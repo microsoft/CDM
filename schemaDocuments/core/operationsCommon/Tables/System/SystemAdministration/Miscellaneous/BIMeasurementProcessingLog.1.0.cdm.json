@@ -1,0 +1,109 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BIMeasurement.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Transaction/BatchJob.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BIMeasurementProcessingLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BIMeasurement",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Measurement",
+          "description": ""
+        },
+        {
+          "name": "Message",
+          "dataType": "EventMessage",
+          "displayName": "Event message",
+          "description": ""
+        },
+        {
+          "name": "LogLevel",
+          "dataType": "integer",
+          "displayName": "Event type",
+          "description": ""
+        },
+        {
+          "name": "EventTime",
+          "dataType": "UTCTimestamp",
+          "isNullable": true,
+          "displayName": "Event time",
+          "description": ""
+        },
+        {
+          "name": "BatchJobInstance",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Batch job",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BIMeasurement"
+          },
+          "name": "Relationship_BIMeasurementRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BatchJob"
+          },
+          "name": "Relationship_BatchJobRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Measurement processing events"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EventMessage",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UTCTimestamp",
+      "extendsDataType": "date"
+    }
+  ]
+}

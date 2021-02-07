@@ -1,8 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CdmDataPartitionPatternDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -43,6 +40,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string RootLocation { get; set; }
 
         /// <summary>
+        /// Gets or sets the glob pattern string to use to search for partitions.
+        /// If both globPattern and regularExpression is set, globPattern will be used.
+        /// </summary>
+        public string GlobPattern { get; set; }
+
+        /// <summary>
         /// Gets or sets the regular expression string to use to search for partitions.
         /// </summary>
         public string RegularExpression { get; set; }
@@ -68,7 +71,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public DateTimeOffset? LastFileModifiedTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the last child file modified time.
+        /// LastChildFileModifiedTime is not valid for DataPartitionPatterns since they do not contain any children objects.
         /// </summary>
         public DateTimeOffset? LastChildFileModifiedTime { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -82,7 +85,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return this.RegularExpression != null || !string.IsNullOrWhiteSpace(this.RootLocation);
+            if (string.IsNullOrWhiteSpace(this.RootLocation))
+            {
+                Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string>() { "RootLocation" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />
@@ -90,7 +98,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmDataPartitionPatternDefinition copy;
@@ -106,6 +114,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             copy.RootLocation = this.RootLocation;
+            copy.GlobPattern = this.GlobPattern;
             copy.RegularExpression = this.RegularExpression;
             copy.Parameters = this.Parameters;
             copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
@@ -168,11 +177,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseName, ResolveOptions resOpt)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
-
             return false;
         }
 
@@ -189,26 +193,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             // make sure the root is a good full corpus path
-            string rootCleaned = this.RootLocation;
+            string rootCleaned = this.RootLocation?.EndsWith("/") == true ? this.RootLocation.Substring(0, this.RootLocation.Length - 1) : this.RootLocation;
             if (rootCleaned == null)
             {
                 rootCleaned = "";
-            }
-            if (rootCleaned.EndsWith("/"))
-            {
-                rootCleaned = rootCleaned.Slice(rootCleaned.Length - 1);
             }
             string rootCorpus = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(rootCleaned, this.InDocument);
 
             List<string> fileInfoList = null;
             try
             {
+                // Remove namespace from path
+                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(rootCorpus);
+                if (pathTuple == null)
+                {
+                    Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, "The root corpus path should not be null or empty.", nameof(FileStatusCheckAsync));
+                    return;
+                }
                 // get a list of all corpusPaths under the root
-                fileInfoList = await adapter.FetchAllFilesAsync(rootCorpus);
+                fileInfoList = await adapter.FetchAllFilesAsync(pathTuple.Item2);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Logger.Warning(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"The folder location '{rootCorpus}' described by a partition pattern does not exist", nameof(FileStatusCheckAsync));
+                Logger.Warning(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"Failed to fetch all files in the folder location '{rootCorpus}' described by a partition pattern. Exception: {e.Message}", nameof(FileStatusCheckAsync));
             }
 
             if (fileInfoList != null)
@@ -220,44 +227,85 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     fileInfoList[i] = fileInfoList[i].Slice(rootCorpus.Length);
                 }
 
-                Regex regexPattern = new Regex(this.RegularExpression);
-
                 if (this.Owner is CdmLocalEntityDeclarationDefinition)
                 {
-                    foreach (var fi in fileInfoList)
+                    // if both are present log warning and use glob pattern, otherwise use regularExpression
+                    if (!String.IsNullOrWhiteSpace(this.GlobPattern) && !String.IsNullOrWhiteSpace(this.RegularExpression))
                     {
-                        Match m = regexPattern.Match(fi);
-                        if (m.Success && m.Length > 1 && m.Value == fi)
-                        {
-                            // create a map of arguments out of capture groups
-                            Dictionary<string, List<string>> args = new Dictionary<string, List<string>>();
-                            int iParam = 0;
-                            // captures start after the string match at m.Groups[0]
-                            for (int i = 1; i < m.Groups.Count; i++)
-                            {
-                                CaptureCollection captures = m.Groups[i].Captures;
-                                if (captures.Count > 0 && iParam < this.Parameters?.Count)
-                                {
-                                    // to be consistent with other languages, if a capture group captures
-                                    // multiple things, only use the last thing that was captured
-                                    var singleCapture = captures[captures.Count - 1];
+                        Logger.Warning(
+                            nameof(CdmDataPartitionPatternDefinition),
+                            this.Ctx,
+                            $"The Data Partition Pattern contains both a glob pattern ({this.GlobPattern}) and a regular expression ({this.RegularExpression}) set, the glob pattern will be used.",
+                            nameof(FileStatusCheckAsync));
+                    }
+                    string regularExpression = !String.IsNullOrWhiteSpace(this.GlobPattern) ? this.GlobPatternToRegex(this.GlobPattern) : this.RegularExpression;
+                    Regex regexPattern = null;
 
-                                    string currentParam = this.Parameters[iParam];
-                                    if (!args.ContainsKey(currentParam))
-                                        args[currentParam] = new List<string>();
-                                    args[currentParam].Add(singleCapture.ToString());
-                                    iParam++;
-                                }
-                                else
+                    try
+                    {
+                        regexPattern = new Regex(regularExpression);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(
+                            nameof(CdmDataPartitionPatternDefinition),
+                            this.Ctx,
+                            $"The {(!String.IsNullOrWhiteSpace(this.GlobPattern) ? "glob pattern" : "regular expression")} '{(!String.IsNullOrWhiteSpace(this.GlobPattern) ? this.GlobPattern : this.RegularExpression)}' could not form a valid regular expression. Reason: ${e.Message}",
+                            nameof(FileStatusCheckAsync));
+                    }
+
+                    if (regexPattern != null)
+                    {
+                        foreach (var fi in fileInfoList)
+                        {
+                            Match m = regexPattern.Match(fi);
+                            if (m.Success && m.Length > 1 && m.Value == fi)
+                            {
+                                // create a map of arguments out of capture groups
+                                Dictionary<string, List<string>> args = new Dictionary<string, List<string>>();
+                                int iParam = 0;
+                                // captures start after the string match at m.Groups[0]
+                                for (int i = 1; i < m.Groups.Count; i++)
                                 {
-                                    break;
+                                    CaptureCollection captures = m.Groups[i].Captures;
+                                    if (captures.Count > 0 && iParam < this.Parameters?.Count)
+                                    {
+                                        // to be consistent with other languages, if a capture group captures
+                                        // multiple things, only use the last thing that was captured
+                                        var singleCapture = captures[captures.Count - 1];
+
+                                        string currentParam = this.Parameters[iParam];
+                                        if (!args.ContainsKey(currentParam))
+                                            args[currentParam] = new List<string>();
+                                        args[currentParam].Add(singleCapture.ToString());
+                                        iParam++;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                // put the original but cleaned up root back onto the matched doc as the location stored in the partition
+                                string locationCorpusPath = $"{rootCleaned}{fi}";
+                                string fullPath = $"{rootCorpus}{fi}";
+                                // Remove namespace from path
+                                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(fullPath);
+                                if (pathTuple == null)
+                                {
+                                    Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, "The corpus path should not be null or empty.", nameof(FileStatusCheckAsync));
+                                    return;
+                                }
+
+                                try
+                                {
+                                    DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+                                    (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
+                                }
+                                catch (Exception e)
+                                {
+                                    Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"Failed to compute last modified time for partition file {pathTuple.Item2}. Exception: {e.Message}", nameof(FileStatusCheckAsync));
                                 }
                             }
-                            // put the original but cleaned up root back onto the matched doc as the location stored in the partition
-                            string locationCorpusPath = $"{rootCleaned}{fi}";
-                            string fullPath = $"{rootCorpus}{fi}";
-                            DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(fullPath);
-                            (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
                         }
                     }
                 }
@@ -272,6 +320,79 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (this.Owner is CdmFileStatus && childTime != null)
                 await (this.Owner as CdmFileStatus).ReportMostRecentTimeAsync(childTime);
+        }
+
+        /// <summary>
+        /// Converts a glob pattern to a regular expression 
+        /// </summary>
+        private string GlobPatternToRegex(string pattern)
+        {
+            List<string> newPattern = new List<string>();
+
+            // all patterns should start with a slash
+            newPattern.Add("[/\\\\]");
+
+            // if pattern starts with slash, skip the first character. We already added it above
+            for (int i = (pattern[0] == '/' || pattern[0] == '\\' ? 1 : 0); i < pattern.Length; i++)
+            {
+                char currChar = pattern[i];
+
+                switch (currChar)
+                {
+                    case '.':
+                        // escape '.' characters
+                        newPattern.Add("\\.");
+                        break;
+                    case '\\':
+                        // convert backslash into slash
+                        newPattern.Add("[/\\\\]");
+                        break;
+                    case '?':
+                        // question mark in glob matches any single character
+                        newPattern.Add(".");
+                        break;
+                    case '*':
+                        char? nextChar = i + 1 < pattern.Length ? pattern[i + 1] : (char?)null;
+                        if (nextChar != null && nextChar == '*')
+                        {
+                            char? prevChar = i - 1 >= 0 ? pattern[i - 1] : (char?)null;
+                            char? postChar = i + 2 < pattern.Length ? pattern[i + 2] : (char?)null;
+
+                            // globstar must be at beginning of pattern, end of pattern, or wrapped in separator characters
+                            if ((prevChar == null || prevChar == '/' || prevChar == '\\')
+                            && (postChar == null || postChar == '/' || postChar == '\\'))
+                            {
+                                newPattern.Add(".*");
+
+                                // globstar can match zero or more subdirectories. If it matches zero, then there should not be
+                                // two consecutive '/' characters so make the second one optional
+                                if (prevChar != null && postChar != null &&
+                                (prevChar == '/' || prevChar == '\\') && (postChar == '/' || postChar == '\\'))
+                                {
+                                    newPattern.Add("/?");
+                                    i++;
+                                }
+                            }
+                            else
+                            {
+                                // otherwise, treat the same as '*'
+                                newPattern.Add("[^/\\\\]*");
+                            }
+                            i++;
+                        }
+                        else
+                        {
+                            // *
+                            newPattern.Add("[^/\\\\]*");
+                        }
+                        break;
+                    default:
+                        newPattern.Add(currChar.ToString());
+                        break;
+                }
+            }
+
+            return string.Join("", newPattern);
         }
     }
 }

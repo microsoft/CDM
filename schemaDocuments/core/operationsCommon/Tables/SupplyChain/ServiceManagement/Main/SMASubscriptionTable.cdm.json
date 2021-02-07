@@ -1,0 +1,243 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjCategory.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Group/SMASubscriptionGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Miscellaneous/TaxInformation_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SMASubscriptionTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Active",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Active",
+          "description": ""
+        },
+        {
+          "name": "BasePrice",
+          "dataType": "SMABasePrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "SMASalesCurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "GroupId",
+          "dataType": "SMASubscriptionGroupId",
+          "description": ""
+        },
+        {
+          "name": "LatestEnddate",
+          "dataType": "SMAEnddate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Latest end date",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjCategoryId",
+          "dataType": "ProjCategoryId",
+          "displayName": "Fee category",
+          "description": ""
+        },
+        {
+          "name": "ProjId",
+          "dataType": "ProjId",
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "SMAStartDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SubscriptionId",
+          "dataType": "SMASubscriptionId",
+          "description": ""
+        },
+        {
+          "name": "SubscriptionIndex",
+          "dataType": "SMAIndex",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInformation_IN",
+          "dataType": "TaxInformationRefRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMASubscriptionGroup"
+          },
+          "name": "Relationship_SMASubscriptionGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxInformation_IN"
+          },
+          "name": "Relationship_TaxInformationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Subscription"
+    },
+    {
+      "dataTypeName": "SMABasePrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SMASalesCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMASubscriptionGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAEnddate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAStartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SMASubscriptionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAIndex",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxInformationRefRecId_IN",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

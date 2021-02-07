@@ -1,0 +1,268 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventJournalTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/InventJournalTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventTransferTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/ProdTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/PurchLine.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlan.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqTransFirmLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransRefId",
+          "dataType": "InventTransRefId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "InventQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefId",
+          "dataType": "InventTransRefId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Planned order",
+          "description": ""
+        },
+        {
+          "name": "RefType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Inventory reference",
+          "description": ""
+        },
+        {
+          "name": "ReqFirmDate",
+          "dataType": "ReqFirmDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqFirmUserId",
+          "dataType": "ReqFirmUserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPlanId",
+          "dataType": "ReqPlanId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventJournalTable"
+          },
+          "name": "Relationship_InventJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventJournalTrans"
+          },
+          "name": "Relationship_InventJournalTransTransferRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransferTable"
+          },
+          "name": "Relationship_inventTransferTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_ProdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlan"
+          },
+          "name": "Relationship_ReqPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Firming log"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReqFirmDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ReqFirmUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqPlanId",
+      "extendsDataType": "string"
+    }
+  ]
+}

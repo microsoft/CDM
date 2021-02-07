@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmObject,
     CdmObjectDefinition,
@@ -27,7 +30,7 @@ export interface CdmObjectReference extends CdmObject {
     simpleNamedReference?: boolean;
 
     /**
-     * @deprecated
+     * @deprecated Only for internal use.
      */
-    fetchResolvedReference(resOpt?: resolveOptions): CdmObjectDefinition;
+    fetchResolvedReference(resOpt?: resolveOptions): CdmObject;
 }

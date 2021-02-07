@@ -1,0 +1,1652 @@
+{
+  "documentVersion": "2.2.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PaymentAsset",
+      "extendsEntity": "CdsStandard",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Payment Asset"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Payment Asset represents the assets associated with specific types of payments including, but not limited to, in-kind gifts, stocks and securities.."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "2.2.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "exchangeRate",
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "ExchangeRate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "1E-10"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Exchange Rate"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Exchange rate for the currency associated with the entity with respect to the base currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "exchangerate",
+                "displayName": "Exchange Rate",
+                "description": "Exchange rate for the currency associated with the entity with respect to the base currency.",
+                "maximumValue": "100000000000",
+                "minimumValue": "1E-10"
+              },
+              {
+                "name": "amount",
+                "purpose": "hasA",
+                "dataType": "currency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_Amount"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "0"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "1000000000"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Amount"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msnfp_amount",
+                "displayName": "Amount",
+                "description": "",
+                "maximumValue": "1000000000",
+                "minimumValue": "0"
+              },
+              {
+                "name": "amountBase",
+                "purpose": "hasA",
+                "dataType": "currency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_amount_Base"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-922337203685477"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "922337203685477"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Amount (Base)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Value of the Amount in base currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msnfp_amount_base",
+                "displayName": "Amount (Base)",
+                "description": "Value of the Amount in base currency.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "name": "assetType",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "PaymentAssetType",
+                                "100000000",
+                                "0"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_AssetType"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Asset Type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msnfp_assettype",
+                "displayName": "Asset Type",
+                "description": "",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'assetType_display' is added to the 'PaymentAsset' entity to provide the localized display text for the value of the listLookup attribute 'assetType'",
+                    "name": "assetType_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "bookDate",
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_BookDate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Book Date"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msnfp_bookdate",
+                "displayName": "Book Date",
+                "description": ""
+              },
+              {
+                "name": "description",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_Description"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "1024"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Description"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msnfp_description",
+                "displayName": "Description",
+                "description": "",
+                "maximumLength": 1024
+              },
+              {
+                "name": "name",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_Name"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "160"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msnfp_name",
+                "displayName": "Name",
+                "maximumLength": 160
+              },
+              {
+                "entity": {
+                  "entityReference": "PaymentAsset",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "PaymentAsset/(resolvedAttributes)/paymentAssetId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "originalAssetAdjusted",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'PaymentAsset'.",
+                      "name": "originalAssetAdjustedId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Original Asset Gift Adjusted"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Original Asset Gift Adjusted"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msnfp_originalassetadjustedid",
+                      "displayName": "Original Asset Gift Adjusted",
+                      "description": "Original Asset Gift Adjusted"
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "PlannedGiving",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "PlannedGiving/(resolvedAttributes)/plannedGivingId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "paymentassetPlannedgiving",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'PlannedGiving'.",
+                      "name": "paymentassetPlannedgivingId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Planned Giving"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Unique identifier for Planned Giving associated with Payment Asset."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msnfp_paymentasset_plannedgivingid",
+                      "displayName": "Planned Giving",
+                      "description": "Unique identifier for Planned Giving associated with Payment Asset."
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "PaymentAsset",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "PaymentAsset/(resolvedAttributes)/paymentAssetId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "paymentAssetPledgedAsset",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'PaymentAsset'.",
+                      "name": "paymentAssetPledgedAssetId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Pledged Asset"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Pledged Asset"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msnfp_paymentasset_pledgedasset",
+                      "displayName": "Pledged Asset",
+                      "description": "Pledged Asset"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "paymentAssetCategory",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "PaymentAssetCategory",
+                                "100000000",
+                                "0"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_PaymentAssetCategory"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "recommended"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Payment Asset Category"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msnfp_paymentassetcategory",
+                "displayName": "Payment Asset Category",
+                "description": "",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'paymentAssetCategory_display' is added to the 'PaymentAsset' entity to provide the localized display text for the value of the listLookup attribute 'paymentAssetCategory'",
+                    "name": "paymentAssetCategory_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "paymentAssetId",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_PaymentAssetId"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Payment Asset"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier for entity instances"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msnfp_paymentassetid",
+                "displayName": "Payment Asset",
+                "description": "Unique identifier for entity instances"
+              },
+              {
+                "name": "paymentAssetSubcategory",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "PaymentAssetSubcategory",
+                                "100000000",
+                                "0"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_PaymentAssetSubcategory"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "recommended"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Payment Asset Subcategory"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msnfp_paymentassetsubcategory",
+                "displayName": "Payment Asset Subcategory",
+                "description": "",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'paymentAssetSubcategory_display' is added to the 'PaymentAsset' entity to provide the localized display text for the value of the listLookup attribute 'paymentAssetSubcategory'",
+                    "name": "paymentAssetSubcategory_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "PaymentSchedule",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "PaymentSchedule/(resolvedAttributes)/paymentScheduleId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "pledgedOnPaymentSchedule",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'PaymentSchedule'.",
+                      "name": "pledgedOnPaymentScheduleId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Pledged On Payment Schedule"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Pledged On Payment Schedule"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msnfp_pledgedonpaymentscheduleid",
+                      "displayName": "Pledged On Payment Schedule",
+                      "description": "Pledged On Payment Schedule"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "quantity",
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_Quantity"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "0"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "1000000000"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Quantity"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msnfp_quantity",
+                "displayName": "Quantity",
+                "description": "",
+                "maximumValue": "1000000000",
+                "minimumValue": "0"
+              },
+              {
+                "name": "symbol",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_Symbol"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Symbol"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msnfp_symbol",
+                "displayName": "Symbol",
+                "description": "",
+                "maximumLength": 100
+              },
+              {
+                "entity": {
+                  "entityReference": "Transaction",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Transaction/(resolvedAttributes)/transactionId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "transferredOnTransaction",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Transaction'.",
+                      "name": "transferredOnTransactionId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Transferred On Transaction"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Transferred On Transaction"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msnfp_transferredontransactionid",
+                      "displayName": "Transferred On Transaction",
+                      "description": "Transferred On Transaction"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "stateCode",
+                "purpose": "representsStateWith",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the Payment Asset"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "statecode",
+                "displayName": "Status",
+                "description": "Status of the Payment Asset",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'stateCode_display' is added to the 'PaymentAsset' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                    "name": "stateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "statusCode",
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    },
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookupCorrelated",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "1",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "2",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status Reason"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reason for the status of the Payment Asset"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "statuscode",
+                "displayName": "Status Reason",
+                "description": "Reason for the status of the Payment Asset",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'statusCode_display' is added to the 'PaymentAsset' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                    "name": "statusCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "Currency",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Currency/(resolvedAttributes)/transactionCurrencyId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "transactionCurrency",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Currency'.",
+                      "name": "transactionCurrencyId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Currency"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Unique identifier of the currency associated with the entity."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "transactioncurrencyid",
+                      "displayName": "Currency",
+                      "description": "Unique identifier of the currency associated with the entity."
+                    }
+                  }
+                }
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitCore/PaymentAsset.cdm.json/PaymentAsset/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "sourceName": "msnfp_PaymentAsset",
+      "displayName": "Payment Asset",
+      "description": "Payment Asset represents the assets associated with specific types of payments including, but not limited to, in-kind gifts, stocks and securities.."
+    }
+  ]
+}

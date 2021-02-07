@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
     CdmFileStatus,
@@ -8,7 +11,6 @@ import {
     traitToPropertyMap,
     VisitCallback
 } from '../internal';
-import { KeyValPair } from '../Persistence/CdmFolder/types';
 import * as timeUtils from '../Utilities/timeUtils';
 
 /**
@@ -38,7 +40,7 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     /**
      * @inheritdoc
      */
-    public arguments?: KeyValPair[];
+    public arguments?: Map<string, string[]>;
 
     /**
      * @inheritdoc
@@ -49,6 +51,20 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
      * @inheritdoc
      */
     public lastFileModifiedTime: Date;
+
+    /**
+     * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+     */
+    public get lastChildFileModifiedTime(): Date {
+        throw new Error('Not implemented');
+    }
+
+    /**
+     * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+     */
+    public set lastChildFileModifiedTime(time: Date) {
+        throw new Error('Not implemented');
+    }
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.dataPartitionDef;
@@ -69,7 +85,7 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
         super(ctx);
         this.name = name;
         this.objectType = cdmObjectType.dataPartitionDef;
-        this.arguments = [];
+        this.arguments = new Map();
         this.inferred = false;
         this.traitToPropertyMap = new traitToPropertyMap(this);
     }
@@ -101,7 +117,7 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmDataPartitionDefinition {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
         let copy: CdmDataPartitionDefinition;
@@ -164,10 +180,6 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
      * @inheritdoc
      */
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 

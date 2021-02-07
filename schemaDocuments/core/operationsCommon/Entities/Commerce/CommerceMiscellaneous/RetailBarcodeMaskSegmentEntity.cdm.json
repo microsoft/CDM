@@ -1,0 +1,128 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailBarcodeMaskEntity.cdm.json"
+    },
+    {
+      "corpusPath": "RetailBarcodeMaskCharacterEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/CommerceMiscellaneous/Parameter/RetailBarcodeMaskSegment.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailBarcodeMaskSegmentEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Character",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Decimals",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Length",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaskId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "SegmentNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CharacterType",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailBarcodeMaskEntity"
+          },
+          "name": "Relationship_RetailBarcodeMaskEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailBarcodeMaskCharacterEntity"
+          },
+          "name": "Relationship_RetailBarcodeMaskCharacterEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailBarcodeMaskSegment"
+          },
+          "name": "BackingTable_RetailBarcodeMaskSegmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bar code mask segment"
+    }
+  ]
+}

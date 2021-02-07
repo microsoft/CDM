@@ -1,0 +1,94 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Miscellaneous/TaxGSTReportConfigurationLine_MY.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxGSTReportConfigurationEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ReportingCodesForGSTAmount",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCodesForTransactionAmount",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TypeOfTransaction",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportConfigurationName",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportConfigurationDescription",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGSTReportConfigurationLine_MY"
+          },
+          "name": "BackingTable_TaxGSTReportConfigurationLine_MYRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "GST report configuration lines"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/SysEmailSystemTable.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysUserRequestParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "NewUserEmailTemplate",
+          "dataType": "SysEmailSystemId",
+          "isNullable": true,
+          "displayName": "New User Email",
+          "description": ""
+        },
+        {
+          "name": "TestWorkflowAllowReprovisioning",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow existing user reprovisioning",
+          "description": ""
+        },
+        {
+          "name": "TestWorkflowExposeExistingUsers",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Expose information about existing users",
+          "description": ""
+        },
+        {
+          "name": "TestWorkflowKeepExistingUserRoleAssignments",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Keep existing user role assignments",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysEmailSystemTable"
+          },
+          "name": "Relationship_NewUserEmailRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "SysEmailSystemId",
+      "extendsDataType": "string"
+    }
+  ]
+}

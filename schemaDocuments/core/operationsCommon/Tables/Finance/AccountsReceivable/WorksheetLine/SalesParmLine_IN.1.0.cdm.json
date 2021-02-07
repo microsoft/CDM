@@ -1,0 +1,135 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/InventSiteGateEntryLine_IN.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesParmLine.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesParmLine_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventSiteGateEntryLine",
+          "dataType": "InventSiteGateEntryLineRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesParmLine",
+          "dataType": "SalesParmLineRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "AssessableValueTransactionCurrency",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Assessable value",
+          "description": ""
+        },
+        {
+          "name": "CustomsShippingBillNumberTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Shipping bill",
+          "description": ""
+        },
+        {
+          "name": "MaximumRetailPrice",
+          "dataType": "MaximumRetailPrice_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventSiteGateEntryLine_IN"
+          },
+          "name": "Relationship_InventSiteGateEntryLine_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesParmLine"
+          },
+          "name": "Relationship_SalesParmLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales parm line information for India"
+    },
+    {
+      "dataTypeName": "InventSiteGateEntryLineRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SalesParmLineRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MaximumRetailPrice_IN",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

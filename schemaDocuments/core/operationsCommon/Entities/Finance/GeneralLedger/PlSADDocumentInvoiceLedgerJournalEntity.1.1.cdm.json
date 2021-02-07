@@ -1,0 +1,108 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PlSADDocumentLedgerJournalEntity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetLine/PlSADFinanceInvoice.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PlSADDocumentInvoiceLedgerJournalEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InvoiceDate",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Invoice",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SADDate",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SADNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PlSADDocumentLedgerJournalEntity"
+          },
+          "name": "Relationship_SADDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlSADFinanceInvoice"
+          },
+          "name": "BackingTable_PlSADFinanceInvoiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Invoices for SAD document from general journal"
+    }
+  ]
+}

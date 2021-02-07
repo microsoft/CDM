@@ -1,0 +1,126 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysCheckListTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutoCheckOnStartup",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Caption",
+          "dataType": "Caption",
+          "isNullable": true,
+          "displayName": "Caption",
+          "description": ""
+        },
+        {
+          "name": "Header",
+          "dataType": "Caption",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HeaderHelp",
+          "dataType": "Caption",
+          "isNullable": true,
+          "displayName": "Help text",
+          "description": ""
+        },
+        {
+          "name": "IsRunning",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Recurrence",
+          "dataType": "SysRecurrenceData",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SortWithStatusPreference",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "StartDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SysCheckListId",
+          "dataType": "SysCheckListId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Checklists"
+    },
+    {
+      "dataTypeName": "Caption",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysRecurrenceData",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "StartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SysCheckListId",
+      "extendsDataType": "string"
+    }
+  ]
+}

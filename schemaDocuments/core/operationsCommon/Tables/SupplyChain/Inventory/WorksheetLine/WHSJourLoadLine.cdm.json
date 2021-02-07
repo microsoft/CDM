@@ -1,0 +1,431 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Transaction/CustConfirmTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSInventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSJourLoadTable.cdm.json"
+    },
+    {
+      "corpusPath": "WHSLoadLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSLoadTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSShipmentTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSJourLoadLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustJourType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventQty",
+          "dataType": "WHSInventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "LoadClosedUTCDateTime",
+          "dataType": "WHSLoadClosedUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadDirection",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadId",
+          "dataType": "WHSLoadId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadInProcessUTCDateTime",
+          "dataType": "WHSLoadInProcessUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadOpenUTCDateTime",
+          "dataType": "WHSLoadOpenUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadReadyToShipUTCDateTime",
+          "dataType": "WHSLoadReadyToShipUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrderNum",
+          "dataType": "WHSOrderNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OverDeliveryPct",
+          "dataType": "OverDeliveryPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackingQty",
+          "dataType": "WHSPackingQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "ProductQuantity",
+          "description": ""
+        },
+        {
+          "name": "QtyLeftToStructure",
+          "dataType": "WHSQtyLeftToStructure",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefId",
+          "dataType": "WHSCustJourRefId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "WHSLoadLineRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ReleaseToWarehouseId",
+          "dataType": "WHSReleaseToWarehouseId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipmentId",
+          "dataType": "WHSShipmentId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnderDeliveryPct",
+          "dataType": "UnderDeliveryPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UOM",
+          "dataType": "WHSUOM",
+          "description": ""
+        },
+        {
+          "name": "WorkCreatedQty",
+          "dataType": "WHSWorkCreatedQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustConfirmTrans"
+          },
+          "name": "Relationship_CustConfirmTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceTrans"
+          },
+          "name": "Relationship_CustInvoiceTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSInventTable"
+          },
+          "name": "Relationship_WHSInventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSJourLoadTable"
+          },
+          "name": "Relationship_WHSJourLoadTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadLine"
+          },
+          "name": "Relationship_WHSLoadLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadTable"
+          },
+          "name": "Relationship_WHSLoadTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipmentTable"
+          },
+          "name": "Relationship_WHSShipmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Journal load details"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSInventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLoadClosedUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSLoadId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLoadInProcessUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSLoadOpenUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSLoadReadyToShipUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSOrderNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OverDeliveryPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSPackingQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProductQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSQtyLeftToStructure",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSCustJourRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLoadLineRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSReleaseToWarehouseId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSShipmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnderDeliveryPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSUOM",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkCreatedQty",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

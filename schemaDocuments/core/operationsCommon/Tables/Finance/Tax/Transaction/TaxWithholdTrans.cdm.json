@@ -1,0 +1,921 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetHeader/LedgerJournalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/LedgerJournalTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/WorksheetLine/SpecTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxWithholdComponentGroupTable_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxWithholdComponentTable_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdItemGroupHeading_TH.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdPeriodHead_TH.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxWithholdTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTransOpen.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxWithholdTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "VendAccount",
+          "dataType": "VendAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CanBeReversed_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompetenceDate",
+          "dataType": "TransDate",
+          "displayName": "Competence date",
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustTransInvoiceId",
+          "dataType": "CustTransRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustTransPaymId",
+          "dataType": "CustTransRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustVendTransOpenRecId_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExemptedAmount",
+          "dataType": "TaxWithholdAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Amount exempted from withhold in default currency",
+          "description": ""
+        },
+        {
+          "name": "IntersectionWithholdBaseAmount_BR",
+          "dataType": "TaxWithholdBaseCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Basis for withholding tax calculation in invoice currency",
+          "description": ""
+        },
+        {
+          "name": "Invoice",
+          "dataType": "InvoiceId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Invoice amount to be paid in invoice currency",
+          "description": ""
+        },
+        {
+          "name": "InvoiceBaseAmount",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Base amount in invoice currency",
+          "description": ""
+        },
+        {
+          "name": "InvoiceCurrency",
+          "dataType": "CurrencyCode",
+          "isReadOnly": true,
+          "displayName": "Invoice currency",
+          "description": ""
+        },
+        {
+          "name": "InvoiceExemptedAmount",
+          "dataType": "TaxWithholdAmountCur",
+          "isNullable": true,
+          "displayName": "Amount exempted from withhold in invoice currency",
+          "description": ""
+        },
+        {
+          "name": "InvoiceNotTaxableByTreaty",
+          "dataType": "TaxWithholdAmountCur",
+          "isNullable": true,
+          "displayName": "Not withhold taxable by treaty in invoice currency",
+          "description": ""
+        },
+        {
+          "name": "InvoiceNotTaxableExpenses",
+          "dataType": "TaxWithholdAmountCur",
+          "isNullable": true,
+          "displayName": "Not taxable expenses in invoice currency",
+          "description": ""
+        },
+        {
+          "name": "InvoiceTaxAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Sales tax amount in invoice currency",
+          "description": ""
+        },
+        {
+          "name": "InvoiceTaxWithholdAmount",
+          "dataType": "TaxWithholdAmountCur",
+          "isNullable": true,
+          "displayName": "Withholding tax in invoice currency",
+          "description": ""
+        },
+        {
+          "name": "InvoiceWithholdBaseAmount",
+          "dataType": "TaxWithholdBaseCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Basis for withholding tax calculation in invoice currency",
+          "description": ""
+        },
+        {
+          "name": "JournalNum",
+          "dataType": "LedgerJournalId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJourTransRecId_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NotTaxableByTreaty",
+          "dataType": "TaxWithholdAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Not withhold taxable by treaty in default currency",
+          "description": ""
+        },
+        {
+          "name": "NotTaxableExpenses",
+          "dataType": "TaxWithholdAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Not taxable expenses in default currency",
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PartyId_BR",
+          "dataType": "DirPartyNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymCompany",
+          "dataType": "CompanyId",
+          "isNullable": true,
+          "displayName": "Company accounts",
+          "description": ""
+        },
+        {
+          "name": "PaymCurrency",
+          "dataType": "CurrencyCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Payment currency",
+          "description": ""
+        },
+        {
+          "name": "PaymExemptedAmount",
+          "dataType": "TaxWithholdAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Amount exempted from withhold in payment currency",
+          "description": ""
+        },
+        {
+          "name": "PaymNotTaxableByTreaty",
+          "dataType": "TaxWithholdAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Not withhold taxable by treaty in payment currency",
+          "description": ""
+        },
+        {
+          "name": "PaymNotTaxableExpenses",
+          "dataType": "TaxWithholdAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Not taxable expenses in payment currency",
+          "description": ""
+        },
+        {
+          "name": "PaymTaxWithholdAmount",
+          "dataType": "TaxWithholdAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Withholding tax in payment currency",
+          "description": ""
+        },
+        {
+          "name": "PaymVendor",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "displayName": "Payment vendor account",
+          "description": ""
+        },
+        {
+          "name": "PaymWithholdBaseAmount",
+          "dataType": "TaxWithholdBaseCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Basis for withholding tax calculation in payment currency",
+          "description": ""
+        },
+        {
+          "name": "Posted",
+          "dataType": "Posted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefCustVendTransRecId_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Settled",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Settled",
+          "description": ""
+        },
+        {
+          "name": "SettlementVoucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Source_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecTransId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxExemptedAmount",
+          "dataType": "TaxWithholdAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Amount exempted from withhold in withholding tax currency",
+          "description": ""
+        },
+        {
+          "name": "TaxNotTaxableByTreaty",
+          "dataType": "TaxWithholdAmountCur",
+          "isNullable": true,
+          "displayName": "Not withhold taxable by treaty in withholding tax currency",
+          "description": ""
+        },
+        {
+          "name": "TaxNotTaxableExpenses",
+          "dataType": "TaxWithholdAmountCur",
+          "isNullable": true,
+          "displayName": "Not taxable expenses in withholding tax currency",
+          "description": ""
+        },
+        {
+          "name": "TaxRepCounter_BR",
+          "dataType": "TaxVersion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxTaxWithholdAmount",
+          "dataType": "TaxWithholdAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Withholding tax in withholding tax currency",
+          "description": ""
+        },
+        {
+          "name": "TaxType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdAmount",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Withholding tax in default currency",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdBaseAmount",
+          "dataType": "TaxWithholdBaseCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Basis for withholding tax calculation in withholding tax currency",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdCode",
+          "dataType": "TaxWithholdCode",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdComponentGroupTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Withholding tax component group",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdComponentTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Withholding tax component",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdCurrency",
+          "dataType": "CurrencyCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Withholding tax currency",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdGroup",
+          "dataType": "TaxWithholdGroup",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdIsSelected_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Withholding tax is selected",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdItemGroupHeading_TH",
+          "dataType": "TaxWithholdItemGroupId_TH",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdPeriod_BR",
+          "dataType": "TaxWithholdPeriod",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdPeriodHead_TH",
+          "dataType": "TaxWithholdPeriodId_TH",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdSlipNum_TH",
+          "dataType": "TaxWithholdSlipNum_TH",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "VendorType_TH",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendTransInvoiceId",
+          "dataType": "VendTransRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendTransPaymId",
+          "dataType": "VendTransRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "displayName": "Payment voucher",
+          "description": ""
+        },
+        {
+          "name": "VoucherInvoice",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "displayName": "Invoice voucher",
+          "description": ""
+        },
+        {
+          "name": "WithholdBaseAmount",
+          "dataType": "TaxWithholdBase",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Basis for withholding tax calculation in default currency",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdAccumulatedBaseAmount",
+          "dataType": "TaxWithholdBaseCur",
+          "isNullable": true,
+          "displayName": "Withholding tax accumulated base amount",
+          "description": ""
+        },
+        {
+          "name": "HideInReport_IT",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Hide",
+          "description": ""
+        },
+        {
+          "name": "TaxReimbursement_IT",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Reimbursement in withholding tax currency",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_InvoiceCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_PaymCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_TaxWithholdCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTrans_CustTransInvoiceIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTrans_CustTransPaymIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTable"
+          },
+          "name": "Relationship_LedgerJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SpecTrans"
+          },
+          "name": "Relationship_SpecTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdComponentGroupTable_IN"
+          },
+          "name": "Relationship_TaxWithholdComponentGroupTable_INFKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdComponentTable_IN"
+          },
+          "name": "Relationship_TaxWithholdComponentTable_INFKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdGroupHeading"
+          },
+          "name": "Relationship_TaxWithholdGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdItemGroupHeading_TH"
+          },
+          "name": "Relationship_TaxWithholdItemGroupHeading_THRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdPeriodHead_TH"
+          },
+          "name": "Relationship_TaxWithholdPeriodHead_THRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdTable"
+          },
+          "name": "Relationship_TaxWithholdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_PaymVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_VendAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransInvoiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTransOpen"
+          },
+          "name": "Relationship_VendTransOpenRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransPaymRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Withholding tax transaction"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxWithholdAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxWithholdBaseCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "DirPartyNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Posted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxVersion",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxWithholdCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdItemGroupId_TH",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxWithholdPeriod",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdPeriodId_TH",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxWithholdSlipNum_TH",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxWithholdBase",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

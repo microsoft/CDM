@@ -1,0 +1,134 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMOperatingUnit.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PlanReference",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ControllingOrganization",
+          "dataType": "OMOperatingUnitRefRecId",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "LegalEntity",
+          "description": ""
+        },
+        {
+          "name": "PlanDescription",
+          "dataType": "PlanDescription",
+          "description": ""
+        },
+        {
+          "name": "PlanName",
+          "dataType": "PlanName",
+          "description": ""
+        },
+        {
+          "name": "PlanType",
+          "dataType": "PlanType",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "OMOperatingUnit"
+          },
+          "name": "Relationship_ControllingOrganizationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_LegalEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Plan references"
+    },
+    {
+      "dataTypeName": "OMOperatingUnitRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LegalEntity",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PlanDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlanName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlanType",
+      "extendsDataType": "integer"
+    }
+  ]
+}

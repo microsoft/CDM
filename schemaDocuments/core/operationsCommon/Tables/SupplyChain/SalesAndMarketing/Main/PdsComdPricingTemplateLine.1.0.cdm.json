@@ -1,0 +1,243 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventItemGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "PdsComdPricingTemplate.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PriceDiscGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PdsComdPricingTemplateLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventQty",
+          "dataType": "PdsInventQtyOrdered",
+          "description": ""
+        },
+        {
+          "name": "InventQtyFrom",
+          "dataType": "PdsInventQtyFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventQtyTo",
+          "dataType": "PdsInventQtyTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarginAccountCode",
+          "dataType": "PriceDiscPartyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarginAccountRelation",
+          "dataType": "PdsComdMarginAccountRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarginChange",
+          "dataType": "PdsComdMarginChange",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarginItemCode",
+          "dataType": "PriceDiscProductCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarginItemRelation",
+          "dataType": "PdsComdMarginItemRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarginMult",
+          "dataType": "PdsComdMarginMult",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarginPerc",
+          "dataType": "PdsComdMarginPerc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PricingTemplateId",
+          "dataType": "PdsComdPricingTemplateId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustomerTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventItemGroup"
+          },
+          "name": "Relationship_ItemGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsComdPricingTemplate"
+          },
+          "name": "Relationship_PdsComdPricingTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_PriceDiscGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Commodity pricing template lines"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsInventQtyOrdered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsInventQtyFrom",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsInventQtyTo",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceDiscPartyCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsComdMarginAccountRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsComdMarginChange",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceDiscProductCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsComdMarginItemRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsComdMarginMult",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsComdMarginPerc",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsComdPricingTemplateId",
+      "extendsDataType": "string"
+    }
+  ]
+}

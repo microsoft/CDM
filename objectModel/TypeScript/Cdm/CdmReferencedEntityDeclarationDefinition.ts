@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmAttributeContext,
     CdmCollection,
@@ -9,6 +12,8 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
+    Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
@@ -70,7 +75,7 @@ export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
         let copy: CdmReferencedEntityDeclarationDefinition;
@@ -93,7 +98,26 @@ export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
      * @inheritdoc
      */
     public validate(): boolean {
-        return this.entityName && this.entityPath ? true : false;
+        const missingFields: string[] = [];
+        if (!this.entityName) {
+            missingFields.push('entityName');
+        }
+        if (!this.entityPath) {
+            missingFields.push('entityPath');
+        }
+
+        if (missingFields.length > 0) {
+            Logger.error(
+                CdmReferencedEntityDeclarationDefinition.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, missingFields),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -114,10 +138,6 @@ export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
      * @inheritdoc
      */
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 

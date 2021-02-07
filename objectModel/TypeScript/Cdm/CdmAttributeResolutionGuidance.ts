@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
     CdmObject,
@@ -105,7 +108,7 @@ export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements C
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
             let copy: CdmAttributeResolutionGuidance;
             if (!host) {
@@ -192,9 +195,6 @@ export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements C
             if (this.entityByReference.allowReference) {
                 if (this.entityByReference.alwaysIncludeForeignKey === undefined) {
                     this.entityByReference.alwaysIncludeForeignKey = false;
-                }
-                if (this.entityByReference.referenceOnlyAfterDepth === undefined) {
-                    this.entityByReference.referenceOnlyAfterDepth = 2;
                 }
                 if (this.entityByReference.foreignKeyAttribute === undefined) {
                     // make up a fk

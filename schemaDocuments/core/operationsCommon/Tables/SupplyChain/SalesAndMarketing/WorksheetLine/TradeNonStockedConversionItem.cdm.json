@@ -1,0 +1,174 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProduct.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventModelGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/TradeNonStockedConversion.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TradeNonStockedConversionItem",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "ItemIdDataAreaId",
+          "dataType": "DataAreaId",
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "TradeNonStockedConversionLegalEntity",
+          "description": ""
+        },
+        {
+          "name": "NonStockedConversion",
+          "dataType": "TradeNonStockedConversionRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Product",
+          "dataType": "EcoResProductRecId",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TargetItemModelGroupDataAreaId",
+          "dataType": "DataAreaId",
+          "description": ""
+        },
+        {
+          "name": "TargetItemModelGroupId",
+          "dataType": "TradeNonStockedTargetItemModelGroupId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_EcoResProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventModelGroup"
+          },
+          "name": "Relationship_InventModelGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TradeNonStockedConversion"
+          },
+          "name": "Relationship_TradeNonStockedConversionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Not stocked product conversion item"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TradeNonStockedConversionLegalEntity",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TradeNonStockedConversionRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResProductRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TradeNonStockedTargetItemModelGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

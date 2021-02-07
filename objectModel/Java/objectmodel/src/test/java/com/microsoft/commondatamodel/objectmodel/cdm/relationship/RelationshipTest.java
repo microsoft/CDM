@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm.relationship;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,6 +17,8 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryS
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.E2ERelationship;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +39,7 @@ public class RelationshipTest {
    */
   @Test
   public void testCalculateRelationshipsAndPopulateManifests() throws IOException, InterruptedException {
-    final CdmCorpusDefinition corpus = this.getCorpus();
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests", null);
     final CdmManifestDefinition rootManifest = corpus
         .<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
     final CdmManifestDefinition subManifest = corpus
@@ -42,9 +47,6 @@ public class RelationshipTest {
 
     corpus.calculateEntityGraphAsync(rootManifest).join();
     rootManifest.populateManifestRelationshipsAsync().join();
-
-    Assert.assertEquals(rootManifest.getRelationships().getCount(), 5);
-    Assert.assertEquals(subManifest.getRelationships().getCount(), 7);
 
     final List<E2ERelationship> expectedAllManifestRels = JMapper.MAP.readValue(
         TestHelper.getExpectedOutputFileContent(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests",
@@ -58,25 +60,8 @@ public class RelationshipTest {
         });
 
     // check that each relationship has been created correctly
-    for (final E2ERelationship expectedRel : expectedAllManifestRels) {
-      final List<CdmE2ERelationship> found = rootManifest.getRelationships().getAllItems().parallelStream()
-          .filter(x -> Objects.equals(expectedRel.getFromEntity(), x.getFromEntity())
-              && Objects.equals(expectedRel.getFromEntityAttribute(), x.getFromEntityAttribute())
-              && Objects.equals(expectedRel.getToEntity(), x.getToEntity())
-              && Objects.equals(expectedRel.getToEntityAttribute(), x.getToEntityAttribute()))
-          .collect(Collectors.toList());
-      Assert.assertEquals(found.size(), 1);
-    }
-
-    for (final E2ERelationship expectedSubRel : expectedAllSubManifestRels) {
-      final List<CdmE2ERelationship> found = subManifest.getRelationships().getAllItems().parallelStream()
-          .filter(x -> Objects.equals(expectedSubRel.getFromEntity(), x.getFromEntity())
-              && Objects.equals(expectedSubRel.getFromEntityAttribute(), x.getFromEntityAttribute())
-              && Objects.equals(expectedSubRel.getToEntity(), x.getToEntity())
-              && Objects.equals(expectedSubRel.getToEntityAttribute(), x.getToEntityAttribute()))
-          .collect(Collectors.toList());
-      Assert.assertEquals(found.size(), 1);
-    }
+    verifyRelationships(rootManifest, expectedAllManifestRels);
+    verifyRelationships(subManifest, expectedAllSubManifestRels);
   }
 
   /**
@@ -86,7 +71,7 @@ public class RelationshipTest {
   @Test
   public void TestCalculateRelationshipsAndPopulateManifestsWithExclusiveFlag()
       throws InterruptedException, ExecutionException, IOException {
-    final CdmCorpusDefinition corpus = this.getCorpus();
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests", null);
 
     final CdmManifestDefinition rootManifest = corpus
         .<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").get();
@@ -95,9 +80,6 @@ public class RelationshipTest {
 
     corpus.calculateEntityGraphAsync(rootManifest).join();
     rootManifest.populateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle.Exclusive).join();
-
-    Assert.assertEquals(rootManifest.getRelationships().size(), 3);
-    Assert.assertEquals(subManifest.getRelationships().size(), 3);
 
     final List<E2ERelationship> expectedExclusiveManifestRels = JMapper.MAP.readValue(
         TestHelper.getExpectedOutputFileContent(TESTS_SUBPATH, "TestCalculateRelationshipsAndPopulateManifests",
@@ -111,25 +93,8 @@ public class RelationshipTest {
         });
 
     // check that each relationship has been created correctly
-    for (final E2ERelationship expectedRel : expectedExclusiveManifestRels) {
-      final List<CdmE2ERelationship> found = rootManifest.getRelationships().getAllItems().parallelStream()
-          .filter(x -> Objects.equals(expectedRel.getFromEntity(), x.getFromEntity())
-              && Objects.equals(expectedRel.getFromEntityAttribute(), x.getFromEntityAttribute())
-              && Objects.equals(expectedRel.getToEntity(), x.getToEntity())
-              && Objects.equals(expectedRel.getToEntityAttribute(), x.getToEntityAttribute()))
-          .collect(Collectors.toList());
-      Assert.assertEquals(found.size(), 1);
-    }
-
-    for (final E2ERelationship expectedSubRel : expectedExclusiveSubManifestRels) {
-      final List<CdmE2ERelationship> found = subManifest.getRelationships().getAllItems().parallelStream()
-          .filter(x -> Objects.equals(expectedSubRel.getFromEntity(), x.getFromEntity())
-              && Objects.equals(expectedSubRel.getFromEntityAttribute(), x.getFromEntityAttribute())
-              && Objects.equals(expectedSubRel.getToEntity(), x.getToEntity())
-              && Objects.equals(expectedSubRel.getToEntityAttribute(), x.getToEntityAttribute()))
-          .collect(Collectors.toList());
-      Assert.assertEquals(found.size(), 1);
-    }
+    verifyRelationships(rootManifest, expectedExclusiveManifestRels);
+    verifyRelationships(subManifest, expectedExclusiveSubManifestRels);
   }
 
   /**
@@ -139,7 +104,7 @@ public class RelationshipTest {
   @Test
   public void testCalculateRelationshipsAndPopulateManifestsWithNoneFlag()
       throws ExecutionException, InterruptedException {
-    final CdmCorpusDefinition corpus = this.getCorpus();
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests", null);
 
     final CdmManifestDefinition rootManifest = corpus
         .<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").get();
@@ -174,6 +139,20 @@ public class RelationshipTest {
       "expectedResolvedSubManifestRels.json"),
       new TypeReference<List<E2ERelationship>>() {
       });
+    final List<E2ERelationship> expectedResolvedExcManifestRels = 
+      JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+      TESTS_SUBPATH,
+      "testCalculateRelationshipsOnResolvedEntities", 
+      "expectedResolvedExcManifestRels.json"),
+      new TypeReference<List<E2ERelationship>>() {
+      });
+    final List<E2ERelationship> expectedResolvedExcSubManifestRels = 
+      JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+      TESTS_SUBPATH,
+      "testCalculateRelationshipsOnResolvedEntities",
+      "expectedResolvedExcSubManifestRels.json"),
+      new TypeReference<List<E2ERelationship>>() {
+      });
     final String testInputPath = TestHelper.getInputFolderPath(TESTS_SUBPATH, "TestCalculateRelationshipsOnResolvedEntities");
     final CdmCorpusDefinition corpus = new CdmCorpusDefinition();
     corpus.getStorage().mount("local", new LocalAdapter(testInputPath));
@@ -182,33 +161,16 @@ public class RelationshipTest {
     final CdmManifestDefinition resolvedManifest = loadAndResolveManifest(corpus, rootManifest, "-resolved");
     String subManifestPath = corpus.getStorage().createAbsoluteCorpusPath(resolvedManifest.getSubManifests().getAllItems().get(0).getDefinition());
     CdmManifestDefinition subManifest = corpus.<CdmManifestDefinition>fetchObjectAsync(subManifestPath).join();
-    // using createResolvedManifest will only populate exclusive relationships
-    Assert.assertEquals(resolvedManifest.getRelationships().size(), expectedResolvedManifestRels.size());
-    Assert.assertEquals(subManifest.getRelationships().size(), expectedResolvedSubManifestRels.size());
-    // check that each relationship has been created correctly
-    for (final E2ERelationship expectedRel : expectedResolvedManifestRels) {
-    final List<CdmE2ERelationship> found = resolvedManifest.getRelationships().getAllItems()
-      .parallelStream()
-      .filter(x ->
-        Objects.equals(expectedRel.getFromEntity(), x.getFromEntity())
-          && Objects.equals(expectedRel.getFromEntityAttribute(), x.getFromEntityAttribute())
-          && Objects.equals(expectedRel.getToEntity(), x.getToEntity())
-          && Objects.equals(expectedRel.getToEntityAttribute(), x.getToEntityAttribute()))
-        .collect(Collectors.toList());
-      Assert.assertEquals(found.size(), 1);
-    }
 
-    for (E2ERelationship expectedSubRel : expectedResolvedSubManifestRels) {
-      final List<CdmE2ERelationship> found = subManifest.getRelationships().getAllItems()
-      .parallelStream()
-      .filter(x ->
-        Objects.equals(expectedSubRel.getFromEntity(), x.getFromEntity())
-          && Objects.equals(expectedSubRel.getFromEntityAttribute(), x.getFromEntityAttribute())
-          && Objects.equals(expectedSubRel.getToEntity(), x.getToEntity())
-          && Objects.equals(expectedSubRel.getToEntityAttribute(), x.getToEntityAttribute()))
-        .collect(Collectors.toList());
-      Assert.assertEquals(found.size(), 1);
-    }
+    // using createResolvedManifest will only populate exclusive relationships
+    verifyRelationships(resolvedManifest, expectedResolvedExcManifestRels);
+    verifyRelationships(subManifest, expectedResolvedExcSubManifestRels);
+
+    // check that each relationship has been created correctly with the all flag
+    resolvedManifest.populateManifestRelationshipsAsync().join();
+    subManifest.populateManifestRelationshipsAsync().join();
+    verifyRelationships(resolvedManifest, expectedResolvedManifestRels);
+    verifyRelationships(subManifest, expectedResolvedSubManifestRels);
 
     // it is not enough to check if the relationships are correct.
     // We need to check if the incoming and outgoing relationships are
@@ -226,9 +188,11 @@ public class RelationshipTest {
     final CdmEntityDefinition bEnt = corpus.<CdmEntityDefinition>fetchObjectAsync(resolvedManifest.getEntities().getAllItems().get(1).getEntityPath(), resolvedManifest).join();
     final ArrayList<CdmE2ERelationship> bInRels = corpus.fetchIncomingRelationships(bEnt);
     final ArrayList<CdmE2ERelationship> bOutRels = corpus.fetchOutgoingRelationships(bEnt);
-    Assert.assertEquals(bInRels.size(), 1);
+    Assert.assertEquals(bInRels.size(), 2);
     Assert.assertEquals(bInRels.get(0).getFromEntity(), "local:/A-resolved.cdm.json/A");
     Assert.assertEquals(bInRels.get(0).getToEntity(), "local:/B-resolved.cdm.json/B");
+    Assert.assertEquals(bInRels.get(1).getFromEntity(), "local:/sub/C-resolved.cdm.json/C");
+    Assert.assertEquals(bInRels.get(1).getToEntity(), "local:/B-resolved.cdm.json/B");
     Assert.assertEquals(bOutRels.size(), 0);
 
     // C
@@ -238,8 +202,7 @@ public class RelationshipTest {
     Assert.assertEquals(cInRels.size(), 0);
     Assert.assertEquals(cOutRels.size(), 2);
     Assert.assertEquals(cOutRels.get(0).getFromEntity(), "local:/sub/C-resolved.cdm.json/C");
-    // TODO: this should point to the resolved entity, currently an open bug
-    Assert.assertEquals(cOutRels.get(0).getToEntity(), "local:/B.cdm.json/B");
+    Assert.assertEquals(cOutRels.get(0).getToEntity(), "local:/B-resolved.cdm.json/B");
     Assert.assertEquals(cOutRels.get(1).getFromEntity(), "local:/sub/C-resolved.cdm.json/C");
     Assert.assertEquals(cOutRels.get(1).getToEntity(), "local:/sub/D-resolved.cdm.json/D");
 
@@ -251,6 +214,162 @@ public class RelationshipTest {
     Assert.assertEquals(dInRels.get(0).getFromEntity(), "local:/sub/C-resolved.cdm.json/C");
     Assert.assertEquals(dInRels.get(0).getToEntity(), "local:/sub/D-resolved.cdm.json/D");
     Assert.assertEquals(dOutRels.size(), 0);
+
+    // E
+    final CdmEntityDefinition eEnt = corpus.<CdmEntityDefinition>fetchObjectAsync(resolvedManifest.getEntities().getAllItems().get(2).getEntityPath(), resolvedManifest).join();
+    final ArrayList<CdmE2ERelationship> eInRels = corpus.fetchIncomingRelationships(eEnt);
+    final ArrayList<CdmE2ERelationship> eOutRels = corpus.fetchOutgoingRelationships(eEnt);
+    Assert.assertEquals(eInRels.size(), 1);
+    Assert.assertEquals(eInRels.get(0).getFromEntity(), "local:/sub/F-resolved.cdm.json/F");
+    Assert.assertEquals(eInRels.get(0).getToEntity(), "local:/E-resolved.cdm.json/E");
+    Assert.assertEquals(eOutRels.size(), 0);
+
+    // F
+    final CdmEntityDefinition fEnt = corpus.<CdmEntityDefinition>fetchObjectAsync(subManifest.getEntities().getAllItems().get(2).getEntityPath(), subManifest).join();
+    final ArrayList<CdmE2ERelationship> fInRels = corpus.fetchIncomingRelationships(fEnt);
+    final ArrayList<CdmE2ERelationship> fOutRels = corpus.fetchOutgoingRelationships(fEnt);
+    Assert.assertEquals(fInRels.size(), 0);
+    Assert.assertEquals(fOutRels.size(), 1);
+    Assert.assertEquals(fOutRels.get(0).getFromEntity(), "local:/sub/F-resolved.cdm.json/F");
+    Assert.assertEquals(fOutRels.get(0).getToEntity(), "local:/E-resolved.cdm.json/E");
+  }
+
+  /**
+   * Testing calculating relationships for the special kind of attribute that uses the "select one" directive
+   */
+  @Test
+  public void testCalculateRelationshipsForSelectsOneAttribute()
+      throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels = 
+          JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+          TESTS_SUBPATH,
+          "testCalculateRelationshipsForSelectsOneAttribute", 
+          "expectedRels.json"),
+          new TypeReference<List<E2ERelationship>>() {
+        });
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsForSelectsOneAttribute", null);
+        corpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
+
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/selectsOne.manifest.cdm.json").join();
+
+        corpus.calculateEntityGraphAsync(manifest).get();
+        manifest.populateManifestRelationshipsAsync().get();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+  }
+
+  /**
+   * Test relationships are generated correctly when the document name and entity name do not match
+   */
+  @Test
+  public void testRelationshipsEntityAndDocumentNameDifferent()
+      throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels = 
+          JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+          TESTS_SUBPATH,
+          "testRelationshipsEntityAndDocumentNameDifferent", 
+          "expectedRels.json"),
+          new TypeReference<List<E2ERelationship>>() {
+        });
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipsEntityAndDocumentNameDifferent", null);
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
+
+        corpus.calculateEntityGraphAsync(manifest).get();
+        manifest.populateManifestRelationshipsAsync().get();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+  }
+
+  /**
+   * Test that multiple relationships are generated when there are references to multiple entities
+   */
+  @Test
+  public void testRelationshipToMultipleEntities()
+      throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels = 
+          JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+          TESTS_SUBPATH,
+          "testRelationshipToMultipleEntities", 
+          "expectedRels.json"),
+          new TypeReference<List<E2ERelationship>>() {
+        });
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToMultipleEntities", null);
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
+
+        corpus.calculateEntityGraphAsync(manifest).get();
+        manifest.populateManifestRelationshipsAsync().get();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+  }
+
+  /**
+   * Test that relationships between entities in different namespaces are created correctly
+   */
+  @Test
+  public void testRelationshipToDifferentNamespace()
+      throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels = 
+          JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+          TESTS_SUBPATH,
+          "testRelationshipToDifferentNamespace", 
+          "expectedRels.json"),
+          new TypeReference<List<E2ERelationship>>() {
+        });
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToDifferentNamespace", null);
+        // entity B will be in a different namespace
+        corpus.getStorage().mount("differentNamespace", new LocalAdapter(TestHelper.getInputFolderPath(TESTS_SUBPATH, "TestRelationshipToDifferentNamespace") + "/differentNamespace"));
+
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
+
+        corpus.calculateEntityGraphAsync(manifest).get();
+        manifest.populateManifestRelationshipsAsync().get();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+  }
+
+  /**
+   * Test that relationships pointing from a manifest to an entity in a submanifest create correct paths
+   */
+  @Test
+  public void testRelationshipPointingToSubManifest()
+      throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels = 
+          JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+          TESTS_SUBPATH,
+          "testRelationshipPointingToSubManifest", 
+          "expectedRels.json"),
+          new TypeReference<List<E2ERelationship>>() {
+        });
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipPointingToSubManifest", null);
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
+
+        corpus.calculateEntityGraphAsync(manifest).get();
+        manifest.populateManifestRelationshipsAsync().get();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+  }
+
+  private static void verifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships) {
+    Assert.assertEquals(manifest.getRelationships().size(), expectedRelationships.size());
+
+    for (final E2ERelationship expectedRel : expectedRelationships) {
+      final List<CdmE2ERelationship> found = manifest.getRelationships().getAllItems()
+        .parallelStream()
+        .filter(x ->
+          Objects.equals(expectedRel.getFromEntity(), x.getFromEntity())
+          && Objects.equals(expectedRel.getFromEntityAttribute(), x.getFromEntityAttribute())
+          && Objects.equals(expectedRel.getToEntity(), x.getToEntity())
+          && Objects.equals(expectedRel.getToEntityAttribute(), x.getToEntityAttribute())
+          && ((StringUtils.isNullOrTrimEmpty(expectedRel.getName()) && StringUtils.isNullOrTrimEmpty(x.getName()))
+          || (expectedRel.getName().equals(x.getName()))))
+        .collect(Collectors.toList());
+      Assert.assertEquals(found.size(), 1);
+   }
   }
 
   private static CdmManifestDefinition loadAndResolveManifest(CdmCorpusDefinition corpus, CdmManifestDefinition manifest, String renameSuffix) {
@@ -266,20 +385,5 @@ public class RelationshipTest {
       resolvedManifest.getSubManifests().add(resolvedDecl);
     }
     return resolvedManifest;
-  }
-
-  private CdmCorpusDefinition getCorpus() throws InterruptedException {
-    final String testInputPath =
-        TestHelper.getInputFolderPath(
-            TESTS_SUBPATH,
-            "testCalculateRelationshipsAndPopulateManifests");
-
-    CdmCorpusDefinition corpus = new CdmCorpusDefinition();
-    corpus.getStorage().mount("local", new LocalAdapter(testInputPath));
-    corpus.getStorage().unmount("cdm");
-
-    corpus.getStorage().setDefaultNamespace("local");
-
-    return corpus;
   }
 }

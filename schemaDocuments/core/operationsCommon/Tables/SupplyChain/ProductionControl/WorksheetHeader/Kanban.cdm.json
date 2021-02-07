@@ -1,0 +1,382 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/BOMTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/KanbanJob.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/KanbanRule.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Kanban",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BOMDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMId",
+          "dataType": "BOMId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrentJob",
+          "dataType": "KanbanJobRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Current job",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDateTime",
+          "dataType": "KanbanDueDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EmptiedDateTime",
+          "dataType": "KanbanEmptiedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpectedDateTime",
+          "dataType": "KanbanExpectedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Express",
+          "dataType": "KanbanExpress",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FirstPlanActivityName",
+          "dataType": "PlanActivityName",
+          "isNullable": true,
+          "displayName": "First plan activity",
+          "description": ""
+        },
+        {
+          "name": "InventDimDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "description": ""
+        },
+        {
+          "name": "InventTransDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "KanbanCardId",
+          "dataType": "KanbanCardId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "KanbanId",
+          "dataType": "KanbanId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "KanbanRule",
+          "dataType": "KanbanRuleRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LastPlanActivityName",
+          "dataType": "PlanActivityName",
+          "isNullable": true,
+          "displayName": "The last planned activity in the kanban flow",
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "LegalEntity",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Manual",
+          "dataType": "KanbanManual",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuantityOrdered",
+          "dataType": "KanbanProductQuantity",
+          "description": ""
+        },
+        {
+          "name": "QuantityReceived",
+          "dataType": "KanbanQuantityReceived",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BOMTable"
+          },
+          "name": "Relationship_BOMTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_ItemInventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KanbanJob"
+          },
+          "name": "Relationship_KanbanJobRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KanbanRule"
+          },
+          "name": "Relationship_KanbanRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_LegalEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Kanbans"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BOMId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KanbanJobRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "KanbanDueDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "KanbanEmptiedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "KanbanExpectedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "KanbanExpress",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PlanActivityName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KanbanCardId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KanbanId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KanbanRuleRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LegalEntity",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "KanbanManual",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "KanbanProductQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "KanbanQuantityReceived",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

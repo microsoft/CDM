@@ -1,0 +1,188 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/DocuType.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendFormletterDocument",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DocuTypePurchOrder",
+          "dataType": "DocuOnFormularTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocuOnAgreement",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocuOnPurchOrder",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocuOnPurchOrderConfirmationRequest",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocuOnPurchReq",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocuOnPurchRFQ",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocuTypeAgreement",
+          "dataType": "DocuOnFormularTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocuTypePurchOrderConfirmationRequest",
+          "dataType": "DocuOnFormularTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocuTypePurchReq",
+          "dataType": "DocuOnFormularTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocuTypePurchRFQ",
+          "dataType": "DocuOnFormularTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DocuType"
+          },
+          "name": "Relationship_DocuType_DocuTypeAgreementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuType"
+          },
+          "name": "Relationship_DocuType_DocuTypeConfirmationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuType"
+          },
+          "name": "Relationship_DocuType_DocuTypePurchOrderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuType"
+          },
+          "name": "Relationship_DocuType_DocuTypePurchReqRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuType"
+          },
+          "name": "Relationship_DocuType_DocuTypePurchRFQRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor, form setup"
+    },
+    {
+      "dataTypeName": "DocuOnFormularTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    }
+  ]
+}

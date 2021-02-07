@@ -1,0 +1,122 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "LedgerAllocationBasisRuleEntity.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/LedgerAllocationBasisRuleSource.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerAllocationBasisRuleSourceEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BasisCriteria",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Source criteria",
+          "description": ""
+        },
+        {
+          "name": "BasisDimensionAttribute",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BasisId",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Basis ID",
+          "description": ""
+        },
+        {
+          "name": "LegalEntityId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FieldSetting",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "BasisDimensionAttributeName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Dimension name",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocationBasisRuleEntity"
+          },
+          "name": "Relationship_LedgerAllocationBasisRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocationBasisRuleSource"
+          },
+          "name": "BackingTable_LedgerAllocationBasisRuleSourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger allocation basis source"
+    }
+  ]
+}

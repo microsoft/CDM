@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 public class RelationshipInfo {
@@ -5,7 +8,8 @@ public class RelationshipInfo {
   private boolean isByRef;
   private boolean isArray;
   private boolean selectsOne;
-  private Integer nextDepth;
+  private int nextDepth;
+  private Integer maxDepth;
   private boolean maxDepthExceeded;
 
   public void setSelectsOne(final boolean selectsOne) {
@@ -48,11 +52,19 @@ public class RelationshipInfo {
     this.isByRef = isByRef;
   }
 
-  public Integer getNextDepth() {
+  public int getNextDepth() {
     return nextDepth;
   }
 
-  public void setNextDepth(final Integer nextDepth) {
+  public void setNextDepth(final int nextDepth) {
     this.nextDepth = nextDepth;
+  }
+
+  public Integer getMaxDepth() {
+    return maxDepth;
+  }
+
+  public void setMaxDepth(final Integer nextDepth) {
+    this.maxDepth = nextDepth;
   }
 }

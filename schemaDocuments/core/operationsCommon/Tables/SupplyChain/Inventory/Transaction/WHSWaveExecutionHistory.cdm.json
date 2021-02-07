@@ -1,0 +1,211 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSLoadTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSShipmentTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSWaveTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWaveExecutionHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Fail",
+          "dataType": "WHSFail",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadId",
+          "dataType": "WHSLoadId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Message",
+          "dataType": "WHSMessage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipmentId",
+          "dataType": "WHSShipmentId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDateTime",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaveExecutionID",
+          "dataType": "WHSWaveExecutionID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaveId",
+          "dataType": "WHSWaveId",
+          "description": ""
+        },
+        {
+          "name": "WorkBuildId",
+          "dataType": "WHSWorkBuildId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadTable"
+          },
+          "name": "Relationship_WHSLoadTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipmentTable"
+          },
+          "name": "Relationship_WHSShipmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWaveTable"
+          },
+          "name": "Relationship_WHSWaveTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Wave processing history log"
+    },
+    {
+      "dataTypeName": "WHSFail",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSLoadId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSMessage",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSShipmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSWaveExecutionID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWaveId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkBuildId",
+      "extendsDataType": "string"
+    }
+  ]
+}

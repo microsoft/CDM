@@ -1,0 +1,97 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "smmMailingCategoryGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmMailingGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CategoryId",
+          "dataType": "smmMailingCategoryId",
+          "description": ""
+        },
+        {
+          "name": "CategoryItemDescription",
+          "dataType": "smmMailingDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CategoryItemId",
+          "dataType": "smmMailingCategoryItemId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "smmMailingCategoryGroup"
+          },
+          "name": "Relationship_smmMailingCategoryGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Mailing"
+    },
+    {
+      "dataTypeName": "smmMailingCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmMailingDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmMailingCategoryItemId",
+      "extendsDataType": "string"
+    }
+  ]
+}

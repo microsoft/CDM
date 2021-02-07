@@ -1,9 +1,14 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
@@ -13,16 +18,14 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public abstract class CdmObjectReferenceBase extends CdmObjectBase implements CdmObjectReference {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmObjectReferenceBase.class);
-
   private static String RES_ATT_TOKEN = "/(resolvedAttributes)/";
   private CdmTraitCollection appliedTraits;
   private String namedReference;
@@ -82,6 +85,10 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @param refTo - Object
+   * @param simpleReference - if simple reference
+   * @return Cdm Object Reference Base
    */
   @Deprecated
   public abstract CdmObjectReferenceBase copyRefObject(ResolveOptions resOpt, Object refTo, boolean simpleReference);
@@ -89,34 +96,54 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @param refTo - Object
+   * @param simpleReference - if simple reference
+   * @param host - Object reference base
+   * @return Cdm Object Reference Base
    */
   @Deprecated
   public abstract CdmObjectReferenceBase copyRefObject(ResolveOptions resOpt, Object refTo, boolean simpleReference, CdmObjectReferenceBase host);
 
   /**
-   * @param pathFrom
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param pathFrom - path from
+   * @param preChildren - pre children
+   * @param postChildren - post children
+   * @return boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
   public abstract boolean visitRef(String pathFrom, VisitCallback preChildren, VisitCallback postChildren);
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @return Resolved Attribute Set Builder
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @param under - CDM Attribute context
+   * @return Resolved Attribute SetBuilder
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(
       final ResolveOptions resOpt,
       final CdmAttributeContext under) {
     // find and getCache() the complete set of attributes
     final ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
     rasb.getResolvedAttributeSet().setAttributeContext(under);
-    final CdmObjectDefinition def = this.fetchObjectDefinition(resOpt);
+    final CdmObjectDefinitionBase def = this.fetchObjectDefinition(resOpt);
     if (def != null) {
       AttributeContextParameters acpRef = null;
       if (under != null) {
@@ -127,13 +154,13 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       }
       ResolvedAttributeSet resAtts = def.fetchResolvedAttributes(resOpt, acpRef);
       if (resAtts != null && resAtts.getSet() != null && resAtts.getSet().size() > 0) {
-        resAtts = resAtts.copy();
+//        resAtts = resAtts.copy(); should not neeed this copy now that we copy from the cache. lets try!
         rasb.mergeAttributes(resAtts);
         rasb.removeRequestedAtts();
       }
     } else {
       final String defName = this.fetchObjectDefinitionName();
-      LOGGER.warn("Unable to resolve an object from the reference '{}'.", defName);
+      Logger.warning(defName, this.getCtx(), Logger.format("Unable to resolve an object from the reference '{0}'.", defName));
     }
     return rasb;
   }
@@ -142,13 +169,52 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
+  @Override
+  @Deprecated
+  public ResolvedTraitSet fetchResolvedTraits() {
+    return this.fetchResolvedTraits(null);
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @return Resolved Trait Set
+   */
   @Deprecated
   @Override
-  public ResolvedTraitSet fetchResolvedTraits(final ResolveOptions resOpt) {
+  public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
+    final boolean wasPreviouslyResolving = this.getCtx().getCorpus().isCurrentlyResolving;
+    this.getCtx().getCorpus().isCurrentlyResolving = true;
+    ResolvedTraitSet ret = this._fetchResolvedTraits(resOpt);
+    this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
+    return ret;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @return Resolved Trait Set
+   */
+  @Deprecated
+  public ResolvedTraitSet _fetchResolvedTraits(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     if (this.getNamedReference() != null && this.getAppliedTraits() == null) {
       final String kind = "rts";
       final ResolveContext ctx = (ResolveContext) this.getCtx();
-      String cacheTag = ctx.getCorpus().createDefinitionCacheTag(resOpt, this, kind, "", true);
+      final CdmObjectDefinition objDef = this.fetchObjectDefinition(resOpt);
+      String cacheTag = ctx.getCorpus().createDefinitionCacheTag(
+        resOpt,
+        this,
+        kind,
+        "",
+        true,
+        objDef != null ? objDef.getAtCorpusPath() : null
+      );
       Object rtsResultDynamic = null;
       if (cacheTag != null) {
         rtsResultDynamic = ctx.getCache().get(cacheTag);
@@ -164,7 +230,6 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       resOpt.setSymbolRefSet(new SymbolSet());
 
       if (rtsResult == null) {
-        final CdmObjectDefinition objDef = this.fetchObjectDefinition(resOpt);
         if (objDef != null) {
           rtsResult = objDef.fetchResolvedTraits(resOpt);
           if (rtsResult != null) {
@@ -175,7 +240,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
           ctx.getCorpus().registerDefinitionReferenceSymbols(objDef, kind, resOpt.getSymbolRefSet());
 
           // get the new getCache() tag now that we have the list of docs
-          cacheTag = ctx.getCorpus().createDefinitionCacheTag(resOpt, this, kind, "", true);
+          cacheTag = ctx.getCorpus().createDefinitionCacheTag(resOpt, this, kind, "", true, objDef.getAtCorpusPath());
           if (!StringUtils.isNullOrTrimEmpty(cacheTag)) {
             ctx.getCache().put(cacheTag, rtsResult);
           }
@@ -210,23 +275,36 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       rtsb.takeReference(rtsInh);
     } else {
       final String defName = this.fetchObjectDefinitionName();
-      LOGGER.warn("unable to resolve an object from the reference '{}'.", defName);
+      Logger.warning(defName, this.getCtx(), Logger.format("unable to resolve an object from the reference '{0}'.", defName));
     }
 
     if (this.getAppliedTraits() != null) {
       for (final CdmTraitReference at : this.getAppliedTraits()) {
-        rtsb.mergeTraits(at.fetchResolvedTraits(resOpt));
+        rtsb.mergeTraits(((CdmTraitReference)at).fetchResolvedTraits(resOpt));
       }
     }
   }
 
-  public CdmObjectDefinition fetchResolvedReference() {
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @return Cdm Object
+   */
+  @Deprecated
+  public CdmObject fetchResolvedReference() {
     return fetchResolvedReference(null);
   }
 
-  public CdmObjectDefinition fetchResolvedReference(ResolveOptions resOpt) {
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @return Cdm Object
+   */
+  @Deprecated
+  public CdmObject fetchResolvedReference(ResolveOptions resOpt) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     if (this.getExplicitReference() != null) {
@@ -238,7 +316,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     }
 
     final ResolveContext ctx = (ResolveContext) this.getCtx();
-    CdmObjectDefinitionBase res = null;
+    CdmObjectBase res = null;
 
     // if this is a special request for a resolved attribute, look that up now
     final int seekResAtt = offsetAttributePromise(this.getNamedReference());
@@ -246,20 +324,32 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       final String entName = this.getNamedReference().substring(0, seekResAtt);
       final String attName = this.getNamedReference().substring(seekResAtt + RES_ATT_TOKEN.length());
       // get the entity
-      final CdmObjectDefinition ent = this.getCtx().getCorpus().resolveSymbolReference(resOpt, this.getInDocument(),
+      final CdmObject ent = this.getCtx().getCorpus().resolveSymbolReference(resOpt, this.getInDocument(),
           entName, CdmObjectType.EntityDef, true);
       if (ent == null) {
-        LOGGER.warn("unable to resolve an entity named '{}' from the reference '{}'", entName,
-            this.getNamedReference());
+        Logger.warning(
+            CdmObjectReferenceBase.class.getSimpleName(),
+            ctx,
+            Logger.format("unable to resolve an entity named '{0}' from the reference '{1}'", entName, this.getNamedReference())
+        );
         return null;
       }
 
       // get the resolved attribute
-      final ResolvedAttribute ra = ent.fetchResolvedAttributes(resOpt).get(attName);
+      final ResolvedAttributeSet ras = ent.fetchResolvedAttributes(resOpt);
+      ResolvedAttribute ra = null;
+      if (ras != null) {
+        ra = ras.get(attName);
+      }
       if (ra != null) {
         res = (CdmObjectDefinitionBase) ra.getTarget();
       } else {
-        LOGGER.warn("couldn't resolve the attribute promise for '{}'", this.getNamedReference());
+        Logger.warning(
+            CdmObjectReferenceBase.class.getSimpleName(),
+            ctx,
+            Logger.format("couldn't resolve the attribute promise for '{0}'", this.getNamedReference()),
+            resOpt.getWrtDoc().getAtCorpusPath()
+        );
       }
     } else {
       // normal symbolic reference, look up from the CdmCorpusDefinition, it knows
@@ -275,6 +365,33 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     }
 
     return res;
+  }
+
+  // Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed into some final document.
+  @Override
+  @Deprecated
+  public CdmObjectReference createPortableReference(ResolveOptions resOpt) {
+    CdmObjectReferenceBase cdmObjectRef = ((CdmObjectReferenceBase) this.getCtx().getCorpus().makeObject(CdmCorpusDefinition.mapReferenceType(this.getObjectType()), "portable", true));
+    CdmObjectDefinitionBase cdmObjectDef = this.fetchObjectDefinition(resOpt);
+    
+    if (cdmObjectDef == null || this.getInDocument() == null) {
+      return null; // not allowed
+    }
+
+    cdmObjectRef.setExplicitReference((CdmObjectDefinition) cdmObjectDef.copy());
+    
+    cdmObjectRef.setInDocument(this.getInDocument()); // if the object has no document, take from the reference
+    cdmObjectRef.setOwner(this.getOwner());
+
+    return cdmObjectRef;
+  }
+
+  //Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed into some final document.
+  @Deprecated
+  public void localizePortableReference(ResolveOptions resOpt, String importPath) {
+    String newDeclaredPath = ((CdmObjectBase)this.getExplicitReference()).getDeclaredPath();
+    newDeclaredPath = newDeclaredPath != null && newDeclaredPath.endsWith("/(ref)") == true ? newDeclaredPath.substring(0, newDeclaredPath.length() - 6) : newDeclaredPath;
+    this.setNamedReference(String.format("%s%s", importPath, newDeclaredPath));
   }
 
   @Override
@@ -294,6 +411,9 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
 
   @Override
   public void setExplicitReference(final CdmObjectDefinition explicitReference) {
+    if (explicitReference != null) {
+      explicitReference.setOwner(this);
+    }
     this.explicitReference = explicitReference;
   }
 
@@ -308,9 +428,18 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   }
 
   @Override
-  public <T extends CdmObjectDefinition> T fetchObjectDefinition(final ResolveOptions resOpt) {
-    final CdmObjectDefinition def = this.fetchResolvedReference(resOpt);
+  public <T extends CdmObjectDefinition> T fetchObjectDefinition(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
+    CdmObject def = this.fetchResolvedReference(resOpt);
     if (def != null) {
+      if (def instanceof CdmObjectReference) {
+        def = ((CdmObjectReference)def).fetchResolvedReference();
+      }
+    }
+    if (def != null && !(def instanceof CdmObjectReference)) {
       return (T) def;
     }
 
@@ -318,7 +447,11 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     final CdmObjectDefinition def = this.fetchObjectDefinition(resOpt);
     if (def != null) {
       return def.isDerivedFrom(baseDef, resOpt);
@@ -342,7 +475,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       }
     }
     if (this.explicitReference != null) {
-      return this.explicitReference.fetchObjectDefinitionName();
+      return this.explicitReference.getName();
     }
     return null;
   }
@@ -359,39 +492,68 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       if (!Strings.isNullOrEmpty(this.getNamedReference())) {
         path = pathFrom + this.getNamedReference();
       } else {
-        path = pathFrom;
+        // when an object is defined inline inside a reference, we need a path to the reference
+        // AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
+        // defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
+        // gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
+        // entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
+        // object at the same level, like anywhere there is a collection of references or the collection of attributes.
+        // so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
+        // extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
+        // the inline defined object.
+        // ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
+        // the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
+        // ANY reference, not just inline ones
+        if (this.explicitReference != null) {
+          // ref path is name of defined object
+          path = pathFrom + this.explicitReference.getName();
+          // inline object path is a request for the defintion. setting the declaredPath
+          // keeps the visit on the explcitReference from using the defined object name
+          // as the path to that object
+          ((CdmObjectDefinitionBase)this.getExplicitReference()).setDeclaredPath(path);
+        } else {
+          path = pathFrom;
+        }
       }
-      this.setDeclaredPath(path);
+      this.setDeclaredPath(path + "/(ref)");
     }
+    String refPath = this.getDeclaredPath();
 
-    if (preChildren != null && preChildren.invoke(this, path)) {
+    if (preChildren != null && preChildren.invoke(this, refPath)) {
       return false;
     }
-    if (this.getExplicitReference() != null && Strings.isNullOrEmpty(this.getNamedReference())) {
-      if (this.getExplicitReference().visit(path, preChildren, postChildren)) {
-        return true;
-      }
+    if (this.getExplicitReference() != null && Strings.isNullOrEmpty(this.getNamedReference()) && this.getExplicitReference().visit(path, preChildren, postChildren)) {
+      return true;
     }
     if (this.visitRef(path, preChildren, postChildren)) {
       return true;
     }
 
     if (this.getAppliedTraits() != null) {
-      if (this.getAppliedTraits().visitList(path + "/appliedTraits/", preChildren, postChildren)) {
+      if (this.getAppliedTraits().visitList(refPath + "/appliedTraits/", preChildren, postChildren)) {
         return true;
       }
     }
 
-    return postChildren != null && postChildren.invoke(this, path);
+    return postChildren != null && postChildren.invoke(this, refPath);
   }
 
   @Override
   public boolean validate() {
-    return (!Strings.isNullOrEmpty(this.namedReference) || this.explicitReference != null);
+    ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("namedReference", "explicitReference"));
+    if (StringUtils.isNullOrTrimEmpty(this.namedReference) && this.explicitReference == null) {
+      Logger.error(CdmObjectReferenceBase.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields, true));
+      return false;
+    }
+    return true;
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt, CdmObject host) {
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     final CdmObjectReferenceBase copy;
     if (!Strings.isNullOrEmpty(this.getNamedReference())) {
       copy = this.copyRefObject(resOpt, this.getNamedReference(), this.isSimpleNamedReference());
@@ -399,9 +561,9 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       copy = this.copyRefObject(resOpt, this.getExplicitReference(), this.isSimpleNamedReference());
     }
     if (resOpt.isSaveResolutionsOnCopy()) {
-      copy.setExplicitReference(this.getExplicitReference());
+      final CdmObjectDefinition explicitReference = this.getExplicitReference() != null ? (CdmObjectDefinition) this.getExplicitReference().copy() : null;
+      copy.setExplicitReference(explicitReference);
     }
-    copy.setInDocument(this.getInDocument());
 
     copy.getAppliedTraits().clear();
     if (this.getAppliedTraits() != null) {
@@ -409,16 +571,25 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         copy.getAppliedTraits().add(appliedTrait);
       }
     }
+
+    // Don't do anything else after this, as it may cause InDocument to become dirty
+    copy.setInDocument(this.getInDocument());
+
     return copy;
   }
 
   @Override
-  public CdmObjectReference createSimpleReference(final ResolveOptions resOpt) {
+  public CdmObjectReference createSimpleReference(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     if (!Strings.isNullOrEmpty(this.namedReference)) {
       return this.copyRefObject(resOpt, this.namedReference, true);
     }
-    return this.copyRefObject(resOpt, this.getDeclaredPath() + this.explicitReference.getName(),
-        true);
+    String newDeclaredPath = this.getDeclaredPath() != null && this.getDeclaredPath().endsWith("/(ref)") ?
+      this.getDeclaredPath().substring(0, this.getDeclaredPath().length() - 6) : this.getDeclaredPath();
+    return this.copyRefObject(resOpt, newDeclaredPath, true);
   }
 
   CdmDocumentDefinition getMonikeredDocument() {

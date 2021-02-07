@@ -1,0 +1,71 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailPosPermissionGroup.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailJobPosPermissionGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Job",
+          "dataType": "HcmJobRecId",
+          "description": ""
+        },
+        {
+          "name": "RetailPosPermissionGroup",
+          "dataType": "RetailPosPermissionGroupRecId",
+          "isNullable": true,
+          "displayName": "POS permission group",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailPosPermissionGroup"
+          },
+          "name": "Relationship_RetailPosPermissionGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail Job POSPermission Group"
+    },
+    {
+      "dataTypeName": "HcmJobRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailPosPermissionGroupRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

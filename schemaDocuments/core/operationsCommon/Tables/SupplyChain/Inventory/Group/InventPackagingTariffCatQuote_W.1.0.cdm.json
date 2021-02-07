@@ -1,0 +1,111 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InventPackagingTariffCat_W.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "InventPackagingTariffCatAlloc_W.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventPackagingTariffCatQuote_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PackagingTariffCatAlloc",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "Percent",
+          "dataType": "PercentPositive",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TariffCategoryId",
+          "dataType": "ItemPackagingTariffCatId_W",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventPackagingTariffCat_W"
+          },
+          "name": "Relationship_InventPackagingTariffCat_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventPackagingTariffCatAlloc_W"
+          },
+          "name": "Relationship_InventPackagingTariffCatAlloc_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Allocation by tariff categories quotes"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PercentPositive",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemPackagingTariffCatId_W",
+      "extendsDataType": "string"
+    }
+  ]
+}

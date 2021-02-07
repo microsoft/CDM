@@ -1,0 +1,574 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EInvoice/Miscellaneous/EInvoiceCFDIPACTable_MX.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/SysEmailTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Miscellaneous/KeyVaultCertificateTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EInvoice/Group/EInvoiceExtCodeTable_MX.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/WorksheetLine/DocuRef.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EInvoiceCFDIParameters_MX",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CertificateSubject",
+          "dataType": "DigitalCertificateSubject",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIDigestAlgorithm",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "CFDI Encryption algorithm",
+          "description": ""
+        },
+        {
+          "name": "CFDIEnvironment",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIForeignTradeVersion",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIForeignTradeXsdFile",
+          "dataType": "Filename",
+          "isNullable": true,
+          "displayName": "CFDI XML schema file",
+          "description": ""
+        },
+        {
+          "name": "CFDIPACCertificate",
+          "dataType": "PACCertificateSubject_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIVersion",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIXsdFile",
+          "dataType": "Filename",
+          "isNullable": true,
+          "displayName": "CFDI XML schema file",
+          "description": ""
+        },
+        {
+          "name": "EmailId",
+          "dataType": "SysEmailId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnabledCFDI",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Enable CFDI (electronic invoice)",
+          "description": ""
+        },
+        {
+          "name": "EnabledCFDIWithholding",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Enable CFDI withholding",
+          "description": ""
+        },
+        {
+          "name": "ForeignTradeReportingCurrency",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "displayName": "Reporting currency",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PACAccount",
+          "dataType": "EInvoiceCFDIPACAccount_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WithholdingDigestAlgorithm",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "CFDI digest algorithm",
+          "description": ""
+        },
+        {
+          "name": "WithholdingEmailId",
+          "dataType": "SysEmailId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WithholdingSendByMail",
+          "dataType": "SendByMail_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WithholdingXsdFile",
+          "dataType": "FilenameOpen",
+          "isNullable": true,
+          "displayName": "CFDI XML schema file",
+          "description": ""
+        },
+        {
+          "name": "WithholdingXsltFile",
+          "dataType": "FilenameOpen",
+          "isNullable": true,
+          "displayName": "CDFI XSLT file",
+          "description": ""
+        },
+        {
+          "name": "SendByMail",
+          "dataType": "SendByMail_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SendReportFile",
+          "dataType": "SendReportFile_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IncomingLimit",
+          "dataType": "EInvoiceTotalAmountLimit_MX",
+          "isNullable": true,
+          "displayName": "Incoming",
+          "description": ""
+        },
+        {
+          "name": "OutgoingLimit",
+          "dataType": "EInvoiceTotalAmountLimit_MX",
+          "isNullable": true,
+          "displayName": "Outgoing",
+          "description": ""
+        },
+        {
+          "name": "OperationType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SATProductCode_MX",
+          "dataType": "SATProductCode_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SATUnitCode_MX",
+          "dataType": "SATUnitCode_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymXsdFile",
+          "dataType": "FilenameOpen",
+          "isNullable": true,
+          "displayName": "CFDI Payment XML schema file",
+          "description": ""
+        },
+        {
+          "name": "KeyVaultCertificateRef",
+          "dataType": "KeyVaultCertificateRef",
+          "isNullable": true,
+          "displayName": "Certificate",
+          "description": ""
+        },
+        {
+          "name": "PACKeyVaultCertificateRef",
+          "dataType": "KeyVaultCertificateRef",
+          "isNullable": true,
+          "displayName": "PAC certificate",
+          "description": ""
+        },
+        {
+          "name": "DocuRefCFDI",
+          "dataType": "DocuRefRecId",
+          "isNullable": true,
+          "displayName": "CFDI XML schema file",
+          "description": ""
+        },
+        {
+          "name": "DocuRefPaym",
+          "dataType": "DocuRefRecId",
+          "isNullable": true,
+          "displayName": "CFDI Payment XML schema file",
+          "description": ""
+        },
+        {
+          "name": "EnabledXsdValidation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable validation against XML schema",
+          "description": ""
+        },
+        {
+          "name": "DocuRefWithholding",
+          "dataType": "DocuRefRecId",
+          "isNullable": true,
+          "displayName": "CFDI XML schema file",
+          "description": ""
+        },
+        {
+          "name": "DocuRefForeignTrade",
+          "dataType": "DocuRefRecId",
+          "isNullable": true,
+          "displayName": "CFDI Foreign trade XML schema file",
+          "description": ""
+        },
+        {
+          "name": "RetailInvoiceRFC",
+          "dataType": "Rfc_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailItemDescription",
+          "dataType": "ItemFreeTxt",
+          "isNullable": true,
+          "displayName": "Item description",
+          "description": ""
+        },
+        {
+          "name": "RetailPaymMethod",
+          "dataType": "EInvoiceExtCodeId_MX",
+          "isNullable": true,
+          "displayName": "Payment type",
+          "description": ""
+        },
+        {
+          "name": "RetailProductCode",
+          "dataType": "EInvoiceExtCodeId_MX",
+          "isNullable": true,
+          "displayName": "SAT product code",
+          "description": ""
+        },
+        {
+          "name": "RetailPurpose",
+          "dataType": "EInvoiceExtCodeId_MX",
+          "isNullable": true,
+          "displayName": "Purpose",
+          "description": ""
+        },
+        {
+          "name": "RetailUnitCode",
+          "dataType": "EInvoiceExtCodeId_MX",
+          "isNullable": true,
+          "displayName": "SAT unit code",
+          "description": ""
+        },
+        {
+          "name": "SplitTaxAmountPerLines",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Detailed tax amounts",
+          "description": ""
+        },
+        {
+          "name": "RetailExcludeCustOrdersFromCFDIGlobal",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Exclude customer orders from CFDI Global",
+          "description": ""
+        },
+        {
+          "name": "RetailEnableRelatedCFDIInReturns",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Specify related CFDI in returns",
+          "description": ""
+        },
+        {
+          "name": "RetailRecalculateRoundingOfTaxBaseAmount",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Recalculate rounding of tax base amounts",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EInvoiceCFDIPACTable_MX"
+          },
+          "name": "Relationship_PACTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysEmailTable"
+          },
+          "name": "Relationship_SysEmailTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KeyVaultCertificateTable"
+          },
+          "name": "Relationship_KeyVaultCertificateTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KeyVaultCertificateTable"
+          },
+          "name": "Relationship_PACKeyVaultCertificateTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EInvoiceExtCodeTable_MX"
+          },
+          "name": "Relationship_SATProductCode_MXRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EInvoiceExtCodeTable_MX"
+          },
+          "name": "Relationship_SATUnitCode_MXRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysEmailTable"
+          },
+          "name": "Relationship_WitholdingSysEmailTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuRef"
+          },
+          "name": "Relationship_DocuRefCFDIRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuRef"
+          },
+          "name": "Relationship_DocuRefPaymRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuRef"
+          },
+          "name": "Relationship_DocuRefForeignTradeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuRef"
+          },
+          "name": "Relationship_DocuRefWithholdingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Electronic invoice parameters"
+    },
+    {
+      "dataTypeName": "DigitalCertificateSubject",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Filename",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PACCertificateSubject_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EInvoiceCFDIPACAccount_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SendByMail_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FilenameOpen",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SendReportFile_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EInvoiceTotalAmountLimit_MX",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SATProductCode_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SATUnitCode_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KeyVaultCertificateRef",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DocuRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Rfc_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemFreeTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EInvoiceExtCodeId_MX",
+      "extendsDataType": "string"
+    }
+  ]
+}

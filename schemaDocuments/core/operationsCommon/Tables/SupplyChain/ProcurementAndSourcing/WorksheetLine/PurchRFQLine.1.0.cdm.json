@@ -1,0 +1,1192 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/AccountingDistributionTemplate.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetBookTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CFOPTable_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjCategory.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Transaction/ProjItemTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjLineProperty.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "PurchRFQCaseLine.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchRFQTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlanSched.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxServiceCode_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchRFQLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ProjSalesCurrencyId",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "displayName": "Sales currency",
+          "description": ""
+        },
+        {
+          "name": "AccountingDistributionTemplate",
+          "dataType": "AccountingDistributionTemplateRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivityNumber",
+          "dataType": "ProjActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AddressRefRecId",
+          "dataType": "AddressRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AddressRefTableId",
+          "dataType": "AddressRefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AgreementId",
+          "dataType": "PurchAgreementId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetBookId",
+          "dataType": "AssetBookId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetId",
+          "dataType": "AssetIdOpen",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetTransTypePurch",
+          "dataType": "AssetTransTypePurchEDT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CategoryId",
+          "dataType": "PurchCategory",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFOPTable_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "CFOP",
+          "description": ""
+        },
+        {
+          "name": "ConfirmedDlv",
+          "dataType": "PurchLineDlvDate",
+          "isNullable": true,
+          "displayName": "Confirmed",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "InventSiteLinkedDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryDate",
+          "dataType": "PurchRFQRequestedDeliveryDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryName",
+          "dataType": "LogisticsDeliveryName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpiryDateTime",
+          "dataType": "PurchRFQExpiryDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExternalItemId",
+          "dataType": "PurchExternalItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventRefId",
+          "dataType": "InventRefId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventRefTransId",
+          "dataType": "InventRefTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventRefType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsAlternate",
+          "dataType": "PurchRFQIsAlternate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemIdSmall",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemName",
+          "dataType": "ItemNameDisplay",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineAmount",
+          "dataType": "PurchLineAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDisc",
+          "dataType": "PurchLineDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LinePercent",
+          "dataType": "PurchLinePercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MultiLnDisc",
+          "dataType": "PurchMultiLnDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MultiLnPercent",
+          "dataType": "PurchMultiLnPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "ItemFreeTxt",
+          "isNullable": true,
+          "displayName": "Item description",
+          "description": ""
+        },
+        {
+          "name": "PdsCWQty",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceUnit",
+          "dataType": "PriceUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjCategoryId",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "displayName": "Project category",
+          "description": ""
+        },
+        {
+          "name": "ProjId",
+          "dataType": "ProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjLinePropertyId",
+          "dataType": "ProjLinePropertyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjSalesPrice",
+          "dataType": "ProjSalesPriceCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjSalesUnitId",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjTaxGroupId",
+          "dataType": "ProjTaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjTaxItemGroupId",
+          "dataType": "ProjTaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjTransId",
+          "dataType": "ProjItemTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchId",
+          "dataType": "PurchIdBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchMarkup",
+          "dataType": "PurchMarkup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchPrice",
+          "dataType": "PurchPrice",
+          "isNullable": true,
+          "displayName": "Unit price",
+          "description": ""
+        },
+        {
+          "name": "PurchQty",
+          "dataType": "PurchOrderedQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchUnit",
+          "dataType": "PurchUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyOrdered",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonId",
+          "dataType": "PurchRFQReasonId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonRef",
+          "dataType": "PurchRFQReasonRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPlanIdSched",
+          "dataType": "ReqPlanIdSched",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPOId",
+          "dataType": "ReqPOId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFQCaseLineLineNumber",
+          "dataType": "TradeLineNumber",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFQCaseLineRefRecId",
+          "dataType": "PurchRFQCaseLineRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFQId",
+          "dataType": "PurchRFQId",
+          "description": ""
+        },
+        {
+          "name": "RFQType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxServiceCode_BR",
+          "dataType": "TaxServiceCodeId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomsTariffCodeTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompanyLocation_IN",
+          "dataType": "LogisticsLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATGoodsType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NonRecoverablePercent_IN",
+          "dataType": "Percent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTaxFormTypes_IN",
+          "dataType": "SalesTaxFormTypesRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseRecordType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseTariffCodes_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DSA_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceCodeTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GTAServiceCategory_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Exempt_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HSNCodeTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ITCCategory_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NonBusinessUsagePercentage_IN",
+          "dataType": "Percent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceAccountingCodeTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceCategory_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorLocation_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorTaxInformation_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InclTax_IN",
+          "dataType": "InclTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AccountingDistributionTemplate"
+          },
+          "name": "Relationship_AccountingDistributionTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBookTable"
+          },
+          "name": "Relationship_AssetBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFOPTable_BR"
+          },
+          "name": "Relationship_CFOPTable_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyProjSalesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_DeliveryPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_EcoResCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_EcoResCategory_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjItemTrans"
+          },
+          "name": "Relationship_ProjItemTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjLineProperty"
+          },
+          "name": "Relationship_ProjLinePropertyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQCaseLine"
+          },
+          "name": "Relationship_PurchRFQCaseLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQTable"
+          },
+          "name": "Relationship_PurchRFQTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlanSched"
+          },
+          "name": "Relationship_ReqPlanSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingProjRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingProjRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxServiceCode_BR"
+          },
+          "name": "Relationship_TaxServiceCode_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Request for quotation lines"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AccountingDistributionTemplateRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AddressRefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchAgreementId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetIdOpen",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetTransTypePurchEDT",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchCategory",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchLineDlvDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventSiteLinkedDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchRFQRequestedDeliveryDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LogisticsDeliveryName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchRFQExpiryDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchExternalItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventRefTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQIsAlternate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ItemIdSmall",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemNameDisplay",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchLineAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchLineDisc",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchLinePercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchMultiLnDisc",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchMultiLnPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemFreeTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCWInventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceUnit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjLinePropertyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjSalesPriceCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjItemTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchMarkup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchOrderedQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchUnit",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchRFQReasonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQReasonRef",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ReqPlanIdSched",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqPOId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TradeLineNumber",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchRFQCaseLineRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchRFQId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "LogisticsLocationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesTaxFormTypesRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InclTax",
+      "extendsDataType": "integer"
+    }
+  ]
+}

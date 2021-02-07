@@ -1,0 +1,108 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AssetDocumentAcceleratedDepEntry_JP.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetAcceleratedDepWorkingHours_JP",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActualHours",
+          "dataType": "AssetAcceleratedDepActualHours_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetDocumentAcceleratedDepEntry_JP",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ReservedHours",
+          "dataType": "CapacityReservedHours",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "AssetTransDate",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDocumentAcceleratedDepEntry_JP"
+          },
+          "name": "Relationship_AssetDocumentAcceleratedDepEntry_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Equipment working hours"
+    },
+    {
+      "dataTypeName": "AssetAcceleratedDepActualHours_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CapacityReservedHours",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetTransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

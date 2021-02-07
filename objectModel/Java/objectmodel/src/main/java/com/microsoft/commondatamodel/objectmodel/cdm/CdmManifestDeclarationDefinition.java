@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
@@ -5,11 +8,16 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
@@ -104,7 +112,7 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
     return false;
   }
 
@@ -139,7 +147,19 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.getManifestName()) && !Strings.isNullOrEmpty(this.getDefinition());
+    ArrayList<String> missingFields = new ArrayList<String>();
+    if (StringUtils.isNullOrTrimEmpty(this.getManifestName())) {
+      missingFields.add("manifestName");
+    }
+    if (StringUtils.isNullOrTrimEmpty(this.getDefinition())) {
+      missingFields.add("definition");
+    }
+
+    if (missingFields.size() > 0) {
+      Logger.error(CdmManifestDeclarationDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -149,8 +169,9 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolved options
+   * @param host Host
+   * @return CDM Object 
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -159,7 +180,7 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
   @Deprecated
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmManifestDeclarationDefinition copy;
@@ -181,13 +202,23 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
   }
 
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
                                                           final CdmAttributeContext under) {
     // return null intentionally
     return null;

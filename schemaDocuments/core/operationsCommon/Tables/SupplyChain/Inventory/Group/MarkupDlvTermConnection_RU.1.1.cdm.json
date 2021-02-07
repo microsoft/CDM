@@ -1,0 +1,101 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Group/MarkupTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MarkupDlvTermConnection_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DlvTermCode",
+          "dataType": "DlvTermId",
+          "description": ""
+        },
+        {
+          "name": "MarkupCode",
+          "dataType": "MarkupCodeVend_RU",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MarkupTable"
+          },
+          "name": "Relationship_MarkupTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Misc. charges relation with terms of delivery"
+    },
+    {
+      "dataTypeName": "DlvTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MarkupCodeVend_RU",
+      "extendsDataType": "string"
+    }
+  ]
+}

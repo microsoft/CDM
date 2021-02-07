@@ -1,0 +1,130 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/TransactionHeader/WHSBillOfLading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSBillOfLadingOrder",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AdditionalInfo",
+          "dataType": "WMSBOLAdditionalInfo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BillOfLadingId",
+          "dataType": "WHSBillOfLadingId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "IsPallet",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Pallet/Slip",
+          "description": ""
+        },
+        {
+          "name": "OrderNum",
+          "dataType": "CustPurchaseOrder",
+          "isNullable": true,
+          "displayName": "Customer order number",
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "ProductQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReferenceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "decimal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSBillOfLading"
+          },
+          "name": "Relationship_WHSBillOfLadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bill of lading orders"
+    },
+    {
+      "dataTypeName": "WMSBOLAdditionalInfo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSBillOfLadingId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPurchaseOrder",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProductQuantity",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

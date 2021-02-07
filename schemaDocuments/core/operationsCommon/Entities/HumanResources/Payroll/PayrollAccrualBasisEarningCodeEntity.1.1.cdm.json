@@ -1,0 +1,124 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PayrollAccrualPlanEntity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PayrollEarningCodeGroupEntity.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/HumanResources/Payroll/Reference/PayrollAccrualBasisEarningcode.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollAccrualBasisEarningCodeEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Accrual",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccrualRate",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccrualType",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "EarningCode",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EarningCodeGroup",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccrualId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "EarningCodeId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EarningCodeGroupId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollAccrualPlanEntity"
+          },
+          "name": "Relationship_AccrualPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollEarningCodeGroupEntity"
+          },
+          "name": "Relationship_EarningCodeGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollAccrualBasisEarningcode"
+          },
+          "name": "BackingTable_PayrollAccrualBasisEarningcodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Accrual basis earnings"
+    }
+  ]
+}

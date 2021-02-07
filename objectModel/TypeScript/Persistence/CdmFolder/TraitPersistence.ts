@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmCorpusContext,
     cdmObjectType,
@@ -5,13 +9,12 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     Parameter,
     Trait,
     TraitReference
 } from './types';
-import * as utils from './utils';
 
 export class TraitPersistence {
     public static fromData(ctx: CdmCorpusContext, object: Trait): CdmTraitDefinition {
@@ -49,7 +52,7 @@ export class TraitPersistence {
         const result : Trait =  {
             traitName: instance.traitName,
             extendsTrait: instance.extendsTrait ? instance.extendsTrait.copyData(resOpt, options) as (string | TraitReference) : undefined,
-            hasParameters: utils.arrayCopyData<string | Parameter>(resOpt, instance.parameters, options)
+            hasParameters: copyDataUtils.arrayCopyData<string | Parameter>(resOpt, instance.parameters, options)
         };
 
         if (instance.associatedProperties !== undefined) {

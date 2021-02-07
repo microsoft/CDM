@@ -1,17 +1,21 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmArgumentDefinition extends CdmObjectSimple {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmArgumentDefinition.class);
-
   private CdmParameterDefinition resolvedParameter;
   private String explanation;
   private String name;
@@ -57,15 +61,31 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
     return unResolvedValue;
   }
 
-  void setResolvedParameter(final CdmParameterDefinition resolvedParameter) {
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @return Cdm Parameter Definition
+   */
+  @Deprecated
+  public CdmParameterDefinition getResolvedParameter() {
+    return this.resolvedParameter;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resolvedParameter resolved parameter
+   */
+  @Deprecated
+  public void setResolvedParameter(final CdmParameterDefinition resolvedParameter) {
     this.resolvedParameter = resolvedParameter;
   }
 
   /**
    *
-   * @return
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return Cdm Parameter Definition
    */
   @Deprecated
   public CdmParameterDefinition getParameterDef() {
@@ -74,9 +94,9 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Data object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, Please refrain from using it.
    */
@@ -96,7 +116,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
       path = this.declaredPath;
 
       if (StringUtils.isNullOrTrimEmpty(path)) {
-        path = pathFrom + (this.getValue() != null ? "value/" : "");
+        path = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
         this.declaredPath = path;
       }
     }
@@ -104,9 +124,9 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
     }
-    if (this.getValue() instanceof CdmObject) {
+    if (this.getValue() != null && this.getValue() instanceof CdmObject) {
       final CdmObject value = (CdmObject) this.getValue();
-      if (value.visit(path, preChildren, postChildren)) {
+      if (value.visit(path + "/value/", preChildren, postChildren)) {
         return true;
       }
     }
@@ -120,7 +140,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmArgumentDefinition copy;
@@ -138,7 +158,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
       } else if (this.getValue() instanceof String){
         copy.setValue(this.getValue());
       } else {
-        LOGGER.error("Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
+        Logger.error(CdmArgumentDefinition.class.getSimpleName(), this.getCtx(), "Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
         throw new RuntimeException("Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
       }
     }
@@ -149,6 +169,10 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
 
   @Override
   public boolean validate() {
-    return this.getValue() != null;
+    if (this.getValue() == null) {
+      Logger.error(CdmArgumentDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("value"))));
+      return false;
+    }
+    return true;
   }
 }

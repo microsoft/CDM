@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm.cdmcollection;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
@@ -6,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 
 public class CdmCollectionHelperFunctions {
@@ -52,7 +56,7 @@ public class CdmCollectionHelperFunctions {
     final CdmFolderDefinition cdmFolderDef = cdmCorpus.getStorage().fetchRootFolder(nameSpace);
     final CdmDocumentDefinition entityDoc = cdmCorpus.makeObject(
         CdmObjectType.DocumentDef,
-        entity.getEntityName() + ".cdm.json",
+        entity.getEntityName() + CdmConstants.CDM_EXTENSION,
         false);
 
     cdmFolderDef.getDocuments().add(entityDoc);

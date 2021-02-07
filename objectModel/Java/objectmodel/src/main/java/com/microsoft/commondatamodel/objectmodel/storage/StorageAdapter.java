@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.storage;
 
 import java.io.IOException;
@@ -8,13 +11,14 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * The CDM Def interface for an adapter object that can read and write documents from a data source.
- * This interface allows a user flexibility to interact with data from multiple sources without
- * having to manually copy data to the location where the Object Model is running. This interface
- * also allows users to create their own adapter if needed.
+ * This was the previous method for a user to create their own storage adapter. The current method is 
+ * to extend the StorageAdapterBase class.
+ * @deprecated Please use the StorageAdapterBase class instead.
  */
 public interface StorageAdapter {
   /**
    * The location hint, gives a hint to the reader app about the location where the adapter implementation (Nuget, NPM...) can be obtained.
+   * @param locationHint String
    */
   void setLocationHint(String locationHint);
 
@@ -48,8 +52,9 @@ public interface StorageAdapter {
 
   /**
    * Writes the object data to the specified document path.
-   *  @param corpusPath CdmCorpusDefinition path
-   * @param data       The data to write
+   * @param corpusPath CdmCorpusDefinition path
+   * @param data  The data to write
+   * @return CompletableFuture
    */
   CompletableFuture<Void> writeAsync(String corpusPath, String data);
 
@@ -57,6 +62,7 @@ public interface StorageAdapter {
    * Converts a corpus path into a path in the domain of this adapter.
    *
    * @param corpusPath CdmCorpusDefinition path
+   * @return String
    */
   String createAdapterPath(String corpusPath) throws StorageAdapterException;
 
@@ -99,6 +105,8 @@ public interface StorageAdapter {
 
   /**
    * Applies the JSON config, has to be called after default constructor.
+   * @param config String
+   * @throws java.io.IOException IO Exception
    */
   void updateConfig(String config) throws IOException;
 }

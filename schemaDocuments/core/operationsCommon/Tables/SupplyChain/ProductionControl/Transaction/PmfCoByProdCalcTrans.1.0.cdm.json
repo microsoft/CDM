@@ -1,0 +1,637 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/BOMCalcGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/BOMCostGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/ProdTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/PmfProdCoBy.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/ProdBOM.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/RouteOprTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/WrkCtrTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PmfCoByProdCalcTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BOM",
+          "dataType": "BOMCalcBOMConsumption",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalcGroupId",
+          "dataType": "BOMCalcGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalcType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CollectRefLevel",
+          "dataType": "ProdCollectRefLevel",
+          "isNullable": true,
+          "displayName": "Level",
+          "description": ""
+        },
+        {
+          "name": "CollectRefProdId",
+          "dataType": "ProdCollectRefProdId",
+          "description": ""
+        },
+        {
+          "name": "ConsumpConstant",
+          "dataType": "CostQuantity",
+          "isNullable": true,
+          "displayName": "Constant",
+          "description": ""
+        },
+        {
+          "name": "ConsumpType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsumpVariable",
+          "dataType": "CostQuantity",
+          "isNullable": true,
+          "displayName": "Variable",
+          "description": ""
+        },
+        {
+          "name": "CostAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Cost amount",
+          "description": ""
+        },
+        {
+          "name": "CostGroupId",
+          "dataType": "CostGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostMarkup",
+          "dataType": "BOMCalcCostMarkup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostPriceModelUsed",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DerivedReference",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DerivedRefNum",
+          "dataType": "InventRefId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IdRefRecId",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "IdRefTableId",
+          "dataType": "RefTableId",
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimStr",
+          "dataType": "BOMCalcInventDimStr",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfSeries",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "displayName": "Number of series",
+          "description": ""
+        },
+        {
+          "name": "OprId",
+          "dataType": "RouteOprId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OprNum",
+          "dataType": "OprNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfCostAllocation",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfCostAllocationPct",
+          "dataType": "PmfCostAllocationPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfIdRefCoByRecId",
+          "dataType": "PmfIdRefCoByRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfOverheadPct",
+          "dataType": "PmfOverheadPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceDiscQty",
+          "dataType": "BOMCalcPriceDiscQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Production",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Production",
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealConsump",
+          "dataType": "CostQuantity",
+          "isNullable": true,
+          "displayName": "Consumption",
+          "description": ""
+        },
+        {
+          "name": "RealCostAdjustment",
+          "dataType": "CostAmountNonMonetary",
+          "isNullable": true,
+          "displayName": "Adjustment",
+          "description": ""
+        },
+        {
+          "name": "RealCostAmount",
+          "dataType": "CostAmountNonMonetary",
+          "isNullable": true,
+          "displayName": "Actual cost amount",
+          "description": ""
+        },
+        {
+          "name": "RealQty",
+          "dataType": "ProdQty",
+          "isNullable": true,
+          "displayName": "Quantity",
+          "description": ""
+        },
+        {
+          "name": "Resource",
+          "dataType": "BOMCalcResource",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Sales amount",
+          "description": ""
+        },
+        {
+          "name": "SalesMarkup",
+          "dataType": "BOMCalcSalesMarkup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPriceModelUsed",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransRefId",
+          "dataType": "CostTransRefId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransRefType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitId",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendId",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOMCalcGroup"
+          },
+          "name": "Relationship_BOMCalcGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BOMCostGroup"
+          },
+          "name": "Relationship_BOMCostGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_CollectRefProdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableBOMRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableItemRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableProdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableServiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PmfProdCoBy"
+          },
+          "name": "Relationship_PmfProdCoByProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdBOM"
+          },
+          "name": "Relationship_ProdBOMRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_ProdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteOprTable"
+          },
+          "name": "Relationship_RouteOprTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_WrkCtrTableProcessRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_WrkCtrTableQtyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_WrkCtrTableSetupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Calculation"
+    },
+    {
+      "dataTypeName": "BOMCalcBOMConsumption",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BOMCalcGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdCollectRefLevel",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProdCollectRefProdId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CostQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BOMCalcCostMarkup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BOMCalcInventDimStr",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RouteOprId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OprNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PmfCostAllocationPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PmfIdRefCoByRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PmfOverheadPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BOMCalcPriceDiscQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmountNonMonetary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BOMCalcResource",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BOMCalcSalesMarkup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CostTransRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { DataObject, dataObjectBaseProperties } from './DataObject';
 import { Entity } from './Entity';
 import { ReferenceModel } from './ReferenceModel';
@@ -18,6 +21,7 @@ export abstract class Model extends DataObject {
     public 'cdm:imports': object[];
     public 'cdm:lastFileStatusCheckTime'? : string;
     public 'cdm:lastChildFileModifiedTime'? : string;
+    public 'cdm:documentVersion'? : string;
 }
 
 export const modelBaseProperties: string[] = [
@@ -31,5 +35,6 @@ export const modelBaseProperties: string[] = [
     'modifiedTime',
     'cdm:imports',
     'cdm:lastFileStatusCheckTime',
-    'cdm:lastChildFileModifiedTime'
+    'cdm:lastChildFileModifiedTime',
+    'cdm:documentVersion'
 ];

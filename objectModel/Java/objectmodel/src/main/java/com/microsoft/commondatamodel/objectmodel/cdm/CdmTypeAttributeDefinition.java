@@ -1,28 +1,38 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.AttributeResolutionContext;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReferenceSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.*;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionDirective;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmTypeAttributeDefinition extends CdmAttribute {
-
   private CdmDataTypeReference dataType;
   private CdmAttributeContextReference attributeContext;
+
+  private CdmProjection projection;
   private TraitToPropertyMap t2pm;
 
   public CdmTypeAttributeDefinition(final CdmCorpusContext ctx, final String name) {
     super(ctx, name);
     this.setObjectType(CdmObjectType.TypeAttributeDef);
+    this.setAttributeCount(1);
   }
 
   public CdmAttributeContextReference getAttributeContext() {
@@ -33,12 +43,23 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     this.attributeContext = value;
   }
 
-  public String fetchDataFormat() {
-    final Object dataFormat = this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.DATA_FORMAT);
-    return dataFormat != null ? (String) dataFormat : "Unknown";
+  public CdmProjection getProjection() {
+    return projection;
   }
 
-  public void updateDataFormat(final String value) {
+  public void setProjection(CdmProjection projection) {
+    if (projection != null) {
+      projection.setOwner(this);
+    }
+    this.projection = projection;
+  }
+
+  public CdmDataFormat fetchDataFormat() {
+    final Object dataFormat = this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.DATA_FORMAT);
+    return dataFormat != null ? CdmDataFormat.valueOf((String)dataFormat) : CdmDataFormat.Unknown;
+  }
+
+  public void updateDataFormat(final CdmDataFormat value) {
     this.getTraitToPropertyMap().updatePropertyValue(CdmPropertyName.DATA_FORMAT, value);
   }
 
@@ -68,11 +89,19 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   }
 
   public String fetchDisplayName() {
-    final Object displayName = this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.DISPLAY_NAME);
-    return displayName != null ? (String) displayName : "Unknown";
+    return (String) this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.DISPLAY_NAME);
   }
 
+  /**
+   * @deprecated Please use updateDisplayName instead.
+   * @param value String value
+   */
+  @Deprecated
   public void setDisplayName(final String value) {
+    this.updateDisplayName(value);
+  }
+
+  public void updateDisplayName(final String value) {
     this.getTraitToPropertyMap().updatePropertyValue(CdmPropertyName.DISPLAY_NAME, value);
   }
 
@@ -130,8 +159,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   }
 
   public String fetchSourceName() {
-    final Object sourceName = this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.SOURCE_NAME);
-    return sourceName != null ? (String) sourceName : "Unknown";
+    return (String) this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.SOURCE_NAME);
   }
 
   public void updateSourceName(final String value) {
@@ -140,10 +168,23 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   public Integer fetchSourceOrdering() {
     final Object sourceOrdering = this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.SOURCE_ORDERING);
-    return sourceOrdering != null ? (Integer) sourceOrdering : null;
+    try {
+      return Integer.parseInt((String)sourceOrdering);
+    } catch (NumberFormatException ex) {
+      return null;
+    }
   }
 
+  /**
+   * @deprecated Please use updateSourceOrdering instead
+   * @param value value
+   */
+  @Deprecated
   public void updateSourceOrderingToTrait(final Integer value) {
+    this.updateSourceOrdering(value);
+  }
+
+  public void updateSourceOrdering(final Integer value) {
     this.getTraitToPropertyMap().updatePropertyValue(CdmPropertyName.SOURCE_ORDERING, value);
   }
 
@@ -157,9 +198,9 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   /**
    *
-   * @param propertyName
-   * @return
-   * @deprecated This class is extremely likely to be removed in the public interface, and not meant
+   * @param propertyName CdmPropertyName
+   * @return Object
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
    */
   @Deprecated
@@ -167,7 +208,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     return this.getTraitToPropertyMap().fetchPropertyValue(propertyName, true);
   }
 
-  public TraitToPropertyMap getTraitToPropertyMap() {
+  private TraitToPropertyMap getTraitToPropertyMap() {
     if (this.t2pm == null) {
       this.t2pm = new TraitToPropertyMap(this);
     }
@@ -200,6 +241,12 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
             .visit(path + "/attributeContext/", preChildren, postChildren)) {
       return true;
     }
+
+    if (this.getProjection() != null
+            && this.getProjection()
+            .visit(path + "/projection/", preChildren, postChildren)) {
+      return true;
+    }
     if (this.visitAtt(path, preChildren, postChildren)) {
       return true;
     }
@@ -208,16 +255,57 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.getName());
+    ArrayList<String> missingFields = new ArrayList<String>();
+
+    if (StringUtils.isNullOrTrimEmpty(this.getName())) {
+      missingFields.add("name");
+    }
+
+    if (this.getCardinality() != null) {
+      if (StringUtils.isNullOrTrimEmpty(this.getCardinality().getMinimum())) {
+        missingFields.add("cardinality.minimum");
+      }
+      if (StringUtils.isNullOrTrimEmpty(this.getCardinality().getMaximum())) {
+        missingFields.add("cardinality.maximum");
+      }
+    }
+
+    if (missingFields.size() > 0) {
+      Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      return false;
+    }
+
+    if (this.getCardinality() != null) {
+      if (!CardinalitySettings.isMinimumValid(this.getCardinality().getMinimum())) {
+        Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Logger.format("Invalid minimum cardinality {0}", this.getCardinality().getMinimum()), "validate");
+        return false;
+      }
+      if (!CardinalitySettings.isMaximumValid(this.getCardinality().getMaximum())) {
+        Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Logger.format("Invalid maximum cardinality {0}", this.getCardinality().getMaximum()), "validate");
+        return false;
+      }
+    }
+
+    return true;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
     // find and cache the complete set of attributes
     // attributes definitions originate from and then get modified by subsequent re-definitions from (in this order):
     // the datatype used as an attribute, traits applied to that datatype,
@@ -243,14 +331,23 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     // renameFormat is not currently supported for type attributes.
     resGuideWithDefault.setRenameFormat(null);
 
-    resGuideWithDefault.updateAttributeDefaults(null);
+    resGuideWithDefault.updateAttributeDefaults(null, this);
     final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 
+    // TODO: remove the resolution guidance if projection is being used
     // from the traits of the datatype, purpose and applied here, see if new attributes get generated
     rasb.applyTraits(arc);
     rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
     // this may have added symbols to the dependencies, so merge them
     resOpt.getSymbolRefSet().merge(arc.getResOpt().getSymbolRefSet());
+
+    if (this.getProjection() != null) {
+      ProjectionDirective projDirective = new ProjectionDirective(resOpt, this);
+      ProjectionContext projCtx = this.getProjection().constructProjectionContext(projDirective, under, rasb.getResolvedAttributeSet());
+
+      ResolvedAttributeSet ras = this.getProjection().extractResolvedAttributes(projCtx, under);
+      rasb.setResolvedAttributeSet(ras);
+    }
 
     return rasb;
   }
@@ -271,7 +368,9 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     if (resolvedTraitSet != null && resolvedTraitSet.getHasElevated() != null && resolvedTraitSet.getHasElevated()) {
       final CdmAttributeReference replacement = new CdmAttributeReference(this.getCtx(), this.getName(), true);
       replacement.setCtx(this.getCtx());
-      replacement.setExplicitReference(this);
+      replacement.setExplicitReference((CdmObjectDefinition) this.copy());
+      replacement.setInDocument(this.getInDocument());
+      replacement.setOwner(this);
 
       rtsb.replaceTraitParameterValue(resOpt, "does.elevateAttribute",
               "attribute", "this.attribute", replacement);
@@ -281,9 +380,9 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved option
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -297,7 +396,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmTypeAttributeDefinition copy;
@@ -329,7 +428,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
     return false;
   }
 }

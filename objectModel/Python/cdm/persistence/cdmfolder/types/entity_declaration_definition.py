@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import List, Union
 
 from .file_status import FileStatus
@@ -13,14 +16,14 @@ class EntityDeclarationDefinition(FileStatus):
         self.type = path_type  # type: str
         """the entity declaration type."""
 
-        self.entityName = ''  # type: str
+        self.entityName = None  # type: str
         """The entity name."""
 
-        self.entityPath = ''  # type: str
+        self.entityPath = None  # type: str
         """The entity path."""
 
-        self.explanation = ''  # type: str
+        self.explanation = None  # type: str
         """The explanation."""
 
-        self.exhibitsTraits = []  # type: List[Union[str, TraitReference]]
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]
         """The exhibited traits."""

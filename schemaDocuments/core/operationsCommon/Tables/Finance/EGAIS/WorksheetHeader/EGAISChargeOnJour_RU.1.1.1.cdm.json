@@ -1,0 +1,207 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Group/Branches_RU.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/Main/EGAISIncomingDocument_RU.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventJournalTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EGAISChargeOnJour_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BranchId",
+          "dataType": "BranchId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChargeOnType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Identity",
+          "dataType": "EGAISIdentity_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventJournalTable",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Notes",
+          "dataType": "Notes",
+          "isNullable": true,
+          "displayName": "Notes",
+          "description": ""
+        },
+        {
+          "name": "RegId",
+          "dataType": "EGAISRegId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplyId",
+          "dataType": "EGAISReplyId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StatementDate",
+          "dataType": "EGAISChargeOnJourDate_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StatementNumber",
+          "dataType": "EGAISChargeOnJourNumber_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StatusIssue",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Version",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Branches_RU"
+          },
+          "name": "Relationship_Branches_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISIncomingDocument_RU"
+          },
+          "name": "Relationship_EGAISIncomingDocument_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventJournalTable"
+          },
+          "name": "Relationship_InventJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "EGAIS inventory statements journal"
+    },
+    {
+      "dataTypeName": "BranchId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EGAISIdentity_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Notes",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EGAISRegId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EGAISReplyId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EGAISChargeOnJourDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EGAISChargeOnJourNumber_RU",
+      "extendsDataType": "string"
+    }
+  ]
+}

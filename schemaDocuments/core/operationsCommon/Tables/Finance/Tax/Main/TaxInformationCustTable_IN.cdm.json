@@ -1,0 +1,214 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxInformationCustTable_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustTable",
+          "dataType": "AccountNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsForeign",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Foreign customer",
+          "description": ""
+        },
+        {
+          "name": "IsPreferential",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Preferential customer",
+          "description": ""
+        },
+        {
+          "name": "NatureOfAssessee",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PANNumber",
+          "dataType": "PANNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PANReferenceNumber",
+          "dataType": "PANReferenceNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PanStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TCSGroup",
+          "dataType": "TaxWithholdGroup",
+          "isNullable": true,
+          "displayName": "TCS group",
+          "description": ""
+        },
+        {
+          "name": "TDSGroup",
+          "dataType": "TaxWithholdGroup",
+          "isNullable": true,
+          "displayName": "TDS group",
+          "description": ""
+        },
+        {
+          "name": "CustomerType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultECommerceOperator",
+          "dataType": "AccountNum",
+          "isNullable": true,
+          "displayName": "Default E-Commerce operator",
+          "description": ""
+        },
+        {
+          "name": "IsConsumer",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Consumer",
+          "description": ""
+        },
+        {
+          "name": "MerchantID",
+          "dataType": "MerchantID_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdGroupHeading"
+          },
+          "name": "Relationship_TaxWithholdGroupHeadingTCSRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdGroupHeading"
+          },
+          "name": "Relationship_TaxWithholdGroupHeadingTDSRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_DefaultECommerceOperatorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax Information of Customer"
+    },
+    {
+      "dataTypeName": "AccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PANNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PANReferenceNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MerchantID_IN",
+      "extendsDataType": "string"
+    }
+  ]
+}

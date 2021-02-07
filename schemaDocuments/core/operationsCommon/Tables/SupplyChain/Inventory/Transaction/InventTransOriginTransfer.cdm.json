@@ -1,0 +1,133 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InventTransOrigin.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProduct.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/TransactionHeader/InventClosing.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventTransOriginTransfer",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IssueInventTransOrigin",
+          "dataType": "InventTransOriginId",
+          "displayName": "Issue",
+          "description": ""
+        },
+        {
+          "name": "ReceiptInventTransOrigin",
+          "dataType": "InventTransOriginId",
+          "displayName": "Receipt",
+          "description": ""
+        },
+        {
+          "name": "NonFinancialTransfInventClosingRecId",
+          "dataType": "InventClosingRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Product",
+          "dataType": "EcoResProductRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ReferenceCategory",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_TransferInventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_EcoResProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventClosing"
+          },
+          "name": "Relationship_InventClosingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transfer relations of the inventory transaction originator table"
+    },
+    {
+      "dataTypeName": "InventTransOriginId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventClosingRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResProductRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

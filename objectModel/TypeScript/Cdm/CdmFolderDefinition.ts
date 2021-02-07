@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
     CdmCorpusDefinition,
@@ -8,6 +11,7 @@ import {
     CdmObjectDefinition,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
     Logger,
     ResolvedAttributeSet,
     ResolvedTraitSet,
@@ -27,6 +31,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
     /**
      * @inheritdoc
+     * @deprecated Only for internal use.
      */
     public folderPath: string;
 
@@ -54,6 +59,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
     /**
      * @inheritdoc
+     * @deprecated Only for internal use.
      */
     public namespace: string;
 
@@ -92,17 +98,24 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      * @inheritdoc
      */
     public validate(): boolean {
-        return this.name ? true : false;
+        if (!this.name) {
+            Logger.error(
+                CdmFolderDefinition.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, ['name']),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * @inheritdoc
      */
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 
@@ -119,66 +132,63 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      * @internal
      * @inheritdoc
      */
-    public async fetchChildFolderFromPathAsync(path: string, makeFolder: boolean = true): Promise<CdmFolderDefinition> {
+    public fetchChildFolderFromPath(path: string, makeFolder: boolean = true): CdmFolderDefinition {
         let name: string;
-        let remainingPath: string;
-        let first: number = path.indexOf('/', 0);
-        if (first < 0) {
-            name = path.slice(0);
-            remainingPath = '';
-        } else {
-            name = path.slice(0, first);
-            remainingPath = path.slice(first + 1);
-        }
-        if (name.toLowerCase() === this.name.toLowerCase()) {
+        let remainingPath: string = path;
+        let childFolder: CdmFolderDefinition = this;
+
+        while (childFolder && remainingPath.indexOf('/') != -1) {
+            let first: number = remainingPath.indexOf('/');
+            name = remainingPath.slice(0, first);
+            remainingPath = remainingPath.slice(first + 1);
+
+            if (name.toLowerCase() !== childFolder.name.toLowerCase()) {
+                Logger.error(
+                    CdmFolderDefinition.name,
+                    this.ctx,
+                    `Invalid path '${path}'`,
+                    this.fetchChildFolderFromPath.name
+                );
+                return undefined;
+            }
+
             // the end?
             if (remainingPath === '') {
-                return this;
+                return childFolder;
             }
+
+            first = remainingPath.indexOf('/')
+            let childFolderName: string = remainingPath
+            if (first != -1) {
+                childFolderName = remainingPath.slice(0, first);
+            } else {
+                // the last part of the path will be considered part of the part depending on the make_folder flag.
+                break
+            }
+
             // check children folders
             let result: CdmFolderDefinition;
-            if (this.childFolders) {
-                for (const f of this.childFolders) {
-                    result = await f.fetchChildFolderFromPathAsync(remainingPath, makeFolder);
-                    if (result) {
+            if (childFolder.childFolders) {
+                for (const folder of childFolder.childFolders) {
+                    if (childFolderName.toLowerCase() == folder.name.toLowerCase()) {
+                        result = folder;
                         break;
                     }
                 }
             }
-            if (result) {
-                return result;
+
+            if (!result) {
+                result = childFolder.childFolders.push(childFolderName);
             }
 
-            // get the next folder
-            first = remainingPath.indexOf('/', 0);
-            name = first > 0 ? remainingPath.slice(0, first) : remainingPath;
-
-            if (first !== -1) {
-                const childPath: CdmFolderDefinition = await this.childFolders.push(name)
-                    .fetchChildFolderFromPathAsync(remainingPath, makeFolder);
-                if (!childPath) {
-                    Logger.error(
-                        CdmFolderDefinition.name,
-                        this.ctx,
-                        `Invalid path '${path}'`,
-                        this.fetchChildFolderFromPathAsync.name
-                    );
-                }
-
-                return childPath;
-            }
-
-            if (makeFolder) {
-                // huh, well need to make the fold here
-                return (this.childFolders.push(name))
-                    .fetchChildFolderFromPathAsync(remainingPath, makeFolder);
-            } else {
-                // good enough, return where we got to
-                return this;
-            }
+            childFolder = result;
         }
 
-        return undefined;
+        if (makeFolder) {
+            childFolder = childFolder.childFolders.push(remainingPath);
+        }
+
+        return childFolder;
     }
 
     /**
@@ -188,7 +198,8 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
     public async fetchDocumentFromFolderPathAsync(
         objectPath: string,
         adapter: StorageAdapter,
-        forceReload: boolean = false): Promise<CdmDocumentDefinition> {
+        forceReload: boolean = false,
+        resOpt: resolveOptions = null): Promise<CdmDocumentDefinition> {
         let docName: string;
         let remainingPath: string;
         const first: number = objectPath.indexOf('/', 0);
@@ -216,7 +227,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
         }
 
         // go get the doc
-        doc = await this.corpus.persistence.LoadDocumentFromPathAsync(this, docName, doc);
+        doc = await this.corpus.persistence.LoadDocumentFromPathAsync(this, docName, doc, resOpt);
 
         return doc;
     }
@@ -239,26 +250,20 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      * @inheritdoc
      */
     public fetchObjectDefinition<T = CdmObjectDefinition>(resOpt?: resolveOptions): T {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return undefined;
     }
 
     /**
      * @inheritdoc
+     * @internal
      */
     public fetchResolvedTraits(resOpt?: resolveOptions): ResolvedTraitSet {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return undefined;
     }
 
     /**
      * @inheritdoc
+     * @internal
      */
     public fetchResolvedAttributes(): ResolvedAttributeSet {
         return undefined;
@@ -268,10 +273,6 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      * @inheritdoc
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return undefined;
     }
 }

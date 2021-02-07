@@ -1,0 +1,123 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysTestBatchRun.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysTestResultsTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BatchRunId",
+          "dataType": "SysTestBatchRunId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClassName",
+          "dataType": "ClassName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MethodName",
+          "dataType": "MethodName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Succeeded",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Duration",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TestStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsCheckInTest",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Messages",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GroupNumber",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutionMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysTestBatchRun"
+          },
+          "name": "Relationship_BatchRunRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Test results"
+    },
+    {
+      "dataTypeName": "SysTestBatchRunId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ClassName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MethodName",
+      "extendsDataType": "string"
+    }
+  ]
+}

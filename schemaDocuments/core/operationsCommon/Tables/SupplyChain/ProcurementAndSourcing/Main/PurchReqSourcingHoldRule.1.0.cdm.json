@@ -1,0 +1,115 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Parameter/PurchReqSourcingPolicyRule.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/Workflow/Main/SysPolicyRule.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchReqSourcingHoldRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EnableHoldByExternalCatalogItem",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Categories and vendors for external catalog items",
+          "description": ""
+        },
+        {
+          "name": "EnableHoldByInternalCatalogItem",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Categories and vendors for internal catalog items",
+          "description": ""
+        },
+        {
+          "name": "EnableHoldByNonCatalogItem",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Categories and vendors for non-catalog items",
+          "description": ""
+        },
+        {
+          "name": "EnableHoldByPrePayment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "When the requisition is set up for prepayment",
+          "description": ""
+        },
+        {
+          "name": "EnableManualHold",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PolicyRule",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsFinancialDimensionMergeEnabled",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Merge financial dimensions from the vendor that was added after purchase requisition approval",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PurchReqSourcingPolicyRule"
+          },
+          "name": "Relationship_PurchReqSourcingPolicyRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysPolicyRule"
+          },
+          "name": "Relationship_SysPolicyRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase requisition to purchase order hold rule"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

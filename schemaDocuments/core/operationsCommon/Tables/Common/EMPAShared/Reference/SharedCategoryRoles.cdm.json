@@ -1,0 +1,93 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SharedCategory.cdm.json"
+    },
+    {
+      "corpusPath": "SharedCategoryRoleType.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SharedCategoryRoles",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "GlobalCategory",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Shared category",
+          "description": ""
+        },
+        {
+          "name": "GlobalCategoryRoleType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Category role type",
+          "description": ""
+        },
+        {
+          "name": "ExpenseType",
+          "dataType": "TrvExpTypeEDT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SharedCategory"
+          },
+          "name": "Relationship_CategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SharedCategoryRoleType"
+          },
+          "name": "Relationship_RoleTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Category roles"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TrvExpTypeEDT",
+      "extendsDataType": "integer"
+    }
+  ]
+}

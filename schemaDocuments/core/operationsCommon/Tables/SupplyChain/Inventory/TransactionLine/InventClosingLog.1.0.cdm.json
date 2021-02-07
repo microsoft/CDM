@@ -1,0 +1,116 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/TransactionHeader/InventClosing.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventClosingLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InfologData",
+          "dataType": "InfologData",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogId",
+          "dataType": "LogId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventClosing"
+          },
+          "name": "Relationship_InventClosingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Log"
+    },
+    {
+      "dataTypeName": "InfologData",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "LogId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,394 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/ContactPerson.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PriceDiscGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventSite.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/smmBusRelTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesQuotationBasket",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PriceGroupId",
+          "dataType": "CustPriceGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BusRelAccount",
+          "dataType": "smmBusRelAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactPersonId",
+          "dataType": "ContactPersonId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CustCurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "displayName": "Customer number",
+          "description": ""
+        },
+        {
+          "name": "DeliveryDate",
+          "dataType": "SalesShippingDateRequested",
+          "isNullable": true,
+          "displayName": "Ship date",
+          "description": ""
+        },
+        {
+          "name": "DeliveryLocation",
+          "dataType": "LogisticsLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryName",
+          "dataType": "CustName",
+          "isNullable": true,
+          "displayName": "Delivery name",
+          "description": ""
+        },
+        {
+          "name": "EndDisc",
+          "dataType": "CustEndDiscCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InclTax",
+          "dataType": "InclTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDisc",
+          "dataType": "CustLineDiscCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MultiLineDisc",
+          "dataType": "CustMultiLineDiscCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjIdRef",
+          "dataType": "ProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuotationType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesQuotationBasketId",
+          "dataType": "SalesQuotationBasketId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "SessionId",
+          "dataType": "SessionId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ContactPerson"
+          },
+          "name": "Relationship_ContactPersonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_CustLineDiscountGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_CustMultiLineDiscountGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_CustPriceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_CustTotalDiscountGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsLocation"
+          },
+          "name": "Relationship_DeliveryLocation_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSite"
+          },
+          "name": "Relationship_InventSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmBusRelTable"
+          },
+          "name": "Relationship_smmBusRelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales quotation basket"
+    },
+    {
+      "dataTypeName": "CustPriceGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmBusRelAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ContactPersonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesShippingDateRequested",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LogisticsLocationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustEndDiscCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InclTax",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustLineDiscCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustMultiLineDiscCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesQuotationBasketId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SessionId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

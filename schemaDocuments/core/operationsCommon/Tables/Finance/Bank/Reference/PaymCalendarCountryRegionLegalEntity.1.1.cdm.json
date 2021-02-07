@@ -1,0 +1,100 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PaymCalendarCountryRegion.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PaymCalendarCountryRegionLegalEntity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IncludeStateHoliday",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Include state/province holidays",
+          "description": ""
+        },
+        {
+          "name": "ModuleType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "PaymCalendarCountryRegion",
+          "dataType": "PaymCalendarCountryRegionRecId",
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "LegalEntityRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PaymCalendarCountryRegion"
+          },
+          "name": "Relationship_PaymCalendarCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payment calendar country/region legal entity"
+    },
+    {
+      "dataTypeName": "PaymCalendarCountryRegionRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LegalEntityRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

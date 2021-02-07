@@ -1,0 +1,97 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxVATNumTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountryRegionId",
+          "dataType": "AddressCountryRegionId",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "VATName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATNum",
+          "dataType": "VATNum",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax exempt number table"
+    },
+    {
+      "dataTypeName": "AddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VATName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VATNum",
+      "extendsDataType": "string"
+    }
+  ]
+}

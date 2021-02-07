@@ -1,7 +1,10 @@
-from collections import OrderedDict
-import dateutil.parser
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import List, Optional, TYPE_CHECKING
+from collections import OrderedDict
 import uuid
+import dateutil.parser
 
 from cdm.enums import CdmObjectType
 from cdm.persistence import PersistenceLayer
@@ -24,7 +27,7 @@ _TAG = 'ManifestPersistence'
 class ManifestPersistence:
     is_persistence_async = True
 
-    formats = [PersistenceLayer._MODEL_JSON_EXTENSION]
+    formats = [PersistenceLayer.MODEL_JSON_EXTENSION]
 
     @staticmethod
     async def from_data(ctx: 'CdmCorpusContext', doc_name: str, json_data: str, folder: 'CdmFolderDefinition') -> 'CdmManifestDefinition':
@@ -56,6 +59,9 @@ class ManifestPersistence:
 
         if obj.get('lastFileStatusCheckTime'):
             manifest.last_file_status_check_time = dateutil.parser.parse(obj.get('lastFileStatusCheckTime'))
+
+        if obj.get('documentVersion'):
+            manifest.document_version = obj.get('documentVersion')
 
         if obj.get('application'):
             application_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.managedBy', False)
@@ -147,37 +153,38 @@ class ManifestPersistence:
     async def to_data(instance: 'CdmManifestDefinition', res_opt: 'ResolveOptions', options: 'CopyOptions') -> Optional['Model']:
         result = Model()
 
-        # process_annotations_to_data also processes extensions.
-        await utils.process_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
+        # process_traits_and_annotations_to_data also processes extensions.
+        utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
 
         result.name = instance.manifest_name
         result.description = instance.explanation
         result.modifiedTime = utils.get_formatted_date_string(instance.last_file_modified_time)
         result.lastChildFileModifiedTime = utils.get_formatted_date_string(instance.last_child_file_modified_time)
         result.lastFileStatusCheckTime = utils.get_formatted_date_string(instance.last_file_status_check_time)
+        result.documentVersion = instance.document_version
 
         t2pm = TraitToPropertyMap(instance)
 
-        result.isHidden = bool(t2pm.fetch_trait_reference('is.hidden')) or None
+        result.isHidden = bool(t2pm._fetch_trait_reference('is.hidden')) or None
 
-        application_trait = t2pm.fetch_trait_reference('is.managedBy')
+        application_trait = t2pm._fetch_trait_reference('is.managedBy')
         if application_trait:
             result.application = application_trait.arguments[0].value
 
-        version_trait = t2pm.fetch_trait_reference('is.modelConversion.modelVersion')
+        version_trait = t2pm._fetch_trait_reference('is.modelConversion.modelVersion')
         if version_trait:
             result.version = version_trait.arguments[0].value
         else:
             result.version = '1.0'
 
-        culture_trait = t2pm.fetch_trait_reference('is.partition.culture')
+        culture_trait = t2pm._fetch_trait_reference('is.partition.culture')
         if culture_trait:
             result.culture = culture_trait.arguments[0].value
 
         reference_entity_locations = {}
         reference_models = OrderedDict()
 
-        reference_models_trait = t2pm.fetch_trait_reference('is.modelConversion.referenceModelMap')
+        reference_models_trait = t2pm._fetch_trait_reference('is.modelConversion.referenceModelMap')
 
         if reference_models_trait:
             ref_models = reference_models_trait.arguments[0].value
@@ -228,20 +235,22 @@ class ManifestPersistence:
                                  'There was an error while trying to convert {}\'s entity declaration to model json format.'.format(entity.entity_name))
 
         if reference_models:
+            result.referenceModels = []
             for value, key in reference_models.items():
                 model = ReferenceModel()
                 model.id = value
                 model.location = key
                 result.referenceModels.append(model)
 
-        for cdm_relationship in instance.relationships:
-            relationship = await RelationshipPersistence.to_data(cdm_relationship, res_opt, options, instance.ctx)
-
-            if relationship:
-                result.relationships.append(relationship)
-            else:
-                logger.error(_TAG, instance.ctx, 'There was an error while trying to convert cdm relationship to model.json relationship.')
-                return None
+        if instance.relationships is not None and len(instance.relationships) > 0:
+            result.relationships = []  # type: List[SingleKeyRelationship]
+            for cdm_relationship in instance.relationships:
+                relationship = await RelationshipPersistence.to_data(cdm_relationship, res_opt, options, instance.ctx)
+                if relationship is not None:
+                    result.relationships.append(relationship)
+                else:
+                    logger.error(_TAG, instance.ctx, 'There was an error while trying to convert cdm relationship to model.json relationship.')
+                    return None
 
         if instance.imports:
             result.imports = []

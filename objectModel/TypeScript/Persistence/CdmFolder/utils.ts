@@ -1,19 +1,15 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmFolder } from '..';
 import {
     ArgumentValue,
-    CdmArgumentCollection,
     CdmAttributeItem,
     CdmCollection,
     CdmCorpusContext,
-    CdmDefinitionCollection,
-    CdmDocumentCollection,
-    CdmEntityCollection,
-    CdmFolderCollection,
-    CdmImportCollection,
     CdmObject,
     CdmObjectDefinition,
     CdmObjectReference,
-    CdmTraitCollection,
     CdmTraitReference,
     copyOptions,
     identifierRef,
@@ -24,7 +20,7 @@ import {
     CdmJsonType,
     DataTypeReference,
     EntityAttribute,
-    EntityReference,
+    EntityReferenceDefinition,
     PurposeReference,
     TraitReference,
     TypeAttribute
@@ -70,27 +66,6 @@ export function addArrayToCdmCollection<T extends CdmObject>(cdmCollection: CdmC
 }
 
 /**
- * Creates a list object that is a copy of the input IEnumerable object
- */
-export function arrayCopyData<T>(
-    resOpt: resolveOptions,
-    source: CdmCollection<CdmObject> | CdmArgumentCollection | CdmDocumentCollection | CdmDefinitionCollection | CdmEntityCollection | CdmTraitCollection | CdmFolderCollection | CdmImportCollection | CdmObject[],
-    options: copyOptions): T[] {
-    if (!source || !source.length) {
-        return undefined;
-    }
-    const casted: T[] = [];
-    const l: number = source.length;
-    for (let i: number = 0; i < l; i++) {
-        const element: CdmObject =
-            (source as CdmCollection<CdmObject>).allItems ? (source as CdmCollection<CdmObject>).allItems[i] : source[i];
-        casted.push(element ? element.copyData(resOpt, options) as unknown as T : undefined);
-    }
-
-    return casted;
-}
-
-/**
  * Creates a CDM object from a JSON object
  */
 export function createConstant(ctx: CdmCorpusContext, object: CdmJsonType): ArgumentValue {
@@ -123,7 +98,7 @@ export function createConstant(ctx: CdmCorpusContext, object: CdmJsonType): Argu
         } else if (checkExistingProperty('dataTypeReference')) {
             return CdmFolder.DataTypeReferencePersistence.fromData(ctx, object as DataTypeReference);
         } else if (checkExistingProperty('entityReference')) {
-            return CdmFolder.EntityReferencePersistence.fromData(ctx, object as EntityReference);
+            return CdmFolder.EntityReferencePersistence.fromData(ctx, object as EntityReferenceDefinition);
         } else if (checkExistingProperty('attributeGroupReference')) {
             return CdmFolder.AttributeGroupReferencePersistence.fromData(ctx, object as AttributeGroupReference);
         } else {
@@ -135,18 +110,18 @@ export function createConstant(ctx: CdmCorpusContext, object: CdmJsonType): Argu
 /**
  * Converts a JSON object to an Attribute object
  */
-export function createAttribute(ctx: CdmCorpusContext, object: (string | AttributeGroupReference | EntityAttribute | TypeAttribute))
+export function createAttribute(ctx: CdmCorpusContext, object: (string | AttributeGroupReference | EntityAttribute | TypeAttribute), entityName?: string)
     : CdmAttributeItem {
     if (!object) {
         return undefined;
     }
 
     if (typeof object === 'string' || isAttributeGroupReference(object)) {
-        return CdmFolder.AttributeGroupReferencePersistence.fromData(ctx, object);
+        return CdmFolder.AttributeGroupReferencePersistence.fromData(ctx, object, entityName);
     } else if (isEntityAttribute(object)) {
         return CdmFolder.EntityAttributePersistence.fromData(ctx, object);
     } else if (isTypeAttribute(object)) {
-        return CdmFolder.TypeAttributePersistence.fromData(ctx, object);
+        return CdmFolder.TypeAttributePersistence.fromData(ctx, object, entityName);
     }
 }
 
@@ -155,7 +130,8 @@ export function createAttribute(ctx: CdmCorpusContext, object: (string | Attribu
  */
 export function createAttributeArray(
     ctx: CdmCorpusContext,
-    object: (string | AttributeGroupReference | EntityAttribute | TypeAttribute)[]): CdmAttributeItem[] {
+    object: (string | AttributeGroupReference | EntityAttribute | TypeAttribute)[],
+    entityName?: string): CdmAttributeItem[] {
     if (!object) {
         return undefined;
     }
@@ -165,7 +141,7 @@ export function createAttributeArray(
     const l: number = object.length;
     for (let i: number = 0; i < l; i++) {
         const ea: (string | AttributeGroupReference | EntityAttribute | TypeAttribute) = object[i];
-        result.push(createAttribute(ctx, ea));
+        result.push(createAttribute(ctx, ea, entityName));
     }
 
     return result;
@@ -189,3 +165,53 @@ export function copyIdentifierRef(objRef: CdmObjectReference, resOpt: resolveOpt
         identifier: identifier
     };
 }
+
+/**
+ * Converts dynamic input into a string for a property (ints are converted to string)
+ * @param value The value that should be converted to a string.
+ */
+export function propertyFromDataToString(value): string {
+    if (typeof value === 'string' && value.trim() !== '') {
+        return value;
+    } else if (typeof value === 'number') {
+        return value.toString();
+    }
+
+    return undefined;
+}
+
+/**
+ * Converts dynamic input into an int for a property (numbers represented as strings are converted to int)
+ * @param value The value that should be converted to an int.
+ */
+export function propertyFromDataToInt(value): number {
+    if (typeof value === 'number') {
+        return value;
+    } else if (typeof value === 'string') {
+        const numberValue: number = Number(value);
+        if (!isNaN(numberValue)) {
+            return numberValue;
+        }
+    }
+
+    return undefined;
+}
+
+/**
+ * Converts dynamic input into a boolean for a property (booleans represented as strings are converted to boolean)
+ * @param value The value that should be converted to a boolean.
+ */
+export function propertyFromDataToBool(value): boolean {
+    if (typeof value === 'boolean') {
+        return value;
+    } else if (typeof value === 'string') {
+        if (value === 'true' || value === 'True') {
+            return true;
+        } else if (value === 'false' || value === 'False') {
+            return false;
+        }
+    }
+
+    return undefined;
+}
+

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     ArgumentValue,
     CdmCorpusContext,
@@ -9,8 +12,8 @@ import {
 } from '../internal';
 
 /**
-     * @internal
-     */
+ * @internal
+ */
 export class ParameterValueSet {
     public pc: ParameterCollection;
     public values: ArgumentValue[];

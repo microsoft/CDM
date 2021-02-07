@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
@@ -59,11 +62,11 @@ public class ResolvedEntityReferenceSet {
 
   /**
    *
-   * @param resOpt
-   * @param to
-   * @param indent
-   * @param nameSort
-   * @throws IOException
+   * @param resOpt Resolved options
+   * @param to StringSpewCatcher
+   * @param indent String
+   * @param nameSort boolean
+   * @throws IOException Throws IO exception
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
    */

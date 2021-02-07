@@ -1,18 +1,21 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.TraitReferencePersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Annotation;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.CsvFormatSettings;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.MetadataObject;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+import com.microsoft.commondatamodel.objectmodel.utilities.NameValuePair;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -20,16 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods for model.json persistence.
  */
 public class Utils {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-
   private static final Map<String, String> annotationToTraitMap = new LinkedHashMap<String, String>() {
     private static final long serialVersionUID = 1863481726936L;
 
@@ -38,16 +36,30 @@ public class Utils {
     }
   };
 
-  private static final Set<String> ignoredTraits = new LinkedHashSet<String>() {
+  public static final Set<String> ignoredTraits = new LinkedHashSet<String>() {
     private static final long serialVersionUID = 1987129612639L;
 
     {
-      add("is.modelConversion.otherAnnotations");
       add("is.propertyContent.multiTrait");
       add("is.modelConversion.referenceModelMap");
       add("is.modelConversion.modelVersion");
       add("means.measurement.version");
+      add("is.CDM.entityVersion");
       add("is.partition.format.CSV");
+      add("is.partition.culture");
+      add("is.managedBy");
+      add("is.hidden");
+    }
+  };
+
+  // Traits to ignore if they come from properties.
+  // These traits become properties on the model.json. To avoid persisting both a trait
+  // and a property on the model.json, we filter these traits out.
+  public static final Set<String> modelJsonPropertyTraits = new LinkedHashSet<String>() {
+    private static final long serialVersionUID = 1560087956924063099L;
+
+    {
+      add("is.localized.describedAs");
     }
   };
 
@@ -56,13 +68,16 @@ public class Utils {
       final MetadataObject obj,
       final CdmTraitCollection traits) {
     return CompletableFuture.runAsync(() -> {
-      final List<Annotation> multiTraitAnnotations = new ArrayList<>();
+      final List<NameValuePair> multiTraitAnnotations = new ArrayList<>();
 
       if (obj.getAnnotations() != null) {
 
         for (final Annotation element : obj.getAnnotations()) {
           if (!shouldAnnotationGoIntoASingleTrait(element.getName())) {
-            multiTraitAnnotations.add(element);
+            NameValuePair cdmElement = new NameValuePair();
+            cdmElement.setName(element.getName());
+            cdmElement.setValue(element.getValue());
+            multiTraitAnnotations.add(cdmElement);
           } else {
             final CdmTraitReference innerTrait = ctx.getCorpus()
                     .makeObject(CdmObjectType.TraitRef, convertAnnotationToTrait(element.getName()),
@@ -75,7 +90,7 @@ public class Utils {
         if (multiTraitAnnotations.size() > 0) {
           final CdmTraitReference trait = ctx.getCorpus()
               .makeRef(CdmObjectType.TraitRef, "is.modelConversion.otherAnnotations", false);
-          trait.setFromProperty(true);
+          trait.setFromProperty(false);
 
           final CdmArgumentDefinition annotationsArgument =
               new CdmArgumentDefinition(ctx, "annotations");
@@ -95,73 +110,62 @@ public class Utils {
     });
   }
 
-  static CompletableFuture<Void> processAnnotationsToData(
+  static void processTraitsAndAnnotationsToData(
       final CdmCorpusContext ctx,
       final MetadataObject obj,
       final CdmTraitCollection traits) {
-    return CompletableFuture.runAsync(() -> {
-      if (traits == null) {
-        return;
-      }
-
-      final List<Annotation> annotations = new ArrayList<>();
-      final List<JsonNode> extensions = new ArrayList<>();
-
-      for (final CdmTraitReference trait : traits) {
-        if (ExtensionHelper.traitRefIsExtension(trait)) {
-          ExtensionHelper.processExtensionTraitToObject(trait, obj);
-          continue;
+        if (traits == null) {
+          return;
         }
-
-        if ("is.modelConversion.otherAnnotations".equals(trait.getNamedReference())) {
-          final Object traitArgument = trait.getArguments().get(0).getValue();
-          Iterable<?> traitArguments = new ArrayList<>();
-          if (traitArgument instanceof List<?>) {
-            traitArguments = (ArrayList<?>) traitArgument;
-          } else if (traitArgument instanceof JsonNode && ((JsonNode) traitArgument).isArray()) {
-            traitArguments =  (JsonNode) traitArgument;
-          } else {
-            LOGGER.error("Unsupported annotation type.");
+  
+        final List<Annotation> annotations = new ArrayList<>();
+        final List<JsonNode> extensions = new ArrayList<>();
+  
+        for (final CdmTraitReference trait : traits) {
+          if (ExtensionHelper.traitRefIsExtension(trait)) {
+            ExtensionHelper.processExtensionTraitToObject(trait, obj);
+            continue;
           }
-          for (final Object annotation : traitArguments) {
-            if (annotation instanceof JsonNode) {
-              final JsonNode jAnnotation = (JsonNode) annotation;
-              annotations.add(JMapper.MAP.convertValue(jAnnotation, Annotation.class));
-            } else if (annotation instanceof Annotation) {
-              annotations.add((Annotation) annotation);
+  
+          if ("is.modelConversion.otherAnnotations".equals(trait.getNamedReference())) {
+            final Object traitArgument = trait.getArguments().get(0).getValue();
+            Iterable<?> traitArguments = new ArrayList<>();
+            if (traitArgument instanceof List<?>) {
+              traitArguments = (ArrayList<?>) traitArgument;
+            } else if (traitArgument instanceof JsonNode && ((JsonNode) traitArgument).isArray()) {
+              traitArguments =  (JsonNode) traitArgument;
             } else {
-              LOGGER.warn("Unsupported annotation type.");
+              Logger.error(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
             }
-          }
-        } else if (!trait.isFromProperty()) {
-          final String annotationName = traitToAnnotationName(trait.getNamedReference());
-          if (annotationName != null
-              && trait.getArguments() != null
-              && trait.getArguments().getAllItems().size() == 1) {
-            final Annotation argument =
-                ArgumentPersistence.toData(
-                    trait.getArguments().get(0),
-                    null,
-                    null).join();
-            if (argument != null) {
-              argument.setName(annotationName);
-              annotations.add(argument);
+            for (final Object annotation : traitArguments) {
+              if (annotation instanceof JsonNode) {
+                final JsonNode jAnnotation = (JsonNode) annotation;
+                annotations.add(JMapper.MAP.convertValue(jAnnotation, Annotation.class));
+              } else if (annotation instanceof NameValuePair) {
+                Annotation element = new Annotation();
+                element.setName(((NameValuePair)annotation).getName());
+                element.setValue(((NameValuePair)annotation).getValue());
+                annotations.add(element);
+              } else {
+                Logger.warning(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
+              }
             }
-          } else if (!ignoredTraits.contains(trait.getNamedReference())) {
+          } else if (!ignoredTraits.contains(trait.getNamedReference())
+                  && !trait.getNamedReference().startsWith("is.dataFormat")
+                  && !(modelJsonPropertyTraits.contains(trait.getNamedReference()) && trait.isFromProperty())
+          ) {
             final Object extension = TraitReferencePersistence.toData(trait, null, null);
             extensions.add(JMapper.MAP.valueToTree(extension));
           }
         }
-      }
-
-      if (!annotations.isEmpty()) {
-        obj.setAnnotations(annotations);
-      }
-
-      if (!extensions.isEmpty()) {
-        obj.setTraits(extensions);
-      }
-    });
+  
+        if (!annotations.isEmpty()) {
+          obj.setAnnotations(annotations);
+        }
+  
+        if (!extensions.isEmpty()) {
+          obj.setTraits(extensions);
+        }
   }
 
   private static String traitToAnnotationName(final String traitName) {
@@ -243,5 +247,42 @@ public class Utils {
 
   private static String convertAnnotationToTrait(final String name) {
     return annotationToTraitMap.get(name);
+  }
+
+
+  
+  /** 
+   * Creates a list of JSON objects that is a copy of the input Iterable object.
+   * @param source Source iterable
+   * @param resOpt Resolve Options
+   * @param options Copy Options
+   * @param <T> Type
+   * @return List of JsonNode
+   */
+  public static <T> List<JsonNode> listCopyData(
+          final Iterable<T> source,
+          final ResolveOptions resOpt,
+          final CopyOptions options) {
+    if (source == null) {
+      return null;
+    }
+
+    final List<JsonNode> casted = new ArrayList<>();
+    for (final Object element : source) {
+      if (element instanceof CdmObject) {
+        final Object serialized = ((CdmObject) element).copyData(resOpt, options);
+        if (serialized instanceof JsonNode) {
+          casted.add((JsonNode) serialized);
+        } else {
+          casted.add(JMapper.MAP.valueToTree(serialized));
+        }
+      }
+    }
+
+    if (casted.size() == 0) {
+      return null;
+    }
+
+    return casted;
   }
 }

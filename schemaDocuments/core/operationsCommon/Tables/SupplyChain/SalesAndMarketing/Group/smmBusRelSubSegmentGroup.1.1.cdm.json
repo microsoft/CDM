@@ -1,0 +1,97 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "smmBusRelSegmentGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmBusRelSubSegmentGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "SegmentId",
+          "dataType": "smmSegmentId",
+          "description": ""
+        },
+        {
+          "name": "SubSegmentDescription",
+          "dataType": "smmSubsegmentDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SubsegmentId",
+          "dataType": "smmSubsegmentId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "smmBusRelSegmentGroup"
+          },
+          "name": "Relationship_SubSegmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Subsegment table"
+    },
+    {
+      "dataTypeName": "smmSegmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmSubsegmentDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmSubsegmentId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,8 +1,13 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContextReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
@@ -13,15 +18,13 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Att
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AttributeContextPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AttributeContextPersistence.class);
-
   public static CdmAttributeContext fromData(final CdmCorpusContext ctx, final AttributeContext obj) {
     if (obj == null)
       return null;
@@ -67,8 +70,20 @@ public class AttributeContextPersistence {
           try {
             attributeContext.getContents().add(fromData(ctx, JMapper.MAP.treeToValue(node, AttributeContext.class)));
           } catch (final IOException ex) {
-            LOGGER.error("There was an error while trying to convert from JSON to CdmAttributeContext. Reason: '{}'", ex.getLocalizedMessage());
+            Logger.error(
+                AttributeContextPersistence.class.getSimpleName(),
+                ctx,
+                Logger.format("There was an error while trying to convert from JSON to CdmAttributeContext. Reason: '{0}'", ex.getLocalizedMessage()),
+                "fromData"
+            );
           }
+      }
+    }
+
+    if (obj.getLineage() != null) {
+      attributeContext.setLineage(new CdmCollection<CdmAttributeContextReference>(ctx, attributeContext, CdmObjectType.AttributeContextRef));
+      for (final JsonNode node : obj.getLineage()) {
+        attributeContext.getLineage().add(AttributeContextReferencePersistence.fromData(ctx, node));
       }
     }
 
@@ -106,6 +121,10 @@ public class AttributeContextPersistence {
       result.setContents(Utils.listCopyDataAsArrayNode(instance.getContents(), resOpt, options));
     }
 
+    if (instance.getLineage() != null) {
+      result.setLineage(Utils.listCopyDataAsArrayNode(instance.getLineage(), resOpt, options));
+    }
+
     return result;
   }
 
@@ -131,8 +150,34 @@ public class AttributeContextPersistence {
         return CdmAttributeContextType.GeneratedRound;
       case "generatedSet":
         return CdmAttributeContextType.GeneratedSet;
+      case "projection":
+        return CdmAttributeContextType.Projection;
+      case "source":
+        return CdmAttributeContextType.Source;
+      case "operations":
+        return CdmAttributeContextType.Operations;
+      case "operationAddCountAttribute":
+        return CdmAttributeContextType.OperationAddCountAttribute;
+      case "operationAddSupportingAttribute":
+        return CdmAttributeContextType.OperationAddSupportingAttribute;
+      case "operationAddTypeAttribute":
+        return CdmAttributeContextType.OperationAddTypeAttribute;
+      case "operationExcludeAttributes":
+        return CdmAttributeContextType.OperationExcludeAttributes;
+      case "operationArrayExpansion":
+        return CdmAttributeContextType.OperationArrayExpansion;
+      case "operationCombineAttributes":
+        return CdmAttributeContextType.OperationCombineAttributes;
+      case "operationRenameAttributes":
+        return CdmAttributeContextType.OperationRenameAttributes;
+      case "operationReplaceAsForeignKey":
+        return CdmAttributeContextType.OperationReplaceAsForeignKey;
+      case "operationIncludeAttributes":
+        return CdmAttributeContextType.OperationIncludeAttributes;
+      case "operationAddAttributeGroup":
+        return CdmAttributeContextType.OperationAddAttributeGroup;
       default:
-        return null;
+        return CdmAttributeContextType.Unknown;
     }
   }
 
@@ -158,6 +203,32 @@ public class AttributeContextPersistence {
         return "generatedRound";
       case GeneratedSet:
         return "generatedSet";
+      case Projection:
+        return "projection";
+      case Source:
+        return "source";
+      case Operations:
+        return "operations";
+      case OperationAddCountAttribute:
+        return "operationAddCountAttribute";
+      case OperationAddSupportingAttribute:
+        return "operationAddSupportingAttribute";
+      case OperationAddTypeAttribute:
+        return "operationAddTypeAttribute";
+      case OperationExcludeAttributes:
+        return "operationExcludeAttributes";
+      case OperationArrayExpansion:
+        return "operationArrayExpansion";
+      case OperationCombineAttributes:
+        return "operationCombineAttributes";
+      case OperationRenameAttributes:
+        return "operationRenameAttributes";
+      case OperationReplaceAsForeignKey:
+        return "operationReplaceAsForeignKey";
+      case OperationIncludeAttributes:
+        return "operationIncludeAttributes";
+      case OperationAddAttributeGroup:
+        return "operationAddAttributeGroup";
       default:
         return "unknown";
     }

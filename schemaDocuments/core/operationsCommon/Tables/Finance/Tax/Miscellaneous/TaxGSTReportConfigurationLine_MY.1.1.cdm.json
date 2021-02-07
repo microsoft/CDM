@@ -1,0 +1,118 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TaxGSTReportConfiguration_MY.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxGSTReportConfigurationLine_MY",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TaxGSTReportConfiguration",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "TaxReportCollectionRecIdsTaxAmount",
+          "dataType": "TaxGSTReportMultiSelectLookupValue_MY",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxReportCollectionRecIdsTaxBaseAmount",
+          "dataType": "TaxGSTReportMultiSelectLookupValue_MY",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxReportCollectionsTaxAmount",
+          "dataType": "TaxGSTReportMultiSelectLookupValue_MY",
+          "isNullable": true,
+          "displayName": "GST amount",
+          "description": ""
+        },
+        {
+          "name": "TaxReportCollectionsTaxBaseAmount",
+          "dataType": "TaxGSTReportMultiSelectLookupValue_MY",
+          "isNullable": true,
+          "displayName": "Transaction amount",
+          "description": ""
+        },
+        {
+          "name": "TypeOfTransaction",
+          "dataType": "Name",
+          "displayName": "Type of transactions",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGSTReportConfiguration_MY"
+          },
+          "name": "Relationship_TaxGSTReportConfiguration_MYRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "GST report configuration lines"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxGSTReportMultiSelectLookupValue_MY",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    }
+  ]
+}

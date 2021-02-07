@@ -1,15 +1,24 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,8 +52,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
-    // Intended to return false
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
     return false;
   }
 
@@ -174,29 +182,42 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return CompletableFuture.runAsync(() -> {
-      final String fullPath =
-          this.getCtx()
-              .getCorpus()
-              .getStorage()
-              .createAbsoluteCorpusPath(this.getEntityPath(), this.getInDocument());
-      final OffsetDateTime modifiedTime = getCtx()
-          .getCorpus()
-          .computeLastModifiedTimeAsync(fullPath, this)
-          .join();
+      StorageAdapter storageAdapterInterface = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace()); 
+      StorageAdapterBase.CacheContext cacheContext = null;
+      if(storageAdapterInterface instanceof StorageAdapterBase) {
+        cacheContext = ((StorageAdapterBase)storageAdapterInterface).createFileQueryCacheContext();
+      }      
+      try {
+        final String fullPath =
+            this.getCtx()
+                .getCorpus()
+                .getStorage()
+                .createAbsoluteCorpusPath(this.getEntityPath(), this.getInDocument());
+        final OffsetDateTime modifiedTime = getCtx()
+            .getCorpus()
+            .computeLastModifiedTimeAsync(fullPath, this)
+            .join();
 
-      for (final CdmDataPartitionDefinition partition : getDataPartitions()) {
-          partition.fileStatusCheckAsync().join();
-      }
-
-      for (final CdmDataPartitionPatternDefinition pattern : getDataPartitionPatterns()) {
+        for (final CdmDataPartitionPatternDefinition pattern : getDataPartitionPatterns()) {
           pattern.fileStatusCheckAsync().join();
+        }
+
+        for (final CdmDataPartitionDefinition partition : getDataPartitions()) {
+            partition.fileStatusCheckAsync().join();
+        }
+
+        // update modified times
+        setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+        setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
+
+        reportMostRecentTimeAsync(getLastFileModifiedTime()).join();
       }
-
-      // update modified times
-      setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
-      setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
-
-      reportMostRecentTimeAsync(getLastFileModifiedTime()).join();
+      finally {
+        if(cacheContext != null)
+        {
+          cacheContext.dispose();
+        }
+      }
     });
   }
 
@@ -215,7 +236,11 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
   @Override
   public boolean validate() {
-    return !StringUtils.isNullOrTrimEmpty(this.entityName);
+    if (StringUtils.isNullOrTrimEmpty(this.entityName)) {
+      Logger.error(CdmLocalEntityDeclarationDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("entityName"))));
+      return false;
+    }
+    return true;
   }
 
 
@@ -227,8 +252,9 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolved optoions
+   * @param host Host
+   * @return CDM Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -237,7 +263,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   @Deprecated
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmLocalEntityDeclarationDefinition copy;

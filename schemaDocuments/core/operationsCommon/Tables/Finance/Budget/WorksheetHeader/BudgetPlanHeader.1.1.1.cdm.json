@@ -1,0 +1,287 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMInternalOrganization.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetPlanningProcess.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetPlanningStage.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetPlanPriority.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/UserGroupInfo.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetPlanLayout.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanHeader",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetingOrganization",
+          "dataType": "BudgetingOrganizationRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanningProcess",
+          "dataType": "BudgetPlanningProcessRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanningStage",
+          "dataType": "BudgetPlanningStageRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanPreparer",
+          "dataType": "BudgetPlanPreparerRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanPriority",
+          "dataType": "BudgetPlanPriorityRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentNumber",
+          "dataType": "BudgetPlanDocumentNumber",
+          "description": ""
+        },
+        {
+          "name": "DocumentStatus",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "IsHistorical",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Is historical",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "BudgetPlanName",
+          "description": ""
+        },
+        {
+          "name": "ParentBudgetPlanHeader",
+          "dataType": "BudgetPlanHeaderRecId",
+          "isNullable": true,
+          "displayName": "Parent budget plan",
+          "description": ""
+        },
+        {
+          "name": "PlanningUserGroup",
+          "dataType": "BudgetPlanningUserGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Rank",
+          "dataType": "BudgetPlanRank",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowStatus",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "Currency",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "Layout",
+          "dataType": "BudgetPlanLayoutRecId",
+          "description": ""
+        },
+        {
+          "name": "InUseBy",
+          "dataType": "UserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "In use by user",
+          "description": ""
+        },
+        {
+          "name": "NeedsUpdate",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "OMInternalOrganization"
+          },
+          "name": "Relationship_BudgetingOrganizationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanningProcess"
+          },
+          "name": "Relationship_BudgetPlanningProcessRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanningStage"
+          },
+          "name": "Relationship_BudgetPlanningStageRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanPriority"
+          },
+          "name": "Relationship_BudgetPlanPriorityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "UserGroupInfo"
+          },
+          "name": "Relationship_UserGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanLayout"
+          },
+          "name": "Relationship_LayoutRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget plans"
+    },
+    {
+      "dataTypeName": "BudgetingOrganizationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningProcessRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningStageRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanPreparerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanPriorityRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanDocumentNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BudgetPlanName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetPlanHeaderRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningUserGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetPlanRank",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetPlanLayoutRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    }
+  ]
+}

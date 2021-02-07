@@ -1,0 +1,115 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResStyle.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Group/EcoResProductDimensionAttribute.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResProductMaster.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResProductMasterDimensionValue.1.0.cdm.json",
+      "moniker": "base_EcoResProductMasterDimensionValue"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResProductMasterStyle",
+      "extendsEntity": "base_EcoResProductMasterDimensionValue/EcoResProductMasterDimensionValue",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Style",
+          "dataType": "EcoResStyleRecId",
+          "description": ""
+        },
+        {
+          "name": "StyleProductDimensionAttribute",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "StyleProductMaster",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ExtensionStyleDimensionGroupId",
+          "dataType": "RetailDimensionGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResStyle"
+          },
+          "name": "Relationship_EcoResStyleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductDimensionAttribute"
+          },
+          "name": "Relationship_StyleEcoResProductDimensionAttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductMaster"
+          },
+          "name": "Relationship_StyleEcoResProductMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Styles assigned to product masters"
+    },
+    {
+      "dataTypeName": "EcoResStyleRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailDimensionGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

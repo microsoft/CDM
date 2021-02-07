@@ -1,0 +1,129 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/CredManRiskScoreGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CredManCustRiskScore",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "description": ""
+        },
+        {
+          "name": "RiskScoreGroupId",
+          "dataType": "CredManRiskScoreGroupId",
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "dataType": "Range",
+          "isNullable": true,
+          "displayName": "Value",
+          "description": ""
+        },
+        {
+          "name": "NumericValue",
+          "dataType": "CredManCustRiskAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsNumericValue",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Is numeric value",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CredManRiskScoreGroup"
+          },
+          "name": "Relationship_CredManRiskScoreGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer risk score"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CredManRiskScoreGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Range",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CredManCustRiskAmount",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

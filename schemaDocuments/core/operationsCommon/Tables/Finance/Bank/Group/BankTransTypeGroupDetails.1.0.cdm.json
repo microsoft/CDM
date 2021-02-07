@@ -1,0 +1,101 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankTransactionTypeGroupHeader.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "BankTransType.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankTransTypeGroupDetails",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BankTransactionType",
+          "dataType": "BankTransactionType",
+          "description": ""
+        },
+        {
+          "name": "BankTransactionTypeGroup",
+          "dataType": "BankTransactionTypeGroup",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankTransactionTypeGroupHeader"
+          },
+          "name": "Relationship_BankTransactionTypeGroupHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankTransType"
+          },
+          "name": "Relationship_BankTransTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bank transaction types"
+    },
+    {
+      "dataTypeName": "BankTransactionType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankTransactionTypeGroup",
+      "extendsDataType": "string"
+    }
+  ]
+}

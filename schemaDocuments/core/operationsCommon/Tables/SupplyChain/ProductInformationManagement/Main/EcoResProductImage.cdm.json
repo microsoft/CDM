@@ -1,0 +1,116 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/WorksheetLine/DocuRef.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResProductImage",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultImage",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Default image",
+          "description": ""
+        },
+        {
+          "name": "FileName",
+          "dataType": "Filename",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImageFormat",
+          "dataType": "ImageFormat",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MediumSize",
+          "dataType": "Bitmap",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecord",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ThumbnailSize",
+          "dataType": "Bitmap",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Usage",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DocuRef"
+          },
+          "name": "Relationship_DocuRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Image management"
+    },
+    {
+      "dataTypeName": "Filename",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ImageFormat",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Bitmap",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

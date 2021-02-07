@@ -1,0 +1,173 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "LedgerJournalTransAccrual.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerJournalTransAccrualTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCur",
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "DocumentDate",
+          "isNullable": true,
+          "displayName": "Preferred posting date",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecid",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableid",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "displayName": "Posting date",
+          "description": ""
+        },
+        {
+          "name": "TransTxt",
+          "dataType": "TransTxt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "description": ""
+        },
+        {
+          "name": "IsTaxInCostPrice",
+          "dataType": "TaxIsTaxInCostPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTransAccrual"
+          },
+          "name": "Relationship_LedgerJournalTransAccrualRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger accrual transactions"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LedgerDimensionAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TransTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxIsTaxInCostPrice",
+      "extendsDataType": "integer"
+    }
+  ]
+}

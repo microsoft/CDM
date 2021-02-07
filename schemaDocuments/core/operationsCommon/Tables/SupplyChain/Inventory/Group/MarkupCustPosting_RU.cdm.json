@@ -1,0 +1,168 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Group/MarkupTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MarkupCustPosting_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Account code",
+          "description": ""
+        },
+        {
+          "name": "CustRelation",
+          "dataType": "InventCustVendRel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerPostingType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarkupCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Misc. charges relation",
+          "description": ""
+        },
+        {
+          "name": "MarkupPostingType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarkupRelation",
+          "dataType": "MarkupCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustGroup"
+          },
+          "name": "Relationship_CustGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MarkupTable"
+          },
+          "name": "Relationship_MarkupTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Misc. charges posting in Accounts receivable"
+    },
+    {
+      "dataTypeName": "InventCustVendRel",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MarkupCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

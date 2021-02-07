@@ -1,0 +1,247 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSRoute.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/WorksheetLine/TMSRouteSegment.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/WHSContainerTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/WHSContainerType.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSShipmentTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSRouteSegmentContainer",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ContainerTypeCode",
+          "dataType": "WHSContainerTypeCode",
+          "description": ""
+        },
+        {
+          "name": "Height",
+          "dataType": "WHSHeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Id",
+          "dataType": "WHSContainerId",
+          "description": ""
+        },
+        {
+          "name": "Length",
+          "dataType": "WHSLength",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MasterTrackingNum",
+          "dataType": "WHSMasterTrackingNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteCode",
+          "dataType": "TMSRouteCode",
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "TMSSequence",
+          "description": ""
+        },
+        {
+          "name": "ShipCarrierTrackingNum",
+          "dataType": "ShipCarrierTrackingNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipmentId",
+          "dataType": "WHSShipmentId",
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Width",
+          "dataType": "WHSWidth",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContainerShippingLabelType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContainerShippingLabel",
+          "dataType": "TMSContainerShippingLabel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRoute"
+          },
+          "name": "Relationship_TMSRouteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteSegment"
+          },
+          "name": "Relationship_TMSRouteSegmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSContainerTable"
+          },
+          "name": "Relationship_WHSContainerTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSContainerType"
+          },
+          "name": "Relationship_WHSContainerTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipmentTable"
+          },
+          "name": "Relationship_WHSShipmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Route Segment Container"
+    },
+    {
+      "dataTypeName": "WHSContainerTypeCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSHeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSContainerId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLength",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSMasterTrackingNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSSequence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ShipCarrierTrackingNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSShipmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSWidth",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSContainerShippingLabel",
+      "extendsDataType": "string"
+    }
+  ]
+}

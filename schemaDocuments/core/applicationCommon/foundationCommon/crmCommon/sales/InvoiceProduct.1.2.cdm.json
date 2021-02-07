@@ -1,0 +1,3764 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.1.2.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InvoiceProduct",
+      "extendsEntity": "CdsStandard",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Invoice Product"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Line item in an invoice containing detailed billing information for a product."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "invoiceDetailId",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Invoice Product"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier of the invoice product line item."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "invoicedetailid",
+                "sourceOrdering": 10000,
+                "displayName": "Invoice Product",
+                "description": "Unique identifier of the invoice product line item."
+              },
+              {
+                "name": "actualDeliveryOn",
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Delivered On"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Enter the date when the invoiced product was delivered to the customer."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "actualdeliveryon",
+                "sourceOrdering": 10028,
+                "displayName": "Delivered On",
+                "description": "Enter the date when the invoiced product was delivered to the customer."
+              },
+              {
+                "name": "baseAmount",
+                "purpose": "hasA",
+                "dataType": "currency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Amount"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the total price of the invoice product, based on the price per unit, volume discount, and quantity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "baseamount",
+                "sourceOrdering": 10029,
+                "displayName": "Amount",
+                "description": "Shows the total price of the invoice product, based on the price per unit, volume discount, and quantity.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "entity": {
+                  "entityReference": "Currency",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Currency/(resolvedAttributes)/transactionCurrencyId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "transactionCurrency",
+                "resolutionGuidance": {
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "id",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Currency"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Choose the local currency for the record to make sure budgets are reported in the correct currency."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "transactioncurrencyid",
+                      "sourceOrdering": 10030,
+                      "displayName": "Currency",
+                      "description": "Choose the local currency for the record to make sure budgets are reported in the correct currency."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "exchangeRate",
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Exchange Rate"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "exchangerate",
+                "sourceOrdering": 10032,
+                "displayName": "Exchange Rate",
+                "description": "Shows the conversion rate of the record's currency. The exchange rate is used to convert all money fields in the record from the local currency to the system's default currency.",
+                "maximumValue": "100000000000",
+                "minimumValue": "1E-10"
+              },
+              {
+                "name": "baseAmountBase",
+                "purpose": "hasA",
+                "dataType": "baseCurrency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.calculationOf",
+                    "arguments": [
+                      {
+                        "name": "sourceAttribute",
+                        "value": "baseAmount"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Amount (Base)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Value of the Amount in base currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "baseamount_base",
+                "sourceOrdering": 10033,
+                "displayName": "Amount (Base)",
+                "description": "Value of the Amount in base currency.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "name": "description",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Description"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type additional information to describe the product line item of the invoice."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "description",
+                "sourceOrdering": 10034,
+                "displayName": "Description",
+                "description": "Type additional information to describe the product line item of the invoice.",
+                "maximumLength": 2000
+              },
+              {
+                "name": "extendedAmount",
+                "purpose": "hasA",
+                "dataType": "currency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Extended Amount"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the total amount due for the invoice product, based on the sum of the unit price, quantity, discounts, and tax."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "extendedamount",
+                "sourceOrdering": 10035,
+                "displayName": "Extended Amount",
+                "description": "Shows the total amount due for the invoice product, based on the sum of the unit price, quantity, discounts, and tax.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "name": "extendedAmountBase",
+                "purpose": "hasA",
+                "dataType": "baseCurrency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.calculationOf",
+                    "arguments": [
+                      {
+                        "name": "sourceAttribute",
+                        "value": "extendedAmount"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Extended Amount (Base)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Value of the Extended Amount in base currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "extendedamount_base",
+                "sourceOrdering": 10036,
+                "displayName": "Extended Amount (Base)",
+                "description": "Value of the Extended Amount in base currency.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "entity": {
+                  "entityReference": "Invoice",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Invoice/(resolvedAttributes)/invoiceId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "invoice",
+                "resolutionGuidance": {
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "id",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "systemrequired"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Invoice ID"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Unique identifier of the invoice associated with the invoice product line item."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "sourceName": "invoiceid",
+                      "sourceOrdering": 10037,
+                      "displayName": "Invoice ID",
+                      "description": "Unique identifier of the invoice associated with the invoice product line item."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "invoiceIsPriceLocked",
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Invoice Is Price Locked"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Information about whether invoice product pricing is locked."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "invoiceispricelocked",
+                "sourceOrdering": 10038,
+                "displayName": "Invoice Is Price Locked",
+                "description": "Information about whether invoice product pricing is locked."
+              },
+              {
+                "name": "invoiceStateCode",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": []
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Invoice Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the invoice product."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "invoicestatecode",
+                "sourceOrdering": 10040,
+                "displayName": "Invoice Status",
+                "description": "Status of the invoice product.",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'invoiceStateCode_display' is added to the 'InvoiceProduct' entity to provide the localized display text for the value of the listLookup attribute 'invoiceStateCode'",
+                    "name": "invoiceStateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "isCopied",
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Copied"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Select whether the invoice product is copied from another item or data source."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "iscopied",
+                "sourceOrdering": 10042,
+                "displayName": "Copied",
+                "description": "Select whether the invoice product is copied from another item or data source."
+              },
+              {
+                "name": "isPriceOverridden",
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Pricing"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Select whether the price per unit is fixed at the value in the specified price list or can be overridden by users who have edit rights to the invoice product."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "ispriceoverridden",
+                "sourceOrdering": 10044,
+                "displayName": "Pricing",
+                "description": "Select whether the price per unit is fixed at the value in the specified price list or can be overridden by users who have edit rights to the invoice product."
+              },
+              {
+                "name": "isProductOverridden",
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Select Product"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Select whether the product exists in the Microsoft Dynamics 365 product catalog or is a write-in product specific to the parent invoice."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "isproductoverridden",
+                "sourceOrdering": 10046,
+                "displayName": "Select Product",
+                "description": "Select whether the product exists in the Microsoft Dynamics 365 product catalog or is a write-in product specific to the parent invoice."
+              },
+              {
+                "name": "lineItemNumber",
+                "purpose": "hasA",
+                "dataType": "integer",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Line Item Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the line item number for the invoice product to easily identify the product in the invoice and make sure it's listed in the correct order."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "lineitemnumber",
+                "sourceOrdering": 10048,
+                "displayName": "Line Item Number",
+                "description": "Type the line item number for the invoice product to easily identify the product in the invoice and make sure it's listed in the correct order.",
+                "maximumValue": "1000000000",
+                "minimumValue": "0"
+              },
+              {
+                "name": "manualDiscountAmount",
+                "purpose": "hasA",
+                "dataType": "currency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Manual Discount"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the manual discount amount for the invoice product to deduct any negotiated or other savings from the product total."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "manualdiscountamount",
+                "sourceOrdering": 10049,
+                "displayName": "Manual Discount",
+                "description": "Type the manual discount amount for the invoice product to deduct any negotiated or other savings from the product total.",
+                "maximumValue": "1000000000000",
+                "minimumValue": "0"
+              },
+              {
+                "name": "manualDiscountAmountBase",
+                "purpose": "hasA",
+                "dataType": "baseCurrency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.calculationOf",
+                    "arguments": [
+                      {
+                        "name": "sourceAttribute",
+                        "value": "manualDiscountAmount"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Manual Discount (Base)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Value of the Manual Discount in base currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "manualdiscountamount_base",
+                "sourceOrdering": 10050,
+                "displayName": "Manual Discount (Base)",
+                "description": "Value of the Manual Discount in base currency.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "entity": {
+                  "entityReference": "InvoiceProduct",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "InvoiceProduct/(resolvedAttributes)/invoiceDetailId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "parentBundle",
+                "resolutionGuidance": {
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "id",
+                      "purpose": "hasA",
+                      "dataType": "guid",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Parent Bundle"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Choose the parent bundle associated with this product"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "parentbundleid",
+                      "sourceOrdering": 10051,
+                      "displayName": "Parent Bundle",
+                      "description": "Choose the parent bundle associated with this product"
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "ProductAssociation",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "ProductAssociation/(resolvedAttributes)/productAssociationId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "productAssociation",
+                "resolutionGuidance": {
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "id",
+                      "purpose": "hasA",
+                      "dataType": "guid",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Bundle Item Association"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Unique identifier of the product line item association with bundle in the invoice"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "productassociationid",
+                      "sourceOrdering": 10052,
+                      "displayName": "Bundle Item Association",
+                      "description": "Unique identifier of the product line item association with bundle in the invoice"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "productTypeCode",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Product",
+                                "1",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Bundle",
+                                "2",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Required Bundle Product",
+                                "3",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Optional Bundle Product",
+                                "4",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "Project-based Service",
+                                "5",
+                                "4"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Product type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Product Type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "producttypecode",
+                "sourceOrdering": 10053,
+                "displayName": "Product type",
+                "description": "Product Type",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'productTypeCode_display' is added to the 'InvoiceProduct' entity to provide the localized display text for the value of the listLookup attribute 'productTypeCode'",
+                    "name": "productTypeCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "pricePerUnit",
+                "purpose": "hasA",
+                "dataType": "currency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Price Per Unit"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the price per unit of the invoice product. The default is the value in the price list specified on the parent invoice for existing products."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "priceperunit",
+                "sourceOrdering": 10055,
+                "displayName": "Price Per Unit",
+                "description": "Type the price per unit of the invoice product. The default is the value in the price list specified on the parent invoice for existing products.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "name": "pricePerUnitBase",
+                "purpose": "hasA",
+                "dataType": "baseCurrency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.calculationOf",
+                    "arguments": [
+                      {
+                        "name": "sourceAttribute",
+                        "value": "pricePerUnit"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Price Per Unit (Base)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Value of the Price Per Unit in base currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "priceperunit_base",
+                "sourceOrdering": 10056,
+                "displayName": "Price Per Unit (Base)",
+                "description": "Value of the Price Per Unit in base currency.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "name": "pricingErrorCode",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "None",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Detail Error",
+                                "1",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Missing Price Level",
+                                "2",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Inactive Price Level",
+                                "3",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "Missing Quantity",
+                                "4",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "Missing Unit Price",
+                                "5",
+                                "5"
+                              ],
+                              [
+                                "en",
+                                "Missing Product",
+                                "6",
+                                "6"
+                              ],
+                              [
+                                "en",
+                                "Invalid Product",
+                                "7",
+                                "7"
+                              ],
+                              [
+                                "en",
+                                "Missing Pricing Code",
+                                "8",
+                                "8"
+                              ],
+                              [
+                                "en",
+                                "Invalid Pricing Code",
+                                "9",
+                                "9"
+                              ],
+                              [
+                                "en",
+                                "Missing UOM",
+                                "10",
+                                "10"
+                              ],
+                              [
+                                "en",
+                                "Product Not In Price Level",
+                                "11",
+                                "11"
+                              ],
+                              [
+                                "en",
+                                "Missing Price Level Amount",
+                                "12",
+                                "12"
+                              ],
+                              [
+                                "en",
+                                "Missing Price Level Percentage",
+                                "13",
+                                "13"
+                              ],
+                              [
+                                "en",
+                                "Missing Price",
+                                "14",
+                                "14"
+                              ],
+                              [
+                                "en",
+                                "Missing Current Cost",
+                                "15",
+                                "15"
+                              ],
+                              [
+                                "en",
+                                "Missing Standard Cost",
+                                "16",
+                                "16"
+                              ],
+                              [
+                                "en",
+                                "Invalid Price Level Amount",
+                                "17",
+                                "17"
+                              ],
+                              [
+                                "en",
+                                "Invalid Price Level Percentage",
+                                "18",
+                                "18"
+                              ],
+                              [
+                                "en",
+                                "Invalid Price",
+                                "19",
+                                "19"
+                              ],
+                              [
+                                "en",
+                                "Invalid Current Cost",
+                                "20",
+                                "20"
+                              ],
+                              [
+                                "en",
+                                "Invalid Standard Cost",
+                                "21",
+                                "21"
+                              ],
+                              [
+                                "en",
+                                "Invalid Rounding Policy",
+                                "22",
+                                "22"
+                              ],
+                              [
+                                "en",
+                                "Invalid Rounding Option",
+                                "23",
+                                "23"
+                              ],
+                              [
+                                "en",
+                                "Invalid Rounding Amount",
+                                "24",
+                                "24"
+                              ],
+                              [
+                                "en",
+                                "Price Calculation Error",
+                                "25",
+                                "25"
+                              ],
+                              [
+                                "en",
+                                "Invalid Discount Type",
+                                "26",
+                                "26"
+                              ],
+                              [
+                                "en",
+                                "Discount Type Invalid State",
+                                "27",
+                                "27"
+                              ],
+                              [
+                                "en",
+                                "Invalid Discount",
+                                "28",
+                                "28"
+                              ],
+                              [
+                                "en",
+                                "Invalid Quantity",
+                                "29",
+                                "29"
+                              ],
+                              [
+                                "en",
+                                "Invalid Pricing Precision",
+                                "30",
+                                "30"
+                              ],
+                              [
+                                "en",
+                                "Missing Product Default UOM",
+                                "31",
+                                "31"
+                              ],
+                              [
+                                "en",
+                                "Missing Product UOM Schedule ",
+                                "32",
+                                "32"
+                              ],
+                              [
+                                "en",
+                                "Inactive Discount Type",
+                                "33",
+                                "33"
+                              ],
+                              [
+                                "en",
+                                "Invalid Price Level Currency",
+                                "34",
+                                "34"
+                              ],
+                              [
+                                "en",
+                                "Price Attribute Out Of Range",
+                                "35",
+                                "35"
+                              ],
+                              [
+                                "en",
+                                "Base Currency Attribute Overflow",
+                                "36",
+                                "36"
+                              ],
+                              [
+                                "en",
+                                "Base Currency Attribute Underflow",
+                                "37",
+                                "37"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Pricing Error "
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Pricing error for the invoice product line item."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "pricingerrorcode",
+                "sourceOrdering": 10057,
+                "displayName": "Pricing Error ",
+                "description": "Pricing error for the invoice product line item.",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'pricingErrorCode_display' is added to the 'InvoiceProduct' entity to provide the localized display text for the value of the listLookup attribute 'pricingErrorCode'",
+                    "name": "pricingErrorCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "productDescription",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Write-In Product"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type a name or description to identify the type of write-in product included in the invoice."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "productdescription",
+                "sourceOrdering": 10059,
+                "displayName": "Write-In Product",
+                "description": "Type a name or description to identify the type of write-in product included in the invoice.",
+                "maximumLength": 500
+              },
+              {
+                "name": "productName",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Product Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Calculated field that will be populated by name and description of the product."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "productname",
+                "sourceOrdering": 10060,
+                "displayName": "Product Name",
+                "description": "Calculated field that will be populated by name and description of the product.",
+                "maximumLength": 500
+              },
+              {
+                "entity": {
+                  "entityReference": "Product",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Product/(resolvedAttributes)/productId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "product",
+                "resolutionGuidance": {
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "id",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Existing Product"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Choose the product to include on the invoice."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "productid",
+                      "sourceOrdering": 10061,
+                      "displayName": "Existing Product",
+                      "description": "Choose the product to include on the invoice."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "quantity",
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Quantity"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the amount or quantity of the product included in the invoice's total amount due."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "quantity",
+                "sourceOrdering": 10062,
+                "displayName": "Quantity",
+                "description": "Type the amount or quantity of the product included in the invoice's total amount due.",
+                "maximumValue": "100000000000",
+                "minimumValue": "-100000000000"
+              },
+              {
+                "name": "quantityBackordered",
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Quantity Back Ordered"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the amount or quantity of the product that is back ordered for the invoice."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "quantitybackordered",
+                "sourceOrdering": 10063,
+                "displayName": "Quantity Back Ordered",
+                "description": "Type the amount or quantity of the product that is back ordered for the invoice.",
+                "maximumValue": "1000000000",
+                "minimumValue": "0"
+              },
+              {
+                "name": "quantityCancelled",
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Quantity Canceled"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the amount or quantity of the product that was canceled for the invoice line item."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "quantitycancelled",
+                "sourceOrdering": 10064,
+                "displayName": "Quantity Canceled",
+                "description": "Type the amount or quantity of the product that was canceled for the invoice line item.",
+                "maximumValue": "1000000000",
+                "minimumValue": "0"
+              },
+              {
+                "name": "quantityShipped",
+                "purpose": "hasA",
+                "dataType": "decimal",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Quantity Shipped"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the amount or quantity of the product that was shipped."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "quantityshipped",
+                "sourceOrdering": 10065,
+                "displayName": "Quantity Shipped",
+                "description": "Type the amount or quantity of the product that was shipped.",
+                "maximumValue": "1000000000",
+                "minimumValue": "-1000000000"
+              },
+              {
+                "entity": {
+                  "entityReference": "User",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "User/(resolvedAttributes)/systemUserId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "salesRep",
+                "resolutionGuidance": {
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "id",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Salesperson"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Choose the user responsible for the sale of the invoice product."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "salesrepid",
+                      "sourceOrdering": 10066,
+                      "displayName": "Salesperson",
+                      "description": "Choose the user responsible for the sale of the invoice product."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "shippingTrackingNumber",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shipment Tracking Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type a tracking number for shipment of the invoiced product."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shippingtrackingnumber",
+                "sourceOrdering": 10067,
+                "displayName": "Shipment Tracking Number",
+                "description": "Type a tracking number for shipment of the invoiced product.",
+                "maximumLength": 100
+              },
+              {
+                "name": "shipToCity",
+                "purpose": "hasA",
+                "dataType": "city",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To City"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the city for the customer's shipping address."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_city",
+                "sourceOrdering": 10068,
+                "displayName": "Ship To City",
+                "description": "Type the city for the customer's shipping address.",
+                "maximumLength": 80
+              },
+              {
+                "name": "shipToCountry",
+                "purpose": "hasA",
+                "dataType": "country",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To Country/Region"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the country or region for the customer's shipping address."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_country",
+                "sourceOrdering": 10069,
+                "displayName": "Ship To Country/Region",
+                "description": "Type the country or region for the customer's shipping address.",
+                "maximumLength": 80
+              },
+              {
+                "name": "shipToFax",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To Fax"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the fax number for the customer's shipping address."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_fax",
+                "sourceOrdering": 10070,
+                "displayName": "Ship To Fax",
+                "description": "Type the fax number for the customer's shipping address.",
+                "maximumLength": 50
+              },
+              {
+                "name": "shipToFreightTermsCode",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "FOB",
+                                "1",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "No Charge",
+                                "2",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Freight Terms"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Select the freight terms to make sure shipping orders are processed correctly."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_freighttermscode",
+                "sourceOrdering": 10071,
+                "displayName": "Freight Terms",
+                "description": "Select the freight terms to make sure shipping orders are processed correctly.",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'shipToFreightTermsCode_display' is added to the 'InvoiceProduct' entity to provide the localized display text for the value of the listLookup attribute 'shipToFreightTermsCode'",
+                    "name": "shipToFreightTermsCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "shipToLine1",
+                "purpose": "hasA",
+                "dataType": "addressLine",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To Street 1"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the first line of the customer's shipping address."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_line1",
+                "sourceOrdering": 10073,
+                "displayName": "Ship To Street 1",
+                "description": "Type the first line of the customer's shipping address.",
+                "maximumLength": 250
+              },
+              {
+                "name": "shipToLine2",
+                "purpose": "hasA",
+                "dataType": "addressLine",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To Street 2"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the second line of the customer's shipping address."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_line2",
+                "sourceOrdering": 10074,
+                "displayName": "Ship To Street 2",
+                "description": "Type the second line of the customer's shipping address.",
+                "maximumLength": 250
+              },
+              {
+                "name": "shipToLine3",
+                "purpose": "hasA",
+                "dataType": "addressLine",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To Street 3"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the third line of the shipping address."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_line3",
+                "sourceOrdering": 10075,
+                "displayName": "Ship To Street 3",
+                "description": "Type the third line of the shipping address.",
+                "maximumLength": 250
+              },
+              {
+                "name": "shipToName",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type a name for the customer's shipping address, such as \"Headquarters\" or \"Field office\",  to identify the address."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_name",
+                "sourceOrdering": 10076,
+                "displayName": "Ship To Name",
+                "description": "Type a name for the customer's shipping address, such as \"Headquarters\" or \"Field office\",  to identify the address.",
+                "maximumLength": 200
+              },
+              {
+                "name": "shipToPostalCode",
+                "purpose": "hasA",
+                "dataType": "postalCode",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To ZIP/Postal Code"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the ZIP Code or postal code for the shipping address."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_postalcode",
+                "sourceOrdering": 10077,
+                "displayName": "Ship To ZIP/Postal Code",
+                "description": "Type the ZIP Code or postal code for the shipping address.",
+                "maximumLength": 20
+              },
+              {
+                "name": "shipToStateOrProvince",
+                "purpose": "hasA",
+                "dataType": "stateOrProvince",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To State/Province"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the state or province for the shipping address."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_stateorprovince",
+                "sourceOrdering": 10078,
+                "displayName": "Ship To State/Province",
+                "description": "Type the state or province for the shipping address.",
+                "maximumLength": 50
+              },
+              {
+                "name": "shipToTelephone",
+                "purpose": "hasA",
+                "dataType": "phone",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To Phone"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the phone number for the customer's shipping address."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "shipto_telephone",
+                "sourceOrdering": 10079,
+                "displayName": "Ship To Phone",
+                "description": "Type the phone number for the customer's shipping address.",
+                "maximumLength": 50
+              },
+              {
+                "name": "tax",
+                "purpose": "hasA",
+                "dataType": "currency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Tax"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the tax amount for the invoice product."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "tax",
+                "sourceOrdering": 10080,
+                "displayName": "Tax",
+                "description": "Type the tax amount for the invoice product.",
+                "maximumValue": "1000000000000",
+                "minimumValue": "-1000000000000"
+              },
+              {
+                "name": "taxBase",
+                "purpose": "hasA",
+                "dataType": "baseCurrency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.calculationOf",
+                    "arguments": [
+                      {
+                        "name": "sourceAttribute",
+                        "value": "tax"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Tax (Base)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Value of the Tax in base currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "tax_base",
+                "sourceOrdering": 10081,
+                "displayName": "Tax (Base)",
+                "description": "Value of the Tax in base currency.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "entity": {
+                  "entityReference": "Unit",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Unit/(resolvedAttributes)/uoMId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "uoM",
+                "resolutionGuidance": {
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "id",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Unit"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Choose the unit of measurement for the base unit quantity for this purchase, such as each or dozen."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "uomid",
+                      "sourceOrdering": 10082,
+                      "displayName": "Unit",
+                      "description": "Choose the unit of measurement for the base unit quantity for this purchase, such as each or dozen."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "volumeDiscountAmount",
+                "purpose": "hasA",
+                "dataType": "currency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Volume Discount"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the discount amount per unit if a specified volume is purchased. Configure volume discounts in the Product Catalog in the Settings area."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "volumediscountamount",
+                "sourceOrdering": 10083,
+                "displayName": "Volume Discount",
+                "description": "Shows the discount amount per unit if a specified volume is purchased. Configure volume discounts in the Product Catalog in the Settings area.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "0"
+              },
+              {
+                "name": "volumeDiscountAmountBase",
+                "purpose": "hasA",
+                "dataType": "baseCurrency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.calculationOf",
+                    "arguments": [
+                      {
+                        "name": "sourceAttribute",
+                        "value": "volumeDiscountAmount"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Volume Discount (Base)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Value of the Volume Discount in base currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "volumediscountamount_base",
+                "sourceOrdering": 10084,
+                "displayName": "Volume Discount (Base)",
+                "description": "Value of the Volume Discount in base currency.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "name": "willCall",
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Ship To"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Select whether the invoice product should be shipped to the specified address or held until the customer calls with further pick up or delivery instructions."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "willcall",
+                "sourceOrdering": 10085,
+                "displayName": "Ship To",
+                "description": "Select whether the invoice product should be shipped to the specified address or held until the customer calls with further pick up or delivery instructions."
+              },
+              {
+                "name": "sequenceNumber",
+                "purpose": "hasA",
+                "dataType": "integer",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Sequence Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the ID of the data that maintains the sequence."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "sequencenumber",
+                "sourceOrdering": 10087,
+                "displayName": "Sequence Number",
+                "description": "Shows the ID of the data that maintains the sequence.",
+                "maximumValue": "2147483647",
+                "minimumValue": "-2147483648"
+              },
+              {
+                "name": "propertyConfigurationStatus",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Edit",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Rectify",
+                                "1",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Not Configured",
+                                "2",
+                                "2"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Property Configuration"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the property configuration."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "propertyconfigurationstatus",
+                "sourceOrdering": 10088,
+                "displayName": "Property Configuration",
+                "description": "Status of the property configuration.",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'propertyConfigurationStatus_display' is added to the 'InvoiceProduct' entity to provide the localized display text for the value of the listLookup attribute 'propertyConfigurationStatus'",
+                    "name": "propertyConfigurationStatus_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "invoiceDetailName",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Invoice Detail Name. Added for 1:n Referential relationship"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "invoicedetailname",
+                "sourceOrdering": 10095,
+                "displayName": "Name",
+                "description": "Invoice Detail Name. Added for 1:n Referential relationship",
+                "maximumLength": 100
+              },
+              {
+                "entity": {
+                  "entityReference": "OrderProduct",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "OrderProduct/(resolvedAttributes)/salesOrderDetailId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "salesOrderDetail",
+                "resolutionGuidance": {
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "id",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Order Product Id"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Unique identifier for Order Line associated with Invoice Line."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "salesorderdetailid",
+                      "sourceOrdering": 10096,
+                      "displayName": "Order Product Id",
+                      "description": "Unique identifier for Order Line associated with Invoice Line."
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "InvoiceProduct",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "InvoiceProduct/(resolvedAttributes)/invoiceDetailId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "InvoiceProduct_parentBundleIdRef",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "parentBundleIdRef",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Parent bundle product"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Choose the parent bundle associated with this product"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "parentbundleidref",
+                      "sourceOrdering": 10097,
+                      "displayName": "Parent bundle product",
+                      "description": "Choose the parent bundle associated with this product"
+                    }
+                  }
+                }
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/core/applicationCommon/foundationCommon/crmCommon/sales/InvoiceProduct.1.2.cdm.json/InvoiceProduct/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "sourceName": "InvoiceDetail",
+      "displayName": "Invoice Product",
+      "description": "Line item in an invoice containing detailed billing information for a product."
+    }
+  ]
+}

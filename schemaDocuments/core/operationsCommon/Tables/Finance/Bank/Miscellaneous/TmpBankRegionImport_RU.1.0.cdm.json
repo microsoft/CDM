@@ -1,0 +1,87 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TmpBankRegionImport_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AddressStateId",
+          "dataType": "AddressStateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Str60",
+          "isNullable": true,
+          "displayName": "Name",
+          "description": ""
+        },
+        {
+          "name": "Mark",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Mark",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Regions for import"
+    },
+    {
+      "dataTypeName": "AddressStateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Str60",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -50,6 +53,10 @@ public class Model extends DataObject {
   @JsonProperty("cdm:lastChildFileModifiedTime")
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private OffsetDateTime lastChildFileModifiedTime;
+
+  @JsonProperty("cdm:documentVersion")
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private String documentVersion;
 
   public OffsetDateTime getLastFileStatusCheckTime() {
     return lastFileStatusCheckTime;
@@ -129,5 +136,13 @@ public class Model extends DataObject {
 
   public List<SingleKeyRelationship> getRelationships() {
     return relationships;
+  }
+
+  public String getDocumentVersion() {
+    return documentVersion;
+  }
+
+  public void setDocumentVersion(String documentVersion) {
+    this.documentVersion = documentVersion;
   }
 }

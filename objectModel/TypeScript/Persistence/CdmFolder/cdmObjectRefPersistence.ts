@@ -1,11 +1,8 @@
-import {
-    CdmObjectReference,
-    cdmObjectType,
-    CdmTraitReference,
-    copyOptions,
-    identifierRef,
-    resolveOptions
-} from '../../internal';
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmObjectReference, cdmObjectType, CdmTraitReference, copyOptions, identifierRef, resolveOptions } from '../../internal';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     Argument,
     AttributeGroup,
@@ -14,7 +11,7 @@ import {
     DataType,
     DataTypeReference,
     Entity,
-    EntityReference,
+    EntityReferenceDefinition,
     Purpose,
     PurposeReference,
     Trait,
@@ -47,7 +44,7 @@ export class cdmObjectRefPersistence {
         if (instance.appliedTraits.length > 0) {
             // We don't know if the object we are copying has applied traits or not and hence use any
             // tslint:disable-next-line:no-any
-            copy.appliedTraits = utils.arrayCopyData<CdmTraitReference>(resOpt, instance.appliedTraits, options);
+            copy.appliedTraits = copyDataUtils.arrayCopyData<CdmTraitReference>(resOpt, instance.appliedTraits, options);
         }
 
         return copy;
@@ -57,20 +54,26 @@ export class cdmObjectRefPersistence {
         switch (instance.objectType) {
             case cdmObjectType.attributeGroupRef:
                 (copy as AttributeGroupReference).attributeGroupReference = refTo as string | AttributeGroup;
-                break;
+
+                return copy;
             case cdmObjectType.dataTypeRef:
                 (copy as DataTypeReference).dataTypeReference = refTo as string | DataType;
-                break;
+
+                return copy;
             case cdmObjectType.entityRef:
-                (copy as EntityReference).entityReference = refTo as string | Entity;
-                break;
+                (copy as EntityReferenceDefinition).entityReference = refTo as string | Entity;
+
+                return copy;
             case cdmObjectType.purposeRef:
                 (copy as PurposeReference).purposeReference = refTo as string | Purpose;
-                break;
+
+                return copy;
             case cdmObjectType.traitRef:
                 const traitRef: TraitReference = copy as TraitReference;
                 traitRef.traitReference = refTo as string | Trait;
-                traitRef.arguments = utils.arrayCopyData<Argument>(resOpt, (instance as CdmTraitReference).arguments, options);
+                traitRef.arguments = copyDataUtils.arrayCopyData<Argument>(resOpt, (instance as CdmTraitReference).arguments, options);
+
+                return traitRef;
             default:
                 return undefined;
         }

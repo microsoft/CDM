@@ -1,0 +1,206 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjFundingSource.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "ProjEmplTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjEmplTransCost",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CostPrice",
+          "dataType": "ProjCostPriceEmpl",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FundingSource",
+          "dataType": "ProjFundingSourceRefId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerCostAmountMST",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Cost amount",
+          "description": ""
+        },
+        {
+          "name": "LedgerStatusCost",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerTransdate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineAmount",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Total",
+          "description": ""
+        },
+        {
+          "name": "PSAIndirectCost",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransId",
+          "dataType": "ProjEmplTransId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TransStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WIPPeriod",
+          "dataType": "ProjPeriodFromWIP",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Estimate date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjFundingSource"
+          },
+          "name": "Relationship_FundingSourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjEmplTrans"
+          },
+          "name": "Relationship_ProjEmplTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Hours"
+    },
+    {
+      "dataTypeName": "ProjCostPriceEmpl",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjFundingSourceRefId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjEmplTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjPeriodFromWIP",
+      "extendsDataType": "date"
+    }
+  ]
+}

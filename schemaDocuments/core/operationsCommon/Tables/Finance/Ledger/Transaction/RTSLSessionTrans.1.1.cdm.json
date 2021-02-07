@@ -1,0 +1,156 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/RTSLRuleGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/RTSLRuleModule.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTSLSessionTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ClassId",
+          "dataType": "ClassId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "FromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumTrans",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Number of transactions",
+          "description": ""
+        },
+        {
+          "name": "RuleGroupId",
+          "dataType": "RTSLRuleGroupId",
+          "description": ""
+        },
+        {
+          "name": "SessionTransId",
+          "dataType": "RTSLSessionTransId",
+          "description": ""
+        },
+        {
+          "name": "StatusExport",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Export status",
+          "description": ""
+        },
+        {
+          "name": "StatusImport",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Import status",
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLRuleGroup"
+          },
+          "name": "Relationship_RTSLRuleGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLRuleModule"
+          },
+          "name": "Relationship_RuleModuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Translation sessions"
+    },
+    {
+      "dataTypeName": "ClassId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTSLRuleGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTSLSessionTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ToDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

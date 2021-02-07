@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.storage;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,9 +27,9 @@ import java.util.stream.Collectors;
  * If a user doesn't specify timeout, maximutimeout or number of retries in the config under 'httpConfig' property
  * default values will be used as specified in the class.
  */
-public abstract class NetworkAdapter implements StorageAdapter {
+public abstract class NetworkAdapter extends StorageAdapterBase {
   // Use some default values in the case a user doesn't set them up.
-  private static final Duration DEFAULT_TIMEOUT = Duration.ofMillis(5000);
+  protected static final Duration DEFAULT_TIMEOUT = Duration.ofMillis(5000);
   private static final Duration DEFAULT_MAXIMUM_TIMEOUT = Duration.ofMillis(20000);
   private static final int DEFAULT_NUMBER_OF_RETRIES = 2;
   private static final int DEFAULT_SHORTEST_TIME_WAIT = 500;
@@ -35,16 +38,6 @@ public abstract class NetworkAdapter implements StorageAdapter {
   protected Duration maximumTimeout = DEFAULT_MAXIMUM_TIMEOUT;
   protected int numberOfRetries = DEFAULT_NUMBER_OF_RETRIES;
   protected CdmHttpClient.Callback waitTimeCallback = NetworkAdapter::defaultCallback;
-
-  /**
-   * The default network adapter constructor called when the object is created by a user through code.
-   */
-  protected NetworkAdapter() {
-  }
-
-  // TODO-BQ: Why did we removed the setting field part? Should we call updateNetworkConfig(configs)?
-  protected NetworkAdapter(final String configs) throws IOException {
-  }
 
   public CdmHttpClient getHttpClient() {
     return httpClient;
@@ -75,7 +68,7 @@ public abstract class NetworkAdapter implements StorageAdapter {
   }
 
   public void setNumberOfRetries(int numberOfRetries) {
-    this.numberOfRetries = numberOfRetries;
+    this.numberOfRetries = numberOfRetries < 0 ? DEFAULT_NUMBER_OF_RETRIES : numberOfRetries;
   }
 
   public CdmHttpClient.Callback getWaitTimeCallback() {
@@ -90,13 +83,25 @@ public abstract class NetworkAdapter implements StorageAdapter {
    * Sets up the CDM request that can be used by CDM Http Client.
    *
    * @param path    The partial or full path to a network location.
+   * @param method  The method.
+   * @return A CdmHttpRequest object, representing the CDM Http request.
+   */
+  CdmHttpRequest setUpCdmRequest(final String path, final String method) {
+    return setUpCdmRequest(path, null, method);
+  }
+
+  /**
+   * Sets up the CDM request that can be used by CDM Http Client.
+   *
+   * @param path    The partial or full path to a network location.
    * @param headers The headers.
    * @param method  The method.
    * @return A CdmHttpRequest object, representing the CDM Http request.
    */
   CdmHttpRequest setUpCdmRequest(final String path, final Map<String, String> headers, final String method) {
     final CdmHttpRequest cdmHttpRequest = new CdmHttpRequest(path, numberOfRetries);
-    cdmHttpRequest.setHeaders(headers);
+    final Map<String, String> internalHeaders = headers != null ? headers : new LinkedHashMap<>();
+    cdmHttpRequest.setHeaders(internalHeaders);
     cdmHttpRequest.setTimeout(this.timeout);
     cdmHttpRequest.setMaximumTimeout(this.maximumTimeout);
     cdmHttpRequest.setNumberOfRetries(this.numberOfRetries);
@@ -107,7 +112,7 @@ public abstract class NetworkAdapter implements StorageAdapter {
   CompletableFuture<CdmHttpResponse> executeRequest(final CdmHttpRequest request) {
     return CompletableFuture.supplyAsync(() -> {
       try {
-        final CdmHttpResponse response = this.httpClient.sendAsync(request, this.waitTimeCallback).get();
+        final CdmHttpResponse response = this.httpClient.sendAsync(request, this.waitTimeCallback, this.getCtx()).get();
         if (response == null) {
           return null;
         }
@@ -121,7 +126,7 @@ public abstract class NetworkAdapter implements StorageAdapter {
                       .stream()
                       .map(entry -> entry + entry.getKey() + ":" + entry.getValue())
                       .collect(Collectors.joining(",")),
-                  request.getRequestedUrl()
+                  request.stripSasSig()
               )
           );
         }
@@ -169,10 +174,11 @@ public abstract class NetworkAdapter implements StorageAdapter {
     }
   }
 
-  /// <summary>
-  /// Constructs the network configs.
-  /// </summary>
-  /// <returns>A Map of String and JsonNode containing the network specific properties.</returns>
+  /**
+   * Constructs the network configs.
+   *
+   * @return A Map of String and JsonNode containing the network specific properties.
+   */
   protected Map<String, JsonNode> fetchNetworkConfig() {
       final Map<String, JsonNode> config = new LinkedHashMap<>();
       config.put("timeout", JsonNodeFactory.instance.numberNode(this.timeout.toMillis()));

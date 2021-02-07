@@ -1,0 +1,65 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "COODualUseCountry",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountryId",
+          "dataType": "AddressCountryRegionId",
+          "description": ""
+        },
+        {
+          "name": "CertificateRequired",
+          "dataType": "integer",
+          "displayName": "Certificate Required",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_CountryIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Dual Use Country Setup"
+    },
+    {
+      "dataTypeName": "AddressCountryRegionId",
+      "extendsDataType": "string"
+    }
+  ]
+}

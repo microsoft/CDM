@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="ResolvedTraitSet.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 {
@@ -20,7 +17,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 
         public ResolvedTraitSet(ResolveOptions resOpt)
         {
-            this.ResOpt = CdmObjectBase.CopyResolveOptions(resOpt);
+            this.ResOpt = resOpt.Copy();
             this.Set = new List<ResolvedTrait>();
             this.LookupByTrait = new Dictionary<CdmTraitDefinition, ResolvedTrait>();
             this.HasElevated = false;
@@ -226,16 +223,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 List<dynamic> av = resTrait.ParameterValues.Values;
                 dynamic newVal = arg.Value;
                 // get the value index from the parameter collection given the parameter that this argument is setting
-                int iParam = resTrait.ParameterValues.IndexOf(arg.GetParameterDef());
-                av[iParam] = ParameterValue.FetchReplacementValue(this.ResOpt, av[iParam], newVal, true);
-                resTrait.ParameterValues.WasSet[iParam] = true;
+                var paramDef = arg.GetParameterDef();
+                if (paramDef != null)
+                {
+                    int iParam = resTrait.ParameterValues.IndexOf(paramDef);
+                    av[iParam] = ParameterValue.FetchReplacementValue(this.ResOpt, av[iParam], newVal, true);
+                    resTrait.ParameterValues.WasSet[iParam] = true;
+                }
+                else
+                {
+                    // debug
+                    paramDef = arg.GetParameterDef();
+                }
             }
         }
 
         public ResolvedTraitSet SetTraitParameterValue(ResolveOptions resOpt, CdmTraitDefinition toTrait, string paramName, dynamic value)
         {
             ResolvedTraitSet altered = this.ShallowCopyWithException(toTrait);
-            altered.Get(toTrait).ParameterValues.SetParameterValue(this.ResOpt, paramName, value);
+            var currTrait = altered.Get(toTrait)?.ParameterValues;
+            if (currTrait != null)
+                currTrait.SetParameterValue(this.ResOpt, paramName, value);
             return altered;
         }
 
@@ -245,32 +253,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             for (int i = 0; i < traitSetResult.Set.Count; i++)
             {
                 ResolvedTrait rt = traitSetResult.Set[i];
-                if (rt.Trait.IsDerivedFrom(toTrait, resOpt))
+                if (rt?.Trait.IsDerivedFrom(toTrait, resOpt) == true)
                 {
                     if (rt.ParameterValues != null)
                     {
                         ParameterCollection pc = rt.ParameterValues.PC;
                         List<dynamic> av = rt.ParameterValues.Values;
                         int idx = pc.FetchParameterIndex(paramName);
-                        if (idx >= 0)
+                        if (idx >= 0 && Equals(av[idx], valueWhen))
                         {
-                            try
-                            {
-                                if (av[idx] == valueWhen)
-                                {
-                                    // copy the set and make a deep copy of the trait being set
-                                    traitSetResult = this.ShallowCopyWithException(rt.Trait);
-                                    // assume these are all still true for this copy
-                                    rt = traitSetResult.Set[i];
-                                    av = rt.ParameterValues.Values;
-                                    av[idx] = ParameterValue.FetchReplacementValue(resOpt, av[idx], valueNew, true);
-                                    break;
-                                }
-                            }
-                            catch
-                            {
-
-                            }
+                            // copy the set and make a deep copy of the trait being set
+                            traitSetResult = this.ShallowCopyWithException(rt.Trait);
+                            // assume these are all still true for this copy
+                            rt = traitSetResult.Set[i];
+                            av = rt.ParameterValues.Values;
+                            av[idx] = ParameterValue.FetchReplacementValue(resOpt, av[idx], valueNew, true);
+                            break;
                         }
                     }
                 }

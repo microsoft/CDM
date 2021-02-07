@@ -1,0 +1,96 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Commerce/ChannelManagement/BrickAndMortarStore/RetailStoreEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Commerce/ChannelManagement/OnlineStore/RetailOnlineChannelEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailStoreAddressBook.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailChannelCustomerAddressBookEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AddressBook",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AddressBookName",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "RetailChannelId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreEntity"
+          },
+          "name": "Relationship_RetailStoreEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailOnlineChannelEntity"
+          },
+          "name": "Relationship_RetailOnlineChannelEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreAddressBook"
+          },
+          "name": "BackingTable_RetailStoreAddressBookRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer address book"
+    }
+  ]
+}

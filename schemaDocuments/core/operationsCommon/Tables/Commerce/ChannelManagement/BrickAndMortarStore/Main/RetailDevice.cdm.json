@@ -1,0 +1,283 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Miscellaneous/RetailDeviceTypes.cdm.json"
+    },
+    {
+      "corpusPath": "RetailTerminalTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailDevice",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivatedDateTime",
+          "dataType": "RetailDeviceActivationDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Activated date and time",
+          "description": ""
+        },
+        {
+          "name": "ActivationStaffId",
+          "dataType": "RetailStaffId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Activated by",
+          "description": ""
+        },
+        {
+          "name": "ActivationStatus",
+          "dataType": "RetailDeviceActivationStatus",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeactivateComments",
+          "dataType": "RetailDeviceDeactivateComment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeactivatedDateTime",
+          "dataType": "RetailDeviceActivationDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Deactivated date and time",
+          "description": ""
+        },
+        {
+          "name": "DeactivationStaffId",
+          "dataType": "RetailStaffId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Deactivated by",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "RetailDeviceDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeviceId",
+          "dataType": "RetailDeviceId",
+          "description": ""
+        },
+        {
+          "name": "Terminal",
+          "dataType": "RetailTerminalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "RetailDeviceTypeRecId",
+          "description": ""
+        },
+        {
+          "name": "PhysicalDeviceId",
+          "dataType": "RetailPhysicalDeviceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeviceTokenData",
+          "dataType": "string",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeviceTokenSalt",
+          "dataType": "string",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeviceTokenIssueTime",
+          "dataType": "date",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivationValidationDateTime",
+          "dataType": "date",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Validated on",
+          "description": ""
+        },
+        {
+          "name": "ActivationValidationStaffId",
+          "dataType": "RetailStaffId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Validated for",
+          "description": ""
+        },
+        {
+          "name": "ActivationValidationStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Validation status",
+          "description": ""
+        },
+        {
+          "name": "UseInMemoryDeviceDataStorage",
+          "dataType": "integer",
+          "displayName": "Use in-memory data storage on device",
+          "description": ""
+        },
+        {
+          "name": "CurrentVersion",
+          "dataType": "CurrentVersion",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SelfServicePackage",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Package name",
+          "description": ""
+        },
+        {
+          "name": "DeviceTokenAlgorithm",
+          "dataType": "DeviceTokenAlgorithmName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivationGuid",
+          "dataType": "RetailDeviceActivationGUID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowMassActivation",
+          "dataType": "RetailAllowMassActivation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MergedSelfServicePackageReference",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Package reference",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailDeviceTypes"
+          },
+          "name": "Relationship_RetailDeviceTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail Devices"
+    },
+    {
+      "dataTypeName": "RetailDeviceActivationDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailStaffId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDeviceActivationStatus",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailDeviceDeactivateComment",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDeviceDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDeviceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDeviceTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailPhysicalDeviceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrentVersion",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DeviceTokenAlgorithmName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDeviceActivationGUID",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "RetailAllowMassActivation",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Reference/BankPositivePayFormat.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankPositivePayTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Confirmation",
+          "dataType": "BankPositivePayConfirmationNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CutoffDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Cutoff date",
+          "description": ""
+        },
+        {
+          "name": "Filestatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumberOfCheques",
+          "dataType": "BankChequeQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of checks",
+          "description": ""
+        },
+        {
+          "name": "PayFormat",
+          "dataType": "BankPositivePayFormatName",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Positive pay format",
+          "description": ""
+        },
+        {
+          "name": "PositivePayNum",
+          "dataType": "BankPositivePayId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "VoidQty",
+          "dataType": "BankChequeQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of voided checks",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BankPositivePayFormat"
+          },
+          "name": "Relationship_BankPositivePayFormatRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bank positive payment table"
+    },
+    {
+      "dataTypeName": "BankPositivePayConfirmationNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BankChequeQty",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankPositivePayFormatName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankPositivePayId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -8,11 +9,13 @@ public interface CdmObjectReference extends CdmObject {
 
   /**
    * Gets the object reference applied traits.
+   * @return Cdm Trait Collection
    */
   CdmTraitCollection getAppliedTraits();
 
   /**
    * Gets or sets the object explicit reference.
+   * @return Cdm Object definition
    */
   CdmObjectDefinition getExplicitReference();
 
@@ -20,6 +23,7 @@ public interface CdmObjectReference extends CdmObject {
 
   /**
    * Gets or sets the object named reference.
+   * @return string name reference
    */
   String getNamedReference();
 
@@ -28,6 +32,7 @@ public interface CdmObjectReference extends CdmObject {
   /**
    * Gets or sets if the reference is simple named or not. If true use namedReference else use
    * explicitReference.
+   * @return boolean if simple name referenced
    */
   boolean isSimpleNamedReference();
 
@@ -35,22 +40,22 @@ public interface CdmObjectReference extends CdmObject {
 
   /**
    *
-   * @return
+   * @return CDM Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  default CdmObjectDefinition fetchResolvedReference() {
+  default CdmObject fetchResolvedReference() {
     return fetchResolvedReference(new ResolveOptions(this));
   }
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolution options
+   * @return CDM Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  CdmObjectDefinition fetchResolvedReference(ResolveOptions resOpt);
+  CdmObject fetchResolvedReference(ResolveOptions resOpt);
 }

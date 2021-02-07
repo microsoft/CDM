@@ -1,0 +1,553 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "RetailCashDeclaration.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/WorksheetHeader/RetailStatementTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailStoreTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Payments/Main/RetailTenderTypeCardTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Payments/Main/RetailTenderTypeTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailTerminalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailStatementTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "addedToDrawer",
+          "dataType": "RetailAddedToDrawerAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "bankedAmount",
+          "dataType": "RetailBankedAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "bankedAmountMST",
+          "dataType": "RetailBankedAmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "bankedAmountStore",
+          "dataType": "RetailBankedAmountStore",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "cardFeeAmount",
+          "dataType": "RetailCardFeeAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "cardTypeId",
+          "dataType": "RetailCardTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashLaterReturnedAmountCur_RU",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Returned amount",
+          "description": ""
+        },
+        {
+          "name": "changeTender",
+          "dataType": "RetailChangeTenderAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "countedAmount",
+          "dataType": "RetailCountedAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "countedAmountMST",
+          "dataType": "RetailCountedAmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "countedAmountStore",
+          "dataType": "RetailCountedAmountStore",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "currency",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "differenceAmount",
+          "dataType": "RetailDifferenceAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "differenceAmountMST",
+          "dataType": "RetailDifferenceAmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "differenceAmountStore",
+          "dataType": "RetailDifferenceAmountStore",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "inDrawerAtEndOfDay",
+          "dataType": "RetailInDrawerAtEndOfDay",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "lineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "orderInvoiceAmount",
+          "dataType": "RetailOrderInvoiceAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "orderInvoiceAmountMST",
+          "dataType": "RetailOrderInvoiceAmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "postedDate",
+          "dataType": "RetailPostedDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "realExchRate",
+          "dataType": "ExchRate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "removedFromDrawer",
+          "dataType": "RetailRemovedFromDrawerAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "replicationCounter",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "safeAmount",
+          "dataType": "RetailSafeAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "safeAmountMST",
+          "dataType": "RetailSafeAmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "safeAmountStore",
+          "dataType": "RetailSafeAmountStore",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "staffId",
+          "dataType": "RetailStaffId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "statementCode",
+          "dataType": "RetailStatementCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "statementId",
+          "dataType": "RetailStatementId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "storeExchRate",
+          "dataType": "ExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "storeId",
+          "dataType": "RetailStoreId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "tenderTypeId",
+          "dataType": "RetailTenderTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "terminalId",
+          "dataType": "RetailTerminalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transAmount",
+          "dataType": "RetailTransAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transAmountInMST",
+          "dataType": "RetailTransAmountInMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transAmountStore",
+          "dataType": "RetailTransAmountStore",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "uniqueShiftId",
+          "dataType": "RetailUniqueShiftId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DimensionAttributeValueSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailCashDeclaration"
+          },
+          "name": "Relationship_RetailCashDeclarationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStatementTable"
+          },
+          "name": "Relationship_RetailStatementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreTable"
+          },
+          "name": "Relationship_RetailStoreTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTenderTypeCardTable"
+          },
+          "name": "Relationship_RetailTenderTypeCardTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTenderTypeTable"
+          },
+          "name": "Relationship_RetailTenderTypeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Statement journal transactions"
+    },
+    {
+      "dataTypeName": "RetailAddedToDrawerAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailBankedAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailBankedAmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailBankedAmountStore",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCardFeeAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCardTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailChangeTenderAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCountedAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCountedAmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCountedAmountStore",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailDifferenceAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailDifferenceAmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailDifferenceAmountStore",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailInDrawerAtEndOfDay",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailOrderInvoiceAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailOrderInvoiceAmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailPostedDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailRemovedFromDrawerAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailSafeAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailSafeAmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailSafeAmountStore",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailStaffId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStatementCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStatementId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTenderTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailTransAmountInMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailTransAmountStore",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailUniqueShiftId",
+      "extendsDataType": "string"
+    }
+  ]
+}

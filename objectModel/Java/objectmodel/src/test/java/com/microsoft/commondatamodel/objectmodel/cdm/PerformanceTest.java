@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.CommonDataModelLoader;
@@ -8,10 +11,10 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmValidationStep;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.RetryTest;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,39 +39,6 @@ public class PerformanceTest {
    * The path between TestDataPath and TestName.
    */
   private static final String TESTS_SUBPATH = new File("cdm", "performance").toString();
-
-  /**
-   * Test the time taken to resolve the corpus
-   */
-  @Test(retryAnalyzer = RetryTest.class)
-  public void resolveCorpus() {
-    Assert.assertTrue(
-        (Files.isDirectory(
-            Paths.get(SCHEMA_DOCS_ROOT))),
-        "SchemaDocsRoot not found!!!");
-
-    final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
-
-    System.out.println("reading source files");
-
-    final long startTime = System.currentTimeMillis();
-    cdmCorpus.getStorage().mount("local", new LocalAdapter(SCHEMA_DOCS_ROOT));
-    final CdmManifestDefinition manifest =
-        cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-            "local:/standards.manifest.cdm.json"
-        ).join();
-    final AttributeResolutionDirectiveSet directives =
-        new AttributeResolutionDirectiveSet(
-            new HashSet<>(Arrays.asList("normalized", "referenceOnly")));
-    CdmEntityDefinitionResolutionTest.listAllResolved(
-        cdmCorpus,
-        directives,
-        manifest,
-        new StringSpewCatcher()).join();
-    final long stopTime = System.currentTimeMillis();
-    //    TODO-BQ: 2019-10-18 Limit higher than C#'s test
-    Assert.assertTrue(stopTime - startTime < 80000L);
-  }
 
   /**
    * Test the time taken to resolve all the entities
@@ -231,7 +201,7 @@ public class PerformanceTest {
           constEnt.getConstantValues().forEach(val ->
               refs.add(
                   cdmCorpus.<CdmEntityDefinition>fetchObjectAsync(
-                      cdmCorpus.getStorage().createAbsoluteCorpusPath(val.get(0))
+                      cdmCorpus.getStorage().createAbsoluteCorpusPath(val.get(0), resolvedEntity)
                   ).join()));
           references.addAll(refs);
         }

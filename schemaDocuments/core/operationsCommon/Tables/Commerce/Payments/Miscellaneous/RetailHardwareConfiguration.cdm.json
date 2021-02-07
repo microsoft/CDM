@@ -1,0 +1,153 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailStoreHardwareStationTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailTerminalTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailHardwareConfiguration",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DrawerIP",
+          "dataType": "RetailHardwareIPAddress",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DrawerPort",
+          "dataType": "RetailHardwarePortNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Drawer2IP",
+          "dataType": "RetailHardwareIPAddress",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Drawer2Port",
+          "dataType": "RetailHardwarePortNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrinterIP",
+          "dataType": "RetailHardwareIPAddress",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrinterPort",
+          "dataType": "RetailHardwarePortNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Printer2IP",
+          "dataType": "RetailHardwareIPAddress",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Printer2Port",
+          "dataType": "RetailHardwarePortNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PinpadIP",
+          "dataType": "RetailHardwareIPAddress",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PinpadPort",
+          "dataType": "RetailHardwarePortNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TerminalId",
+          "dataType": "RetailTerminalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StoreHardwareStation",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreHardwareStationTable"
+          },
+          "name": "Relationship_RetailStoreHardwareStationTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "IP addresses configuration"
+    },
+    {
+      "dataTypeName": "RetailHardwareIPAddress",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailHardwarePortNumber",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvPolicyRule.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/WorksheetHeader/TrvExpTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Transaction/TrvExpTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Transaction/TrvRequisitionLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Transaction/TrvRequisitionTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvPolicyViolationsLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ViolationsLogId",
+          "dataType": "guid",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Action",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "Header",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "Line",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PolicyType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Rule",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ViolationDate",
+          "dataType": "TrvDateStd",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "TrvHcmWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "TrvPolicyRule"
+          },
+          "name": "Relationship_TrvPolicyRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvExpTable"
+          },
+          "name": "Relationship_TrvExpTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvExpTrans"
+          },
+          "name": "Relationship_TrvExpTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvRequisitionLine"
+          },
+          "name": "Relationship_TrvRequisitionLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvRequisitionTable"
+          },
+          "name": "Relationship_TrvRequisitionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Policy violations log"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TrvDateStd",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TrvHcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

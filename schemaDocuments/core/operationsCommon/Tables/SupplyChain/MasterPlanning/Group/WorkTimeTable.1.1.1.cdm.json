@@ -1,0 +1,121 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WorkTimeTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ClosedForPickupFriday",
+          "dataType": "SalesClosedForPickup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClosedForPickupMonday",
+          "dataType": "SalesClosedForPickup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClosedForPickupSaturday",
+          "dataType": "SalesClosedForPickup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClosedForPickupSunday",
+          "dataType": "SalesClosedForPickup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClosedForPickupThursday",
+          "dataType": "SalesClosedForPickup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClosedForPickupTuesday",
+          "dataType": "SalesClosedForPickup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClosedForPickupWednesday",
+          "dataType": "SalesClosedForPickup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTimeId",
+          "dataType": "WorkTimeId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Working time templates"
+    },
+    {
+      "dataTypeName": "SalesClosedForPickup",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkTimeId",
+      "extendsDataType": "string"
+    }
+  ]
+}

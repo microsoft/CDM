@@ -1,0 +1,195 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendInvoiceTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EInvoice/Group/CFDIWithholdingType_MX.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendInvoiceTrans_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RefInvoiceDate_MY",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Original invoice date",
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceId_MY",
+          "dataType": "InvoiceId",
+          "isNullable": true,
+          "displayName": "Original invoice number",
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceTrans",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIBeneficiaryRetains_MX",
+          "dataType": "CFDIBeneficiaryRetains_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIFinancialSystem_MX",
+          "dataType": "CFDIFinancialSystem_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIInterestBelongsDerivedFinOp_MX",
+          "dataType": "CFDIInterestBelongsDerivedFinOp_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIInterestCashedInTheCurrentPeriod_MX",
+          "dataType": "CFDIInterestCashedInTheCurrentPeriod_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIInterestLossAmount_MX",
+          "dataType": "CFDIInterestLossAmount_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIInterestNominalAmount_MX",
+          "dataType": "CFDIInterestNominalAmount_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIInterestRealAmount_MX",
+          "dataType": "CFDIInterestRealAmount_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WithholdingTypeCode_MX",
+          "dataType": "CFDIWithholdingTypeCode_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceTrans"
+          },
+          "name": "Relationship_VendInvoiceTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFDIWithholdingType_MX"
+          },
+          "name": "Relationship_CFDIWithholdingType_MXRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Posted vendor invoice lines for other country contexts"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CFDIBeneficiaryRetains_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFDIFinancialSystem_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFDIInterestBelongsDerivedFinOp_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFDIInterestCashedInTheCurrentPeriod_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFDIInterestLossAmount_MX",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CFDIInterestNominalAmount_MX",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CFDIInterestRealAmount_MX",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CFDIWithholdingTypeCode_MX",
+      "extendsDataType": "string"
+    }
+  ]
+}

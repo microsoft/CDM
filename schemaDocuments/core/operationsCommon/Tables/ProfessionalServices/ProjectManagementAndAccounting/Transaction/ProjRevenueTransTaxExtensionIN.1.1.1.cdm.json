@@ -1,0 +1,250 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ProjRevenueTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdGroupHeading.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjRevenueTransTaxExtensionIN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MaximumRetailPrice",
+          "dataType": "MaximumRetailPrice_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjRevenueTrans",
+          "dataType": "ProjRevenueTransRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceEventGroup",
+          "dataType": "ServiceEventGroup_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TCSGroup",
+          "dataType": "TaxWithholdGroup",
+          "isNullable": true,
+          "displayName": "TCS group",
+          "description": ""
+        },
+        {
+          "name": "TDSGroup",
+          "dataType": "TaxWithholdGroup",
+          "isNullable": true,
+          "displayName": "TDS group",
+          "description": ""
+        },
+        {
+          "name": "AssessableValueTransactionCurrency",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Assessable value",
+          "description": ""
+        },
+        {
+          "name": "AssessableValue",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompanyLocation",
+          "dataType": "LogisticsLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerLocation",
+          "dataType": "LogisticsLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerTaxInformation",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Exempt",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HSNCodeTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ITCCategory",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTaxFormTypes",
+          "dataType": "SalesTaxFormTypesRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceAccountingCodeTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceCodeTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInformation",
+          "dataType": "TaxInformationRefRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInventVATCommodityCodeId",
+          "dataType": "TaxInventVATCommodityCodeId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjRevenueTrans"
+          },
+          "name": "Relationship_ProjRevenueTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdGroupHeading"
+          },
+          "name": "Relationship_TaxWithholdGroupHeadingTCSRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdGroupHeading"
+          },
+          "name": "Relationship_TaxWithholdGroupHeadingTDSRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fee tax extension for India taxes"
+    },
+    {
+      "dataTypeName": "MaximumRetailPrice_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjRevenueTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ServiceEventGroup_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LogisticsLocationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SalesTaxFormTypesRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxInformationRefRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxInventVATCommodityCodeId_IN",
+      "extendsDataType": "string"
+    }
+  ]
+}

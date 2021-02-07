@@ -1,15 +1,14 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmDataTypeDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
+    using System.Collections.Generic;
 
     public class CdmDataTypeDefinition : CdmObjectDefinitionBase
     {
@@ -68,7 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmDataTypeDefinition copy;
@@ -92,7 +91,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.DataTypeName);
+            if (string.IsNullOrEmpty(this.DataTypeName))
+            {
+                Logger.Error(nameof(CdmDataTypeDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "DataTypeName" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />
@@ -112,6 +116,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
+            if (this.ExtendsDataType != null) this.ExtendsDataType.Owner = this;
             if (this.ExtendsDataType?.Visit(path + "/extendsDataType/", preChildren, postChildren) == true)
                 return true;
             if (this.VisitDef(path, preChildren, postChildren))
@@ -126,7 +131,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return this.IsDerivedFromDef(resOpt, this.ExtendsDataTypeRef, this.GetName(), baseDef);

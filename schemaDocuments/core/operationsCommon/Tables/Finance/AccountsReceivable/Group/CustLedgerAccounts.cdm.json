@@ -1,0 +1,408 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "CustCollectionLetterTable.cdm.json"
+    },
+    {
+      "corpusPath": "CustGroup.cdm.json"
+    },
+    {
+      "corpusPath": "CustLedger.cdm.json"
+    },
+    {
+      "corpusPath": "CustInterest.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Group/DimensionHierarchy.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustLedgerAccounts",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountCode",
+          "dataType": "PostingProfileAccountCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClearingLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Liquidity account for payments",
+          "description": ""
+        },
+        {
+          "name": "CollectionLetterCourse",
+          "dataType": "CollectionLetterCourseId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustInterest",
+          "dataType": "CustInterestID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepositLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Deposits",
+          "description": ""
+        },
+        {
+          "name": "DimensionHierarchy_RU",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Set",
+          "description": ""
+        },
+        {
+          "name": "EndorseLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Endorse account",
+          "description": ""
+        },
+        {
+          "name": "ExportSalesLedgerDimension",
+          "dataType": "ExportSalesLedgerDimension",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FineLedgerDimension_BR",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Fine",
+          "description": ""
+        },
+        {
+          "name": "InterestLedgerDimension_BR",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Financial interest",
+          "description": ""
+        },
+        {
+          "name": "LiabilitiesForDiscountLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Liabilities for discount account",
+          "description": ""
+        },
+        {
+          "name": "Num",
+          "dataType": "PostingProfileAccountRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "CustPostingProfile",
+          "description": ""
+        },
+        {
+          "name": "SummaryLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Summary account",
+          "description": ""
+        },
+        {
+          "name": "TaxTransferLedgerDimension_BR",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Tax transfer",
+          "description": ""
+        },
+        {
+          "name": "VATPrepaymentsLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Sales tax prepayments",
+          "description": ""
+        },
+        {
+          "name": "WriteOffLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Write-off account",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_ClearingLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustCollectionLetterTable"
+          },
+          "name": "Relationship_CustCollectionLetterTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustGroup"
+          },
+          "name": "Relationship_CustGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustLedger"
+          },
+          "name": "Relationship_CustLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInterest"
+          },
+          "name": "Relationship_CustLedgerAccountsCustInterestRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DepositLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchy"
+          },
+          "name": "Relationship_DimensionHierarchy_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_EndorseLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_ExportSalesLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_FineLedgerDimension_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_InterestLedgerDimension_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LiabilitiesForDiscountLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_SummaryLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_TaxTransferLedgerDimension_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_VATPrepaymentsLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_WriteOffLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer ledger accounts"
+    },
+    {
+      "dataTypeName": "PostingProfileAccountCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CollectionLetterCourseId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustInterestID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ExportSalesLedgerDimension",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PostingProfileAccountRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPostingProfile",
+      "extendsDataType": "string"
+    }
+  ]
+}

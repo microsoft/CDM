@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Network';
 import { NetworkAdapter } from './NetworkAdapter';
 import { configObjectType, StorageAdapter } from './StorageAdapter';
@@ -9,12 +12,11 @@ interface HostInfo {
     path?: string;
 }
 
-export class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
+export class RemoteAdapter extends NetworkAdapter {
     /**
      * @internal
      */
     public readonly type: string = 'remote';
-    public locationHint: string;
 
     private sources: { [key: string]: string } = {};
     private sourcesById: { [key: string]: { protocol: string; host: string } } = {};
@@ -40,10 +42,6 @@ export class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
         }
     }
 
-    public async writeAsync(corpusPath: string, data: string): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-
     public clearCache(): void {
         this.sources = {};
         this.sourcesById = {};
@@ -61,10 +59,6 @@ export class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
         const cdmHttpResponse: CdmHttpResponse = await super.executeRequest(cdmHttpRequest);
 
         return cdmHttpResponse.content.toString();
-    }
-
-    public canWrite(): boolean {
-        return false;
     }
 
     public createAdapterPath(corpusPath: string): string {
@@ -91,15 +85,7 @@ export class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
         return `/${hostInfo.key}${path}`;
     }
 
-    public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
-        throw new Error('Method not implemented.');
-    }
-
-    public async fetchAllFilesAsync(currFullPath: string): Promise<string[]> {
-        return undefined;
-    }
-
-    public getGuid(): string {
+    private getGuid(): string {
         let guid: string;
         // make sure that there is no collision of keys.
         do {

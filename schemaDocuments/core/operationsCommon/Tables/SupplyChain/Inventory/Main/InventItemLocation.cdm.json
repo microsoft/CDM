@@ -1,0 +1,193 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventCountGroup.cdm.json"
+    },
+    {
+      "corpusPath": "InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "WMSLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventItemLocation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountGroupId",
+          "dataType": "CountGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "inventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "WMSLocationIdDefaultIssue",
+          "dataType": "WMSLocationIdDefaultIssue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WMSLocationIdDefaultReceipt",
+          "dataType": "WMSLocationIdDefaultReceipt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "wMSPickingLocation",
+          "dataType": "WMSPickingLocation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventCountGroup"
+          },
+          "name": "Relationship_InventCountGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSLocation"
+          },
+          "name": "Relationship_WMSLocationIdDefaultIssueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSLocation"
+          },
+          "name": "Relationship_WMSLocationIdDefaultReceiptRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSLocation"
+          },
+          "name": "Relationship_WMSPickingLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Warehouse items"
+    },
+    {
+      "dataTypeName": "CountGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSLocationIdDefaultIssue",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSLocationIdDefaultReceipt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSPickingLocation",
+      "extendsDataType": "string"
+    }
+  ]
+}

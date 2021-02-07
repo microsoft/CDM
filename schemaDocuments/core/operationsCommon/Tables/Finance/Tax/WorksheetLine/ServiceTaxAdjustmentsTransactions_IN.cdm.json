@@ -1,0 +1,161 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/WorksheetHeader/ServiceTaxAdjustments_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Transaction/TaxTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ServiceTaxAdjustmentsTransactions_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PayableAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Payable amount",
+          "description": ""
+        },
+        {
+          "name": "Posted",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RecoverableAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Recoverable amount",
+          "description": ""
+        },
+        {
+          "name": "ServiceTaxAdjustments",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceTaxAdjustmentsTransactions",
+          "dataType": "ServiceTaxAdjustmentDetails_IN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxPaymentVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxTrans",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UtilizedPayableAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UtilizedRecoverableAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ServiceTaxAdjustments_IN"
+          },
+          "name": "Relationship_ServiceTaxAdjustmentsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTrans"
+          },
+          "name": "Relationship_TaxTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Service tax transactions"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ServiceTaxAdjustmentDetails_IN",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

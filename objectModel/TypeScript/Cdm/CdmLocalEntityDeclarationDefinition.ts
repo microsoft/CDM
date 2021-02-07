@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCollection,
     CdmCorpusContext,
@@ -9,10 +12,12 @@ import {
     CdmObjectDefinitionBase,
     cdmObjectType,
     CdmTraitCollection,
+    Errors,
+    Logger,
     resolveOptions,
     VisitCallback
 } from '../internal';
-import { KeyValPair } from '../Persistence/CdmFolder/types';
+import {StorageAdapterBase , StorageAdapterCacheContext } from 'Storage/StorageAdapterBase';
 import * as timeUtils from '../Utilities/timeUtils';
 
 /**
@@ -76,7 +81,18 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public validate(): boolean {
-        return !!this.entityName;
+        if (!this.entityName) {
+            Logger.error(
+                CdmLocalEntityDeclarationDefinition.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, ['entityName']),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -84,7 +100,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmLocalEntityDeclarationDefinition {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
         let copy: CdmLocalEntityDeclarationDefinition;
@@ -165,10 +181,6 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false; // makes no sense
     }
 
@@ -176,21 +188,31 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public async fileStatusCheckAsync(): Promise<void> {
-        const fullPath: string  = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);
-        const modifiedTime: Date = await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
 
-        for (const partition of this.dataPartitions) {
-            await partition.fileStatusCheckAsync();
+        let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace) as StorageAdapterBase;
+        let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
+        try {
+            const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);
+            const modifiedTime: Date = await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
+
+            for (const pattern of this.dataPartitionPatterns) {
+                await pattern.fileStatusCheckAsync();
+            }
+
+            for (const partition of this.dataPartitions) {
+                await partition.fileStatusCheckAsync();
+            }
+
+            this.lastFileStatusCheckTime = new Date();
+            this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
+
+            await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
         }
-
-        for (const pattern of this.dataPartitionPatterns) {
-            await pattern.fileStatusCheckAsync();
+        finally {
+            if(cacheContext != null) {
+                cacheContext.dispose()
+            }
         }
-
-        this.lastFileStatusCheckTime = new Date();
-        this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
-
-        await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
     }
 
     /**
@@ -213,7 +235,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     public createDataPartitionFromPattern(
         filePath: string,
         exhibitsTraits: CdmTraitCollection,
-        args: KeyValPair[],
+        args: Map<string, string[]>,
         schema: string,
         modifiedTime: Date): void {
         const existingPartition: CdmDataPartitionDefinition =
@@ -229,7 +251,8 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
             for (const trait of exhibitsTraits) {
                 newPartition.exhibitsTraits.push(trait);
             }
-            newPartition.arguments = [...args];
+
+            newPartition.arguments = new Map(args);
 
             this.dataPartitions.push(newPartition);
         }

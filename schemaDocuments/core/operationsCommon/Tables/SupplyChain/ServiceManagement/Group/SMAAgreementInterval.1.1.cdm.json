@@ -1,0 +1,91 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SMAAgreementInterval",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Frequency",
+          "dataType": "SMAFrequency",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntervalId",
+          "dataType": "SMAIntervalId",
+          "description": ""
+        },
+        {
+          "name": "IntervalUnit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Range",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Service intervals"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAFrequency",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SMAIntervalId",
+      "extendsDataType": "string"
+    }
+  ]
+}

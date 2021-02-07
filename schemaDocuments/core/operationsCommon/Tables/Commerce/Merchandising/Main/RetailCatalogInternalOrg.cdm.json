@@ -1,0 +1,106 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "Catalog.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailInternalOrganization.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailCatalogInternalOrg",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssociatedListingAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssociatedListingActionStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Catalog",
+          "dataType": "CatalogRefRecId",
+          "description": ""
+        },
+        {
+          "name": "InternalOrganization",
+          "dataType": "RetailInternalOrgRefRecId",
+          "description": ""
+        },
+        {
+          "name": "ListingCount",
+          "dataType": "RetailProductListCount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Catalog"
+          },
+          "name": "Relationship_CatalogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailInternalOrganization"
+          },
+          "name": "Relationship_RetailInternalOrganizationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail internal organizations in a catalog"
+    },
+    {
+      "dataTypeName": "CatalogRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailInternalOrgRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailProductListCount",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

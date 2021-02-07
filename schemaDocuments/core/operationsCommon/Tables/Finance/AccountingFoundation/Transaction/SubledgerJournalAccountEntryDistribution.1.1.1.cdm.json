@@ -1,0 +1,119 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AccountingDistribution.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/SubledgerJournalAccountEntry.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SubledgerJournalAccountEntryDistribution",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingCurrencyAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountingDistribution",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParentDistribution",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyAmount",
+          "dataType": "AmountMSTSecondary",
+          "isNullable": true,
+          "displayName": "The amount in the reporting currency",
+          "description": ""
+        },
+        {
+          "name": "SubledgerJournalAccountEntry",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AccountingDistribution"
+          },
+          "name": "Relationship_AccountingDistributionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AccountingDistribution"
+          },
+          "name": "Relationship_ParentDistributionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SubledgerJournalAccountEntry"
+          },
+          "name": "Relationship_SubledgerJournalAccountEntryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Subledger journal account entry distribution"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountMSTSecondary",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

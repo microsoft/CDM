@@ -1,0 +1,89 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WHSLTLClass.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSNMFC",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultHandlingType",
+          "dataType": "WHSDefaultHandlingType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LTLClassCode",
+          "dataType": "WHSLTLClassCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NMFCCode",
+          "dataType": "WHSNMFCCode",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLTLClass"
+          },
+          "name": "Relationship_WHSLTLClassRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "NMFC codes"
+    },
+    {
+      "dataTypeName": "WHSDefaultHandlingType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLTLClassCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSNMFCCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

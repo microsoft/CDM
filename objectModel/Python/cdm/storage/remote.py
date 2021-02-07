@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import datetime
 import json
@@ -19,8 +17,8 @@ class RemoteAdapter(NetworkAdapter, StorageAdapterBase):
 
     def __init__(self, hosts: Optional[Dict[str, str]] = None) -> None:
         super().__init__()
-
-        self.location_hint = None  # type: Optional[str]
+        super(NetworkAdapter, self).__init__()
+        super(StorageAdapterBase, self).__init__()
 
         # --- internal ---
         self._hosts = {}  # type: Dict[str, str]
@@ -46,17 +44,11 @@ class RemoteAdapter(NetworkAdapter, StorageAdapterBase):
     def can_read(self) -> bool:
         return True
 
-    def can_write(self) -> bool:
-        return False
-
     async def read_async(self, corpus_path: str) -> str:
         url = self.create_adapter_path(corpus_path)
         request = self._set_up_cdm_request(url, {'User-Agent': 'CDM'}, 'GET')
 
         return await super()._read(request)
-
-    async def write_async(self, corpus_path: str, data: str) -> None:
-        raise NotImplementedError()
 
     def create_adapter_path(self, corpus_path: str) -> str:
         if not corpus_path:
@@ -90,13 +82,6 @@ class RemoteAdapter(NetworkAdapter, StorageAdapterBase):
     def clear_cache(self) -> None:
         self._sources = {}
         self._sources_by_id = {}
-
-    async def compute_last_modified_time_async(self, adapter_path: str) -> Optional[datetime.datetime]:
-        return datetime.datetime.now()
-
-    async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
-        # TODO: implement
-        return None
 
     def fetch_config(self) -> str:
         result_config = {'type': self._type}

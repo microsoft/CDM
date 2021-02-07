@@ -1,0 +1,135 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetSourceTrackingDetail.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetSourceTracking.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetSourceTrackingRelievingDetail",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingCurrencyAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsDeletePending",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsReturnOfBudgetFunds",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsSummarized",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RelievedBudgetSourceTrackingDetail",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Relieved budget source tracking detail",
+          "description": ""
+        },
+        {
+          "name": "RelievingBudgetSourceLedgerDimension",
+          "dataType": "LedgerDimensionBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RelievingBudgetSourceTracking",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Relieving budget source tracking detail",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetSourceTrackingDetail"
+          },
+          "name": "Relationship_RelievedBudgetSourceTrackingDetailRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RelievingBudgetSourceLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetSourceTracking"
+          },
+          "name": "Relationship_RelievingBudgetSourceTrackingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget source tracking relieving details"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDimensionBase",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

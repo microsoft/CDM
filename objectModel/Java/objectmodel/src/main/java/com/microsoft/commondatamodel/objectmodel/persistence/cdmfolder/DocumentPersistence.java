@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -5,8 +8,11 @@ import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DataType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DocumentContent;
@@ -15,12 +21,10 @@ import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.DynamicObjectExtensions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class DocumentPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentPersistence.class);
+  private static final String TAG = DocumentPersistence.class.getSimpleName();
 
   /**
    * Whether this persistence class has async methods.
@@ -30,7 +34,12 @@ public class DocumentPersistence {
   /**
    * The file format/extension types this persistence class supports.
    */
-  public static final String[] formats = { ".cdm.json" };
+  public static final String[] formats = { CdmConstants.CDM_EXTENSION };
+
+  /**
+   * The maximum json semantic version supported by this ObjectModel version.
+   */
+  public static final String jsonSemanticVersion = CdmDocumentDefinition.getCurrentJsonSchemaSemanticVersion();
 
   public static CdmDocumentDefinition fromObject(final CdmCorpusContext ctx, final String name, final String nameSpace,
                                                final String path, final DocumentContent obj) {
@@ -41,10 +50,12 @@ public class DocumentPersistence {
     if (!Strings.isNullOrEmpty(obj.getSchema())) {
       doc.setSchema(obj.getSchema());
     }
-    if (DynamicObjectExtensions.hasProperty(obj, "JsonSchemaSemanticVersion") && !Strings
-            .isNullOrEmpty(obj.getJsonSchemaSemanticVersion())) {
-      doc.setJsonSchemaSemanticVersion(obj.getJsonSchemaSemanticVersion());
+
+    if (DynamicObjectExtensions.hasProperty(obj, "DocumentVersion") && !Strings
+            .isNullOrEmpty(obj.getDocumentVersion())) {
+      doc.setDocumentVersion(obj.getDocumentVersion());
     }
+
     if (obj.getImports() != null) {
       for (final Import imp: obj.getImports()) {
         doc.getImports().add(ImportPersistence.fromData(ctx, imp));
@@ -71,6 +82,31 @@ public class DocumentPersistence {
       }
     }
 
+    boolean isResolvedDoc = false;
+    if (doc.getDefinitions().getCount() == 1 && doc.getDefinitions().get(0).getObjectType() == CdmObjectType.EntityDef) {
+      CdmEntityDefinition entity = (CdmEntityDefinition) doc.getDefinitions().get(0);
+      CdmTraitReference resolvedTrait = entity.getExhibitsTraits().item("has.entitySchemaAbstractionLevel");
+      // Tries to figure out if the document is in resolved form by looking for the schema abstraction trait
+      // or the presence of the attribute context.
+      isResolvedDoc = resolvedTrait != null && "resolved".equals(resolvedTrait.getArguments().get(0).getValue());
+      isResolvedDoc = isResolvedDoc || entity.getAttributeContext() != null;
+    }
+
+    if (!Strings.isNullOrEmpty(obj.getJsonSchemaSemanticVersion())) {
+      doc.setJsonSchemaSemanticVersion(obj.getJsonSchemaSemanticVersion());
+      if (compareJsonSemanticVersion(ctx, doc.getJsonSchemaSemanticVersion()) > 0) {
+          String message = "This ObjectModel version supports json semantic version " + jsonSemanticVersion + " at maximum.";
+          message += " Trying to load a document with version " + doc.getJsonSchemaSemanticVersion() + ".";
+          if (isResolvedDoc) {
+            Logger.warning(TAG, ctx, message, "fromData");
+          } else {
+            Logger.error(TAG, ctx, message, "fromData");
+          }
+      }
+    } else {
+        Logger.warning(TAG, ctx, "jsonSemanticVersion is a required property of a document.", "fromData");
+    }
+
     return doc;
   }
   
@@ -79,7 +115,12 @@ public class DocumentPersistence {
       DocumentContent obj = JMapper.MAP.readValue(jsonData, DocumentContent.class);
       return fromObject(ctx, docName, folder.getNamespace(), folder.getFolderPath(), obj);
     } catch (final Exception e) {
-      LOGGER.error("Could not convert '{}'. Reason '{}'.", docName, e.getLocalizedMessage());
+      Logger.error(
+          DocumentPersistence.class.getSimpleName(),
+          ctx,
+          Logger.format("Could not convert '{0}'. Reason '{1}'.", docName, e.getLocalizedMessage()),
+          "fromData"
+      );
       return null;
     }
   }
@@ -92,6 +133,40 @@ public class DocumentPersistence {
     documentContent.setJsonSchemaSemanticVersion(instance.getJsonSchemaSemanticVersion());
     documentContent.setImports(Utils.listCopyDataAsCdmObject(instance.getImports(), resOpt, options));
     documentContent.setDefinitions(Utils.listCopyDataAsCdmObject(instance.getDefinitions(), resOpt, options));
+    documentContent.setDocumentVersion(instance.getDocumentVersion());
+
     return documentContent;
+  }
+
+  /**
+   * Compares the document version with the json semantic version supported.
+   * 1 => if documentSemanticVersion > jsonSemanticVersion
+   * 0 => if documentSemanticVersion == jsonSemanticVersion or if documentSemanticVersion is invalid
+   * -1 => if documentSemanticVersion < jsonSemanticVersion
+   */
+  private static int compareJsonSemanticVersion(CdmCorpusContext ctx, String documentSemanticVersion) {
+      String[] docSemanticVersionSplit = documentSemanticVersion.split("\\.");
+      String[] currSemanticVersionSplit = jsonSemanticVersion.split("\\.");
+
+      String errorMessage = "jsonSemanticVersion must be set using the format <major>.<minor>.<patch>.";
+
+      if (docSemanticVersionSplit.length != 3) {
+        Logger.warning(TAG, ctx, errorMessage, "compareJsonSemanticVersion");
+        return 0;
+      }
+
+      for (int i = 0; i < 3; ++i) {
+          if (!docSemanticVersionSplit[i].equals(currSemanticVersionSplit[i])) {
+              try {
+                Integer version = Integer.parseInt(docSemanticVersionSplit[i]);
+                return  version < Integer.parseInt(currSemanticVersionSplit[i]) ? -1 : 1;
+              } catch (NumberFormatException e) {
+                Logger.warning(TAG, ctx, errorMessage, "compareJsonSemanticVersion");
+                return 0;
+              }
+          }
+      }
+
+      return 0;
   }
 }

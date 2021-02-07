@@ -1,0 +1,105 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    },
+    {
+      "corpusPath": "PCProductConfigurationModel.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PCProductConfigurationModelTranslation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "PCDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Language",
+          "dataType": "LanguageIdAll",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PCProductModelName",
+          "description": ""
+        },
+        {
+          "name": "ProductConfigurationModel",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Product configuration model",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PCProductConfigurationModel"
+          },
+          "name": "Relationship_PCProductConfigurationModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Product configuration model translation"
+    },
+    {
+      "dataTypeName": "PCDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LanguageIdAll",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PCProductModelName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

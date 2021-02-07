@@ -1,0 +1,78 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DataFeedsEntityCatalog.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DataFeedsEntityFieldMapping",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EntityTableId",
+          "dataType": "TableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EntityFieldId",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceTableId",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JoinedTableIds",
+          "dataType": "binary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DataFeedsEntityCatalog"
+          },
+          "name": "Relationship_DataFeedsEntityCatalogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "TableId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

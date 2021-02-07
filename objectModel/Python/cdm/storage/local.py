@@ -1,13 +1,12 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import os
 from typing import List, Optional
 
+from cdm.utilities import StorageUtils
 from .base import StorageAdapterBase
 
 
@@ -15,8 +14,8 @@ class LocalAdapter(StorageAdapterBase):
     """Local file system storage adapter"""
 
     def __init__(self, root: Optional[str] = '') -> None:
-        self.root = root  # type: str
-        self.location_hint = None  # type: Optional[str]
+        super().__init__()
+        self.root = root  # type: str        
 
         # --- internal ---
         self._full_root = os.path.abspath(self.root)
@@ -43,7 +42,13 @@ class LocalAdapter(StorageAdapterBase):
             file.write(data)
 
     def create_adapter_path(self, corpus_path: str) -> str:
-        corpus_path = corpus_path[(corpus_path.find(':') + 1):].lstrip('\\/')
+        path_tuple = StorageUtils.split_namespace_path(corpus_path)
+        if not path_tuple:
+            return None
+
+        corpus_path = path_tuple[1]
+
+        corpus_path = corpus_path.lstrip('\\/')
         return os.path.normpath(os.path.join(self._full_root, corpus_path))
 
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:
@@ -57,12 +62,11 @@ class LocalAdapter(StorageAdapterBase):
         # Signal that we did not recognize path as one for self adapter.
         return None
 
-    def clear_cache(self) -> None:
-        pass
-
-    async def compute_last_modified_time_async(self, adapter_path: str) -> Optional[datetime]:
+    async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime]:
+        adapter_path = self.create_adapter_path(corpus_path)
         if os.path.exists(adapter_path):
-            return datetime.fromtimestamp(os.path.getmtime(adapter_path))
+            modified_time = datetime.fromtimestamp(os.path.getmtime(adapter_path))
+            return modified_time.replace(tzinfo=timezone.utc)
         return None
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:

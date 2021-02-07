@@ -1,12 +1,22 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.storage;
 
 import com.google.common.base.Strings;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
+import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
+import org.apache.commons.codec.binary.Base64;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -19,12 +29,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.codec.binary.Base64;
 
 /**
- * It is used for handling authentication items for ADLS requests.
+ * AdlsAdapterAuthenticator handles authentication items for ADLS requests.
  */
 class AdlsAdapterAuthenticator {
   private static final String HMAC_SHA256 = "HmacSHA256";
@@ -35,30 +42,20 @@ class AdlsAdapterAuthenticator {
   // The MS version key, used during shared key auth.
   private static final String HTTP_XMS_VERSION = "x-ms-version";
 
-  private final String sharedKey;
-  private final String tenant;
-  private final String clientId;
-  private final String secret;
+  private String sharedKey;
+  private String tenant;
+  private String clientId;
+  private String secret;
+  private String sasToken;
   private AuthenticationResult lastAuthenticationResult;
+  private TokenProvider tokenProvider;
 
-  AdlsAdapterAuthenticator(final String sharedKey) {
-    if (sharedKey == null) {
-      throw new IllegalArgumentException("sharedKey is null");
-    }
-    this.sharedKey = sharedKey;
+  AdlsAdapterAuthenticator() {
+    this.sharedKey = null;
     this.clientId = null;
     this.secret = null;
     this.tenant = null;
-  }
-
-  AdlsAdapterAuthenticator(final String tenant, final String clientId, final String secret) {
-    if ( tenant == null || clientId == null || secret == null) {
-      throw new IllegalArgumentException("tenant or clientId or secret is null");
-    }
-    this.sharedKey = null;
-    this.tenant = tenant;
-    this.clientId = clientId;
-    this.secret = secret;
+    this.tokenProvider = null;
   }
 
   /**
@@ -77,17 +74,32 @@ class AdlsAdapterAuthenticator {
       final String method,
       final String content,
       final String contentType)
-      throws NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
+      throws NoSuchAlgorithmException, InvalidKeyException, URISyntaxException, UnsupportedEncodingException {
     if (sharedKey != null) {
       return buildAuthenticationHeaderWithSharedKey(url, method, content, contentType);
+    } else if (tokenProvider != null) {
+      final Map<String, String> header = new LinkedHashMap<>();
+      header.put("authorization", tokenProvider.getToken());
+      return header;
+    } else if (clientId != null) {
+      return buildAuthenticationHeaderWithClientIdAndSecret();
+    } else {
+      throw new StorageAdapterException("Adls adapter is not configured with any auth method");
     }
+  }
 
-    return buildAuthenticationHeaderWithClientIdAndSecret();
+  /**
+   * Appends SAS token to the given URL.
+   * @param url URL to be appended with the SAS token
+   * @return URL with the SAS token appended
+   */
+  String buildSasAuthenticatedUrl(String url) {
+    return url + (url.contains("?") ? "&" : "?") + sasToken;
   }
 
   /**
    * Returns the authentication headers with the applied shared key.
-   * @param url The URL.
+   * @param url The URL with query parameters sorted lexicographically.
    * @param method The HTTP method.
    * @param content The string content.
    * @param contentType The content type.
@@ -98,7 +110,7 @@ class AdlsAdapterAuthenticator {
       final String method,
       final String content,
       final String contentType)
-      throws URISyntaxException, NoSuchAlgorithmException, InvalidKeyException {
+      throws URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
     final Map<String, String> headers = new LinkedHashMap<>();
 
     // Add UTC now time and new version.
@@ -128,14 +140,16 @@ class AdlsAdapterAuthenticator {
     // Append canonicalized resource.
     final String accountName = uri.getHost().split("\\.")[0];
     builder.append("/").append(accountName);
-    builder.append(uri.getPath());
+    builder.append(uri.getRawPath());
     // Append canonicalized queries.
     if (!Strings.isNullOrEmpty(uri.getQuery())) {
-      final String queryParameters = uri.getQuery();
+      final String queryParameters = uri.getRawQuery();
       final String[] queryParts = queryParameters.split("&");
       for(final String item : queryParts) {
         final String[] keyValuePair = item.split("=");
-        builder.append("\n").append(keyValuePair[0]).append(":").append(keyValuePair[1]);
+        String queryName = keyValuePair[0].toLowerCase();
+        String decodedValue = URLDecoder.decode(keyValuePair[1], "UTF-8");
+        builder.append("\n").append(queryName).append(":").append(decodedValue);
       }
     }
 
@@ -173,7 +187,7 @@ class AdlsAdapterAuthenticator {
     }
 
     Date now = new Date();
-    return now.before(this.lastAuthenticationResult.getExpiresOnDate());
+    return this.lastAuthenticationResult.getExpiresOnDate().before(now);
   }
 
   /**
@@ -200,15 +214,53 @@ class AdlsAdapterAuthenticator {
     return sharedKey;
   }
 
+  void setSharedKey(String sharedKey) {
+    this.sharedKey = sharedKey;
+  }
+
   String getTenant() {
     return tenant;
+  }
+
+  void setTenant(String tenant) {
+    this.tenant = tenant;
   }
 
   String getClientId() {
     return clientId;
   }
 
+  void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
+
   String getSecret() {
     return secret;
+  }
+
+  void setSecret(String secret) {
+    this.secret = secret;
+  }
+
+  String getSasToken() {
+    return sasToken;
+  }
+
+  /**
+   * Sets the SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
+   * @param sasToken The SAS token
+   */
+  void setSasToken(String sasToken) {
+    this.sasToken = sasToken != null ?
+            (sasToken.startsWith("?") ? sasToken.substring(1) : sasToken)
+            : null;
+  }
+
+  TokenProvider getTokenProvider() {
+    return tokenProvider;
+  }
+
+  void setTokenProvider(TokenProvider tokenProvider) {
+    this.tokenProvider = tokenProvider;
   }
 }

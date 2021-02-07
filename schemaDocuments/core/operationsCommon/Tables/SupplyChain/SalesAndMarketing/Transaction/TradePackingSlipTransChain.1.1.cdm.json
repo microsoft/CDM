@@ -1,0 +1,80 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CustPackingSlipTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Transaction/VendPackingSlipTrans.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TradePackingSlipTransChain",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustPackingSlipTrans",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "VendPackingSlipTrans",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CustPackingSlipTrans"
+          },
+          "name": "Relationship_CustPackingSlipTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPackingSlipTrans"
+          },
+          "name": "Relationship_VendPackingSlipTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Packing slip line relations"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

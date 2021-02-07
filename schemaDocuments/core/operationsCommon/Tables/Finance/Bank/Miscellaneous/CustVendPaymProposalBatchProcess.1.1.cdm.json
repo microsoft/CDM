@@ -1,0 +1,198 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetHeader/LedgerJournalTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustVendPaymProposalBatchProcess",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "JournalId",
+          "dataType": "LedgerJournalId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ModuleCustVend",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IncludeInvoicesFromOtherCompanies",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreatePaymPerInvoiceCompany",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LimitPaymCreationToLedgerCompanyOnly",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultOffsetAccountType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultOffsetAccount",
+          "dataType": "LedgerJournalAC",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultOffsetLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChangePaymMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CanUseSpecTransSetBasedInsert",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CanUseCustVendPaymProposalLineSetBasedInsert",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "State",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Current state",
+          "description": ""
+        },
+        {
+          "name": "UserId",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "The user ID",
+          "description": ""
+        },
+        {
+          "name": "TargetState",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Target state",
+          "description": ""
+        },
+        {
+          "name": "BatchJobId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTable"
+          },
+          "name": "Relationship_LedgerJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DefaultOffsetLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payment proposal batch process."
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerJournalAC",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

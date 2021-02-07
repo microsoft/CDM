@@ -1,0 +1,152 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventItemGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "PMFSequenceTable.cdm.json"
+    },
+    {
+      "corpusPath": "PMFSequenceTableValue.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PMFSequenceItemTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ItemCode",
+          "dataType": "ItemCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemRelation",
+          "dataType": "ItemRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SequenceId",
+          "dataType": "PMFSequenceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SequenceValue",
+          "dataType": "PMFSequenceValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventItemGroup"
+          },
+          "name": "Relationship_InventItemGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PMFSequenceTable"
+          },
+          "name": "Relationship_PMFSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PMFSequenceTableValue"
+          },
+          "name": "Relationship_PMFSequenceTableValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sequence item"
+    },
+    {
+      "dataTypeName": "ItemCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ItemRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PMFSequenceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PMFSequenceValue",
+      "extendsDataType": "string"
+    }
+  ]
+}

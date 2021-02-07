@@ -1,0 +1,101 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/EMPAShared/Reference/SharedCategory.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvSharedSubCategory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ChargeType",
+          "dataType": "TrvChargeType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "TrvDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExcludeFromRecovery",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Exclude from tax recovery",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "TrvExpSubCategoryName",
+          "description": ""
+        },
+        {
+          "name": "SharedCategory",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "SystemCreated",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SharedCategory"
+          },
+          "name": "Relationship_SharedCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Shared expense subcategory"
+    },
+    {
+      "dataTypeName": "TrvChargeType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TrvDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvExpSubCategoryName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

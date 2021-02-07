@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 
 
@@ -11,6 +14,7 @@ public class AttributeContext {
     private String definition;
     private ArrayNode appliedTraits;
     private ArrayNode contents;
+    private ArrayNode lineage;
 
     public String getExplanation() {
         return this.explanation;
@@ -66,5 +70,13 @@ public class AttributeContext {
 
     public void setContents(final ArrayNode contents) {
         this.contents = contents;
+    }
+
+    public ArrayNode getLineage() {
+        return this.lineage;
+    }
+
+    public void setLineage(final ArrayNode lineage) {
+        this.lineage = lineage;
     }
 }

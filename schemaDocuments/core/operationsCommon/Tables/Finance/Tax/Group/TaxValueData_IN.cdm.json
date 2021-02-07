@@ -1,0 +1,193 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TaxValueThresholdProfile_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/ThresholdSections_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxValueData_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CalcUncalcPostedTrans",
+          "dataType": "CalcUncalcPostedTrans_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsCalculate",
+          "dataType": "IsCalculate_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsOverLook",
+          "dataType": "IsOverLook_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsPartOfTurnOver",
+          "dataType": "IsPartOfTurnOver_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PANTaxStatus_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonCode",
+          "dataType": "TaxWithholdReasonCode_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceReferenceRecId",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "SourceReferenceTableId",
+          "dataType": "RefTableId",
+          "description": ""
+        },
+        {
+          "name": "TaxValue",
+          "dataType": "TaxValue_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ThresholdSections",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "TaxValidFrom_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "TaxValidTo_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxValueThresholdProfile_IN"
+          },
+          "name": "Relationship_TaxValueThresholdProfile_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ThresholdSections_IN"
+          },
+          "name": "Relationship_ThresholdSections_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax value"
+    },
+    {
+      "dataTypeName": "CalcUncalcPostedTrans_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "IsCalculate_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "IsOverLook_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "IsPartOfTurnOver_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxWithholdReasonCode_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxValue_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxValidFrom_IN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxValidTo_IN",
+      "extendsDataType": "date"
+    }
+  ]
+}

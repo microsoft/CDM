@@ -1,11 +1,16 @@
-from typing import Optional, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import Optional, TYPE_CHECKING, cast
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.resolvedmodel import ResolvedAttributeSet
 
 from .cdm_collection import CdmCollection
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_references_entities import CdmReferencesEntities
+from .cdm_attribute_item import CdmAttributeItem
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttributeContext, CdmAttributeItem, CdmCollection, CdmCorpusContext, CdmObjectReference
@@ -25,6 +30,8 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
         self._members = CdmCollection(self.ctx, self, CdmObjectType.TYPE_ATTRIBUTE_DEF)  # type: CdmCollection[CdmAttributeItem]
 
+        self._TAG = CdmAttributeGroupDefinition.__name__
+
     @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.ATTRIBUTE_GROUP_DEF
@@ -43,6 +50,7 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
         from cdm.utilities import AttributeContextParameters
 
         rasb = ResolvedAttributeSetBuilder()
+        all_under = under  # type: CdmAttributeContext
 
         if under:
             acp_att_grp = AttributeContextParameters(
@@ -51,7 +59,7 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 name=self.get_name(),
                 regarding=self,
                 include_traits=False)
-            under = rasb.ras.create_attribute_context(res_opt, acp_att_grp)
+            under = rasb._resolved_attribute_set.create_attribute_context(res_opt, acp_att_grp)
 
         if self.members:
             for att in self.members:
@@ -63,8 +71,15 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
                         name=att.fetch_object_definition_name(),
                         regarding=att,
                         include_traits=False)
-                rasb.merge_attributes(att._fetch_resolved_attributes(res_opt, acp_att))
-        rasb.ras.attribute_context = under
+                ras_from_att = att._fetch_resolved_attributes(res_opt, acp_att)  # type: ResolvedAttributeSet
+                # before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
+                # from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before
+                # that didn't just pop out of that same named attribute now need to go away.
+                # mark any attributes formerly from this named attribute that don't show again as orphans
+                rasb._resolved_attribute_set.mark_orphans_for_removal(cast(CdmAttributeItem, att).fetch_object_definition_name, ras_from_att)
+                rasb.merge_attributes(ras_from_att)
+
+        rasb._resolved_attribute_set.attribute_context = all_under  # context must be the one expected from the caller's pov.
 
         # things that need to go away
         rasb.remove_requested_atts()
@@ -87,7 +102,7 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmAttributeGroupDefinition'] = None) -> 'CdmAttributeGroupDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmAttributeGroupDefinition(self.ctx, self.attribute_group_name)
@@ -123,11 +138,14 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
         return False
 
     def validate(self) -> bool:
-        return bool(self.attribute_group_name)
+        if not bool(self.attribute_group_name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['attribute_group_name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = path_from + self.attribute_group_name
@@ -136,8 +154,10 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.attribute_context and self.attribute_context.visit('{}/attributeContext/'.format(path), pre_children, post_children):
-            return True
+        if self.attribute_context:
+            self.attribute_context.owner = self
+            if self.attribute_context.visit('{}/attributeContext/'.format(path), pre_children, post_children):
+                return True
 
         if self.members and self.members._visit_array('{}/members/'.format(path), pre_children, post_children):
             return True

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.network;
 
 import static org.mockito.Matchers.any;
@@ -84,7 +87,7 @@ public class MockCdmHttpClientTest {
         cdmHttpRequest.setMaximumTimeout(Duration.ofMillis(10000));
         cdmHttpRequest.setTimeout(Duration.ofMillis(5000));
 
-        final CdmHttpResponse cdmHttpResponse = cdmHttpClient.sendAsync(cdmHttpRequest, null).get();
+        final CdmHttpResponse cdmHttpResponse = cdmHttpClient.sendAsync(cdmHttpRequest, null, null).get();
 
         Assert.assertEquals(200, cdmHttpResponse.getStatusCode());
         Assert.assertEquals("test data", cdmHttpResponse.getContent());
@@ -131,7 +134,7 @@ public class MockCdmHttpClientTest {
         cdmHttpRequest.setTimeout(Duration.ofMillis(1500));
 
         try {
-            final CdmHttpResponse cdmHttpResponse = cdmHttpClient.sendAsync(cdmHttpRequest, null).get();
+            final CdmHttpResponse cdmHttpResponse = cdmHttpClient.sendAsync(cdmHttpRequest, null, null).get();
             fail("An exception was expected.");
         } catch (final Exception ex) {
             Assert.assertTrue(ex.getMessage().contains("CdmTimedOutException"));
@@ -153,7 +156,7 @@ public class MockCdmHttpClientTest {
         cdmHttpRequest.setMaximumTimeout(Duration.ofMillis(100000));
         cdmHttpRequest.setTimeout(Duration.ofMillis(500));
         try {
-            final CdmHttpResponse cdmHttpResponse = cdmHttpClient.sendAsync(cdmHttpRequest, this::defaultWaitTimeCallback).get();
+            final CdmHttpResponse cdmHttpResponse = cdmHttpClient.sendAsync(cdmHttpRequest, this::defaultWaitTimeCallback, null).get();
             fail("An exception was expected.");
         } catch (final Exception ex) {
             Assert.assertTrue(ex.getMessage().contains("CdmNumberOfRetriesExceededException"));
@@ -184,7 +187,7 @@ public class MockCdmHttpClientTest {
         cdmHttpRequest.setTimeout(Duration.ofMillis(500));
 
 
-        final CdmHttpResponse cdmHttpResponse = cdmHttpClient.sendAsync(cdmHttpRequest, this::defaultWaitTimeCallback).get();
+        final CdmHttpResponse cdmHttpResponse = cdmHttpClient.sendAsync(cdmHttpRequest, this::defaultWaitTimeCallback, null).get();
 
         Assert.assertNotNull(cdmHttpResponse);
 

@@ -1,0 +1,43 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "traitName": "testExtendsTraitB",
+            "extendsTrait": "testTrait",
+            "hasParameters": [
+                {
+                    "name": "testExtendsTraitBParam1",
+                    "dataType": "string",
+                    "defaultValue": "TestExtendsTraitB Param 1 DefaultValue"
+                }
+            ]
+        },
+        {
+            "dataTypeName": "testExtendsDataTypeB",
+            "extendsDataType": "testDataType",
+            "exhibitsTraits": [
+                "does.haveDefault",
+                "testExtendsTraitB"
+            ]
+        },
+        {
+            "entityName": "TestProjectionExtendsTrait",
+            "extendsEntity": {
+                "source": "TestProjectionTrait"
+            },
+            "hasAttributes": [
+                {
+                    "name": "TestProjectionAttributeB",
+                    "dataType": "testExtendsDataTypeB",
+                    "purpose": "hasA"
+                }
+            ]
+        }
+    ]
+}

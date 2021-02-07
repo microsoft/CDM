@@ -1,0 +1,229 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventItemGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Main/JournalizingDefinition.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Group/VendGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JournalizingDefinitionPayablesTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountsPayableTransactionType",
+          "dataType": "AccountsPayableTransactionTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EcoResCategory",
+          "dataType": "InventCategoryRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemCode",
+          "dataType": "ItemTableGroupCategoryAllId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemGroupId",
+          "dataType": "ItemGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalizingDefinition",
+          "dataType": "JournalizingDefinitionId",
+          "description": ""
+        },
+        {
+          "name": "VendAccount",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendAccountCode",
+          "dataType": "VendorTableGroupAllId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendGroup",
+          "dataType": "VendGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_EcoResCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventItemGroup"
+          },
+          "name": "Relationship_InventItemGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JournalizingDefinition"
+          },
+          "name": "Relationship_JournalizingDefinitionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendGroup"
+          },
+          "name": "Relationship_VendGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Journalizing definition accounts payable"
+    },
+    {
+      "dataTypeName": "AccountsPayableTransactionTypeId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCategoryRelation",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ItemTableGroupCategoryAllId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ItemGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalizingDefinitionId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendorTableGroupAllId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

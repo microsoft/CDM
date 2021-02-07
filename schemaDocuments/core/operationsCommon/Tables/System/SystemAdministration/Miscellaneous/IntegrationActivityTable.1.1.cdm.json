@@ -1,0 +1,145 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "IntegrationClientMapTable.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "IntegrationActivityTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Name",
+          "dataType": "IntegrationName",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "IntegrationDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivityId",
+          "dataType": "IntegrationActivityId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "State",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Direction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefinitionGroupName",
+          "dataType": "DMFDefinitionGroupName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SysRecurrenceData",
+          "dataType": "SysRecurrenceData",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MonitoringRecurrenceData",
+          "dataType": "SysRecurrenceData",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessMessagesSerially",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Process messages only in the order received",
+          "description": ""
+        },
+        {
+          "name": "DataSource",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Supported data source type",
+          "description": ""
+        },
+        {
+          "name": "UseDataAreaIdFromMessage",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Specify if the legal entity for processing would be picked from the submitted job. If no, messages would be processed in the company context in which this job is scheduled to run.",
+          "description": ""
+        },
+        {
+          "name": "PreventUpload",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prevent upload when zero records",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "IntegrationClientMapTable"
+          },
+          "name": "Relationship_ClientIdMapRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "IntegrationName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntegrationDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntegrationActivityId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "DMFDefinitionGroupName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysRecurrenceData",
+      "extendsDataType": "binary"
+    }
+  ]
+}

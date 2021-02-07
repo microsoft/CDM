@@ -1,0 +1,242 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "BankChequePaymTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "BankChequeTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankChequeReprints",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountID",
+          "dataType": "CompanyBankAccountId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Amount",
+          "description": ""
+        },
+        {
+          "name": "BankNegInstRecipientName",
+          "dataType": "BankNegInstRecipientName",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChequeNum",
+          "dataType": "BankChequeNum",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ChequeStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Status",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RecipientAccountNum",
+          "dataType": "CustVendAC",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Recipient",
+          "description": ""
+        },
+        {
+          "name": "RecipientType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_BankAccountsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankChequePaymTrans"
+          },
+          "name": "Relationship_BankChequePaymentTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankChequeTable"
+          },
+          "name": "Relationship_CheckNumRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Check table"
+    },
+    {
+      "dataTypeName": "CompanyBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankNegInstRecipientName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankChequeNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendAC",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

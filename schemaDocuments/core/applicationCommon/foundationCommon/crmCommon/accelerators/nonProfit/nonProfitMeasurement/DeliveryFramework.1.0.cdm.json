@@ -1,0 +1,445 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.1.0.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "DeliveryFramework",
+            "extendsEntity": "base_DeliveryFramework/DeliveryFramework",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Delivery Framework"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        ""
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
+            "sourceName": "msnfp_deliveryframework",
+            "displayName": "Delivery Framework",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitMeasurement/DeliveryFramework.1.0.cdm.json/DeliveryFramework/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "purpose": "hasA",
+                                "dataType": "country",
+                                "name": "country",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msnfp_Country"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "250"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Country"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Records the country related to the delivery framework."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_country",
+                                "displayName": "Country",
+                                "description": "Records the country related to the delivery framework.",
+                                "maximumLength": 250
+                            },
+                            {
+                                "name": "donor",
+                                "entity": {
+                                    "entityReference": "Account",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Account/(resolvedAttributes)/accountId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "explanation": "Unique identifier of 'Account'.",
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "donorId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Donor"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "This field contains the unique identifier for the donor."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "msnfp_donorid",
+                                            "displayName": "Donor",
+                                            "description": "This field contains the unique identifier for the donor."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Approved",
+                                                                "844060000"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Review in Progress",
+                                                                "844060001"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Review Not Started",
+                                                                "844060002"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "logframeStatus",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msnfp_LogframeStatus"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Logframe Status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Records the delivery frameworks  status in the review process."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'logframeStatus_display' is added to the 'DeliveryFramework' entity to provide the localized display text for the value of the listLookup attribute 'logframeStatus'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "logframeStatus_display",
+                                        "isReadOnly": true
+                                    }
+                                },
+                                "sourceName": "msnfp_logframestatus",
+                                "displayName": "Logframe Status",
+                                "description": "Records the delivery frameworks  status in the review process."
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "string",
+                                "name": "region",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msnfp_Region"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "250"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Region"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Records the region related to the delivery framework."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msnfp_region",
+                                "displayName": "Region",
+                                "description": "Records the region related to the delivery framework.",
+                                "maximumLength": 250
+                            },
+                            {
+                                "name": "reviewer",
+                                "entity": {
+                                    "entityReference": "User",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "User/(resolvedAttributes)/systemUserId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "explanation": "Unique identifier of 'User'.",
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "reviewerId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Reviewer"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Records who will be reviewing the delivery framework."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "msnfp_reviewer",
+                                            "displayName": "Reviewer",
+                                            "description": "Records who will be reviewing the delivery framework."
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

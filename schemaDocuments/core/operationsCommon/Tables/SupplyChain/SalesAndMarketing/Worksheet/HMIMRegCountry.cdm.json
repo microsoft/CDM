@@ -1,0 +1,83 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/HMIMRegulation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "HMIMRegCountry",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RegCode",
+          "dataType": "HMIMRegCode",
+          "description": ""
+        },
+        {
+          "name": "CountryRegionId",
+          "dataType": "LogisticsAddressCountryRegionId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "HMIMRegulation"
+          },
+          "name": "Relationship_HMIMRegulationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Regulation countries"
+    },
+    {
+      "dataTypeName": "HMIMRegCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCountryRegionId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,510 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "manifestName": "Reference",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "JmgTermTexts",
+      "entityPath": "JmgTermTexts.cdm.json/JmgTermTexts"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "JmgProfileTypeTable",
+      "entityPath": "JmgProfileTypeTable.cdm.json/JmgProfileTypeTable"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "JmgIpcCategory",
+      "entityPath": "JmgIpcCategory.cdm.json/JmgIpcCategory"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "JmgProfileDay",
+      "entityPath": "JmgProfileDay.cdm.json/JmgProfileDay"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "JmgPayAdjustSetup",
+      "entityPath": "JmgPayAdjustSetup.cdm.json/JmgPayAdjustSetup"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "JmgPayRate",
+      "entityPath": "JmgPayRate.cdm.json/JmgPayRate"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "JmgIpcActivity",
+      "entityPath": "JmgIpcActivity.cdm.json/JmgIpcActivity"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "JmgProfileTable",
+      "entityPath": "JmgProfileTable.cdm.json/JmgProfileTable"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "JmgPayLineDelimitation",
+      "entityPath": "JmgPayLineDelimitation.cdm.json/JmgPayLineDelimitation"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "JmgTermTexts.cdm.json/JmgTermTexts",
+      "fromEntityAttribute": "Relationship_JmgPayStatGroupRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/JmgPayStatGroup.cdm.json/JmgPayStatGroup",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgTermTexts.cdm.json/JmgTermTexts",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgProfileTypeTable.cdm.json/JmgProfileTypeTable",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgProfileSpec.cdm.json/JmgProfileSpec",
+      "fromEntityAttribute": "Relationship_JmgProfileTypeTableRelationshipId",
+      "toEntity": "JmgProfileTypeTable.cdm.json/JmgProfileTypeTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgProfileSpec.cdm.json/JmgProfileSpec",
+      "fromEntityAttribute": "Relationship_SecondaryRelationshipId",
+      "toEntity": "JmgProfileTypeTable.cdm.json/JmgProfileTypeTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementLine.cdm.json/JmgPayAgreementLine",
+      "fromEntityAttribute": "Relationship_JmgProfileTypeTableRelationshipId",
+      "toEntity": "JmgProfileTypeTable.cdm.json/JmgProfileTypeTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementOverrideLine.cdm.json/JmgPayAgreementOverrideLine",
+      "fromEntityAttribute": "Relationship_JmgProfileTypeTableRelationshipId",
+      "toEntity": "JmgProfileTypeTable.cdm.json/JmgProfileTypeTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgProfileOverrideSpec.cdm.json/JmgProfileOverrideSpec",
+      "fromEntityAttribute": "Relationship_JmgProfileTypeTableRelationshipId",
+      "toEntity": "JmgProfileTypeTable.cdm.json/JmgProfileTypeTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgProfileOverrideSpec.cdm.json/JmgProfileOverrideSpec",
+      "fromEntityAttribute": "Relationship_SecondaryRelationshipId",
+      "toEntity": "JmgProfileTypeTable.cdm.json/JmgProfileTypeTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Entities/SupplyChain/ProductionControl/JmgTimeAndAttendanceProfileTypeEntity.cdm.json/JmgTimeAndAttendanceProfileTypeEntity",
+      "fromEntityAttribute": "BackingTable_JmgProfileTypeTableRelationshipId",
+      "toEntity": "JmgProfileTypeTable.cdm.json/JmgProfileTypeTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "fromEntityAttribute": "Relationship_JmgIpcCategoryRelationshipId",
+      "toEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgStampTrans.cdm.json/JmgStampTrans",
+      "fromEntityAttribute": "Relationship_JobRef_IpcBreakRelationshipId",
+      "toEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgStampTrans.cdm.json/JmgStampTrans",
+      "fromEntityAttribute": "Relationship_JobRef_IpcCategoryRelationshipId",
+      "toEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgJobTable.cdm.json/JmgJobTable",
+      "fromEntityAttribute": "Relationship_JmgIpcCategoryRelationshipId",
+      "toEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgIpcTrans.cdm.json/JmgIpcTrans",
+      "fromEntityAttribute": "Relationship_JmgIpcCategoryRelationshipId",
+      "toEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/JmgStampJournalTrans.cdm.json/JmgStampJournalTrans",
+      "fromEntityAttribute": "Relationship_JobRef_IpcBreakRelationshipId",
+      "toEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/JmgStampJournalTrans.cdm.json/JmgStampJournalTrans",
+      "fromEntityAttribute": "Relationship_JobRef_IpcCategoryRelationshipId",
+      "toEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/JmgIpcJournalTrans.cdm.json/JmgIpcJournalTrans",
+      "fromEntityAttribute": "Relationship_JmgIpcCategoryRelationshipId",
+      "toEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Worksheet/JmgProdJobStatus.cdm.json/JmgProdJobStatus",
+      "fromEntityAttribute": "Relationship_JmgIpcCategoryRelationshipId",
+      "toEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Entities/SupplyChain/ProductionControl/JmgIndirectTimeAndAttendanceActivityCategoryEntity.cdm.json/JmgIndirectTimeAndAttendanceActivityCategoryEntity",
+      "fromEntityAttribute": "BackingTable_JmgIpcCategoryRelationshipId",
+      "toEntity": "JmgIpcCategory.cdm.json/JmgIpcCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgProfileDay.cdm.json/JmgProfileDay",
+      "fromEntityAttribute": "Relationship_JmgProfileSpecRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgProfileSpec.cdm.json/JmgProfileSpec",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgProfileDay.cdm.json/JmgProfileDay",
+      "fromEntityAttribute": "Relationship_JmgProfileTableRelationshipId",
+      "toEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgProfileDay.cdm.json/JmgProfileDay",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgPayAdjustSetup.cdm.json/JmgPayAdjustSetup",
+      "fromEntityAttribute": "Relationship_JmgPayAgreementTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementTable.cdm.json/JmgPayAgreementTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgPayAdjustSetup.cdm.json/JmgPayAdjustSetup",
+      "fromEntityAttribute": "Relationship_JmgPayTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayTable.cdm.json/JmgPayTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgPayAdjustSetup.cdm.json/JmgPayAdjustSetup",
+      "fromEntityAttribute": "Relationship_ProjPeriodTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjPeriodTable.cdm.json/ProjPeriodTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgPayAdjustSetup.cdm.json/JmgPayAdjustSetup",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAdjustCostType.cdm.json/JmgPayAdjustCostType",
+      "fromEntityAttribute": "Relationship_JmgPayAdjustSetupRelationshipId",
+      "toEntity": "JmgPayAdjustSetup.cdm.json/JmgPayAdjustSetup",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgPayEvents.cdm.json/JmgPayEvents",
+      "fromEntityAttribute": "Relationship_JmgPayAdjustSetupRelationshipId",
+      "toEntity": "JmgPayAdjustSetup.cdm.json/JmgPayAdjustSetup",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgPayRate.cdm.json/JmgPayRate",
+      "fromEntityAttribute": "Relationship_JmgPayTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayTable.cdm.json/JmgPayTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgPayRate.cdm.json/JmgPayRate",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayEmployee.cdm.json/JmgPayEmployee",
+      "fromEntityAttribute": "Relationship_JmgPayRateRelationshipId",
+      "toEntity": "JmgPayRate.cdm.json/JmgPayRate",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "fromEntityAttribute": "Relationship_DefaultDimensionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json/DimensionAttributeValueSet",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "fromEntityAttribute": "Relationship_JmgJobTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgJobTable.cdm.json/JmgJobTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "fromEntityAttribute": "Relationship_LedgerDimensionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json/DimensionAttributeValueCombination",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "fromEntityAttribute": "Relationship_OffsetLedgerDimensionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json/DimensionAttributeValueCombination",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgProfileSpec.cdm.json/JmgProfileSpec",
+      "fromEntityAttribute": "Relationship_SwitchJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementLine.cdm.json/JmgPayAgreementLine",
+      "fromEntityAttribute": "Relationship_JmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementLine.cdm.json/JmgPayAgreementLine",
+      "fromEntityAttribute": "Relationship_OnCallJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementLine.cdm.json/JmgPayAgreementLine",
+      "fromEntityAttribute": "Relationship_SwitchJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementOverrideLine.cdm.json/JmgPayAgreementOverrideLine",
+      "fromEntityAttribute": "Relationship_JmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementOverrideLine.cdm.json/JmgPayAgreementOverrideLine",
+      "fromEntityAttribute": "Relationship_OnCallJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementOverrideLine.cdm.json/JmgPayAgreementOverrideLine",
+      "fromEntityAttribute": "Relationship_SwitchJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgStampTrans.cdm.json/JmgStampTrans",
+      "fromEntityAttribute": "Relationship_JobId_IpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgStampTrans.cdm.json/JmgStampTrans",
+      "fromEntityAttribute": "Relationship_OnCallJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgAttendanceRegistration.cdm.json/JmgAttendanceRegistration",
+      "fromEntityAttribute": "Relationship_JmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgAttendanceRegistration.cdm.json/JmgAttendanceRegistration",
+      "fromEntityAttribute": "Relationship_SwitchJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgProfileOverrideSpec.cdm.json/JmgProfileOverrideSpec",
+      "fromEntityAttribute": "Relationship_SwitchJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgIllegalEventCodeCombination.cdm.json/JmgIllegalEventCodeCombination",
+      "fromEntityAttribute": "Relationship_ExcludesSwitchJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgIllegalEventCodeCombination.cdm.json/JmgIllegalEventCodeCombination",
+      "fromEntityAttribute": "Relationship_SwitchJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgTermRegArchive.cdm.json/JmgTermRegArchive",
+      "fromEntityAttribute": "Relationship_OnCallJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgTermReg.cdm.json/JmgTermReg",
+      "fromEntityAttribute": "Relationship_OnCallJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgEventCtrl.cdm.json/JmgEventCtrl",
+      "fromEntityAttribute": "Relationship_SwitchJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgIpcTrans.cdm.json/JmgIpcTrans",
+      "fromEntityAttribute": "Relationship_JmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgIpcActivityCostPrice.cdm.json/JmgIpcActivityCostPrice",
+      "fromEntityAttribute": "Relationship_JmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/JmgStampJournalTrans.cdm.json/JmgStampJournalTrans",
+      "fromEntityAttribute": "Relationship_JobId_IpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/JmgStampJournalTrans.cdm.json/JmgStampJournalTrans",
+      "fromEntityAttribute": "Relationship_OnCallJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/JmgIpcJournalTrans.cdm.json/JmgIpcJournalTrans",
+      "fromEntityAttribute": "Relationship_JmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/JmgTimecardTrans.cdm.json/JmgTimecardTrans",
+      "fromEntityAttribute": "Relationship_OnCallJmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/JmgGroupSigningTable.cdm.json/JmgGroupSigningTable",
+      "fromEntityAttribute": "Relationship_JmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Entities/SupplyChain/ProductionControl/JmgIndirectTimeAndAttendanceActivityEntity.cdm.json/JmgIndirectTimeAndAttendanceActivityEntity",
+      "fromEntityAttribute": "BackingTable_JmgIpcActivityRelationshipId",
+      "toEntity": "JmgIpcActivity.cdm.json/JmgIpcActivity",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "fromEntityAttribute": "Relationship_JmgPayAgreementTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementTable.cdm.json/JmgPayAgreementTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgProfileSpec.cdm.json/JmgProfileSpec",
+      "fromEntityAttribute": "Relationship_JmgProfileTableRelationshipId",
+      "toEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgEmployee.cdm.json/JmgEmployee",
+      "fromEntityAttribute": "Relationship_JmgProfileTableRelationshipId",
+      "toEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementLine.cdm.json/JmgPayAgreementLine",
+      "fromEntityAttribute": "Relationship_JmgProfileTableRelationshipId",
+      "toEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementOverrideLine.cdm.json/JmgPayAgreementOverrideLine",
+      "fromEntityAttribute": "Relationship_JmgProfileTableRelationshipId",
+      "toEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgProfileRelation.cdm.json/JmgProfileRelation",
+      "fromEntityAttribute": "Relationship_ProfileTableRelationshipId",
+      "toEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/JmgTimecardTable.cdm.json/JmgTimecardTable",
+      "fromEntityAttribute": "Relationship_JmgProfileTableRelationshipId",
+      "toEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/JmgStampJournalTable.cdm.json/JmgStampJournalTable",
+      "fromEntityAttribute": "Relationship_JmgProfileTableRelationshipId",
+      "toEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Worksheet/JmgProfileCalendar.cdm.json/JmgProfileCalendar",
+      "fromEntityAttribute": "Relationship_JmgProfileTableRelationshipId",
+      "toEntity": "JmgProfileTable.cdm.json/JmgProfileTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgPayLineDelimitation.cdm.json/JmgPayLineDelimitation",
+      "fromEntityAttribute": "Relationship_ExpressionTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/ExpressionTable.cdm.json/ExpressionTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgPayLineDelimitation.cdm.json/JmgPayLineDelimitation",
+      "fromEntityAttribute": "Relationship_JmgPayAgreementLineRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementLine.cdm.json/JmgPayAgreementLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "JmgPayLineDelimitation.cdm.json/JmgPayLineDelimitation",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    }
+  ]
+}

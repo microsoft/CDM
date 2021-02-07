@@ -1,0 +1,92 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxFiscalClassification_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApproxTaxValueImported",
+          "dataType": "ApproximateTaxValue_BR",
+          "isNullable": true,
+          "displayName": "Tax rate for imported products",
+          "description": ""
+        },
+        {
+          "name": "ApproxTaxValueNational",
+          "dataType": "ApproximateTaxValue_BR",
+          "isNullable": true,
+          "displayName": "Tax rate for national products",
+          "description": ""
+        },
+        {
+          "name": "FiscalClassificationId",
+          "dataType": "TaxFiscalClassificationId_BR",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "TaxFiscalClassificationName_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal classification code"
+    },
+    {
+      "dataTypeName": "ApproximateTaxValue_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxFiscalClassificationId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxFiscalClassificationName_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

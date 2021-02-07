@@ -1,0 +1,88 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysTaskRecorderFramework.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "SysTaskRecorderIndustry.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysTaskRecorderFrameworkIndustryMap",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Framework",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GenerateProcessData",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Generate process data",
+          "description": ""
+        },
+        {
+          "name": "Industry",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysTaskRecorderFramework"
+          },
+          "name": "Relationship_SysTaskRecorderFrameworkRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysTaskRecorderIndustry"
+          },
+          "name": "Relationship_SysTaskRecorderIndustryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Framework industry map"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/EMPAShared/Reference/SharedCategory.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MeasurementCategoryEnabledModule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Category",
+          "dataType": "SharedCategoryRecId",
+          "description": ""
+        },
+        {
+          "name": "Module",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "CompanyId",
+          "dataType": "CompanyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SharedCategory"
+          },
+          "name": "Relationship_ActivityCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Modules where a category is enabled"
+    },
+    {
+      "dataTypeName": "SharedCategoryRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    }
+  ]
+}

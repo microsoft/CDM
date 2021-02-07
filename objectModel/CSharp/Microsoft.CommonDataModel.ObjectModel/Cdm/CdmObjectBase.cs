@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmObjectBase.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -75,9 +72,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public abstract T FetchObjectDefinition<T>(ResolveOptions resOpt = null) where T : CdmObjectDefinition;
 
+
         /// <inheritdoc />
-        public virtual string AtCorpusPath { 
-            get {
+        public virtual string AtCorpusPath
+        {
+            get
+            {
                 if (this.InDocument == null)
                 {
                     return $"NULL:/NULL/{this.DeclaredPath}";
@@ -103,19 +103,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         private bool resolvingTraits = false;
 
-        [Obsolete()]
         internal virtual ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)
         {
             bool wasPreviouslyResolving = this.Ctx.Corpus.isCurrentlyResolving;
             this.Ctx.Corpus.isCurrentlyResolving = true;
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             const string kind = "rtsb";
             ResolveContext ctx = this.Ctx as ResolveContext;
-            string cacheTagA = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind);
+            string cacheTagA = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind);
             ResolvedTraitSetBuilder rtsbAll = null;
             if (this.TraitCache == null)
                 this.TraitCache = new Dictionary<string, ResolvedTraitSetBuilder>();
@@ -146,7 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (objDef != null)
                 {
                     // register set of possible docs
-                    ((CdmCorpusDefinition)ctx.Corpus).RegisterDefinitionReferenceSymbols(objDef, kind, resOpt.SymbolRefSet);
+                    ctx.Corpus.RegisterDefinitionReferenceSymbols(objDef, kind, resOpt.SymbolRefSet);
 
                     if (rtsbAll.ResolvedTraitSet == null)
                     {
@@ -154,7 +153,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         rtsbAll.ResolvedTraitSet = new ResolvedTraitSet(resOpt);
                     }
                     // get the new cache tag now that we have the list of docs
-                    cacheTagA = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind);
+                    cacheTagA = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind);
                     if (!string.IsNullOrWhiteSpace(cacheTagA))
                         this.TraitCache[cacheTagA] = rtsbAll;
                 }
@@ -175,26 +174,51 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
             return rtsbAll.ResolvedTraitSet;
         }
+        virtual internal ResolvedAttributeSetBuilder FetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext = null)
+        {
+            const string kind = "rasb";
+            ResolveContext ctx = this.Ctx as ResolveContext;
+            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
 
-        private bool resolvingAttributes = false;
+            dynamic rasbCache = null;
+            if (cacheTag != null)
+            {
+                ctx.Cache.TryGetValue(cacheTag, out rasbCache);
+            }
+            return rasbCache;
+        }
 
-        [Obsolete()]
         internal ResolvedAttributeSet FetchResolvedAttributes(ResolveOptions resOpt = null, AttributeContextParameters acpInContext = null)
         {
             bool wasPreviouslyResolving = this.Ctx.Corpus.isCurrentlyResolving;
             this.Ctx.Corpus.isCurrentlyResolving = true;
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            bool inCircularReference = false;
+            bool wasInCircularReference = resOpt.InCircularReference;
+            if (this is CdmEntityDefinition entity)
+            {
+                inCircularReference = resOpt.CurrentlyResolvingEntities.Contains(entity);
+                resOpt.CurrentlyResolvingEntities.Add(entity);
+                resOpt.InCircularReference = inCircularReference;
+
+                // uncomment this line as a test to turn off allowing cycles
+                //if (inCircularReference)
+                //{
+                //    return new ResolvedAttributeSet();
+                //}
             }
 
             const string kind = "rasb";
             ResolveContext ctx = this.Ctx as ResolveContext;
-            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
-            dynamic rasbCache = null;
-            if (cacheTag != null)
-                ctx.Cache.TryGetValue(cacheTag, out rasbCache);
-            CdmAttributeContext underCtx = null;
+            ResolvedAttributeSetBuilder rasbResult = null;
+            ResolvedAttributeSetBuilder rasbCache = this.FetchObjectFromCache(resOpt, acpInContext);
+            CdmAttributeContext underCtx;
+
+            int currentDepth = resOpt.DepthInfo.CurrentDepth;
 
             // store the previous document set, we will need to add it with
             // children found from the constructResolvedTraits call
@@ -205,81 +229,99 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             resOpt.SymbolRefSet = new SymbolSet();
 
-            // get the moniker that was found and needs to be appended to all
-            // refs in the children attribute context nodes
-            string fromMoniker = resOpt.FromMoniker;
-            resOpt.FromMoniker = null;
+            // if using the cache passes the maxDepth, we cannot use it
+            if (rasbCache != null && resOpt.DepthInfo.CurrentDepth + rasbCache.ResolvedAttributeSet.DepthTraveled > resOpt.DepthInfo.MaxDepth)
+            {
+                rasbCache = null;
+            }
 
             if (rasbCache == null)
             {
-                if (this.resolvingAttributes)
-                {
-                    // re-entered this attribute through some kind of self or looping reference.
-                    this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
-                    return new ResolvedAttributeSet();
-                }
-                this.resolvingAttributes = true;
-
-                // if a new context node is needed for these attributes, make it now
-                if (acpInContext != null)
-                    underCtx = CdmAttributeContext.CreateChildUnder(resOpt, acpInContext);
+                // a new context node is needed for these attributes, 
+                // this tree will go into the cache, so we hang it off a placeholder parent
+                // when it is used from the cache (or now), then this placeholder parent is ignored and the things under it are
+                // put into the 'receiving' tree
+                underCtx = CdmAttributeContext.GetUnderContextForCacheContext(resOpt, this.Ctx, acpInContext);
 
                 rasbCache = this.ConstructResolvedAttributes(resOpt, underCtx);
-                this.resolvingAttributes = false;
 
-                // register set of possible docs
-                CdmObjectDefinition oDef = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
-                if (oDef != null)
+                if (rasbCache != null)
                 {
-                    ((CdmCorpusDefinition)ctx.Corpus).RegisterDefinitionReferenceSymbols(oDef, kind, resOpt.SymbolRefSet);
-
-                    // get the new cache tag now that we have the list of docs
-                    cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
-
-                    // save this as the cached version
-                    if (!string.IsNullOrWhiteSpace(cacheTag))
-                        ctx.Cache[cacheTag] = rasbCache;
-
-                    if (!string.IsNullOrWhiteSpace(fromMoniker) && acpInContext != null &&
-                        (this is CdmObjectReferenceBase) && (this as CdmObjectReferenceBase).NamedReference != null)
+                    // register set of possible docs
+                    CdmObjectDefinition oDef = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
+                    if (oDef != null)
                     {
-                        // create a fresh context
-                        CdmAttributeContext oldContext = acpInContext.under.Contents[acpInContext.under.Contents.Count - 1] as CdmAttributeContext;
-                        acpInContext.under.Contents.RemoveAt(acpInContext.under.Contents.Count - 1);
-                        underCtx = CdmAttributeContext.CreateChildUnder(resOpt, acpInContext);
+                        ctx.Corpus.RegisterDefinitionReferenceSymbols(oDef, kind, resOpt.SymbolRefSet);
 
-                        CdmAttributeContext newContext = oldContext.CopyAttributeContextTree(resOpt, underCtx, rasbCache.ResolvedAttributeSet, null, fromMoniker);
-                        // since THIS should be a refererence to a thing found in a moniker document, it already has a moniker in the reference
-                        // this function just added that same moniker to everything in the sub-tree but now this one symbol has too many
-                        // remove one
-                        string monikerPathAdded = $"{fromMoniker}/";
-                        if (newContext.Definition != null && newContext.Definition.NamedReference != null &&
-                            newContext.Definition.NamedReference.StartsWith(monikerPathAdded))
-                        {
-                            // slice it off the front
-                            newContext.Definition.NamedReference = newContext.Definition.NamedReference.Substring(monikerPathAdded.Length);
-                        }
+                        // get the new cache tag now that we have the list of docs
+                        string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
+
+                        // save this as the cached version
+                        if (!string.IsNullOrWhiteSpace(cacheTag))
+                            ctx.Cache[cacheTag] = rasbCache;
                     }
+                    // get the 'underCtx' of the attribute set from the acp that is wired into
+                    // the target tree
+                    underCtx = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
                 }
             }
             else
             {
-                // cache found. if we are building a context, then fix what we got instead of making a new one
-                if (acpInContext != null)
-                {
-                    // make the new context
-                    underCtx = CdmAttributeContext.CreateChildUnder(resOpt, acpInContext);
+                // get the 'underCtx' of the attribute set from the cache. The one stored there was build with a different
+                // acp and is wired into the fake placeholder. so now build a new underCtx wired into the output tree but with
+                // copies of all cached children
+                underCtx = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
+                //underCtx.ValidateLineage(resOpt); // debugging
+            }
 
-                    rasbCache.ResolvedAttributeSet.AttributeContext.CopyAttributeContextTree(resOpt, underCtx, rasbCache.ResolvedAttributeSet, null, fromMoniker);
+            if (rasbCache != null)
+            {
+                // either just built something or got from cache
+                // either way, same deal: copy resolved attributes and copy the context tree associated with it
+                // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
+                // 2. deep copy the tree. 
+
+                // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
+                rasbResult = new ResolvedAttributeSetBuilder
+                {
+                    ResolvedAttributeSet = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.Copy()
+                };
+
+                // 2. deep copy the tree and map the context references. 
+                if (underCtx != null) // null context? means there is no tree, probably 0 attributes came out
+                {
+                    if (underCtx.AssociateTreeCopyWithAttributes(resOpt, rasbResult.ResolvedAttributeSet) == false)
+                    {
+                        return null;
+                    }
                 }
             }
+
+            if (this is CdmEntityAttributeDefinition)
+            {
+                // current depth should now be set to this entity attribute level
+                resOpt.DepthInfo.CurrentDepth = currentDepth;
+                // now at the top of the chain where max depth does not influence the cache
+                if (currentDepth == 0)
+                {
+                    resOpt.DepthInfo.MaxDepthExceeded = false;
+                }
+            }
+            
+            if (!inCircularReference && this.ObjectType == CdmObjectType.EntityDef)
+            {
+                // should be removed from the root level only
+                // if it is in a circular reference keep it there
+                resOpt.CurrentlyResolvingEntities.Remove(this as CdmEntityDefinition);
+            }
+            resOpt.InCircularReference = wasInCircularReference;
 
             // merge child document set with current
             currDocRefSet.Merge(resOpt.SymbolRefSet);
             resOpt.SymbolRefSet = currDocRefSet;
 
             this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
-            return rasbCache?.ResolvedAttributeSet;
+            return rasbResult?.ResolvedAttributeSet;
         }
 
         internal void ClearTraitCache()
@@ -304,7 +346,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(instance);
+                resOpt = new ResolveOptions(instance, instance.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             if (options == null)
@@ -354,6 +396,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return result;
         }
 
+        private static dynamic ProtectParameterValues(ResolveOptions resOpt, dynamic val)
+        {
+            if (val != null)
+            {
+                // the value might be a contant entity object, need to protect the original 
+                var cEnt = (val as CdmEntityReference)?.ExplicitReference as CdmConstantEntityDefinition;
+                if (cEnt != null)
+                {
+                    // copy the constant entity AND the reference that holds it
+                    cEnt = cEnt.Copy(resOpt) as CdmConstantEntityDefinition;
+                    val = (val as CdmEntityReference).Copy(resOpt);
+                    (val as CdmEntityReference).ExplicitReference = cEnt;
+                }
+            }
+            return val;
+        }
+
+
         internal static CdmTraitReference ResolvedTraitToTraitRef(ResolveOptions resOpt, ResolvedTrait rt)
         {
             CdmTraitReference traitRef = null;
@@ -364,7 +424,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (l == 1)
                 {
                     // just one argument, use the shortcut syntax
-                    dynamic val = rt.ParameterValues.Values[0];
+                    dynamic val = ProtectParameterValues(resOpt, rt.ParameterValues.Values[0]);
                     if (val != null)
                     {
                         traitRef.Arguments.Add(null, val);
@@ -375,7 +435,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     for (int i = 0; i < l; i++)
                     {
                         CdmParameterDefinition param = rt.ParameterValues.FetchParameterAtIndex(i);
-                        dynamic val = rt.ParameterValues.Values[i];
+                        dynamic val = ProtectParameterValues(resOpt, rt.ParameterValues.Values[i]);
                         if (val != null)
                         {
                             traitRef.Arguments.Add(param.Name, val);
@@ -392,24 +452,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 traitRef.InDocument = (rt.Trait as CdmTraitDefinition).InDocument;
             }
             // always make it a property when you can, however the dataFormat traits should be left alone
-            if (rt.Trait.AssociatedProperties != null && !rt.Trait.IsDerivedFrom("is.dataFormat", resOpt))
+            // also the wellKnown is the first constrained list that uses the datatype to hold the table instead of the default value property.
+            // so until we figure out how to move the enums away from default value, show that trait too
+            if (rt.Trait.AssociatedProperties != null && !rt.Trait.IsDerivedFrom("is.dataFormat", resOpt) && !(rt.Trait.TraitName == "is.constrainedList.wellKnown"))
                 traitRef.IsFromProperty = true;
             return traitRef;
         }
 
-        internal static ResolveOptions CopyResolveOptions(ResolveOptions resOpt)
-        {
-            ResolveOptions resOptCopy = new ResolveOptions();
-            resOptCopy.WrtDoc = resOpt.WrtDoc;
-            resOptCopy.RelationshipDepth = resOpt.RelationshipDepth;
-            if (resOpt.Directives != null)
-                resOptCopy.Directives = resOpt.Directives.Copy();
-            resOptCopy.LocalizeReferencesFor = resOpt.LocalizeReferencesFor;
-            resOptCopy.IndexingDoc = resOpt.IndexingDoc;
-            return resOptCopy;
-        }
-
         /// <inheritdoc />
         public abstract CdmObjectReference CreateSimpleReference(ResolveOptions resOpt = null);
+        internal abstract CdmObjectReference CreatePortableReference(ResolveOptions resOpt);
     }
 }

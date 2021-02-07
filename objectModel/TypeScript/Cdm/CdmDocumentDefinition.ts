@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmAttributeContext,
     CdmCollection,
@@ -16,34 +19,45 @@ import {
     CdmObjectBase,
     CdmObjectDefinition,
     CdmObjectDefinitionBase,
+    CdmObjectReferenceBase,
     cdmObjectSimple,
     cdmObjectType,
     copyOptions,
+    Errors,
+    ImportInfo,
+    importsLoadStrategy,
     Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
     VisitCallback
 } from '../internal';
+import { using } from "using-statement";
+import { enterScope } from '../Utilities/Logging/Logger';
 
 /**
  * @internal
  */
 class ImportPriorities {
-    public importPriority: Map<CdmDocumentDefinition, number>;
+    public importPriority: Map<CdmDocumentDefinition, ImportInfo>;
     public monikerPriorityMap: Map<string, CdmDocumentDefinition>;
+    public hasCircularImport: boolean;
 
     constructor() {
-        this.importPriority = new Map<CdmDocumentDefinition, number>();
+        this.importPriority = new Map<CdmDocumentDefinition, ImportInfo>();
         this.monikerPriorityMap = new Map<string, CdmDocumentDefinition>();
+        this.hasCircularImport = false;
     }
 
     public copy(): ImportPriorities {
         const copy: ImportPriorities = new ImportPriorities();
         if (this.importPriority) {
-            this.importPriority.forEach((v: number, k: CdmDocumentDefinition) => { copy.importPriority.set(k, v); });
+            this.importPriority.forEach((v: ImportInfo, k: CdmDocumentDefinition) => { copy.importPriority.set(k, v); });
+        }
+        if (this.monikerPriorityMap) {
             this.monikerPriorityMap.forEach((v: CdmDocumentDefinition, k: string) => { copy.monikerPriorityMap.set(k, v); });
         }
+        copy.hasCircularImport = this.hasCircularImport;
 
         return copy;
     }
@@ -59,13 +73,23 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         return `${this.namespace || this.folder.namespace}:${this.folderPath}${this.name}`;
     }
     public name: string;
+    /**
+     * @deprecated Only for internal use.
+     */
     public folderPath: string;
+    /**
+     * @deprecated Only for internal use.
+     */
     public namespace: string;
     public schema: string;
     public jsonSchemaSemanticVersion: string;
+    public documentVersion: string;
     public readonly imports: CdmImportCollection;
     public definitions: CdmDefinitionCollection;
     public importSetKey: string;
+    /**
+     * @deprecated Use owner property instead.
+     */
     public folder: CdmFolderDefinition;
     /**
      * @internal
@@ -74,7 +98,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     /**
      * @internal
      */
-    public internalDeclarations: Map<string, CdmObjectDefinitionBase>;
+    public internalDeclarations: Map<string, CdmObjectBase>;
     /**
      * @internal
      */
@@ -86,6 +110,10 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     /**
      * @internal
      */
+    public declarationsIndexed: boolean;
+    /**
+     * @internal
+     */
     public importsIndexed: boolean;
     /**
      * @internal
@@ -94,7 +122,15 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     /**
      * @internal
      */
+    public isValid: boolean;
+    /**
+     * @internal
+     */
     public _fileSystemModifiedTime: Date;
+    /**
+     * The maximum json semantic version supported by this ObjectModel version.
+     */
+    public static currentJsonSchemaSemanticVersion = '1.1.0';
 
     constructor(ctx: CdmCorpusContext, name: string, hasImports: boolean = false) {
         super(ctx);
@@ -103,11 +139,15 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             this.inDocument = this;
             this.objectType = cdmObjectType.documentDef;
             this.name = name;
-            this.jsonSchemaSemanticVersion = '0.9.0';
+            this.jsonSchemaSemanticVersion = CdmDocumentDefinition.currentJsonSchemaSemanticVersion;
+            this.documentVersion = undefined;
             this.needsIndexing = true;
             this.importsIndexed = false;
+            this.declarationsIndexed = false;
             this.isDirty = true;
             this.currentlyIndexing = false;
+            this.isValid = true;
+            this.namespace = null;
 
             this.clearCaches();
 
@@ -264,7 +304,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmDocumentDefinition;
@@ -275,7 +315,12 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 copy.ctx = this.ctx;
                 copy.name = this.name;
                 copy.definitions.clear();
+                copy.declarationsIndexed = false;
+                copy.internalDeclarations = new Map<string, CdmObjectBase>();
+                copy.needsIndexing = true;
                 copy.imports.clear();
+                copy.importsIndexed = false;
+                copy.importPriorities = undefined;
             }
 
             copy.inDocument = copy;
@@ -283,6 +328,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             copy.folderPath = this.folderPath;
             copy.schema = this.schema;
             copy.jsonSchemaSemanticVersion = this.jsonSchemaSemanticVersion;
+            copy.documentVersion = this.documentVersion;
 
             for (const def of this.definitions) {
                 copy.definitions.push(def);
@@ -300,7 +346,17 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.name ? true : false;
+            if (!this.name) {
+                Logger.error(
+                    CdmDocumentDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['name']),
+                    this.validate.name);
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -410,57 +466,79 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
      * linked from the source doc and that have been modified. existing document names are used for those.
      * returns false on any failure
      */
-    public async saveAsAsync(newName: string, saveReferenced: boolean, options?: copyOptions): Promise<boolean> {
-        if (!options) {
-            options = new copyOptions();
-        }
-        const resOpt: resolveOptions = new resolveOptions(this);
-        if (await this.indexIfNeeded(resOpt) === false) {
-            Logger.error(
-                CdmDocumentDefinition.name,
-                this.ctx,
-                `Failed to index document prior to save '${this.name}'`,
-                this.saveAsAsync.name
-            );
+    public async saveAsAsync(newName: string, saveReferenced: boolean = false, options?: copyOptions): Promise<boolean> {
+        return await using(enterScope(CdmDocumentDefinition.name, this.ctx, this.saveAsAsync.name), async _ => {
+            if (!options) {
+                options = new copyOptions();
+            }
+            const resOpt: resolveOptions = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+            if (!await this.indexIfNeeded(resOpt)) {
+                Logger.error(
+                    CdmDocumentDefinition.name,
+                    this.ctx,
+                    `Failed to index document prior to save '${this.name}'`,
+                    this.saveAsAsync.name
+                );
 
-            return false;
-        }
-        // if save to the same document name, then we are no longer 'dirty'
-        if (newName === this.name) {
-            this.isDirty = false;
-        }
+                return false;
+            }
+            // if save to the same document name, then we are no longer 'dirty'
+            if (newName === this.name) {
+                this.isDirty = false;
+            }
 
-        if (await this.ctx.corpus.persistence.saveDocumentAsAsync(this, options, newName, saveReferenced) === false) {
-            return false;
-        }
+            if (await this.ctx.corpus.persistence.saveDocumentAsAsync(this, options, newName, saveReferenced) === false) {
+                return false;
+            }
 
-        return true;
+            return true;
+        });
     }
 
     public async refreshAsync(resOpt: resolveOptions): Promise<boolean> {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
         this.needsIndexing = true;
+        this.importPriorities = undefined;
+        this.importsIndexed = false;
+        this.declarationsIndexed = false;
+        this.isValid = true;
 
-        return this.indexIfNeeded(resOpt);
+        return this.indexIfNeeded(resOpt, true);
     }
 
-    // remove any old document content from caches and re-declare and resolve with new content
-    public async indexIfNeeded(resOpt: resolveOptions): Promise<boolean> {
+    /**
+     * @internal
+     * Remove any old document content from caches and re-declare and resolve with new content
+     */
+    public async indexIfNeeded(resOpt: resolveOptions, loadImports: boolean = false): Promise<boolean> {
         // let bodyCode = () =>
         {
-            if (this.needsIndexing) {
-                // make the corpus internal machinery pay attention to this document for this call
+            if (this.needsIndexing && !this.currentlyIndexing) {
+                if (!this.folder) {
+                    Logger.error(CdmDocumentDefinition.name, this.ctx, `Document '${this.name}' is not in a folder`, this.indexIfNeeded.name);
+                    return false;
+                }
+
                 const corpus: CdmCorpusDefinition = this.folder.corpus;
 
-                await corpus.resolveImportsAsync(this);
+                // if the imports load strategy is "lazyLoad", loadImports value will be the one sent by the called function.
+                if (resOpt.importsLoadStrategy === importsLoadStrategy.doNotLoad) {
+                    loadImports = false;
+                } else if (resOpt.importsLoadStrategy === importsLoadStrategy.load) {
+                    loadImports = true;
+                }
 
-                // maintain actual current doc
-                corpus.docsNotIndexed.add(this);
+                if (loadImports) {
+                    await corpus.resolveImportsAsync(this, resOpt);
+                }
 
-                return corpus.indexDocuments(resOpt);
+                // make the corpus internal machinery pay attention to this document for this call.
+                corpus.documentLibrary.markDocumentForIndexing(this);
+
+                return corpus.indexDocuments(resOpt, loadImports);
             }
 
             return true;
@@ -474,25 +552,62 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     public getImportPriorities(): ImportPriorities {
 
         if (this.importPriorities === undefined) {
-            this.importPriorities = new ImportPriorities();
-            this.importPriorities.importPriority.set(this, 0);
+            const importPriorities: ImportPriorities = new ImportPriorities();
+            importPriorities.importPriority.set(this, new ImportInfo(0, false));
             this.prioritizeImports(
-                new Set<CdmDocumentDefinition>(), this.importPriorities.importPriority, 1, this.importPriorities.monikerPriorityMap, false);
+                new Set<CdmDocumentDefinition>(), importPriorities, 1, false);
+            this.importPriorities = importPriorities;
         }
-        // make a copy so the caller doesn't mess these up
 
+        // make a copy so the caller doesn't mess these up
         return this.importPriorities.copy();
     }
 
     /**
      * @internal
      */
-    public fetchObjectFromDocumentPath(objectPath: string): CdmObject {
+    public fetchObjectFromDocumentPath(objectPath: string, resOpt: resolveOptions): CdmObject {
         // let bodyCode = () =>
         {
             // in current document?
             if (this.internalDeclarations.has(objectPath)) {
                 return this.internalDeclarations.get(objectPath);
+            } else {
+                // this might be a request for an object def drill through of a reference.
+                // path/(object)/paths
+                // there can be several such requests in one path AND some of the requested
+                // defintions might be defined inline inside a reference meaning the declared path
+                // includes that reference name and could still be inside this document. example:
+                // /path/path/refToInline/(object)/member1/refToSymbol/(object)/member2
+                // the full path is not in this doc but /path/path/refToInline/(object)/member1/refToSymbol
+                // is declared in this document. we then need to go to the doc for refToSymbol and
+                // search for refToSymbol/member2
+
+                // work backward until we find something in this document
+                let lastObj: number = objectPath.lastIndexOf('/(object)');
+                let thisDocPart: string = objectPath;
+                while (lastObj > 0) {
+                    thisDocPart = objectPath.slice(0, lastObj);
+                    if (this.internalDeclarations.has(thisDocPart)) {
+                        const thisDocObjRef: CdmObjectReferenceBase = this.internalDeclarations.get(thisDocPart) as CdmObjectReferenceBase;
+                        const thatDocObjDef: CdmObjectDefinitionBase = thisDocObjRef.fetchObjectDefinition(resOpt);
+                        if (thatDocObjDef !== undefined) {
+                            // get from other document.
+                            // but first fix the path to look like it is relative to that object as declared in that doc
+                            let thatDocPart: string = objectPath.slice(lastObj + '/(object)'.length);
+                            thatDocPart = `${thatDocObjDef.declaredPath}${thatDocPart}`;
+                            if (thatDocPart === objectPath) {
+                                // we got back to were we started. probably because something is just not found.
+                                return undefined;
+                            }
+
+                            return thatDocObjDef.inDocument.fetchObjectFromDocumentPath(thatDocPart, resOpt);
+                        }
+
+                        return undefined;
+                    }
+                    lastObj = thisDocPart.lastIndexOf('/(object)');
+                }
             }
 
             return undefined;
@@ -506,6 +621,9 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         await (this.ctx.corpus).fetchObjectAsync(this.corpusPath);
     }
 
+    /**
+     * @internal
+     */
     public async saveLinkedDocuments(options?: copyOptions): Promise<boolean> {
         if (!options) {
             options = new copyOptions();
@@ -570,70 +688,111 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
 
     private prioritizeImports(
         processedSet: Set<CdmDocumentDefinition>,
-        priorityMap: Map<CdmDocumentDefinition, number>,
+        importPriorities: ImportPriorities,
         sequence: number,
-        monikerMap: Map<string, CdmDocumentDefinition>,
-        skipMonikered: boolean = false)
+        skipMonikered: boolean)
         : number {
         // goal is to make a map from the reverse order of imports (breadth first) to the first (aka last) sequence number in that list.
         // This gives the semantic that the 'last/shallowest' definition for a duplicate symbol wins,
         // the lower in this list a document shows up, the higher priority its definitions are for resolving conflicts.
         // for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
+        // maps document to priority.
+        const priorityMap: Map<CdmDocumentDefinition, ImportInfo> = importPriorities.importPriority;
+
+        // maps moniker to document.
+        const monikerMap: Map<string, CdmDocumentDefinition> = importPriorities.monikerPriorityMap;
+
         // if already in list, don't do this again
         if (processedSet.has(this)) {
+            // if the first document in the priority map is this then the document was the starting point of the recursion.
+            // and if this document is present in the processedSet we know that there is a circular list of imports.
+            if (priorityMap.has(this) && priorityMap.get(this).priority === 0) {
+                importPriorities.hasCircularImport = true;
+            }
+
             return sequence;
         }
         processedSet.add(this);
 
         if (this.imports) {
-            // reverse order
-            // first add the imports done at this level only
             const revImp: CdmImport[] = this.imports.allItems.slice()
                 .reverse();
+            const monikerImports: CdmDocumentDefinition[] = [];
+            // first add the imports done at this level only in reverse order.
             for (const imp of revImp) {
-                const impDoc: CdmDocumentDefinition = imp.resolvedDocument;
-                // don't add the moniker imports to the priority list
-                if (imp.resolvedDocument && !imp.moniker) {
-                    if (priorityMap.has(impDoc) === false) {
-                        // add doc
-                        priorityMap.set(impDoc, sequence);
+                const impDoc: CdmDocumentDefinition = imp.document;
+
+                if (impDoc) {
+                    // moniker imports will be added to the end of the priority list later.
+                    if (imp.document && !imp.moniker && !priorityMap.has(impDoc)) {
+                        // add doc.
+                        priorityMap.set(impDoc, new ImportInfo(sequence, false));
                         sequence++;
+                    } else {
+                        monikerImports.push(impDoc);
                     }
+                } else {
+                    Logger.warning(CdmDocumentDefinition.name, this.ctx, `Import document ${imp.corpusPath} not loaded. This might cause an unexpected output.`);
                 }
             }
 
-            // now add the imports of the imports
+            // now add the imports of the imports.
             for (const imp of revImp) {
-                const impDoc: CdmDocumentDefinition = imp.resolvedDocument;
+                const impDoc: CdmDocumentDefinition = imp.document;
                 const isMoniker: boolean = !!imp.moniker;
-                if (impDoc !== undefined && impDoc.importPriorities !== undefined) {
-                    // lucky, already done so avoid recursion and copy
+
+                if (!impDoc) {
+                    Logger.warning(CdmDocumentDefinition.name, this.ctx, `Import document ${imp.corpusPath} not loaded. This might cause an unexpected output.`);
+                }
+
+                // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
+                // since the document itself will always be the first one on the list.
+                if (impDoc !== undefined && impDoc.importPriorities !== undefined && !impDoc.importPriorities.hasCircularImport) {
+                    // lucky, already done so avoid recursion and copy.
                     const impPriSub: ImportPriorities = impDoc.getImportPriorities();
-                    impPriSub.importPriority.delete(impDoc); // because already added above
-                    impPriSub.importPriority.forEach((v: number, k: CdmDocumentDefinition) => {
-                        if (priorityMap.has(k) === false) {
-                            // add doc
-                            priorityMap.set(k, sequence);
+                    impPriSub.importPriority.delete(impDoc); // because already added above.
+                    impPriSub.importPriority.forEach((v: ImportInfo, k: CdmDocumentDefinition) => {
+                        // if the document is imported with moniker in another document do not include it in the priority list of this one.
+                        // moniker imports are only added to the priority list of the document that directly imports them.
+                        if (!priorityMap.has(k) && !v.isMoniker) {
+                            // add doc.
+                            priorityMap.set(k, new ImportInfo(sequence, false));
                             sequence++;
                         }
                     });
+
+                    // if the import is not monikered then merge its monikerMap to this one.
                     if (!isMoniker) {
                         impPriSub.monikerPriorityMap.forEach((v: CdmDocumentDefinition, k: string) => {
                             monikerMap.set(k, v);
                         });
                     }
                 } else if (impDoc !== undefined) {
-                    // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies
-                    sequence = impDoc.prioritizeImports(processedSet, priorityMap, sequence, monikerMap, isMoniker);
+                    // skip the monikered imports from here if this is a monikered import itself 
+                    // and we are only collecting the dependencies.
+                    sequence = impDoc.prioritizeImports(processedSet, importPriorities, sequence, isMoniker);
                 }
             }
-            if (skipMonikered === false) {
+
+            // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies.
+            if (!skipMonikered) {
                 // moniker imports are prioritized by the 'closest' use of the moniker to the starting doc.
-                // so last one found in this recursion
+                // so last one found in this recursion.
                 for (const imp of this.imports) {
-                    if (imp.resolvedDocument && imp.moniker) {
-                        monikerMap.set(imp.moniker, imp.resolvedDocument);
+                    if (imp.document && imp.moniker) {
+                        monikerMap.set(imp.moniker, imp.document);
+                    }
+                }
+
+                // if the document index is zero, the document being processed is the root of the imports chain.
+                // in this case add the monikered imports to the end of the priorityMap.
+                if (priorityMap.has(this) && priorityMap.get(this).priority === 0) {
+                    for (const imp of monikerImports) {
+                        if (!priorityMap.has(imp)) {
+                            priorityMap.set(imp, new ImportInfo(sequence, true));
+                            sequence++;
+                        }
                     }
                 }
             }

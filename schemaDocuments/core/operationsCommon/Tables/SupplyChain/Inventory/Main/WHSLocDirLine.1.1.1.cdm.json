@@ -1,0 +1,188 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WHSLocDirTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/WHSReplenishmentTemplate.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSLocDirLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllowSplit",
+          "dataType": "WHSAllowSplit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromQty",
+          "dataType": "WHSFromQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LocatePackingQty",
+          "dataType": "WHSLocatePackingQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LocateQty",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LocSeqNum",
+          "dataType": "WHSLocSeqNum",
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "RestrictByUOM",
+          "dataType": "WHSRestrictByUOM",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToQty",
+          "dataType": "WHSToQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitID",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoundUpToHandlingUnit",
+          "dataType": "WHSRoundUpToHandlingUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImmediateReplenishmentTemplateId",
+          "dataType": "WHSImmediateReplenishTemplateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLocDirTable"
+          },
+          "name": "Relationship_WHSLocDirTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSReplenishmentTemplate"
+          },
+          "name": "Relationship_WHSReplenishmentTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Location Directive Lines"
+    },
+    {
+      "dataTypeName": "WHSAllowSplit",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSFromQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSLocatePackingQty",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSLocSeqNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSRestrictByUOM",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSToQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSRoundUpToHandlingUnit",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSImmediateReplenishTemplateId",
+      "extendsDataType": "string"
+    }
+  ]
+}

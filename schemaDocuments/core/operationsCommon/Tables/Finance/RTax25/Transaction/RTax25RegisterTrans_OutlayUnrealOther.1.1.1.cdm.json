@@ -1,0 +1,245 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/LedgerJournalTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Group/RTax25ProfitTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/WorksheetLine/RTax25RegisterJournalTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25RegisterTrans_OutlayUnrealOther",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BlockType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Line type",
+          "description": ""
+        },
+        {
+          "name": "Corrected",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected",
+          "description": ""
+        },
+        {
+          "name": "Document",
+          "dataType": "DocumentNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpenseCode",
+          "dataType": "Name",
+          "isNullable": true,
+          "displayName": "Expense code",
+          "description": ""
+        },
+        {
+          "name": "IssueAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Issue amount",
+          "description": ""
+        },
+        {
+          "name": "IssueOperation",
+          "dataType": "TransTxt",
+          "isNullable": true,
+          "displayName": "Issue operation",
+          "description": ""
+        },
+        {
+          "name": "JournalTransRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDescription",
+          "dataType": "RTax25Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "RTax25RegisterLineNum64",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualInput",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Manual data input",
+          "description": ""
+        },
+        {
+          "name": "ProfitAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTable",
+          "dataType": "RTax25ProfitTableRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Transaction date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterJournalTrans"
+          },
+          "name": "Relationship_RTax25RegisterJournalTransRecIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax register line"
+    },
+    {
+      "dataTypeName": "DocumentNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25RegisterLineNum64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

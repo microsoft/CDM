@@ -1,0 +1,85 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProduct.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Transaction/EcoResReleaseSession.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResProductSelectedForRelease",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Product",
+          "dataType": "EcoResProductRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReleaseSession",
+          "dataType": "EcoResReleaseSessionRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_EcoResProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResReleaseSession"
+          },
+          "name": "Relationship_EcoResReleaseSessionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Products selected for release"
+    },
+    {
+      "dataTypeName": "EcoResProductRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResReleaseSessionRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

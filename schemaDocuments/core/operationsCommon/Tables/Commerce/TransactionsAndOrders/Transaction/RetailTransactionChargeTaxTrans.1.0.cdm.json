@@ -1,0 +1,201 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailTransactionMarkupTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "RetailTransactionTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailChannelTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailTransactionChargeTaxTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Channel",
+          "dataType": "RetailChannelRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StoreId",
+          "dataType": "RetailStoreId",
+          "description": ""
+        },
+        {
+          "name": "TerminalId",
+          "dataType": "RetailTerminalId",
+          "description": ""
+        },
+        {
+          "name": "TransactionId",
+          "dataType": "RetailTransactionId",
+          "description": ""
+        },
+        {
+          "name": "ReplicationCounterFromOrigin",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarkupLineNum",
+          "dataType": "RetailTransactionMarkupLineNum",
+          "description": ""
+        },
+        {
+          "name": "SaleLineNum",
+          "dataType": "RetailTransactionSalesLineNum",
+          "description": ""
+        },
+        {
+          "name": "Amount",
+          "dataType": "RetailTaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsIncludedInPrice",
+          "dataType": "RetailIsTaxIncludedInPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "description": ""
+        },
+        {
+          "name": "IsExempt",
+          "dataType": "RetailIsExemptTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTransactionMarkupTrans"
+          },
+          "name": "Relationship_RetailTransactionMarkupTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTransactionTable"
+          },
+          "name": "Relationship_RetailTransactionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelTable"
+          },
+          "name": "Relationship_RetailChannelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail charge tax transactions"
+    },
+    {
+      "dataTypeName": "RetailChannelRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailTransactionMarkupLineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailTransactionSalesLineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailTaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailIsTaxIncludedInPrice",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailIsExemptTax",
+      "extendsDataType": "integer"
+    }
+  ]
+}

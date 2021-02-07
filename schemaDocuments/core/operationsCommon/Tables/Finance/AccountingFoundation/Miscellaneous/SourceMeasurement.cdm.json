@@ -1,0 +1,95 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DomainEvent.cdm.json"
+    },
+    {
+      "corpusPath": "Measure.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SourceMeasurement",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Magnitude",
+          "dataType": "decimal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Measure",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DomainEvent",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Unit",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Time",
+          "dataType": "date",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DomainEvent"
+          },
+          "name": "Relationship_DomainEventRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Measure"
+          },
+          "name": "Relationship_MeasureRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Group/DimensionHierarchy.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/ExchangeRateType.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RCashFlowManagement/Group/CFMPaymentRequestType.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CFMParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustPaymJournalNameId",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Customer payment journal",
+          "description": ""
+        },
+        {
+          "name": "DimensionSet",
+          "dataType": "DimensionHierarchyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateType",
+          "dataType": "ExchangeRateTypeRecId",
+          "isNullable": true,
+          "displayName": "Default exchange rate type for forecast",
+          "description": ""
+        },
+        {
+          "name": "IndebtednessToCustomer",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Indebtedness to customer",
+          "description": ""
+        },
+        {
+          "name": "IndebtednessToVendor",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Indebtedness to vendor",
+          "description": ""
+        },
+        {
+          "name": "IndebtednessToWorker",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Indebtedness to worker",
+          "description": ""
+        },
+        {
+          "name": "PRReaproveAmountChange",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SupplierPrepayment",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Vendor prepayment",
+          "description": ""
+        },
+        {
+          "name": "VendPaymJournalNameId",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Vendor payment journal",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_CustPaymJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchy"
+          },
+          "name": "Relationship_DimensionHierarchyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_ExchangeRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestType"
+          },
+          "name": "Relationship_PaymentRequestTypeCustomerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestType"
+          },
+          "name": "Relationship_PaymentRequestTypeSupplierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestType"
+          },
+          "name": "Relationship_PaymentRequestTypeVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestType"
+          },
+          "name": "Relationship_PaymentRequestTypeWorkerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_VendPaymJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Cash flow management parameters"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionHierarchyId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ExchangeRateTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

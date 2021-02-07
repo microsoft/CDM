@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Generic, List, TypeVar, Union, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
@@ -72,7 +75,7 @@ class CdmCollection(list, Generic[T]):
 
     def _make_document_dirty(self):
         """Make the outermost document containing this collection dirty because the collection was changed."""
-        if self.ctx.corpus.is_currently_resolving is False:
+        if self.ctx.corpus._is_currently_resolving is False:
             if self.owner:
                 document = self.owner.in_document if self.owner.in_document is not None else self.owner  # type: CdmDocumentDefinition
 
@@ -82,8 +85,8 @@ class CdmCollection(list, Generic[T]):
 
     def _propagate_in_document(self, cdm_object: 'CdmObject', document: 'CdmDocumentDefinition'):
         """Propagate document through all objects."""
-        if self.ctx.corpus.is_currently_resolving is False:
-            self.ctx.corpus.block_declared_path_changes = True
+        if self.ctx.corpus._is_currently_resolving is False:
+            self.ctx.corpus._block_declared_path_changes = True
 
             def visit_callback(obj: 'CdmObject', path: str) -> bool:
                 # If object's document is already the same as the one we're trying to set
@@ -94,7 +97,7 @@ class CdmCollection(list, Generic[T]):
                 return False
 
             cdm_object.visit('', visit_callback, None)
-            self.ctx.corpus.block_declared_path_changes = False
+            self.ctx.corpus._block_declared_path_changes = False
 
     def _visit_array(self, path: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         result = False

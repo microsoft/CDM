@@ -1,0 +1,223 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/CustomCorrectionTable_RU.cdm.json"
+    },
+    {
+      "corpusPath": "CustomJournalTrans_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustomCorrectionTrans_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CorrectionCost",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Cost",
+          "description": ""
+        },
+        {
+          "name": "CorrectionDuty",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Duty",
+          "description": ""
+        },
+        {
+          "name": "CorrectionExcise",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Excise",
+          "description": ""
+        },
+        {
+          "name": "CorrectionJournalId",
+          "dataType": "CustomCorrectionJournalId_RU",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectionVAT",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "VAT",
+          "description": ""
+        },
+        {
+          "name": "CountryRegionId",
+          "dataType": "AddressCountryRegionId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomPartition",
+          "dataType": "CustomPartition_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FEACCId",
+          "dataType": "FEACCId_RU",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "JournalTransRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Journal line",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustomCorrectionTable_RU"
+          },
+          "name": "Relationship_CustomCorrectionTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustomJournalTrans_RU"
+          },
+          "name": "Relationship_CustomJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "KTS lines"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustomCorrectionJournalId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustomPartition_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FEACCId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

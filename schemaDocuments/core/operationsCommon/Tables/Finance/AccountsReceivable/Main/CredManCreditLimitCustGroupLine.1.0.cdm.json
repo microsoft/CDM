@@ -1,0 +1,93 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "CredManCreditLimitCustGroup.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CredManCreditLimitCustGroupLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Company",
+          "dataType": "SelectableDataArea",
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustVendAC",
+          "displayName": "Customer account",
+          "description": ""
+        },
+        {
+          "name": "CreditLimitCustGroup",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CredManCreditLimitCustGroup"
+          },
+          "name": "Relationship_CredManCreditLimitCustGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer credit group lines"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendAC",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Parameter/TaxWithholdParameters_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxWithholdParametersEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CrossCompanyPayment",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnableWarningMsg",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TCSActivate",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TCSInvoice",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "TCS invoice",
+          "description": ""
+        },
+        {
+          "name": "TCSPayment",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "TCS payment",
+          "description": ""
+        },
+        {
+          "name": "TDSActivate",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TDSInvoice",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "TDS invoice",
+          "description": ""
+        },
+        {
+          "name": "TDSPayment",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "TDS payment",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdParameters_IN"
+          },
+          "name": "BackingTable_TaxWithholdParameters_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Withholding tax parameters"
+    }
+  ]
+}

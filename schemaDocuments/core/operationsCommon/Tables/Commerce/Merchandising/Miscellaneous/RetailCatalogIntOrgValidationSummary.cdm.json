@@ -1,0 +1,116 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Main/Catalog.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Main/RetailCatalogInternalOrg.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailCatalogIntOrgValidationSummary",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Catalog",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "CatalogInternalOrg",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "dataType": "RetailCatalogValidationErrorMessage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ErrorType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastValidationDateTime",
+          "dataType": "DateTimeExecuted",
+          "isNullable": true,
+          "displayName": "Last validation date",
+          "description": ""
+        },
+        {
+          "name": "ProductCount",
+          "dataType": "RetailProductCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Catalog"
+          },
+          "name": "Relationship_CatalogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailCatalogInternalOrg"
+          },
+          "name": "Relationship_CatalogInternalOrgRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail catalog validation summary"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCatalogValidationErrorMessage",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DateTimeExecuted",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailProductCount",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

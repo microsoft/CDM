@@ -1,0 +1,102 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetPlanColumn.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanColumnRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Column",
+          "dataType": "BudgetPlanColumnRecId",
+          "description": ""
+        },
+        {
+          "name": "TableName",
+          "dataType": "TableName",
+          "displayName": "Table",
+          "description": ""
+        },
+        {
+          "name": "FieldName",
+          "dataType": "FieldName",
+          "displayName": "Field",
+          "description": ""
+        },
+        {
+          "name": "Operator",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RightSideValueOne",
+          "dataType": "BudgetPlanColumnRuleValue",
+          "displayName": "Value",
+          "description": ""
+        },
+        {
+          "name": "RightSideValueTwo",
+          "dataType": "BudgetPlanColumnRuleValue",
+          "isNullable": true,
+          "displayName": "To Value",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanColumn"
+          },
+          "name": "Relationship_BudgetPlanColumnRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Column rules"
+    },
+    {
+      "dataTypeName": "BudgetPlanColumnRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TableName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FieldName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetPlanColumnRuleValue",
+      "extendsDataType": "string"
+    }
+  ]
+}

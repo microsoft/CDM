@@ -1,0 +1,163 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchaseOrderResponseHeader.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "PurchTableVersion.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchaseOrderResponseVersion",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "VersionDateTime",
+          "dataType": "VersioningTimeStamp",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PurchaseOrderResponseHeader",
+          "dataType": "PurchaseOrderResponseHeaderRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PurchTableVersion",
+          "dataType": "PurchTableVersionRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsArchived",
+          "dataType": "VersioningIsVersionArchived",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponseDateTime",
+          "dataType": "DateTimeAnswered",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RespondingPerson",
+          "dataType": "HcmPersonRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Responding person",
+          "description": ""
+        },
+        {
+          "name": "ResponseState",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ResponseNote",
+          "dataType": "VendMemo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PurchaseOrderResponseHeader"
+          },
+          "name": "Relationship_PurchaseOrderResponseHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTableVersion"
+          },
+          "name": "Relationship_PurchTableVersionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase order response version"
+    },
+    {
+      "dataTypeName": "VersioningTimeStamp",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchaseOrderResponseHeaderRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchTableVersionRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VersioningIsVersionArchived",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DateTimeAnswered",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "HcmPersonRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendMemo",
+      "extendsDataType": "string"
+    }
+  ]
+}

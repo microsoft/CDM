@@ -1,0 +1,383 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "CustInterestJour.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "CustInvoiceLineIdRef.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/CustInvoiceTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "CustTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/TransactionHeader/GeneralJournalEntry.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustInterestTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AdjustmentStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalcFrom",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Interest date",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CustCurrencyCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustInvoiceLineIdRef",
+          "dataType": "CustInvoiceLineIdRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustTransId",
+          "dataType": "CustTransRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GeneralJournalEntry",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "General journal number",
+          "description": ""
+        },
+        {
+          "name": "InterestAmount",
+          "dataType": "InterestAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterestCalculate",
+          "dataType": "InterestCalculate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterestDays",
+          "dataType": "PositiveDays",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterestNote",
+          "dataType": "InterestNote",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InterestPercent",
+          "dataType": "InterestPct",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Invoice",
+          "dataType": "InvoiceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAmount",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Invoice amount",
+          "description": ""
+        },
+        {
+          "name": "LastAdjustmentInvoice",
+          "dataType": "CustInvoiceTableRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "displayName": "Line number",
+          "description": ""
+        },
+        {
+          "name": "Notes",
+          "dataType": "Notes",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemainAmount",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Origin",
+          "description": ""
+        },
+        {
+          "name": "TaxInterestAmount_PL",
+          "dataType": "InterestAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Tax interest",
+          "description": ""
+        },
+        {
+          "name": "TaxInterestDays_PL",
+          "dataType": "CustTaxInterestDays_PL",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Txt",
+          "dataType": "TransTxt",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Interest on transaction voucher",
+          "description": ""
+        },
+        {
+          "name": "WriteOffAmount",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Write off",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInterestJour"
+          },
+          "name": "Relationship_CustInterestJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceLineIdRef"
+          },
+          "name": "Relationship_CustInvoiceLineIdRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceTable"
+          },
+          "name": "Relationship_CustInvoiceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "GeneralJournalEntry"
+          },
+          "name": "Relationship_GeneralJournalEntryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Interest lines"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustInvoiceLineIdRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InterestAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InterestCalculate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PositiveDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InterestNote",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InterestPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustInvoiceTableRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Notes",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustTaxInterestDays_PL",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

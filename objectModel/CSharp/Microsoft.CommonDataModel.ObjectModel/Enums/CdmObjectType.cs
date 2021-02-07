@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmObjectType.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Enums
 {
@@ -37,7 +34,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         DataPartitionPatternDef,
         LocalEntityDeclarationDef,
         AttributeResolutionGuidanceDef,
-        E2ERelationshipDef
+        E2ERelationshipDef,
+        OperationAddCountAttributeDef,
+        OperationAddSupportingAttributeDef,
+        OperationAddTypeAttributeDef,
+        OperationExcludeAttributesDef,
+        OperationArrayExpansionDef,
+        OperationCombineAttributesDef,
+        OperationRenameAttributesDef,
+        OperationReplaceAsForeignKeyDef,
+        OperationIncludeAttributesDef,
+        OperationAddAttributeGroupDef,
+        ProjectionDef
     }
 
     public enum CdmValidationStep
@@ -71,6 +79,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         AddedAttributeIdentity,
         AddedAttributeSelectedType,
         AddedAttributeExpansionTotal,
-        PassThrough
+        PassThrough,
+        Projection,
+        Source,
+        Operations,
+        OperationAddCountAttribute,
+        OperationAddSupportingAttribute,
+        OperationAddTypeAttribute,
+        OperationExcludeAttributes,
+        OperationArrayExpansion,
+        OperationCombineAttributes,
+        OperationRenameAttributes,
+        OperationReplaceAsForeignKey,
+        OperationIncludeAttributes,
+        OperationAddAttributeGroup,
+        Unknown
     }
 }

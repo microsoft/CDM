@@ -1,0 +1,316 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "WHSRFMenuTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Miscellaneous/WHSWorker.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWorkUser",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllowLocOverridePick",
+          "dataType": "WHSAllowLocOverridePick",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowLocOverridePut",
+          "dataType": "WHSAllowLocOverridePut",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Disabled",
+          "dataType": "WHSDisabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MenuName",
+          "dataType": "WHSMenuName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserDefaultWarehouse",
+          "dataType": "WHSUserDefaultWarehouse",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserId",
+          "dataType": "WHSUserId",
+          "description": ""
+        },
+        {
+          "name": "UserName",
+          "dataType": "WHSUserName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserPasswordHash",
+          "dataType": "WHSUserPasswordHash",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserPasswordIterations",
+          "dataType": "WHSUserPasswordIterations",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserPasswordSalt",
+          "dataType": "WHSUserPasswordSalt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkCountIsSupervisor",
+          "dataType": "WHSWorkCountIsSupervisor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkCountMaxPercent",
+          "dataType": "WHSWorkCountMaxPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkCountMaxQty",
+          "dataType": "WHSWorkCountMaxQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkCountMaxValue",
+          "dataType": "WHSWorkCountMaxValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "WHSWorkerRecId",
+          "description": ""
+        },
+        {
+          "name": "AllowOverpickSales",
+          "dataType": "WHSAllowOverpickSales",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowOverpickTransfer",
+          "dataType": "WHSAllowOverpickTransfer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowInventoryMovementWithAssociatedWork",
+          "dataType": "WHSAllowInventoryMovementWithAssociatedWork",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowManualItemReallocation",
+          "dataType": "WHSAllowManualItemReallocation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AuthenticationFailures",
+          "dataType": "WHSAuthenticationFailureCount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserGuid",
+          "dataType": "WhsUserGuid",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowAdjustmentsFromUserLocation",
+          "dataType": "WHSAllowAdjustFromUserLocation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSRFMenuTable"
+          },
+          "name": "Relationship_WHSRFMenuTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorker"
+          },
+          "name": "Relationship_WHSWorkerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Work users"
+    },
+    {
+      "dataTypeName": "WHSAllowLocOverridePick",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSAllowLocOverridePut",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSDisabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSMenuName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSUserDefaultWarehouse",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSUserName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSUserPasswordHash",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSUserPasswordIterations",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSUserPasswordSalt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkCountIsSupervisor",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSWorkCountMaxPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSWorkCountMaxQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSWorkCountMaxValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSAllowOverpickSales",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSAllowOverpickTransfer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSAllowInventoryMovementWithAssociatedWork",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSAllowManualItemReallocation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSAuthenticationFailureCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WhsUserGuid",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WHSAllowAdjustFromUserLocation",
+      "extendsDataType": "integer"
+    }
+  ]
+}

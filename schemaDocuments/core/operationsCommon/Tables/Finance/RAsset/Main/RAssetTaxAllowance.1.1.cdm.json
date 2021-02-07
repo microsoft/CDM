@@ -1,0 +1,121 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RAssetTaxAllowance",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllowanceValue",
+          "dataType": "RAssetTaxPrivilege",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ArticleClause",
+          "dataType": "RAssetTaxAllowanceArticle",
+          "isNullable": true,
+          "displayName": "Clause",
+          "description": ""
+        },
+        {
+          "name": "ArticleNumber",
+          "dataType": "RAssetTaxAllowanceArticle",
+          "isNullable": true,
+          "displayName": "Article number",
+          "description": ""
+        },
+        {
+          "name": "ArticleSubClause",
+          "dataType": "RAssetTaxAllowanceArticle",
+          "isNullable": true,
+          "displayName": "Sub-clause",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAllowanceId",
+          "dataType": "RAssetTaxAllowanceId",
+          "description": ""
+        },
+        {
+          "name": "TaxAllowanceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Assessed tax allowance code"
+    },
+    {
+      "dataTypeName": "RAssetTaxPrivilege",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RAssetTaxAllowanceArticle",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetTaxAllowanceId",
+      "extendsDataType": "string"
+    }
+  ]
+}

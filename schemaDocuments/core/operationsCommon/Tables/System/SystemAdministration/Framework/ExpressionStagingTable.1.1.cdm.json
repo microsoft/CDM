@@ -1,0 +1,100 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ExpressionTable.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ExpressionStagingTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustomProviderClassName",
+          "dataType": "WorkflowHierarchyProviderName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Document",
+          "dataType": "ClassName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpressionTable",
+          "dataType": "ExpressionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "ExpressionStagingEntityName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "ExpressionStagingType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ExpressionTable"
+          },
+          "name": "Relationship_ExpressionIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Expression staging table"
+    },
+    {
+      "dataTypeName": "WorkflowHierarchyProviderName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ClassName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ExpressionId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "ExpressionStagingEntityName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ExpressionStagingType",
+      "extendsDataType": "string"
+    }
+  ]
+}

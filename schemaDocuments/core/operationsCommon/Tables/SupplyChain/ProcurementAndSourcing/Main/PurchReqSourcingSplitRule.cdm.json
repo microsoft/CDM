@@ -1,0 +1,96 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Parameter/PurchReqSourcingPolicyRule.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/Workflow/Main/SysPolicyRule.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchReqSourcingSplitRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PolicyRule",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SplitByLineType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Line types",
+          "description": ""
+        },
+        {
+          "name": "SplitByProductCategory",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Procurement categories",
+          "description": ""
+        },
+        {
+          "name": "SplitByRequisitioner",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Requesters",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PurchReqSourcingPolicyRule"
+          },
+          "name": "Relationship_PurchReqSourcingPolicyRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysPolicyRule"
+          },
+          "name": "Relationship_SysPolicyRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase requisition to purchase order split rule"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

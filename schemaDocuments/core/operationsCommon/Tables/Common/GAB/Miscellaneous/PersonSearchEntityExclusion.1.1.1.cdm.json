@@ -1,0 +1,76 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PersonSearchResultEntityFieldFilter.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PersonSearchEntityExclusion",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EntityName",
+          "dataType": "DMFEntityName",
+          "description": ""
+        },
+        {
+          "name": "EntityField",
+          "dataType": "RefFieldId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Active",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PersonSearchResultEntityFieldFilter"
+          },
+          "name": "Relationship_PersonSearchResultEntityFieldFilterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "DMFEntityName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefFieldId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

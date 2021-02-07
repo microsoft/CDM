@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -6,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +31,10 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
       final CdmObject owner,
       final CdmObjectType defaultType) {
     this.ctx = ctx;
-    this.allItems = new ArrayList<>();
+    // Use a synchronized list here to make this thread-safe, as we can occasionally run into a scenario where multiple
+    // threads add items to this list at the same time (before the list is able to resize), which causes an ArrayIndexOutOfBoundsException
+    // to be thrown.
+    this.allItems = Collections.synchronizedList(new ArrayList<>());
     this.defaultType = defaultType;
     this.owner = owner;
   }
@@ -88,9 +95,9 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
   public int getCount() {
     return this.allItems.size();
   }
-
-  /**
-   * @return
+  
+  /** 
+   * @return List of items of type T
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -239,15 +246,20 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
     this.allItems.add(index, element);
   }
 
-  /**
+  /** 
    * Creates a copy of the current CdmCollection.
+   * @param resOpt Resolve Options
+   * @return CdmCollection of type T
    */
   public CdmCollection<T> copy(final ResolveOptions resOpt) {
     return copy(resOpt, null);
   }
-
-  /**
+  
+  /** 
    * Creates a copy of the current CdmCollection.
+   * @param resOpt  Resolve Options
+   * @param host CDM Host Object
+   * @return CdmCollection of type T
    */
   public CdmCollection<T> copy(final ResolveOptions resOpt, final CdmObject host) {
     final CdmCollection<T> copy =

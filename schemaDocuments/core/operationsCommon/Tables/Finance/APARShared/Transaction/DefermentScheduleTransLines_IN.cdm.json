@@ -1,0 +1,149 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DefermentScheduleTrans_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DefermentScheduleTransLines_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Credit",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Credit",
+          "description": ""
+        },
+        {
+          "name": "Debit",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Debit",
+          "description": ""
+        },
+        {
+          "name": "FatherRecId",
+          "dataType": "FatherRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Period",
+          "dataType": "TransDate",
+          "displayName": "Period",
+          "description": ""
+        },
+        {
+          "name": "TaxInformation",
+          "dataType": "TaxRegistrationNumberRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferCrebitAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Credit",
+          "description": ""
+        },
+        {
+          "name": "TransferDebitAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Debit",
+          "description": ""
+        },
+        {
+          "name": "TransferDetails",
+          "dataType": "TransferDetails_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Transferred",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Transferred",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DefermentScheduleTrans_IN"
+          },
+          "name": "Relationship_DefermentScheduleTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Deferment schedule transaction lines"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FatherRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxRegistrationNumberRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransferDetails_IN",
+      "extendsDataType": "binary"
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CostObjectWithLowestTurnDataSetTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StyleId",
+          "dataType": "EcoResItemStyleName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VersionId",
+          "dataType": "EcoResItemVersionName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfigId",
+          "dataType": "EcoResItemConfigurationName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ColorId",
+          "dataType": "EcoResItemColorName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SizeId",
+          "dataType": "EcoResItemSizeName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndingBalance",
+          "dataType": "CostObjectBalanceEnding",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventoryTurn",
+          "dataType": "CostInventoryTurn",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SysDataCacheContextId",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemStyleName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemVersionName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemConfigurationName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemColorName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemSizeName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CostObjectBalanceEnding",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostInventoryTurn",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

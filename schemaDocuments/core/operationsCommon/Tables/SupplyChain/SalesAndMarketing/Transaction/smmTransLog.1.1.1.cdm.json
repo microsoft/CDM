@@ -1,0 +1,386 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/ContactPerson.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/WorksheetLine/DocuRef.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/smmBusRelTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/smmCampaignTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/smmLeadTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/smmMailings.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/smmOpportunityTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmSalesUnit.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/smmTMCallListTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmTransLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ContactPersonId",
+          "dataType": "ContactPersonId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogDateTime",
+          "dataType": "smmLogDateTime",
+          "description": ""
+        },
+        {
+          "name": "LogType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Party",
+          "dataType": "DirPartyRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrimaryDescription",
+          "dataType": "smmLogPrimDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Reference date",
+          "description": ""
+        },
+        {
+          "name": "RefNum",
+          "dataType": "smmLogRefNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "smmLogRecId",
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "smmLogTableId",
+          "description": ""
+        },
+        {
+          "name": "SalesUnitId",
+          "dataType": "smmSalesUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SecondaryDescription",
+          "dataType": "smmLogSecDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "smmLogWorker",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ContactPerson"
+          },
+          "name": "Relationship_ContactPersonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_DirPartyTable_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuRef"
+          },
+          "name": "Relationship_DocuRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmBusRelTable"
+          },
+          "name": "Relationship_smmBusRelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmCampaignTable"
+          },
+          "name": "Relationship_smmCampaignTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmLeadTable"
+          },
+          "name": "Relationship_smmLeadTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmMailings"
+          },
+          "name": "Relationship_smmMailingsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmOpportunityTable"
+          },
+          "name": "Relationship_smmOpportunityTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmSalesUnit"
+          },
+          "name": "Relationship_smmSalesUnitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmTMCallListTable"
+          },
+          "name": "Relationship_smmTMCallListTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transaction log"
+    },
+    {
+      "dataTypeName": "ContactPersonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmLogDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DirPartyRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmLogPrimDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "smmLogRefNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmLogRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmLogTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "smmSalesUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmLogSecDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmLogWorker",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

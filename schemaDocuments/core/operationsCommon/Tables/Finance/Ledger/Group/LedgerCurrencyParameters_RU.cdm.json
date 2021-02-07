@@ -1,0 +1,845 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/Ledger.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Group/RTax25ProfitTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerCurrencyParameters_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurConvertLossLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Conversion loss",
+          "description": ""
+        },
+        {
+          "name": "CurConvertProfitLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Conversion gain",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustPostingMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustPostingModeTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRateLossTaxVend",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRateNeg",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Taxable loss",
+          "description": ""
+        },
+        {
+          "name": "ExchRateNonrealLossTaxCust",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRateNonrealProfitTaxCust",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRatePos",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Taxable gain",
+          "description": ""
+        },
+        {
+          "name": "ExchRateProfitTaxVend",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Ledger",
+          "dataType": "LedgerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealizedLossCustLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Realized loss",
+          "description": ""
+        },
+        {
+          "name": "RealizedLossEmplLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealizedLossTaxCustLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealizedLossTaxVendLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealizedLossVendLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Realized loss",
+          "description": ""
+        },
+        {
+          "name": "RealizedProfitCustLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Realized gain",
+          "description": ""
+        },
+        {
+          "name": "RealizedProfitEmplLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealizedProfitTaxCustLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealizedProfitTaxVendLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealizedProfitVendLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Realized gain",
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableConvertLoss",
+          "dataType": "RTax25ProfitTableLoss",
+          "isNullable": true,
+          "displayName": "Expense code (currency conversion)",
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableConvertProfit",
+          "dataType": "RTax25ProfitTableProfit",
+          "isNullable": true,
+          "displayName": "Revenue code (currency conversion)",
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableLoss",
+          "dataType": "RTax25ProfitTableLoss",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableLossCust",
+          "dataType": "RTax25ProfitTableLoss",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableLossCustPrepayment",
+          "dataType": "RTax25ProfitTableLoss",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableLossEmpl",
+          "dataType": "RTax25ProfitTableLoss",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableLossVend",
+          "dataType": "RTax25ProfitTableLoss",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableLossVendPrepayment",
+          "dataType": "RTax25ProfitTableLoss",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableProfit",
+          "dataType": "RTax25ProfitTableProfit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableProfitCust",
+          "dataType": "RTax25ProfitTableProfit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableProfitCustPrepayment",
+          "dataType": "RTax25ProfitTableProfit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableProfitEmpl",
+          "dataType": "RTax25ProfitTableProfit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableProfitVend",
+          "dataType": "RTax25ProfitTableProfit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTableProfitVendPrepayment",
+          "dataType": "RTax25ProfitTableProfit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountDifference",
+          "dataType": "TaxAmountDifference_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountDifferenceLoss",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Take VAT into account for expenses",
+          "description": ""
+        },
+        {
+          "name": "TaxAmountDiffLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Offset ledger account",
+          "description": ""
+        },
+        {
+          "name": "TaxAmountDiffLossLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Amount difference - loss",
+          "description": ""
+        },
+        {
+          "name": "TaxAmountDiffProfitLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Amount difference - gain",
+          "description": ""
+        },
+        {
+          "name": "UnrealizedLossCustLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Unrealized loss",
+          "description": ""
+        },
+        {
+          "name": "UnrealizedLossEmplLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnrealizedLossTaxCustLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnrealizedLossVendLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Unrealized loss",
+          "description": ""
+        },
+        {
+          "name": "UnrealizedProfitCustLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Unrealized gain",
+          "description": ""
+        },
+        {
+          "name": "UnrealizedProfitEmplLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnrealizedProfitTaxCustLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnrealizedProfitVendLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Unrealized gain",
+          "description": ""
+        },
+        {
+          "name": "VendPostingMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendPostingModeTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CurConvertLossLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CurConvertProfitLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Ledger"
+          },
+          "name": "Relationship_LedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RealizedLossCustLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RealizedLossEmplLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RealizedLossTaxCustLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RealizedLossTaxVendLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RealizedLossVendLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RealizedProfitCustLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RealizedProfitEmplLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RealizedProfitTaxCustLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RealizedProfitTaxVendLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RealizedProfitVendLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableConvertLossRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableConvertProfitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableLossRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableLossCustRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableLossCustPrepaymentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableLossEmplRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableLossVendRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableLossVendPrepaymentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableProfitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableProfitCustRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableProfitCustPrepaymentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableProfitEmplRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableProfitVendRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableProfitVendPrepaymentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_TaxAmountDiffLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_TaxAmountDiffLossLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_TaxAmountDiffProfitLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_UnrealizedLossCustLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_UnrealizedLossEmplLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_UnrealizedLossTaxCustLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_UnrealizedLossVendLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_UnrealizedProfitCustLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_UnrealizedProfitEmplLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_UnrealizedProfitTaxCustLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_UnrealizedProfitVendLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger currency parameters"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableLoss",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableProfit",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxAmountDifference_RU",
+      "extendsDataType": "integer"
+    }
+  ]
+}

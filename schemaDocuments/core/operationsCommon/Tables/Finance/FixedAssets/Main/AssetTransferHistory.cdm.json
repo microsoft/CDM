@@ -1,0 +1,234 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AssetBook.cdm.json"
+    },
+    {
+      "corpusPath": "AssetBookTable.cdm.json"
+    },
+    {
+      "corpusPath": "AssetTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetTransferHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetId",
+          "dataType": "AssetId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BookId",
+          "dataType": "AssetBookId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDimension",
+          "dataType": "FromDimension",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDimension",
+          "dataType": "ToDimension",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferComment",
+          "dataType": "TransferComment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferDate",
+          "dataType": "TransferDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferSequenceNumber",
+          "dataType": "TransferSequenceNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferValue",
+          "dataType": "TransferValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferValueReportingCurrency",
+          "dataType": "TransferValue",
+          "isNullable": true,
+          "displayName": "Value at transfer in reporting currency",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBook"
+          },
+          "name": "Relationship_AssetBookRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBookTable"
+          },
+          "name": "Relationship_AssetBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_FromDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_NumberSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_ToDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fixed asset transfer history"
+    },
+    {
+      "dataTypeName": "AssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FromDimension",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ToDimension",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransferComment",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransferDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TransferSequenceNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransferValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

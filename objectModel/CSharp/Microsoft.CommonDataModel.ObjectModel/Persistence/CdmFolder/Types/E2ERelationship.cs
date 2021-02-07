@@ -1,11 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="E2ERelationship.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-// <summary>
-//   The entity to entity relationships that will be populated in a manifest.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Newtonsoft.Json;
 
@@ -18,6 +12,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
     /// </summary>
     public class E2ERelationship
     {
+        /// <summary>
+        /// Gets or sets name of the relationship.
+        /// </summary>
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+
         /// <summary>
         /// Gets or sets the absolute corpus path of the referencing entity.
         /// </summary>

@@ -1,0 +1,205 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Parameter/DocuFileTypes.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DocuTemplate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TemplateType",
+          "dataType": "DocuTemplateType",
+          "description": ""
+        },
+        {
+          "name": "TemplateID",
+          "dataType": "DocuTemplateName",
+          "description": ""
+        },
+        {
+          "name": "LegalEntityID",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RegionID",
+          "dataType": "DocuTemplateRegion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LanguageID",
+          "dataType": "LanguageId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FileName",
+          "dataType": "Filename",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FileType",
+          "dataType": "FilenameType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description255",
+          "isNullable": true,
+          "displayName": "Template description",
+          "description": ""
+        },
+        {
+          "name": "RootEntityName",
+          "dataType": "DocuTemplateRootEntityName",
+          "description": ""
+        },
+        {
+          "name": "FileID",
+          "dataType": "guid",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AotResourceName",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayName",
+          "dataType": "DocuTemplateDisplayName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ApplyRecordFilter",
+          "dataType": "DocuTemplateApplyRecordFilter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ListInOfficeMenu",
+          "dataType": "DocuTemplateListInOfficeMenu",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ApplyCompanyFilter",
+          "dataType": "DocuTemplateApplyCompanyFilter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DocuFileTypes"
+          },
+          "name": "Relationship_FiletypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Document templates"
+    },
+    {
+      "dataTypeName": "DocuTemplateType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DocuTemplateName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocuTemplateRegion",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Filename",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FilenameType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description255",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocuTemplateRootEntityName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocuTemplateDisplayName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocuTemplateApplyRecordFilter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DocuTemplateListInOfficeMenu",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DocuTemplateApplyCompanyFilter",
+      "extendsDataType": "integer"
+    }
+  ]
+}

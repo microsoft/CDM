@@ -1,0 +1,208 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgFlexGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MinimumPayType",
+          "dataType": "JmgPayCostType",
+          "isNullable": true,
+          "displayName": "Minimum pay type",
+          "description": ""
+        },
+        {
+          "name": "AdjustFlexMaximum",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Adjust flex maximum",
+          "description": ""
+        },
+        {
+          "name": "AdjustFlexMinimum",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Adjust flex minimum",
+          "description": ""
+        },
+        {
+          "name": "CalculateFlexFromPayTypes",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Based on pay types",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "JmgDescription",
+          "description": ""
+        },
+        {
+          "name": "FlexAddPayType",
+          "dataType": "JmgPayCostType",
+          "isNullable": true,
+          "displayName": "Flex+",
+          "description": ""
+        },
+        {
+          "name": "FlexGroupId",
+          "dataType": "JmgFlexGroupId",
+          "description": ""
+        },
+        {
+          "name": "FlexSubPayType",
+          "dataType": "JmgPayCostType",
+          "isNullable": true,
+          "displayName": "Flex-",
+          "description": ""
+        },
+        {
+          "name": "MaximumFlexBalanceSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaximumPayType",
+          "dataType": "JmgPayCostType",
+          "isNullable": true,
+          "displayName": "Maximum pay type",
+          "description": ""
+        },
+        {
+          "name": "MaximumPayUnits",
+          "dataType": "JmgPayQty",
+          "isNullable": true,
+          "displayName": "Pay type factor",
+          "description": ""
+        },
+        {
+          "name": "MinimumFlexBalanceSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinimumPayUnits",
+          "dataType": "JmgPayQty",
+          "isNullable": true,
+          "displayName": "Pay type factor",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayTable"
+          },
+          "name": "Relationship_FlexAdditionPayTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayTable"
+          },
+          "name": "Relationship_FlexSubtractionPayTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayTable"
+          },
+          "name": "Relationship_MaximumPayTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayTable"
+          },
+          "name": "Relationship_MinimumPayTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Flex groups"
+    },
+    {
+      "dataTypeName": "JmgPayCostType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgFlexGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgSeconds",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgPayQty",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

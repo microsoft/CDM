@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import List
 
@@ -20,7 +18,7 @@ class LocalEntity(Entity):
     def __init__(self):
         super().__init__()
 
-        self.attributes = []  # type: List[Attribute]
-        self.partitions = []  # type: List[Partition]
-        self.schemas = []  # type: List[str]
-        self.imports = []  # type: List[Import]
+        self.attributes = None  # type: List[Attribute]
+        self.partitions = None  # type: List[Partition]
+        self.schemas = None  # type: List[str]
+        self.imports = None  # type: List[Import]

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     ArgumentValue,
     CdmCorpusContext,
@@ -5,6 +8,8 @@ import {
     CdmObject,
     cdmObjectSimple,
     cdmObjectType,
+    Errors,
+    Logger,
     resolveOptions,
     VisitCallback
 } from '../internal';
@@ -42,7 +47,7 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmParameterDefinition;
@@ -78,7 +83,18 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.name ? true : false;
+            if (!this.name) {
+                Logger.error(
+                    CdmParameterDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['name']),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -100,10 +116,6 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
     }
 
     public isDerivedFrom(baseDef: string, resOpt?: resolveOptions) {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 

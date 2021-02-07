@@ -1,0 +1,133 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ProdUnitTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/WrkCtrTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgShopSupervisorWorkspaceConfiguration",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "UserId",
+          "dataType": "UserId",
+          "isReadOnly": true,
+          "displayName": "User ID",
+          "description": ""
+        },
+        {
+          "name": "ProdUnitFilter",
+          "dataType": "ProdUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResourceFilter",
+          "dataType": "WrkCtrId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResourceGroupFilter",
+          "dataType": "WrkCtrId",
+          "isNullable": true,
+          "displayName": "Resource group",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProdUnitTable"
+          },
+          "name": "Relationship_ProdUnitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_ResourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_ResourceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WrkCtrId",
+      "extendsDataType": "string"
+    }
+  ]
+}

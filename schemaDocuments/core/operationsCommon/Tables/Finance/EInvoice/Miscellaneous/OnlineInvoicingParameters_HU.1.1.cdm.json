@@ -1,0 +1,176 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Miscellaneous/KeyVaultCertificateTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "OnlineInvoicingParameters_HU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TechUserNameKeyVaultRef",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Technical user name secret",
+          "description": ""
+        },
+        {
+          "name": "TechUserPasswordKeyVaultRef",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Technical user password secret",
+          "description": ""
+        },
+        {
+          "name": "SignatureKeyKeyVaultRef",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Signature key secret",
+          "description": ""
+        },
+        {
+          "name": "ReplacementKeyKeyVaultRef",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Replacement key secret",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TechUserName",
+          "dataType": "UserRequestAccountNumber",
+          "isNullable": true,
+          "displayName": "Technical user name",
+          "description": ""
+        },
+        {
+          "name": "TechUserPassword",
+          "dataType": "CryptoBlob",
+          "isNullable": true,
+          "displayName": "Technical user password",
+          "description": ""
+        },
+        {
+          "name": "SignatureKey",
+          "dataType": "CryptoBlob",
+          "isNullable": true,
+          "displayName": "Signature key",
+          "description": ""
+        },
+        {
+          "name": "ReplacementKey",
+          "dataType": "CryptoBlob",
+          "isNullable": true,
+          "displayName": "Replacement key",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "KeyVaultCertificateTable"
+          },
+          "name": "Relationship_TechUserNameKeyVaultRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KeyVaultCertificateTable"
+          },
+          "name": "Relationship_TechUserPasswordKeyVaultRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KeyVaultCertificateTable"
+          },
+          "name": "Relationship_SignatureKeyKeyVaultRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KeyVaultCertificateTable"
+          },
+          "name": "Relationship_ReplacementKeyKeyVaultRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Online invoicing system parameters"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UserRequestAccountNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CryptoBlob",
+      "extendsDataType": "binary"
+    }
+  ]
+}

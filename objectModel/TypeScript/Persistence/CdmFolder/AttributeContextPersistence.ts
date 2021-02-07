@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmAttributeContext,
     cdmAttributeContextType,
@@ -7,7 +11,7 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeContext,
     TraitReference
@@ -69,11 +73,11 @@ export class AttributeContextPersistence {
             parent: instance.parent ? instance.parent.copyData(resOpt, options) as string : undefined,
             definition: instance.definition ? instance.definition.copyData(resOpt, options) as string : undefined,
             // i know the trait collection names look wrong. but I wanted to use the def baseclass
-            appliedTraits: utils.arrayCopyData<string | TraitReference>(
+            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference>(
                 resOpt,
                 instance.exhibitsTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty),
                 options),
-            contents: utils.arrayCopyData<string | AttributeContext>(resOpt, instance.contents, options)
+            contents: copyDataUtils.arrayCopyData<string | AttributeContext>(resOpt, instance.contents, options)
         };
     }
     public static mapTypeNameToEnum(typeName: string): cdmAttributeContextType {
@@ -98,6 +102,35 @@ export class AttributeContextPersistence {
                 return cdmAttributeContextType.generatedRound;
             case 'generatedSet':
                 return cdmAttributeContextType.generatedSet;
+            case 'projection':
+                return cdmAttributeContextType.projection;
+            case 'source':
+                return cdmAttributeContextType.source;
+            case 'operations':
+                return cdmAttributeContextType.operations;
+            case 'operationAddCountAttribute':
+                return cdmAttributeContextType.operationAddCountAttribute;
+            case 'operationAddSupportingAttribute':
+                return cdmAttributeContextType.operationAddSupportingAttribute;
+            case 'operationAddTypeAttribute':
+                return cdmAttributeContextType.operationAddTypeAttribute;
+            case 'operationExcludeAttributes':
+                return cdmAttributeContextType.operationExcludeAttributes;
+            case 'operationArrayExpansion':
+                return cdmAttributeContextType.operationArrayExpansion;
+            case 'operationCombineAttributes':
+                return cdmAttributeContextType.operationCombineAttributes;
+            case 'operationRenameAttributes':
+                return cdmAttributeContextType.operationRenameAttributes;
+            case 'operationReplaceAsForeignKey':
+                return cdmAttributeContextType.operationReplaceAsForeignKey;
+            case 'operationIncludeAttributes':
+                return cdmAttributeContextType.operationIncludeAttributes;
+            case 'operationAddAttributeGroup':
+                return cdmAttributeContextType.operationAddAttributeGroup;
+            case 'unknown':
+                return cdmAttributeContextType.unknown;
+
             default:
                 return -1;
         }
@@ -124,6 +157,32 @@ export class AttributeContextPersistence {
                 return 'generatedRound';
             case cdmAttributeContextType.generatedSet:
                 return 'generatedSet';
+            case cdmAttributeContextType.projection:
+                return 'projection';
+            case cdmAttributeContextType.source:
+                return 'source';
+            case cdmAttributeContextType.operations:
+                return 'operations';
+            case cdmAttributeContextType.operationAddCountAttribute:
+                return 'operationAddCountAttribute';
+            case cdmAttributeContextType.operationAddSupportingAttribute:
+                return 'operationAddSupportingAttribute';
+            case cdmAttributeContextType.operationAddTypeAttribute:
+                return 'operationAddTypeAttribute';
+            case cdmAttributeContextType.operationExcludeAttributes:
+                return 'operationExcludeAttributes';
+            case cdmAttributeContextType.operationArrayExpansion:
+                return 'operationArrayExpansion';
+            case cdmAttributeContextType.operationCombineAttributes:
+                return 'operationCombineAttributes';
+            case cdmAttributeContextType.operationRenameAttributes:
+                return 'operationRenameAttributes';
+            case cdmAttributeContextType.operationReplaceAsForeignKey:
+                return 'operationReplaceAsForeignKey';
+            case cdmAttributeContextType.operationIncludeAttributes:
+                return 'operationIncludeAttributes';
+            case cdmAttributeContextType.operationAddAttributeGroup:
+                return 'operationAddAttributeGroup';
             default:
                 return 'unknown';
         }

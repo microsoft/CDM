@@ -1,0 +1,188 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CreditCardProcessors.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CreditCardCust",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CardNumber",
+          "dataType": "CreditCardNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CardToken",
+          "dataType": "CreditCardPaymentCardToken",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreditCardProcessors",
+          "dataType": "CreditCardProcessorsId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreditCardTypeName",
+          "dataType": "CreditCardTypeName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpiryDate",
+          "dataType": "CreditCardExpiryDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PersonName",
+          "isNullable": true,
+          "displayName": "Card holder",
+          "description": ""
+        },
+        {
+          "name": "Notes",
+          "dataType": "CreditCardNotes",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UniqueCardId",
+          "dataType": "CreditCardUniqueCardId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CreditCardProcessors"
+          },
+          "name": "Relationship_CreditCardProcessorsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer credit card"
+    },
+    {
+      "dataTypeName": "CreditCardNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CreditCardPaymentCardToken",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CreditCardProcessorsId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CreditCardTypeName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CreditCardExpiryDate",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PersonName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CreditCardNotes",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CreditCardUniqueCardId",
+      "extendsDataType": "string"
+    }
+  ]
+}

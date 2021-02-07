@@ -1,0 +1,254 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Main/Catalog.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProduct.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailChannelTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailProductListingStatus",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActionStatus",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "Catalog",
+          "dataType": "CatalogRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Channel",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ChannelDataAreaId",
+          "dataType": "DataAreaId",
+          "description": ""
+        },
+        {
+          "name": "ChannelListingId",
+          "dataType": "RetailChannelListingId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDim",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "displayName": "Variant",
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "displayName": "Product",
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "LanguageId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ParentListing",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Product",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestedAction",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "StatusDateTime",
+          "dataType": "UTCTimestamp",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StatusMessage",
+          "dataType": "RetailListingStatusMessage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDate",
+          "displayName": "Effective date",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDate",
+          "displayName": "Expiration date",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Catalog"
+          },
+          "name": "Relationship_CatalogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_EcoResProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelTable"
+          },
+          "name": "Relationship_RetailChannelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail listing status"
+    },
+    {
+      "dataTypeName": "CatalogRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailChannelListingId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UTCTimestamp",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailListingStatusMessage",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ValidFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

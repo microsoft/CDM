@@ -1,7 +1,10 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_object_def import CdmObjectDefinition
 
@@ -20,13 +23,15 @@ class CdmE2ERelationship(CdmObjectDefinition):
         self.to_entity = None  # type: Optional[str]
         self.to_entity_attribute = None  # type: Optional[str]
 
+        self._TAG = CdmE2ERelationship.__name__
+
     @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.E2E_RELATIONSHIP_DEF
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmE2ERelationship'] = None) -> 'CdmE2ERelationship':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmE2ERelationship(self.ctx, self.get_name())
@@ -50,11 +55,24 @@ class CdmE2ERelationship(CdmObjectDefinition):
         return False
 
     def validate(self) -> bool:
-        return bool(self.from_entity and self.from_entity_attribute and self.to_entity and self.to_entity_attribute)
+        missing_fields = []
+        if not bool(self.from_entity):
+            missing_fields.append('from_entity')
+        if not bool(self.from_entity_attribute):
+            missing_fields.append('from_entity_attribute')
+        if not bool(self.to_entity):
+            missing_fields.append('to_entity')
+        if not bool(self.to_entity_attribute):
+            missing_fields.append('to_entity_attribute')
+
+        if missing_fields:
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             if not self._declared_path:
                 self._declared_path = '{}{}'.format(path_from, self.get_name())
 

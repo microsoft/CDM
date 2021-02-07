@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -28,8 +29,8 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
   private TraitToPropertyMap t2pm;
   private String location;
   private boolean inferred;
-
-  CdmDataPartitionDefinition(final CdmCorpusContext ctx, final String name) {
+  
+  public CdmDataPartitionDefinition(final CdmCorpusContext ctx, final String name) {
     super(ctx);
     this.setName(name);
     this.setObjectType(CdmObjectType.DataPartitionDef);
@@ -44,9 +45,9 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -61,7 +62,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     CdmDataPartitionDefinition copy;
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     if (host == null) {
@@ -94,7 +95,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
     return false;
   }
 
@@ -130,6 +131,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
 
   /**
    * Gets or sets the name of a data partition.
+   * @return String
    */
   @Override
   public String getName() {
@@ -142,6 +144,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
 
   /**
    * Gets or sets the corpus path for the data file location.
+   * @return String
    */
   public String getLocation() {
     return this.location;
@@ -162,6 +165,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
   /**
    * Gets or sets the list of key value pairs to give names for the replacement values from the
    * RegEx.
+   * @return map of String to list of strings
    */
   public Map<String, List<String>> getArguments() {
     return this.arguments;
@@ -174,6 +178,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
   /**
    * Gets or sets the path of a specialized schema to use specifically for the partitions
    * generated.
+   * @return String
    */
   public String getSpecializedSchema() {
     return this.specializedSchema;
@@ -185,6 +190,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
 
   /**
    * Gets or sets the name of a data partition.
+   * @return String
    */
   public String getDescription() {
     return (String) getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.DESCRIPTION);
@@ -196,6 +202,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
 
   /**
    * Gets or sets the name of a data partition.
+   * @return Offset date time
    */
   public OffsetDateTime getRefreshTime() {
     return this.refreshTime;
@@ -207,6 +214,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
 
   /**
    * Last time the modified times were updated.
+   * @return Offset date time
    */
   @Override
   public OffsetDateTime getLastFileStatusCheckTime() {
@@ -218,18 +226,27 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     this.lastFileStatusCheckTime = value;
   }
 
+  /**
+   * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+   * @return Offset date time
+   */
   @Override
   public OffsetDateTime getLastChildFileModifiedTime() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
+  /**
+   * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+   * @param time offset time
+   */
   @Override
   public void setLastChildFileModifiedTime(final OffsetDateTime time) {
-
+    throw new UnsupportedOperationException();
   }
 
   /**
    * Last time this file was modified according to the OM.
+   * @return Offset date time
    */
   @Override
   public OffsetDateTime getLastFileModifiedTime() {
@@ -243,6 +260,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
 
   /**
    * Updates the object and any children with changes made in the document file where it came from.
+   * @return CompletableFuture
    */
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
@@ -265,6 +283,8 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
 
   /**
    * Report most recent modified time (of current or children objects) to the parent object.
+   * @param childTime datetime offset
+   * @return CompletableFuture
    */
   @Override
   public CompletableFuture<Void> reportMostRecentTimeAsync(final OffsetDateTime childTime) {

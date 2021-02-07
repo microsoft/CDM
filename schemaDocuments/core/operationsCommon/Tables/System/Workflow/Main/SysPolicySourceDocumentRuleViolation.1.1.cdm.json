@@ -1,0 +1,120 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysPolicySourceDocumentRule.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionLine/SourceDocumentLine.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysPolicySourceDocumentRuleViolation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IsForSourceDocumentLine",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastEvaluationDate",
+          "dataType": "SysPolicyDateTime",
+          "isNullable": true,
+          "displayName": "Date last run",
+          "description": ""
+        },
+        {
+          "name": "PolicySourceDocumentRule",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentHeader",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentLine",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysPolicySourceDocumentRule"
+          },
+          "name": "Relationship_PolicySourceDocumentRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentHeader"
+          },
+          "name": "Relationship_SourceDocumentHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentLine"
+          },
+          "name": "Relationship_SourceDocumentLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Policy source document rule violation"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SysPolicyDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

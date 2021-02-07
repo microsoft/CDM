@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 {
     using System;
@@ -34,9 +37,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "cdmTest", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(cdmManifest.Schema, "CdmManifestDefinition.cdm.json");
             Assert.AreEqual(cdmManifest.ManifestName, "cdmTest");
-            Assert.AreEqual(cdmManifest.JsonSchemaSemanticVersion, "0.9.0");
+            Assert.AreEqual(cdmManifest.JsonSchemaSemanticVersion, "1.0.0");
             Assert.AreEqual(TimeUtils.GetFormattedDateString((DateTimeOffset)cdmManifest.LastFileModifiedTime), "2008-09-15T23:53:23.000Z");
-            Assert.AreEqual(cdmManifest.Explanation, "test cdm folder for cdm version 0.9+");
+            Assert.AreEqual(cdmManifest.Explanation, "test cdm folder for cdm version 1.0+");
             Assert.AreEqual(cdmManifest.Imports.Count, 1);
             Assert.AreEqual(cdmManifest.Imports[0].CorpusPath, "/primitives.cdm.json");
             Assert.AreEqual(cdmManifest.Entities.Count, 0);
@@ -92,9 +95,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "docName", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             ManifestContent manifestObject = CdmObjectBase.CopyData(cdmManifest, null, null);
             Assert.AreEqual(manifestObject.Schema, "CdmManifestDefinition.cdm.json");
-            Assert.AreEqual(manifestObject.JsonSchemaSemanticVersion, "0.9.0");
+            Assert.AreEqual(manifestObject.JsonSchemaSemanticVersion, "1.0.0");
+            Assert.AreEqual(manifestObject.DocumentVersion, "2.0.0");
             Assert.AreEqual(manifestObject.ManifestName, "cdmTest");
-            Assert.AreEqual(manifestObject.Explanation, "test cdm folder for cdm version 0.9+");
+            Assert.AreEqual(manifestObject.Explanation, "test cdm folder for cdm version 1.0+");
             Assert.AreEqual(manifestObject.Imports.Count, 1);
             Assert.AreEqual(manifestObject.Imports[0].CorpusPath, "/primitives.cdm.json");
             Assert.AreEqual(manifestObject.ExhibitsTraits.Count, 1);
@@ -125,6 +129,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             // hard coded because the time comes from inside the file
             Assert.AreEqual(TimeUtils.GetFormattedDateString(statusTimeAtLoad), "2019-02-01T15:36:19.410Z");
 
+            Assert.IsNotNull(cdmManifest._fileSystemModifiedTime);
+            Assert.IsTrue(cdmManifest._fileSystemModifiedTime < timeBeforeLoad);
+
             System.Threading.Thread.Sleep(100);
 
             await cdmManifest.FileStatusCheckAsync();
@@ -140,97 +147,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var subManifest = cdmManifest.SubManifests.AllItems[0] as CdmManifestDeclarationDefinition;
             var maxTime = TimeUtils.MaxTime(entity.LastFileModifiedTime, subManifest.LastFileModifiedTime);
             Assert.AreEqual(TimeUtils.GetFormattedDateString(cdmManifest.LastChildFileModifiedTime), TimeUtils.GetFormattedDateString(maxTime));
-        }
-
-        /// <summary>
-        /// Tests refreshing files that match the regular expression
-        /// </summary>
-        [TestMethod]
-        public async Task TestRefreshesDataPartitionPatterns()
-        {
-            var inputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestRefreshDataPartitionPatterns");
-
-            var actualLastModTime = new FileInfo(Path.GetFullPath(inputPath)).LastWriteTimeUtc;
-
-            var cdmCorpus = new CdmCorpusDefinition();
-            cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(inputPath));
-            cdmCorpus.Storage.DefaultNamespace = "local";
-            var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/patternManifest.manifest.cdm.json");
-
-            var partitionEntity = cdmManifest.Entities.AllItems[0];
-            Assert.AreEqual(partitionEntity.DataPartitions.Count, 1);
-
-            var timeBeforeLoad = DateTime.Now;
-
-            await cdmManifest.FileStatusCheckAsync();
-
-            // file status check should check patterns and add two more partitions that match the pattern
-            // should not re-add already existing partitions
-
-            // Mac and Windows behave differently when listing file content, so we don't want to be strict about partition file order
-            int totalExpectedPartitionsFound = 0;
-            foreach (CdmDataPartitionDefinition partition in partitionEntity.DataPartitions.AllItems)
-            {
-                switch (partition.Location)
-                {
-                    case "partitions/existingPartition.csv":
-                        totalExpectedPartitionsFound++;
-                        break;
-
-                    case "partitions/someSubFolder/someSubPartition.csv":
-                        totalExpectedPartitionsFound++;
-                        Assert.AreEqual(partition.SpecializedSchema, "test special schema");
-                        Assert.IsTrue(partition.LastFileStatusCheckTime > timeBeforeLoad);
-
-                        // inherits the exhibited traits from pattern
-                        Assert.AreEqual(partition.ExhibitsTraits.Count, 1);
-                        Assert.AreEqual(partition.ExhibitsTraits.AllItems[0].NamedReference, "is");
-
-                        Assert.AreEqual(partition.Arguments.Count, 1);
-                        Assert.IsTrue(partition.Arguments.ContainsKey("testParam1"));
-                        List<string> argArray = partition.Arguments["testParam1"];
-                        Assert.AreEqual(argArray.Count, 1);
-                        Assert.AreEqual(argArray[0], "/someSubFolder/someSub");
-                        break;
-                    case "partitions/newPartition.csv":
-                        totalExpectedPartitionsFound++;
-                        Assert.AreEqual(partition.Arguments.Count, 1);
-                        break;
-                    case "partitions/2018/folderCapture.csv":
-                        totalExpectedPartitionsFound++;
-                        Assert.AreEqual(partition.Arguments.Count, 1);
-                        Assert.AreEqual(partition.Arguments.ContainsKey("year"), true);
-                        Assert.AreEqual(partition.Arguments["year"][0], "2018");
-                        break;
-                    case "partitions/2018/8/15/folderCapture.csv":
-                        totalExpectedPartitionsFound++;
-                        Assert.AreEqual(partition.Arguments.Count, 3);
-                        Assert.AreEqual(partition.Arguments.ContainsKey("year"), true);
-                        Assert.AreEqual(partition.Arguments["year"][0], "2018");
-                        Assert.AreEqual(partition.Arguments.ContainsKey("month"), true);
-                        Assert.AreEqual(partition.Arguments["month"][0], "8");
-                        Assert.AreEqual(partition.Arguments.ContainsKey("day"), true);
-                        Assert.AreEqual(partition.Arguments["day"][0], "15");
-                        break;
-                    case "partitions/2018/8/15/folderCaptureRepeatedGroup.csv":
-                        totalExpectedPartitionsFound++;
-                        Assert.AreEqual(partition.Arguments.Count, 1);
-                        Assert.AreEqual(partition.Arguments.ContainsKey("day"), true);
-                        Assert.AreEqual(partition.Arguments["day"][0], "15");
-                        break;
-                    case "partitions/testTooFew.csv":
-                        totalExpectedPartitionsFound++;
-                        Assert.AreEqual(partition.Arguments.Count, 0);
-                        break;
-                    case "partitions/testTooMany.csv":
-                        totalExpectedPartitionsFound++;
-                        Assert.AreEqual(partition.Arguments.Count, 0);
-                        break;
-                }
-            }
-
-            Assert.AreEqual(totalExpectedPartitionsFound, 8);
         }
 
         /// <summary>
@@ -305,7 +221,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var callback = new EventCallback();
             var functionWasCalled = false;
             var functionParameter1 = CdmStatusLevel.Info;
-            string functionParameter2 = null, functionParameter3 = null;
+            string functionParameter2 = null;
             callback.Invoke = (CdmStatusLevel statusLevel, string message1) =>
             {
                 functionWasCalled = true;
@@ -355,7 +271,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var callback = new EventCallback();
             var functionWasCalled = false;
             var functionParameter1 = CdmStatusLevel.Info;
-            string functionParameter2 = null, functionParameter3 = null;
+            string functionParameter2 = null;
             callback.Invoke = (CdmStatusLevel statusLevel, string message1) =>
             {
                 functionWasCalled = true;

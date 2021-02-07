@@ -1,0 +1,175 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmCampaignMediaTypeGroup.cdm.json"
+    },
+    {
+      "corpusPath": "RetailMediaChannelConnectorCredentials.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailMediaChannelConnectorSettings",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ChannelName",
+          "dataType": "RetailMediaChannelNameStr",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChannelType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpirationDateTime",
+          "dataType": "RetailMediaChannelExpirationDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PageId",
+          "dataType": "RetailMediaChannelUserId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PageName",
+          "dataType": "RetailMediaChannelPageNameStr",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PageUrl",
+          "dataType": "RetailMediaChannelPageUrl",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailMediaChannelConnectorCredentials",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "smmCampaignMediaTypeGroup",
+          "dataType": "smmCampaignMediaTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SyncSolutionId",
+          "dataType": "SyncSolutionId",
+          "description": ""
+        },
+        {
+          "name": "UserId",
+          "dataType": "RetailMediaChannelUserId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "smmCampaignMediaTypeGroup"
+          },
+          "name": "Relationship_CampaignMediaRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailMediaChannelConnectorCredentials"
+          },
+          "name": "Relationship_CredentialsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Channel settings"
+    },
+    {
+      "dataTypeName": "RetailMediaChannelNameStr",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailMediaChannelExpirationDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailMediaChannelUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailMediaChannelPageNameStr",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailMediaChannelPageUrl",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmCampaignMediaTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SyncSolutionId",
+      "extendsDataType": "string"
+    }
+  ]
+}

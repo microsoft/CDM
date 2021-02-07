@@ -1,4 +1,7 @@
-﻿namespace create_net_new_entities
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace create_net_new_entities
 {
     using System;
     using System.Threading.Tasks;
@@ -48,10 +51,10 @@
             var pathFromExeToExampleRoot = "../../../../../../";
 
 
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "6-create-net-new-entities"));
+            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "6-create-net-new-entities/sample-data"));
             cdmCorpus.Storage.DefaultNamespace = "local"; // local is our default. so any paths that start out navigating without a device tag will assume local
 
-            // Fake cdm, normaly use the github adapter
+            // Fake cdm, normaly use the CDM Standards adapter
             // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));
 
@@ -69,7 +72,7 @@
             // Make the temp manifest and add it to the root of the local documents in the corpus
             CdmManifestDefinition manifestAbstract = cdmCorpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "tempAbstract");
 
-            // Add the temp manifest to the root of the local documents in the corpus
+            // Add the temp manifest to the root of the local adapter in the corpus
             var localRoot = cdmCorpus.Storage.FetchRootFolder("local");
             localRoot.Documents.Add(manifestAbstract, "TempAbstract.manifest.cdm.json");
 
@@ -83,7 +86,7 @@
             // Add type attributes to the entity instance
             var personAttributeId = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomPersonEntityName}Id", "identifiedBy", "entityId");
             personEntity.Attributes.Add(personAttributeId);
-            var personAttributeName = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomPersonEntityName}Name", "hasA", "string");
+            var personAttributeName = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomPersonEntityName}Name", "hasA", "name");
             personEntity.Attributes.Add(personAttributeName);
             // Add properties to the entity instance
             personEntity.DisplayName = CustomPersonEntityName;
@@ -106,7 +109,7 @@
             // Add type attributes to the entity instance
             var accountAttributeId = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomAccountEntityName}Id", "identifiedBy", "entityId");
             accountEntity.Attributes.Add(accountAttributeId);
-            var accountAttributeName = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomAccountEntityName}Name", "hasA", "string");
+            var accountAttributeName = CreateEntityAttributeWithPurposeAndDataType(cdmCorpus, $"{CustomAccountEntityName}Name", "hasA", "name");
             accountEntity.Attributes.Add(accountAttributeName);
             // Add properties to the entity instance
             accountEntity.DisplayName = CustomAccountEntityName;
@@ -131,7 +134,6 @@
             localRoot.Documents.Add(accountEntityDoc, accountEntityDoc.Name);
             // Add the entity to the manifest
             manifestAbstract.Entities.Add(accountEntity);
-
 
             // Create an entity which extends "Account" from the standard, it contains everything that "Account" has
             var extendedStandardAccountEntity = cdmCorpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, ExtendedStandardAccount, false);
@@ -187,8 +189,9 @@
             // Save as a model.json
             // await manifestResolved.SaveAsAsync("model.json", true);
         }
+
         /// <summary>
-        /// Create an type attribute definition instance.
+        /// Create an type attribute definition instance with provided data type.
         /// </summary>
         /// <param name="cdmCorpus"> The CDM corpus. </param>
         /// <param name="attributeName"> The directives to use while getting the resolved entities. </param>
@@ -197,9 +200,22 @@
         /// <returns> The instance of type attribute definition. </returns>
         private static CdmTypeAttributeDefinition CreateEntityAttributeWithPurposeAndDataType(CdmCorpusDefinition cdmCorpus, string attributeName, string purpose, string dataType)
         {
+            var entityAttribute = CreateEntityAttributeWithPurpose(cdmCorpus, attributeName, purpose);
+            entityAttribute.DataType = cdmCorpus.MakeRef<CdmDataTypeReference>(CdmObjectType.DataTypeRef, dataType, true);
+            return entityAttribute;
+        }
+
+        /// <summary>
+        /// Create an type attribute definition instance with provided purpose.
+        /// </summary>
+        /// <param name="cdmCorpus"> The CDM corpus. </param>
+        /// <param name="attributeName"> The directives to use while getting the resolved entities. </param>
+        /// <param name="purpose"> The manifest to be resolved. </param>
+        /// <returns> The instance of type attribute definition. </returns>
+        private static CdmTypeAttributeDefinition CreateEntityAttributeWithPurpose(CdmCorpusDefinition cdmCorpus, string attributeName, string purpose)
+        {
             var entityAttribute = cdmCorpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, attributeName, false);
             entityAttribute.Purpose = cdmCorpus.MakeRef<CdmPurposeReference>(CdmObjectType.PurposeRef, purpose, true);
-            entityAttribute.DataType = cdmCorpus.MakeRef<CdmDataTypeReference>(CdmObjectType.DataTypeRef, dataType, true);
             return entityAttribute;
         }
 

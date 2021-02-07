@@ -1,0 +1,199 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxAgent.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxBranch.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesTableExtensionTH",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "NoteFormat",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonTableRef",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceAmountCur",
+          "dataType": "TaxUnrealizedSalesRefInvoiceAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceId",
+          "dataType": "TaxUnrealizedSalesRefInvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTable",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAgent",
+          "dataType": "TaxAgentRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBranch",
+          "dataType": "TaxBranchRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoicePostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "displayName": "Invoice address",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxAgent"
+          },
+          "name": "Relationship_TaxAgentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxBranch"
+          },
+          "name": "Relationship_TaxBranchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_InvoicePostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales orders for Thailand"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxUnrealizedSalesRefInvoiceAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxUnrealizedSalesRefInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAgentRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxBranchRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

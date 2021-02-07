@@ -1,8 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CdmDataPartitionDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -79,10 +76,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string Name { get; set; }
 
         /// Gets or sets the data partition's refresh time.
-        public DateTime? RefreshTime { get; set; }
+        public DateTimeOffset? RefreshTime { get; set; }
 
-        /// Gets or sets the last child file modified time.
-        public DateTimeOffset? LastChildFileModifiedTime { get; set; }
+        /// LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+        public DateTimeOffset? LastChildFileModifiedTime { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         /// <inheritdoc />
         [Obsolete]
@@ -103,7 +100,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmDataPartitionDefinition copy;
@@ -175,11 +172,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
-
             return false;
         }
 

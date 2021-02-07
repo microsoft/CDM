@@ -1,0 +1,129 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "NumberSequenceTable.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "NumberSequenceDeployment",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "NumberSequence",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "Deployment",
+          "dataType": "DeploymentRecId",
+          "description": ""
+        },
+        {
+          "name": "Lowest",
+          "dataType": "NumberSequenceRange",
+          "isNullable": true,
+          "displayName": "Smallest",
+          "description": ""
+        },
+        {
+          "name": "Highest",
+          "dataType": "NumberSequenceRange",
+          "isNullable": true,
+          "displayName": "Largest",
+          "description": ""
+        },
+        {
+          "name": "NextRec",
+          "dataType": "NumberSequenceRange",
+          "isNullable": true,
+          "displayName": "Next",
+          "description": ""
+        },
+        {
+          "name": "InUse",
+          "dataType": "InUse",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Active",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Active",
+          "description": ""
+        },
+        {
+          "name": "IsNumberSequenceContinuous",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LatestCleanDateTime",
+          "dataType": "NumberSequenceCleanDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_NumberSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Number sequence deployments"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DeploymentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NumberSequenceRange",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InUse",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NumberSequenceCleanDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/WorksheetHeader/AssetImpairmentTestResult_JP.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetImpairmentCGURecognitionTotal_JP",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetImpairmentTestResult_JP",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CGUSubtotalImpairmentAdj",
+          "dataType": "AssetImpairmentAdjustment_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CGUSubtotalNbv",
+          "dataType": "AssetNetBookValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CGUSubtotalRecov",
+          "dataType": "AssetRecoverableAmount_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CGUSubtotalUndisc",
+          "dataType": "AssetUndiscountedCashFlow_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GrandTotalImpairmentAdj",
+          "dataType": "AssetImpairmentAdjustment_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GrandTotalNbv",
+          "dataType": "AssetNetBookValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GrandTotalRecov",
+          "dataType": "AssetRecoverableAmount_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GrandTotalTestResult",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GrandTotalUndisc",
+          "dataType": "AssetUndiscountedCashFlow_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SharedAssetImpairmentAdjExceeded",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SharedAssetsSubtotalImpairmentAdj",
+          "dataType": "AssetImpairmentAdjustment_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SharedAssetsSubtotalNbv",
+          "dataType": "AssetNetBookValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SharedAssetsSubtotalRecov",
+          "dataType": "AssetAmount",
+          "isNullable": true,
+          "displayName": "Recoverable amount",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetImpairmentTestResult_JP"
+          },
+          "name": "Relationship_AssetImpairmentTestResult_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Asset impairment test result and document table link table"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetImpairmentAdjustment_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetNetBookValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetRecoverableAmount_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetUndiscountedCashFlow_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetAmount",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

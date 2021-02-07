@@ -1,8 +1,11 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from datetime import datetime, timezone
 from typing import cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, time_utils
+from cdm.utilities import ResolveOptions, time_utils, logger, Errors
 
 from .cdm_file_status import CdmFileStatus
 from .cdm_object_def import CdmObjectDefinition
@@ -22,6 +25,8 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
         # The corpus path to the definition of the sub folder.
         self.definition = None  # type: Optional[str]
 
+        self._TAG = CdmManifestDeclarationDefinition.__name__
+
     @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.MANIFEST_DECLARATION_DEF
@@ -34,7 +39,7 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmManifestDeclarationDefinition'] = None) -> 'CdmManifestDeclarationDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmManifestDeclarationDefinition(self.ctx, self.manifest_name)
@@ -56,7 +61,7 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
         modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._compute_last_modified_time_async(full_path, self)
 
         self.last_file_status_check_time = datetime.now(timezone.utc)
-        self.last_file_modified_time = time_utils.max_time(modified_time, self.last_file_modified_time)
+        self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
 
         await self.report_most_recent_time_async(self.last_file_modified_time)
 
@@ -72,11 +77,20 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
             await cast(CdmFileStatus, self.owner).report_most_recent_time_async(child_time)
 
     def validate(self) -> bool:
-        return bool(self.manifest_name) and bool(self.definition)
+        missing_fields = []
+        if not bool(self.manifest_name):
+            missing_fields.append('manifest_name')
+        if not bool(self.definition):
+            missing_fields.append('definition')
+
+        if missing_fields:
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = '{}{}'.format(path_from, self.get_name())

@@ -1,0 +1,202 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/PlTaxDueTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ClearingPeriod",
+          "dataType": "VendClearingPeriod",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymTermId",
+          "dataType": "PaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroupId",
+          "dataType": "CustVendTaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxPeriodPaymentCode_PL",
+          "dataType": "PlTaxPeriodPaymentCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendGroup",
+          "dataType": "VendGroupId",
+          "description": ""
+        },
+        {
+          "name": "ExcludeFromSignup_PSN",
+          "dataType": "VendRequestSignupExcludeVendor_PSN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendAccountNumSeq",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermClearingPeriodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlTaxDueTable"
+          },
+          "name": "Relationship_PlTaxDueTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_VendAccountNumSeqRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor groups"
+    },
+    {
+      "dataTypeName": "VendClearingPeriod",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendTaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlTaxPeriodPaymentCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendRequestSignupExcludeVendor_PSN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,226 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/TransactionHeader/InventClosing.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventCostTransSum",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccruedQty",
+          "dataType": "InventCostQtyAccrued",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "COGSQty",
+          "dataType": "InventCostQtyCOGS",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostTransRefType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeferredCOGSQty",
+          "dataType": "InventCostQtyDeferredCOGS",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FinancialInventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventClosingRefRecId",
+          "dataType": "InventClosingRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "OnHandQty",
+          "dataType": "InventCostQtyOnHand",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransRefId",
+          "dataType": "CostTransRefId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WIPInQty",
+          "dataType": "InventCostQtyWIPIn",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WIPOutQty",
+          "dataType": "InventCostQtyWIPOut",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_FinancialInventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventClosing"
+          },
+          "name": "Relationship_InventClosingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Inventory cost closing balances"
+    },
+    {
+      "dataTypeName": "InventCostQtyAccrued",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventCostQtyCOGS",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventCostQtyDeferredCOGS",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventClosingRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventCostQtyOnHand",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostTransRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventCostQtyWIPIn",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventCostQtyWIPOut",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

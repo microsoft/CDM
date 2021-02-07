@@ -1,0 +1,360 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/LedgerJournalTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PriceDiscGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjCategory.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjLineProperty.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerJournalTrans_Project",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityNumber",
+          "dataType": "ProjActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CategoryId",
+          "dataType": "ProjCategoryCostId",
+          "description": ""
+        },
+        {
+          "name": "CostPrice",
+          "dataType": "CostPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LinePropertyId",
+          "dataType": "ProjLinePropertyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Module",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjId",
+          "dataType": "LedgerJournalAC",
+          "isReadOnly": true,
+          "displayName": "Project",
+          "description": ""
+        },
+        {
+          "name": "ProjPriceGroupID",
+          "dataType": "ProjPriceGroupID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjTransDate",
+          "dataType": "ProjTransDate",
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "LedgerJournalTransRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "SalesCurrencyId",
+          "dataType": "ProjSalesCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPrice",
+          "dataType": "SalesPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroupSales",
+          "dataType": "TaxGroupJournal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroupSales",
+          "dataType": "TaxGroupJournal",
+          "isNullable": true,
+          "displayName": "Item sales tax group",
+          "description": ""
+        },
+        {
+          "name": "TransId",
+          "dataType": "ProjTransIdBase",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Resource",
+          "dataType": "ResourceRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsPwp",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Pay when paid",
+          "description": ""
+        },
+        {
+          "name": "ReadyForPayment",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Ready for payment",
+          "description": ""
+        },
+        {
+          "name": "EntAssetWorkOrderLine",
+          "dataType": "EntAssetWorkOrderLineRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_PriceDiscGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjLineProperty"
+          },
+          "name": "Relationship_ProjLinePropertyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project journal lines"
+    },
+    {
+      "dataTypeName": "ProjActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjCategoryCostId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CostPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjLinePropertyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "LedgerJournalAC",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjPriceGroupID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerJournalTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjSalesCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxGroupJournal",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTransIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ResourceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EntAssetWorkOrderLineRecID",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

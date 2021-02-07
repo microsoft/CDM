@@ -1,0 +1,185 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/ReasonTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TransactionReversalExecutionDetail",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PostingType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReferenceTableId",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReferenceRecId",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Result",
+          "dataType": "TransactionReversalResult",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SubledgerVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalNumber",
+          "dataType": "GeneralJournalEntryJournalNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutionId",
+          "dataType": "guid",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonCode",
+          "dataType": "ReasonCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalCategory",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessingDate",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalBatchNumber",
+          "dataType": "LedgerJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTable"
+          },
+          "name": "Relationship_ReasonCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transaction reversal temporary"
+    },
+    {
+      "dataTypeName": "TransactionReversalResult",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "GeneralJournalEntryJournalNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReasonCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    }
+  ]
+}

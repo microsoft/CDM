@@ -1,0 +1,100 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResCategoryData",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Code",
+          "dataType": "EcoResCategoryCommodityCode",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "EcoResCategoryDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FriendlyName",
+          "dataType": "EcoResCategoryName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Locale",
+          "dataType": "LanguageIdAll",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "EcoResCategoryName",
+          "description": ""
+        },
+        {
+          "name": "Parent",
+          "dataType": "EcoResCategoryCommodityCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Import commodity code"
+    },
+    {
+      "dataTypeName": "EcoResCategoryCommodityCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResCategoryDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResCategoryName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LanguageIdAll",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,310 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CustBankAccount.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustDirectDebitMandate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BankAccount",
+          "dataType": "CustBankAccountId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankSubmissionDaysFirst",
+          "dataType": "CustBankSubmissionDays",
+          "isNullable": true,
+          "displayName": "Days required for the first bank submission",
+          "description": ""
+        },
+        {
+          "name": "BankSubmissionDaysRecurring",
+          "dataType": "CustBankSubmissionDays",
+          "isNullable": true,
+          "displayName": "Days required for recurring bank submissions",
+          "description": ""
+        },
+        {
+          "name": "CancellationDate",
+          "dataType": "CustMandateCancellationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "description": ""
+        },
+        {
+          "name": "CustomerAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "displayName": "Customer address",
+          "description": ""
+        },
+        {
+          "name": "ExpectedUsageCount",
+          "dataType": "CustMandateExpectedUsageCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpirationDate",
+          "dataType": "ExpirationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsFirst",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Is First",
+          "description": ""
+        },
+        {
+          "name": "MandatePaymentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MandateReference",
+          "dataType": "CustMandateId",
+          "displayName": "Mandate ID",
+          "description": ""
+        },
+        {
+          "name": "MandateScheme",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrenotificationDaysFirst",
+          "dataType": "CustPrenotificationDays",
+          "isNullable": true,
+          "displayName": "Days required for the first pre-notification",
+          "description": ""
+        },
+        {
+          "name": "PrenotificationDaysRecurring",
+          "dataType": "CustPrenotificationDays",
+          "isNullable": true,
+          "displayName": "Days required for recurring pre-notifications",
+          "description": ""
+        },
+        {
+          "name": "PreviousIBAN",
+          "dataType": "BankIBAN",
+          "isNullable": true,
+          "displayName": "Previous IBAN",
+          "description": ""
+        },
+        {
+          "name": "SignatureDate",
+          "dataType": "CustMandateSignatureDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SignatureLocation",
+          "dataType": "LogisticsAddressCityName",
+          "isNullable": true,
+          "displayName": "Signature location",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UsageCount",
+          "dataType": "CustMandateUsageCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastLogNum",
+          "dataType": "Counter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreditorBankAccount",
+          "dataType": "CompanyBankAccountId",
+          "displayName": "Creditor bank account",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustBankAccount"
+          },
+          "name": "Relationship_CustBankAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_LogisticsPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_BankAccountTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer direct debit mandates"
+    },
+    {
+      "dataTypeName": "CustBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustBankSubmissionDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustMandateCancellationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustMandateExpectedUsageCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ExpirationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustMandateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPrenotificationDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankIBAN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustMandateSignatureDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCityName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustMandateUsageCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Counter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CompanyBankAccountId",
+      "extendsDataType": "string"
+    }
+  ]
+}

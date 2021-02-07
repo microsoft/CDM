@@ -1,0 +1,112 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RouteGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RouteJobSetup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Activation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Activation",
+          "description": ""
+        },
+        {
+          "name": "JobCtrlTime",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Job management",
+          "description": ""
+        },
+        {
+          "name": "JobType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteGroupId",
+          "dataType": "RouteGroupId",
+          "description": ""
+        },
+        {
+          "name": "SchedCapacity",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Capacity",
+          "description": ""
+        },
+        {
+          "name": "SchedWorkTime",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Working time",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RouteGroup"
+          },
+          "name": "Relationship_RouteGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Route job types"
+    },
+    {
+      "dataTypeName": "RouteGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,9 +1,11 @@
-﻿from abc import abstractmethod
-from typing import Optional, Union, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from abc import abstractmethod
+from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 
-from .cdm_collection import CdmCollection
 from .cdm_object import CdmObject
 from .cdm_object_ref import CdmObjectReference
 from .cdm_trait_collection import CdmTraitCollection
@@ -11,7 +13,7 @@ from .cdm_trait_collection import CdmTraitCollection
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmTraitDefinition, CdmTraitReference
     from cdm.resolvedmodel import ResolvedTraitSetBuilder
-    from cdm.utilities import FriendlyFormatNode, ResolveOptions, VisitCallback
+    from cdm.utilities import ResolveOptions, VisitCallback
 
 
 class CdmObjectDefinition(CdmObject):
@@ -45,9 +47,11 @@ class CdmObjectDefinition(CdmObject):
         copy.exhibits_traits.clear()
         for trait in self.exhibits_traits:
             copy.exhibits_traits.append(trait)
+        copy.in_document = self.in_document  # if gets put into a new document, this will change. until, use the source
 
     def create_simple_reference(self, res_opt: 'ResolveOptions') -> 'CdmObjectReference':
         from .cdm_corpus_def import CdmCorpusDefinition
+        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         name = self._declared_path or self.get_name()
         ref = self.ctx.corpus.make_object(CdmCorpusDefinition._map_reference_type(self.object_type), name, True)  # type: CdmObjectReference
         if res_opt._save_resolutions_on_copy:
@@ -57,15 +61,27 @@ class CdmObjectDefinition(CdmObject):
 
         return ref
 
+    def _create_portable_reference(self, res_opt: 'ResolveOptions') -> Optional['CdmObjectReference']:
+        """
+        Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed
+        into some final document.
+        """
+        from .cdm_corpus_def import CdmCorpusDefinition
+        cdm_object_ref = self.ctx.corpus.make_object(CdmCorpusDefinition._map_reference_type(self.object_type), 'portable', True)  # type: CdmObjectReference
+        cdm_object_ref.explicit_reference = self.copy()
+        cdm_object_ref.in_document = self.in_document
+        cdm_object_ref.owner = self.owner # where it started life
+
+        return cdm_object_ref
+
+
     def fetch_object_definition_name(self) -> str:
         return self.get_name()
 
     def fetch_object_definition(self, res_opt: 'ResolveOptions') -> 'CdmObjectDefinition':
         """Returns the resolved object reference."""
-        if not res_opt:
-            res_opt = ResolveOptions(self)
-
-        res_opt._from_moniker = None
+        if res_opt is None:
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         return self
 
     def _is_derived_from_def(self, res_opt: 'ResolveOptions', base: 'CdmObjectReference', name: str, seek: str) -> bool:

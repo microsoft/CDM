@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 /**
  * The CDM Http response class that a CDM Http client returns to a client.
  */
@@ -29,7 +32,7 @@ export class CdmHttpResponse {
     public isSuccessful: boolean;
 
     constructor(statusCode: number = undefined) {
-        if (statusCode != undefined) {
+        if (statusCode !== undefined) {
             this.statusCode = statusCode;
         }
 

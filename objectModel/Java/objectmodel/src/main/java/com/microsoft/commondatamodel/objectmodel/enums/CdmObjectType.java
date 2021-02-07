@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.enums;
 
@@ -29,7 +30,18 @@ public enum CdmObjectType {
   LocalEntityDeclarationDef,
   ManifestDeclarationDef,
   ManifestDef,
+  OperationAddCountAttributeDef,
+  OperationAddSupportingAttributeDef,
+  OperationAddTypeAttributeDef,
+  OperationExcludeAttributesDef,
+  OperationArrayExpansionDef,
+  OperationCombineAttributesDef,
+  OperationRenameAttributesDef,
+  OperationReplaceAsForeignKeyDef,
+  OperationIncludeAttributesDef,
+  OperationAddAttributeGroupDef,
   ParameterDef,
+  ProjectionDef,
   PurposeDef,
   PurposeRef,
   ReferencedEntityDeclarationDef,

@@ -1,0 +1,211 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Reference/FiscalCalendarYear.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchCommitmentHeader_PSN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CommitmentNumber",
+          "dataType": "PurchCommitmentNumber_PSN",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "DefaultAccountingDate",
+          "dataType": "AccountingDate",
+          "displayName": "Default date",
+          "description": ""
+        },
+        {
+          "name": "DocumentStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Document status",
+          "description": ""
+        },
+        {
+          "name": "FiscalCalendarYear",
+          "dataType": "RefRecId",
+          "displayName": "Fiscal year",
+          "description": ""
+        },
+        {
+          "name": "HcmWorker",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Preparer",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PurchCommitmentName_PSN",
+          "description": ""
+        },
+        {
+          "name": "ReasonComment",
+          "dataType": "PurchCommitmentReasonComment_PSN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefPurchCommitmentHeader_PSN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentHeader",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorAccount",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowApprovalState",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Workflow state",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalCalendarYear"
+          },
+          "name": "Relationship_FiscalCalendarYearRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentHeader"
+          },
+          "name": "Relationship_SourceDocumentHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase commitment"
+    },
+    {
+      "dataTypeName": "PurchCommitmentNumber_PSN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AccountingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchCommitmentName_PSN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchCommitmentReasonComment_PSN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Miscellaneous/SysLCSProject.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysHelpCpsSetup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LCSProjectRecId",
+          "dataType": "SysLCSProjectId",
+          "isNullable": true,
+          "displayName": "LCS Project",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysLCSProject"
+          },
+          "name": "Relationship_SysLCSProjectRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "SysLCSProjectId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

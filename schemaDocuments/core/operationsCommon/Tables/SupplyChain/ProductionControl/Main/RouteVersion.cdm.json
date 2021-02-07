@@ -1,0 +1,221 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "RouteTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RouteVersion",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Active",
+          "dataType": "RouteVersionActive",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Approved",
+          "dataType": "RouteVersionApproved",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Approver",
+          "dataType": "BOMRouteApprover",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Construction",
+          "dataType": "BOMRouteVersionConstruction",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "FromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromQty",
+          "dataType": "ProductFromQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemIdProduction",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteId",
+          "dataType": "RouteId",
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EngChgEngineeringRouteVersionRecId",
+          "dataType": "EngChgEngineeringRouteVersionRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteTable"
+          },
+          "name": "Relationship_RouteTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Route versions"
+    },
+    {
+      "dataTypeName": "RouteVersionActive",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RouteVersionApproved",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BOMRouteApprover",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BOMRouteVersionConstruction",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProductFromQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemIdProduction",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RouteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EngChgEngineeringRouteVersionRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

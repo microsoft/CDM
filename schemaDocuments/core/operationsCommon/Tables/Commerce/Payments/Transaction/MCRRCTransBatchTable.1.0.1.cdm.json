@@ -1,0 +1,104 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetHeader/LedgerJournalTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRRCTransBatchTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LedgerJournalId",
+          "dataType": "LedgerJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRClaimRefundCheck",
+          "dataType": "MCRClaimRefundCheck",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRRCTransBatchID",
+          "dataType": "MCRRCTransBatchID",
+          "description": ""
+        },
+        {
+          "name": "MCRRCTransBatchStatus",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTable"
+          },
+          "name": "Relationship_LedgerJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Refund check transaction batch"
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRClaimRefundCheck",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRRCTransBatchID",
+      "extendsDataType": "string"
+    }
+  ]
+}

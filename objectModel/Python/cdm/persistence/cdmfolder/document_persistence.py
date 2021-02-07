@@ -1,10 +1,13 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import List
 
 from cdm.enums import CdmObjectType
-from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition
-from cdm.utilities import CopyOptions, ResolveOptions
+from cdm.persistence import PersistenceLayer
+from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityDefinition
+from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils, logger
 
-from . import utils
 from .attribute_group_persistence import AttributeGroupPersistence
 from .constant_entity_persistence import ConstantEntityPersistence
 from .data_type_persistence import DataTypePersistence
@@ -18,7 +21,10 @@ from .types import DocumentContent
 class DocumentPersistence:
     is_persistence_async = False
 
-    formats = ['.cdm.json']
+    formats = [PersistenceLayer.CDM_EXTENSION]
+
+    # The maximum json semantic version supported by this ObjectModel version.
+    json_semantic_version = CdmDocumentDefinition.current_json_schema_semantic_version
 
     @staticmethod
     def from_data(ctx: 'CdmCorpusContext', doc_name: str, json_data: str, folder: 'CdmFolderDefinition') -> 'CdmDocumentDefinition':
@@ -39,12 +45,8 @@ class DocumentPersistence:
             if data.get('schemaVersion'):
                 document.json_schema_semantic_version = data.schemaVersion
 
-            if data.get('jsonSchemaSemanticVersion'):
-                document.json_schema_semantic_version = data.jsonSchemaSemanticVersion
-
-            if document.json_schema_semantic_version != '0.9.0':
-                # TODO: validate that this is a version we can understand with the OM
-                pass
+            if data.get('documentVersion'):
+                document.document_version = data.documentVersion
 
             if data.get('imports'):
                 for import_obj in data.imports:
@@ -65,6 +67,27 @@ class DocumentPersistence:
                     elif definition.get('entityName'):
                         document.definitions.append(EntityPersistence.from_data(ctx, definition))
 
+            is_resolved_doc = False
+            if len(document.definitions) == 1 and isinstance(document.definitions[0], CdmEntityDefinition):
+                entity = document.definitions[0]  # type: CdmEntityDefinition
+                resolved_trait = entity.exhibits_traits.item('has.entitySchemaAbstractionLevel')
+                # Tries to figure out if the document is in resolved form by looking for the schema abstraction trait
+                # or the presence of the attribute context.
+                is_resolved_doc = resolved_trait and resolved_trait.arguments[0].value == 'resolved'
+                is_resolved_doc = is_resolved_doc or entity.attribute_context
+
+            if data.jsonSchemaSemanticVersion:
+                document.json_schema_semantic_version = data.jsonSchemaSemanticVersion
+                if DocumentPersistence._compare_json_semantic_version(ctx, document.json_schema_semantic_version) > 0:
+                    message = 'This ObjectModel version supports json semantic version {} at maximum.'.format(DocumentPersistence.json_semantic_version)
+                    message += ' Trying to load a document with version {}.'.format(document.json_schema_semantic_version)
+                    if is_resolved_doc:
+                        logger.warning('DocumentPersistence', ctx, message, 'from_data')
+                    else:
+                        logger.error('DocumentPersistence', ctx, message, 'from_data')
+            else:
+                logger.warning('DocumentPersistence', ctx, 'jsonSemanticVersion is a required property of a document.', 'from_data')
+
         return document
 
     @staticmethod
@@ -72,6 +95,32 @@ class DocumentPersistence:
         result = DocumentContent()
         result.schema = instance.schema
         result.jsonSchemaSemanticVersion = instance.json_schema_semantic_version
-        result.imports = utils.array_copy_data(res_opt, instance.imports, options)
-        result.definitions = utils.array_copy_data(res_opt, instance.definitions, options)
+        result.imports = copy_data_utils._array_copy_data(res_opt, instance.imports, options)
+        result.definitions = copy_data_utils._array_copy_data(res_opt, instance.definitions, options)
+        result.documentVersion = instance.document_version
         return result
+
+    @staticmethod
+    def _compare_json_semantic_version(ctx: 'CdmCorpusContext', document_semantic_version: str) -> int:
+        """Compares the document version with the json semantic version supported.
+        1 => if document_semantic_version > json_semantic_version
+        0 => if document_semantic_version == json_semantic_version or if document_semantic_version is invalid
+        -1 => if document_semantic_version < json_semantic_version"""
+        curr_semantic_version_split = [int(x) for x in DocumentPersistence.json_semantic_version.split('.')]
+
+        error_message = 'jsonSemanticVersion must be set using the format <major>.<minor>.<patch>.'
+
+        try:
+            doc_semantic_version_split = [int(x) for x in document_semantic_version.split('.')]
+        except ValueError:
+            logger.warning('DocumentPersistence', ctx, error_message, '_compare_json_semantic_version')
+            return 0
+
+        if len(doc_semantic_version_split) != 3:
+            logger.warning('DocumentPersistence', ctx, error_message, '_compare_json_semantic_version')
+            return 0
+
+        for i in range(3):
+            if doc_semantic_version_split[i] != curr_semantic_version_split[i]:
+                return -1 if doc_semantic_version_split[i] < curr_semantic_version_split[i] else 1
+        return 0

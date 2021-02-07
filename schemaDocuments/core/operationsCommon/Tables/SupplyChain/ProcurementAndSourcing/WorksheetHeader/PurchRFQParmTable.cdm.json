@@ -1,0 +1,282 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CashDisc.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "PurchRFQCaseTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Transaction/PurchRFQParmUpdate.cdm.json"
+    },
+    {
+      "corpusPath": "PurchRFQTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchRFQParmTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CashDisc",
+          "dataType": "CashDiscCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDateTime",
+          "dataType": "EndDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Log",
+          "dataType": "LogText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "description": ""
+        },
+        {
+          "name": "ParmJobStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "POTransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Transaction date",
+          "description": ""
+        },
+        {
+          "name": "PublishToSites",
+          "dataType": "PurchRFQPublishToSites",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFQCaseId",
+          "dataType": "PurchRFQCaseId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFQId",
+          "dataType": "PurchRFQId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFQName",
+          "dataType": "PurchRFQName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDateTime",
+          "dataType": "StartDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TableRefId",
+          "dataType": "TradeLineRefId",
+          "description": ""
+        },
+        {
+          "name": "VendAccount",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeferLinesLoad",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "DeferParmLinesLoad",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CashDisc"
+          },
+          "name": "Relationship_CashDiscRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQCaseTable"
+          },
+          "name": "Relationship_PurchRFQCaseTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQParmUpdate"
+          },
+          "name": "Relationship_PurchRFQParmUpdateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQTable"
+          },
+          "name": "Relationship_PurchRFQTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Request for quotation - update table"
+    },
+    {
+      "dataTypeName": "CashDiscCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EndDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LogText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchRFQPublishToSites",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchRFQCaseId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "StartDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TradeLineRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    }
+  ]
+}

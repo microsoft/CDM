@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import List
 
 from cdm.utilities import JObject
@@ -13,20 +16,20 @@ class Folder(JObject):
     def __init__(self):
         super().__init__()
 
-        self.folderName = ''  # type: str
+        self.folderName = None  # type: str
         """The folder name."""
 
-        self.explanation = ''  # type: str
+        self.explanation = None  # type: str
         """The folder explanation."""
 
-        self.exhibitsTraits = []  # type: List[Union[str, TraitReference]]
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]
         """The exhibited traits."""
 
-        self.entities = []  # type: List[Union[LocalEntityDeclaration, ReferencedEntityDeclaration]]
+        self.entities = None  # type: List[Union[LocalEntityDeclaration, ReferencedEntityDeclaration]]
         """The entities(could only be LocalEntityDeclaration or ReferencedEntityDeclaration)."""
 
-        self.subManifests = []  # type: List[ManifestDeclaration]
+        self.subManifests = None  # type: List[ManifestDeclaration]
         """The sub folders."""
 
-        self.relationships = []  # type: List[E2ERelationship]
+        self.relationships = None  # type: List[E2ERelationship]
         """The list of references that exist wherein either the fromEntity or the toEntity is defined in this folder."""

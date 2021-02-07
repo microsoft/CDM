@@ -1,0 +1,83 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/KanbanJob.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/PurchLine.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "KanbanJobPurchaseLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "KanbanJob",
+          "dataType": "KanbanJobRefRecId",
+          "description": ""
+        },
+        {
+          "name": "PurchLineInventTransId",
+          "dataType": "TradeInventTransId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "KanbanJob"
+          },
+          "name": "Relationship_KanbanJobRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Kanban jobs assigned to purchase order lines"
+    },
+    {
+      "dataTypeName": "KanbanJobRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TradeInventTransId",
+      "extendsDataType": "string"
+    }
+  ]
+}

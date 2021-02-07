@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from datetime import datetime
 
@@ -18,7 +16,7 @@ class Entity(DataObject):
     def __init__(self):
         super().__init__()
 
-        self.type = ''  # type: str
+        self.type = None  # type: str
         self.lastChildFileModifiedTime = None  # type: datetime
         self.lastFileModifiedTime = None  # type: datetime
         self.lastFileStatusCheckTime = None  # type: datetime

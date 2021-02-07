@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,19 +11,21 @@ import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.RemoteAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class TestHelper {
 
@@ -37,18 +42,24 @@ public class TestHelper {
   private static final String REMOTE = "remote";
   private static final String OUTPUT = "output";
 
+  /**
+   * The path of the sample schema documents folder.
+   */
+  public static final String SAMPLE_SCHEMA_FOLDER_PATH = "../../../samples/example-public-standards";
 
   /**
    * The path of the CDM Schema Documents Folder.
    */
   public static final String SCHEMA_DOCS_ROOT = "../../../schemaDocuments";
 
-  private static Logger LOGGER = LoggerFactory.getLogger(TestHelper.class);
-
   /**
-   * Whether tests should write debugging files or not.
+   * The adapter path to the top-level manifest in the CDM Schema Documents folder. Used by tests where we resolve the corpus.
+   * This path is temporarily pointing to the applicationCommon manifest instead of standards due to performance issues when resolving
+   * the entire set of CDM standard schemas, after 8000+ F&O entities were added.
    */
-  public static final boolean doesWriteTestDebuggingFiles = true;
+  public static final String CDM_STANDARDS_SCHEMA_PATH = "local:/core/applicationCommon/applicationCommon.manifest.cdm.json";
+
+  private static Logger LOGGER = LoggerFactory.getLogger(TestHelper.class);
 
   /**
    * Gets the input folder path associated with specified test.
@@ -160,8 +171,41 @@ public class TestHelper {
   public static void assertFileContentEquality(String expected, String actual) {
     expected = expected.replace("\r\n", "\n");
     actual = actual.replace("\r\n", "\n");
-    Assert.assertEquals(expected, actual);
+    Assert.assertEquals(actual, expected);
   }
+
+  /**
+   * Asserts the files in actualFolderPath and their content are the same as the files in expectedFolderPath.
+   *
+   * @param expectedFolderPath Expected folder path.
+   * @param actualFolderPath   Actual folder path.
+   */
+  public static void assertFolderFilesEquality(String expectedFolderPath, String actualFolderPath) {
+    try {
+      List<Path> expectedPaths = Files.list(Paths.get(expectedFolderPath)).collect(Collectors.toList());
+      List<Path> actualPaths = Files.list(Paths.get(actualFolderPath)).collect(Collectors.toList());
+      expectedPaths.forEach(expectedPath -> {
+        Path actualPath = actualPaths.stream()
+                .filter(f -> f.getFileName().equals(expectedPath.getFileName()))
+                .findFirst().get();
+        if (Files.isDirectory(expectedPath) && Files.isDirectory(actualPath)) {
+          assertFolderFilesEquality(expectedPath.toString(), actualPath.toString());
+        } else if (!Files.isDirectory(expectedPath) && !Files.isDirectory(actualPath)) {
+          try {
+            assertFileContentEquality(
+                    FileReadWriteUtil.readFileToString(expectedPath.toString()),
+                    FileReadWriteUtil.readFileToString(actualPath.toString()));
+          } catch (IOException e) {
+            Assert.fail(e.getMessage());
+          }
+        } else {
+          Assert.fail();
+        }
+      });
+    } catch (IOException e) {
+      Assert.fail(e.getMessage());
+    }
+}
 
   private static boolean compareObjectsContent(final Object expected, final Object actual) {
     return compareObjectsContent(expected, actual, false);
@@ -293,10 +337,71 @@ public class TestHelper {
   }
 
   /**
+   * Copy files from inputFolderPath to actualFolderPath.
+   * @param testSubPath The test sub path.
+   * @param testName The test name.
+   */
+  public static void copyFilesFromInputToActualOutput(String testSubPath, String testName) throws InterruptedException, IOException {
+    copyFilesFromInputToActualOutputHelper(
+            Paths.get(TestHelper.getInputFolderPath(testSubPath, testName)),
+            Paths.get(TestHelper.getActualOutputFolderPath(testSubPath, testName)));
+  }
+
+  /**
+   * Helper function to copy files from inputFolderPath to actualFolderPath recursively.
+   * @param inputFolderPath The input folder path.
+   * @param actualFolderPath The actual folder path.
+   */
+  private static void copyFilesFromInputToActualOutputHelper(Path inputFolderPath, Path actualFolderPath) throws IOException {
+    List<Path> inputFilePaths = Files.list(inputFolderPath).collect(Collectors.toList());
+
+    for (Path inputPath: inputFilePaths
+         ) {
+      Path inputName = inputPath.getFileName();
+      Path actualPath = Paths.get(actualFolderPath.toString(), inputName.toString());
+      if(!Files.isDirectory(inputPath)) {
+        Files.copy(inputPath, actualPath, REPLACE_EXISTING);
+      } else {
+        Files.createDirectory(actualPath);
+        copyFilesFromInputToActualOutputHelper(inputPath, actualPath);
+      }
+    }
+  }
+
+  /**
+   * Delete files in actual output directory if exists.
+   * @param actualOutputFolderPath The actual output folder path.
+   */
+  public static void deleteFilesFromActualOutput(String actualOutputFolderPath) throws IOException {
+    List<Path> actualPaths = Files.list(Paths.get(actualOutputFolderPath)).collect(Collectors.toList());
+    actualPaths.forEach(actualPath -> {
+      try {
+        if (Files.isDirectory(actualPath)) {
+          deleteFilesFromActualOutput(actualPath.toString());
+          Files.delete(actualPath);
+        } else {
+          Files.delete(actualPath);
+        }
+      } catch (IOException e) {
+        Assert.fail(e.getMessage());
+      }
+    });
+  }
+
+  /**
    * Gets local corpus.
    *
    * @return {@link CdmCorpusDefinition}
    */
+  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName) throws InterruptedException {
+    return getLocalCorpus(testSubpath, testName, null);
+  }
+
+    /**
+     * Gets local corpus.
+     *
+     * @return {@link CdmCorpusDefinition}
+     */
   public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, String testInputDir) throws InterruptedException {
     testInputDir = (testInputDir != null) ? testInputDir : TestHelper.getInputFolderPath(testSubpath, testName);
 

@@ -1,0 +1,119 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ReleaseUpdateScripts.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReleaseUpdateScriptsUsedTables",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CreateOperation",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Create",
+          "description": ""
+        },
+        {
+          "name": "DeleteOperation",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Delete",
+          "description": ""
+        },
+        {
+          "name": "Exclude",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Exclude",
+          "description": ""
+        },
+        {
+          "name": "ExplicitLevel",
+          "dataType": "ReleaseUpdateExplicitLevel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReadOperation",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Read",
+          "description": ""
+        },
+        {
+          "name": "ScriptId",
+          "dataType": "ReleaseUpdateScriptId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TableName",
+          "dataType": "TableName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateOperation",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Update",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ReleaseUpdateScripts"
+          },
+          "name": "Relationship_ReleaseUpdateScriptsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tables used by upgrade scripts during upgrade"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReleaseUpdateExplicitLevel",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReleaseUpdateScriptId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TableName",
+      "extendsDataType": "string"
+    }
+  ]
+}

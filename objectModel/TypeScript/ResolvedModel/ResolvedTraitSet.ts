@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     ArgumentValue,
     CdmArgumentDefinition,
@@ -47,7 +50,7 @@ export class ResolvedTraitSet {
     constructor(resOpt: resolveOptions) {
         // let bodyCode = () =>
         {
-            this.resOpt = CdmObjectBase.copyResolveOptions(resOpt);
+            this.resOpt = resOpt.copy();
             this.set = [];
             this.lookupByTrait = new Map<CdmTraitDefinition, ResolvedTrait>();
             this.hasElevated = false;
@@ -256,8 +259,11 @@ export class ResolvedTraitSet {
         // let bodyCode = () =>
         {
             const altered: ResolvedTraitSet = this.shallowCopyWithException(toTrait);
-            altered.get(toTrait).parameterValues
-                .setParameterValue(this.resOpt, paramName, value);
+            const currTrait: ResolvedTrait = altered.get(toTrait);
+            if (currTrait) {
+                currTrait.parameterValues
+                    .setParameterValue(this.resOpt, paramName, value);
+            }
 
             return altered;
         }
@@ -272,21 +278,19 @@ export class ResolvedTraitSet {
             const l: number = traitSetResult.set.length;
             for (let i: number = 0; i < l; i++) {
                 let rt: ResolvedTrait = traitSetResult.set[i];
-                if (rt.trait.isDerivedFrom(toTrait, this.resOpt)) {
+                if (rt && rt.trait.isDerivedFrom(toTrait, this.resOpt)) {
                     if (rt.parameterValues) {
                         const pc: ParameterCollection = rt.parameterValues.pc;
                         let av: ArgumentValue[] = rt.parameterValues.values;
                         const idx: number = pc.fetchParameterIndex(paramName);
-                        if (idx !== undefined) {
-                            if (av[idx] === valueWhen) {
-                                // copy the set and make a deep copy of the trait being set
-                                traitSetResult = this.shallowCopyWithException(rt.trait);
-                                // assume these are all still true for this copy
-                                rt = traitSetResult.set[i];
-                                av = rt.parameterValues.values;
-                                av[idx] = ParameterValue.fetchReplacementValue(this.resOpt, av[idx], valueNew, true);
-                                break;
-                            }
+                        if (idx !== undefined && av[idx] === valueWhen) {
+                            // copy the set and make a deep copy of the trait being set
+                            traitSetResult = this.shallowCopyWithException(rt.trait);
+                            // assume these are all still true for this copy
+                            rt = traitSetResult.set[i];
+                            av = rt.parameterValues.values;
+                            av[idx] = ParameterValue.fetchReplacementValue(this.resOpt, av[idx], valueNew, true);
+                            break;
                         }
                     }
                 }

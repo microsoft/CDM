@@ -1,0 +1,126 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/TradeNonStockedConversionItem.cdm.json"
+    },
+    {
+      "corpusPath": "TradeNonStockedConversionLogParent.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TradeNonStockedConversionLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IdentifyingAttributeValue",
+          "dataType": "TradeNonStockedIdentifyingAttributeValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IdentifyingField",
+          "dataType": "RefFieldId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IdentifyingTable",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NonStockedConversionItem",
+          "dataType": "TradeNonStockedConversionItemRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NonStockedConversionLogParent",
+          "dataType": "TradeNonStockedConversionLogParentRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "TradeNonStockedConversionItem"
+          },
+          "name": "Relationship_TradeNonStockedConversionItemRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TradeNonStockedConversionLogParent"
+          },
+          "name": "Relationship_TradeNonStockedConversionLogParentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Conversion log for products not stocked"
+    },
+    {
+      "dataTypeName": "TradeNonStockedIdentifyingAttributeValue",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefFieldId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TradeNonStockedConversionItemRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TradeNonStockedConversionLogParentRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

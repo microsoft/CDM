@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="AttributeContextParameters.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 {
@@ -17,5 +14,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         internal CdmAttributeContext under;
         internal CdmAttributeContextType type;
         internal CdmObject Regarding;
+        internal AttributeContextParameters Copy()
+        {
+            AttributeContextParameters c = new AttributeContextParameters();
+            c.Name = this.Name;
+            c.IncludeTraits = this.IncludeTraits;
+            c.under = this.under;
+            c.type = this.type;
+            c.Regarding = this.Regarding;
+            return c;
+        }
+
     }
 }

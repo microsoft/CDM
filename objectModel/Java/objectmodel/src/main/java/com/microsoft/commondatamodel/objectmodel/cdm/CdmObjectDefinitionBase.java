@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
@@ -33,8 +36,13 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
   }
 
   @Override
-  public CdmObjectReference createSimpleReference(final ResolveOptions resOpt) {
+  public CdmObjectReference createSimpleReference(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     final String name;
+
     if (!Strings.isNullOrEmpty(this.getDeclaredPath())) {
       name = this.getDeclaredPath();
     } else {
@@ -53,8 +61,10 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
   }
 
   @Override
-  public <T extends CdmObjectDefinition> T fetchObjectDefinition(final ResolveOptions resOpt) {
-    resOpt.setFromMoniker(null);
+  public <T extends CdmObjectDefinition> T fetchObjectDefinition(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
     return (T) this;
   }
 
@@ -65,8 +75,8 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
 
   /**
    *
-   * @param resOpt
-   * @param copy
+   * @param resOpt Resolve Options
+   * @param copy Copy object definition
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -79,6 +89,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
     for (final CdmTraitReference trait : this.getExhibitsTraits()) {
       copy.getExhibitsTraits().add(trait);
     }
+    copy.setInDocument(this.getInDocument()); // if gets put into a new document, this will change. until, use the source
   }
 
   boolean isDerivedFromDef(final ResolveOptions resOpt, final CdmObjectReference baseCdmObjectReference,
@@ -120,4 +131,17 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
     return getExhibitsTraits() != null
             && exhibitsTraits.visitList(pathFrom + "/exhibitsTraits/", preChildren, postChildren);
   }
+
+  // Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed into some final document.
+  @Override
+  @Deprecated
+  public CdmObjectReference createPortableReference(ResolveOptions resOpt) {
+    CdmObjectReferenceBase cdmObjectRef = ((CdmObjectReferenceBase)this.getCtx().getCorpus().makeObject(CdmCorpusDefinition.mapReferenceType(this.getObjectType()), "portable", true));
+    cdmObjectRef.setExplicitReference((CdmObjectDefinition) this.copy());
+    cdmObjectRef.setInDocument(this.getInDocument()); // where it started life
+    cdmObjectRef.setOwner(this.getOwner());
+
+    return cdmObjectRef;
+  }
+
 }

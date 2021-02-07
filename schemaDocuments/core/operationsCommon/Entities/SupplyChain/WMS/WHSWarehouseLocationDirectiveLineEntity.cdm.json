@@ -1,0 +1,184 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/SupplyChain/ProductInformationManagement/UnitOfMeasureEntity.cdm.json"
+    },
+    {
+      "corpusPath": "WHSWarehouseReplenishmentTemplateEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSLocDirLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWarehouseLocationDirectiveLineEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "WarehouseLocationDirectiveWorkOrderType",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "WarehouseLocationDirectiveId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "WarehouseLocationDirectiveWorkType",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "WarehouseLocationDirectiveInventorySiteId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "WarehouseLocationDirectiveWarehouseId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "SequenceNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinimumWarehouseWorkOrderLineQuantity",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaximumWarehouseWorkOrderLineQuantity",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WarehouseWorkOrderLineQuantityUnitSymbol",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LocateQuantityMethod",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsUnitOfMeasureRestrictionEnabled",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsPackingQuantityLocated",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsWarehouseWorkOrderLineSplittingAllowed",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WillRestrictingUnitQuantityCalculationRoundUp",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImmediateWarehouseReplenishmentTemplateId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "UnitOfMeasureEntity"
+          },
+          "name": "Relationship_WarehouseWorkOrderLineQuantityUnitOfMeasureRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWarehouseReplenishmentTemplateEntity"
+          },
+          "name": "Relationship_ImmediateWarehouseReplenishmentTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLocDirLine"
+          },
+          "name": "BackingTable_WHSLocDirLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Warehouse location directive lines"
+    }
+  ]
+}

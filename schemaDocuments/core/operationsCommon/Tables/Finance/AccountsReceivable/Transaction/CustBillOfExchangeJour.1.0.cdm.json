@@ -1,0 +1,199 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/LedgerJournalTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustBillOfExchangeJour",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApprovalDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Approval date",
+          "description": ""
+        },
+        {
+          "name": "BillOfExchangeId",
+          "dataType": "CustBillOfExchangeID",
+          "description": ""
+        },
+        {
+          "name": "BillOfExchangeSeqNum",
+          "dataType": "CustVendNegInstSeqNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Document date",
+          "description": ""
+        },
+        {
+          "name": "DocumentNum",
+          "dataType": "BankBillOfExchangeNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalTransRecId",
+          "dataType": "LedgerJournalTransRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Open",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Open",
+          "description": ""
+        },
+        {
+          "name": "RemittanceDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Remittance date",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "CustBillOfExchangeStatus",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRecIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bill of exchange journal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustBillOfExchangeID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendNegInstSeqNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankBillOfExchangeNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LedgerJournalTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustBillOfExchangeStatus",
+      "extendsDataType": "integer"
+    }
+  ]
+}

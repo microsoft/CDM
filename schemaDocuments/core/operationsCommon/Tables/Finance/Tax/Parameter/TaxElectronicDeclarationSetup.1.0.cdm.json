@@ -1,0 +1,120 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxElectronicDeclarationSetup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Authentication",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Authentication",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProxyIPAddress",
+          "dataType": "ProxyIPAddress",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProxyPortNum",
+          "dataType": "ProxyPortNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProxyServer",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Use of proxy server",
+          "description": ""
+        },
+        {
+          "name": "ProxyServerAuthenticationRequired",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Proxy server authentication required",
+          "description": ""
+        },
+        {
+          "name": "ERFormatMappingId",
+          "dataType": "ERFormatMappingId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Electronic tax declaration setup"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProxyIPAddress",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProxyPortNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ERFormatMappingId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

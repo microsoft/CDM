@@ -1,0 +1,211 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxLedgerAccountGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25LedgerAccountGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssessedTaxLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Account for FA taxes",
+          "description": ""
+        },
+        {
+          "name": "CTALedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "CTA",
+          "description": ""
+        },
+        {
+          "name": "CTLLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "CTL",
+          "description": ""
+        },
+        {
+          "name": "DTALedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "DTA",
+          "description": ""
+        },
+        {
+          "name": "DTLLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "DTL",
+          "description": ""
+        },
+        {
+          "name": "TaxAccountGroup",
+          "dataType": "TaxAccountGroup",
+          "description": ""
+        },
+        {
+          "name": "WritingOffDTALedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Writing off DTA",
+          "description": ""
+        },
+        {
+          "name": "WritingOffDTLLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Writing off DTL",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_AssessedTaxLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CTALedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CTLLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DTALedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DTLLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxLedgerAccountGroup"
+          },
+          "name": "Relationship_TaxLedgerAccountGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_WritingOffDTALedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_WritingOffDTLLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger posting groups of profit tax"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxAccountGroup",
+      "extendsDataType": "string"
+    }
+  ]
+}

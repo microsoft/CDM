@@ -1,0 +1,184 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjPeriodTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjPeriodTimesheetWeek.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TSTimesheetTableLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApprovalStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChangeReason",
+          "dataType": "Notes",
+          "isNullable": true,
+          "displayName": "Change reason",
+          "description": ""
+        },
+        {
+          "name": "ChangeType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodFrom",
+          "dataType": "TSPeriodFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodTo",
+          "dataType": "TSPeriodTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjPeriodId",
+          "dataType": "ProjPeriodId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjPeriodTimesheetWeek",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TimesheetNbr",
+          "dataType": "TSTimesheetNbr",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Resource",
+          "dataType": "TSResourceRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "ProjWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjPeriodTable"
+          },
+          "name": "Relationship_ProjPeriodTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjPeriodTimesheetWeek"
+          },
+          "name": "Relationship_ProjPeriodTimesheetWeekRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Timesheet Log"
+    },
+    {
+      "dataTypeName": "Notes",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TSPeriodFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TSPeriodTo",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjPeriodId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TSTimesheetNbr",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TSResourceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeResolutionGuidance;
@@ -37,6 +40,18 @@ public class AttributeResolutionContext {
     this.resOpt = resOpt.copy();
 
     if (resGuide != null) {
+      if (this.applierCaps == null) {
+        this.applierCaps = new AttributeResolutionApplierCapabilities();
+        this.applierCaps.canAlterDirectives = false;
+        this.applierCaps.canAlterDirectives = false;
+        this.applierCaps.canCreateContext = false;
+        this.applierCaps.canRemove = false;
+        this.applierCaps.canAttributeModify = false;
+        this.applierCaps.canGroupAdd = false;
+        this.applierCaps.canRoundAdd = false;
+        this.applierCaps.canAttributeAdd = false;
+      }
+
       if (resGuide.getRemoveAttribute() != null) {
         addApplier(PrimitiveAppliers.isRemoved);
       }
@@ -155,7 +170,12 @@ public class AttributeResolutionContext {
     this.actionsRemove = actionsRemove;
   }
 
-  ResolvedTraitSet getTraitsToApply() {
+  /**
+   * @deprecated Only for internal use.
+   * @return ResolvedTraitSet
+   */
+  @Deprecated
+  public ResolvedTraitSet getTraitsToApply() {
     return traitsToApply;
   }
 

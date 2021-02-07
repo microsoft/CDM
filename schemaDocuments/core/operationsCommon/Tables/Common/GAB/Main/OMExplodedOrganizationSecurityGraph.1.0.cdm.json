@@ -1,0 +1,144 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "OMInternalOrganization.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "OMHierarchyType.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "OMHierarchyChangeLog.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "OMExplodedOrganizationSecurityGraph",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AncestorOrganization",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Ancestor organization",
+          "description": ""
+        },
+        {
+          "name": "Distance",
+          "dataType": "Distance",
+          "isNullable": true,
+          "displayName": "Distance relative to ancestor",
+          "description": ""
+        },
+        {
+          "name": "OMHierarchyType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Organization",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Organization",
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "OMInternalOrganization"
+          },
+          "name": "Relationship_AncestorOrganizationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMHierarchyType"
+          },
+          "name": "Relationship_HierarchyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMInternalOrganization"
+          },
+          "name": "Relationship_OrganizationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMHierarchyChangeLog"
+          },
+          "name": "Relationship_OMHierarchyChangeLogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Exploded organization structure"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Distance",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ValidFromDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

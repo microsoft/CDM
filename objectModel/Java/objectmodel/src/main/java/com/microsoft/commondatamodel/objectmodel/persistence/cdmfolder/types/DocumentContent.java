@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,6 +20,8 @@ public class DocumentContent {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<JsonNode> definitions;
+
+    private String documentVersion;
 
     public String getJsonSchemaSemanticVersion() {
         return jsonSchemaSemanticVersion;
@@ -48,5 +53,13 @@ public class DocumentContent {
 
     public void setDefinitions(List<JsonNode> definitions) {
         this.definitions = definitions;
+    }
+
+    public String getDocumentVersion() {
+        return documentVersion;
+    }
+
+    public void setDocumentVersion(final String documentVersion) {
+        this.documentVersion = documentVersion;
     }
 }

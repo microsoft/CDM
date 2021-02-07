@@ -1,0 +1,123 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "StatRepInterval.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "StatRepIntervalLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AgingIndicator",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Heading",
+          "dataType": "StatRepIntervalLineHeading",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntervalType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Interval",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "displayName": "Column",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "CustVendReportName",
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "TimeUnits",
+          "isNullable": true,
+          "displayName": "Unit",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "StatRepInterval"
+          },
+          "name": "Relationship_CustVendRepIntervalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Aging periods"
+    },
+    {
+      "dataTypeName": "StatRepIntervalLineHeading",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustVendReportName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TimeUnits",
+      "extendsDataType": "integer"
+    }
+  ]
+}

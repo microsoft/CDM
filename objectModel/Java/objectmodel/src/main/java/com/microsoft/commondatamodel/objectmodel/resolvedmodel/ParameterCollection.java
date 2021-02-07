@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.google.common.base.Strings;
@@ -42,7 +45,11 @@ public class ParameterCollection {
 
     if (!Strings.isNullOrEmpty(name)) {
       if (lookup.containsKey(name)) {
-        throw new CdmException("Duplicate parameter name " + name);
+        // why not just replace the old one?
+        this.lookup.put(name, element);
+        this.sequence.set(this.sequence.indexOf(this.sequence.stream().filter(e ->  e.getName().equals(name)).findFirst()), element);
+        this.ordinals.put(element, this.sequence.size());
+        return;
       } else {
         lookup.put(name, element);
       }

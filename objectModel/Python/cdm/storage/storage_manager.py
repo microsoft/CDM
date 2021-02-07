@@ -1,11 +1,14 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from collections import OrderedDict
 import importlib
 import json
 import os
 from typing import List, Optional, Tuple, Set, TYPE_CHECKING
 
-from cdm.storage import GithubAdapter, LocalAdapter, ResourceAdapter
-from cdm.utilities import logger
+from cdm.storage import CdmStandardsAdapter, LocalAdapter, ResourceAdapter, StorageAdapterBase
+from cdm.utilities import logger, StorageUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmContainerDefinition, CdmCorpusDefinition, CdmFolderDefinition
@@ -15,13 +18,14 @@ class StorageManager:
     def __init__(self, corpus: 'CdmCorpusDefinition'):
         # the default namespace to be used when not specified.
         self.default_namespace = None  # type: Optional[str]
+        self.namespace_adapters = OrderedDict()  # type: Dict[str, StorageAdapterBase]
 
         # Internal
 
         self._corpus = corpus
-        self._namespace_adapters = OrderedDict()  # type: Dict[str, StorageAdapterBase]
         self._namespace_folders = OrderedDict()  # type: Dict[str, CdmFolderDefinition]
         self._registered_adapter_types = {
+            'cdm-standards': 'CdmStandardsAdapter',
             'local': 'LocalAdapter',
             'adls': 'ADLSAdapter',
             'remote': 'RemoteAdapter',
@@ -33,7 +37,7 @@ class StorageManager:
 
         # set up default adapters.
         self.mount('local', LocalAdapter(root=os.getcwd()))
-        self.mount('cdm', GithubAdapter())
+        self.mount('cdm', CdmStandardsAdapter())
 
         self._system_defined_namespaces.add('local')
         self._system_defined_namespaces.add('cdm')
@@ -44,14 +48,24 @@ class StorageManager:
     def _ctx(self):
         return self._corpus.ctx
 
+    @property
+    def max_concurrent_reads(self) -> Optional[int]:
+        """Maximum number of documents read concurrently when loading imports."""
+        return self._corpus._document_library._concurrent_read_lock.permits
+
+    @max_concurrent_reads.setter
+    def max_concurrent_reads(self, max_concurrent_reads: Optional[int]) -> None:
+        """Maximum number of documents read concurrently when loading imports."""
+        self._corpus._document_library._concurrent_read_lock.permits = max_concurrent_reads
+
     def adapter_path_to_corpus_path(self, adapter_path: str) -> Optional[str]:
         """Takes a storage adapter domain path, figures out the right adapter to use
         and then return a corpus path"""
         result = None
 
         # Keep trying adapters until one of them likes what it sees
-        if self._namespace_adapters:
-            for key, value in self._namespace_adapters.items():
+        if self.namespace_adapters:
+            for key, value in self.namespace_adapters.items():
                 result = value.create_corpus_path(adapter_path)
                 if result:
                     # Got one, add the prefix
@@ -74,7 +88,10 @@ class StorageManager:
         result = None
 
         # Break the corpus path into namespace and ... path
-        path_tuple = self.split_namespace_path(corpus_path)
+        path_tuple = StorageUtils.split_namespace_path(corpus_path)
+        if not path_tuple:
+            logger.error(self._TAG, self._ctx, 'The corpus path cannot be null or empty.', self.corpus_path_to_adapter_path.__name__)
+            return None
         namespace = path_tuple[0] or self.default_namespace
 
         # Get the adapter registered for this namespace
@@ -93,19 +110,25 @@ class StorageManager:
             logger.error(self._TAG, self._ctx, 'The namespace is null or empty.', StorageManager.fetch_adapter.__name__)
             return None
 
-        if namespace in self._namespace_adapters:
-            return self._namespace_adapters[namespace]
+        if namespace in self.namespace_adapters:
+            return self.namespace_adapters[namespace]
 
         logger.error(self._TAG, self._ctx, 'Adapter not found for the namespace \'{}\''.format(namespace), StorageManager.fetch_adapter.__name__)
         return None
 
     def fetch_root_folder(self, namespace: str) -> 'CdmFolderDefinition':
-        """given the namespace of a registered storage adapter, return the root
+        """Given the namespace of a registered storage adapter, return the root
         folder containing the sub-folders and documents"""
-        if namespace and namespace in self._namespace_folders:
-            return self._namespace_folders[namespace]
+        if not namespace:
+            logger.error(self._TAG, self._ctx, 'The namespace cannot be null or empty.', StorageManager.fetch_root_folder.__name__)
+            return None
 
-        logger.error(self._TAG, self._ctx, 'missing adapter for namespace "{}"'.format(namespace), StorageManager.fetch_root_folder.__name__)
+        if namespace in self._namespace_folders:
+            return self._namespace_folders[namespace]
+        elif self.default_namespace in self._namespace_folders:
+            return self._namespace_folders[self.default_namespace]
+
+        logger.error(self._TAG, self._ctx, 'Adapter not found for the namespace \'{}\''.format(namespace), StorageManager.fetch_root_folder.__name__)
         return None
 
     def fetch_config(self) -> str:
@@ -113,7 +136,7 @@ class StorageManager:
         adapters_array = []
 
         # Construct the JObject for each adapter.
-        for namespace, adapter in self._namespace_adapters.items():
+        for namespace, adapter in self.namespace_adapters.items():
             # Skip system-defined adapters and resource adapters.
             if adapter._type == 'resource' or namespace in self._system_defined_namespaces:
                 continue
@@ -147,14 +170,17 @@ class StorageManager:
         """Takes a corpus path (relative or absolute) and creates a valid absolute
         path with namespace"""
         if not object_path:
-            logger.error(self._TAG, self._ctx, 'The namespace cannot be null or empty.', StorageManager.create_absolute_corpus_path.__name__)
+            logger.error(self._TAG, self._ctx, 'The object path cannot be null or empty.', StorageManager.create_absolute_corpus_path.__name__)
             return None
 
         if self._contains_unsupported_path_format(object_path):
             # Already called status_rpt when checking for unsupported path format.
             return None
 
-        path_tuple = self.split_namespace_path(object_path)
+        path_tuple = StorageUtils.split_namespace_path(object_path)
+        if not path_tuple:
+            logger.error(self._TAG, self._ctx, 'The object path cannot be null or empty.', self.create_absolute_corpus_path.__name__)
+            return None
         final_namespace = ''
 
         prefix = None
@@ -216,7 +242,9 @@ class StorageManager:
         from cdm.objectmodel import CdmFolderDefinition
 
         if adapter:
-            self._namespace_adapters[namespace] = adapter
+            if isinstance(adapter, StorageAdapterBase):
+                adapter.ctx = self._ctx
+            self.namespace_adapters[namespace] = adapter
             fd = CdmFolderDefinition(self._ctx, '')
             fd._corpus = self._corpus
             fd.namespace = namespace
@@ -275,24 +303,14 @@ class StorageManager:
 
         return unrecognized_adapters if does_return_error_list else None
 
-    def split_namespace_path(self, object_path: str) -> Tuple[str, str]:
-        namespace = ''
-        namespace_index = object_path.find(':')
-
-        if namespace_index != -1:
-            namespace = object_path[0: namespace_index]
-            object_path = object_path[namespace_index + 1:]
-
-        return (namespace, object_path)
-
     def unmount(self, namespace: str) -> None:
         """unregisters a storage adapter and its root folder"""
         if not namespace:
             logger.error(self._TAG, self._ctx, 'The namespace cannot be null or empty.', StorageManager.unmount.__name__)
             return None
 
-        if namespace in self._namespace_adapters:
-            self._namespace_adapters.pop(namespace, None)
+        if namespace in self.namespace_adapters:
+            self.namespace_adapters.pop(namespace, None)
             self._namespace_folders.pop(namespace, None)
             if namespace in self._system_defined_namespaces:
                 self._system_defined_namespaces.remove(namespace)
@@ -322,4 +340,4 @@ class StorageManager:
 
     def _set_adapter(self, namespace: str, adapter: 'StorageAdapter') -> None:
         if adapter:
-            self._namespace_adapters[namespace] = adapter
+            self.namespace_adapters[namespace] = adapter

@@ -1,0 +1,230 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WHSSlotTemplate.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "WHSSlotUOMTier.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/WHSLocDirHint.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "WMSLocation.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSSlotTemplateLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssignSlotCriteria",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "AllowLetUps",
+          "dataType": "WHSAllowLetUps",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SlotMaxQty",
+          "dataType": "WHSSlotMaxQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SlotMinQty",
+          "dataType": "WHSSlotMinQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OverflowLocation",
+          "dataType": "WHSOverflowLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SequenceNumber",
+          "dataType": "WHSSlotTemplateLineSequenceNumber",
+          "description": ""
+        },
+        {
+          "name": "SlotTemplate",
+          "dataType": "WHSSlotTemplateRecId",
+          "description": ""
+        },
+        {
+          "name": "SlotUOMTierId",
+          "dataType": "WHSSlotUOMTierId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedQueryRun",
+          "dataType": "PackedQueryRun",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasureSymbol",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LocDirHintCode",
+          "dataType": "WHSLocDirHintCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseFixedLocation",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSSlotTemplate"
+          },
+          "name": "Relationship_WHSSlotTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSSlotUOMTier"
+          },
+          "name": "Relationship_WHSSlotUOMTierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLocDirHint"
+          },
+          "name": "Relationship_WHSLocDirHintRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSLocation"
+          },
+          "name": "Relationship_WMSLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Slotting template details"
+    },
+    {
+      "dataTypeName": "WHSAllowLetUps",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSSlotMaxQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSSlotMinQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSOverflowLocationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSSlotTemplateLineSequenceNumber",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSSlotTemplateRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSSlotUOMTierId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PackedQueryRun",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLocDirHintCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

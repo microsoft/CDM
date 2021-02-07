@@ -1,9 +1,13 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     AttributeContext,
     AttributeGroupReference,
     AttributeResolutionGuidance,
     EntityAttribute,
-    EntityReference,
+    EntityReferenceDefinition,
+    Projection,
     TraitReference,
     TypeAttribute
 } from '.';
@@ -11,7 +15,7 @@ import {
 export abstract class Entity {
     public explanation?: string;
     public entityName: string;
-    public extendsEntity?: string | EntityReference;
+    public extendsEntity?: (string | EntityReferenceDefinition | Projection);
     public extendsEntityResolutionGuidance: AttributeResolutionGuidance;
     public exhibitsTraits?: (string | TraitReference)[];
     public attributeContext?: AttributeContext;

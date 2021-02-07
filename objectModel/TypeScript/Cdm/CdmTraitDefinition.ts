@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     addTraitRef,
     ArgumentValue,
@@ -6,11 +9,12 @@ import {
     CdmCorpusContext,
     CdmCorpusDefinition,
     CdmObject,
-    CdmObjectBase,
     CdmObjectDefinitionBase,
     cdmObjectType,
     CdmParameterDefinition,
     CdmTraitReference,
+    Errors,
+    Logger,
     ParameterCollection,
     ParameterValueSet,
     resolveContext,
@@ -24,24 +28,33 @@ import {
 } from '../internal';
 
 export class CdmTraitDefinition extends CdmObjectDefinitionBase {
-    public explanation: string;
-    public traitName: string;
-    public extendsTrait: CdmTraitReference;
-    public _parameters: CdmCollection<CdmParameterDefinition>;
-    public allParameters: ParameterCollection;
-    public hasSetFlags: boolean;
-    public elevated: boolean;
-    public ugly: boolean;
+
+    public static get objectType(): cdmObjectType {
+        return cdmObjectType.traitDef;
+    }
+
+    public get parameters(): CdmCollection<CdmParameterDefinition> {
+        if (!this._parameters) {
+            this._parameters = new CdmCollection<CdmParameterDefinition>(this.ctx, this, cdmObjectType.parameterDef);
+        }
+
+        return this._parameters;
+    }
     public associatedProperties: string[];
-    public baseIsKnownToHaveParameters: boolean;
+    public explanation: string;
+    public elevated: boolean;
+    public traitName: string;
+    public extendsTrait?: CdmTraitReference;
+    public ugly: boolean;
     /**
      * @internal
      */
     public thisIsKnownToHaveParameters: boolean;
 
-    public static get objectType(): cdmObjectType {
-        return cdmObjectType.traitDef;
-    }
+    private _parameters: CdmCollection<CdmParameterDefinition>;
+    private allParameters: ParameterCollection;
+    private hasSetFlags: boolean;
+    private baseIsKnownToHaveParameters: boolean;
 
     constructor(ctx: CdmCorpusContext, name: string, extendsTrait?: CdmTraitReference) {
         super(ctx);
@@ -53,14 +66,6 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
             this.extendsTrait = extendsTrait;
         }
         // return p.measure(bodyCode);
-    }
-
-    public get parameters(): CdmCollection<CdmParameterDefinition> {
-        if (!this._parameters) {
-            this._parameters = new CdmCollection<CdmParameterDefinition>(this.ctx, this, cdmObjectType.parameterDef);
-        }
-
-        return this._parameters;
     }
 
     public getObjectType(): cdmObjectType {
@@ -75,7 +80,7 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
             let copy: CdmTraitDefinition;
             if (!host) {
@@ -102,7 +107,18 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.traitName ? true : false;
+            if (!this.traitName) {
+                Logger.error(
+                    CdmTraitDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['traitName']),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -141,7 +157,7 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             if (base === this.traitName) {
@@ -187,11 +203,14 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public fetchResolvedTraits(resOpt?: resolveOptions): ResolvedTraitSet {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
             const kind: string = 'rtsb';
             const ctx: resolveContext = this.ctx as resolveContext;

@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmCorpusContext,
     CdmLocalEntityDeclarationDefinition,
@@ -6,9 +10,9 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
-import { CdmFolder } from '..';
 import {
     DataPartition,
     DataPartitionPattern,
@@ -87,10 +91,10 @@ export class LocalEntityDeclarationPersistence {
             lastFileStatusCheckTime: timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime),
             lastFileModifiedTime: timeUtils.getFormattedDateString(instance.lastFileModifiedTime),
             lastChildFileModifiedTime: timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime),
-            exhibitsTraits: utils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options),
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options),
             entityPath: instance.entityPath,
-            dataPartitions: utils.arrayCopyData<DataPartition>(resOpt, instance.dataPartitions, options),
-            dataPartitionPatterns: utils.arrayCopyData<DataPartitionPattern>(resOpt, instance.dataPartitionPatterns, options)
+            dataPartitions: copyDataUtils.arrayCopyData<DataPartition>(resOpt, instance.dataPartitions, options),
+            dataPartitionPatterns: copyDataUtils.arrayCopyData<DataPartitionPattern>(resOpt, instance.dataPartitionPatterns, options)
         };
     }
 }

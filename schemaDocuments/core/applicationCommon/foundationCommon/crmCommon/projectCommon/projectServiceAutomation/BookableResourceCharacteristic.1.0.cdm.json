@@ -1,0 +1,211 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.1.0.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "BookableResourceCharacteristic",
+            "extendsEntity": "base_BookableResourceCharacteristic/BookableResourceCharacteristic",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.CDM.entityVersion",
+                    "arguments": [
+                        {
+                            "name": "versionNumber",
+                            "value": "1.0"
+                        }
+                    ]
+                }
+            ],
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/projectServiceAutomation/BookableResourceCharacteristic.1.0.cdm.json/BookableResourceCharacteristic/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "purpose": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Saved",
+                                                                "192350000",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Pending Approval",
+                                                                "192350001",
+                                                                "1"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Rejected",
+                                                                "192350002",
+                                                                "2"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Approved",
+                                                                "192350003",
+                                                                "3"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Recalled",
+                                                                "192350004",
+                                                                "4"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "approvalStatus",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Approval status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'approvalStatus_display' is added to the 'BookableResourceCharacteristic' entity to provide the localized display text for the value of the listLookup attribute 'approvalStatus'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "approvalStatus_display",
+                                        "isReadOnly": true
+                                    }
+                                },
+                                "isNullable": true,
+                                "sourceName": "msdyn_approvalstatus",
+                                "sourceOrdering": 10049,
+                                "displayName": "Approval status"
+                            },
+                            {
+                                "name": "msdyn_bookableresourcecharacteristic_bookableresourcecharacteristic_supportingrecord",
+                                "entity": {
+                                    "entityReference": "BookableResourceCharacteristic",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "BookableResourceCharacteristic/(resolvedAttributes)/bookableResourceCharacteristicId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "alwaysIncludeForeignKey": false,
+                                        "referenceOnlyAfterDepth": 2,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "supportingRecord",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Supporting Record"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ],
+                                            "isNullable": true,
+                                            "sourceName": "msdyn_supportingrecord",
+                                            "sourceOrdering": 10051,
+                                            "displayName": "Supporting Record"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

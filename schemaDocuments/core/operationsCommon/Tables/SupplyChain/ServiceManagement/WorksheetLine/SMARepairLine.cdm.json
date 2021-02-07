@@ -1,0 +1,357 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Group/SMADiagnosisCode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Main/SMAServiceObjectTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Main/SMAServiceObjectRelation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/WorksheetHeader/SMAServiceOrderTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Group/SMAConditionTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Group/SMADiagnosisArea.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Group/SMARepairStage.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Group/SMAResolutionTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Group/SMASymptomArea.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Group/SMASymptomCode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SMARepairLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ConditionId",
+          "dataType": "SMAConditionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateTimeFinished",
+          "dataType": "SMARepairFinishDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "SMAMemo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiagnosisAreaId",
+          "dataType": "SMADiagnosisAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiagnosisCodeId",
+          "dataType": "SMADiagnosisCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "displayName": "Description",
+          "description": ""
+        },
+        {
+          "name": "RepairLineId",
+          "dataType": "SMARepairLineId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RepairStageId",
+          "dataType": "SMARepairStageId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResolutionId",
+          "dataType": "SMAResolutionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceObjectId",
+          "dataType": "SMAServiceObjectId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceObjectRelationId",
+          "dataType": "SMAServiceObjectRelationId",
+          "description": ""
+        },
+        {
+          "name": "ServiceOrderId",
+          "dataType": "SMAServiceOrderId",
+          "description": ""
+        },
+        {
+          "name": "SymptomAreaId",
+          "dataType": "SMASymptomAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SymptomCodeId",
+          "dataType": "SMASymptomCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "SMAWorker",
+          "isNullable": true,
+          "displayName": "Technician",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SMADiagnosisCode"
+          },
+          "name": "Relationship_DiagnosisCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceObjectTable"
+          },
+          "name": "Relationship_ServiceObjectRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceObjectRelation"
+          },
+          "name": "Relationship_ServiceObjectRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceOrderTable"
+          },
+          "name": "Relationship_ServiceOrderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAConditionTable"
+          },
+          "name": "Relationship_SMAConditionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMADiagnosisArea"
+          },
+          "name": "Relationship_SMADiagnosisAreaRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMARepairStage"
+          },
+          "name": "Relationship_SMARepairStageRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAResolutionTable"
+          },
+          "name": "Relationship_SMAResolutionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceObjectRelation"
+          },
+          "name": "Relationship_SMAServiceObjectRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMASymptomArea"
+          },
+          "name": "Relationship_SMASymptomAreaRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMASymptomCode"
+          },
+          "name": "Relationship_SymptomCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Repair lines"
+    },
+    {
+      "dataTypeName": "SMAConditionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMARepairFinishDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SMAMemo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMADiagnosisAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMADiagnosisCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMARepairLineId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SMARepairStageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAResolutionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAServiceObjectId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAServiceObjectRelationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAServiceOrderId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMASymptomAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMASymptomCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAWorker",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

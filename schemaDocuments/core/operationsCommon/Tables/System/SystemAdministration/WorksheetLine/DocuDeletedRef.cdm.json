@@ -1,0 +1,241 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Transaction/DocuDeletedValue.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Transaction/DocuValue.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/DocuType.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DocuDeletedRef",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RefCompanyId",
+          "dataType": "SelectableDataArea",
+          "isReadOnly": true,
+          "displayName": "Company account",
+          "description": ""
+        },
+        {
+          "name": "ActualCompanyId",
+          "dataType": "SelectableDataArea",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Company accounts",
+          "description": ""
+        },
+        {
+          "name": "Author",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Author",
+          "description": ""
+        },
+        {
+          "name": "InterCompanySkipUpdate",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Notes",
+          "dataType": "Notes",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Party",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "displayName": "Reference record ID",
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Restriction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TypeId",
+          "dataType": "DocuTypeId",
+          "description": ""
+        },
+        {
+          "name": "ValueRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Document value record ID",
+          "description": ""
+        },
+        {
+          "name": "DocumentId",
+          "dataType": "DocuDocumentId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultAttachment",
+          "dataType": "DocuDefaultAttachment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemoveOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Caption",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Previous record",
+          "description": ""
+        },
+        {
+          "name": "ExtensionFields",
+          "dataType": "binary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FileRemovalConfirmationResponse",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Physical file confirmation response",
+          "description": ""
+        },
+        {
+          "name": "PhysicalFileForceDeletion",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Physical file force deletion",
+          "description": ""
+        },
+        {
+          "name": "DocuType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DocuDeletedValue"
+          },
+          "name": "Relationship_DocuDeletedValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuValue"
+          },
+          "name": "Relationship_DocuValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuType"
+          },
+          "name": "Relationship_DocuTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Deleted document references"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Notes",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DocuTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocuDocumentId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "DocuDefaultAttachment",
+      "extendsDataType": "integer"
+    }
+  ]
+}

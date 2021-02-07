@@ -1,0 +1,177 @@
+{
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "/Input/Customer.cdm.json",
+      "moniker": "resolvedFrom"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Customer_R_ro_n_s",
+      "exhibitsTraits": [
+        {
+          "traitReference": "has.entitySchemaAbstractionLevel",
+          "arguments": [
+            {
+              "name": "level",
+              "value": "resolved"
+            }
+          ]
+        }
+      ],
+      "attributeContext": {
+        "type": "entity",
+        "name": "Customer_R_ro_n_s",
+        "definition": "resolvedFrom/Customer",
+        "contents": [
+          {
+            "type": "entityReferenceExtends",
+            "name": "extends",
+            "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s",
+            "contents": [
+              {
+                "type": "entity",
+                "name": "CdmEntity",
+                "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/extends",
+                "definition": "resolvedFrom/CdmEntity"
+              }
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "customerIdAttribute",
+            "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s",
+            "definition": "resolvedFrom/Customer/hasAttributes/customerIdAttribute",
+            "contents": [
+              {
+                "type": "attributeGroup",
+                "name": "customerIdAttribute",
+                "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute",
+                "definition": "resolvedFrom/Customer/hasAttributes/customerIdAttribute",
+                "contents": [
+                  {
+                    "type": "attributeDefinition",
+                    "name": "customer",
+                    "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute",
+                    "definition": "resolvedFrom/Customer/hasAttributes/customerIdAttribute/members/customer",
+                    "contents": [
+                      {
+                        "type": "entity",
+                        "name": "Customer",
+                        "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute/customer",
+                        "definition": "resolvedFrom/Customer/hasAttributes/customerIdAttribute/members/customer/entity/Customer",
+                        "contents": [
+                          {
+                            "type": "attributeDefinition",
+                            "name": "contactOption",
+                            "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute/customer/Customer",
+                            "definition": "resolvedFrom/Customer/hasAttributes/customerIdAttribute/members/customer/entity/Customer/hasAttributes/contactOption",
+                            "contents": [
+                              {
+                                "type": "entity",
+                                "name": "Contact",
+                                "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute/customer/Customer/contactOption",
+                                "definition": "resolvedFrom/Contact"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "attributeDefinition",
+                            "name": "accountOption",
+                            "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute/customer/Customer",
+                            "definition": "resolvedFrom/Customer/hasAttributes/customerIdAttribute/members/customer/entity/Customer/hasAttributes/accountOption",
+                            "contents": [
+                              {
+                                "type": "entity",
+                                "name": "Account",
+                                "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute/customer/Customer/accountOption",
+                                "definition": "resolvedFrom/Account"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "generatedSet",
+                        "name": "_generatedAttributeSet",
+                        "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute/customer",
+                        "contents": [
+                          {
+                            "type": "generatedRound",
+                            "name": "_generatedAttributeRound0",
+                            "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute/customer/_generatedAttributeSet",
+                            "contents": [
+                              {
+                                "type": "addedAttributeIdentity",
+                                "name": "_foreignKey",
+                                "parent": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute/customer/_generatedAttributeSet/_generatedAttributeRound0",
+                                "definition": "resolvedFrom/Customer/hasAttributes/customerIdAttribute/members/customer/resolutionGuidance/foreignKeyAttribute/customerId",
+                                "contents": [
+                                  "Customer_R_ro_n_s/hasAttributes/customer/members/customerId"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "customer",
+            "attributeContext": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute/customer",
+            "members": [
+              {
+                "name": "customerId",
+                "appliedTraits": [
+                  "is.dataFormat.character",
+                  "is.dataFormat.big",
+                  "is.dataFormat.array",
+                  "is.dataFormat.guid",
+                  "means.identity.entityId",
+                  {
+                    "traitReference": "is.linkedEntity.identifier",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "entityGroupSet",
+                          "constantValues": [
+                            [
+                              "/Input/Contact.cdm.json/Contact",
+                              "contactId"
+                            ],
+                            [
+                              "/Input/Account.cdm.json/Account",
+                              "accountId"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "is.CDS.customer"
+                ],
+                "attributeContext": "Customer_R_ro_n_s/attributeContext/Customer_R_ro_n_s/customerIdAttribute/customerIdAttribute/customer/_generatedAttributeSet/_generatedAttributeRound0/_foreignKey",
+                "dataFormat": "Guid",
+                "sourceName": "customerid",
+                "displayName": "Customer"
+              }
+            ]
+          }
+        }
+      ],
+      "sourceName": "Customer",
+      "displayName": "Customer",
+      "description": "Customer information.",
+      "version": "1.1"
+    }
+  ]
+}

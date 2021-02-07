@@ -1,0 +1,131 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/Main/EGAISAlcoholProduction_RU.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/Main/EGAISInformB_RU.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/WorksheetHeader/EGAISRestsJour_RU.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EGAISRestsLine_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AlcoholProduction",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "displayName": "Alcohol product",
+          "description": ""
+        },
+        {
+          "name": "InformB",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "Qty",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RestsJour",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISAlcoholProduction_RU"
+          },
+          "name": "Relationship_EGAISAlcoholProduction_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISInformB_RU"
+          },
+          "name": "Relationship_EGAISInformB_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISRestsJour_RU"
+          },
+          "name": "Relationship_EGAISRestsJour_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "EGAIS remains journal lines"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

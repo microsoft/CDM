@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 
 public class ManifestDeclaration extends FileStatusExtended {
@@ -29,7 +32,7 @@ public class ManifestDeclaration extends FileStatusExtended {
   /**
    * Gets the corpus path to the definition of the sub manifest.
    *
-   * @return
+   * @return string
    */
   public String getDefinition() {
     return definition;
@@ -38,7 +41,7 @@ public class ManifestDeclaration extends FileStatusExtended {
   /**
    * Sets the corpus path to the definition of the sub manifest.
    *
-   * @param definition
+   * @param definition String
    */
   public void setDefinition(final String definition) {
     this.definition = definition;

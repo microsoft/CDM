@@ -1,0 +1,136 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EFDocument_BR.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EFDocumentXML_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Cancel",
+          "dataType": "EFDocXML_BR",
+          "isNullable": true,
+          "displayName": "Request",
+          "description": ""
+        },
+        {
+          "name": "CancelResponse",
+          "dataType": "EFDocXML_BR",
+          "isNullable": true,
+          "displayName": "Response",
+          "description": ""
+        },
+        {
+          "name": "EFDocRefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Submission",
+          "dataType": "EFDocXML_BR",
+          "isNullable": true,
+          "displayName": "Request",
+          "description": ""
+        },
+        {
+          "name": "SubmissionResponse",
+          "dataType": "EFDocXML_BR",
+          "isNullable": true,
+          "displayName": "Response",
+          "description": ""
+        },
+        {
+          "name": "SubmitReturn",
+          "dataType": "EFDocXML_BR",
+          "isNullable": true,
+          "displayName": "Request",
+          "description": ""
+        },
+        {
+          "name": "SubmitReturnResponse",
+          "dataType": "EFDocXML_BR",
+          "isNullable": true,
+          "displayName": "Response",
+          "description": ""
+        },
+        {
+          "name": "Moved",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "XML was moved as attachment",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EFDocument_BR"
+          },
+          "name": "Relationship_EFDocument_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "NF-e sent/protocol XML documents"
+    },
+    {
+      "dataTypeName": "EFDocXML_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

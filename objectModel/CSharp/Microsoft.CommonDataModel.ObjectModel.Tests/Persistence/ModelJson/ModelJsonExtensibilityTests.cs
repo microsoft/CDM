@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson;
@@ -11,11 +14,9 @@
     using System.IO;
     using System.Threading.Tasks;
 
-    using Assert = Microsoft.CommonDataModel.ObjectModel.Tests.AssertExtension;
-    using DocumentContent = Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types.DocumentContent;
-    using cdmDocument = Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.DocumentPersistence;
-    using cdmManifestPersistence = Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.ManifestPersistence;
-    using modelManifestPersistence = Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.ManifestPersistence;
+    using Assert = AssertExtension;
+    using cdmDocument = ObjectModel.Persistence.CdmFolder.DocumentPersistence;
+    using cdmManifestPersistence = ObjectModel.Persistence.CdmFolder.ManifestPersistence;
 
     /// <summary>
     /// Class containing tests related to MetadataObject class (and it's children) use, serialization and deserialization.
@@ -28,7 +29,10 @@
         /// </summary>
         private string testsSubpath = Path.Combine("Persistence", "ModelJson", "ModelJsonExtensibility");
 
-        private bool doesWriteTestDebuggingFiles = TestHelper.DoesWriteTestDebuggingFiles;
+        /// <summary>
+        /// Whether debugging files should be written or not.
+        /// </summary>
+        private bool doesWriteTestDebuggingFiles = false;
 
         /// <summary>
         /// Tests the serializer and the deserializer.
@@ -149,7 +153,7 @@
             var deserializerTime = deserializeStopwatch.ElapsedMilliseconds;
 
             Assert.Performance(500, serializerTime, "Serializing");
-            Assert.Performance(1500, deserializerTime, "Deserializing");
+            Assert.Performance(1800, deserializerTime, "Deserializing");
         }
 
         /// <summary>
@@ -184,7 +188,7 @@
                 TestHelper.WriteActualOutputFileContent(testsSubpath, "ModelJsonExtensibilityManifestDocuments", manifest.Name, serializedManifest);
             }
 
-            foreach(var doc in folderObject.Documents)
+            foreach (var doc in folderObject.Documents)
             {
                 // manifest shows up twice. once as a manifest and again as the model.json conversion cached
                 if (doc.Name == manifest.Name)
@@ -192,7 +196,7 @@
                     continue;
                 }
 
-                string serializedDocument = Serialize(cdmDocument.ToData(doc, null, null));                
+                string serializedDocument = Serialize(cdmDocument.ToData(doc, null, null));
 
                 var expectedOutputDocument = TestHelper.GetExpectedOutputFileContent(testsSubpath, "ModelJsonExtensibilityManifestDocuments", doc.Name);
 

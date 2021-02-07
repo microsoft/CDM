@@ -1,0 +1,144 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "ReqIntercompanyPlanningGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlanSched.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqIntercompanyPlanningGroupMember",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CopyToDynamicPlan",
+          "dataType": "ReqCopyToDynamicPlan",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CopyToStaticPlan",
+          "dataType": "ReqCopyToStaticPlan",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntercompanyPlanDataAreaId",
+          "dataType": "SelectableDataArea",
+          "description": ""
+        },
+        {
+          "name": "IntercompanyPlanId",
+          "dataType": "ReqIntercompanyPlanId",
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "LegalEntity",
+          "description": ""
+        },
+        {
+          "name": "PlanningGroup",
+          "dataType": "ReqIntercompanyPlanningGroupRecId",
+          "description": ""
+        },
+        {
+          "name": "SequenceNumber",
+          "dataType": "InterCompanySchedulingOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqIntercompanyPlanningGroup"
+          },
+          "name": "Relationship_ReqIntercompanyPlanningGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlanSched"
+          },
+          "name": "Relationship_ReqPlanSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Intercompany planning group member"
+    },
+    {
+      "dataTypeName": "ReqCopyToDynamicPlan",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqCopyToStaticPlan",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqIntercompanyPlanId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LegalEntity",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ReqIntercompanyPlanningGroupRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InterCompanySchedulingOrder",
+      "extendsDataType": "integer"
+    }
+  ]
+}

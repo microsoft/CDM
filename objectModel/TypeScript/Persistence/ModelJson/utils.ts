@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { readFileSync } from 'fs';
 import { CdmFolder, ModelJson } from '..';
 import {
@@ -11,15 +14,25 @@ import {
 import { CdmJsonType, TraitReference } from '../CdmFolder/types';
 import { processExtensionTraitToObject, traitRefIsExtension } from './ExtensionHelper';
 import { Annotation, AnnotationTraitMapping, CsvFormatSettings, MetadataObject } from './types';
+import { NameValuePair } from '../../Utilities/NameValuePair';
 
 const annotationToTraitMap: Map<string, string> = new Map([['version', 'is.CDM.entityVersion']]);
 
-const ignoredTraits: Set<string> = new Set<string>().add('is.modelConversion.otherAnnotations')
+export const ignoredTraits: Set<string> = new Set<string>().add('is.modelConversion.otherAnnotations')
     .add('is.propertyContent.multiTrait')
     .add('is.modelConversion.referenceModelMap')
     .add('is.modelConversion.modelVersion')
     .add('means.measurement.version')
-    .add('is.partition.format.CSV');
+    .add('is.CDM.entityVersion')
+    .add('is.partition.format.CSV')
+    .add('is.partition.culture')
+    .add('is.managedBy')
+    .add('is.hidden');
+
+// Traits to ignore if they come from properties.
+// These traits become properties on the model.json. To avoid persisting both a trait
+// and a property on the model.json, we filter these traits out.
+export const modelJsonPropertyTraits: Set<string> = new Set<string>().add('is.localized.describedAs');
 
 export function shouldAnnotationGoIntoASingleTrait(name: string): boolean {
     return annotationToTraitMap.has(name);
@@ -96,12 +109,15 @@ export function createCsvFormatSettings(csvFormatTrait: CdmTraitReference): CsvF
 
 export async function processAnnotationsFromData(ctx: CdmCorpusContext, object: MetadataObject, traits: CdmTraitCollection)
     : Promise<void> {
-    const multiTraitAnnotations: Annotation[] = [];
+    const multiTraitAnnotations: NameValuePair[] = [];
 
     if (object.annotations !== undefined) {
         for (const annotation of object.annotations) {
             if (!shouldAnnotationGoIntoASingleTrait(annotation.name)) {
-                multiTraitAnnotations.push(annotation);
+                const cdmElement: NameValuePair = new NameValuePair();
+                cdmElement.name = annotation.name;
+                cdmElement.value = annotation.value;
+                multiTraitAnnotations.push(cdmElement);
             } else {
                 const innerTrait: CdmTraitReference =
                     ctx.corpus.MakeObject(cdmObjectType.traitRef, convertAnnotationToTrait(annotation.name));
@@ -113,23 +129,23 @@ export async function processAnnotationsFromData(ctx: CdmCorpusContext, object: 
         if (multiTraitAnnotations.length > 0) {
             const trait: CdmTraitReference =
                 ctx.corpus.MakeObject(cdmObjectType.traitRef, 'is.modelConversion.otherAnnotations', false);
-            trait.isFromProperty = true;
+            trait.isFromProperty = false;
 
             const annotationsArguemnt: CdmArgumentDefinition = new CdmArgumentDefinition(ctx, 'annotations');
             annotationsArguemnt.value = multiTraitAnnotations;
             trait.arguments.push(annotationsArguemnt);
             traits.push(trait);
         }
+    }
 
-        if (object['cdm:traits'] !== undefined) {
-            object['cdm:traits'].forEach((trait: string | TraitReference) => {
-                traits.push(CdmFolder.TraitReferencePersistence.fromData(ctx, trait));
-            });
-        }
+    if (object['cdm:traits'] !== undefined) {
+        object['cdm:traits'].forEach((trait: string | TraitReference) => {
+            traits.push(CdmFolder.TraitReferencePersistence.fromData(ctx, trait));
+        });
     }
 }
 
-export async function processAnnotationsToData(
+export function processTraitsAndAnnotationsToData(
     ctx: CdmCorpusContext,
     entityObject: MetadataObject,
     traits: CdmTraitCollection): Promise<void> {
@@ -150,27 +166,23 @@ export async function processAnnotationsToData(
 
         if (trait.namedReference === 'is.modelConversion.otherAnnotations') {
             for (const annotation of (trait.arguments.allItems[0].value as any)) {
-                if (typeof annotation === 'object') {
+                if (annotation instanceof NameValuePair) {
+                    const element: Annotation = new Annotation();
+                    element.name = annotation.name;
+                    element.value = annotation.value;
+                    annotations.push(element);
+                } 
+                else if (typeof annotation === 'object') {
                     annotations.push(annotation);
                 } else {
                     Logger.warning('Utils', ctx, 'Unsupported annotation type.');
                 }
             }
-        } else if (!trait.isFromProperty) {
-            const annotationName: string = traitToAnnotationName(trait.namedReference);
-
-            if (annotationName !== undefined && trait.arguments !== undefined && trait.arguments.allItems !== undefined
-                && trait.arguments.length === 1) {
-                const argument: Annotation = await ModelJson.ArgumentPersistence.toData(trait.arguments.allItems[0], undefined, undefined);
-
-                if (argument !== undefined) {
-                    argument.name = annotationName;
-                    annotations.push(argument);
-                }
-            } else if (!ignoredTraits.has(trait.namedReference)) {
-                const extension: CdmJsonType = CdmFolder.TraitReferencePersistence.toData(trait, undefined, undefined);
-                extensions.push(extension);
-            }
+        } else if (!ignoredTraits.has(trait.namedReference)
+                    && !trait.namedReference.startsWith('is.dataFormat')
+                    && !(modelJsonPropertyTraits.has(trait.namedReference) && trait.isFromProperty)) {
+            const extension: CdmJsonType = CdmFolder.TraitReferencePersistence.toData(trait, undefined, undefined);
+            extensions.push(extension);
         }
 
         if (annotations.length > 0) {

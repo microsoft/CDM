@@ -1,0 +1,166 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "VendPackingSlipJour.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendPackingSlipPurchLink",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "deliveryDate",
+          "dataType": "TransDate",
+          "description": ""
+        },
+        {
+          "name": "invoiceAccount",
+          "dataType": "VendInvoiceAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "orderAccount",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "origPurchId",
+          "dataType": "PurchIdOrig",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "packingSlipId",
+          "dataType": "ProductReceiptId",
+          "description": ""
+        },
+        {
+          "name": "VendPackingSlipJour",
+          "dataType": "VendPackingSlipJourRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_InvoiceVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_OrderVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPackingSlipJour"
+          },
+          "name": "Relationship_vendPackingSlipJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor product receipt - purchase order relation table"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendInvoiceAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchIdOrig",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProductReceiptId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPackingSlipJourRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

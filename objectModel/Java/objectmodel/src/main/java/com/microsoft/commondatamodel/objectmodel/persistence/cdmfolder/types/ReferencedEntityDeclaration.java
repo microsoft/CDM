@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 
 /**
@@ -10,7 +13,7 @@ public class ReferencedEntityDeclaration extends EntityDeclaration {
 
     /**
      * Gets the corpus path pointing to the external document.
-     * @return
+     * @return String
      */
     public String getEntityPath() {
         return entityPath;
@@ -18,7 +21,7 @@ public class ReferencedEntityDeclaration extends EntityDeclaration {
 
     /**
      * Sets the corpus path pointing to the external document.
-     * @param entityPath
+     * @param entityPath String
      */
     public void setEntityPath(final String entityPath) {
         this.entityPath = entityPath;
@@ -26,7 +29,7 @@ public class ReferencedEntityDeclaration extends EntityDeclaration {
 
     /**
      * Sets the corpus path pointing to the external document.
-     * @param entityDeclaration
+     * @param entityDeclaration String
      */
     public void setEntityDeclaration(final String entityDeclaration) {
         this.entityPath = entityDeclaration;

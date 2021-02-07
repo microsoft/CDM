@@ -1,0 +1,205 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailFiscalDocumentModel2Line_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CFOP",
+          "dataType": "SalesPurchCFOPId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineAmount",
+          "dataType": "LineAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDiscount",
+          "dataType": "SalesSumLineDiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "description": ""
+        },
+        {
+          "name": "LineSurcharge",
+          "dataType": "RetailSurchargeAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Origin",
+          "dataType": "RetailConnDistributionLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "UnitQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplicationCounterFromOrigin",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StoreId",
+          "dataType": "RetailStoreId",
+          "description": ""
+        },
+        {
+          "name": "TerminalId",
+          "dataType": "RetailTerminalId",
+          "description": ""
+        },
+        {
+          "name": "TransactionId",
+          "dataType": "RetailTransactionId",
+          "description": ""
+        },
+        {
+          "name": "Unit",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitPrice",
+          "dataType": "PriceCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal document (model 2) lines"
+    },
+    {
+      "dataTypeName": "SalesPurchCFOPId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesSumLineDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailSurchargeAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailConnDistributionLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceCur",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

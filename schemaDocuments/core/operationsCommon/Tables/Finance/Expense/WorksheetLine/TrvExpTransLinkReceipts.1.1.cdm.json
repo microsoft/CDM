@@ -1,0 +1,82 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/WorksheetLine/DocuRef.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Transaction/TrvExpTrans.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvExpTransLinkReceipts",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RefDocuRefRecId",
+          "dataType": "DocuRefRecId",
+          "description": ""
+        },
+        {
+          "name": "RefExpTransRecId",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DocuRef"
+          },
+          "name": "Relationship_DocuRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvExpTrans"
+          },
+          "name": "Relationship_TrvExpTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Receipts linked to expense lines"
+    },
+    {
+      "dataTypeName": "DocuRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

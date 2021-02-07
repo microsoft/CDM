@@ -1,0 +1,104 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PaymDueDateLimit_ES.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PaymDueDateLimitValues_ES",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "GroupId",
+          "dataType": "DueDateLimitGroupId_ES",
+          "description": ""
+        },
+        {
+          "name": "PeriodUnit",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyUnit",
+          "dataType": "DueDateLimitQtyUnit_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "StartDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PaymDueDateLimit_ES"
+          },
+          "name": "Relationship_PaymDueDateLimit_ESRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Due date limit values"
+    },
+    {
+      "dataTypeName": "DueDateLimitGroupId_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDateLimitQtyUnit_ES",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "StartDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

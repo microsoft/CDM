@@ -1,0 +1,86 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DimensionHierarchy.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DimensionConstraintTree",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DimensionHierarchy",
+          "dataType": "RefRecId",
+          "displayName": "Dimension set",
+          "description": ""
+        },
+        {
+          "name": "LastModifiedId",
+          "dataType": "HashKey",
+          "isNullable": true,
+          "displayName": "Last modified",
+          "description": ""
+        },
+        {
+          "name": "IsActivating",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Activating",
+          "description": ""
+        },
+        {
+          "name": "ActivationBatchId",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Batch Id",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchy"
+          },
+          "name": "Relationship_DimensionHierarchyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Dimension constraint tree"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HashKey",
+      "extendsDataType": "guid"
+    }
+  ]
+}

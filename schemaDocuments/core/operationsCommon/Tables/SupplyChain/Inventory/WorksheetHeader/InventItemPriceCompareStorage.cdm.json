@@ -1,0 +1,153 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventItemPriceCompareStorage",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TransactionId",
+          "dataType": "CreatedTransactionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutionName",
+          "dataType": "InventItemPriceCompareExecutionName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutionTime",
+          "dataType": "InventItemPriceCompareExecutionTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ComparePriceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompareVersionId",
+          "dataType": "CostingVersionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompareToVersionId",
+          "dataType": "CostingVersionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompareDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompareToDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompareTo",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompareLevel",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalculateInventory",
+          "dataType": "InventItemPriceCompareInventory",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Filters",
+          "dataType": "binary",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Compare item prices executions"
+    },
+    {
+      "dataTypeName": "CreatedTransactionId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventItemPriceCompareExecutionName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventItemPriceCompareExecutionTime",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CostingVersionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventItemPriceCompareInventory",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,9 +1,12 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 import dateutil.parser
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmManifestDefinition
 from cdm.persistence import PersistenceLayer
-from cdm.utilities import logger, CopyOptions, ResolveOptions, time_utils
+from cdm.utilities import logger, CopyOptions, ResolveOptions, time_utils, copy_data_utils
 
 from . import utils
 from .attribute_group_persistence import AttributeGroupPersistence
@@ -26,7 +29,7 @@ _TAG = 'ManifestPersistence'
 class ManifestPersistence:
     is_persistence_async = False
 
-    formats = [PersistenceLayer._MANIFEST_EXTENSION, PersistenceLayer._FOLIO_EXTENSION]
+    formats = [PersistenceLayer.MANIFEST_EXTENSION, PersistenceLayer.FOLIO_EXTENSION]
 
     @staticmethod
     def from_data(ctx: 'CdmCorpusContext', doc_name: str, json_data: str, folder: 'CdmFolderDefinition') -> 'CdmManifestDefinition':
@@ -43,7 +46,7 @@ class ManifestPersistence:
         elif data.get('folioName'):
             manifest_name = data.folioName
         elif name:
-            manifest_name = name.replace(PersistenceLayer._MANIFEST_EXTENSION, '').replace(PersistenceLayer._FOLIO_EXTENSION, '')
+            manifest_name = name.replace(PersistenceLayer.MANIFEST_EXTENSION, '').replace(PersistenceLayer.FOLIO_EXTENSION, '')
         else:
             manifest_name = ''
 
@@ -62,9 +65,12 @@ class ManifestPersistence:
 
         manifest.json_schema_semantic_version = data.get('jsonSchemaSemanticVersion')
 
-        if manifest.json_schema_semantic_version != '0.9.0':
+        if manifest.json_schema_semantic_version != '0.9.0' and manifest.json_schema_semantic_version != '1.0.0':
             # TODO: validate that this is a version we can understand with the OM
             pass
+
+        if data.get('documentVersion'):
+            manifest.document_version = data.documentVersion
 
         if data.get('exhibitsTraits'):
             exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
@@ -77,17 +83,17 @@ class ManifestPersistence:
         if data.get('definitions'):
             for definition in data.definitions:
                 if 'dataTypeName' in definition:
-                    manifest.definitions.append(DataTypePersistence.fromData(ctx, definition))
+                    manifest.definitions.append(DataTypePersistence.from_data(ctx, definition))
                 elif 'purposeName' in definition:
-                    manifest.definitions.append(PurposePersistence.fromData(ctx, definition))
+                    manifest.definitions.append(PurposePersistence.from_data(ctx, definition))
                 elif 'attributeGroupName' in definition:
-                    manifest.definitions.append(AttributeGroupPersistence.fromData(ctx, definition))
+                    manifest.definitions.append(AttributeGroupPersistence.from_data(ctx, definition))
                 elif 'traitName' in definition:
-                    manifest.definitions.append(TraitPersistence.fromData(ctx, definition))
+                    manifest.definitions.append(TraitPersistence.from_data(ctx, definition))
                 elif 'entityShape' in definition:
-                    manifest.definitions.append(ConstantEntityPersistence.fromData(ctx, definition))
+                    manifest.definitions.append(ConstantEntityPersistence.from_data(ctx, definition))
                 elif 'entityName' in definition:
-                    manifest.definitions.append(EntityPersistence.fromData(ctx, definition))
+                    manifest.definitions.append(EntityPersistence.from_data(ctx, definition))
 
         if data.get('lastFileStatusCheckTime'):
             manifest.last_file_status_check_time = dateutil.parser.parse(data.lastFileStatusCheckTime)
@@ -132,14 +138,15 @@ class ManifestPersistence:
         manifest.manifestName = instance.manifest_name
         manifest.schema = instance.schema
         manifest.jsonSchemaSemanticVersion = instance.json_schema_semantic_version
-        manifest.lastFileStatusCheckTime = time_utils.get_formatted_date_string(instance.last_file_status_check_time)
-        manifest.lastFileModifiedTime = time_utils.get_formatted_date_string(instance.last_file_modified_time)
-        manifest.lastChildFileModifiedTime = time_utils.get_formatted_date_string(instance.last_child_file_modified_time)
+        manifest.documentVersion = instance.document_version
+        manifest.lastFileStatusCheckTime = time_utils._get_formatted_date_string(instance.last_file_status_check_time)
+        manifest.lastFileModifiedTime = time_utils._get_formatted_date_string(instance.last_file_modified_time)
+        manifest.lastChildFileModifiedTime = time_utils._get_formatted_date_string(instance.last_child_file_modified_time)
         manifest.explanation = instance.explanation
-        manifest.exhibitsTraits = utils.array_copy_data(res_opt, instance.exhibits_traits, options)
-        manifest.entities = utils.array_copy_data(res_opt, instance.entities, options)
-        manifest.subManifests = utils.array_copy_data(res_opt, instance.sub_manifests, options)
-        manifest.imports = [ImportPersistence.to_data(importDoc, res_opt, options) for importDoc in instance.imports]
-        manifest.relationships = [E2ERelationshipPersistence.to_data(relationship, res_opt, options) for relationship in instance.relationships]
+        manifest.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, instance.exhibits_traits, options)
+        manifest.entities = copy_data_utils._array_copy_data(res_opt, instance.entities, options)
+        manifest.subManifests = copy_data_utils._array_copy_data(res_opt, instance.sub_manifests, options)
+        manifest.imports = copy_data_utils._array_copy_data(res_opt, instance.imports, options)
+        manifest.relationships = copy_data_utils._array_copy_data(res_opt, instance.relationships, options)
 
         return manifest

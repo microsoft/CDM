@@ -1,0 +1,213 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustBankAccount.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "BankLC.1.0.cdm.json",
+      "moniker": "base_BankLC"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankLCExport",
+      "extendsEntity": "base_BankLC/BankLC",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AdvisingBankNoticeDateTime",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "displayName": "Notice date",
+          "description": ""
+        },
+        {
+          "name": "AdvisingBankNoticeNumber",
+          "dataType": "BankLCExportAdvisingBankNoticeNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdvisingSWIFTCode",
+          "dataType": "SWIFTNo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustTable",
+          "dataType": "CustAccount",
+          "description": ""
+        },
+        {
+          "name": "ExportAdvisingBank",
+          "dataType": "CompanyBankAccount",
+          "displayName": "Advising bank",
+          "description": ""
+        },
+        {
+          "name": "ExportBeneficiary",
+          "dataType": "CompanyName",
+          "displayName": "Beneficiary",
+          "description": ""
+        },
+        {
+          "name": "ExportStatus",
+          "dataType": "BankLCExportStatus",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IssuingBank",
+          "dataType": "CustBankAccountId",
+          "displayName": "Issuing bank",
+          "description": ""
+        },
+        {
+          "name": "MaturityDateTime",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "displayName": "Date of maturity",
+          "description": ""
+        },
+        {
+          "name": "SalesTable",
+          "dataType": "SalesIdBase",
+          "isReadOnly": true,
+          "displayName": "Order number",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_ExportAdvisingBankRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustBankAccount"
+          },
+          "name": "Relationship_IssuingBankRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Letter of credit / import collection export table"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BankLCExportAdvisingBankNoticeNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SWIFTNo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyBankAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankLCExportStatus",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesIdBase",
+      "extendsDataType": "string"
+    }
+  ]
+}

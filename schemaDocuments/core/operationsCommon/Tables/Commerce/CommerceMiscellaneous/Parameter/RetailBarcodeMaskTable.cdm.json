@@ -1,0 +1,116 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailBarcodeMaskTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "RetailDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Mask",
+          "dataType": "RetailBarcodeMask",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maskId",
+          "dataType": "RetailBarcodeMaskId",
+          "description": ""
+        },
+        {
+          "name": "Prefix",
+          "dataType": "RetailBarcodeMaskPrefix",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Symbology",
+          "dataType": "RetailBarcodeSymbology",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "RetailBarcodeMaskType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bar code mask"
+    },
+    {
+      "dataTypeName": "RetailDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailBarcodeMask",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailBarcodeMaskId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailBarcodeMaskPrefix",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailBarcodeSymbology",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailBarcodeMaskType",
+      "extendsDataType": "integer"
+    }
+  ]
+}

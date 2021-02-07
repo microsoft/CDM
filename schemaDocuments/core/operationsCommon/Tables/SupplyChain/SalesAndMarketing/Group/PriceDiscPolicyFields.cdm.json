@@ -1,0 +1,80 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PriceDiscChangePolicy.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PriceDiscPolicyFields",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ChangePolicy",
+          "dataType": "RefReturnInvoiceTrans_W",
+          "description": ""
+        },
+        {
+          "name": "FieldId",
+          "dataType": "RefFieldId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TableMapId",
+          "dataType": "TableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscChangePolicy"
+          },
+          "name": "Relationship_PriceDiscChangePolicyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Price discount policy fields"
+    },
+    {
+      "dataTypeName": "RefReturnInvoiceTrans_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefFieldId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TableId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

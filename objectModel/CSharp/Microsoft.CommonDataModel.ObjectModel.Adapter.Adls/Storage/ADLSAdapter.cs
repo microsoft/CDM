@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="ADLSAdapter.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
@@ -21,10 +18,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using Newtonsoft.Json;
     using System.Security.Cryptography;
     using Newtonsoft.Json.Linq;
-    using System.Diagnostics;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
 
-    public class ADLSAdapter : NetworkAdapter, StorageAdapter
+    public class ADLSAdapter : NetworkAdapter
     {
+        private const double ADLSDefaultTimeout = 6000;
+
         private AuthenticationContext Context;
 
         /// <summary>
@@ -38,8 +37,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             private set
             {
-                this._root = value;
-                this.ExtractFilesystemAndSubPath(this._root);
+                this._root = this.ExtractRootBlobContainerAndSubPath(value);
             }
         }
 
@@ -48,7 +46,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The hostname of ADLS.
         /// </summary>
-        public string Hostname { get; private set; }
+        public string Hostname
+        {
+            get
+            {
+                return this._hostname;
+            }
+            private set
+            {
+                this._hostname = value;
+                this.formattedHostname = this.FormatHostname(this._hostname);
+            }
+        }
+
+        private string _hostname;
+        private string _sasToken;
 
         /// <summary>
         /// The tenant.
@@ -58,30 +70,81 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The client ID of an application accessing ADLS.
         /// </summary>
-        public string ClientId { get; private set; }
+        public string ClientId { get; set; }
 
         /// <summary>
         /// The secret for the app accessing ADLS.
         /// </summary>
-        public string Secret { get; private set; }
+        public string Secret { get; set; }
 
         /// <summary>
         /// The account/shared key.
         /// </summary>
-        public string SharedKey { get; private set; }
-
-        /// <inheritdoc />
-        public string LocationHint { get; set; }
+        public string SharedKey { get; set; }
 
         /// <summary>
-        /// The file-system name.
+        /// The SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
         /// </summary>
-        private string fileSystem = "";
+        public string SasToken {
+            get
+            {
+                return _sasToken;
+            }
+            set
+            {
+                // Remove the leading question mark, so we can append this token to URLs that already have it
+                _sasToken = value != null ? 
+                    (value.StartsWith("?") ? value.Substring(1) : value) 
+                    : null;
+            }
+        }
 
         /// <summary>
-        /// The sub-path.
+        /// The user-defined token provider.
         /// </summary>
-        private string subPath = "";
+        public TokenProvider TokenProvider { get; set; }
+
+        /// <summary>
+        /// Maximum number of items to be returned by the directory list API.
+        /// If omitted or greater than 5,000, the response will include up to 5,000 items.
+        /// </summary>
+        public int HttpMaxResults = 5000;
+
+        /// <summary>
+        /// The map from corpus path to adapter path.
+        /// </summary>
+        private readonly IDictionary<string, string> adapterPaths = new Dictionary<string, string>();
+
+        /// <summary>
+        /// The formatted hostname for validation in CreateCorpusPath.
+        /// </summary>
+        private string formattedHostname = "";
+
+        /// <summary>
+        /// The blob container name of root path.
+        /// Leading and trailing slashes should be removed.
+        /// e.g. "blob-container-name"
+        /// </summary>
+        private string rootBlobContainer = "";
+
+        /// <summary>
+        /// The unescaped sub-path of root path.
+        /// Leading and trailing slashes should be removed.
+        /// e.g. "folder1/folder 2"
+        /// </summary>
+        private string unescapedRootSubPath = "";
+
+        /// <summary>
+        /// The escaped sub-path of root path.
+        /// Leading and trailing slashes should be removed.
+        /// e.g. "folder1/folder%202"
+        /// </summary>
+        private string escapedRootSubPath = "";
+
+        /// <summary>
+        /// A cache for storing last modified times of file paths.
+        /// </summary>
+        private Dictionary<string, DateTimeOffset> fileModifiedTimeCache = new Dictionary<string, DateTimeOffset>();
 
         /// <summary>
         /// The predefined ADLS resource.
@@ -103,22 +166,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         private const string HttpXmsVersion = "x-ms-version";
 
-        internal const string Type = "adls";
-
         /// <summary>
-        /// The ADLS constructor for clientId/secret authentication.
+        /// The MS continuation token key, used when the number of files to list is more than HttpMaxResults.
         /// </summary>
-        public ADLSAdapter(string hostname, string root, string tenant, string clientId, string secret)
-        {
-            this.Root = root;
-            this.Hostname = hostname;
-            this.Tenant = tenant;
-            this.ClientId = clientId;
-            this.Secret = secret;
-            this.Context = new AuthenticationContext("https://login.windows.net/" + this.Tenant);
+        private const string HttpXmsContinuation = "x-ms-continuation";
 
-            this.httpClient = new CdmHttpClient();
-        }
+        internal const string Type = "adls";
 
         /// <summary>
         /// The default constructor, a user has to apply JSON config after creating it this way.
@@ -126,47 +179,82 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public ADLSAdapter()
         {
             this.httpClient = new CdmHttpClient();
+            this.Timeout = TimeSpan.FromMilliseconds(ADLSAdapter.ADLSDefaultTimeout);
+        }
+
+        /// <summary>
+        /// The ADLS constructor for clientId/secret authentication.
+        /// </summary>
+        public ADLSAdapter(string hostname, string root, string tenant, string clientId, string secret) : this()
+        {
+            this.Hostname = hostname;
+            this.Root = root;
+            this.Tenant = tenant;
+            this.ClientId = clientId;
+            this.Secret = secret;
+            this.Context = new AuthenticationContext("https://login.windows.net/" + this.Tenant);
         }
 
         /// <summary>
         /// The ADLS constructor for shared key authentication.
         /// </summary>
-        public ADLSAdapter(string hostname, string root, string sharedKey)
+        public ADLSAdapter(string hostname, string root, string sharedKey) : this()
         {
             this.Hostname = hostname;
             this.Root = root;
             this.SharedKey = sharedKey;
+        }
 
-            this.httpClient = new CdmHttpClient();
+        /// <summary>
+        /// The ADLS constructor for user-defined token provider.
+        /// </summary>
+        public ADLSAdapter(string hostname, string root, TokenProvider tokenProvider) : this()
+        {
+            this.Hostname = hostname;
+            this.Root = root;
+            this.TokenProvider = tokenProvider;
+        }
+
+        /// <summary>
+        /// The ADLS constructor without auth info - the auth configuration is set after the construction.
+        /// <param name="hostname">Host name</param>
+        /// <param name="root">Root location</param>
+        /// </summary>
+        public ADLSAdapter(string hostname, string root) : this()
+        {
+            this.Hostname = hostname;
+            this.Root = root;
         }
 
         /// <inheritdoc />
-        public bool CanRead()
+        public override bool CanRead()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public async Task<string> ReadAsync(string corpusPath)
+        public override async Task<string> ReadAsync(string corpusPath)
         {
-            String url = this.CreateAdapterPath(corpusPath);
-            var request = await this.BuildRequest(url, HttpMethod.Get);
+            string url = this.CreateAdapterPath(corpusPath);
 
-            var cdmResponse = await base.ExecuteRequest(request);
+            var httpRequest = await this.BuildRequest(url, HttpMethod.Get);
 
-            return await cdmResponse.Content.ReadAsStringAsync();
+            using (var cdmResponse = await base.ExecuteRequest(httpRequest))
+            {
+                return await cdmResponse.Content.ReadAsStringAsync();
+            }
         }
 
         /// <inheritdoc />
-        public bool CanWrite()
+        public override bool CanWrite()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public async Task WriteAsync(string corpusPath, string data)
+        public override async Task WriteAsync(string corpusPath, string data)
         {
-            if (ensurePath($"{this.Root}{corpusPath}") == false)
+            if (EnsurePath($"{this.Root}{corpusPath}") == false)
             {
                 throw new Exception($"Could not create folder for document '{corpusPath}'");
             }
@@ -187,101 +275,271 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public string CreateAdapterPath(string corpusPath)
+        public override string CreateAdapterPath(string corpusPath)
         {
-            return $"https://{this.Hostname}{this.Root}{this.FormatCorpusPath(corpusPath)}";
-        }
-
-        /// <inheritdoc />
-        public string CreateCorpusPath(string adapterPath)
-        {
-            var prefix = $"https://{this.Hostname}{this.Root}";
-            if (!string.IsNullOrEmpty(adapterPath) && adapterPath.StartsWith(prefix))
+            var formattedCorpusPath = this.FormatCorpusPath(corpusPath);
+            if (formattedCorpusPath == null)
             {
-                return adapterPath.Substring(prefix.Length);
+                return null;
             }
 
-            return null;
-        }
-
-        /// <inheritdoc />
-        public void ClearCache()
-        {
-            return;
-        }
-
-        /// <inheritdoc />
-        public async Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
-        {
-            var url = this.CreateAdapterPath(corpusPath);
-
-            var request = await this.BuildRequest(url, HttpMethod.Head);
-
-            try
+            if (adapterPaths.ContainsKey(formattedCorpusPath))
             {
-                CdmHttpResponse cdmResponse = await base.ExecuteRequest(request);
+                return adapterPaths[formattedCorpusPath];
+            }
+            else
+            {
+                return $"https://{this.Hostname}{this.GetEscapedRoot()}{this.EscapePath(formattedCorpusPath)}";
+            }
+        }
 
-                if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+        /// <inheritdoc />
+        public override string CreateCorpusPath(string adapterPath)
+        {
+            if (!string.IsNullOrEmpty(adapterPath))
+            {
+                var startIndex = "https://".Length;
+                var endIndex = adapterPath.IndexOf("/", startIndex + 1);
+
+                if (endIndex < startIndex)
                 {
-                    return cdmResponse.Content.Headers.LastModified;
+                    throw new Exception($"Unexpected adapter path: {adapterPath}");
+                }
+
+                var hostname = this.FormatHostname(adapterPath.Substring(startIndex, endIndex - startIndex));
+
+                if (hostname.Equals(this.formattedHostname) && adapterPath.Substring(endIndex).StartsWith(this.GetEscapedRoot()))
+                {
+                    var escapedCorpusPath = adapterPath.Substring(endIndex + this.GetEscapedRoot().Length);
+                    var corpusPath = Uri.UnescapeDataString(escapedCorpusPath);
+                    if (!adapterPaths.ContainsKey(corpusPath))
+                    {
+                        adapterPaths.Add(corpusPath, adapterPath);
+                    }
+
+                    return corpusPath;
                 }
             }
-            catch (HttpRequestException ex)
-            {
-                // We don't have standard logger here, so use one from system diagnostics
-                Debug.WriteLine($"ADLS file not found, skipping last modified time calculation for it. Exception: {ex}");
-            }
 
             return null;
         }
 
-        /// <inheritdoc />
-        public async Task<List<string>> FetchAllFilesAsync(string folderCorpusPath)
+        public override void ClearCache()
         {
-            var url = $"https://{this.Hostname}/{this.fileSystem}";
-            
-            var directory = $"{this.subPath}{FormatCorpusPath(folderCorpusPath)}";
+            this.fileModifiedTimeCache.Clear();
+        }
+
+        /// <inheritdoc />
+        public override async Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
+        {
+            if (this.IsCacheEnabled && fileModifiedTimeCache.TryGetValue(corpusPath, out DateTimeOffset time))
+            {
+                return time;
+            }
+            else
+            {
+                var url = this.CreateAdapterPath(corpusPath);
+
+                var httpRequest = await this.BuildRequest(url, HttpMethod.Head);
+
+                using (var cdmResponse = await base.ExecuteRequest(httpRequest))
+                {
+                    if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+                    {
+                        var lastTime = cdmResponse.Content.Headers.LastModified;
+                        if (this.IsCacheEnabled && lastTime.HasValue)
+                        {
+                            this.fileModifiedTimeCache[corpusPath] = lastTime.Value;
+                        }
+                        return lastTime;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public override async Task<List<string>> FetchAllFilesAsync(string folderCorpusPath)
+        {
+            if (folderCorpusPath == null)
+            {
+                return null;
+            }
+
+            var url = $"https://{this.formattedHostname}/{this.rootBlobContainer}";
+
+            var escapedFolderCorpusPath = this.EscapePath(folderCorpusPath);
+            var directory = $"{this.escapedRootSubPath}{FormatCorpusPath(escapedFolderCorpusPath)}";
             if (directory.StartsWith("/"))
             {
                 directory = directory.Substring(1);
             }
 
-            var request = await this.BuildRequest($"{url}?directory={directory}&recursive=True&resource=filesystem", HttpMethod.Get);
-            CdmHttpResponse cdmResponse = await base.ExecuteRequest(request);
+            List<string> result = new List<string>();
+            string continuationToken = null;
 
-            if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+            do
             {
-                string json = await cdmResponse.Content.ReadAsStringAsync();
-                JObject jObject1 = JObject.Parse(json);
+                CdmHttpRequest request;
 
-                JArray jArray = JArray.FromObject(jObject1.GetValue("paths"));
-                List<string> result = new List<string>();
-
-                foreach (JObject jObject in jArray.Children<JObject>())
+                if (continuationToken == null)
                 {
-                    jObject.TryGetValue("isDirectory", StringComparison.OrdinalIgnoreCase, out JToken isDirectory);
-                    if (isDirectory == null || !isDirectory.ToObject<bool>())
-                    {
-                        jObject.TryGetValue("name", StringComparison.OrdinalIgnoreCase, out JToken name);
-
-                        string nameWithoutSubPath = this.subPath.Length > 0 && name.ToString().StartsWith(this.subPath) ? 
-                            name.ToString().Substring(this.subPath.Length + 1) : name.ToString();
-                        
-                        result.Add(this.FormatCorpusPath(nameWithoutSubPath));
-                    }
+                    request = await this.BuildRequest($"{url}?directory={directory}&maxResults={this.HttpMaxResults}&recursive=True&resource=filesystem", HttpMethod.Get);
+                }
+                else
+                {
+                    // The number of paths returned with each invocation is limited. When a continuation token is returned in the response,
+                    // it must be specified in a subsequent invocation of the list operation to continue listing the paths.
+                    request = await this.BuildRequest($"{url}?continuation={Uri.EscapeDataString(continuationToken)}&directory={directory}&maxResults={this.HttpMaxResults}&recursive=True&resource=filesystem", HttpMethod.Get);
                 }
 
-                return result;
+                using (var cdmResponse = await base.ExecuteRequest(request))
+                {
+                    if (!cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+                    {
+                        return null;
+                    }
+
+                    continuationToken = null;
+                    cdmResponse.ResponseHeaders.TryGetValue(HttpXmsContinuation, out continuationToken);
+
+                    string json = await cdmResponse.Content.ReadAsStringAsync();
+                    JObject jObject1 = JObject.Parse(json);
+                    JArray jArray = JArray.FromObject(jObject1.GetValue("paths"));
+
+                    foreach (JObject jObject in jArray.Children<JObject>())
+                    {
+                        jObject.TryGetValue("isDirectory", StringComparison.OrdinalIgnoreCase, out JToken isDirectory);
+                        if (isDirectory == null || !isDirectory.ToObject<bool>())
+                        {
+                            jObject.TryGetValue("name", StringComparison.OrdinalIgnoreCase, out JToken name);
+
+                            string nameWithoutSubPath = this.unescapedRootSubPath.Length > 0 && name.ToString().StartsWith(this.unescapedRootSubPath) ?
+                                name.ToString().Substring(this.unescapedRootSubPath.Length + 1) : name.ToString();
+
+                            string path = this.FormatCorpusPath(nameWithoutSubPath);
+                            result.Add(path);
+
+                            jObject.TryGetValue("lastModified", StringComparison.OrdinalIgnoreCase, out JToken lastModifiedTime);
+
+                            if (this.IsCacheEnabled && DateTimeOffset.TryParse(lastModifiedTime.ToString(), out DateTimeOffset offset))
+                            {
+                                fileModifiedTimeCache[path] = offset;
+                            }
+                        }
+                    }
+                }
+            } while (!string.IsNullOrWhiteSpace(continuationToken));
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public override string FetchConfig()
+        {
+            var resultConfig = new JObject
+            {
+                { "type", Type }
+            };
+
+            var configObject = new JObject
+            {
+                new JProperty("hostname", this.Hostname),
+                new JProperty("root", this.Root)
+            };
+
+            // Check for clientId auth, we won't write shared key or secrets to JSON.
+            if (this.ClientId != null && this.Tenant != null)
+            {
+                configObject.Add(new JProperty("tenant", this.Tenant));
+                configObject.Add(new JProperty("clientId", this.ClientId));
             }
 
-            return null;
+            // Try constructing network configs. 
+            configObject.Add(this.FetchNetworkConfig());
+
+            if (this.LocationHint != null)
+            {
+                configObject.Add("locationHint", this.LocationHint);
+            }
+
+            resultConfig.Add("config", configObject);
+
+            return resultConfig.ToString();
+        }
+
+        /// <inheritdoc />
+        public override void UpdateConfig(string config)
+        {
+            if (config == null)
+            {
+                throw new Exception("ADLS adapter needs a config.");
+            }
+
+            var configJson = JsonConvert.DeserializeObject<JObject>(config);
+
+            if (configJson["root"] != null)
+            {
+                this.Root = configJson["root"].ToString();
+            }
+            else
+            {
+                throw new Exception("Root has to be set for ADLS adapter.");
+            }
+
+            if (configJson["hostname"] != null)
+            {
+                this.Hostname = configJson["hostname"].ToString();
+            }
+            else
+            {
+                throw new Exception("Hostname has to be set for ADLS adapter.");
+            }
+
+            this.UpdateNetworkConfig(config);
+
+            // Check first for clientId/secret auth.
+            if (configJson["tenant"] != null && configJson["clientId"] != null)
+            {
+                this.Tenant = configJson["tenant"].ToString();
+                this.ClientId = configJson["clientId"].ToString();
+
+                // Check for a secret, we don't really care is it there, but it is nice if it is.
+                if (configJson["secret"] != null)
+                {
+                    this.Secret = configJson["secret"].ToString();
+                }
+            }
+
+            // Check for shared key auth
+            if (configJson["sharedKey"] != null)
+            {
+                this.SharedKey = configJson["sharedKey"].ToString();
+            }
+
+            // Check for SAS token auth
+            if (configJson["sasToken"] != null)
+            {
+                this.SasToken = configJson["sasToken"].ToString();
+            }
+
+            if (configJson["locationHint"] != null)
+            {
+                this.LocationHint = configJson["locationHint"].ToString();
+            }
+
+            if (this.Tenant != null)
+            {
+                this.Context = new AuthenticationContext("https://login.windows.net/" + this.Tenant);
+            }
         }
 
         /// <summary>
         /// Returns the headers with the applied shared key.
         /// </summary>
         /// <param name="sharedKey">The account/shared key.</param>
-        /// <param name="url">The URL.</param>
+        /// <param name="url">The URL with query parameters sorted lexicographically.</param>
         /// <param name="method">The HTTP method.</param>
         /// <param name="content">The string content.</param>
         /// <param name="contentType">The content type.</param>
@@ -335,12 +593,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 foreach (var parameter in queryParameters)
                 {
                     string[] keyValuePair = parameter.Split('=');
-                    builder.Append($"\n{keyValuePair[0]}:{keyValuePair[1]}");
+                    builder.Append($"\n{keyValuePair[0].ToLower()}:{Uri.UnescapeDataString(keyValuePair[1])}");
                 }
             }
 
             // Hash the payload.
-            byte[] dataToHash = System.Text.Encoding.UTF8.GetBytes(builder.ToString().TrimEnd('\n'));
+            byte[] dataToHash = Encoding.UTF8.GetBytes(builder.ToString().TrimEnd('\n'));
             if (!TryFromBase64String(sharedKey, out byte[] bytes))
             {
                 throw new Exception("Couldn't encode the shared key.");
@@ -348,7 +606,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
             using (HMACSHA256 hmac = new HMACSHA256(bytes))
             {
-                string signedString = $"SharedKey {accountName}:{System.Convert.ToBase64String(hmac.ComputeHash(dataToHash))}";
+                string signedString = $"SharedKey {accountName}:{Convert.ToBase64String(hmac.ComputeHash(dataToHash))}";
 
                 headers.Add(HttpAuthorization, signedString);
             }
@@ -357,36 +615,94 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
+        /// Appends SAS token to the given URL.
+        /// </summary>
+        /// <param name="url">URL to be appended with the SAS token</param>
+        /// <returns>URL with the SAS token appended</returns>
+        private string ApplySasToken(string url)
+        {
+            return $"{url}{(url.Contains("?")? "&" : "?")}{SasToken}";
+        }
+
+        /// <summary>
+        /// Generates the required request to work with Azure Storage API.
+        /// </summary>
+        /// <param name="url">The URL of a resource.</param>
+        /// <param name="method">The method.</param>
+        /// <param name="content">The string content.</param>
+        /// <param name="contentType">The content type.</param>
+        /// <returns>The constructed Cdm Http request.</returns>
+        private async Task<CdmHttpRequest> BuildRequest(string url, HttpMethod method, string content = null, string contentType = null)
+        {
+            CdmHttpRequest request;
+
+            // Check whether we support shared key or clientId/secret auth.
+            if (this.SharedKey != null)
+            {
+                request = this.SetUpCdmRequest(url, ApplySharedKey(this.SharedKey, url, method, content, contentType), method);
+            }
+            else if (this.SasToken != null)
+            {
+                request = this.SetUpCdmRequest(ApplySasToken(url), method);
+            }
+            else if (this.Context != null)
+            {
+                var token = await this.GenerateBearerToken();
+
+                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{token.AccessTokenType} {token.AccessToken}" } }, method);
+            }
+            else if (this.TokenProvider != null)
+            {
+                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{this.TokenProvider.GetToken()}" } }, method);
+            }
+            else
+            {
+                throw new Exception($"Adls adapter is not configured with any auth method");
+            }
+
+            if (content != null)
+            {
+                request.Content = content;
+                request.ContentType = contentType;
+            }
+
+            return request;
+        }
+
+        /// <summary>
         /// Extracts the filesystem and sub-path from the given root value.
         /// </summary>
         /// <param name="root">The root</param>
         /// <param name="fileSystem">The extracted filesystem name</param>
         /// <param name="subPath">The extracted sub-path</param>
-        private void ExtractFilesystemAndSubPath(string root)
+        /// <returns>The root path with leading slash</returns>
+        private string ExtractRootBlobContainerAndSubPath(string root)
         {
             // No root value was set
             if (string.IsNullOrEmpty(root))
             {
-                this.fileSystem = "";
-                this.subPath = "";
-                return;
+                this.rootBlobContainer = string.Empty;
+                this.UpdateRootSubPath(string.Empty);
+                return string.Empty;
             }
 
-            // Remove leading /
+            // Remove leading and trailing /
             var prepRoot = root[0] == '/' ? root.Substring(1) : root;
+            prepRoot = prepRoot[prepRoot.Length - 1] == '/' ? prepRoot.Substring(0, prepRoot.Length - 1) : prepRoot;
 
             // Root contains only the file-system name, e.g. "fs-name"
             if (prepRoot.IndexOf('/') == -1)
             {
-                this.fileSystem = prepRoot;
-                this.subPath = "";
-                return;
+                this.rootBlobContainer = prepRoot;
+                this.UpdateRootSubPath(string.Empty);
+                return $"/{this.rootBlobContainer}";
             }
 
             // Root contains file-system name and folder, e.g. "fs-name/folder/folder..."
             var prepRootArray = prepRoot.Split('/');
-            this.fileSystem = prepRootArray.First();
-            this.subPath = String.Join("/", prepRootArray.Skip(1));
+            this.rootBlobContainer = prepRootArray.First();
+            this.UpdateRootSubPath(String.Join("/", prepRootArray.Skip(1)));
+            return $"/{this.rootBlobContainer}/{this.unescapedRootSubPath}";
         }
 
         /// <summary>
@@ -396,11 +712,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <returns></returns>
         private string FormatCorpusPath(string corpusPath)
         {
-            if (corpusPath.StartsWith("adls:"))
+            var pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
+            if (pathTuple == null)
             {
-                corpusPath = corpusPath.Substring(5);
-            } 
-            else if (corpusPath.Length > 0 && corpusPath[0] != '/')
+                return null;
+            }
+
+            corpusPath = pathTuple.Item2;
+
+            if (corpusPath.Length > 0 && corpusPath[0] != '/')
             {
                 corpusPath = $"/{corpusPath}";
             }
@@ -408,6 +728,58 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             return corpusPath;
         }
 
+        /// <summary>
+        /// Escape the path, including uri reserved characters.
+        /// e.g. "/folder 1/folder=2" -> "/folder%201/folder%3D2"
+        /// </summary>
+        /// <param name="unescapedPath">The unescaped original path.</param>
+        /// <returns>Escaped path.</returns>
+        private string EscapePath(string unescapedPath)
+        {
+            return Uri.EscapeDataString(unescapedPath).Replace("%2F", "/");
+        }
+
+        private bool EnsurePath(string pathFor)
+        {
+            if (pathFor.LastIndexOf("/") == -1)
+                return false;
+
+            // Folders are only of virtual kind in Azure Storage
+            return true;
+        }
+
+        /// <summary>
+        /// Normalizes the hostname to point to a DFS endpoint, with default port removed.
+        /// </summary>
+        /// <param name="corpusPath">The hostname.</param>
+        /// <returns>The formatted hostname.</returns>
+        private string FormatHostname(string hostname)
+        {
+            hostname = hostname.Replace(".blob.", ".dfs.");
+
+            var port = ":443";
+
+            if (hostname.Contains(port))
+            {
+                hostname = hostname.Substring(0, hostname.Length - port.Length);
+            }
+
+            return hostname;
+        }
+
+        private string GetEscapedRoot() {
+            return string.IsNullOrEmpty(this.escapedRootSubPath) ?
+                "/" + this.rootBlobContainer
+                : "/" + this.rootBlobContainer + "/" + this.escapedRootSubPath;
+        }
+
+        private Task<AuthenticationResult> GenerateBearerToken()
+        {
+            // In-memory token caching is handled by AuthenticationContext by default.
+            var clientCredentials = new ClientCredential(this.ClientId, this.Secret);
+            return this.Context.AcquireTokenAsync(Resource, clientCredentials);
+        }
+      
         /// <summary>
         /// Encodes from base 64 string to the byte array.
         /// </summary>
@@ -428,146 +800,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
         }
 
-        private Task<AuthenticationResult> GenerateBearerToken()
+        private void UpdateRootSubPath(String value)
         {
-            var clientCredentials = new ClientCredential(this.ClientId, this.Secret);
-            return this.Context.AcquireTokenAsync(Resource, clientCredentials);
-        }
-
-        /// <summary>
-        /// Generates the required request to work with Azure Storage API.
-        /// </summary>
-        /// <param name="url">The URL of a resource.</param>
-        /// <param name="method">The method.</param>
-        /// <param name="content">The string content.</param>
-        /// <param name="contentType">The content type.</param>
-        /// <returns>The constructed Cdm Http request.</returns>
-        private async Task<CdmHttpRequest> BuildRequest(String url, HttpMethod method, string content = null, string contentType = null)
-        {
-            CdmHttpRequest request;
-
-            // Check whether we support shared key or clientId/secret auth.
-            if (this.SharedKey != null)
-            {
-                request = this.SetUpCdmRequest(url, ApplySharedKey(this.SharedKey, url, method, content, contentType), method);
-            }
-            else
-            {
-                var token = await this.GenerateBearerToken();
-
-                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{token.AccessTokenType} {token.AccessToken}" } }, method);
-            }
-
-            if (content != null)
-            {
-                request.Content = content;
-                request.ContentType = contentType;
-            }
-
-            return request;
-        }
-
-        private bool ensurePath(string pathFor)
-        {
-            if (pathFor.LastIndexOf("/") == -1)
-                return false;
-
-            // Folders are only of virtual kind in Azure Storage
-            return true;
-        }
-
-        /// <inheritdoc />
-        public string FetchConfig()
-        {
-            var resultConfig = new JObject
-            {
-                { "type", Type }
-            };
-
-            var configObject = new JObject
-            {
-                new JProperty("hostname", this.Hostname),
-                new JProperty("root", this.Root)
-            };
-
-            // Check for clientId auth, we won't write shared key or secrets to JSON.
-            if (this.ClientId != null && this.Tenant != null)
-            {
-                configObject.Add(new JProperty("tenant", this.Tenant));
-                configObject.Add(new JProperty("clientId", this.ClientId));
-            }
-
-            // Try constructing network configs. 
-            configObject.Add(this.FetchNetworkConfig());
-
-            if (this.LocationHint != null)
-            {
-                configObject.Add("locationHint", this.LocationHint);
-            }
-
-            resultConfig.Add("config", configObject);
-
-            return resultConfig.ToString();
-        }
-
-        /// <inheritdoc />
-        public void UpdateConfig(string config)
-        {
-            if (config == null)
-            {
-                throw new Exception("ADLS adapter needs a config.");
-            }
-
-            var configJson = JsonConvert.DeserializeObject<JObject>(config);
-
-            if (configJson["root"] != null)
-            {
-                this.Root = configJson["root"].ToString();
-            }
-            else
-            {
-                throw new Exception("Root has to be set for ADLS adapter.");
-            }
-
-            if (configJson["hostname"] != null)
-            {
-                this.Hostname = configJson["hostname"].ToString();
-            }
-            else
-            {
-                throw new Exception("Hostname has to be set for ADLS adapter.");
-            }
-
-            this.UpdateNetworkConfig(config);
-
-            // Check first for clientId/secret auth.
-            if (configJson["tenant"] != null && configJson["clientId"] != null)
-            {
-                this.Tenant = configJson["tenant"].ToString();
-                this.ClientId = configJson["clientId"].ToString();
-
-                // Check for a secret, we don't really care is it there, but it is nice if it is.
-                if (configJson["secret"] != null)
-                {
-                    this.Secret = configJson["secret"].ToString();
-                }
-            }
-
-            // Check then for shared key auth.
-            if (configJson["sharedKey"] != null)
-            {
-                this.SharedKey = configJson["sharedKey"].ToString();
-            }
-
-            if (configJson["locationHint"] != null)
-            {
-                this.LocationHint = configJson["locationHint"].ToString();
-            }
-
-            if (this.Tenant != null)
-            {
-                this.Context = new AuthenticationContext("https://login.windows.net/" + this.Tenant);
-            }
+            this.unescapedRootSubPath = value;
+            this.escapedRootSubPath = this.EscapePath(this.unescapedRootSubPath);
         }
     }
 }

@@ -1,0 +1,121 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DomainEvent.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "DomainEventStateTransitionModel.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "DomainEventStatusSequence.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DomainEventStatus",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DomainEvent",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnumName",
+          "dataType": "EnumName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnumValueName",
+          "dataType": "EnumName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "DomainEventStateSequence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsTransitionInProcess",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DomainEvent"
+          },
+          "name": "Relationship_DomainEventFKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DomainEventStateTransitionModel"
+          },
+          "name": "Relationship_DomainEventStateTransitionModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DomainEventStatusSequence"
+          },
+          "name": "Relationship_DomainEventSequenceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EnumName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DomainEventStateSequence",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

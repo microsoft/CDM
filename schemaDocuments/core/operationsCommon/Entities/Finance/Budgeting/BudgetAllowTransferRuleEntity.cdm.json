@@ -1,0 +1,156 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/GeneralLedger/LedgerAccountStructureEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/GeneralLedger/LedgerEntity.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetDimensionEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetAllowTransferRule.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetAllowTransferRuleEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LegalEntityId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "BudgetTransferRule",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountStructureId",
+          "dataType": "string",
+          "displayName": "Account structure",
+          "description": ""
+        },
+        {
+          "name": "RuleMember",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Rule member",
+          "description": ""
+        },
+        {
+          "name": "DimensionAttributeId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Criterion",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Criterion",
+          "description": ""
+        },
+        {
+          "name": "RuleMemberId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAccountStructureEntity"
+          },
+          "name": "Relationship_LedgerAccountStructureEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerEntity"
+          },
+          "name": "Relationship_LedgerEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetDimensionEntity"
+          },
+          "name": "Relationship_BudgetDimensionEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetAllowTransferRule"
+          },
+          "name": "BackingTable_BudgetAllowTransferRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget transfer rules"
+    }
+  ]
+}

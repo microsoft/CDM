@@ -1,0 +1,243 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValue.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FiscalEstablishment_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FBCIAPAssetTable_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetName",
+          "dataType": "AssetName",
+          "description": ""
+        },
+        {
+          "name": "AssetTable",
+          "dataType": "AssetId",
+          "description": ""
+        },
+        {
+          "name": "CIAPAssetID",
+          "dataType": "CIAPAssetID_BR",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishment_BR",
+          "dataType": "FiscalEstablishmentRecId_BR",
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishmentDataArea",
+          "dataType": "SelectableDataArea",
+          "description": ""
+        },
+        {
+          "name": "ICMSAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "ICMS",
+          "description": ""
+        },
+        {
+          "name": "ICMSDiffAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "ICMS-DIF",
+          "description": ""
+        },
+        {
+          "name": "ICMSFreightAmount",
+          "dataType": "FBCIAPICMSFreightAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ICMSSTAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "ICMS-ST",
+          "description": ""
+        },
+        {
+          "name": "Installments",
+          "dataType": "ICMSCreditInstallments_BR",
+          "displayName": "Total installments",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "description": ""
+        },
+        {
+          "name": "RemainingInstallments",
+          "dataType": "FBCIAPRemainingInstallments_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLifeMonths",
+          "dataType": "AssetServiceLifeMonths_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValue"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalEstablishment_BR"
+          },
+          "name": "Relationship_FiscalEstablishment_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DimensionAttributeValueSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "CIAP fixed asset"
+    },
+    {
+      "dataTypeName": "AssetName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CIAPAssetID_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FiscalEstablishmentRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FBCIAPICMSFreightAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ICMSCreditInstallments_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FBCIAPRemainingInstallments_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetServiceLifeMonths_BR",
+      "extendsDataType": "integer"
+    }
+  ]
+}

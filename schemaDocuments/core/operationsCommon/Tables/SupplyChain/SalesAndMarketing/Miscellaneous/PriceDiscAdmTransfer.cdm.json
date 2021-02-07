@@ -1,0 +1,950 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PriceDiscGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventBatch.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventSerial.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventSite.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/PriceDiscAdmTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/PriceDiscAdmTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PriceDiscAdmTransfer",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountCode",
+          "dataType": "PriceDiscPartyCode",
+          "description": ""
+        },
+        {
+          "name": "AccountRelation",
+          "dataType": "PriceDiscAccountRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Amount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Amount in currency",
+          "description": ""
+        },
+        {
+          "name": "BasePurchasePrice",
+          "dataType": "Price",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BaseSalesPrice",
+          "dataType": "Price",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalendarDays",
+          "dataType": "CalendarDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Currency",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrentPrice",
+          "dataType": "Price",
+          "isNullable": true,
+          "displayName": "Current price",
+          "description": ""
+        },
+        {
+          "name": "DeliveryTime",
+          "dataType": "LeadTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisregardLeadTime",
+          "dataType": "DisregardLeadTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "dataType": "ErrorMsg",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "FromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GenericCurrency",
+          "dataType": "SalesGenericCurrency",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "inventBatchId",
+          "dataType": "InventBatchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventColorId",
+          "dataType": "EcoResItemColorName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventConfigId",
+          "dataType": "EcoResItemConfigurationName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSerialId",
+          "dataType": "InventSerialId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSizeId",
+          "dataType": "EcoResItemSizeName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventStyleId",
+          "dataType": "EcoResItemStyleName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventVersionId",
+          "dataType": "EcoResItemVersionName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemCode",
+          "dataType": "PriceDiscProductCode",
+          "description": ""
+        },
+        {
+          "name": "ItemRelation",
+          "dataType": "PriceDiscItemRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalNum",
+          "dataType": "PriceDiscJournalNum",
+          "description": ""
+        },
+        {
+          "name": "LineId",
+          "dataType": "SysInt64",
+          "description": ""
+        },
+        {
+          "name": "Markup",
+          "dataType": "PriceMarkup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Module",
+          "dataType": "PriceDiscModule",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PDSCalculationId",
+          "dataType": "PDSCalculationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Percent1",
+          "dataType": "DiscPct",
+          "isNullable": true,
+          "displayName": "Discount percentage 1",
+          "description": ""
+        },
+        {
+          "name": "Percent2",
+          "dataType": "DiscPct",
+          "isNullable": true,
+          "displayName": "Discount percentage 2",
+          "description": ""
+        },
+        {
+          "name": "PriceDiscAdmTransId",
+          "dataType": "PriceDiscAdmTransRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceUnit",
+          "dataType": "PriceUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchasePriceQty",
+          "dataType": "PriceQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchasePriceUnit",
+          "dataType": "PriceUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchaseUnitId",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuantityAmountFrom",
+          "dataType": "AmountQty",
+          "isNullable": true,
+          "displayName": "From",
+          "description": ""
+        },
+        {
+          "name": "QuantityAmountTo",
+          "dataType": "AmountQuantityTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "relation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Relation",
+          "description": ""
+        },
+        {
+          "name": "SalesPriceQty",
+          "dataType": "PriceQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPriceUnit",
+          "dataType": "PriceUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesUnitId",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SearchAgain",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Find next",
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitId",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "wMSLocationId",
+          "dataType": "WMSLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailBasePriceOrigCurrencyCode",
+          "dataType": "RetailBasePriceOrigCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentBasePrice",
+          "dataType": "RetailCurrentBasePrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentBasePriceDeviation",
+          "dataType": "RetailCurrentBasePriceDeviation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentBasePricePercent",
+          "dataType": "RetailCurrentBasePricePercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentInventCost",
+          "dataType": "RetailCurrentInventCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentInventCostDeviation",
+          "dataType": "RetailCurrentInventCostDeviation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentInventCostPercent",
+          "dataType": "RetailCurrentInventCostPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentOrigCurBasePrice",
+          "dataType": "RetailCurrentOrigCurBasePrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentOtherGroupPrice",
+          "dataType": "RetailCurrentOtherGroupPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentOtherGroupPriceDeviation",
+          "dataType": "RetailCurrentOtherGroupPriceDeviation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentOtherGroupPricePercent",
+          "dataType": "RetailCurrentOtherGroupPricePercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentSalesPrice",
+          "dataType": "RetailCurrentSalesPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentSalesPriceDeviation",
+          "dataType": "RetailCurrentSalesPriceDeviation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailCurrentSalesPricePercent",
+          "dataType": "RetailCurrentSalesPricePercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_CustEndGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_CustLineGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_CustMultiGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_CustPriceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventBatch"
+          },
+          "name": "Relationship_InventBatchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSerial"
+          },
+          "name": "Relationship_InventSerialRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSite"
+          },
+          "name": "Relationship_InventSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscAdmTable"
+          },
+          "name": "Relationship_PriceDiscAdmTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_PurchEndGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_PurchLineGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_PurchMultiGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_PurchPriceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_SalesEndGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_SalesLineGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_SalesMultiGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_SalesPriceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_VendEndGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_VendLineGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_VendMultiGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_VendPriceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_RetailBasePriceOrigCurrencyCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscAdmTrans"
+          },
+          "name": "Relationship_PriceDiscAdmTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Trade agreement journal lines"
+    },
+    {
+      "dataTypeName": "PriceDiscPartyCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PriceDiscAccountRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Price",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CalendarDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LeadTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DisregardLeadTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ErrorMsg",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SalesGenericCurrency",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventBatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemColorName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemConfigurationName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSerialId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemSizeName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemStyleName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemVersionName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceDiscProductCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PriceDiscItemRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceDiscJournalNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysInt64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PriceMarkup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceDiscModule",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PDSCalculationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DiscPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceDiscAdmTransRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PriceUnit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountQuantityTo",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WMSLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailBasePriceOrigCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCurrentBasePrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentBasePriceDeviation",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentBasePricePercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentInventCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentInventCostDeviation",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentInventCostPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentOrigCurBasePrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentOtherGroupPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentOtherGroupPriceDeviation",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentOtherGroupPricePercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentSalesPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentSalesPriceDeviation",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentSalesPricePercent",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -1,7 +1,11 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -174,7 +178,7 @@ public class ResolvedTraitSet {
     return copy;
   }
 
-  ResolvedTraitSet shallowCopy() {
+  public ResolvedTraitSet shallowCopy() {
     final ResolvedTraitSet copy = new ResolvedTraitSet(resOpt);
 
     if (set != null) {
@@ -210,16 +214,25 @@ public class ResolvedTraitSet {
       final List<Object> av = resTrait.getParameterValues().getValues();
       final Object newVal = arg.getValue();
       // get the value index from the parameter collection given the parameter that this argument is setting
-      final int iParam = resTrait.getParameterValues().indexOf(arg.getParameterDef());
-      av.set(iParam, ParameterValue.fetchReplacementValue(resOpt, av.get(iParam), newVal, true));
-      resTrait.getParameterValues().getWasSet().set(iParam, true);
+      CdmParameterDefinition paramDef = arg.getParameterDef();
+      if (paramDef != null) {
+        int iParam = resTrait.getParameterValues().indexOf(paramDef);
+        av.set(iParam, ParameterValue.fetchReplacementValue(resOpt, av.get(iParam), newVal, true));
+        resTrait.getParameterValues().getWasSet().set(iParam, true);
+      } else {
+        // debug
+        paramDef = arg.getParameterDef();
+      }
     }
   }
 
   public ResolvedTraitSet setTraitParameterValue(final ResolveOptions resOpt, final CdmTraitDefinition toTrait,
                                                  final String paramName, final Object value) {
     final ResolvedTraitSet altered = shallowCopyWithException(toTrait);
-    altered.get(toTrait).getParameterValues().setParameterValue(resOpt, paramName, value);
+    final ResolvedTrait currTrait = altered.get(toTrait);
+    if (currTrait != null) {
+      currTrait.getParameterValues().setParameterValue(resOpt, paramName, value);
+    }
     return altered;
   }
 
@@ -233,27 +246,21 @@ public class ResolvedTraitSet {
     for (int i = 0; i < traitSetResult.getSet().size(); i++) {
       ResolvedTrait rt = traitSetResult.getSet().get(i);
 
-      if (rt.getTrait().isDerivedFrom(toTrait, resOpt)) {
+      if (rt != null && rt.getTrait().isDerivedFrom(toTrait, resOpt)) {
         if (rt.getParameterValues() != null) {
           final ParameterCollection pc = rt.getParameterValues().getPc();
           List<Object> av = rt.getParameterValues().getValues();
           final int idx = pc.fetchParameterIndex(paramName);
 
-          if (idx >= 0) {
-            try {
-              if (Objects.equals(av.get(idx), valueWhen)) {
-                // copy the set and make a deep copy of the trait being set
-                traitSetResult = shallowCopyWithException(rt.getTrait());
-                // assume these are all still true for this copy
-                rt = traitSetResult.getSet().get(i);
-                av = rt.getParameterValues().getValues();
-                av.set(idx,
-                    ParameterValue.fetchReplacementValue(resOpt, av.get(idx), valueNew, true));
-                break;
-              }
-            } catch (final Exception ex) {
-              // Do nothing?
-            }
+          if (idx >= 0 && Objects.equals(av.get(idx), valueWhen)) {
+            // copy the set and make a deep copy of the trait being set
+            traitSetResult = shallowCopyWithException(rt.getTrait());
+            // assume these are all still true for this copy
+            rt = traitSetResult.getSet().get(i);
+            av = rt.getParameterValues().getValues();
+            av.set(idx,
+                ParameterValue.fetchReplacementValue(resOpt, av.get(idx), valueNew, true));
+            break;
           }
         }
       }

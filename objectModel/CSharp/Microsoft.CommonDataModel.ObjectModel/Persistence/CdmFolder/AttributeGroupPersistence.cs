@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -9,7 +12,7 @@
 
     class AttributeGroupPersistence
     {
-        public static CdmAttributeGroupDefinition FromData(CdmCorpusContext ctx, JToken obj)
+        public static CdmAttributeGroupDefinition FromData(CdmCorpusContext ctx, JToken obj, string entityName = null)
         {
             if (obj == null)
             {
@@ -24,7 +27,7 @@
             if (obj["members"] != null)
             {
                 foreach(var att in obj["members"])
-                    attributeGroup.Members.Add(Utils.CreateAttribute(ctx, att));
+                    attributeGroup.Members.Add(Utils.CreateAttribute(ctx, att, entityName));
             }
 
             return attributeGroup;
@@ -36,9 +39,9 @@
             {
                 Explanation = instance.Explanation,
                 AttributeGroupName = instance.AttributeGroupName,
-                ExhibitsTraits = Utils.ListCopyData(resOpt, instance.ExhibitsTraits, options),
+                ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options),
                 AttributeContext = instance.AttributeContext?.CopyData(resOpt, options) as string,
-                Members = Utils.ListCopyData(resOpt, instance.Members, options)
+                Members = CopyDataUtils.ListCopyData(resOpt, instance.Members, options) ?? new List<JToken>()
             };
         }
     }

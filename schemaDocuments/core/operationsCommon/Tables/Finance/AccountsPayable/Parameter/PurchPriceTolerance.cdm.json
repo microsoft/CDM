@@ -1,0 +1,159 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/InventItemPriceToleranceGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendPriceToleranceGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchPriceTolerance",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Account code",
+          "description": ""
+        },
+        {
+          "name": "AccountRelation",
+          "dataType": "InventCustVendRel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemCode",
+          "dataType": "ItemCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemRelation",
+          "dataType": "InventItemRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PercentTolerance",
+          "dataType": "PriceTolerancePercentage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventItemPriceToleranceGroup"
+          },
+          "name": "Relationship_ItemToleranceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPriceToleranceGroup"
+          },
+          "name": "Relationship_VendToleranceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Price tolerance setup"
+    },
+    {
+      "dataTypeName": "InventCustVendRel",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventItemRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceTolerancePercentage",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

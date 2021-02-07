@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from datetime import datetime, timezone
 from typing import cast, Dict, List, Optional, TYPE_CHECKING
 
@@ -34,8 +37,6 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
         # The refresh time of the partition.
         self.refresh_time = None  # type: Optional[datetime]
 
-        self.last_child_file_modified_time = None  # type: Optional[datetime]
-
         self.last_file_modified_time = None  # type: Optional[datetime]
 
         self.last_file_status_check_time = None  # type: Optional[datetime]
@@ -50,15 +51,23 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
 
     @property
     def description(self) -> str:
-        return cast(str, self._ttpm.fetch_property_value('description'))
+        return cast(str, self._ttpm._fetch_property_value('description'))
 
     @description.setter
     def description(self, val: str) -> None:
-        self._ttpm.update_property_value('description', val)
+        self._ttpm._update_property_value('description', val)
+
+    @property
+    def last_child_file_modified_time(self) -> datetime:
+        raise NotImplementedError()
+
+    @last_child_file_modified_time.setter
+    def last_child_file_modified_time(self, val: datetime):
+        raise NotImplementedError()
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDataPartitionDefinition'] = None) -> 'CdmDataPartitionDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmDataPartitionDefinition(self.ctx, self.name)
@@ -85,7 +94,7 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
 
         # Update modified times.
         self.last_file_status_check_time = datetime.now(timezone.utc)
-        self.last_file_modified_time = time_utils.max_time(modified_time, self.last_file_modified_time)
+        self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
 
         await self.report_most_recent_time_async(self.last_file_modified_time)
 
@@ -105,7 +114,7 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = '{}{}'.format(path_from, (self.get_name() or 'UNNAMED'))

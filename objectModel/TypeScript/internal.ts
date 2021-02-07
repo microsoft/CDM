@@ -1,13 +1,20 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 // this file defines what order the classes get loaded.
 // add your classes after the classes you're using are loaded.
 
+export * from './Persistence/CdmConstants';
+export * from './Utilities/ImportInfo';
 export * from './Utilities/identifierRef';
 export * from './Enums/cdmObjectType';
 export * from './Enums/cdmDataFormat';
 export * from './Enums/cdmValidationStep';
 export * from './Enums/cdmAttributeContextType';
 export * from './Enums/cdmRelationshipDiscoveryStyle';
+export * from './Enums/importsLoadStrategy';
 export * from './Utilities/copyOptions';
+export * from './Utilities/depthInfo';
 export * from './Utilities/resolveOptions';
 export * from './Cdm/CdmCorpusContext';
 export * from './ResolvedModel/TraitParamSpec';
@@ -80,6 +87,7 @@ export * from './Cdm/CdmReferencedEntityDeclarationDefinition';
 export * from './Cdm/CdmManifestDeclarationDefinition';
 export * from './Cdm/CdmDocumentDefinition';
 export * from './Cdm/CdmFolderDefinition';
+export * from './Cdm/DocumentLibrary';
 export * from './Utilities/resolveContextScope';
 export * from './Utilities/resolveContext';
 export * from './Utilities/docsResult';
@@ -104,3 +112,29 @@ export * from './Utilities/Logging/Logger';
 export * from './Utilities/Network';
 export * from './Persistence/CdmFolder/types/EntityDeclarationDefinition';
 export * from './Utilities/cdmObjectTypeGuards';
+export * from './Utilities/Errors';
+export * from './Cdm/Projections/CdmOperationBase';
+export * from './Cdm/Projections/CdmOperationAddCountAttribute';
+export * from './Cdm/Projections/CdmOperationAddSupportingAttribute';
+export * from './Cdm/Projections/CdmOperationAddTypeAttribute';
+export * from './Cdm/Projections/CdmOperationExcludeAttributes';
+export * from './Cdm/Projections/CdmOperationArrayExpansion';
+export * from './Cdm/Projections/CdmOperationCombineAttributes';
+export * from './Cdm/Projections/CdmOperationRenameAttributes';
+export * from './Cdm/Projections/CdmOperationReplaceAsForeignKey';
+export * from './Cdm/Projections/CdmOperationIncludeAttributes';
+export * from './Cdm/Projections/CdmOperationAddAttributeGroup';
+export * from './Cdm/Projections/CdmProjection';
+export * from './Enums/cdmOperationType';
+export * from './Cdm/Projections/CdmOperationCollection';
+export * from './Cdm/Projections/CardinalitySettings';
+export * from './Utilities/StringUtils';
+export * from './ResolvedModel/Projections/ProjectionAttributeState';
+export * from './ResolvedModel/Projections/ProjectionAttributeStateSet';
+export * from './ResolvedModel/Projections/ProjectionContext';
+export * from './ResolvedModel/Projections/ProjectionDirective';
+export * from './ResolvedModel/Projections/ProjectionResolutionCommonUtil';
+export * from './ResolvedModel/Projections/SearchResult';
+export * from './ResolvedModel/Projections/SearchStructure';
+export * from './ResolvedModel/Projections/ProjectionAttributeContextTreeBuilder';
+export * from './Utilities/Logging/EventList';

@@ -1,0 +1,239 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CredManGuaranteeInsuranceType.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CredManInsuranceCoverageType.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CredManCustGuaranteeInsurance",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CoverageType",
+          "dataType": "CredManInsuranceCoverageTypeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreditLimitPercent",
+          "dataType": "CredManGuaranteeCreditLimitPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "description": ""
+        },
+        {
+          "name": "GuaranteeInsurance",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GuaranteeInsuranceType",
+          "dataType": "CredManGuaranteeInsuranceTypeRecId",
+          "description": ""
+        },
+        {
+          "name": "GuaranteeNumber",
+          "dataType": "CredManGuaranteeNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IncludeInExposure",
+          "dataType": "CredManGuaranteeIncludeInExposure",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "dataType": "CredManGuaranteeValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GuarantorInsurer",
+          "dataType": "CredManGuarantorInsurer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CredManGuaranteeInsuranceType"
+          },
+          "name": "Relationship_CredManGuaranteeInsuranceTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CredManInsuranceCoverageType"
+          },
+          "name": "Relationship_CredManInsuranceCoverageTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Insurance and guarantees"
+    },
+    {
+      "dataTypeName": "CredManInsuranceCoverageTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CredManGuaranteeCreditLimitPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CredManGuaranteeInsuranceTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CredManGuaranteeNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CredManGuaranteeIncludeInExposure",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ValidFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CredManGuaranteeValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CredManGuarantorInsurer",
+      "extendsDataType": "string"
+    }
+  ]
+}

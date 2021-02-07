@@ -1,0 +1,207 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.1.3.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SLAKPIInstance",
+      "extendsEntity": "base_SLAKPIInstance/SLAKPIInstance",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.3"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "entity": {
+                  "entityReference": {
+                    "entityName": "Regarding",
+                    "hasAttributes": [
+                      {
+                        "entity": {
+                          "entityReference": "ServiceActivity",
+                          "appliedTraits": [
+                            {
+                              "traitReference": "is.identifiedBy",
+                              "arguments": [
+                                "ServiceActivity/(resolvedAttributes)/activityId"
+                              ]
+                            }
+                          ]
+                        },
+                        "name": "serviceActivityOption"
+                      },
+                      {
+                        "entity": {
+                          "entityReference": "Case",
+                          "appliedTraits": [
+                            {
+                              "traitReference": "is.identifiedBy",
+                              "arguments": [
+                                "Case/(resolvedAttributes)/incidentId"
+                              ]
+                            }
+                          ]
+                        },
+                        "name": "caseOption"
+                      }
+                    ]
+                  }
+                },
+                "name": "Activity_regarding",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "alwaysIncludeForeignKey": false,
+                    "referenceOnlyAfterDepth": 2,
+                    "foreignKeyAttribute": {
+                      "name": "regarding",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Regarding"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Unique identifier of the record that this service level agreement (SLA) key performance indicator (KPI) instance is associated with."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "regarding",
+                      "sourceOrdering": 13,
+                      "displayName": "Regarding",
+                      "description": "Unique identifier of the record that this service level agreement (SLA) key performance indicator (KPI) instance is associated with."
+                    }
+                  },
+                  "selectsSubAttribute": {
+                    "selects": "one",
+                    "selectedTypeAttribute": {
+                      "name": "regardingObjectTypeCode",
+                      "purpose": "hasA",
+                      "dataType": "entityName",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Regarding Type"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "The name of the entity linked by Regarding"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.name"
+                      ],
+                      "isReadOnly": true,
+                      "sourceName": "regardingobjecttypecode",
+                      "displayName": "Regarding Type",
+                      "description": "The name of the entity linked by Regarding"
+                    }
+                  }
+                }
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/core/applicationCommon/foundationCommon/crmCommon/service/SLAKPIInstance.1.3.cdm.json/SLAKPIInstance/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

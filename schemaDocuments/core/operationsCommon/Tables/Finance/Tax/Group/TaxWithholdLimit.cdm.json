@@ -1,0 +1,115 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxWithholdTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxWithholdLimit",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TaxWithholdAmountMax",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Maximum withholding tax",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdAmountMin",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Minimum withholding tax",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdCode",
+          "dataType": "TaxWithholdCode",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdFromDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "From date",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdToDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "To date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdTable"
+          },
+          "name": "Relationship_TaxWithholdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Withholding tax limits"
+    },
+    {
+      "dataTypeName": "TaxWithholdAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxWithholdCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

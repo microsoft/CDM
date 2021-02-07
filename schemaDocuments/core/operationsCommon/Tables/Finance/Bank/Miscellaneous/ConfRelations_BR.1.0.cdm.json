@@ -1,0 +1,136 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ConfTableSelection_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ConfRelations_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ConfGroupId",
+          "dataType": "ConfGroupId_BR",
+          "description": ""
+        },
+        {
+          "name": "FixedValue",
+          "dataType": "ConfFixedValue_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RelatedField",
+          "dataType": "ConfRelatedField_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RelatedTable",
+          "dataType": "ConfRelatedTable_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RelationshipType",
+          "dataType": "ConfRelationshipType_BR",
+          "description": ""
+        },
+        {
+          "name": "SourceFieldName",
+          "dataType": "ConfSourceFieldName_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceTableName",
+          "dataType": "ConfSourceTableName_BR",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ConfTableSelection_BR"
+          },
+          "name": "Relationship_ConfTableSelectionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Table relations"
+    },
+    {
+      "dataTypeName": "ConfGroupId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfFixedValue_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ConfRelatedField_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfRelatedTable_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfRelationshipType_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ConfSourceFieldName_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfSourceTableName_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

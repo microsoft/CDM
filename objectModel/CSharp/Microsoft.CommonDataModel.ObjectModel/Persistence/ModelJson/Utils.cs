@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -19,27 +22,43 @@
             { "version", "is.CDM.entityVersion" }
         };
 
-        private static readonly HashSet<string> ignoredTraits = new HashSet<string>
+        internal static readonly HashSet<string> ignoredTraits = new HashSet<string>
         {
-            "is.modelConversion.otherAnnotations",
             "is.propertyContent.multiTrait",
             "is.modelConversion.referenceModelMap",
             "is.modelConversion.modelVersion",
             "means.measurement.version",
-            "is.partition.format.CSV"
+            "is.CDM.entityVersion",
+            "is.partition.format.CSV",
+            "is.partition.culture",
+            "is.managedBy",
+            "is.hidden"
+        };
+
+        // Traits to ignore if they come from properties.
+        // These traits become properties on the model.json. To avoid persisting both a trait
+        // and a property on the model.json, we filter these traits out.
+        internal static readonly HashSet<string> modelJsonPropertyTraits = new HashSet<string>
+        {
+            "is.localized.describedAs"
         };
 
         internal static async Task ProcessAnnotationsFromData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
         {
-            var multiTraitAnnotations = new List<Annotation>();
-
+            var multiTraitAnnotations = new List<NameValuePair>();
+            
             if (obj.Annotations != null)
             {
                 foreach (var element in obj.Annotations)
                 {
                     if (!ShouldAnnotationGoIntoASingleTrait(element.Name))
                     {
-                        multiTraitAnnotations.Add(element);
+                        NameValuePair cdmElement = new NameValuePair()
+                        {
+                            Name = element.Name,
+                            Value = element.Value
+                        };
+                        multiTraitAnnotations.Add(cdmElement);
                     }
                     else
                     {
@@ -52,7 +71,7 @@
                 if (multiTraitAnnotations.Count > 0)
                 {
                     var trait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.modelConversion.otherAnnotations", false);
-                    trait.IsFromProperty = true;
+                    trait.IsFromProperty = false;
                     var annotationsArgument = new CdmArgumentDefinition(ctx, "annotations")
                     {
                         Value = multiTraitAnnotations
@@ -72,13 +91,13 @@
             }
         }
 
-        internal static async Task ProcessAnnotationsToData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
+        internal static void ProcessTraitsAndAnnotationsToData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
         {
             if (traits == null)
             {
                 return;
             }
-            
+
             var annotations = new List<Annotation>();
             var extensions = new List<JToken>();
 
@@ -92,41 +111,36 @@
                 }
                 if (trait.NamedReference == "is.modelConversion.otherAnnotations")
                 {
-                    foreach(var annotation in trait.Arguments[0].Value)
+                    foreach (var annotation in trait.Arguments[0].Value)
                     {
 
                         if (annotation is JObject jAnnotation)
                         {
                             annotations.Add(jAnnotation.ToObject<Annotation>());
                         }
-                        else if (annotation is Annotation)
+                        else if (annotation is NameValuePair)
                         {
-                            annotations.Add(annotation);
+                            Annotation element = new Annotation()
+                            {
+                                Name = annotation.Name,
+                                Value = annotation.Value
+                            };
+                            annotations.Add(element);
                         }
                         else
                         {
                             Logger.Warning(nameof(Utils), ctx, "Unsupported annotation type.");
                         }
-                        
+
                     }
                 }
-                else if (!trait.IsFromProperty)
+                else if (
+                    !ignoredTraits.Contains(trait.NamedReference)
+                    && !trait.NamedReference.StartsWith("is.dataFormat")
+                    && !(modelJsonPropertyTraits.Contains(trait.NamedReference) && trait.IsFromProperty))
                 {
-                    var annotationName = TraitToAnnotationName(trait.NamedReference);
-                    if (annotationName != null && trait.Arguments != null && trait.Arguments.Count == 1)
-                    {
-                        var argument = await ArgumentPersistence.ToData(trait.Arguments.AllItems[0], null, null);
-                        if (argument != null)
-                        {
-                            argument.Name = annotationName;
-                            annotations.Add(argument);
-                        }
-                    }
-                    else if (!ignoredTraits.Contains(trait.NamedReference))
-                    {
-                        var extension = CdmFolder.TraitReferencePersistence.ToData(trait, null, null);
-                        extensions.Add(JToken.FromObject(extension, JsonSerializationUtil.JsonSerializer));
-                    }
+                    var extension = CdmFolder.TraitReferencePersistence.ToData(trait, null, null);
+                    extensions.Add(JToken.FromObject(extension, JsonSerializationUtil.JsonSerializer));
                 }
             }
 

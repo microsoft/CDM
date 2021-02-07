@@ -1,16 +1,14 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmConstants;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.CdmFolderType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.DocumentPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.common.PersistenceType;
+import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ModelJsonType;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
@@ -18,46 +16,51 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.tuple.Pair;
 
 // TODO-BQ: This class will need a revisit, it is dealing with way too much reflection.
 public class PersistenceLayer {
   final CdmCorpusDefinition corpus;
   final CdmCorpusContext ctx;
 
-  static final String cdmFolder = "CdmFolder";
-  static final String modelJson = "ModelJson";
-  static final String odi = "Odi";
+  public static final String cdmFolder = "CdmFolder";
+  public static final String modelJson = "ModelJson";
+  public static final String odi = "Odi";
 
   private static final Map<String, PersistenceType> persistenceTypeMap = new LinkedHashMap<>();
-  private static final Logger LOGGER = LoggerFactory.getLogger(PersistenceLayer.class);
 
   static {
     persistenceTypeMap.put(cdmFolder, new CdmFolderType());
+    persistenceTypeMap.put(modelJson, new ModelJsonType());
   }
 
   /**
    * The dictionary of file extension <-> persistence class that handles the file format.
    */
-  private Map<String, Class> registeredPersistenceFormats;
+  private ConcurrentHashMap<String, Class> registeredPersistenceFormats;
 
   /**
    * The dictionary of persistence class <-> whether the persistence class has async methods.
    */
-  private Map<Class, Boolean> isRegisteredPersistenceAsync;
+  private ConcurrentHashMap<Class, Boolean> isRegisteredPersistenceAsync;
 
   public PersistenceLayer(final CdmCorpusDefinition corpus) {
     this.corpus = corpus;
     this.ctx = this.corpus.getCtx();
-    this.registeredPersistenceFormats = new LinkedHashMap<>();
-    this.isRegisteredPersistenceAsync = new LinkedHashMap<>();
+    this.registeredPersistenceFormats = new ConcurrentHashMap<>();
+    this.isRegisteredPersistenceAsync = new ConcurrentHashMap<>();
 
     this.registerFormat(ManifestPersistence.class.getCanonicalName());
     this.registerFormat(com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ManifestPersistence.class.getCanonicalName());
@@ -127,12 +130,36 @@ public class PersistenceLayer {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param folder folder
+   * @param docName document name
+   * @param docContainer Doc container
+   * @return CompletableFuture of CdmDocumentDefinition 
    */
   @Deprecated
   public CompletableFuture<CdmDocumentDefinition> loadDocumentFromPathAsync(
       final CdmFolderDefinition folder,
       final String docName,
       final CdmDocumentDefinition docContainer) {
+    return loadDocumentFromPathAsync(folder, docName, docContainer, null);
+  }
+
+
+  
+  /** 
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param folder folder
+   * @param docName document name
+   * @param docContainer Doc container
+   * @param resOpt Resolve options
+   * @return CompletableFuture of CdmDocumentDefinition 
+   */
+  @Deprecated
+  public CompletableFuture<CdmDocumentDefinition> loadDocumentFromPathAsync(
+      final CdmFolderDefinition folder,
+      final String docName,
+      final CdmDocumentDefinition docContainer,
+      final ResolveOptions resOpt) {
     return CompletableFuture.supplyAsync(() -> {
       CdmDocumentDefinition docContent;
       String jsonData = null;
@@ -141,32 +168,62 @@ public class PersistenceLayer {
       final StorageAdapter adapter = this.corpus.getStorage().fetchAdapter(folder.getNamespace());
       try {
         if (adapter.canRead()) {
-          jsonData = adapter.readAsync(docPath).join();
-          fsModifiedTime = adapter.computeLastModifiedTimeAsync(docPath).join();
-          LOGGER.info("read file: '{}'", docPath);
+          // log message used by navigator, do not change or remove
+          Logger.debug(PersistenceLayer.class.getSimpleName(), this.ctx, Logger.format("request file: {0}", docPath), "loadDocumentFromPathAsync");
+          jsonData = adapter.readAsync(docPath).get();
+          // log message used by navigator, do not change or remove
+          Logger.debug(PersistenceLayer.class.getSimpleName(), this.ctx, Logger.format("received file: {0}", docPath), "loadDocumentFromPathAsync");
+        } else {
+          throw new Exception("Storage Adapter is not enabled to read.");
         }
       } catch (final Exception e) {
-        LOGGER.error(
-            "Could not read '{}' from the '{}' namespace. Reason '{}'",
-            docPath,
-            folder.getNamespace(),
-            e.getLocalizedMessage());
+        // log message used by navigator, do not change or remove
+        Logger.debug(PersistenceLayer.class.getSimpleName(), this.ctx, Logger.format("fail file: {0}", docPath), "loadDocumentFromPathAsync");
+
+        String message = Logger.format("Could not read '{0}' from the '{1}' namespace. Reason '{2}'", docPath, folder.getNamespace(), e.getLocalizedMessage());
+        // When shallow validation is enabled, log messages about being unable to find referenced documents as warnings instead of errors.
+        if (resOpt != null && resOpt.getShallowValidation()) {
+          Logger.warning(PersistenceLayer.class.getSimpleName(), this.ctx, message, "loadDocumentFromPathAsync");
+        } else {
+          Logger.error(PersistenceLayer.class.getSimpleName(), this.ctx, message, "loadDocumentFromPathAsync");
+        }
         return null;
       }
 
+      try {
+        fsModifiedTime = adapter.computeLastModifiedTimeAsync(docPath).join();
+      } catch (final Exception e) {
+        Logger.warning(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Failed to compute file last modified time. Reason '{0}'", e.getLocalizedMessage()),
+            "loadDocumentFromPathAsync"
+        );
+      }
+
       if (StringUtils.isEmpty(docName)) {
-        LOGGER.error("Document name cannot be null or empty.");
+        Logger.error(PersistenceLayer.class.getSimpleName(), this.ctx, "Document name cannot be null or empty.", "loadDocumentFromPathAsync");
         return null;
       }
 
       // If loading an odi.json/model.json file, check that it is named correctly.
       if (StringUtils.endsWithIgnoreCase(docName, CdmConstants.ODI_EXTENSION) && !StringUtils.equalsIgnoreCase(docName, CdmConstants.ODI_EXTENSION)) {
-        LOGGER.error("Failed to load '{}', as it's not an acceptable file name. It must be {}.", docName, CdmConstants.ODI_EXTENSION);
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Failed to load '{0}', as it's not an acceptable file name. It must be {1}.", docName, CdmConstants.ODI_EXTENSION),
+            "loadDocumentFromPathAsync"
+        );
         return null;
       }
 
       if (StringUtils.endsWithIgnoreCase(docName, CdmConstants.MODEL_JSON_EXTENSION) && !StringUtils.equalsIgnoreCase(docName, CdmConstants.MODEL_JSON_EXTENSION)) {
-        LOGGER.error("Failed to load '{}', as it's not an acceptable file name. It must be {}.", docName, CdmConstants.MODEL_JSON_EXTENSION);
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Failed to load '{0}', as it's not an acceptable file name. It must be {1}.", docName, CdmConstants.MODEL_JSON_EXTENSION),
+            "loadDocumentFromPathAsync"
+        );
         return null;
       }
 
@@ -189,12 +246,22 @@ public class PersistenceLayer {
             docContent = (CdmDocumentDefinition) method.invoke(null, this.ctx, docName, jsonData, folder);
           }
         } catch (final Exception e) {
-          LOGGER.error("Could not convert '{}'. Reason '{}'.", docName, e.getLocalizedMessage());
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Could not convert '{0}'. Reason '{1}'.", docName, e.getLocalizedMessage()),
+              "loadDocumentFromPathAsync"
+          );
           return null;
         }  
       } else {
         // Could not find a registered persistence class to handle this document type.
-        LOGGER.error("Could not find a persistence class to handle the file '{}'.", docName);
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Could not find a persistence class to handle the file '{0}'.", docName),
+            "loadDocumentFromPathAsync"
+        );
         return null;
       }
       
@@ -209,7 +276,7 @@ public class PersistenceLayer {
           // especially because the caller has no idea this happened. So... sigh ... instead of
           // returning the new object return the one that was just killed off but make it contain
           // everything the new document loaded.
-          docContent = (CdmDocumentDefinition) docContent.copy(new ResolveOptions(docContainer), docContainer);
+          docContent = (CdmDocumentDefinition) docContent.copy(new ResolveOptions(docContainer, this.ctx.getCorpus().getDefaultResolutionDirectives()), docContainer);
         }
 
         folder.getDocuments().add((CdmDocumentDefinition)docContent, docName);
@@ -225,6 +292,9 @@ public class PersistenceLayer {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param doc Document
+   * @param newName New name
+   * @return CompletableFuture 
    */
   @Deprecated
   public CompletableFuture<Boolean> saveDocumentAsAsync(final CdmDocumentDefinition doc, final String newName) {
@@ -234,15 +304,26 @@ public class PersistenceLayer {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param doc Document
+   * @param newName New name
+   * @param saveReferenced Save referenced
+   * @return CompletableFuture 
    */
   @Deprecated
   public CompletableFuture<Boolean> saveDocumentAsAsync(final CdmDocumentDefinition doc, final String newName, final boolean saveReferenced) {
     return saveDocumentAsAsync(doc, newName, saveReferenced, null);
   }
  
-  /**
+
+  
+  /** 
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param doc Document
+   * @param newName New name
+   * @param saveReferenced Save referenced
+   * @param options Options
+   * @return CompletableFuture 
    */
   @Deprecated
   public CompletableFuture<Boolean> saveDocumentAsAsync(
@@ -259,14 +340,24 @@ public class PersistenceLayer {
       final StorageAdapter adapter = this.corpus.getStorage().fetchAdapter(ns);
 
       if (adapter == null) {
-        LOGGER.error("Couldn't find a storage adapter registered for the namespace '{}'", ns);
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Couldn't find a storage adapter registered for the namespace '{0}'", ns),
+            "saveDocumentAsAsync"
+        );
         return false;
       } else if (!adapter.canWrite()) {
-        LOGGER.error("The storage adapter '{}' claims it is unable to write files.", ns);
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("The storage adapter '{0}' claims it is unable to write files.", ns),
+            "saveDocumentAsAsync"
+        );
         return false;
       } else {
         if (StringUtils.isEmpty(newName)) {
-          LOGGER.error("Document name cannot be null or empty.");
+          Logger.error(PersistenceLayer.class.getSimpleName(), this.ctx, "Document name cannot be null or empty.", "saveDocumentAsAsync");
           return false;
         }
 
@@ -278,19 +369,28 @@ public class PersistenceLayer {
                 : StringUtils.endsWithIgnoreCase(newName, CdmConstants.ODI_EXTENSION)? odi : cdmFolder;
 
         if (persistenceType == odi && !StringUtils.equalsIgnoreCase(newName, CdmConstants.ODI_EXTENSION)) {
-          LOGGER.error("Failed to persist '{}', as it's not an acceptable filename.  It must be {}.", newName, CdmConstants.ODI_EXTENSION);
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Failed to persist '{0}', as it's not an acceptable filename.  It must be {1}.", newName, CdmConstants.ODI_EXTENSION),
+              "saveDocumentAsAsync"
+          );
           return false;
         }
 
         if (persistenceType == modelJson && !StringUtils.equalsIgnoreCase(newName, CdmConstants.MODEL_JSON_EXTENSION)) {
-          LOGGER.error("Failed to persist '{}', as it's not an acceptable filename.  It must be {}.", newName, CdmConstants.MODEL_JSON_EXTENSION);
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Failed to persist '{0}', as it's not an acceptable filename.  It must be {1}.", newName, CdmConstants.MODEL_JSON_EXTENSION),
+              "saveDocumentAsAsync"
+          );
           return false;
         }
 
         // Save the object into a json blob
         final ResolveOptions resOpt = new ResolveOptions(doc);
         final Object persistedDoc;
-
         
         // Fetch the correct persistence class to use.
         Class persistenceClass = this.fetchRegisteredPersistenceFormat(newName);
@@ -324,17 +424,33 @@ public class PersistenceLayer {
               persistedDoc = (Object) method.invoke(null, doc, resOpt, options);
             }
           } catch (final Exception e) {
-            LOGGER.error("Could not persist file '{}'. Reason '{}'.", newName, e.getLocalizedMessage());
-            return null;
+            Logger.error(
+                PersistenceLayer.class.getSimpleName(),
+                this.ctx,
+                Logger.format("Could not persist file '{0}'. Reason '{1}'.", newName, e.getLocalizedMessage()),
+                "saveDocumentAsAsync"
+            );
+            return false;
           }
         } else {
           // Could not find a registered persistence class to handle this document type.
-          LOGGER.error("Could not find a persistence class to handle the file '{}'.", newName);
-          return null;
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Could not find a persistence class to handle the file '{0}'.", newName),
+              "saveDocumentAsAsync"
+          );
+          return false;
         }
 
         if (persistedDoc == null) {
-          LOGGER.error("Failed to persist '{}'", newName);
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Failed to persist '{0}'", newName),
+              "saveDocumentAsAsync"
+          );
+          return false;
         }
 
         if (persistenceType.equals(odi)) {
@@ -352,13 +468,21 @@ public class PersistenceLayer {
         try {
           adapter.writeAsync(newPath, JMapper.WRITER.writeValueAsString(persistedDoc)).join();
 
+          doc.setFileSystemModifiedTime(adapter.computeLastModifiedTimeAsync(newPath).join());
+
           if (options.isTopLevelDocument()) {
             this.corpus.getStorage().saveAdapterConfigAsync("/config.json", adapter).join();
             // The next document won't be top level, so reset the flag.
             options.setTopLevelDocument(false);
           }
         } catch (final Exception e) {
-          LOGGER.error("Failed to write to the file '{}' for reason {}.", newName, e.getLocalizedMessage());
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Failed to write to the file '{0}' for reason {1}.", newName, e.getLocalizedMessage()),
+              "saveDocumentAsAsync"
+          );
+          return false;
         }
 
         // if we also want to save referenced docs, then it depends on what kind of thing just got saved
@@ -366,7 +490,12 @@ public class PersistenceLayer {
         // definition will save imports, manifests will save imports, schemas, sub manifests
         if (saveReferenced && persistenceType.equals(cdmFolder)) {
           if (!doc.saveLinkedDocumentsAsync(options).join()) {
-            LOGGER.error("Failed to save linked documents for file '{}'", newName);
+            Logger.error(
+                PersistenceLayer.class.getSimpleName(),
+                this.ctx,
+                Logger.format("Failed to save linked documents for file '{0}'", newName),
+                "saveDocumentAsAsync"
+            );
             return false;
           }
         }
@@ -387,7 +516,13 @@ public class PersistenceLayer {
         Class odiDocumentClass = Class.forName("com.microsoft.commondatamodel.objectmodel.persistence.odi.types.Document");
         oldDocumentPath = (String) odiDocumentClass.getMethod("getDocumentPath").invoke(doc);
         String newDocumentPath = oldDocumentPath.substring(0, oldDocumentPath.length() - CdmConstants.ODI_EXTENSION.length()) + newName;
-        adapter.writeAsync(newDocumentPath, JMapper.MAP.writeValueAsString(doc)).join();
+        // Remove namespace from path
+        final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(newDocumentPath);
+        if (pathTuple == null) {
+          Logger.error(PersistenceLayer.class.getSimpleName(), this.ctx, "The object path cannot be null or empty.", "saveOdiDocumentsAsync");
+          return;
+        }
+        adapter.writeAsync(pathTuple.getRight(), JMapper.MAP.writeValueAsString(doc)).join();
 
         // Save linked documents
         List<Object> linkedDocuments = (List<Object>) odiDocumentClass.getMethod("getLinkedDocuments").invoke(doc);
@@ -395,10 +530,12 @@ public class PersistenceLayer {
           linkedDocuments.forEach(linkedDoc -> saveOdiDocumentsAsync(linkedDoc, adapter, newName).join());
         }
       } catch (final Exception e) {
-        LOGGER.error(
-            "Failed to write to the file '{}' for reason {}",
-            oldDocumentPath,
-            e.getMessage());
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Failed to write to the file '{0}' for reason {1}", oldDocumentPath, e.getMessage()),
+            "saveOdiDocumentsAsync"
+        );
       }
     });
   }
@@ -417,15 +554,35 @@ public class PersistenceLayer {
         registeredPersistenceFormats.put(format, persistenceClass);
       }
     } catch (final Exception e) {
-      LOGGER.info("Unable to register persistence class {}. Reason: {}.", persistenceClassName, e.getLocalizedMessage());
+      Logger.info(
+          PersistenceLayer.class.getSimpleName(),
+          this.ctx,
+          Logger.format("Unable to register persistence class {0}. Reason: {1}.", persistenceClassName, e.getLocalizedMessage()),
+          "registerFormat"
+      );
     }
   }
 
   private Class fetchRegisteredPersistenceFormat(String docName) {
-    for (Map.Entry<String, Class> registeredPersistenceFormat : registeredPersistenceFormats.entrySet()) {
+    // sort keys so that longest file extension is tested first
+    // i.e. .manifest.cdm.json is checked before .cdm.json
+    final SortedSet<String> sortedKeys = new TreeSet<>(new Comparator<String>() {
+      @Override
+      public int compare(String a, String b) {
+        if (a.length() > b.length()) {
+          return -1;
+        } else {
+          return 1;
+        }
+      }
+    });
+    sortedKeys.addAll(registeredPersistenceFormats.keySet());
+
+    for (String key : sortedKeys) {
+      final Class registeredPersistenceFormat = registeredPersistenceFormats.get(key);
       // Find the persistence class to use for this document.
-      if (StringUtils.endsWithIgnoreCase(docName, registeredPersistenceFormat.getKey())) {
-        return registeredPersistenceFormat.getValue();
+      if (registeredPersistenceFormat != null && StringUtils.endsWithIgnoreCase(docName, key)) {
+        return registeredPersistenceFormat;
       }
     }
     return null;

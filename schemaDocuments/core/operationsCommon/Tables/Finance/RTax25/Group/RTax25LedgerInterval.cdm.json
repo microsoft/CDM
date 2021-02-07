@@ -1,0 +1,122 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/MainAccount.cdm.json"
+    },
+    {
+      "corpusPath": "RTax25LedgerIntervalGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25LedgerInterval",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FromMainAccountId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Account (Interval: From)",
+          "description": ""
+        },
+        {
+          "name": "RTax25LedgerIntervalGroup",
+          "dataType": "RTax25LedgerIntervalGroupRecId",
+          "description": ""
+        },
+        {
+          "name": "ToMainAccountId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Account (Interval: To)",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_FromMainAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25LedgerIntervalGroup"
+          },
+          "name": "Relationship_RTax25LedgerIntervalGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_ToMainAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Account interval"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25LedgerIntervalGroupRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

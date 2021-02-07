@@ -1,0 +1,139 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/ExpressionTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "WorkflowWorkItemQueue.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "WorkflowWorkItemQueueExpressionDef.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WorkflowWorkItemQueueExpression",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "LongDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EvaluationOrder",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Evaluation order",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "dataType": "ExpressionRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "description": ""
+        },
+        {
+          "name": "WorkflowWorkItemQueue",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Queue name",
+          "description": ""
+        },
+        {
+          "name": "WorkFlowWorkItemQueueExpressionDef",
+          "dataType": "WorkItemQueueExpressionDefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ExpressionTable"
+          },
+          "name": "Relationship_ExpressionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowWorkItemQueue"
+          },
+          "name": "Relationship_WorkflowWorkItemQueueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowWorkItemQueueExpressionDef"
+          },
+          "name": "Relationship_WorkflowWorkItemQueueExpressionDefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Workflow work item queue assignment rule"
+    },
+    {
+      "dataTypeName": "LongDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ExpressionRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WorkItemQueueExpressionDefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

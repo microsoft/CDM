@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types
 {
     using Newtonsoft.Json;
     using System;
@@ -11,7 +14,7 @@
     public class Partition : DataObject
     {
         [JsonProperty("refreshTime", NullValueHandling = NullValueHandling.Ignore)]
-        public DateTime? RefreshTime { get; set; }
+        public DateTimeOffset? RefreshTime { get; set; }
 
         [JsonProperty("location")]
         public string Location { get; set; }

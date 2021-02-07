@@ -1,19 +1,19 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CommonDataLoader.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 using System.Runtime.CompilerServices;
 
+#if INTERNAL_VSTS
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
+#else
 [assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests")]
+#endif
 namespace Microsoft.CommonDataModel.Tools.Processor
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.IO;
-    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
@@ -23,6 +23,7 @@ namespace Microsoft.CommonDataModel.Tools.Processor
     using Newtonsoft.Json.Serialization;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence;
 
     class CommonDataModelLoader
     {
@@ -41,7 +42,7 @@ namespace Microsoft.CommonDataModel.Tools.Processor
         public static Action<CdmStatusLevel, string> FileStatusReport = (level, msg) =>
         {
             // This callback is written just as an example and the file name can be changed as desired.
-            using (System.IO.StreamWriter file = new StreamWriter("common-data-model-loader-test-report.txt", true))
+            using (StreamWriter file = new StreamWriter("common-data-model-loader-test-report.txt", true))
             {
                 if (level == CdmStatusLevel.Error)
                     file.WriteLine($"Err: {msg}");
@@ -60,7 +61,7 @@ namespace Microsoft.CommonDataModel.Tools.Processor
             {
                 return;
             }
-            string endMatch = (!string.IsNullOrEmpty(version)) ? $".{version}.cdm.json" : ".cdm.json";
+            string endMatch = (!string.IsNullOrEmpty(version)) ? $".{version}{PersistenceLayer.CdmExtension}" : PersistenceLayer.CdmExtension;
 
             if (!Directory.Exists(path))
             {
@@ -109,11 +110,11 @@ namespace Microsoft.CommonDataModel.Tools.Processor
         {
             Console.WriteLine("resolving imports");
 
-            for (int i = 0; i < ((CdmCorpusDefinition)cdmCorpus).AllDocuments.Count; i++)
+            List<CdmDocumentDefinition> AllDocuments = ((CdmCorpusDefinition)cdmCorpus).documentLibrary.ListAllDocuments();
+            for (int i = 0; i < AllDocuments.Count; i++)
             {
-                Tuple<CdmFolderDefinition, CdmDocumentDefinition> tuple = ((CdmCorpusDefinition)cdmCorpus).AllDocuments[i];
-                ResolveOptions resOpt = new ResolveOptions() { WrtDoc = tuple.Item2, Directives = directives };
-                await tuple.Item2.RefreshAsync(resOpt);
+                ResolveOptions resOpt = new ResolveOptions() { WrtDoc = AllDocuments[i], Directives = directives };
+                await AllDocuments[i].RefreshAsync(resOpt);
             }
             return true;
         }

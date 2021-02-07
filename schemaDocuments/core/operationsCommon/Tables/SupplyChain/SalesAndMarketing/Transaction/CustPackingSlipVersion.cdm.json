@@ -1,0 +1,140 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CustPackingSlipJour.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustPackingSlipVersion",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingDate",
+          "dataType": "AccountingDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustPackingSlipJour",
+          "dataType": "CustPackingSlipJourRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InternalPackingSlipId",
+          "dataType": "SalesInternalPackingSlipId",
+          "description": ""
+        },
+        {
+          "name": "LedgerVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "SalesQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VersionDateTime",
+          "dataType": "VersioningTimeStamp",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Volume",
+          "dataType": "Volume",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CustPackingSlipJour"
+          },
+          "name": "Relationship_CustPackingSlipJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer packing slip versions"
+    },
+    {
+      "dataTypeName": "AccountingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustPackingSlipJourRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SalesInternalPackingSlipId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VersioningTimeStamp",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Volume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

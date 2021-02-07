@@ -1,4 +1,7 @@
-﻿from datetime import datetime, timezone
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from datetime import datetime, timezone
 from typing import cast, Dict, Iterable, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle
@@ -21,7 +24,10 @@ if TYPE_CHECKING:
 def rel2_cache_key(rel: 'CdmE2ERelationship') -> str:
     """"standardized way of turning a relationship object into a key for caching
     without using the object itself as a key (could be duplicate relationship objects)"""
-    return '{}|{}|{}|{}'.format(rel.to_entity, rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
+    name_and_pipe = ''
+    if rel.relationship_name:
+        name_and_pipe = '{}|'.format(rel.relationship_name)
+    return '{}{}|{}|{}|{}'.format(name_and_pipe, rel.to_entity, rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
 
 
 class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileStatus):
@@ -100,133 +106,156 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
         return copy
 
-    async def create_resolved_manifest_async(self, new_manifest_name: str, new_entity_document_name_format: str) -> Optional['CdmManifestDefinition']:
+    async def create_resolved_manifest_async(self, new_manifest_name: str, new_entity_document_name_format: str, directives: Optional[AttributeResolutionDirectiveSet] = None) -> Optional['CdmManifestDefinition']:
         """Creates a resolved copy of the manifest.
         new_entity_document_name_format specifies a pattern to use when creating documents for resolved entities.
         The default is "resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as
         the manifest. Every instance of the string {n} is replaced with the entity name from the source manifest. Any
         sub-folders described by the pattern should exist in the corpus prior to calling this function.
         """
-
-        if self.entities is None:
-            return None
-
-        if new_entity_document_name_format is None:
-            new_entity_document_name_format = '{f}resolved/{n}.cdm.json'
-        elif new_entity_document_name_format == '':  # for back compat
-            new_entity_document_name_format = '{n}.cdm.json'
-        elif '{n}' not in new_entity_document_name_format:  # for back compat
-            new_entity_document_name_format = new_entity_document_name_format + '/{n}.cdm.json'
-
-        source_manifest_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.at_corpus_path, self)
-        source_manifest_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.folder.at_corpus_path, self)
-
-        resolved_manifest_path_split = new_manifest_name.rfind('/') + 1
-        resolved_manifest_folder = None
-        if resolved_manifest_path_split > 0:
-            resolved_manifest_path = new_manifest_name[0:resolved_manifest_path_split]
-            new_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(resolved_manifest_path, self)
-            resolved_manifest_folder = await self.ctx.corpus.fetch_object_async(new_folder_path)  # type: CdmFolderDefinition
-            if resolved_manifest_folder is None:
-                logger.error(self._TAG, self.ctx, 'New folder for manifest not found {}'.format(new_folder_path), self.create_resolved_manifest_async.__name__)
-                return None
-            new_manifest_name = new_manifest_name[resolved_manifest_path_split:]
-        else:
-            resolved_manifest_folder = self.owner
-
-        logger.debug(self._TAG, self.ctx, 'resolving manifest {}'.format(source_manifest_path), self.create_resolved_manifest_async.__name__)
-
-        # using the references present in the resolved entities, get an entity
-        # create an imports doc with all the necessary resolved entity references and then resolve it
-        resolved_manifest = CdmManifestDefinition(self.ctx, new_manifest_name)
-
-        # add the new document to the folder
-        if resolved_manifest_folder.documents.append(resolved_manifest) is None:
-            # when would this happen?
-            return None
-
-        # mapping from entity path to resolved entity path for translating relationhsip paths
-        res_ent_map = {}  # type: Dict[str, str]
-
-        for entity in self.entities:
-            ent_def = await self._get_entity_from_reference(entity, self)
-
-            if not ent_def:
-                logger.error(self._TAG, self.ctx, 'Unable to get entity from reference', self.create_resolved_manifest_async.__name__)
+        with logger._enter_scope(self._TAG, self.ctx, self.create_resolved_manifest_async.__name__):
+            if self.entities is None:
                 return None
 
-            # get the path from this manifest to the source entity. this will be the {f} replacement value
-            source_entity_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.in_document.folder.at_corpus_path, self)
-            f = ''
-            if source_entity_full_path.startswith(source_manifest_folder_path):
-                f = source_entity_full_path[len(source_manifest_folder_path):]
-
-            new_document_full_path = new_entity_document_name_format.replace('{n}', ent_def.entity_name).replace('{f}', f)
-            new_document_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(new_document_full_path, self)
-
-            new_document_path_split = new_document_full_path.rfind('/') + 1
-            new_document_path = new_document_full_path[0:new_document_path_split]
-            new_document_name = new_document_full_path[new_document_path_split:]
-
-            # make sure the new folder exists
-            folder = await self.ctx.corpus.fetch_object_async(new_document_path)  # type: CdmFolderDefinition
-            if not folder:
-                logger.error(self._TAG, self.ctx, 'New folder not found {}'.format(new_document_path), self.create_resolved_manifest_async.__name__)
+            if not self.folder:
+                logger.error(
+                    self._TAG,
+                    self.ctx,
+                    'Cannot resolve the manifest \'{}\' because it has not been added to a folder'.format(self.manifest_name),
+                    self.create_resolved_manifest_async.__name__
+                )
                 return None
 
-            # next create the resolved entity.
-            res_opt = ResolveOptions()
-            res_opt.wrt_doc = ent_def.in_document
-            res_opt.directives = AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'})
+            if new_entity_document_name_format is None:
+                new_entity_document_name_format = '{f}resolved/{n}.cdm.json'
+            elif new_entity_document_name_format == '':  # for back compat
+                new_entity_document_name_format = '{n}.cdm.json'
+            elif '{n}' not in new_entity_document_name_format:  # for back compat
+                new_entity_document_name_format = new_entity_document_name_format + '/{n}.cdm.json'
 
-            logger.debug(self._TAG, self.ctx, '    resolving entity {} to document {}'.format(source_entity_full_path, new_document_full_path),
-                         self.create_resolved_manifest_async.__name__)
+            source_manifest_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.at_corpus_path, self)
+            source_manifest_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.folder.at_corpus_path, self)
 
-            resolved_entity = await ent_def.create_resolved_entity_async(ent_def.entity_name, res_opt, folder, new_document_name)
-            if not resolved_entity:
-                # fail all resolution, if any one entity resolution fails
+            resolved_manifest_path_split = new_manifest_name.rfind('/') + 1
+            resolved_manifest_folder = None
+            if resolved_manifest_path_split > 0:
+                resolved_manifest_path = new_manifest_name[0:resolved_manifest_path_split]
+                new_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(resolved_manifest_path, self)
+                resolved_manifest_folder = await self.ctx.corpus.fetch_object_async(new_folder_path)  # type: CdmFolderDefinition
+                if resolved_manifest_folder is None:
+                    logger.error(self._TAG, self.ctx, 'New folder for manifest not found {}'.format(new_folder_path), self.create_resolved_manifest_async.__name__)
+                    return None
+                new_manifest_name = new_manifest_name[resolved_manifest_path_split:]
+            else:
+                resolved_manifest_folder = self.owner
+
+            logger.debug(self._TAG, self.ctx, 'resolving manifest {}'.format(source_manifest_path), self.create_resolved_manifest_async.__name__)
+
+            # using the references present in the resolved entities, get an entity
+            # create an imports doc with all the necessary resolved entity references and then resolve it
+            # sometimes they might send the docname, that makes sense a bit, don't include the suffix in the name
+            if new_manifest_name.lower().endswith('.manifest.cdm.json'):
+                new_manifest_name = new_manifest_name[0: (len(new_manifest_name) - len('.manifest.cdm.json'))]
+            resolved_manifest = CdmManifestDefinition(self.ctx, new_manifest_name)
+
+            # bring over any imports in this document or other bobbles
+            resolved_manifest.schema = self.schema
+            resolved_manifest.explanation = self.explanation
+            for imp in self.imports:
+                resolved_manifest.imports.append(imp.copy())
+
+            # add the new document to the folder
+            if resolved_manifest_folder.documents.append(resolved_manifest) is None:
+                # when would this happen?
                 return None
 
-            result = entity.copy(res_opt)
-            if result.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
-                relative_entity_path = self.ctx.corpus.storage.create_relative_corpus_path(resolved_entity.at_corpus_path, resolved_manifest)
-                result.entity_path = relative_entity_path or result.at_corpus_path
+            for entity in self.entities:
+                ent_def = await self._get_entity_from_reference(entity, self)
 
-            resolved_manifest.entities.append(result)
+                if not ent_def:
+                    logger.error(self._TAG, self.ctx, 'Unable to get entity from reference', self.create_resolved_manifest_async.__name__)
+                    return None
 
-            # absolute path is needed for generating relationships
-            absolute_ent_path = self.ctx.corpus.storage.create_absolute_corpus_path(result.entity_path, resolved_manifest)
-            res_ent_map[self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)] = absolute_ent_path
+                if not ent_def.in_document.folder:
+                    logger.error(self._TAG, self.ctx, 'The document containing the entity \'{}\' is not in a folder'.format(
+                        ent_def.entity_name), self.create_resolved_manifest_async.__name__)
+                    return None
 
-        logger.debug(self._TAG, self.ctx, '    calculating relationships', self.create_resolved_manifest_async.__name__)
-        # Calculate the entity graph for just this manifest.
-        await self.ctx.corpus._calculate_entity_graph_async(resolved_manifest, res_ent_map)
-        # Stick results into the relationships list for the manifest.
-        await resolved_manifest.populate_manifest_relationships_async(CdmRelationshipDiscoveryStyle.EXCLUSIVE)
+                # get the path from this manifest to the source entity. this will be the {f} replacement value
+                source_entity_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.in_document.folder.at_corpus_path, self)
+                f = ''
+                if source_entity_full_path.startswith(source_manifest_folder_path):
+                    f = source_entity_full_path[len(source_manifest_folder_path):]
 
-        # needed until Matt's changes with collections where I can propigate
-        resolved_manifest._is_dirty = True
-        return resolved_manifest
+                new_document_full_path = new_entity_document_name_format.replace('{n}', ent_def.entity_name).replace('{f}', f)
+                new_document_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(new_document_full_path, self)
+
+                new_document_path_split = new_document_full_path.rfind('/') + 1
+                new_document_path = new_document_full_path[0:new_document_path_split]
+                new_document_name = new_document_full_path[new_document_path_split:]
+
+                # make sure the new folder exists
+                folder = await self.ctx.corpus.fetch_object_async(new_document_path)  # type: CdmFolderDefinition
+                if not folder:
+                    logger.error(self._TAG, self.ctx, 'New folder not found {}'.format(new_document_path), self.create_resolved_manifest_async.__name__)
+                    return None
+
+                # next create the resolved entity.
+                with_directives = directives if directives is not None else self.ctx.corpus.default_resolution_directives
+                res_opt = ResolveOptions(ent_def.in_document, with_directives.copy())
+
+                logger.debug(self._TAG, self.ctx, '    resolving entity {} to document {}'.format(source_entity_full_path, new_document_full_path),
+                            self.create_resolved_manifest_async.__name__)
+
+                resolved_entity = await ent_def.create_resolved_entity_async(ent_def.entity_name, res_opt, folder, new_document_name)
+                if not resolved_entity:
+                    # fail all resolution, if any one entity resolution fails
+                    return None
+
+                result = entity.copy(res_opt)
+                if result.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
+                    relative_entity_path = self.ctx.corpus.storage.create_relative_corpus_path(resolved_entity.at_corpus_path, resolved_manifest)
+                    result.entity_path = relative_entity_path or result.at_corpus_path
+
+                resolved_manifest.entities.append(result)
+
+            logger.debug(self._TAG, self.ctx, '    calculating relationships', self.create_resolved_manifest_async.__name__)
+            # Calculate the entity graph for just this manifest.
+            await self.ctx.corpus.calculate_entity_graph_async(resolved_manifest)
+            # Stick results into the relationships list for the manifest.
+            await resolved_manifest.populate_manifest_relationships_async(CdmRelationshipDiscoveryStyle.EXCLUSIVE)
+
+            # needed until Matt's changes with collections where I can propigate
+            resolved_manifest._is_dirty = True
+            return resolved_manifest
 
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
-        modified_time = await self.ctx.corpus._fetch_last_modified_time_from_object_async(self)
+        with logger._enter_scope(self._TAG, self.ctx, self.file_status_check_async.__name__):
+            adapter = self.ctx.corpus.storage.fetch_adapter(self.in_document.namespace)
+            if adapter:
+                context = adapter.create_file_query_cache_context()
+                try:
+                    modified_time = await self.ctx.corpus._fetch_last_modified_time_from_object_async(self)
 
-        for entity in self.entities:
-            await entity.file_status_check_async()
+                    self.last_file_status_check_time = datetime.now(timezone.utc)
+                    if not self.last_file_modified_time:
+                        self.last_file_modified_time = self._file_system_modified_time
 
-        for sub_manifest in self.sub_manifests:
-            await sub_manifest.file_status_check_async()
+                    # Reload the manifest if it has been updated in the file system.
+                    if modified_time and self._file_system_modified_time and modified_time != self._file_system_modified_time:
+                        await self._reload_async()
+                        self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
+                        self._file_system_modified_time = self.last_file_modified_time
+                    
+                    for entity in self.entities:
+                        await entity.file_status_check_async()
 
-        self.last_file_status_check_time = datetime.now(timezone.utc)
-        if not self.last_file_modified_time:
-            self.last_file_modified_time = self._file_system_modified_time
-
-        # Reload the manifest if it has been updated in the file system.
-        if modified_time and self._file_system_modified_time and modified_time != self._file_system_modified_time:
-            await self._reload_async()
-            self.last_file_modified_time = time_utils.max_time(modified_time, self.last_file_modified_time)
-            self._file_system_modified_time = self.last_file_modified_time
+                    for sub_manifest in self.sub_manifests:
+                        await sub_manifest.file_status_check_async()
+                        
+                finally:
+                    context.dispose()
 
     async def _get_entity_from_reference(self, entity: 'CdmEntityDeclarationDefinition', manifest: 'CdmManifestDefinition') -> 'CdmEntityDefinition':
         entity_path = await self._get_entity_path_from_declaration(entity, cast('CdmObject', manifest))
@@ -249,7 +278,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         return False
 
-    def is_rel_allowed(self, rel: 'CdmE2ERelationship', option: 'CdmRelationshipDiscoveryStyle') -> bool:
+    def _is_rel_allowed(self, rel: 'CdmE2ERelationship', option: 'CdmRelationshipDiscoveryStyle') -> bool:
         if option == CdmRelationshipDiscoveryStyle.NONE:
             return False
         if option == CdmRelationshipDiscoveryStyle.EXCLUSIVE:
@@ -267,7 +296,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         return True
 
     def _localize_rel_to_manifest(self, rel: 'CdmE2ERelationship') -> 'CdmE2ERelationship':
-        rel_copy = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF)  # type: CdmE2ERelationship
+        rel_copy = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, rel.relationship_name)  # type: CdmE2ERelationship
         rel_copy.to_entity = self.ctx.corpus.storage.create_relative_corpus_path(rel.to_entity, self)
         rel_copy.from_entity = self.ctx.corpus.storage.create_relative_corpus_path(rel.from_entity, self)
         rel_copy.to_entity_attribute = rel.to_entity_attribute
@@ -291,7 +320,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             if outgoing_rels:
                 for rel in outgoing_rels:
                     cache_key = rel2_cache_key(rel)
-                    if cache_key not in rel_cache and self.is_rel_allowed(rel, option):
+                    if cache_key not in rel_cache and self._is_rel_allowed(rel, option):
                         self.relationships.append(self._localize_rel_to_manifest(rel))
                         rel_cache.add(cache_key)
 
@@ -316,7 +345,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
                     # add current incoming relationship
                     cache_key = rel2_cache_key(in_rel)
-                    if cache_key not in rel_cache and self.is_rel_allowed(in_rel, option):
+                    if cache_key not in rel_cache and self._is_rel_allowed(in_rel, option):
                         self.relationships.append(self._localize_rel_to_manifest(in_rel))
                         rel_cache.add(cache_key)
 
@@ -333,7 +362,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                                 new_rel.to_entity_attribute = in_rel.to_entity_attribute
 
                                 base_rel_cache_key = rel2_cache_key(new_rel)
-                                if base_rel_cache_key not in rel_cache and self.is_rel_allowed(new_rel, option):
+                                if base_rel_cache_key not in rel_cache and self._is_rel_allowed(new_rel, option):
                                     self.relationships.append(self._localize_rel_to_manifest(new_rel))
                                     rel_cache.add(base_rel_cache_key)
         if self.sub_manifests:
@@ -345,9 +374,9 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
     async def report_most_recent_time_async(self, child_time: datetime) -> None:
         """Report most recent modified time (of current or children objects) to the parent object."""
         if child_time:
-            self.last_child_file_modified_time = time_utils.max_time(child_time, self.last_child_file_modified_time)
+            self.last_child_file_modified_time = time_utils._max_time(child_time, self.last_child_file_modified_time)
 
-    async def query_on_traits_async(self, query_spec: Union[str, object]) -> Iterable[object]:
+    async def _query_on_traits_async(self, query_spec: Union[str, object]) -> Iterable[object]:
         """Query the manifest for a set of entities that match an input query
         query_spec = a JSON object (or a string that can be parsed into one) of the form
         {"entityName":"", "attributes":[{see QueryOnTraits for CdmEntityDefinition for details}]}

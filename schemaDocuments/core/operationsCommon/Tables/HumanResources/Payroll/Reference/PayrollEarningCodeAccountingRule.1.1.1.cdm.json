@@ -1,0 +1,136 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMOperatingUnit.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollEarningCodeAccountingRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Department",
+          "dataType": "OMDepartmentRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EarningCode",
+          "dataType": "PayrollEarningCodeRecId",
+          "description": ""
+        },
+        {
+          "name": "Job",
+          "dataType": "HcmJobRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "LegalEntityRecId",
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "HcmWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMOperatingUnit"
+          },
+          "name": "Relationship_OMOperatingUnitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Earning code accounting rule"
+    },
+    {
+      "dataTypeName": "OMDepartmentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PayrollEarningCodeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmJobRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LegalEntityRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

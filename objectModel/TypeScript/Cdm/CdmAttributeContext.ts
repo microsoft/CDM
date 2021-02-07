@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     AttributeContextParameters,
     cdmAttributeContextType,
@@ -10,6 +13,8 @@ import {
     CdmObjectReferenceBase,
     cdmObjectType,
     CdmTraitReference,
+    Errors,
+    Logger,
     ResolvedAttribute,
     ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
@@ -55,6 +60,9 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public static createChildUnder(resOpt: resolveOptions, acp: AttributeContextParameters): CdmAttributeContext {
         // let bodyCode = () =>
         {
@@ -67,7 +75,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
             }
 
             // this flag makes sure we hold on to any resolved object refs when things get copied
-            const resOptCopy: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+            const resOptCopy: resolveOptions = resOpt.copy();
             resOptCopy.saveResolutionsOnCopy = true;
 
             let definition: CdmObjectReference;
@@ -159,9 +167,8 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
 
         // now copy the children
         for (const child of this.contents.allItems) {
-            let newChild: CdmAttributeContext;
             if (child instanceof CdmAttributeContext) {
-                newChild = child.copyNode(resOpt) as CdmAttributeContext;
+                const newChild: CdmAttributeContext = child.copyNode(resOpt) as CdmAttributeContext;
 
                 if (newNode) {
                     newChild.setParent(resOpt, newNode);
@@ -179,7 +186,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
 
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
         let copy: CdmAttributeContext;
@@ -204,7 +211,26 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
     }
 
     public validate(): boolean {
-        return this.name && this.type !== undefined;
+        const missingFields: string[] = [];
+        if (!this.name) {
+            missingFields.push('name');
+        }
+        if (this.type === undefined) {
+            missingFields.push('type');
+        }
+
+        if (missingFields.length > 0) {
+            Logger.error(
+                CdmAttributeContext.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, missingFields),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     public getName(): string {
@@ -261,19 +287,22 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
     public isDerivedFrom(baseDef: string, resOpt?: resolveOptions): boolean {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this);
-            }
-
             return false;
         }
         // return p.measure(bodyCode);
     }
+
+    /**
+     * @internal
+     */
     public constructResolvedTraits(rtsb: ResolvedTraitSetBuilder, resOpt: resolveOptions): void {
         // let bodyCode = () =>
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public constructResolvedAttributes(resOpt: resolveOptions, under?: CdmAttributeContext): ResolvedAttributeSetBuilder {
         // let bodyCode = () =>
         {
@@ -281,6 +310,10 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
         }
         // return p.measure(bodyCode);
     }
+
+    /**
+     * @internal
+     */
     public setParent(resOpt: resolveOptions, parent: CdmAttributeContext): void {
         // let bodyCode = () =>
         {

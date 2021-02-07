@@ -1,0 +1,280 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Payments/Transaction/RetailGiftCardTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailChannelTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailTerminalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/Transaction/RetailTransactionTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailGiftCardTransactions",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "amount",
+          "dataType": "AmountMST",
+          "description": ""
+        },
+        {
+          "name": "cardNumber",
+          "dataType": "RetailGiftCardId",
+          "description": ""
+        },
+        {
+          "name": "Channel",
+          "dataType": "RetailChannelRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRInventTransId",
+          "dataType": "TradeInventTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRInvoiceAccount",
+          "dataType": "CustInvoiceAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRSalesId",
+          "dataType": "SalesIdBase",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "operation",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "receiptId",
+          "dataType": "RetailReceiptId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "staffId",
+          "dataType": "RetailStaffId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "terminalId",
+          "dataType": "RetailTerminalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transactionId",
+          "dataType": "RetailTransactionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transDate",
+          "dataType": "RetailtransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transTime",
+          "dataType": "RetailTransTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailGiftCardTable"
+          },
+          "name": "Relationship_cardNumberRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_MCRCustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesLine"
+          },
+          "name": "Relationship_MCRSalesLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_MCRSalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelTable"
+          },
+          "name": "Relationship_RetailChannelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTransactionTable"
+          },
+          "name": "Relationship_RetailTransactionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Gift card transactions"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailGiftCardId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailChannelRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TradeInventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustInvoiceAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReceiptId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStaffId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailtransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailTransTime",
+      "extendsDataType": "time"
+    }
+  ]
+}

@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmManifestDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -13,6 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
+    using Microsoft.CommonDataModel.ObjectModel.Storage;
 
     public class CdmManifestDefinition : CdmDocumentDefinition, CdmObjectDefinition, CdmFileStatus
     {
@@ -94,13 +92,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
+        public new bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
-
             return false;
         }
 
@@ -166,132 +159,151 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Every instance of the string {n} is replaced with the entity name from the source manifest.
         /// Every instance of the string {f} is replaced with the folder path from the source manifest to the source entity
         /// (if there is one that is possible as a relative location, else nothing).
-        public async Task<CdmManifestDefinition> CreateResolvedManifestAsync(string newManifestName, string newEntityDocumentNameFormat)
+        public async Task<CdmManifestDefinition> CreateResolvedManifestAsync(string newManifestName, string newEntityDocumentNameFormat, AttributeResolutionDirectiveSet Directives = null)
         {
-            if (this.Entities == null)
+            using (Logger.EnterScope(nameof(CdmManifestDefinition), Ctx, nameof(CreateResolvedManifestAsync)))
             {
-                return null;
-            }
-
-            if (newEntityDocumentNameFormat == null)
-                newEntityDocumentNameFormat = "{f}resolved/{n}.cdm.json";
-            else if (newEntityDocumentNameFormat == "") // for back compat
-                newEntityDocumentNameFormat = "{n}.cdm.json";
-            else if (!newEntityDocumentNameFormat.Contains("{n}")) // for back compat
-                newEntityDocumentNameFormat = newEntityDocumentNameFormat + "/{n}.cdm.json";
-
-            string sourceManifestPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.AtCorpusPath, this);
-            string sourceManifestFolderPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Folder.AtCorpusPath, this);
-
-            int resolvedManifestPathSplit = newManifestName.LastIndexOf("/") + 1;
-            CdmFolderDefinition resolvedManifestFolder;
-            if (resolvedManifestPathSplit > 0)
-            {
-                var resolvedManifestPath = newManifestName.Substring(0, resolvedManifestPathSplit);
-                var newFolderPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(resolvedManifestPath, this);
-                resolvedManifestFolder = await this.Ctx.Corpus.FetchObjectAsync<CdmFolderDefinition>(newFolderPath);
-                if (resolvedManifestFolder == null)
+                if (this.Entities == null)
                 {
-                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"New folder for manifest not found {newFolderPath}", nameof(CreateResolvedManifestAsync));
-                    return null;
-                }
-                newManifestName = newManifestName.Substring(resolvedManifestPathSplit);
-            }
-            else
-            {
-                resolvedManifestFolder = this.Owner as CdmFolderDefinition;
-            }
-
-            Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"resolving manifest {sourceManifestPath}", nameof(CreateResolvedManifestAsync));
-
-            // Using the references present in the resolved entities, get an entity
-            // create an imports doc with all the necessary resolved entity references and then resolve it
-            var resolvedManifest = new CdmManifestDefinition(this.Ctx, newManifestName);
-            
-            // add the new document to the folder
-            if (resolvedManifestFolder.Documents.Add(resolvedManifest) == null)
-            {
-                // when would this happen? 
-                return null;
-            }
-
-            // mapping from entity path to resolved entity path for translating relationhsip paths
-            Dictionary<string, string> resEntMap = new Dictionary<string, string>();
-
-            foreach (var entity in this.Entities)
-            {
-                var entDef = await this.GetEntityFromReference(entity, this);
-                if (entDef == null)
-                {
-                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Unable to get entity from reference", nameof(CreateResolvedManifestAsync));
                     return null;
                 }
 
-                // get the path from this manifest to the source entity. this will be the {f} replacement value
-                string sourceEntityFullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.InDocument.Folder.AtCorpusPath, this);
-                string f = "";
-                if (sourceEntityFullPath.StartsWith(sourceManifestFolderPath))
+                if (this.Folder == null)
                 {
-                    f = sourceEntityFullPath.Substring(sourceManifestFolderPath.Length);
-                }
-
-                string newDocumentFullPath = newEntityDocumentNameFormat.Replace("{n}", entDef.EntityName);
-
-                newDocumentFullPath = newDocumentFullPath.Replace("{f}", f);
-                newDocumentFullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(newDocumentFullPath, this);
-
-                int newDocumentPathSplit = newDocumentFullPath.LastIndexOf("/") + 1;
-                string newDocumentPath = newDocumentFullPath.Substring(0, newDocumentPathSplit);
-                string newDocumentName = newDocumentFullPath.Substring(newDocumentPathSplit);
-
-                // make sure the new folder exists
-                var folder = await this.Ctx.Corpus.FetchObjectAsync<CdmFolderDefinition>(newDocumentPath) as CdmFolderDefinition;
-                if (folder == null)
-                {
-                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"New folder not found {newDocumentPath}", nameof(CreateResolvedManifestAsync));
+                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Cannot resolve the manifest '{this.ManifestName}' because it has not been added to a folder", nameof(CreateResolvedManifestAsync));
                     return null;
                 }
 
-                // Next create the resolved entity
-                var resOpt = new ResolveOptions
-                {
-                    WrtDoc = entDef.InDocument,
-                    Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" })
-                };
+                if (newEntityDocumentNameFormat == null)
+                    newEntityDocumentNameFormat = "{f}resolved/{n}.cdm.json";
+                else if (newEntityDocumentNameFormat == "") // for back compat
+                    newEntityDocumentNameFormat = "{n}.cdm.json";
+                else if (!newEntityDocumentNameFormat.Contains("{n}")) // for back compat
+                    newEntityDocumentNameFormat = newEntityDocumentNameFormat + "/{n}.cdm.json";
 
-                Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    resolving entity {sourceEntityFullPath} to document {newDocumentFullPath}", nameof(CreateResolvedManifestAsync));
+                string sourceManifestPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.AtCorpusPath, this);
+                string sourceManifestFolderPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Folder.AtCorpusPath, this);
 
-                var resolvedEntity = await entDef.CreateResolvedEntityAsync(entDef.EntityName, resOpt, folder, newDocumentName);
-                if (resolvedEntity == null)
+                int resolvedManifestPathSplit = newManifestName.LastIndexOf("/") + 1;
+                CdmFolderDefinition resolvedManifestFolder;
+                if (resolvedManifestPathSplit > 0)
                 {
-                    // Fail all resolution, if any one entity resolution fails
+                    var resolvedManifestPath = newManifestName.Substring(0, resolvedManifestPathSplit);
+                    var newFolderPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(resolvedManifestPath, this);
+                    resolvedManifestFolder = await this.Ctx.Corpus.FetchObjectAsync<CdmFolderDefinition>(newFolderPath);
+                    if (resolvedManifestFolder == null)
+                    {
+                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"New folder for manifest not found {newFolderPath}", nameof(CreateResolvedManifestAsync));
+                        return null;
+                    }
+                    newManifestName = newManifestName.Substring(resolvedManifestPathSplit);
+                }
+                else
+                {
+                    resolvedManifestFolder = this.Owner as CdmFolderDefinition;
+                }
+
+                Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"resolving manifest {sourceManifestPath}", nameof(CreateResolvedManifestAsync));
+
+                // Using the references present in the resolved entities, get an entity
+                // create an imports doc with all the necessary resolved entity references and then resolve it
+                // sometimes they might send the docname, that makes sense a bit, don't include the suffix in the name
+                if (newManifestName.ToLowerInvariant().EndsWith(".manifest.cdm.json"))
+                    newManifestName = newManifestName.Substring(0, newManifestName.Length - ".manifest.cdm.json".Length);
+                var resolvedManifest = new CdmManifestDefinition(this.Ctx, newManifestName);
+
+                // bring over any imports in this document or other bobbles
+                resolvedManifest.Schema = this.Schema;
+                resolvedManifest.Explanation = this.Explanation;
+                foreach (CdmImport imp in this.Imports)
+                {
+                    resolvedManifest.Imports.Add((CdmImport)imp.Copy());
+                }
+
+                // add the new document to the folder
+                if (resolvedManifestFolder.Documents.Add(resolvedManifest) == null)
+                {
+                    // when would this happen? 
                     return null;
                 }
 
-                var result = entity.Copy(resOpt) as CdmEntityDeclarationDefinition;
-                if (result.ObjectType == CdmObjectType.LocalEntityDeclarationDef)
+                foreach (var entity in this.Entities)
                 {
-                    result.EntityPath = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(resolvedEntity.AtCorpusPath, resolvedManifest) ?? result.AtCorpusPath;
+                    var entDef = await this.GetEntityFromReference(entity, this);
+                    if (entDef == null)
+                    {
+                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Unable to get entity from reference", nameof(CreateResolvedManifestAsync));
+                        return null;
+                    }
+
+                    if (entDef.InDocument.Folder == null)
+                    {
+                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"The document containing the entity '{entDef.EntityName}' is not in a folder", nameof(CreateResolvedManifestAsync));
+                        return null;
+                    }
+                    // get the path from this manifest to the source entity. this will be the {f} replacement value
+                    string sourceEntityFullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.InDocument.Folder.AtCorpusPath, this);
+                    string f = "";
+                    if (sourceEntityFullPath.StartsWith(sourceManifestFolderPath))
+                    {
+                        f = sourceEntityFullPath.Substring(sourceManifestFolderPath.Length);
+                    }
+
+                    string newDocumentFullPath = newEntityDocumentNameFormat.Replace("{n}", entDef.EntityName);
+
+                    newDocumentFullPath = newDocumentFullPath.Replace("{f}", f);
+                    newDocumentFullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(newDocumentFullPath, this);
+
+                    int newDocumentPathSplit = newDocumentFullPath.LastIndexOf("/") + 1;
+                    string newDocumentPath = newDocumentFullPath.Substring(0, newDocumentPathSplit);
+                    string newDocumentName = newDocumentFullPath.Substring(newDocumentPathSplit);
+
+                    // make sure the new folder exists
+                    var folder = await this.Ctx.Corpus.FetchObjectAsync<CdmFolderDefinition>(newDocumentPath) as CdmFolderDefinition;
+                    if (folder == null)
+                    {
+                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"New folder not found {newDocumentPath}", nameof(CreateResolvedManifestAsync));
+                        return null;
+                    }
+
+                    // Next create the resolved entity
+                    AttributeResolutionDirectiveSet withDirectives = Directives != null ? Directives : this.Ctx.Corpus.DefaultResolutionDirectives;
+                    var resOpt = new ResolveOptions
+                    {
+                        WrtDoc = entDef.InDocument,
+                        Directives = withDirectives?.Copy()
+                    };
+
+                    Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    resolving entity {sourceEntityFullPath} to document {newDocumentFullPath}", nameof(CreateResolvedManifestAsync));
+
+                    var resolvedEntity = await entDef.CreateResolvedEntityAsync(entDef.EntityName, resOpt, folder, newDocumentName);
+                    if (resolvedEntity == null)
+                    {
+                        // Fail all resolution, if any one entity resolution fails
+                        return null;
+                    }
+
+                    var result = entity.Copy(resOpt) as CdmEntityDeclarationDefinition;
+                    if (result.ObjectType == CdmObjectType.LocalEntityDeclarationDef)
+                    {
+                        result.EntityPath = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(resolvedEntity.AtCorpusPath, resolvedManifest) ?? result.AtCorpusPath;
+                    }
+
+                    resolvedManifest.Entities.Add(result);
                 }
 
-                resolvedManifest.Entities.Add(result);
+                Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    calculating relationships", nameof(CreateResolvedManifestAsync));
 
-                // absolute path is needed for generating relationships
-                var absoluteEntPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(result.EntityPath, resolvedManifest);
-                resEntMap.Add(this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.AtCorpusPath, entDef.InDocument), absoluteEntPath);
+                // calculate the entity graph for just this manifest and any submanifests
+                await this.Ctx.Corpus.CalculateEntityGraphAsync(resolvedManifest);
+                // stick results into the relationships list for the manifest
+                // only put in relationships that are between the entities that are used in the manifest
+                await resolvedManifest.PopulateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle.Exclusive);
+
+                // needed until Matt's changes with collections where I can propigate
+                resolvedManifest.IsDirty = true;
+                return resolvedManifest;
             }
-
-            Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    calculating relationships", nameof(CreateResolvedManifestAsync));
-
-            // calculate the entity graph for just this manifest and any submanifests
-            await (this.Ctx.Corpus as CdmCorpusDefinition)._CalculateEntityGraphAsync(resolvedManifest, resEntMap);
-            // stick results into the relationships list for the manifest
-            // only put in relationships that are between the entities that are used in the manifest
-            await resolvedManifest.PopulateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle.Exclusive);
-
-            // needed until Matt's changes with collections where I can propigate
-            resolvedManifest.IsDirty = true;
-            return resolvedManifest;
         }
 
         /// <summary>
@@ -395,9 +407,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     foreach (CdmManifestDeclarationDefinition subManifestDef in this.SubManifests)
                     {
-                        string corpusPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(subManifestDef.Definition, this);
-                        CdmManifestDefinition subManifest = await this.Ctx.Corpus.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
-                        await (subManifest as CdmManifestDefinition).PopulateManifestRelationshipsAsync(option);
+                        var corpusPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(subManifestDef.Definition, this);
+                        var subManifest = await this.Ctx.Corpus.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
+                        await subManifest.PopulateManifestRelationshipsAsync(option);
                     }
                 }
             }
@@ -462,24 +474,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            DateTimeOffset? modifiedTime = await (this.Ctx.Corpus as CdmCorpusDefinition).GetLastModifiedTimeAsyncFromObject(this);
-
-            foreach (var entity in this.Entities)
-                await entity.FileStatusCheckAsync();
-
-            foreach (var subManifest in this.SubManifests)
-                await subManifest.FileStatusCheckAsync();
-
-            this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
-            if (this.LastFileModifiedTime == null)
-                this.LastFileModifiedTime = this._fileSystemModifiedTime;
-
-            // reload the manifest if it has been updated in the file system
-            if (modifiedTime != this._fileSystemModifiedTime)
+            using (Logger.EnterScope(nameof(CdmManifestDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
-                await this.Reload();
-                this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
-                this._fileSystemModifiedTime = this.LastFileModifiedTime;
+                using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
+                {
+                    DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromObject(this);
+
+                    this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
+                    if (this.LastFileModifiedTime == null)
+                        this.LastFileModifiedTime = this._fileSystemModifiedTime;
+
+                    // reload the manifest if it has been updated in the file system
+                    if (modifiedTime != this._fileSystemModifiedTime)
+                    {
+                        await this.Reload();
+                        this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
+                        this._fileSystemModifiedTime = this.LastFileModifiedTime;
+                    }
+
+                    foreach (var entity in this.Entities)
+                        await entity.FileStatusCheckAsync();
+
+                    foreach (var subManifest in this.SubManifests)
+                        await subManifest.FileStatusCheckAsync();
+                }
             }
         }
 
@@ -625,12 +643,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         // without using the object itself as a key (could be duplicate relationship objects).
         internal string rel2CacheKey(CdmE2ERelationship rel)
         {
-            return $"{rel.ToEntity}|{rel.ToEntityAttribute}|{rel.FromEntity}|{rel.FromEntityAttribute}";
+            string nameAndPipe = string.Empty;
+            if (!string.IsNullOrWhiteSpace(rel.Name))
+            {
+                nameAndPipe = $"{rel.Name}|";
+            }
+            return $"{nameAndPipe}{rel.ToEntity}|{rel.ToEntityAttribute}|{rel.FromEntity}|{rel.FromEntityAttribute}";
         }
 
         internal CdmE2ERelationship LocalizeRelToManifest(CdmE2ERelationship rel)
         {
-            CdmE2ERelationship relCopy = this.Ctx.Corpus.MakeObject<CdmE2ERelationship>(CdmObjectType.E2ERelationshipDef);
+            CdmE2ERelationship relCopy = this.Ctx.Corpus.MakeObject<CdmE2ERelationship>(CdmObjectType.E2ERelationshipDef, rel.Name);
             relCopy.ToEntity = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(rel.ToEntity, this);
             relCopy.FromEntity = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(rel.FromEntity, this);
             relCopy.ToEntityAttribute = rel.ToEntityAttribute;

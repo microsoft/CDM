@@ -1,7 +1,10 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_object_def import CdmObjectDefinition
 
@@ -23,6 +26,8 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
 
         self._declared_path = None  # type: Optional[str]
 
+        self._TAG = CdmDataTypeDefinition.__name__
+
     @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.DATA_TYPE_DEF
@@ -32,7 +37,7 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDataTypeDefinition'] = None) -> 'CdmDataTypeDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmDataTypeDefinition(self.ctx, self.data_type_name, None)
@@ -48,14 +53,17 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
         return copy
 
     def validate(self) -> bool:
-        return bool(self.data_type_name)
+        if not bool(self.data_type_name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['data_type_name']))
+            return False
+        return True
 
     def get_name(self) -> str:
         return self.data_type_name
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
 
             if not path:
@@ -65,8 +73,10 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.extends_data_type and self.extends_data_type.visit('{}/extendsDataType/'.format(path), pre_children, post_children):
-            return True
+        if self.extends_data_type:
+            self.extends_data_type.owner = self
+            if self.extends_data_type.visit('{}/extendsDataType/'.format(path), pre_children, post_children):
+                return True
 
         if self._visit_def(path, pre_children, post_children):
             return True
@@ -77,4 +87,6 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
         return False
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
         return self._is_derived_from_def(res_opt, self.extends_data_type, self.get_name(), base)

@@ -1,17 +1,18 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import json
+import os
 import unittest
 import unittest.mock as mock
 
-from tests.common import async_test
+from tests.common import async_test, TestHelper
 from cdm.storage.remote import RemoteAdapter
 
 
 class RemoteStorageAdapterTestCase(unittest.TestCase):
+
+    tests_subpath = os.path.join('Storage')
 
     def setUp(self):
         hosts = {
@@ -60,6 +61,19 @@ class RemoteStorageAdapterTestCase(unittest.TestCase):
 
         self.assertEqual(mock_urlopen.call_args[0][0].full_url, 'http://contoso.com/dir3/dir4/file.json')
         self.assertEqual(data, {'Ḽơᶉëᶆ': 'ȋṕšᶙṁ'})  # Verify data.
+
+    @async_test
+    async def test_model_json_remote_adapter_config(self):
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_model_json_remote_adapter_config')
+
+        manifest = await corpus.fetch_object_async('model.json')
+
+        # Confirm that the partition URL has been mapped to 'contoso' by RemoteAdapter
+
+        self.assertIsNotNone(manifest, 'Manifest loaded from model.json should not be null')
+        self.assertEqual(len(manifest.entities), 1, 'There should be only one entity loaded from model.json')
+        self.assertEqual(len(manifest.entities[0].data_partitions), 1, 'There should be only one partition attached to the entity loaded from model.json')
+        self.assertEqual(manifest.entities[0].data_partitions[0].location, 'remote:/contoso/some/path/partition-data.csv', 'The partition location loaded from model.json did not match')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,218 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceJour.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustInvoiceJourAdjustment",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AdjustDateTime",
+          "dataType": "CustInvoiceJourAdjustmentDateTime",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CustInvoiceJour",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "InvoicingName",
+          "dataType": "CustName",
+          "displayName": "Customer name",
+          "description": ""
+        },
+        {
+          "name": "Reference",
+          "dataType": "CustInvoiceJourReference",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInvoiceId",
+          "dataType": "TaxUnrealizedPurchTaxInvoiceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsPrinted",
+          "dataType": "IsPrinted_TH",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustmentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoicingAddress",
+          "dataType": "LogisticsAddressing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerPhone",
+          "dataType": "Phone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerTeleFax",
+          "dataType": "TeleFax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceTaxRegNumber",
+          "dataType": "TaxRegistrationNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceBranch",
+          "dataType": "BranchNumber_TH",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceBranchName",
+          "dataType": "Name",
+          "isNullable": true,
+          "displayName": "Branch name",
+          "description": ""
+        },
+        {
+          "name": "InvoiceVATNum",
+          "dataType": "VATNumJournal",
+          "isNullable": true,
+          "displayName": "Tax payer identification number",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_CustInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer invoice journal adjustment"
+    },
+    {
+      "dataTypeName": "CustInvoiceJourAdjustmentDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustInvoiceJourReference",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxUnrealizedPurchTaxInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IsPrinted_TH",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressing",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Phone",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TeleFax",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxRegistrationNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BranchNumber_TH",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VATNumJournal",
+      "extendsDataType": "string"
+    }
+  ]
+}

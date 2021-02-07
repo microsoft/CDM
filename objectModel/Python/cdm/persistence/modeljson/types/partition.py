@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Optional, TYPE_CHECKING
 
@@ -22,7 +20,7 @@ class Partition(DataObject):
         super().__init__()
 
         self.refreshTime = None  # type: datetime
-        self.location = ''  # type: str
+        self.location = None  # type: str
         self.fileFormatSettings = None  # type: Optional[CsvFormatSettings]
         self.lastFileStatusCheckTime = None  # type: datetime
         self.lastFileModifiedTime = None  # type: datetime

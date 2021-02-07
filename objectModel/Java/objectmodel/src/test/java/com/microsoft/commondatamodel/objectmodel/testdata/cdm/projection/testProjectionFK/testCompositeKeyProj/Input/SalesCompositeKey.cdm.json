@@ -1,0 +1,46 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "SalesCompositeKey",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "dataType": "decimal",
+                    "name": "SalesCompositeKeyAmount"
+                },
+                {
+                    "name": "SalesCompositeKeyProductId",
+                    "entity": {
+                        "source": "ProductWith2Ids",
+                        "operations": [
+                            {
+                                "$type": "replaceAsForeignKey",
+                                "reference": "ProductId1",
+                                "replaceWith": {
+                                    "dataType": "entityId",
+                                    "name": "FKId1"
+                                }
+                            },
+                            {
+                                "$type": "replaceAsForeignKey",
+                                "reference": "ProductId2",
+                                "replaceWith": {
+                                    "dataType": "entityId",
+                                    "name": "FKId2"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "version": "1.0"
+        }
+    ]
+}

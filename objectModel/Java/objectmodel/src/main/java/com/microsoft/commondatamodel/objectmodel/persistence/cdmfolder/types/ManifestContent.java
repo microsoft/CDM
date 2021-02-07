@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -112,7 +115,7 @@ public class ManifestContent extends DocumentContent {
 
     /**
      * Gets the list of relationships in which the entities in the current folio are involved in.
-     * @return
+     * @return List of E2ERelationship
      */
     public List<E2ERelationship> getRelationships() {
         return relationships;
@@ -120,7 +123,7 @@ public class ManifestContent extends DocumentContent {
 
     /**
      * Sets the list of relationships in which the entities in the current folio are involved in.
-     * @param relationships
+     * @param relationships List of E2ERelationship
      */
     public void setRelationships(final List<E2ERelationship> relationships) {
         this.relationships = relationships;

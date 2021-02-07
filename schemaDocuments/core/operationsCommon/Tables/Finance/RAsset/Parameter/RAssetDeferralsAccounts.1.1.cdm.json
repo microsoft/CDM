@@ -1,0 +1,204 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetStandards.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetStandardTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Main/RDeferralsBookTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Group/RDeferralsGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Group/RTax25ProfitTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RAssetDeferralsAccounts",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountCode",
+          "dataType": "RAssetTableGroupAll",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountNum",
+          "dataType": "PostingProfileAccountRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RassetDeferralsType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RAssetStandardID",
+          "dataType": "RAssetStandardId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RDeferralsBookId",
+          "dataType": "RDeferralsBookId",
+          "description": ""
+        },
+        {
+          "name": "RDeferralsGroupId",
+          "dataType": "RDeferralsGroupLookup",
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTable",
+          "dataType": "RTax25ProfitTableRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetGroup"
+          },
+          "name": "Relationship_RassetGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetStandards"
+          },
+          "name": "Relationship_RAssetStandardsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetStandardTable"
+          },
+          "name": "Relationship_RAssetStandardTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsBookTable"
+          },
+          "name": "Relationship_RDeferralsBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsGroup"
+          },
+          "name": "Relationship_RDeferralsGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Parameters of FA deferrals"
+    },
+    {
+      "dataTypeName": "RAssetTableGroupAll",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PostingProfileAccountRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetStandardId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsGroupLookup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

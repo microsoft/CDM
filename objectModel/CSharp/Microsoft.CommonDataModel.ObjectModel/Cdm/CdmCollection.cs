@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmCollection.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -161,7 +158,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             var copy = new CdmCollection<T>(this.Ctx, this.Owner, this.DefaultType);
             foreach (var element in this.AllItems)
+            {
                 copy.Add((T)element.Copy(resOpt));
+            }
             return copy;
         }
 

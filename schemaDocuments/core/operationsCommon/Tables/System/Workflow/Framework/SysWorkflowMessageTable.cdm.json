@@ -1,0 +1,266 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WorkflowVersionTable.cdm.json"
+    },
+    {
+      "corpusPath": "WorkflowWorkItemTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysWorkflowMessageTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AxaptaUser",
+          "dataType": "WorkflowUser",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActionName",
+          "dataType": "WorkflowOutcomeName",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivityContextType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivityInstanceId",
+          "dataType": "WorkflowActivityInstanceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssignedUser",
+          "dataType": "WorkflowAssignedUser",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BatchAffinity",
+          "dataType": "WorkflowMessageBatchAffinity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Bookmark",
+          "dataType": "WorkflowBookmarkId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfigurationId",
+          "dataType": "WorkflowConfigurationId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MessageId",
+          "dataType": "WorkflowMessageId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MessageLifeCycleState",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MessageType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParentCorrelationId",
+          "dataType": "WorkflowParentCorrelationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RootCorrelationId",
+          "dataType": "WorkflowRootCorrelationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SubWorkflowId",
+          "dataType": "WorkflowSubWorkflowId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowContextCompanyId",
+          "dataType": "CompanyId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowContextRecId",
+          "dataType": "WorkflowContextRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowContextTableId",
+          "dataType": "WorkflowContextTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowCorrelationId",
+          "dataType": "WorkflowCorrelationId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkItemInstanceId",
+          "dataType": "WorkflowWorkItemInstanceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Attempts",
+          "dataType": "WorkflowMessageMaxRetries",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowVersionTable"
+          },
+          "name": "Relationship_WorkflowVersionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowWorkItemTable"
+          },
+          "name": "Relationship_WorkflowWorkItemTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Workflow messages table"
+    },
+    {
+      "dataTypeName": "WorkflowUser",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkflowOutcomeName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkflowActivityInstanceId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowAssignedUser",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkflowMessageBatchAffinity",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowBookmarkId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowConfigurationId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowMessageId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowParentCorrelationId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowRootCorrelationId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowSubWorkflowId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkflowContextRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WorkflowContextTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WorkflowCorrelationId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowWorkItemInstanceId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowMessageMaxRetries",
+      "extendsDataType": "integer"
+    }
+  ]
+}

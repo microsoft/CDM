@@ -1,0 +1,181 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "RetailWishListTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailWishListLineTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustomerId",
+          "dataType": "AccountNum",
+          "isNullable": true,
+          "displayName": "The customer account number of the customer who created the wish list",
+          "description": ""
+        },
+        {
+          "name": "DeletedDateTime",
+          "dataType": "UTCTimestamp",
+          "isNullable": true,
+          "displayName": "Uses a time stamp to indicate whether or not a wish list has been deleted",
+          "description": ""
+        },
+        {
+          "name": "IsFavorite",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Indicates if a wish list item is the favorite or default",
+          "description": ""
+        },
+        {
+          "name": "IsPrivate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Indicates if a wish list item is marked as private",
+          "description": ""
+        },
+        {
+          "name": "IsRecurring",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Indicates if a wish list product is marked as recurring",
+          "description": ""
+        },
+        {
+          "name": "ProductId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "The id of the corresponding wish list product",
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "The quantity of the product on the wish list line",
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasure",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "displayName": "The unit of measuring corresponding to the quantity on the wish list",
+          "description": ""
+        },
+        {
+          "name": "WishListId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "The id of the wish list that corresponds to the wish list item",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustomerIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_ProductIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailWishListTable"
+          },
+          "name": "Relationship_WishListIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "This table contains wish list line items"
+    },
+    {
+      "dataTypeName": "AccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UTCTimestamp",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    }
+  ]
+}

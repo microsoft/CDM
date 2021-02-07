@@ -5,13 +5,155 @@
 
     <properties>
         <!-- Increment version for each official release of the SDK -->
-        <revision>0.9.0-preview31</revision>
+        <revision>1.1.0</revision>
     </properties>
 
     <groupId>com.microsoft.commondatamodel</groupId>
-    <artifactId>pom-master</artifactId>
+    <artifactId>cdm-parent</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
+    <name>com.microsoft.commondatamodel:cdm-parent</name>
+    <description>Parent POM module for all CDM SDK</description>
+    <url>https://github.com/Microsoft/CDM</url>
+    <licenses>
+      <license>
+        <name>MIT License</name>
+        <url>http://www.opensource.org/licenses/mit-license.php</url>
+      </license>
+    </licenses>
+	
+    <developers>
+      <developer>
+        <name>CDM Team</name>
+        <organization>Microsoft</organization>
+        <organizationUrl>https://docs.microsoft.com/en-us/common-data-model/</organizationUrl>
+      </developer>
+    </developers>
+	
+    <scm>
+      <connection>scm:git:git://github.com/Microsoft/CDM.git</connection>
+      <developerConnection>scm:git:ssh://github.com/Microsoft/CDM.git</developerConnection>
+      <url>http://github.com/Microsoft/CDM</url>
+    </scm>
+
+    <profiles>
+      <profile>
+        <id>deploy-jar-external-official</id>
+        <activation>
+          <activeByDefault>false</activeByDefault>
+          <property>
+            <name>CDM SDK</name>
+            <value>external-official</value>
+          </property>
+        </activation>
+        <distributionManagement>
+		  <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          </snapshotRepository>
+          <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+          </repository>
+        </distributionManagement>
+		<build>
+          <plugins>
+            <plugin>
+              <groupId>org.sonatype.plugins</groupId>
+              <artifactId>nexus-staging-maven-plugin</artifactId>
+              <version>1.6.7</version>
+              <extensions>true</extensions>
+              <configuration>
+                <serverId>ossrh</serverId>
+                <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                <autoReleaseAfterClose>true</autoReleaseAfterClose>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-source-plugin</artifactId>
+              <version>2.2.1</version>
+              <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+              </executions>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <configuration>
+                <source>8</source>
+                <additionalparam>-Xdoclint:none</additionalparam>
+                <additionalOptions>-Xdoclint:none</additionalOptions>
+                <additionalJOption>-Xdoclint:none</additionalJOption>
+              </configuration>
+              <version>2.9.1</version>
+              <executions>
+                <execution>
+                  <id>attach-javadocs</id>
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-gpg-plugin</artifactId>
+             <version>1.5</version>
+             <executions>
+               <execution>
+                 <id>sign-artifacts</id>
+                 <phase>verify</phase>
+                 <goals>
+                   <goal>sign</goal>
+                 </goals>
+                  <configuration>
+                    <gpgArguments>
+                      <arg>--pinentry-mode</arg>
+                      <arg>loopback</arg>
+                    </gpgArguments>
+                  </configuration>
+               </execution>
+             </executions>
+           </plugin>
+          </plugins>
+        </build>
+      </profile>
+    </profiles>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>1.1.0</version>
+          <configuration>
+            <updatePomFile>true</updatePomFile>
+            <flattenMode>resolveCiFriendliesOnly</flattenMode>
+          </configuration>
+          <executions>
+            <execution>
+              <id>flatten</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>flatten</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>flatten.clean</id>
+              <phase>clean</phase>
+              <goals>
+                <goal>clean</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+	  </plugins>
+    </build>
 
     <modules>
         <module>objectmodel</module>

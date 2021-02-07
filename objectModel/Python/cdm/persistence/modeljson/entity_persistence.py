@@ -1,4 +1,7 @@
-﻿from typing import List, Optional, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import logger
@@ -40,13 +43,17 @@ class EntityPersistence:
         data = LocalEntity()
         data.type = 'LocalEntity'
         data.name = instance.entity_name
-        data.description = instance.description
+        data.description = instance._get_property("description")
 
-        await utils.process_annotations_to_data(instance.ctx, data, instance.exhibits_traits)
+        utils.process_traits_and_annotations_to_data(instance.ctx, data, instance.exhibits_traits)
 
         if instance.attributes:
             data.attributes = []
             for element in instance.attributes:
+                if element.object_type != CdmObjectType.TYPE_ATTRIBUTE_DEF:
+                    logger.error(EntityPersistence.__name__, ctx, 'Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported.')
+                    return None
+
                 attribute = await TypeAttributePersistence.to_data(element, res_opt, options)
                 if attribute:
                     data.attributes.append(attribute)

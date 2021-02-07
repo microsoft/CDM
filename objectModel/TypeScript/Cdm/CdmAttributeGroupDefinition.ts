@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     AttributeContextParameters,
     CdmAttributeContext,
@@ -6,15 +9,17 @@ import {
     CdmAttributeItem,
     CdmCollection,
     CdmCorpusContext,
+    CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
+    Logger,
     ResolvedAttributeSetBuilder,
     ResolvedEntityReferenceSet,
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    VisitCallback,
-    CdmObject
+    VisitCallback
 } from '../internal';
 
 export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
@@ -48,10 +53,6 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this);
-            }
-
             return false;
         }
         // return p.measure(bodyCode);
@@ -61,7 +62,7 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
             let copy: CdmAttributeGroupDefinition;
             if (!host) {
@@ -87,7 +88,18 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.attributeGroupName ? true : false;
+            if (!this.attributeGroupName) {
+                Logger.error(
+                    CdmAttributeGroupDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['attributeGroupName']),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }

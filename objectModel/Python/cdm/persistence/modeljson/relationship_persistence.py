@@ -1,4 +1,7 @@
-﻿from typing import Dict, Optional, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import Dict, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import logger
@@ -55,7 +58,7 @@ class RelationshipPersistence:
 
         result.description = instance.explanation
         result.name = instance.relationship_name
-        await utils.process_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
+        utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
 
         return result
 

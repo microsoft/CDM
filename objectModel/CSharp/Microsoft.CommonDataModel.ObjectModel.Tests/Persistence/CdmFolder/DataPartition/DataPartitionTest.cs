@@ -1,6 +1,11 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 {
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
@@ -64,28 +69,47 @@
         public void TestProgrammaticallyCreatePartitions()
         {
             var corpus = new CdmCorpusDefinition();
-            corpus.Storage.Mount("local", new LocalAdapter());
             var manifest = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "manifest");
             var entity = manifest.Entities.Add("entity");
 
             var relativePartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "relative partition");
             relativePartition.Location = "relative/path";
+            relativePartition.Arguments.Add("test1", new List<string>() { "argument1" });
+            relativePartition.Arguments.Add("test2", new List<string>() { "argument2", "argument3" });
+
             var absolutePartition = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "absolute partition");
             absolutePartition.Location = "local:/absolute/path";
+            // add an empty arguments list to test empty list should not be displayed in ToData json.
+            absolutePartition.Arguments.Add("test", new List<string>());
 
             entity.DataPartitions.Add(relativePartition);
             entity.DataPartitions.Add(absolutePartition);
 
             var manifestData = ManifestPersistence.ToData(manifest, new ResolveOptions(), new CopyOptions());
-            Assert.AreEqual(manifestData.Entities.Count, 1);
+            Assert.AreEqual(1, manifestData.Entities.Count);
             var entityData = manifestData.Entities[0];
             var partitionsList = entityData.Value<JArray>("dataPartitions");
-            Assert.AreEqual(partitionsList.Count, 2);
+            Assert.AreEqual(2, partitionsList.Count);
             var relativePartitionData = partitionsList.First;
             var absolutePartitionData = partitionsList.Last;
 
-            Assert.AreEqual(relativePartitionData.Value<string>("location"), relativePartition.Location);
-            Assert.AreEqual(absolutePartitionData.Value<string>("location"), absolutePartition.Location);
+            Assert.AreEqual(relativePartition.Location, relativePartitionData.Value<string>("location"));
+
+            var argumentsList = relativePartitionData.Value<JArray>("arguments");
+            Assert.AreEqual(3, argumentsList.Count);
+            Assert.AreEqual(2, argumentsList[0].Count());
+            Assert.AreEqual("test1", argumentsList[0].Value<string>("name"));
+            Assert.AreEqual("argument1", argumentsList[0].Value<string>("value"));
+            Assert.AreEqual(2, argumentsList[1].Count());
+            Assert.AreEqual("test2", argumentsList[1].Value<string>("name"));
+            Assert.AreEqual("argument2", argumentsList[1].Value<string>("value"));
+            Assert.AreEqual(2, argumentsList[2].Count());
+            Assert.AreEqual("test2", argumentsList[2].Value<string>("name"));
+            Assert.AreEqual("argument3", argumentsList[2].Value<string>("value"));
+
+            Assert.AreEqual(absolutePartition.Location, absolutePartitionData.Value<string>("location"));
+            // test if empty argument list is set to null
+            Assert.IsNull(absolutePartitionData.Value<List<object>>("arguments"));
         }
     }
 }

@@ -1,0 +1,115 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSShipConsolidationPolicy",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ShipConsolidationPolicyName",
+          "dataType": "WHSShipConsolidationPolicyName",
+          "displayName": "Policy name",
+          "description": ""
+        },
+        {
+          "name": "ShipConsolidationPolicyType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ShipConsolidationPolicySeqNum",
+          "dataType": "WHSShipConsolidationPolicySeqNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipConsolidationPolicyQuery",
+          "dataType": "WHSShipConsolidationPolicyQuery",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipConsolidationPolicyDesc",
+          "dataType": "WHSShipConsolidationPolicyDesc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Valid",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsolidateWithExistingShipments",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Consolidate with open shipments",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Shipment consolidation policies"
+    },
+    {
+      "dataTypeName": "WHSShipConsolidationPolicyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSShipConsolidationPolicySeqNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSShipConsolidationPolicyQuery",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSShipConsolidationPolicyDesc",
+      "extendsDataType": "string"
+    }
+  ]
+}

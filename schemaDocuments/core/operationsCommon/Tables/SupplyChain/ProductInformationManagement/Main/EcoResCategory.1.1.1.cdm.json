@@ -1,0 +1,250 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/EMPAShared/Reference/SharedCategory.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResCategoryHierarchy.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/HSNCodeTable_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Main/ServiceAccountingCodeTable_IN.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResCategory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CategoryHierarchy",
+          "dataType": "EcoResCategoryHierarchyId",
+          "description": ""
+        },
+        {
+          "name": "ChangeStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Import status",
+          "description": ""
+        },
+        {
+          "name": "Code",
+          "dataType": "EcoResCategoryCommodityCode",
+          "isNullable": true,
+          "displayName": "Commodity code",
+          "description": ""
+        },
+        {
+          "name": "DefaultProjectGlobalCategory",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultThreshold_PSN",
+          "dataType": "CategoryThreshold_PSN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Instance relation type",
+          "description": ""
+        },
+        {
+          "name": "IsActive",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Active",
+          "description": ""
+        },
+        {
+          "name": "IsCategoryAttributesInherited",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Inherit category attributes",
+          "description": ""
+        },
+        {
+          "name": "IsTangible",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Classify as tangible product",
+          "description": ""
+        },
+        {
+          "name": "Level",
+          "dataType": "EcoResCategoryLevel",
+          "isNullable": true,
+          "displayName": "Level",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "EcoResCategoryName",
+          "description": ""
+        },
+        {
+          "name": "NestedSetLeft",
+          "dataType": "EcoResCategoryNestedSetLeft",
+          "isNullable": true,
+          "displayName": "Nested set left",
+          "description": ""
+        },
+        {
+          "name": "NestedSetRight",
+          "dataType": "EcoResCategoryNestedSetRight",
+          "isNullable": true,
+          "displayName": "Nested set right",
+          "description": ""
+        },
+        {
+          "name": "ParentCategory",
+          "dataType": "EcoResCategoryId",
+          "isNullable": true,
+          "displayName": "Parent category ID",
+          "description": ""
+        },
+        {
+          "name": "PKWiUCode",
+          "dataType": "PlPKWiUCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayOrder",
+          "dataType": "RetailEcoResCategoryDisplayOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SharedCategory"
+          },
+          "name": "Relationship_DefaultProjectGlobalCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategoryHierarchy"
+          },
+          "name": "Relationship_EcoResCategoryHierarchyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "HSNCodeTable_IN"
+          },
+          "name": "Relationship_HSNCodeTable_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ServiceAccountingCodeTable_IN"
+          },
+          "name": "Relationship_ServiceAccountingCodeTable_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Category"
+    },
+    {
+      "dataTypeName": "EcoResCategoryHierarchyId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResCategoryCommodityCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CategoryThreshold_PSN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EcoResCategoryLevel",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResCategoryName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResCategoryNestedSetLeft",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResCategoryNestedSetRight",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResCategoryId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PlPKWiUCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailEcoResCategoryDisplayOrder",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -1,0 +1,410 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/BankGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymFeeBankRule_JP.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymFee.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymModeSpec.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymModeTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustVendPaymFeeGroup_JP.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendPaymModeFee",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PaymCurrency",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "displayName": "Payment currency",
+          "description": ""
+        },
+        {
+          "name": "BankRelation",
+          "dataType": "BankRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankRemittanceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankTableGroupAll",
+          "dataType": "BankTableGroupAll",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FeeCurrency",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "displayName": "Fee currency",
+          "description": ""
+        },
+        {
+          "name": "FeeValue",
+          "dataType": "PaymFeePercentAmountValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "FromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinFeeValue",
+          "dataType": "PaymFeeValue",
+          "isNullable": true,
+          "displayName": "Minimum fee",
+          "description": ""
+        },
+        {
+          "name": "PaymFeeBankRule_JP",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymFeeId",
+          "dataType": "VendPaymFeeId",
+          "description": ""
+        },
+        {
+          "name": "PaymMax",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Maximum",
+          "description": ""
+        },
+        {
+          "name": "PaymMin",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Minimum",
+          "description": ""
+        },
+        {
+          "name": "PaymMode",
+          "dataType": "VendPaymMode",
+          "description": ""
+        },
+        {
+          "name": "PaymSpec",
+          "dataType": "PaymSpec",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PercentAmount",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxDirection_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendRelation_JP",
+          "dataType": "VendRelation_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendTableGroupAll_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_BankAccountTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankGroup"
+          },
+          "name": "Relationship_BankGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_FeeCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_PaymCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymFeeBankRule_JP"
+          },
+          "name": "Relationship_PaymFeeBankRule_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymFee"
+          },
+          "name": "Relationship_VendPaymFeeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeSpec"
+          },
+          "name": "Relationship_VendPaymModeSpecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeTable"
+          },
+          "name": "Relationship_VendPaymModeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustVendPaymFeeGroup_JP"
+          },
+          "name": "Relationship_VendPaymFeeGroup_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor payment fee setup"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankTableGroupAll",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PaymFeePercentAmountValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PaymFeeValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendPaymFeeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendPaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymSpec",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendRelation_JP",
+      "extendsDataType": "string"
+    }
+  ]
+}

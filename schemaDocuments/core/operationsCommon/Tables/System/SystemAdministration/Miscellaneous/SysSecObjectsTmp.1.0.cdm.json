@@ -1,0 +1,147 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysSecObjectsTmp",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Name",
+          "dataType": "SecEntity",
+          "isNullable": true,
+          "displayName": "Entry point (AOT name)",
+          "description": ""
+        },
+        {
+          "name": "PermOwnerGroup",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PermOwnerName",
+          "dataType": "SecEntity",
+          "isNullable": true,
+          "displayName": "Permission owner",
+          "description": ""
+        },
+        {
+          "name": "PermOwnerRec",
+          "dataType": "SysInt64",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PermOwnerType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Permission owner type",
+          "description": ""
+        },
+        {
+          "name": "Rec",
+          "dataType": "SysInt64",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SecObjAccess",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Securable object access",
+          "description": ""
+        },
+        {
+          "name": "SecObjChild",
+          "dataType": "SecEntity",
+          "isNullable": true,
+          "displayName": "Field/method/control",
+          "description": ""
+        },
+        {
+          "name": "SecObjName",
+          "dataType": "SecEntity",
+          "isNullable": true,
+          "displayName": "Securable object",
+          "description": ""
+        },
+        {
+          "name": "SecObjRec",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SecObjType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Securable object type",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Entry point type",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Security debugging tool table for entry point securable objects"
+    },
+    {
+      "dataTypeName": "SecEntity",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysInt64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

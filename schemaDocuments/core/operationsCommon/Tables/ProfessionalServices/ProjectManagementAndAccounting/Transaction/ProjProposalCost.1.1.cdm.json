@@ -1,0 +1,272 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ProjCostTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "ProjProposalJour.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Miscellaneous/PSAContractLineItems.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjProposalCost",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EInvoiceAccountCode",
+          "dataType": "EInvoiceAccountCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IncludedTaxPercent_BR",
+          "dataType": "IncludedTaxPercent_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProposalId",
+          "dataType": "ProjProposalId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAContractLineNum",
+          "dataType": "PSAContractLineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroupId",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroupId",
+          "dataType": "ProjTaxItemGroup",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWriteCode",
+          "dataType": "TaxWriteCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransId",
+          "dataType": "ProjCostTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Txt",
+          "dataType": "Description255",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceDate_MY",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Original invoice date",
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceId_MY",
+          "dataType": "InvoiceId",
+          "isNullable": true,
+          "displayName": "Original invoice number",
+          "description": ""
+        },
+        {
+          "name": "OrderLineReference_NO",
+          "dataType": "OrderLineReference_NO",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BookableResourceName",
+          "dataType": "ProjBookableResourceName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCostTrans"
+          },
+          "name": "Relationship_ProjCostTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjProposalJour"
+          },
+          "name": "Relationship_ProjProposalJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PSAContractLineItems"
+          },
+          "name": "Relationship_PSAContractLineItemsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Invoice proposal - expense"
+    },
+    {
+      "dataTypeName": "EInvoiceAccountCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IncludedTaxPercent_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjProposalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSAContractLineNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWriteCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjCostTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description255",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OrderLineReference_NO",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjBookableResourceName",
+      "extendsDataType": "string"
+    }
+  ]
+}

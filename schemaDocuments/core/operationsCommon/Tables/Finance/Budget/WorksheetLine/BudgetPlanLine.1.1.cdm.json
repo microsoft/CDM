@@ -1,0 +1,456 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/WorksheetHeader/BudgetPlanHeader.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetPlanScenario.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetPlanProposedAsset.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetPlanProposedProject.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/HcmPositionForecastScenario.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Main/HcmPositionForecast.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetPlanHeader",
+          "dataType": "BudgetPlanHeaderRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanScenario",
+          "dataType": "BudgetPlanScenarioRecId",
+          "displayName": "Scenario",
+          "description": ""
+        },
+        {
+          "name": "LineReferenceId",
+          "dataType": "BudgetPlanLineReferenceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionBudgetPlanning",
+          "description": ""
+        },
+        {
+          "name": "EffectiveDate",
+          "dataType": "BudgetPlanLineEffectiveDate",
+          "description": ""
+        },
+        {
+          "name": "EstimateType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetClass",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "BudgetPlanQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasure",
+          "dataType": "BudgetPlanUnitOfMeasureRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountingCurrencyAmount",
+          "dataType": "BudgetPlanAccountingCurrencyAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyAmount",
+          "dataType": "BudgetPlanReportingCurrencyAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionCurrencyAmount",
+          "dataType": "BudgetPlanCurrencyAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionCurrencyCode",
+          "dataType": "BudgetPlanCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionUnitPrice",
+          "dataType": "BudgetPlanUnitPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitPrice",
+          "dataType": "BudgetPlanUnitPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Comment",
+          "dataType": "BudgetPlanComment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsNewRequest",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "New request",
+          "description": ""
+        },
+        {
+          "name": "IsRecurring",
+          "dataType": "BudgetPlanIsRecurring",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetId",
+          "dataType": "AssetId",
+          "isNullable": true,
+          "displayName": "Asset",
+          "description": ""
+        },
+        {
+          "name": "ProposedAsset",
+          "dataType": "BudgetPlanProposedAssetRecId",
+          "isNullable": true,
+          "displayName": "Proposed asset",
+          "description": ""
+        },
+        {
+          "name": "ProposedProject",
+          "dataType": "BudgetPlanProposedProjectRecId",
+          "isNullable": true,
+          "displayName": "Proposed project",
+          "description": ""
+        },
+        {
+          "name": "ProjectId",
+          "dataType": "ProjId",
+          "isNullable": true,
+          "displayName": "Project",
+          "description": ""
+        },
+        {
+          "name": "Position",
+          "dataType": "HcmPositionForecastRecId",
+          "isNullable": true,
+          "displayName": "Forecast position",
+          "description": ""
+        },
+        {
+          "name": "PositionScenario",
+          "dataType": "HcmPositionForecastScenarioRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceBudgetPlanLine",
+          "dataType": "BudgetPlanLineRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ForecastModelId",
+          "dataType": "ForecastModelHeadId",
+          "isNullable": true,
+          "displayName": "Forecast model Id",
+          "description": ""
+        },
+        {
+          "name": "PlanCurrencyCode",
+          "dataType": "BudgetPlanCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlanCurrencyAmount",
+          "dataType": "BudgetPlanCurrencyAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ScenarioLineNumber",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanHeader"
+          },
+          "name": "Relationship_BudgetPlanHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanScenario"
+          },
+          "name": "Relationship_BudgetPlanScenarioRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjectRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanProposedAsset"
+          },
+          "name": "Relationship_ProposedAssetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanProposedProject"
+          },
+          "name": "Relationship_ProposedProjectRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "HcmPositionForecastScenario"
+          },
+          "name": "Relationship_PositionForecastScenarioRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_TransactionCurrencyCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "HcmPositionForecast"
+          },
+          "name": "Relationship_PositionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget plan lines"
+    },
+    {
+      "dataTypeName": "BudgetPlanHeaderRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanScenarioRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanLineReferenceId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "LedgerDimensionBudgetPlanning",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanLineEffectiveDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BudgetPlanQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BudgetPlanUnitOfMeasureRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanAccountingCurrencyAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BudgetPlanReportingCurrencyAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BudgetPlanCurrencyAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BudgetPlanCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetPlanUnitPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BudgetPlanComment",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetPlanIsRecurring",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetPlanProposedAssetRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanProposedProjectRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmPositionForecastRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmPositionForecastScenarioRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetPlanLineRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ForecastModelHeadId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -1,0 +1,270 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/JournalError.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/WorksheetHeader/ReqItemJournalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqItemJournalTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CostPrice",
+          "dataType": "CostPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventoryValueCurrent",
+          "dataType": "CostAmount",
+          "isNullable": true,
+          "displayName": "Current inventory value",
+          "description": ""
+        },
+        {
+          "name": "InventoryValueIncrease",
+          "dataType": "CostAmount",
+          "isNullable": true,
+          "displayName": "Increase in inventory value",
+          "description": ""
+        },
+        {
+          "name": "InventoryValueNewLevel",
+          "dataType": "CostAmount",
+          "isNullable": true,
+          "displayName": "New inventory value",
+          "description": ""
+        },
+        {
+          "name": "InventQtyAvgIssueMonth",
+          "dataType": "InventQtyAvgIssueMonth",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "JournalId",
+          "dataType": "ReqItemJournalId",
+          "description": ""
+        },
+        {
+          "name": "LeadTimeCalendarDaysCurrent",
+          "dataType": "CalendarDays",
+          "isNullable": true,
+          "displayName": "Lead time in working days",
+          "description": ""
+        },
+        {
+          "name": "LeadTimeCurrent",
+          "dataType": "LeadTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinOnhandCalculated",
+          "dataType": "InventQtyMinOnhand",
+          "isNullable": true,
+          "displayName": "Calculated minimum quantity",
+          "description": ""
+        },
+        {
+          "name": "MinOnhandCurrent",
+          "dataType": "InventQtyMinOnhand",
+          "isNullable": true,
+          "displayName": "Current minimum quantity",
+          "description": ""
+        },
+        {
+          "name": "MinOnhandNewValue",
+          "dataType": "InventQtyMinOnhand",
+          "isNullable": true,
+          "displayName": "New minimum quantity",
+          "description": ""
+        },
+        {
+          "name": "ReqPOType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StdDeviationIssueMonth",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "displayName": "Standard deviation of issues per month",
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JournalError"
+          },
+          "name": "Relationship_JournalErrorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqItemJournalTable"
+          },
+          "name": "Relationship_ReqItemJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Safety stock journal lines"
+    },
+    {
+      "dataTypeName": "CostPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CostAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyAvgIssueMonth",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqItemJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CalendarDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LeadTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyMinOnhand",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustEinvoiceIntegrationTypeTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CustPaymModeTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CustPaymModeSpec.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustEinvoiceIntegrationPaymModeChg",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustEinvoiceIntegrationTypeTable",
+          "dataType": "CustEInvoiceIntegrationTypeRecId",
+          "description": ""
+        },
+        {
+          "name": "FromPaymMode",
+          "dataType": "CustEinvoiceFromPaymMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromPaymSpec",
+          "dataType": "CustEinvoiceFromPaymSpec",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToPaymMode",
+          "dataType": "CustEinvoiceToPaymMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToPaymSpec",
+          "dataType": "CustEinvoiceToPaymSpec",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Warning",
+          "dataType": "CustEinvoiceIntegrationWarning",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustEinvoiceIntegrationTypeTable"
+          },
+          "name": "Relationship_CustEinvoiceIntegrationTypeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeTable"
+          },
+          "name": "Relationship_CustPaymModeTable_FromPaymModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeTable"
+          },
+          "name": "Relationship_CustPaymModeTable_ToPaymModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeSpec"
+          },
+          "name": "Relationship_FromPaymModeSpecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeSpec"
+          },
+          "name": "Relationship_ToPaymModeSpecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Integration payment mode change"
+    },
+    {
+      "dataTypeName": "CustEInvoiceIntegrationTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustEinvoiceFromPaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustEinvoiceFromPaymSpec",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustEinvoiceToPaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustEinvoiceToPaymSpec",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustEinvoiceIntegrationWarning",
+      "extendsDataType": "integer"
+    }
+  ]
+}

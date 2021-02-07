@@ -1,0 +1,88 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CustVendNetAgreement.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustVendNetAgreementRelationship",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Party",
+          "dataType": "DirPartyRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Company",
+          "dataType": "SelectableDataArea",
+          "isReadOnly": true,
+          "displayName": "Company",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountNum",
+          "dataType": "CustVendAC",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CustVendNetAgreement"
+          },
+          "name": "Relationship_CustVendNetAgreementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Netting agreement relationship"
+    },
+    {
+      "dataTypeName": "DirPartyRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendAC",
+      "extendsDataType": "string"
+    }
+  ]
+}

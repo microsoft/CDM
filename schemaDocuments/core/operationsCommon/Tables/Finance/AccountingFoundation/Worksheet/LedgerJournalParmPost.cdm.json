@@ -1,0 +1,156 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetHeader/LedgerJournalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerJournalParmPost",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExecutedDateTime",
+          "dataType": "DateTimeExecuted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LateSelection",
+          "dataType": "LateSelection",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LateSelectionQuery",
+          "dataType": "LateSelectionQuery",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalId",
+          "dataType": "LedgerJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TransferErrors",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Transfer errors",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTable"
+          },
+          "name": "Relationship_LedgerJournalTable_LedgerJournalIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Post journals"
+    },
+    {
+      "dataTypeName": "DateTimeExecuted",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LateSelection",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LateSelectionQuery",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

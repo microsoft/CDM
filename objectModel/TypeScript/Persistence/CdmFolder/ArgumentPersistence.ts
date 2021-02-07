@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmArgumentDefinition,
     CdmCorpusContext,
@@ -46,6 +49,6 @@ export class ArgumentPersistence {
             return value;
         }
 
-        return { explanation: instance.explanation, name: instance.name, value: instance.value };
+        return { explanation: instance.explanation, name: instance.name, value: value };
     }
 }

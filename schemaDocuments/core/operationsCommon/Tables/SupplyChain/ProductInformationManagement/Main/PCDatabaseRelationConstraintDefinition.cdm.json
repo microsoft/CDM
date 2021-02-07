@@ -1,0 +1,61 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PCTableConstraintDefinition.cdm.json",
+      "moniker": "base_PCTableConstraintDefinition"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PCDatabaseRelationConstraintDefinition",
+      "extendsEntity": "base_PCTableConstraintDefinition/PCTableConstraintDefinition",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Query",
+          "dataType": "PCTableConstraintQuery",
+          "isNullable": true,
+          "displayName": "Table constraint query",
+          "description": ""
+        },
+        {
+          "name": "ReferencedTableId",
+          "dataType": "RefTableId",
+          "description": ""
+        }
+      ],
+      "displayName": "System defined table constraint definition"
+    },
+    {
+      "dataTypeName": "PCTableConstraintQuery",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

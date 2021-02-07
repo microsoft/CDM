@@ -1,0 +1,77 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailConnChannelSchema.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailConnLocationDesignTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "locationTableName",
+          "dataType": "RetailConnTableName",
+          "description": ""
+        },
+        {
+          "name": "RetailConnChannelSchema",
+          "dataType": "RefRecId",
+          "displayName": "Commerce channel schema",
+          "description": ""
+        },
+        {
+          "name": "ParentTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Parent table",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailConnChannelSchema"
+          },
+          "name": "Relationship_RetailConnChannelSchemaRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Channel table"
+    },
+    {
+      "dataTypeName": "RetailConnTableName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

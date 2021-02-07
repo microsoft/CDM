@@ -1,0 +1,234 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailChannelTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailStoreTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailTerminalTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailTransactionTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailTransactionKitsDisassemblyTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Channel",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Origin",
+          "dataType": "RetailConnDistributionLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplicationCounter",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "displayName": "Replication counter from origin",
+          "description": ""
+        },
+        {
+          "name": "StoreId",
+          "dataType": "RetailStoreId",
+          "description": ""
+        },
+        {
+          "name": "TerminalId",
+          "dataType": "RetailTerminalId",
+          "description": ""
+        },
+        {
+          "name": "TransactionId",
+          "dataType": "RetailTransactionId",
+          "description": ""
+        },
+        {
+          "name": "TransactionStatus",
+          "dataType": "RetailTransEntryStatus",
+          "isNullable": true,
+          "displayName": "Transaction status",
+          "description": ""
+        },
+        {
+          "name": "VariantId",
+          "dataType": "RetailVariantId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelTable"
+          },
+          "name": "Relationship_RetailChannelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreTable"
+          },
+          "name": "Relationship_RetailStoreTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTransactionTable"
+          },
+          "name": "Relationship_RetailTransactionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Kit disassembly transactions"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailConnDistributionLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransEntryStatus",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailVariantId",
+      "extendsDataType": "string"
+    }
+  ]
+}

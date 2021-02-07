@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -75,7 +78,7 @@
                 LastFileStatusCheckTime = instance.LastFileStatusCheckTime
             };
 
-            await Utils.ProcessAnnotationsToData(instance.Ctx, referenceEntity, instance.ExhibitsTraits);
+            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, referenceEntity, instance.ExhibitsTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
             

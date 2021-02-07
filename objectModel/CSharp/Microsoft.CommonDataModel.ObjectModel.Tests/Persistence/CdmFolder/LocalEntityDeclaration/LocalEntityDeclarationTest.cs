@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 {
     using System.IO;
     using System.Threading.Tasks;
@@ -25,7 +28,7 @@
         /// Creates Manifest using empty string as namespace.
         /// </summary>
         [TestMethod]
-        public async Task TestLoadLocalEntityNoPartition()
+        public void TestLoadLocalEntityNoPartition()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLocalEntityNoPartition", "entities.manifest.cdm.json");
             var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "", "", "", JsonConvert.DeserializeObject<ManifestContent>(content));
@@ -46,7 +49,7 @@
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task TestLoadLocalEntityNoPartitionNamespaceSet()
+        public void TestLoadLocalEntityNoPartitionNamespaceSet()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLocalEntityNoPartitionNamespaceSet", "entities.manifest.cdm.json");
             ManifestContent manifestContent = JsonConvert.DeserializeObject<ManifestContent>(content);
@@ -71,7 +74,7 @@
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task TestLoadLocalEntityNoPartitionAbsoluteNamespaceSet()
+        public void TestLoadLocalEntityNoPartitionAbsoluteNamespaceSet()
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestLoadLocalEntityNoPartitionAbsoluteNamespaceSet", "entitiesWithNamespace.manifest.cdm.json");
             ManifestContent manifestContent = JsonConvert.DeserializeObject<ManifestContent>(content);

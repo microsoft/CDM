@@ -1,0 +1,72 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "manifestName": "TransactionHeader",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "TSIntercompanyCost",
+      "entityPath": "TSIntercompanyCost.cdm.json/TSIntercompanyCost"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "ResRequest",
+      "entityPath": "ResRequest.cdm.json/ResRequest"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "ProjectRevenueHeader",
+      "entityPath": "ProjectRevenueHeader.cdm.json/ProjectRevenueHeader"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "TSIntercompanyCost.cdm.json/TSIntercompanyCost",
+      "fromEntityAttribute": "Relationship_SourceDocumentHeaderRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.cdm.json/SourceDocumentHeader",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "TSIntercompanyCost.cdm.json/TSIntercompanyCost",
+      "fromEntityAttribute": "Relationship_TSTimesheetTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/TSTimesheetTable.cdm.json/TSTimesheetTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/TransactionLine/TSIntercompanyCostDetails.cdm.json/TSIntercompanyCostDetails",
+      "fromEntityAttribute": "Relationship_TSIntercompanyCostRelationshipId",
+      "toEntity": "TSIntercompanyCost.cdm.json/TSIntercompanyCost",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "ResRequest.cdm.json/ResRequest",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/TransactionLine/ResRequestLine.cdm.json/ResRequestLine",
+      "fromEntityAttribute": "Relationship_RequestRelationshipId",
+      "toEntity": "ResRequest.cdm.json/ResRequest",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "ProjectRevenueHeader.cdm.json/ProjectRevenueHeader",
+      "fromEntityAttribute": "Relationship_ReferenceSourceDocumentHeaderRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.cdm.json/SourceDocumentHeader",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "ProjectRevenueHeader.cdm.json/ProjectRevenueHeader",
+      "fromEntityAttribute": "Relationship_SourceDocumentHeaderRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.cdm.json/SourceDocumentHeader",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/TransactionLine/ProjectRevenueLine.cdm.json/ProjectRevenueLine",
+      "fromEntityAttribute": "Relationship_ProjectRevenueHeaderRelationshipId",
+      "toEntity": "ProjectRevenueHeader.cdm.json/ProjectRevenueHeader",
+      "toEntityAttribute": "RecId"
+    }
+  ]
+}

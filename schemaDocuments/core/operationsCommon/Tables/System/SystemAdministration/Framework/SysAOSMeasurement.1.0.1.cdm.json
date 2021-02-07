@@ -1,0 +1,82 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysAOSMeasurement",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FictiveTime",
+          "dataType": "SysAOSFictiveTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InBytes",
+          "dataType": "Counter",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Server to client bytes",
+          "description": ""
+        },
+        {
+          "name": "InCalls",
+          "dataType": "Counter",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Client to server call",
+          "description": ""
+        },
+        {
+          "name": "OutBytes",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Server to client bytes",
+          "description": ""
+        },
+        {
+          "name": "OutCalls",
+          "dataType": "Counter",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Server to client call",
+          "description": ""
+        }
+      ],
+      "displayName": "AOS measurements"
+    },
+    {
+      "dataTypeName": "SysAOSFictiveTime",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Counter",
+      "extendsDataType": "integer"
+    }
+  ]
+}

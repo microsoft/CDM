@@ -1,7 +1,5 @@
-# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Callable, cast, List, Optional, Tuple, TYPE_CHECKING
 
@@ -37,7 +35,7 @@ class AttributeResolutionContext:
         self.applier_caps = None  # type: Optional[AttributeResolutionApplierCapabilities]
 
         from cdm.objectmodel import CdmObject
-        self.res_opt = CdmObject._copy_resolve_options(res_opt)
+        self.res_opt = res_opt.copy()
 
         if not res_guide:
             return
@@ -49,106 +47,108 @@ class AttributeResolutionContext:
             # Collect the code that will perform the right action.
             # Associate with the resolved trait and get the priority.
 
-            if apl.will_attribute_modify and apl.do_attribute_modify:
+            if apl._will_attribute_modify and apl._do_attribute_modify:
                 self.actions_modify.append(apl)
                 self.applier_caps.can_attribute_modify = True
 
-            if apl.will_attribute_add and apl.do_attribute_add:
+            if apl._will_attribute_add and apl._do_attribute_add:
                 self.actions_attribute_add.append(apl)
                 self.applier_caps.can_attribute_add = True
 
-            if apl.will_group_add and apl.do_group_add:
+            if apl._will_group_add and apl._do_group_add:
                 self.actions_group_add.append(apl)
                 self.applier_caps.can_group_add = True
 
-            if apl.will_round_add and apl.do_round_add:
+            if apl._will_round_add and apl._do_round_add:
                 self.actions_round_add.append(apl)
                 self.applier_caps.can_round_add = True
 
-            if apl.will_alter_directives and apl.do_alter_directives:
+            if apl._will_alter_directives and apl._do_alter_directives:
                 self.applier_caps.can_alter_directives = True
-                apl.do_alter_directives(self.res_opt, res_guide)
+                apl._do_alter_directives(self.res_opt, res_guide)
 
-            if apl.will_create_context and apl.do_create_context:
+            if apl._will_create_context and apl._do_create_context:
                 self.applier_caps.can_create_context = True
 
-            if apl.will_remove:
+            if apl._will_remove:
                 self.actions_remove.append(apl)
                 self.applier_caps.can_remove = True
 
             return True
 
         if res_guide.remove_attribute:
-            add_applier(primitive_appliers.is_removed)
+            add_applier(primitive_appliers._is_removed)
         if res_guide.imposed_directives:
-            add_applier(primitive_appliers.does_impose_directives)
+            add_applier(primitive_appliers._does_impose_directives)
         if res_guide.removed_directives:
-            add_applier(primitive_appliers.does_remove_directives)
+            add_applier(primitive_appliers._does_remove_directives)
         if res_guide.add_supporting_attribute:
-            add_applier(primitive_appliers.does_add_supporting_attribute)
+            add_applier(primitive_appliers._does_add_supporting_attribute)
         if res_guide.rename_format:
-            add_applier(primitive_appliers.does_disambiguate_names)
+            add_applier(primitive_appliers._does_disambiguate_names)
         if res_guide.cardinality == 'many':
-            add_applier(primitive_appliers.does_explain_array)
+            add_applier(primitive_appliers._does_explain_array)
         if res_guide.entity_by_reference:
-            add_applier(primitive_appliers.does_reference_entity_via)
+            add_applier(primitive_appliers._does_reference_entity_via)
         if res_guide.selects_sub_attribute and res_guide.selects_sub_attribute.selects == 'one':
-            add_applier(primitive_appliers.does_select_attributes)
+            add_applier(primitive_appliers._does_select_attributes)
 
         # Sorted by priority.
-        self.actions_modify.sort(key=lambda ara: ara.priority)
-        self.actions_group_add.sort(key=lambda ara: ara.priority)
-        self.actions_round_add.sort(key=lambda ara: ara.priority)
-        self.actions_attribute_add.sort(key=lambda ara: ara.priority)
+        self.actions_modify.sort(key=lambda ara: ara._priority)
+        self.actions_group_add.sort(key=lambda ara: ara._priority)
+        self.actions_round_add.sort(key=lambda ara: ara._priority)
+        self.actions_attribute_add.sort(key=lambda ara: ara._priority)
 
 
 class ResolvedAttributeSetBuilder:
     def __init__(self):
-        self.ras = ResolvedAttributeSet()  # type: Optional[ResolvedAttributeSet]
+        self._resolved_attribute_set = ResolvedAttributeSet()  # type: Optional[ResolvedAttributeSet]
         self.inherited_mark = 0  # type: int
 
     def merge_attributes(self, ras_new: 'ResolvedAttributeSet') -> None:
         if ras_new:
-            self.take_reference(self.ras.merge_set(ras_new))
+            self.take_reference(self._resolved_attribute_set.merge_set(ras_new))
+        if ras_new._depth_traveled > self._resolved_attribute_set._depth_traveled:
+            self._resolved_attribute_set._depth_traveled = ras_new._depth_traveled
 
     def take_reference(self, ras_new: 'ResolvedAttributeSet') -> None:
-        if self.ras != ras_new:
+        if self._resolved_attribute_set != ras_new:
             if ras_new:
-                ras_new.add_ref()
-            if self.ras:
-                self.ras.release()
-            self.ras = ras_new
+                ras_new._add_ref()
+            if self._resolved_attribute_set:
+                self._resolved_attribute_set._release()
+            self._resolved_attribute_set = ras_new
 
     def give_reference(self) -> Optional['ResolvedAttributeSet']:
-        ras_ref = self.ras
-        if self.ras:
-            self.ras.release()
-            if self.ras.ref_cnt == 0:
-                self.ras = None
+        ras_ref = self._resolved_attribute_set
+        if self._resolved_attribute_set:
+            self._resolved_attribute_set._release()
+            if self._resolved_attribute_set._ref_cnt == 0:
+                self._resolved_attribute_set = None
 
         return ras_ref
 
     def own_one(self, ra: 'ResolvedAttribute') -> None:
         # Save the current context.
-        att_ctx = self.ras.attribute_context
+        att_ctx = self._resolved_attribute_set.attribute_context
         self.take_reference(ResolvedAttributeSet())
-        self.ras.merge(ra, ra.att_ctx)
+        self._resolved_attribute_set.merge(ra)
         # Reapply the old attribute context.
-        self.ras.attribute_context = att_ctx
+        self._resolved_attribute_set.attribute_context = att_ctx
 
     def apply_traits(self, arc: 'AttributeResolutionContext') -> None:
-        if self.ras and arc and arc.traits_to_apply:
-            self.take_reference(self.ras.apply_traits(arc.traits_to_apply, arc.res_guide, arc.actions_modify))
+        if self._resolved_attribute_set and arc and arc.traits_to_apply:
+            self.take_reference(self._resolved_attribute_set.apply_traits(arc.traits_to_apply, arc.res_opt, arc.res_guide, arc.actions_modify))
 
     def generate_applier_attributes(self, arc: 'AttributeResolutionContext', apply_traits_to_new: bool) -> None:
         if not arc or not arc.applier_caps:
             return
 
-        if not self.ras:
+        if not self._resolved_attribute_set:
             self.take_reference(ResolvedAttributeSet())
 
         # make sure all of the 'source' attributes know about this context.
-        resolved_set = self.ras.set
+        resolved_set = self._resolved_attribute_set._set
         if resolved_set is not None:
             for ra in resolved_set:
                 ra.arc = arc
@@ -178,55 +178,55 @@ class ResolvedAttributeSetBuilder:
                     # make a quick look up of avoid names
                     avoid = set(selects_some_avoid_names)  # type: Set[str]
 
-                    for name in resolved_set:
+                    for resolved_attribute in resolved_set:
                         # only take the ones not in avoid the list given
-                        if name not in avoid:
-                            take_set.append(name)
+                        if resolved_attribute._resolved_name not in avoid:
+                            take_set.append(resolved_attribute)
 
                 # replace the guts of the resolvedAttributeSet with this
-                self.ras.alter_set_order_and_scope(take_set)
+                self._resolved_attribute_set.alter_set_order_and_scope(take_set)
 
         # get the new atts and then add them one at a time into this set.
         new_atts = self._get_applier_generated_attributes(arc, True, apply_traits_to_new)
         if new_atts:
-            ras = self.ras
+            ras = self._resolved_attribute_set
             for new_att in new_atts:
                 # here we want the context that was created in the appliers.
-                ras = ras.merge(new_att, new_att.att_ctx)
+                ras = ras.merge(new_att)
 
             self.take_reference(ras)
 
     def remove_requested_atts(self) -> None:
-        if self.ras:
+        if self._resolved_attribute_set:
             marker = (0, self.inherited_mark)  # type: Tuple[int, int]
-            self.take_reference(self.ras.remove_requested_atts(marker))
+            self.take_reference(self._resolved_attribute_set.remove_requested_atts(marker))
             self.inherited_mark = marker[1]
 
     def mark_inherited(self) -> None:
-        if not self.ras or not self.ras.set:
+        if not self._resolved_attribute_set or not self._resolved_attribute_set._set:
             self.inherited_mark = 0
             return
 
         def count_set(ras_sub: 'ResolvedAttributeSet', offset: int) -> int:
             last = offset
-            if ras_sub and ras_sub.set:
-                for ra in ras_sub.set:
-                    if isinstance(ra.target, ResolvedAttributeSet) and ra.target.set:
+            if ras_sub and ras_sub._set:
+                for ra in ras_sub._set:
+                    if isinstance(ra.target, ResolvedAttributeSet) and ra.target._set:
                         last = count_set(cast('ResolvedAttributeSet', ra.target), last)
                     else:
                         last += 1
 
             return last
 
-        self.inherited_mark = count_set(self.ras, 0)
+        self.inherited_mark = count_set(self._resolved_attribute_set, 0)
 
     def mark_order(self) -> None:
         def mark_set(ras_sub: 'ResolvedAttributeSet', inherited_mark: int, offset: int) -> int:
             last = offset
-            if ras_sub and ras_sub.set:
+            if ras_sub and ras_sub._set:
                 ras_sub.insert_order = last
-                for ra in ras_sub.set:
-                    if isinstance(ra.target, ResolvedAttributeSet) and ra.target.set:
+                for ra in ras_sub._set:
+                    if isinstance(ra.target, ResolvedAttributeSet) and ra.target._set:
                         last = mark_set(cast('ResolvedAttributeSet', ra.target), inherited_mark, last)
                     else:
                         if last >= inherited_mark:
@@ -235,11 +235,11 @@ class ResolvedAttributeSetBuilder:
 
             return last
 
-        mark_set(self.ras, self.inherited_mark, 0)
+        mark_set(self._resolved_attribute_set, self.inherited_mark, 0)
 
     def _get_applier_generated_attributes(self, arc: 'AttributeResolutionContext', clear_state: bool, apply_modifiers: bool) \
             -> Optional[List['ResolvedAttribute']]:
-        if not self.ras or self.ras.set is None or not arc or not arc.applier_caps:
+        if not self._resolved_attribute_set or self._resolved_attribute_set._set is None or not arc or not arc.applier_caps:
             return None
 
         caps = arc.applier_caps
@@ -267,12 +267,12 @@ class ResolvedAttributeSetBuilder:
 
         # That may need to start out clean.
         if clear_state:
-            for ra in self.ras.set:
+            for ra in self._resolved_attribute_set._set:
                 ra.applier_state = None
 
         # make an attribute context to hold attributes that are generated from appliers
         # there is a context for the entire set and one for each 'round' of applications that happen
-        att_ctx_container_group = self.ras.attribute_context  # type: CdmAttributeContext
+        att_ctx_container_group = self._resolved_attribute_set.attribute_context  # type: CdmAttributeContext
         if att_ctx_container_group:
             acp = AttributeContextParameters(
                 under=att_ctx_container_group,
@@ -291,7 +291,7 @@ class ResolvedAttributeSetBuilder:
             app_ctx.res_att_source = res_att_source
             app_ctx.res_guide = arc.res_guide
 
-            if res_att_source and isinstance(res_att_source.target, ResolvedAttributeSet) and cast('ResolvedAttributeSet', res_att_source).set:
+            if res_att_source and isinstance(res_att_source.target, ResolvedAttributeSet) and cast('ResolvedAttributeSet', res_att_source.target)._set:
                 return app_ctx  # Makes no sense for a group.
 
             # Will something add?
@@ -299,15 +299,15 @@ class ResolvedAttributeSetBuilder:
                 # May want to make a new attribute group.
                 # make the 'new' attribute look like any source attribute for the duration of this call to make a context. there could be state needed
                 app_ctx.res_att_new = res_att_source
-                if self.ras.attribute_context and action.will_create_context and action.will_create_context(app_ctx):
-                    action.do_create_context(app_ctx)
+                if self._resolved_attribute_set.attribute_context and action._will_create_context and action._will_create_context(app_ctx):
+                    action._do_create_context(app_ctx)
 
                 # Make a new resolved attribute as a place to hold results.
                 app_ctx.res_att_new = ResolvedAttribute(app_ctx.res_opt, None, None, app_ctx.att_ctx)
 
                 # Copy state from source.
                 if res_att_source and res_att_source.applier_state:
-                    app_ctx.res_att_new.applier_state = res_att_source.applier_state.copy()
+                    app_ctx.res_att_new.applier_state = res_att_source.applier_state._copy()
                 else:
                     app_ctx.res_att_new.applier_state = ApplierState()
 
@@ -334,16 +334,24 @@ class ResolvedAttributeSetBuilder:
                         app_ctx.res_att_source = app_ctx.res_att_new
 
                         for mod_act in app_ctx.res_att_new.arc.actions_modify:
-                            if mod_act.will_attribute_modify(app_ctx):
-                                mod_act.do_attribute_modify(app_ctx)
+                            if mod_act._will_attribute_modify(app_ctx):
+                                mod_act._do_attribute_modify(app_ctx)
                 app_ctx.res_att_new.complete_context(app_ctx.res_opt)
+                # tie this new resolved att to the source via lineage
+                if app_ctx.res_att_new.att_ctx and res_att_source and res_att_source.att_ctx  \
+                    and (not res_att_source.applier_state or not res_att_source.applier_state._flex_remove):
+                    if res_att_source.att_ctx.lineage is not None and len(res_att_source.att_ctx.lineage) > 0:
+                        for lineage in res_att_source.att_ctx.lineage:
+                            app_ctx.res_att_source.att_ctx._add_lineage(lineage)
+                    else:
+                        app_ctx.res_att_new.att_ctx._add_lineage(res_att_source.att_ctx)
 
             return app_ctx
 
         # Get the one time atts.
         if caps.can_group_add and arc.actions_group_add:
             for action in arc.actions_group_add:
-                app_ctx = make_resolved_attribute(None, action, action.will_group_add, action.do_group_add, 'group')
+                app_ctx = make_resolved_attribute(None, action, action._will_group_add, action._do_group_add, 'group')
                 # Save it.
                 if app_ctx and app_ctx.res_att_new:
                     res_att_out.append(app_ctx.res_att_new)
@@ -363,7 +371,7 @@ class ResolvedAttributeSetBuilder:
         res_atts_last_round = []  # type: List[ResolvedAttribute]
         if caps.can_round_add and arc.actions_round_add:
             for action in arc.actions_round_add:
-                app_ctx = make_resolved_attribute(None, action, action.will_round_add, action.do_round_add, 'round')
+                app_ctx = make_resolved_attribute(None, action, action._will_round_add, action._do_round_add, 'round')
                 # Save it.
                 if app_ctx and app_ctx.res_att_new:
                     # Overall list.
@@ -372,7 +380,7 @@ class ResolvedAttributeSetBuilder:
                     res_atts_last_round.append(app_ctx.res_att_new)
 
         # The first per-round set of attributes is the set owned by this object.
-        res_atts_last_round += self.ras.set
+        res_atts_last_round += self._resolved_attribute_set._set
 
         # Now loop over all of the previous atts until they all say 'stop'.
         if res_atts_last_round:
@@ -384,7 +392,7 @@ class ResolvedAttributeSetBuilder:
                     for att in res_atts_last_round:
                         if arc.actions_attribute_add:
                             for action in arc.actions_attribute_add:
-                                app_ctx = make_resolved_attribute(att, action, action.will_attribute_add, action.do_attribute_add, 'detail')
+                                app_ctx = make_resolved_attribute(att, action, action._will_attribute_add, action._do_attribute_add, 'detail')
                                 # Save it
                                 if app_ctx and app_ctx.res_att_new:
                                     # Overall list.

@@ -1,3 +1,5 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Optional
 
@@ -12,10 +14,10 @@ class LocalEntityDeclaration(EntityDeclarationDefinition):
     def __init__(self):
         super().__init__('LocalEntity')
 
-        self.dataPartitions = []  # type: List[DataPartition]
+        self.dataPartitions = None  # type: List[DataPartition]
         """The data partitions"""
 
-        self.dataPartitionPatterns = []  # type: List[DataPartitionPattern]
+        self.dataPartitionPatterns = None  # type: List[DataPartitionPattern]
         """The data partition patterns."""
 
         self.entitySchema = None  # type: Optional[str]

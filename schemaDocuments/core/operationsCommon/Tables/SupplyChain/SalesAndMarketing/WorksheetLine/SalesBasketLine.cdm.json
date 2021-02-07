@@ -1,0 +1,437 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/BOMTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PriceDiscChangePolicy.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/RouteTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesBasket.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesBasketLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "basketTransId",
+          "dataType": "TradeInventTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfirmedDlv",
+          "dataType": "SalesShippingDateRequested",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CustCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemBOMId",
+          "dataType": "ItemBOMId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "ItemRouteId",
+          "dataType": "ItemRouteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineAmount",
+          "dataType": "SalesLineAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDisc",
+          "dataType": "SalesLineDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LinePercent",
+          "dataType": "SalesLinePercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualEntryChangepolicy",
+          "dataType": "PriceDiscPolicyManual",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MultiLnDisc",
+          "dataType": "SalesMultiLnDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MultiLnPercent",
+          "dataType": "SalesMultiLnPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceUnit",
+          "dataType": "PriceUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesBasketId",
+          "dataType": "SalesBasketId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "SalesMarkup",
+          "dataType": "SalesMarkup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPrice",
+          "dataType": "SalesPrice",
+          "isNullable": true,
+          "displayName": "Unit price",
+          "description": ""
+        },
+        {
+          "name": "SalesQty",
+          "dataType": "SalesOrderedQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesUnit",
+          "dataType": "SalesUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SystemEntryChangePolicy",
+          "dataType": "PriceDiscPolicySystem",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SystemEntrySource",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOMTable"
+          },
+          "name": "Relationship_BOMTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscChangePolicy"
+          },
+          "name": "Relationship_PriceDiscChangePolicyRecId1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscChangePolicy"
+          },
+          "name": "Relationship_PriceDiscChangePolicyRecId2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteTable"
+          },
+          "name": "Relationship_RouteTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesBasket"
+          },
+          "name": "Relationship_SalesBasketRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales basket lines"
+    },
+    {
+      "dataTypeName": "TradeInventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesShippingDateRequested",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemBOMId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemRouteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesLineAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesLineDisc",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesLinePercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceDiscPolicyManual",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SalesMultiLnDisc",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesMultiLnPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceUnit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesBasketId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesMarkup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesOrderedQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesUnit",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceDiscPolicySystem",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    }
+  ]
+}

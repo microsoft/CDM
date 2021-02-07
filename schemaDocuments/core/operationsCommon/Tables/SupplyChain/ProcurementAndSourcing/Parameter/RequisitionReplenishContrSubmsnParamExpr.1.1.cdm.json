@@ -1,0 +1,89 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/ExpressionTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "RequisitionReplenishControlSubmsnParam.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RequisitionReplenishContrSubmsnParamExpr",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExpressionTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsExpressionChanged",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequisitionReplenishControlSubmsnParam",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ExpressionTable"
+          },
+          "name": "Relationship_ExpressionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RequisitionReplenishControlSubmsnParam"
+          },
+          "name": "Relationship_RequisitionReplenishControlSubmsnParamRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Replenishment requisition submission parameter expression"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

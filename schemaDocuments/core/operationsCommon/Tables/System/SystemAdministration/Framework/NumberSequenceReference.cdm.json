@@ -1,0 +1,114 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "NumberSequenceDatatype.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Miscellaneous/NumberSequenceScope.cdm.json"
+    },
+    {
+      "corpusPath": "NumberSequenceTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "NumberSequenceReference",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllowSameAs",
+          "dataType": "NumberSequenceAllowSameAs",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceDatatype",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Datatype number sequence properties",
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Number sequence code",
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceScope",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Number sequence Scope",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceDatatype"
+          },
+          "name": "Relationship_NumberSequenceDatatypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceScope"
+          },
+          "name": "Relationship_NumberSequenceScopeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_NumberSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Number sequence references"
+    },
+    {
+      "dataTypeName": "NumberSequenceAllowSameAs",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

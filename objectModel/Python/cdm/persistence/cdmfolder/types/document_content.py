@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Union, List
 
 from .cdm_import import Import
@@ -16,10 +19,11 @@ class DocumentContent(JObject):
 
         self.json_rename({"schema": "$schema"})
 
-        self.schema = ''  # type: str
-        self.jsonSchemaSemanticVersion = ''  # type: str
-        self.imports = []  # type: List[Import]
+        self.schema = None  # type: str
+        self.jsonSchemaSemanticVersion = None  # type: str
+        self.imports = None  # type: List[Import]
         self.definitions = None  # type: Union[Trait, DataType, Purpose, AttributeGroup, Entity, ConstantEntity]
+        self.documentVersion = None  # type: str
 
-        self.schemaVersion = ''  # type: str
+        self.schemaVersion = None  # type: str
         """DEPRECATED"""

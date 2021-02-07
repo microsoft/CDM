@@ -1,0 +1,105 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRFraudData",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MCRKeyID",
+          "dataType": "MCRKeyID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRScore",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Score",
+          "description": ""
+        },
+        {
+          "name": "MCRSysGenerated",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "System Generated Fraud",
+          "description": ""
+        },
+        {
+          "name": "MCRType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "MCRUserGenerated",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "User Generated",
+          "description": ""
+        },
+        {
+          "name": "MCRValue",
+          "dataType": "MCRFraudDataValue",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fraud data"
+    },
+    {
+      "dataTypeName": "MCRKeyID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRFraudDataValue",
+      "extendsDataType": "string"
+    }
+  ]
+}

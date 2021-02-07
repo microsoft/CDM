@@ -1,0 +1,170 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/JmgStampJournalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgFlexCorrection",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutomaticCorrection",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectedByWorker",
+          "dataType": "JmgWorkerRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Created by",
+          "description": ""
+        },
+        {
+          "name": "Date",
+          "dataType": "JmgDate",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "JmgDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayCostType",
+          "dataType": "JmgPayCostType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayQty",
+          "dataType": "JmgPayQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayTransferred",
+          "dataType": "JmgPayTransferred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Seconds",
+          "dataType": "JmgSeconds",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "JmgWorkerRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayTable"
+          },
+          "name": "Relationship_JmgPayTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgStampJournalTable"
+          },
+          "name": "Relationship_JmgStampJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Flex correction"
+    },
+    {
+      "dataTypeName": "JmgWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JmgDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgPayCostType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgPayQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgPayTransferred",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgSeconds",
+      "extendsDataType": "integer"
+    }
+  ]
+}

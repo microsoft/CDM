@@ -1,0 +1,242 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Main/IntrastatToProdcom.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventProdComTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventProdComLineWithCode",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BranchNumber",
+          "dataType": "TaxBranchNumber",
+          "description": ""
+        },
+        {
+          "name": "ColumnA",
+          "dataType": "InventProdComItemCodeId",
+          "description": ""
+        },
+        {
+          "name": "IntrastatCommodity",
+          "dataType": "IntrastatCommodityId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ColumnC",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ColumnD",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Total production - quantity",
+          "description": ""
+        },
+        {
+          "name": "ColumnE",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Column E",
+          "description": ""
+        },
+        {
+          "name": "ColumnF",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Third party deliveries - quantity",
+          "description": ""
+        },
+        {
+          "name": "ColumnG",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Column G",
+          "description": ""
+        },
+        {
+          "name": "ColumnH",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Column H",
+          "description": ""
+        },
+        {
+          "name": "ColumnI",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Third party deliveries - amount",
+          "description": ""
+        },
+        {
+          "name": "ColumnJ",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Column J",
+          "description": ""
+        },
+        {
+          "name": "ColumnK",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Column K",
+          "description": ""
+        },
+        {
+          "name": "ColumnL",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Column L",
+          "description": ""
+        },
+        {
+          "name": "ColumnM",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Column M",
+          "description": ""
+        },
+        {
+          "name": "ColumnN",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Foreign vendors - quantity",
+          "description": ""
+        },
+        {
+          "name": "ColumnO",
+          "dataType": "InventProdComColumnField",
+          "isNullable": true,
+          "displayName": "Foreign vendors - amount",
+          "description": ""
+        },
+        {
+          "name": "InventProdComTable",
+          "dataType": "InventProdComPeriodRecId",
+          "description": ""
+        },
+        {
+          "name": "ColumnB",
+          "dataType": "DEL_IntrastatItemCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_IntrastatCommodityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatToProdcom"
+          },
+          "name": "Relationship_IntrastatToProdcomRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventProdComTable"
+          },
+          "name": "Relationship_InventProdComTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Products on the PRODCOM list"
+    },
+    {
+      "dataTypeName": "TaxBranchNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventProdComItemCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatCommodityId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventProdComColumnField",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventProdComPeriodRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DEL_IntrastatItemCodeId",
+      "extendsDataType": "string"
+    }
+  ]
+}

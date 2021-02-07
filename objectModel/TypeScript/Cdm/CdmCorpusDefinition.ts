@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     ArgumentValue,
     AttributeResolutionDirectiveSet,
@@ -11,6 +14,7 @@ import {
     CdmAttributeReference,
     CdmAttributeResolutionGuidance,
     CdmConstantEntityDefinition,
+    CdmConstants,
     CdmContainerDefinition,
     CdmCorpusContext,
     CdmDataPartitionDefinition,
@@ -34,7 +38,18 @@ import {
     CdmObjectReference,
     CdmObjectReferenceBase,
     cdmObjectType,
+    CdmOperationAddAttributeGroup,
+    CdmOperationAddCountAttribute,
+    CdmOperationAddSupportingAttribute,
+    CdmOperationAddTypeAttribute,
+    CdmOperationArrayExpansion,
+    CdmOperationCombineAttributes,
+    CdmOperationExcludeAttributes,
+    CdmOperationIncludeAttributes,
+    CdmOperationRenameAttributes,
+    CdmOperationReplaceAsForeignKey,
     CdmParameterDefinition,
+    CdmProjection,
     CdmPurposeDefinition,
     CdmPurposeReference,
     CdmReferencedEntityDeclarationDefinition,
@@ -43,9 +58,12 @@ import {
     CdmTraitReference,
     CdmTypeAttributeDefinition,
     cdmValidationStep,
+    DepthInfo,
     docsResult,
+    DocumentLibrary,
     EventCallback,
     ICdmProfiler,
+    ImportInfo,
     Logger,
     p,
     ParameterCollection,
@@ -59,19 +77,29 @@ import {
 } from '../internal';
 import { PersistenceLayer } from '../Persistence';
 import {
-    fetchFolioExtension,
-    fetchManifestExtension,
-    fetchModelJsonExtension
-} from '../Persistence/extensionFunctions';
-import {
     isAttributeGroupDefinition,
     isCdmTraitDefinition,
+    isConstantEntityDefinition,
     isDataTypeDefinition,
     isEntityDefinition,
+    isOperationAddAttributeGroup,
+    isOperationAddCountAttribute,
+    isOperationAddSupportingAttribute,
+    isOperationAddTypeAttribute,
+    isOperationArrayExpansion,
+    isOperationCombineAttributes,
+    isOperationExcludeAttributes,
+    isOperationIncludeAttributes,
+    isOperationRenameAttributes,
+    isOperationReplaceAsForeignKey,
     isParameterDefinition,
+    isProjection,
     isPurposeDefinition
 } from '../Utilities/cdmObjectTypeGuards';
+import { StorageUtils } from '../Utilities/StorageUtils';
 import { VisitCallback } from '../Utilities/VisitCallback';
+import { using } from "using-statement";
+import { enterScope } from '../Utilities/Logging/Logger';
 
 export class CdmCorpusDefinition {
     public get profiler(): ICdmProfiler {
@@ -83,13 +111,22 @@ export class CdmCorpusDefinition {
     // tslint:disable-next-line:variable-name
     public static _nextID: number = 0;
     public appId: string;
-    public isCurrentlyResolving: boolean = false;
-    public blockDeclaredPathChanges: boolean = false;
-    public rootPath: string;
     /**
      * @internal
      */
-    public allDocuments: [CdmFolderDefinition, CdmDocumentDefinition][];
+    public isCurrentlyResolving: boolean = false;
+    /**
+     * @internal
+     */
+    public blockDeclaredPathChanges: boolean = false;
+
+    /**
+     * The set of resolution directives that will be used by default by the object model when it is resolving
+     * entities and when no per-call set of directives is provided.
+     */
+    public defaultResolutionDirectives: AttributeResolutionDirectiveSet;
+
+    public rootPath: string;
     public readonly storage: StorageManager;
 
     public readonly persistence: PersistenceLayer;
@@ -101,10 +138,6 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public directory: Map<CdmDocumentDefinition, CdmFolderDefinition>;
-    /**
-     * @internal
-     */
     public definitionReferenceSymbols: Map<string, SymbolSet>;
     /**
      * @internal
@@ -113,65 +146,40 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public objectCache: Map<string, CdmObject>;
-
+    public documentLibrary: DocumentLibrary;
     /**
      * @internal
      */
-    public docsNotLoaded: Set<string>;
-    /**
-     * @internal
-     */
-    public docsCurrentlyLoading: Set<string>;
-    /**
-     * @internal
-     */
-    public docsNotIndexed: Set<CdmDocumentDefinition>;
-    /**
-     * @internal
-     */
-    public docsNotFound: Set<string>;
-
-    /**
-     * @internal
-     */
-    public readonly symbol2EntityDefList: Map<string, CdmEntityDefinition[]>;
-    private readonly pathLookup: Map<string, [CdmFolderDefinition, CdmDocumentDefinition]>;
+    public readonly resEntMap: Map<string, string>;
     private readonly symbolDefinitions: Map<string, CdmDocumentDefinition[]>;
-    private readonly defintionWrtTag: Map<string, string>;
     private readonly emptyRTS: Map<string, ResolvedTraitSet>;
     private readonly namespaceFolders: Map<string, CdmFolderDefinition>;
 
-    private readonly outgoingRelationships: Map<CdmEntityDefinition, CdmE2ERelationship[]>;
-    private readonly incomingRelationships: Map<CdmEntityDefinition, CdmE2ERelationship[]>;
+    private readonly outgoingRelationships: Map<CdmObjectDefinition, CdmE2ERelationship[]>;
+    private readonly incomingRelationships: Map<CdmObjectDefinition, CdmE2ERelationship[]>;
 
-    private readonly cdmExtension: string = 'cdm.json';
+    private readonly cdmExtension: string = CdmConstants.cdmExtension;
 
     constructor() {
         // let bodyCode = () =>
         {
             // this.rootPath = rootPath;
             this.namespaceFolders = new Map<string, CdmFolderDefinition>();
-            this.allDocuments = [];
-            this.pathLookup = new Map<string, [CdmFolderDefinition, CdmDocumentDefinition]>();
-            this.directory = new Map<CdmDocumentDefinition, CdmFolderDefinition>();
             this.symbolDefinitions = new Map<string, CdmDocumentDefinition[]>();
             this.definitionReferenceSymbols = new Map<string, SymbolSet>();
-            this.defintionWrtTag = new Map<string, string>();
             this.emptyRTS = new Map<string, ResolvedTraitSet>();
-            this.outgoingRelationships = new Map<CdmEntityDefinition, CdmE2ERelationship[]>();
-            this.incomingRelationships = new Map<CdmEntityDefinition, CdmE2ERelationship[]>();
-            this.symbol2EntityDefList = new Map<string, CdmEntityDefinition[]>();
-            this.objectCache = new Map<string, CdmObject>();
+            this.outgoingRelationships = new Map<CdmObjectDefinition, CdmE2ERelationship[]>();
+            this.incomingRelationships = new Map<CdmObjectDefinition, CdmE2ERelationship[]>();
+            this.resEntMap = new Map<string, string>();
+            this.documentLibrary = new DocumentLibrary();
 
             this.ctx = new resolveContext(this);
             this.storage = new StorageManager(this);
             this.persistence = new PersistenceLayer(this);
 
-            this.docsNotLoaded = new Set<string>();
-            this.docsCurrentlyLoading = new Set<string>();
-            this.docsNotFound = new Set<string>();
-            this.docsNotIndexed = new Set<CdmDocumentDefinition>();
+            // the default for the default is to make entity attributes into foreign key references
+            // when they point at one other instance and to ignore the other entities when there are an array of them
+            this.defaultResolutionDirectives = new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly']));
         }
         // return p.measure(bodyCode);
     }
@@ -247,16 +255,16 @@ export class CdmCorpusDefinition {
     private static fetchPriorityDoc(
         docs: CdmDocumentDefinition[],
         importPriority: Map<CdmDocumentDefinition,
-            number>): CdmDocumentDefinition {
+            ImportInfo>): CdmDocumentDefinition {
         // let bodyCode = () =>
         {
             let docBest: CdmDocumentDefinition;
             let indexBest: number = Number.MAX_SAFE_INTEGER;
             for (const docDefined of docs) {
                 // is this one of the imported docs?
-                const indexFound: number = importPriority.get(docDefined);
-                if (indexFound < indexBest) {
-                    indexBest = indexFound;
+                const importInfo: ImportInfo = importPriority.get(docDefined);
+                if (importInfo && importInfo.priority < indexBest) {
+                    indexBest = importInfo.priority;
                     docBest = docDefined;
                     if (indexBest === 0) {
                         break;
@@ -269,9 +277,12 @@ export class CdmCorpusDefinition {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @deprecated Use fetchObjectAsync instead.
+     */
     public async createRootManifest(corpusPath: string): Promise<CdmManifestDefinition> {
         if (this.isPathManifestDocument(corpusPath)) {
-            this.rootManifest = await this._fetchObjectAsync(corpusPath, undefined, false) as CdmManifestDefinition;
+            this.rootManifest = await this.fetchObjectAsync(corpusPath, undefined, false);
 
             return this.rootManifest;
         }
@@ -338,20 +349,27 @@ export class CdmCorpusDefinition {
                     const prefix: string = symbolDef.slice(0, preEnd);
                     result.newSymbol = symbolDef.slice(preEnd + 1);
                     result.docList = this.symbolDefinitions.get(result.newSymbol);
+
+                    let tempMonikerDoc: CdmDocumentDefinition;
+                    let usingWrtDoc: boolean = false;
                     if (fromDoc && fromDoc.importPriorities && fromDoc.importPriorities.monikerPriorityMap.has(prefix)) {
-                        const tempMonikerDoc: CdmDocumentDefinition = fromDoc.importPriorities.monikerPriorityMap.get(prefix);
-                        // if more monikers, keep looking
-                        if (result.newSymbol.indexOf('/') >= 0 && !this.symbolDefinitions.has(result.newSymbol)) {
-                            return this.docsForSymbol(resOpt, wrtDoc, tempMonikerDoc, result.newSymbol);
-                        }
-                        resOpt.fromMoniker = prefix;
-                        result.docBest = tempMonikerDoc;
-                    } else if (wrtDoc.importPriorities && wrtDoc.importPriorities.monikerPriorityMap.has(prefix)) {
+                        tempMonikerDoc = fromDoc.importPriorities.monikerPriorityMap.get(prefix);
+                    } else if (wrtDoc && wrtDoc.importPriorities && wrtDoc.importPriorities.monikerPriorityMap.has(prefix)) {
                         // if that didn't work, then see if the wrtDoc can find the moniker
-                        const tempMonikerDoc: CdmDocumentDefinition = wrtDoc.importPriorities.monikerPriorityMap.get(prefix);
+                        tempMonikerDoc = wrtDoc.importPriorities.monikerPriorityMap.get(prefix);
+                        usingWrtDoc = true;
+                    }
+
+                    if (tempMonikerDoc) {
                         // if more monikers, keep looking
-                        if (result.newSymbol.indexOf('/') >= 0) {
-                            return this.docsForSymbol(resOpt, wrtDoc, tempMonikerDoc, result.newSymbol);
+                        if (result.newSymbol.indexOf('/') >= 0 && (usingWrtDoc || !this.symbolDefinitions.has(result.newSymbol))) {
+                            const currDocsResult: docsResult = this.docsForSymbol(resOpt, wrtDoc, tempMonikerDoc, result.newSymbol);
+                            if (!currDocsResult.docList && fromDoc === wrtDoc) {
+                                // we are back at the top and we have not found the docs, move the wrtDoc down one level
+                                return this.docsForSymbol(resOpt, tempMonikerDoc, tempMonikerDoc, result.newSymbol);
+                            } else {
+                                return currDocsResult;
+                            }
                         }
                         resOpt.fromMoniker = prefix;
                         result.docBest = tempMonikerDoc;
@@ -377,63 +395,67 @@ export class CdmCorpusDefinition {
         symbolDef: string,
         expectedType: cdmObjectType,
         retry: boolean
-    ): CdmObjectDefinitionBase {
-        // let bodyCode = () =>
-        {
-            // given a symbolic name,
-            // find the 'highest prirority' definition of the object from the point of view of a given document (with respect to, wrtDoc)
-            // (meaning given a document and the things it defines and the files it imports and the files they import,
-            // where is the 'last' definition found)
-            if (!resOpt || !resOpt.wrtDoc) {
-                return undefined;
-            } // no way to figure this out
-            const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
+    ): CdmObjectBase {
+        // given a symbolic name,
+        // find the 'highest priority' definition of the object from the point of view of a given document (with respect to, wrtDoc)
+        // (meaning given a document and the things it defines and the files it imports and the files they import,
+        // where is the 'last' definition found)
+        if (!resOpt || !resOpt.wrtDoc) {
+            return undefined;
+        } // no way to figure this out
+        const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
 
-            // get the array of documents where the symbol is defined
-            const symbolDocsResult: docsResult = this.docsForSymbol(resOpt, wrtDoc, fromDoc, symbolDef);
-            let docBest: CdmDocumentDefinition = symbolDocsResult.docBest;
-            symbolDef = symbolDocsResult.newSymbol;
-            const docs: CdmDocumentDefinition[] = symbolDocsResult.docList;
-            if (docs) {
-                // add this symbol to the set being collected in resOpt, we will need this when caching
-                if (!resOpt.symbolRefSet) {
-                    resOpt.symbolRefSet = new SymbolSet();
-                }
-                resOpt.symbolRefSet.add(symbolDef);
-                // for the given doc, there is a sorted list of imported docs (including the doc itself as item 0).
-                // find the lowest number imported document that has a definition for this symbol
-                if (!wrtDoc.importPriorities) {
-                    return undefined; // need to index imports first, should have happened
-                }
-                const importPriority: Map<CdmDocumentDefinition, number> = wrtDoc.importPriorities.importPriority;
-                if (importPriority.size === 0) {
-                    return undefined;
-                }
-
-                if (!docBest) {
-                    docBest = CdmCorpusDefinition.fetchPriorityDoc(docs, importPriority) || docBest;
-                }
-            }
-
-            // perhaps we have never heard of this symbol in the imports for this document?
-            if (!docBest) {
-                return undefined;
-            }
-
-            // return the definition found in the best document
-            let found: CdmObjectDefinitionBase = docBest.internalDeclarations.get(symbolDef);
-            if (found === undefined && retry === true) {
-                // maybe just locatable from here not defined here
-                found = this.resolveSymbolReference(resOpt, docBest, symbolDef, expectedType, false);
-            }
-
-            if (found && expectedType !== cdmObjectType.error) {
-                found = this.reportErrorStatus(found, symbolDef, expectedType);
-            }
-
-            return found;
+        if (wrtDoc.needsIndexing && !wrtDoc.currentlyIndexing) {
+            Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Please set the 'importsLoadStrategy' to 'load' on the ResolveOptions object when calling fetchObjectAsync.`, this.resolveSymbolReference.name);
+            return undefined;
         }
-        // return p.measure(bodyCode);
+
+        // get the array of documents where the symbol is defined
+        const symbolDocsResult: docsResult = this.docsForSymbol(resOpt, wrtDoc, fromDoc, symbolDef);
+        let docBest: CdmDocumentDefinition = symbolDocsResult.docBest;
+        symbolDef = symbolDocsResult.newSymbol;
+        const docs: CdmDocumentDefinition[] = symbolDocsResult.docList;
+        if (docs) {
+            // add this symbol to the set being collected in resOpt, we will need this when caching
+            if (!resOpt.symbolRefSet) {
+                resOpt.symbolRefSet = new SymbolSet();
+            }
+            resOpt.symbolRefSet.add(symbolDef);
+            // for the given doc, there is a sorted list of imported docs (including the doc itself as item 0).
+            // find the lowest number imported document that has a definition for this symbol
+            if (!wrtDoc.importPriorities) {
+                return undefined; // need to index imports first, should have happened
+            }
+            const importPriority: Map<CdmDocumentDefinition, ImportInfo> = wrtDoc.importPriorities.importPriority;
+            if (importPriority.size === 0) {
+                return undefined;
+            }
+
+            if (!docBest) {
+                docBest = CdmCorpusDefinition.fetchPriorityDoc(docs, importPriority) || docBest;
+            }
+        }
+
+        // perhaps we have never heard of this symbol in the imports for this document?
+        if (!docBest) {
+            return undefined;
+        }
+
+        // return the definition found in the best document
+        let found: CdmObjectBase = docBest.internalDeclarations.get(symbolDef);
+        if (found === undefined && retry === true) {
+            // maybe just locatable from here not defined here.
+            // this happens when the symbol is monikered, but the moniker path doesn't lead to the document where the symbol is defined.
+            // it leads to the document from where the symbol can be found.
+            // Ex.: resolvedFrom/Owner, while resolvedFrom is the Account that imports Owner.
+            found = this.resolveSymbolReference(resOpt, docBest, symbolDef, expectedType, false);
+        }
+
+        if (found && expectedType !== cdmObjectType.error) {
+            found = this.reportErrorStatus(found, symbolDef, expectedType);
+        }
+
+        return found;
     }
 
     /**
@@ -475,7 +497,8 @@ export class CdmCorpusDefinition {
         definition: CdmObjectBase,
         kind: string,
         extraTags: string = '',
-        useNameNotId: boolean = false
+        notKnownToHaveParameters: boolean = false,
+        pathToDef?: string
     ): string {
         // let bodyCode = () =>
         {
@@ -496,15 +519,22 @@ export class CdmCorpusDefinition {
 
             // easy stuff first
             let thisId: string;
-            const thisName: string = definition.fetchObjectDefinitionName();
-            if (useNameNotId) {
-                thisId = thisName;
+            const thisPath: string = (definition.objectType === cdmObjectType.projectionDef) ? definition.declaredPath.replace(/\//g, '') : definition.atCorpusPath;
+            if (pathToDef && notKnownToHaveParameters) {
+                thisId = pathToDef;
             } else {
                 thisId = definition.ID.toString();
             }
 
             let tagSuffix: string = `-${kind}-${thisId}`;
             tagSuffix += `-(${resOpt.directives ? resOpt.directives.getTag() : ''})`;
+            if (resOpt.depthInfo.maxDepthExceeded) {
+                const currDepthInfo: DepthInfo = resOpt.depthInfo;
+                tagSuffix += `-${currDepthInfo.maxDepth - currDepthInfo.currentDepth}`;
+            }
+            if (resOpt.inCircularReference) {
+                tagSuffix += '-pk';
+            }
             if (extraTags) {
                 tagSuffix += `-${extraTags}`;
             }
@@ -518,10 +548,10 @@ export class CdmCorpusDefinition {
                 symbolsRef = this.definitionReferenceSymbols.get(key);
             }
 
-            if (symbolsRef === undefined && thisName !== undefined) {
+            if (symbolsRef === undefined && thisPath !== undefined) {
                 // every symbol should depend on at least itself
                 const symSetThis: SymbolSet = new SymbolSet();
-                symSetThis.add(thisName);
+                symSetThis.add(thisPath);
                 this.registerDefinitionReferenceSymbols(definition, kind, symSetThis);
                 symbolsRef = symSetThis;
             }
@@ -675,6 +705,39 @@ export class CdmCorpusDefinition {
                 case cdmObjectType.e2eRelationshipDef:
                     newObj = new CdmE2ERelationship(this.ctx, nameOrRef);
                     break;
+                case cdmObjectType.projectionDef:
+                    newObj = new CdmProjection(this.ctx);
+                    break;
+                case cdmObjectType.operationAddCountAttributeDef:
+                    newObj = new CdmOperationAddCountAttribute(this.ctx);
+                    break;
+                case cdmObjectType.operationAddSupportingAttributeDef:
+                    newObj = new CdmOperationAddSupportingAttribute(this.ctx);
+                    break;
+                case cdmObjectType.operationAddTypeAttributeDef:
+                    newObj = new CdmOperationAddTypeAttribute(this.ctx);
+                    break;
+                case cdmObjectType.operationExcludeAttributesDef:
+                    newObj = new CdmOperationExcludeAttributes(this.ctx);
+                    break;
+                case cdmObjectType.operationArrayExpansionDef:
+                    newObj = new CdmOperationArrayExpansion(this.ctx);
+                    break;
+                case cdmObjectType.operationCombineAttributesDef:
+                    newObj = new CdmOperationCombineAttributes(this.ctx);
+                    break;
+                case cdmObjectType.operationRenameAttributesDef:
+                    newObj = new CdmOperationRenameAttributes(this.ctx);
+                    break;
+                case cdmObjectType.operationReplaceAsForeignKeyDef:
+                    newObj = new CdmOperationReplaceAsForeignKey(this.ctx);
+                    break;
+                case cdmObjectType.operationIncludeAttributesDef:
+                    newObj = new CdmOperationIncludeAttributes(this.ctx);
+                    break;
+                case cdmObjectType.operationAddAttributeGroupDef:
+                    newObj = new CdmOperationAddAttributeGroup(this.ctx);
+                    break;
                 default:
             }
 
@@ -692,11 +755,7 @@ export class CdmCorpusDefinition {
             const doc: CdmDocumentDefinition = docDef;
             const path: string = this.storage.createAbsoluteCorpusPath(`${doc.folderPath}${doc.name}`, doc)
                 .toLowerCase();
-            if (!this.pathLookup.has(path)) {
-                this.allDocuments.push([folder, doc]);
-                this.pathLookup.set(path, [folder, doc]);
-                this.directory.set(doc, folder);
-            }
+            this.documentLibrary.addDocumentPath(path, folder, doc);
 
             return doc;
         }
@@ -710,8 +769,7 @@ export class CdmCorpusDefinition {
         // let bodyCode = () =>
         {
             const doc: CdmDocumentDefinition = docDef;
-            // don't worry about defintionWrtTag because it uses the doc ID
-            // that won't get re-used in this session unless there are more than 4 billion objects
+
             // every symbol defined in this document is pointing at the document, so remove from cache.
             // also remove the list of docs that it depends on
             this.removeObjectDefinitions(doc);
@@ -719,12 +777,7 @@ export class CdmCorpusDefinition {
             // remove from path lookup, folder lookup and global list of documents
             const path: string = this.storage.createAbsoluteCorpusPath(`${doc.folderPath}${doc.name}`, doc)
                 .toLowerCase();
-            if (this.pathLookup.has(path)) {
-                this.pathLookup.delete(path);
-                this.directory.delete(doc);
-                const index: number = this.allDocuments.indexOf([folder, doc]);
-                this.allDocuments.splice(index, 1);
-            }
+            this.documentLibrary.removeDocumentPath(path, folder, doc);
         }
         // return p.measure(bodyCode);
     }
@@ -732,91 +785,91 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public listMissingImports(): Set<string> {
-        // let bodyCode = () =>
-        {
-            for (const fs of this.allDocuments) {
-                this.findMissingImportsFromDocument(fs['1']);
-            }
+    public indexDocuments(resOpt: resolveOptions, loadImports: boolean): boolean {
+        const docsNotIndexed: Set<CdmDocumentDefinition> = this.documentLibrary.listDocsNotIndexed();
 
-            if (this.docsNotLoaded.size === 0) {
-                return undefined;
-            }
-
-            return this.docsNotLoaded;
-        }
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public indexDocuments(resOpt: resolveOptions): boolean {
-        // let bodyCode = () =>
-        {
-            if (this.docsNotIndexed.size > 0) {
-                // index any imports
-                for (const doc of this.docsNotIndexed) {
-                    if (doc.needsIndexing) {
-                        Logger.debug(CdmCorpusDefinition.name, this.ctx, `index start: ${doc.atCorpusPath}`, this.indexDocuments.name);
-                        doc.clearCaches();
-                        doc.getImportPriorities();
-                    }
-                }
-                // check basic integrity
-                for (const doc of this.docsNotIndexed) {
-                    if (doc.needsIndexing) {
-                        if (!this.checkObjectIntegrity(doc)) {
-                            return false;
-                        }
-                    }
-                }
-                // declare definitions of objects in this doc
-                for (const doc of this.docsNotIndexed) {
-                    if (doc.needsIndexing) {
-                        this.declareObjectDefinitions(doc, '');
-                    }
-                }
-                // make sure we can find everything that is named by reference
-                for (const doc of this.docsNotIndexed) {
-                    if (doc.needsIndexing) {
-                        const resOptLocal: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
-                        resOptLocal.wrtDoc = doc;
-                        this.resolveObjectDefinitions(resOptLocal, doc);
-                    }
-                }
-                // now resolve any trait arguments that are type object
-                for (const doc of this.docsNotIndexed) {
-                    if (doc.needsIndexing) {
-                        const resOptLocal: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
-                        resOptLocal.wrtDoc = doc;
-                        this.resolveTraitArguments(resOptLocal, doc);
-                    }
-                }
-                // finish up
-                for (const doc of this.docsNotIndexed) {
-                    if (doc.needsIndexing) {
-                        Logger.debug(CdmCorpusDefinition.name, this.ctx, `index finish: ${doc.atCorpusPath}`, this.indexDocuments.name);
-                        this.finishDocumentResolve(doc);
-                    }
-                }
-                // return p.measure(bodyCode);
-            }
-
+        if (docsNotIndexed.size === 0) {
             return true;
         }
+
+        for (const doc of docsNotIndexed) {
+            if (!doc.declarationsIndexed) {
+                Logger.debug(CdmCorpusDefinition.name, this.ctx, `index start: ${doc.atCorpusPath}`, this.indexDocuments.name);
+                doc.clearCaches();
+            }
+        }
+
+        // check basic integrity
+        for (const doc of docsNotIndexed) {
+            if (!doc.declarationsIndexed) {
+                doc.isValid = true; // assume valid unless this fails
+                if (!this.checkObjectIntegrity(doc)) {
+                    doc.isValid = false;
+                }
+            }
+        }
+
+        // declare definitions of objects in this doc
+        for (const doc of docsNotIndexed) {
+            if (!doc.declarationsIndexed && doc.isValid) {
+                this.declareObjectDefinitions(doc, '');
+            }
+        }
+
+        if (loadImports) {
+            // index any imports
+            for (const doc of docsNotIndexed) {
+                doc.getImportPriorities();
+            }
+
+            // make sure we can find everything that is named by reference
+            for (const doc of docsNotIndexed) {
+                if (doc.isValid) {
+                    const resOptLocal: resolveOptions = resOpt.copy();
+                    resOptLocal.wrtDoc = doc;
+                    this.resolveObjectDefinitions(resOptLocal, doc);
+                }
+            }
+            // now resolve any trait arguments that are type object
+            for (const doc of docsNotIndexed) {
+                if (doc.isValid) {
+                    const resOptLocal: resolveOptions = resOpt.copy();
+                    resOptLocal.wrtDoc = doc;
+                    this.resolveTraitArguments(resOptLocal, doc);
+                }
+            }
+        }
+
+        // finish up
+        for (const doc of docsNotIndexed) {
+            Logger.debug(CdmCorpusDefinition.name, this.ctx, `index finish: ${doc.atCorpusPath}`, this.indexDocuments.name);
+            this.finishDocumentResolve(doc, loadImports);
+        }
+
+        return true;
     }
 
+    /**
+     * @deprecated
+     */
     public visit(path: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         return false;
     }
 
-    public async loadFolderOrDocument(objectPath: string, forceReload: boolean = false): Promise<CdmContainerDefinition> {
+    /**
+     * @internal
+     */
+    public async loadFolderOrDocument(objectPath: string, forceReload: boolean = false, resOpt: resolveOptions = null): Promise<CdmContainerDefinition> {
         // let bodyCode = () =>
         {
             if (objectPath) {
                 // first check for namespace
-                const pathTuple: [string, string] = this.storage.splitNamespacePath(objectPath);
+                const pathTuple: [string, string] = StorageUtils.splitNamespacePath(objectPath);
+                if (!pathTuple) {
+                    Logger.error(CdmCorpusDefinition.name, this.ctx, 'The object path cannot be null or empty.', this.loadFolderOrDocument.name);
+
+                    return undefined;
+                }
                 const namespace: string = pathTuple[0] || this.storage.defaultNamespace;
                 objectPath = pathTuple[1];
 
@@ -833,7 +886,7 @@ export class CdmCorpusDefinition {
 
                         return;
                     }
-                    const lastFolder: CdmFolderDefinition = await namespaceFolder.fetchChildFolderFromPathAsync(objectPath, false);
+                    const lastFolder: CdmFolderDefinition = namespaceFolder.fetchChildFolderFromPath(objectPath, false);
 
                     // don't create new folders, just go as far as possible
                     if (lastFolder) {
@@ -846,7 +899,7 @@ export class CdmCorpusDefinition {
                         // remove path to folder and then look in the folder
                         objectPath = objectPath.slice(lastPath.length);
 
-                        return lastFolder.fetchDocumentFromFolderPathAsync(objectPath, namespaceAdapter, forceReload);
+                        return lastFolder.fetchDocumentFromFolderPathAsync(objectPath, namespaceAdapter, forceReload, resOpt);
                     }
                 }
             }
@@ -857,79 +910,95 @@ export class CdmCorpusDefinition {
     }
 
     /**
-     * @internal
-     */
-    public async _fetchObjectAsync(objectPath: string, obj: CdmObject, forceReload: boolean = false): Promise<CdmObject> {
-        objectPath = this.storage.createAbsoluteCorpusPath(objectPath, obj);
-
-        let documentPath: string = objectPath;
-        let documentNameIndex: number = objectPath.lastIndexOf(this.cdmExtension);
-
-        if (documentNameIndex !== -1) {
-            // if there is something after the document path, split it into document path and object path.
-            documentNameIndex += this.cdmExtension.length;
-            documentPath = objectPath.slice(0, documentNameIndex);
-        }
-
-        Logger.debug(CdmCorpusDefinition.name, this.ctx, `request object: ${objectPath}`, this._fetchObjectAsync.name);
-        const newObj: CdmContainerDefinition = await this.loadFolderOrDocument(documentPath, forceReload);
-
-        if (newObj) {
-            // get imports and index each document that is loaded
-            if (newObj instanceof CdmDocumentDefinition) {
-                const resOpt: resolveOptions = {
-                    wrtDoc: newObj,
-                    directives: new AttributeResolutionDirectiveSet()
-                };
-                if (!await newObj.indexIfNeeded(resOpt)) {
-                    return undefined;
-                }
-            }
-
-            if (documentPath === objectPath) {
-                return newObj;
-            }
-
-            if (documentNameIndex === -1) {
-                // there is no remaining path to be loaded, so return.
-                return;
-            }
-
-            // trim off the document path to get the object path in the doc
-            const remainingObjectPath: string = objectPath.slice(documentNameIndex + 1);
-
-            const result: CdmObject = (newObj as CdmDocumentDefinition).fetchObjectFromDocumentPath(remainingObjectPath);
-            if (result === undefined) {
-                Logger.error(
-                    CdmCorpusDefinition.name,
-                    this.ctx,
-                    `Could not find symbol '${remainingObjectPath}' in document [${newObj.atCorpusPath}]`,
-                    this._fetchObjectAsync.name
-                );
-            }
-
-            return result;
-        }
-    }
-
-    /**
      * Fetches an object by the path from the corpus.
      * @param objectPath Object path, absolute or relative.
      * @param obj Optional parameter. When provided, it is used to obtain the FolderPath and the Namespace needed
      * to create the absolute path from a relative path.
+     * @param shallowValidationOrResOpt Optional parameter. When provided, shallow validation in ResolveOptions is enabled,
+     * which logs errors regarding resolving/loading references as warnings.
+     * It also accepts a ResolveOptions object. When provided, will use be used to determine how the symbols are resolved.
+     * @param forceReload Optional parameter. When true, the document containing the requested object is reloaded from storage
+     * to access any external changes made to the document since it may have been cached by the corpus.
      * @returns The object obtained from the provided path.
      */
-    public async fetchObjectAsync<T>(objectPath: string, obj?: CdmObject): Promise<T> {
-        return this._fetchObjectAsync(objectPath, obj) as undefined as T;
+    public async fetchObjectAsync<T>(objectPath: string, obj?: CdmObject, shallowValidationOrResOpt: boolean | resolveOptions | undefined = undefined, forceReload: boolean = false): Promise<T> {
+        return await using(enterScope(CdmCorpusDefinition.name, this.ctx, this.fetchObjectAsync.name), async _ => {
+            let resOpt: resolveOptions;
+            if (typeof (shallowValidationOrResOpt) === 'boolean') {
+                resOpt = new resolveOptions();
+                resOpt.shallowValidation = shallowValidationOrResOpt;
+            } else if (shallowValidationOrResOpt === undefined) {
+                resOpt = new resolveOptions();
+            } else {
+                resOpt = shallowValidationOrResOpt;
+            }
+
+            objectPath = this.storage.createAbsoluteCorpusPath(objectPath, obj);
+
+            let documentPath: string = objectPath;
+            let documentNameIndex: number = objectPath.lastIndexOf(this.cdmExtension);
+
+            if (documentNameIndex !== -1) {
+                // if there is something after the document path, split it into document path and object path.
+                documentNameIndex += this.cdmExtension.length;
+                documentPath = objectPath.slice(0, documentNameIndex);
+            }
+
+            Logger.debug(CdmCorpusDefinition.name, this.ctx, `request object: ${objectPath}`, this.fetchObjectAsync.name);
+            const newObj: CdmContainerDefinition = await this.loadFolderOrDocument(documentPath, forceReload);
+
+            if (newObj) {
+                // get imports and index each document that is loaded
+                if (newObj instanceof CdmDocumentDefinition) {
+                    if (!await newObj.indexIfNeeded(resOpt)) {
+                        return undefined;
+                    }
+                    if (!newObj.isValid) {
+                        Logger.error(
+                            CdmCorpusDefinition.name, this.ctx,
+                            `The requested path: ${objectPath} involves a document that failed validation`,
+                            this.fetchObjectAsync.name);
+
+                        return undefined;
+                    }
+                }
+
+                if (documentPath === objectPath) {
+                    return newObj as unknown as T;
+                }
+
+                if (documentNameIndex === -1) {
+                    // there is no remaining path to be loaded, so return.
+                    return undefined;
+                }
+
+                // trim off the document path to get the object path in the doc
+                const remainingObjectPath: string = objectPath.slice(documentNameIndex + 1);
+
+                const result: CdmObject = (newObj as CdmDocumentDefinition).fetchObjectFromDocumentPath(remainingObjectPath, resOpt);
+                if (result === undefined) {
+                    Logger.error(
+                        CdmCorpusDefinition.name,
+                        this.ctx,
+                        `Could not find symbol '${remainingObjectPath}' in document [${newObj.atCorpusPath}]`,
+                        this.fetchObjectAsync.name
+                    );
+                }
+
+                return result as unknown as T;
+            }
+        });
     }
 
     public setEventCallback(
         status: EventCallback,
-        reportAtLevel: cdmStatusLevel = cdmStatusLevel.info
+        reportAtLevel: cdmStatusLevel = cdmStatusLevel.info,
+        correlationId?: string
     ): void {
         const ctx: resolveContext = this.ctx as resolveContext;
         ctx.statusEvent = status;
         ctx.reportAtLevel = reportAtLevel;
+        ctx.correlationId = correlationId;
     }
 
     /**
@@ -940,15 +1009,10 @@ export class CdmCorpusDefinition {
         {
             if (doc.imports) {
                 for (const imp of doc.imports) {
-                    if (!imp.doc) {
+                    if (!imp.document) {
                         // no document set for this import, see if it is already loaded into the corpus
                         const path: string = this.storage.createAbsoluteCorpusPath(imp.corpusPath, doc);
-                        if (!this.docsNotFound.has(path)) {
-                            const lookup: [CdmFolderDefinition, CdmDocumentDefinition] = this.pathLookup.get(path.toLowerCase());
-                            if (!lookup) {
-                                this.docsNotLoaded.add(path);
-                            }
-                        }
+                        this.documentLibrary.addToDocsNotLoaded(path);
                     }
                 }
             }
@@ -962,22 +1026,13 @@ export class CdmCorpusDefinition {
     public setImportDocuments(doc: CdmDocumentDefinition): void {
         if (doc.imports) {
             for (const imp of doc.imports) {
-                if (!imp.doc) {
+                if (!imp.document) {
                     // no document set for this import, see if it is already loaded into the corpus
                     const path: string = this.storage.createAbsoluteCorpusPath(imp.corpusPath, doc);
-                    if (!this.docsNotFound.has(path)) {
-                        const lookup: [CdmFolderDefinition, CdmDocumentDefinition] = this.pathLookup.get(path.toLowerCase());
-                        if (lookup) {
-                            const currentDoc: CdmDocumentDefinition = lookup['1'];
-                            if (!currentDoc.importsIndexed && !currentDoc.currentlyIndexing) {
-                                currentDoc.currentlyIndexing = true;
-                                this.docsNotIndexed.add(currentDoc);
-                            }
-                            imp.doc = lookup[1];
-
-                            // repeat the process for the import documents
-                            this.setImportDocuments(imp.doc);
-                        }
+                    const impDoc: CdmDocumentDefinition = this.documentLibrary.fetchDocument(path);
+                    if (impDoc) {
+                        imp.document = impDoc;
+                        this.setImportDocuments(imp.document);
                     }
                 }
             }
@@ -987,74 +1042,51 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public async loadImportsAsync(doc: CdmDocumentDefinition): Promise<void> {
+    public async loadImportsAsync(doc: CdmDocumentDefinition, resOpt: resolveOptions): Promise<void> {
         const docsNowLoaded: Set<CdmDocumentDefinition> = new Set<CdmDocumentDefinition>();
+        const docsNotLoaded: Set<string> = this.documentLibrary.listDocsNotLoaded();
 
-        if (this.docsNotLoaded.size > 0) {
-            await Promise.all(Array.from(this.docsNotLoaded)
-                .map(async (missing: string) => {
-                    if (!this.docsNotFound.has(missing) && !this.docsCurrentlyLoading.has(missing)) {
-                        // set status to loading
-                        this.docsNotLoaded.delete(missing);
-                        this.docsCurrentlyLoading.add(missing);
-
-                        // load it
-                        const newDoc: CdmDocumentDefinition = await this.loadFolderOrDocument(missing) as CdmDocumentDefinition;
-
-                        if (newDoc) {
-                            Logger.info(CdmCorpusDefinition.name, this.ctx, `resolved import for '${newDoc.name}'`, doc.atCorpusPath);
-                            // doc is now loaded
-                            docsNowLoaded.add(newDoc);
-                            // next step is that the doc needs to be indexed
-                            this.docsNotIndexed.add(newDoc);
-                            newDoc.currentlyIndexing = true;
-                        } else {
-                            Logger.warning(
-                                CdmCorpusDefinition.name,
-                                this.ctx,
-                                `unable to resolve import for '${missing}'`,
-                                doc.atCorpusPath
-                            );
-                            // set doc as not found
-                            this.docsNotFound.add(missing);
-                        }
-                        // doc is no longer loading
-                        this.docsCurrentlyLoading.delete(missing);
-                    }
-                }));
-
-            // now that we've loaded new docs, find imports from them that need loading
-            for (const loadedDoc of docsNowLoaded) {
-                this.findMissingImportsFromDocument(loadedDoc);
-            }
-
-            // repeat this process for the imports of the imports
-            await Promise.all(Array.from(docsNowLoaded)
-                .map(async (loadedDoc: CdmDocumentDefinition) => {
-                    await this.loadImportsAsync(loadedDoc);
-                })
-            );
-
-            // now we know everything for the imports have been loaded
-            // attach newly loaded import docs to import list
-            //   note: we do not know if all imports for 'doc' are loaded
-            //   because loadImportsAsync could have been called in parallel
-            //   and a different call of loadImportsAsync could be loading an
-            //   import that we will need
-            for (const loadedDoc of docsNowLoaded) {
-                this.setImportDocuments(loadedDoc);
-            }
+        if (docsNotLoaded.size === 0) {
+            return;
         }
+
+        await Promise.all(Array.from(docsNotLoaded)
+            .map(async (missing: string) => {
+                if (this.documentLibrary.needToLoadDocument(missing, docsNowLoaded)) {
+                    await this.documentLibrary.concurrentReadLock.acquire();
+                    // load it
+                    const newDoc: CdmDocumentDefinition = await this.loadFolderOrDocument(missing, false, resOpt) as CdmDocumentDefinition;
+
+                    if (this.documentLibrary.markDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded)) {
+                        Logger.info(CdmCorpusDefinition.name, this.ctx, `resolved import for '${newDoc.name}'`, doc.atCorpusPath);
+                    } else {
+                        Logger.warning(CdmCorpusDefinition.name, this.ctx, `unable to resolve import for '${missing}'`, doc.atCorpusPath);
+                    }
+                    this.documentLibrary.concurrentReadLock.release();
+                }
+            }));
+
+        // now that we've loaded new docs, find imports from them that need loading
+        for (const loadedDoc of docsNowLoaded) {
+            this.findMissingImportsFromDocument(loadedDoc);
+        }
+
+        // repeat this process for the imports of the imports
+        await Promise.all(Array.from(docsNowLoaded)
+            .map(async (loadedDoc: CdmDocumentDefinition) => {
+                await this.loadImportsAsync(loadedDoc, resOpt);
+            })
+        );
     }
 
     /**
      * @internal
      */
-    public async resolveImportsAsync(doc: CdmDocumentDefinition): Promise<void> {
+    public async resolveImportsAsync(doc: CdmDocumentDefinition, resOpt: resolveOptions): Promise<void> {
         // find imports for this doc
         this.findMissingImportsFromDocument(doc);
         // load imports (and imports of imports)
-        await this.loadImportsAsync(doc);
+        await this.loadImportsAsync(doc, resOpt);
         // now that everything is loaded, attach import docs to this doc's import list
         this.setImportDocuments(doc);
     }
@@ -1071,12 +1103,6 @@ export class CdmCorpusDefinition {
                 '',
                 (iObject: CdmObject, path: string) => {
                     if (iObject.validate() === false) {
-                        Logger.error(
-                            CdmCorpusDefinition.name,
-                            ctx,
-                            `integrity check failed for : '${path}'`,
-                            currentDoc.folderPath + path
-                        );
                         errorCount++;
                     } else {
                         (iObject as CdmObjectBase).ctx = ctx;
@@ -1107,7 +1133,20 @@ export class CdmCorpusDefinition {
                     if (path.indexOf('(unspecified)') > 0) {
                         return true;
                     }
+                    let skipDuplicates: boolean = false;
                     switch (iObject.objectType) {
+                        case cdmObjectType.attributeGroupRef:
+                        case cdmObjectType.attributeContextRef:
+                        case cdmObjectType.dataTypeRef:
+                        case cdmObjectType.entityRef:
+                        case cdmObjectType.purposeRef:
+                        case cdmObjectType.traitRef:
+                        case cdmObjectType.constantEntityDef:
+                            // these are all references
+                            // we will now allow looking up a reference object based on path, so they get indexed too
+                            // if there is a duplicate, don't complain, the path just finds the first one
+                            skipDuplicates = true;
+                        case cdmObjectType.attributeGroupDef:
                         case cdmObjectType.entityDef:
                         case cdmObjectType.parameterDef:
                         case cdmObjectType.traitDef:
@@ -1115,22 +1154,32 @@ export class CdmCorpusDefinition {
                         case cdmObjectType.dataTypeDef:
                         case cdmObjectType.typeAttributeDef:
                         case cdmObjectType.entityAttributeDef:
-                        case cdmObjectType.attributeGroupDef:
-                        case cdmObjectType.constantEntityDef:
                         case cdmObjectType.attributeContextDef:
                         case cdmObjectType.localEntityDeclarationDef:
                         case cdmObjectType.referencedEntityDeclarationDef:
+                        case cdmObjectType.projectionDef:
+                        case cdmObjectType.operationAddCountAttributeDef:
+                        case cdmObjectType.operationAddSupportingAttributeDef:
+                        case cdmObjectType.operationAddTypeAttributeDef:
+                        case cdmObjectType.operationExcludeAttributesDef:
+                        case cdmObjectType.operationArrayExpansionDef:
+                        case cdmObjectType.operationCombineAttributesDef:
+                        case cdmObjectType.operationRenameAttributesDef:
+                        case cdmObjectType.operationReplaceAsForeignKeyDef:
+                        case cdmObjectType.operationIncludeAttributesDef:
+                        case cdmObjectType.operationAddAttributeGroupDef:
                             ctx.relativePath = relativePath;
                             const corpusPath: string = `${corpusPathRoot}/${path}`;
-                            if (currentDoc.internalDeclarations.has(path)) {
+                            if (currentDoc.internalDeclarations.has(path) && !skipDuplicates) {
                                 Logger.error(CdmCorpusDefinition.name, ctx, `duplicate declaration for item '${path}'`, corpusPath);
 
                                 return false;
-                            }
-                            currentDoc.internalDeclarations.set(path, iObject as CdmObjectDefinitionBase);
-                            this.registerSymbol(path, currentDoc);
+                            } else {
+                                currentDoc.internalDeclarations.set(path, iObject as CdmObjectDefinitionBase);
+                                this.registerSymbol(path, currentDoc);
 
-                            Logger.info(CdmCorpusDefinition.name, ctx, `declared '${path}'`, corpusPath);
+                                Logger.info(CdmCorpusDefinition.name, ctx, `declared '${path}'`, corpusPath);
+                            }
                         default:
                     }
 
@@ -1173,6 +1222,7 @@ export class CdmCorpusDefinition {
                             expectedTypes.push(cdmObjectType.constantEntityDef);
                             expectedTypes.push(cdmObjectType.entityRef);
                             expectedTypes.push(cdmObjectType.entityDef);
+                            expectedTypes.push(cdmObjectType.projectionDef);
                             expected = 'entity';
                         } else if (dt.isDerivedFrom('attribute', resOpt)) {
                             expectedTypes.push(cdmObjectType.attributeRef);
@@ -1227,7 +1277,7 @@ export class CdmCorpusDefinition {
                                     (replacement as CdmAttributeReference).inDocument = currentDoc;
                                     foundType = cdmObjectType.attributeRef;
                                 } else {
-                                    const lu: CdmObjectDefinitionBase = ctx.corpus.resolveSymbolReference(
+                                    const lu: CdmObjectBase = ctx.corpus.resolveSymbolReference(
                                         resOpt,
                                         currentDoc,
                                         pValue,
@@ -1257,7 +1307,7 @@ export class CdmCorpusDefinition {
                                 currentDoc.folderPath + ctx.relativePath
                             );
                         } else {
-                            Logger.info(CdmCorpusDefinition.name, ctx, `    resolved '${foundDesc}'`, ctx.relativePath);
+                            Logger.info(CdmCorpusDefinition.name, ctx, `resolved '${foundDesc}'`, ctx.relativePath);
                         }
                     }
                 }
@@ -1296,23 +1346,17 @@ export class CdmCorpusDefinition {
                                 const resNew: CdmObjectDefinitionBase = ref.fetchObjectDefinition(resOpt);
 
                                 if (!resNew) {
-                                    // it is 'ok' to not find entity refs sometimes
+                                    const message: string = `Unable to resolve the reference '${ref.namedReference}' to a known object`;
+                                    const messagePath: string = currentDoc.folderPath + path;
 
-                                    if (ot === cdmObjectType.entityRef) {
-                                        Logger.warning(
-                                            CdmCorpusDefinition.name,
-                                            ctx,
-                                            `unable to resolve the reference '${ref.namedReference}' to a known object`,
-                                            currentDoc.folderPath + path
-                                        );
+                                    // It's okay if references can't be resolved when shallow validation is enabled.
+                                    if (resOpt.shallowValidation) {
+                                        Logger.warning(CdmCorpusDefinition.name, ctx, message, messagePath);
                                     } else {
-                                        Logger.error(
-                                            CdmCorpusDefinition.name,
-                                            ctx,
-                                            `unable to resolve the reference '${ref.namedReference}' to a known object`,
-                                            currentDoc.folderPath + path
-                                        );
+                                        Logger.error(CdmCorpusDefinition.name, ctx, message, messagePath);
                                     }
+                                    // don't check in this file without both of these comments. handy for debug of failed lookups
+                                    //const resTest: CdmObjectDefinitionBase = ref.fetchObjectDefinition(resOpt);
                                 } else {
                                     Logger.info(
                                         CdmCorpusDefinition.name,
@@ -1381,7 +1425,9 @@ export class CdmCorpusDefinition {
                                         // if parameter type is entity, then the value should be an entity or ref to one
                                         // same is true of 'dataType' dataType
                                         aValue = this.constTypeCheck(resOpt, currentDoc, paramFound, aValue);
-                                        (iObject as CdmArgumentDefinition).setValue(aValue);
+                                        if (aValue) {
+                                            (iObject as CdmArgumentDefinition).setValue(aValue);
+                                        }
                                     }
                                 }
                             } catch (e) {
@@ -1418,17 +1464,23 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public finishDocumentResolve(doc: CdmDocumentDefinition): void {
+    public finishDocumentResolve(doc: CdmDocumentDefinition, loadedImports: boolean): void {
+        const wasIndexedPreviously = doc.declarationsIndexed;
+
         doc.currentlyIndexing = false;
-        doc.importsIndexed = true;
-        doc.needsIndexing = false;
-        for (const def of doc.definitions.allItems) {
-            if (isEntityDefinition(def)) {
-                Logger.debug(CdmCorpusDefinition.name, this.ctx as resolveContext, `indexed entity: ${def.atCorpusPath}`);
+        doc.importsIndexed = doc.importsIndexed || loadedImports;
+        doc.declarationsIndexed = true;
+        doc.needsIndexing = !loadedImports;
+        this.documentLibrary.markDocumentAsIndexed(doc);
+
+        // if the document declarations were indexed previously, do not log again.
+        if (!wasIndexedPreviously && doc.isValid) {
+            for (const def of doc.definitions.allItems) {
+                if (isEntityDefinition(def)) {
+                    Logger.debug(CdmCorpusDefinition.name, this.ctx as resolveContext, `indexed entity: ${def.atCorpusPath}`);
+                }
             }
         }
-
-        this.docsNotIndexed.delete(doc);
     }
 
     /**
@@ -1439,8 +1491,8 @@ export class CdmCorpusDefinition {
         {
             const ctx: resolveContext = this.ctx as resolveContext;
             Logger.debug(CdmCorpusDefinition.name, ctx, 'finishing...');
-            for (const fd of this.allDocuments) {
-                this.finishDocumentResolve(fd[1]);
+            for (const doc of this.documentLibrary.listAllDocuments()) {
+                this.finishDocumentResolve(doc, false);
             }
         }
         // return p.measure(bodyCode);
@@ -1452,7 +1504,7 @@ export class CdmCorpusDefinition {
      * @param corpusPath The corpus path to a CDM object
      */
     public async computeLastModifiedTimeAsync(corpusPath: string, obj?: CdmObject): Promise<Date> {
-        const currObject: CdmObject = await this.fetchObjectAsync(corpusPath, obj);
+        const currObject: CdmObject = await this.fetchObjectAsync(corpusPath, obj, true);
         if (currObject) {
             return this.getLastModifiedTimeAsyncFromObject(currObject);
         }
@@ -1464,7 +1516,7 @@ export class CdmCorpusDefinition {
      * @param currObject A CDM object
      */
     public async getLastModifiedTimeAsyncFromObject(currObject: CdmObject): Promise<Date> {
-        if ((currObject as CdmContainerDefinition).namespace) {
+        if ("namespace" in currObject) {
             const adapter: StorageAdapter = this.storage.fetchAdapter((currObject as CdmContainerDefinition).namespace);
 
             if (adapter === undefined) {
@@ -1477,8 +1529,25 @@ export class CdmCorpusDefinition {
 
                 return undefined;
             }
+            // Remove namespace from path
+            const pathTuple: [string, string] = StorageUtils.splitNamespacePath((currObject as CdmContainerDefinition).atCorpusPath);
+            if (!pathTuple) {
+                Logger.error(CdmCorpusDefinition.name, this.ctx, 'The object\'s AtCorpusPath should not be null or empty.', this.getLastModifiedTimeAsyncFromObject.name);
 
-            return adapter.computeLastModifiedTimeAsync(currObject.atCorpusPath);
+                return undefined;
+            }
+
+            try {
+                return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
+            } catch (e) {
+                Logger.error(
+                    CdmCorpusDefinition.name,
+                    this.ctx,
+                    `Failed to compute last modified time for partition file ${pathTuple[1]}. Exception: ${(e as Error).toString()}`,
+                    this.getLastModifiedTimeAsyncFromObject.name
+                );
+                return null;
+            }
         } else {
             return this.getLastModifiedTimeAsyncFromObject(currObject.inDocument);
         }
@@ -1492,7 +1561,12 @@ export class CdmCorpusDefinition {
      */
     public async getLastModifiedTimeFromPartitionPath(corpusPath: string): Promise<Date> {
         // we do not want to load partitions from file, just check the modified times
-        const pathTuple: [string, string] = this.storage.splitNamespacePath(corpusPath);
+        const pathTuple: [string, string] = StorageUtils.splitNamespacePath(corpusPath);
+        if (!pathTuple) {
+            Logger.error(CdmCorpusDefinition.name, this.ctx, 'The object path cannot be null or empty.', this.getLastModifiedTimeFromPartitionPath.name);
+
+            return undefined;
+        }
         const namespace: string = pathTuple[0];
         if (namespace) {
             const adapter: StorageAdapter = this.storage.fetchAdapter(namespace);
@@ -1507,9 +1581,19 @@ export class CdmCorpusDefinition {
 
                 return undefined;
             }
-
-            return adapter.computeLastModifiedTimeAsync(corpusPath);
+            
+            try {
+                return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
+            } catch (e) {
+                Logger.error(
+                    CdmCorpusDefinition.name,
+                    this.ctx,
+                    `Failed to compute last modified time for partition file ${pathTuple[1]}. Exception: ${(e as Error).toString()}`,
+                    this.getLastModifiedTimeFromPartitionPath.name
+                );
+            }
         }
+        return null;
     }
 
     /**
@@ -1539,17 +1623,9 @@ export class CdmCorpusDefinition {
     /**
      * Calculates the entity to entity relationships for all the entities present in the manifest and its sub-manifests.
      * @param currManifest The manifest (and any sub-manifests it contains) that we want to calculate relationships for.
-     */
-    public async calculateEntityGraphAsync(currManifest: CdmManifestDefinition): Promise<void> {
-        await this._calculateEntityGraphAsync(currManifest);
-    }
-
-    /**
-     * Calculates the entity to entity relationships for all the entities present in the manifest and its sub-manifests.
-     * @param currManifest The manifest (and any sub-manifests it contains) that we want to calculate relationships for.
      * @returns A Promise for the completion of entity graph calculation.
      */
-    public async _calculateEntityGraphAsync(currManifest: CdmManifestDefinition, resEntMap?: Map<string, string>): Promise<void> {
+    public async calculateEntityGraphAsync(currManifest: CdmManifestDefinition): Promise<void> {
         for (const entityDec of currManifest.entities) {
             const entityPath: string = await currManifest.getEntityPathFromDeclaration(entityDec, currManifest);
             // the path returned by GetEntityPathFromDeclaration is an absolute path.
@@ -1561,7 +1637,8 @@ export class CdmCorpusDefinition {
             }
 
             let resEntity: CdmEntityDefinition;
-            const resOpt: resolveOptions = new resolveOptions(entity.inDocument);
+            // make options wrt this entity document and "relational" always
+            const resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
 
             const isResolvedEntity: boolean = entity.attributeContext !== undefined;
 
@@ -1573,25 +1650,9 @@ export class CdmCorpusDefinition {
                 resEntity = entity;
             }
 
-            if (!this.symbol2EntityDefList.has(entity.entityName)) {
-                this.symbol2EntityDefList.set(entity.entityName, []);
-            }
-
-            this.symbol2EntityDefList.get(entity.entityName)
-                .push(entity);
-
             // find outgoing entity relationships using attribute context
             const outgoingRelationships: CdmE2ERelationship[] =
-                this.findOutgoingRelationships(resOpt, resEntity, resEntity.attributeContext);
-
-            // if the entity is a resolved entity, change the relationships to point to the resolved versions
-            if (isResolvedEntity && resEntMap) {
-                for (const rel of outgoingRelationships) {
-                    if (resEntMap.has(rel.toEntity)) {
-                        rel.toEntity = resEntMap.get(rel.toEntity);
-                    }
-                }
-            }
+                this.findOutgoingRelationships(resOpt, resEntity, resEntity.attributeContext, isResolvedEntity);
 
             this.outgoingRelationships.set(entity, outgoingRelationships);
 
@@ -1622,74 +1683,229 @@ export class CdmCorpusDefinition {
         }
     }
 
+    /**
+     * @internal
+     */
     public findOutgoingRelationships(
         resOpt: resolveOptions,
         resEntity: CdmEntityDefinition,
         attCtx: CdmAttributeContext,
-        outerAttGroup?: CdmAttributeContext): CdmE2ERelationship[] {
-        const outRels: CdmE2ERelationship[] = [];
+        isResolvedEntity: boolean = false,
+        generatedAttSetContext?: CdmAttributeContext,
+        wasProjectionPolymorphic: boolean = false,
+        wasEntityRef: boolean = false,
+        fromAtts: CdmAttributeReference[] = null
+    ): CdmE2ERelationship[] {
+        let outRels: CdmE2ERelationship[] = [];
         if (attCtx && attCtx.contents) {
+            // as we traverse the context tree, look for these nodes which hold the foreign key
+            // once we find a context node that refers to an entity reference, we will use the
+            // nearest _generatedAttributeSet (which is above or at the same level as the entRef context)
+            // and use its foreign key
+            let newGenSet: CdmAttributeContext = attCtx.contents.item('_generatedAttributeSet') as CdmAttributeContext;
+            if (!newGenSet) {
+                newGenSet = generatedAttSetContext;
+            }
+
+            let isEntityRef: boolean = false;
+            let isPolymorphicSource: boolean = false;
             for (const subAttCtx of attCtx.contents.allItems) {
-                // find entity references that identifies the 'this' entity
-                const child: CdmAttributeContext = subAttCtx as CdmAttributeContext;
-                if (child.definition && child.definition.getObjectType() === cdmObjectType.entityRef) {
-                    const toAtt: string[] = child.exhibitsTraits.allItems.filter(
-                        (x: CdmTraitReference) => { return x.namedReference === 'is.identifiedBy' && x.arguments.length > 0; })
-                        .map((y: CdmTraitReference) => {
-                            const namedRef: string = (y.arguments.allItems[0].value as CdmAttributeReference).namedReference;
+                if (subAttCtx.objectType === cdmObjectType.attributeContextDef) {
+                    // find entity references that identifies the 'this' entity
+                    const child: CdmAttributeContext = subAttCtx as CdmAttributeContext;
+                    if (child.definition && child.definition.getObjectType() === cdmObjectType.entityRef) {
+                        const toEntity: CdmObjectDefinition = child.definition.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
 
-                            return namedRef.slice(namedRef.lastIndexOf('/') + 1);
-                        });
+                        if (toEntity?.objectType === cdmObjectType.projectionDef) {
+                            // Projections
 
-                    const toEntity: CdmEntityDefinition = child.definition.fetchObjectDefinition<CdmEntityDefinition>(resOpt);
+                            isEntityRef = false;
+                            isPolymorphicSource = (toEntity?.owner?.objectType === cdmObjectType.entityAttributeDef &&
+                                ((toEntity.owner as CdmEntityAttributeDefinition).isPolymorphicSource === true));
 
-                    // entity references should have the "is.identifiedBy" trait, and the entity ref should be valid
-                    if (toAtt.length === 1 && toEntity) {
-                        // get the attribute name from the foreign key
-                        const findAddedAttributeIdentity = (context: CdmAttributeContext): string => {
-                            if (context.contents) {
-                                for (const sub of context.contents.allItems) {
-                                    const subCtx: CdmAttributeContext = sub as CdmAttributeContext;
-                                    if (subCtx.type === cdmAttributeContextType.entity) {
-                                        continue;
-                                    }
-                                    const fk: string = findAddedAttributeIdentity(subCtx);
-                                    if (fk) {
-                                        return fk;
-                                    } else if (subCtx && subCtx.type === cdmAttributeContextType.addedAttributeIdentity
-                                        && subCtx.contents && subCtx.contents.allItems[0]) {
-                                        // entity references should have the "is.identifiedBy" trait, and the entity def should be valid
-                                        return (subCtx.contents.allItems[0] as CdmObjectReference).namedReference;
-                                    }
-                                }
+                            // From the top of the projection (or the top most which contains a generatedSet / operations)
+                            // get the attribute names for the foreign key
+                            if (newGenSet && !fromAtts) {
+                                fromAtts = this.getFromAttributes(newGenSet, fromAtts);
                             }
-                        };
 
-                        const foreignKey: string = findAddedAttributeIdentity(outerAttGroup || attCtx);
+                            outRels = this.findOutgoingRelationshipsForProjection(outRels, child, resOpt, resEntity, fromAtts);
 
-                        if (foreignKey) {
-                            const fromAtt: string = foreignKey.slice(foreignKey.lastIndexOf('/') + 1)
-                                .replace(`${child.name}_`, '');
+                            wasProjectionPolymorphic = isPolymorphicSource;
+                        } else {
+                            // Non-Projections based approach and current as-is code path
 
-                            const newE2ERel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, '');
-                            newE2ERel.fromEntity =
-                                this.storage.createAbsoluteCorpusPath(resEntity.atCorpusPath.replace(/wrtSelf_/g, ''), resEntity);
-                            newE2ERel.fromEntityAttribute = fromAtt;
-                            newE2ERel.toEntity =
-                                this.storage.createAbsoluteCorpusPath(toEntity.atCorpusPath.replace(/wrtSelf_/g, ''), toEntity);
-                            newE2ERel.toEntityAttribute = toAtt[0];
-                            outRels.push(newE2ERel);
+                            isEntityRef = true;
+
+                            const toAtt: string[] = child.exhibitsTraits.allItems.filter(
+                                (x: CdmTraitReference) => {
+                                    return x.namedReference === 'is.identifiedBy' && x.arguments.length > 0;
+                                })
+                                .map((y: CdmTraitReference) => {
+                                    const namedRef: string = (y.arguments.allItems[0].value as CdmAttributeReference).namedReference;
+
+                                    return namedRef.slice(namedRef.lastIndexOf('/') + 1);
+                                });
+
+                            outRels = this.findOutgoingRelationshipsForEntityRef(toEntity, toAtt, outRels, newGenSet, child, resOpt, resEntity, isResolvedEntity, wasProjectionPolymorphic, isEntityRef);
                         }
                     }
-                } else if (child && child.definition && child.definition.getObjectType() === cdmObjectType.attributeGroupRef) {
-                    // if this is an attribute group, we need to search for foreign keys from this level
-                    outerAttGroup = child;
+
+                    // repeat the process on the child node
+                    const skipAdd: boolean = wasProjectionPolymorphic && isEntityRef;
+
+                    const subOutRels: CdmE2ERelationship[] = this.findOutgoingRelationships(resOpt, resEntity, child, isResolvedEntity, newGenSet, wasProjectionPolymorphic, isEntityRef, fromAtts);
+                    outRels = outRels.concat(subOutRels);
+
+                    // if it was a projection-based polymorphic source up through this branch of the tree and currently it has reached the end of the projection tree to come to a non-projection source,
+                    // then skip adding just this one source and continue with the rest of the tree
+                    if (skipAdd) {
+                        // skip adding only this entry in the tree and continue with the rest of the tree
+                        wasProjectionPolymorphic = false;
+                    }
+                }
+            }
+        }
+
+        return outRels;
+    }
+
+    /**
+     * Find the outgoing relationships for Projections.
+     * Given a list of 'From' attributes, find the E2E relationships based on the 'To' information stored in the trait of the attribute in the resolved entity
+     * @internal
+     */
+    public findOutgoingRelationshipsForProjection(
+        outRels: CdmE2ERelationship[],
+        child: CdmAttributeContext,
+        resOpt: resolveOptions,
+        resEntity: CdmEntityDefinition,
+        fromAtts: CdmAttributeReference[] = null
+    ): CdmE2ERelationship[] {
+        if (fromAtts) {
+            const resOptCopy: resolveOptions = resOpt.copy();
+            resOptCopy.wrtDoc = resEntity.inDocument;
+
+            // Extract the from entity from resEntity
+            const refToLogicalEntity: CdmObjectReference = resEntity.attributeContext.definition;
+            const unResolvedEntity: CdmEntityDefinition = refToLogicalEntity?.fetchObjectDefinition<CdmEntityDefinition>(resOptCopy);
+            const fromEntity: string = unResolvedEntity?.ctx.corpus.storage.createRelativeCorpusPath(unResolvedEntity.atCorpusPath, unResolvedEntity.inDocument);
+
+            for (let i: number = 0; i < fromAtts.length; i++) {
+                // List of to attributes from the constant entity argument parameter
+                const fromAttrDef: CdmTypeAttributeDefinition = fromAtts[i].fetchObjectDefinition<CdmTypeAttributeDefinition>(resOptCopy);
+                const tupleList: [string, string, string][] = this.getToAttributes(fromAttrDef, resOptCopy);
+
+                // For each of the to attributes, create a relationship
+                for (const tuple of tupleList) {
+                    const newE2ERel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, tuple[2]);
+                    newE2ERel.fromEntity = this.storage.createAbsoluteCorpusPath(fromEntity, unResolvedEntity);
+                    newE2ERel.fromEntityAttribute = fromAtts[i].fetchObjectDefinitionName();
+                    newE2ERel.toEntity = this.storage.createAbsoluteCorpusPath(tuple[0], unResolvedEntity);
+                    newE2ERel.toEntityAttribute = tuple[1];
+
+                    outRels.push(newE2ERel);
+                }
+            }
+        }
+
+        return outRels;
+    }
+
+    /**
+     * Find the outgoing relationships for Non-Projections EntityRef
+     * @internal
+     */
+    public findOutgoingRelationshipsForEntityRef(
+        toEntity: CdmObjectDefinition,
+        toAtt: string[],
+        outRels: CdmE2ERelationship[],
+        newGenSet: CdmAttributeContext,
+        child: CdmAttributeContext,
+        resOpt: resolveOptions,
+        resEntity: CdmEntityDefinition,
+        isResolvedEntity: boolean,
+        wasProjectionPolymorphic: boolean = false,
+        wasEntityRef: boolean = false
+    ): CdmE2ERelationship[] {
+        // entity references should have the "is.identifiedBy" trait, and the entity ref should be valid
+        if (toAtt.length === 1 && toEntity) {
+            // get the attribute name from the foreign key
+            const findAddedAttributeIdentity = (context: CdmAttributeContext): string => {
+                if (context && context.contents) {
+                    for (const sub of context.contents.allItems) {
+                        const subCtx: CdmAttributeContext = sub as CdmAttributeContext;
+                        if (subCtx.type === cdmAttributeContextType.entity) {
+                            continue;
+                        }
+                        const fk: string = findAddedAttributeIdentity(subCtx);
+                        if (fk) {
+                            return fk;
+                        } else if (subCtx && subCtx.type === cdmAttributeContextType.addedAttributeIdentity
+                            && subCtx.contents && subCtx.contents.allItems[0]) {
+                            // entity references should have the "is.identifiedBy" trait, and the entity def should be valid
+                            return (subCtx.contents.allItems[0] as CdmObjectReference).namedReference;
+                        }
+                    }
+                }
+            };
+
+            const foreignKey: string = findAddedAttributeIdentity(newGenSet);
+
+            if (foreignKey) {
+                // this list will contain the final tuples used for the toEntity where
+                // index 0 is the absolute path to the entity and index 1 is the toEntityAttribute
+                const toAttList: [string, string][] = [];
+
+                // get the list of toAttributes from the traits on the resolved attribute
+                const resolvedResOpt: resolveOptions = new resolveOptions(resEntity.inDocument);
+                const attFromFk: CdmTypeAttributeDefinition = this.resolveSymbolReference(resolvedResOpt, resEntity.inDocument, foreignKey, cdmObjectType.typeAttributeDef, false) as CdmTypeAttributeDefinition;
+                if (attFromFk !== undefined) {
+                    const fkArgValues: [string, string, string][] = this.getToAttributes(attFromFk, resolvedResOpt);
+
+                    for (const constEnt of fkArgValues) {
+                        const absolutePath: string = this.storage.createAbsoluteCorpusPath(constEnt[0], toEntity);
+                        toAttList.push([absolutePath, constEnt[1]]);
+                    }
                 }
 
-                // repeat the process on the child node
-                const subOutRels: CdmE2ERelationship[] = this.findOutgoingRelationships(resOpt, resEntity, child, outerAttGroup);
-                outerAttGroup = undefined;
-                outRels.push.apply(outRels, subOutRels);
+                for (const attributeTuple of toAttList) {
+                    const fromAtt: string = foreignKey.slice(foreignKey.lastIndexOf('/') + 1)
+                        .replace(`${child.name}_`, '');
+
+                    const newE2ERel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, '');
+                    newE2ERel.fromEntityAttribute = fromAtt;
+                    newE2ERel.toEntityAttribute = attributeTuple[1];
+
+                    if (isResolvedEntity) {
+                        newE2ERel.fromEntity = resEntity.atCorpusPath;
+                        if (this.resEntMap.has(attributeTuple[0])) {
+                            newE2ERel.toEntity = this.resEntMap.get(attributeTuple[0]);
+                        } else {
+                            newE2ERel.toEntity = attributeTuple[0];
+                        }
+                    } else {
+                        // find the path of the unresolved entity using the attribute context of the resolved entity
+                        const refToLogicalEntity: CdmObjectReference = resEntity.attributeContext.definition;
+
+                        let unResolvedEntity: CdmEntityDefinition;
+                        if (refToLogicalEntity) {
+                            unResolvedEntity = refToLogicalEntity.fetchObjectDefinition(resOpt);
+                        }
+                        const selectedEntity: CdmEntityDefinition = unResolvedEntity !== undefined ? unResolvedEntity : resEntity;
+                        const selectedEntCorpusPath: string =
+                            unResolvedEntity !== undefined ? unResolvedEntity.atCorpusPath : resEntity.atCorpusPath.replace('wrtSelf_', '');
+
+                        newE2ERel.fromEntity = this.storage.createAbsoluteCorpusPath(selectedEntCorpusPath, selectedEntity);
+                        newE2ERel.toEntity = attributeTuple[0];
+                    }
+
+                    // if it was a projection-based polymorphic source up through this branch of the tree and currently it has reached the end of the projection tree to come to a non-projection source,
+                    // then skip adding just this one source and continue with the rest of the tree
+                    if (!(wasProjectionPolymorphic && wasEntityRef)) {
+                        outRels.push(newE2ERel);
+                    }
+                }
             }
         }
 
@@ -1699,6 +1915,7 @@ export class CdmCorpusDefinition {
     /**
      * Resolves references according to the provided stages and validates.
      * @returns The validation step that follows the completed step
+     * @deprecated
      */
     public async resolveReferencesAndValidateAsync(
         stage: cdmValidationStep,
@@ -1709,17 +1926,18 @@ export class CdmCorpusDefinition {
         {
             return new Promise<cdmValidationStep>(
                 async (resolve: (value?: cdmValidationStep | PromiseLike<cdmValidationStep>) => void): Promise<void> => {
-                    // use the provided directives or make a relational default
+                    // use the provided directives or use the current default
                     let directives: AttributeResolutionDirectiveSet;
                     if (resOpt) {
                         directives = resOpt.directives;
                     } else {
-                        directives = new AttributeResolutionDirectiveSet(new Set<string>(['referenceOnly', 'normalized']));
+                        directives = this.defaultResolutionDirectives;
                     }
-                    resOpt = { wrtDoc: undefined, directives: directives, relationshipDepth: 0 };
+                    resOpt = new resolveOptions(undefined, directives);
+                    resOpt.depthInfo.reset();
 
-                    for (const doc of this.allDocuments) {
-                        await doc[1].indexIfNeeded(resOpt);
+                    for (const doc of this.documentLibrary.listAllDocuments()) {
+                        await doc.indexIfNeeded(resOpt);
                     }
 
                     const finishresolve: boolean = stageThrough === stage;
@@ -1818,6 +2036,17 @@ export class CdmCorpusDefinition {
                         case cdmObjectType.attributeContextDef:
                         case cdmObjectType.localEntityDeclarationDef:
                         case cdmObjectType.referencedEntityDeclarationDef:
+                        case cdmObjectType.projectionDef:
+                        case cdmObjectType.operationAddCountAttributeDef:
+                        case cdmObjectType.operationAddSupportingAttributeDef:
+                        case cdmObjectType.operationAddTypeAttributeDef:
+                        case cdmObjectType.operationExcludeAttributesDef:
+                        case cdmObjectType.operationArrayExpansionDef:
+                        case cdmObjectType.operationCombineAttributesDef:
+                        case cdmObjectType.operationRenameAttributesDef:
+                        case cdmObjectType.operationReplaceAsForeignKeyDef:
+                        case cdmObjectType.operationIncludeAttributesDef:
+                        case cdmObjectType.operationAddAttributeGroupDef:
                             this.unRegisterSymbol(path, doc);
                             this.unRegisterDefinitionReferenceDocuments(iObject, 'rasb');
                         default:
@@ -1909,7 +2138,7 @@ export class CdmCorpusDefinition {
                     const rt: ResolvedTrait = rts.set[i];
                     let found: number = 0;
                     let resolved: number = 0;
-                    if (rt.parameterValues) {
+                    if (rt && rt.parameterValues) {
                         const parameterValuesCount: number = rt.parameterValues.length;
                         for (let iParam: number = 0; iParam < parameterValuesCount; iParam++) {
                             if (rt.parameterValues.fetchParameterAtIndex(iParam)
@@ -1923,8 +2152,7 @@ export class CdmCorpusDefinition {
                                     Logger.error(
                                         CdmCorpusDefinition.name,
                                         ctx,
-                                        `no argument supplied for required parameter '${paramName}' of trait '${
-                                        rt.traitName
+                                        `no argument supplied for required parameter '${paramName}' of trait '${rt.traitName
                                         }' on '${objectName}'`,
                                         currentDoc.folderPath + ctx.relativePath
                                     );
@@ -2051,9 +2279,9 @@ export class CdmCorpusDefinition {
         const ctx: resolveContext = this.ctx as resolveContext;
         Logger.debug(CdmCorpusDefinition.name, ctx, statusMessage);
         const entityNesting: number = 0;
-        for (const fd of this.allDocuments) {
+        for (const doc of this.documentLibrary.listAllDocuments()) {
             // cache import documents
-            const currentDoc: CdmDocumentDefinition = fd[1];
+            const currentDoc: CdmDocumentDefinition = doc;
             resolveOpt.wrtDoc = currentDoc;
             resolveAction(currentDoc, resolveOpt, entityNesting);
         }
@@ -2107,7 +2335,7 @@ export class CdmCorpusDefinition {
         }
     }
 
-    private reportErrorStatus(found: CdmObjectDefinitionBase, symbolDef: string, expectedType: cdmObjectType): CdmObjectDefinitionBase {
+    private reportErrorStatus(found: CdmObjectBase, symbolDef: string, expectedType: cdmObjectType): CdmObjectBase {
         const ctx: resolveContext = this.ctx as resolveContext;
         switch (expectedType) {
             case cdmObjectType.traitRef:
@@ -2125,8 +2353,8 @@ export class CdmCorpusDefinition {
                 }
                 break;
             case cdmObjectType.entityRef:
-                if (!isEntityDefinition(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type entity', symbolDef);
+                if (!isEntityDefinition(found) && !isProjection(found) && !isConstantEntityDefinition(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type entity or type projection or type constant entity', symbolDef);
 
                     return undefined;
                 }
@@ -2151,6 +2379,84 @@ export class CdmCorpusDefinition {
 
                     return undefined;
                 }
+                break;
+            case cdmObjectType.projectionDef:
+                if (!isProjection(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type projection', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationAddCountAttributeDef:
+                if (!isOperationAddCountAttribute(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type add count attribute operation', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationAddSupportingAttributeDef:
+                if (!isOperationAddSupportingAttribute(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type add supporting attribute operation', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationAddTypeAttributeDef:
+                if (!isOperationAddTypeAttribute(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type add type attribute operation', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationExcludeAttributesDef:
+                if (!isOperationExcludeAttributes(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type exclude attributes operation', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationArrayExpansionDef:
+                if (!isOperationArrayExpansion(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type array expansion operation', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationCombineAttributesDef:
+                if (!isOperationCombineAttributes(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type combine attributes operation', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationRenameAttributesDef:
+                if (!isOperationRenameAttributes(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type rename attributes operation', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationReplaceAsForeignKeyDef:
+                if (!isOperationReplaceAsForeignKey(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type replace as foreign key operation', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationIncludeAttributesDef:
+                if (!isOperationIncludeAttributes(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type include attributes operation', symbolDef);
+
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationAddAttributeGroupDef:
+                if (!isOperationAddAttributeGroup(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type add attribute group operation', symbolDef);
+
+                    return undefined;
+                }
+                break;
             default:
         }
 
@@ -2158,9 +2464,9 @@ export class CdmCorpusDefinition {
     }
 
     private isPathManifestDocument(path: string): boolean {
-        return path.endsWith(fetchManifestExtension())
-            || path.endsWith(fetchModelJsonExtension())
-            || path.endsWith(fetchFolioExtension());
+        return path.endsWith(CdmConstants.manifestExtension)
+            || path.endsWith(CdmConstants.modelJsonExtension)
+            || path.endsWith(CdmConstants.folioExtension);
     }
 
     private pathToSymbol(symbol: string, docFrom: CdmDocumentDefinition, docResultTo: docsResult): string {
@@ -2177,7 +2483,7 @@ export class CdmCorpusDefinition {
         // if the to Doc is imported directly here,
         let pri: number;
         if (docFrom.importPriorities.importPriority.has(docResultTo.docBest)) {
-            pri = docFrom.importPriorities.importPriority.get(docResultTo.docBest);
+            pri = docFrom.importPriorities.importPriority.get(docResultTo.docBest).priority;
 
             // if the imported version is the highest priority, we are good
             if (!docResultTo.docList || docResultTo.docList.length === 1) {
@@ -2187,7 +2493,7 @@ export class CdmCorpusDefinition {
             // more than 1 symbol, see if highest pri
             let maxPri: number = -1;
             for (const docCheck of docResultTo.docList) {
-                const priCheck: number = docFrom.importPriorities.importPriority.get(docCheck);
+                const priCheck: number = docFrom.importPriorities.importPriority.get(docCheck).priority;
                 if (priCheck > maxPri) {
                     maxPri = priCheck;
                 }
@@ -2205,6 +2511,51 @@ export class CdmCorpusDefinition {
                     return `${kv[0]}/${tryMoniker}`;
                 }
             }
+        }
+
+        return undefined;
+    }
+
+    /**
+     * For Projections get the list of 'From' Attributes
+     */
+    private getFromAttributes(newGenSet: CdmAttributeContext, fromAttrs: CdmAttributeReference[]): CdmAttributeReference[] {
+        if (newGenSet?.contents) {
+            if (!fromAttrs) {
+                fromAttrs = [];
+            }
+
+            for (const sub of newGenSet.contents) {
+                if (sub.objectType === cdmObjectType.attributeContextDef) {
+                    const subCtx: CdmAttributeContext = sub as CdmAttributeContext;
+                    fromAttrs = this.getFromAttributes(subCtx, fromAttrs);
+                } else if (sub.objectType === cdmObjectType.attributeRef) {
+                    fromAttrs.push(sub as CdmAttributeReference);
+                }
+            }
+        }
+
+        return fromAttrs;
+    }
+
+    /**
+     * For Projections get the list of 'To' Attributes
+     */
+    private getToAttributes(fromAttrDef: CdmTypeAttributeDefinition, resOpt: resolveOptions): [string, string, string][] {
+        if (fromAttrDef?.appliedTraits) {
+            const tupleList: [string, string, string][] = [];
+            for (const trait of fromAttrDef.appliedTraits) {
+                if (trait.namedReference === 'is.linkedEntity.identifier' && trait.arguments.length > 0) {
+                    const constEnt: CdmConstantEntityDefinition = (trait.arguments.allItems[0].value as CdmEntityReference).fetchObjectDefinition<CdmConstantEntityDefinition>(resOpt);
+                    if (constEnt && constEnt.constantValues.length > 0) {
+                        for (const constantValues of constEnt.constantValues) {
+                            tupleList.push([constantValues[0], constantValues[1], constantValues.length > 2 ? constantValues[2] : '']);
+                        }
+                    }
+                }
+            }
+
+            return tupleList;
         }
 
         return undefined;

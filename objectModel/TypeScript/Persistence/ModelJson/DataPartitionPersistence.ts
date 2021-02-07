@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { ModelJson } from '..';
 import {
     CdmCorpusContext,
@@ -25,7 +28,9 @@ export class DataPartitionPersistence {
         Promise<CdmDataPartitionDefinition> {
         const newPartition: CdmDataPartitionDefinition = ctx.corpus.MakeObject(cdmObjectType.dataPartitionDef, object.name);
 
-        newPartition.description = object.description;
+        if (object.description && object.description.trim() !== '') {
+            newPartition.description = object.description;
+        }
 
         newPartition.location = ctx.corpus.storage.createRelativeCorpusPath(
             ctx.corpus.storage.adapterPathToCorpusPath(object.location),
@@ -107,7 +112,7 @@ export class DataPartitionPersistence {
             Logger.warning(DataPartitionPersistence.name, instance.ctx, `Couldn't find data partition's location for partition ${result.name}.`, this.toData.name);
         }
 
-        await ModelJson.utils.processAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (isHiddenTrait) {
             result.isHidden = true;

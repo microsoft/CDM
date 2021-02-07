@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { isString } from 'util';
 import {
     addTraitRef,
@@ -5,7 +8,6 @@ import {
     CdmAttribute,
     CdmAttributeContext,
     cdmAttributeContextType,
-    CdmCollection,
     CdmCorpusContext,
     CdmCorpusDefinition,
     CdmDocumentDefinition,
@@ -15,12 +17,11 @@ import {
     CdmObjectDefinitionBase,
     CdmObjectReference,
     cdmObjectType,
-    cdmStatusLevel,
     CdmTraitCollection,
-    CdmTraitDefinition,
-    CdmTraitReference,
+    Errors,
+    isCdmObjectReference,
+    isEntityDefinition,
     Logger,
-    removeTraitRef,
     resolveContext,
     ResolvedAttribute,
     ResolvedAttributeSet,
@@ -33,6 +34,9 @@ import {
 } from '../internal';
 
 export abstract class CdmObjectReferenceBase extends CdmObjectBase implements CdmObjectReference {
+    /**
+     * @internal
+     */
     public static resAttToken: string = '/(resolvedAttributes)/';
     public readonly appliedTraits: CdmTraitCollection;
     public namedReference?: string;
@@ -96,11 +100,14 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         return this;
     }
 
-    public fetchResolvedReference(resOpt?: resolveOptions): CdmObjectDefinition {
+    /**
+     * @deprecated Only for internal use.
+     */
+    public fetchResolvedReference(resOpt?: resolveOptions): CdmObject {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             if (this.explicitReference) {
@@ -112,7 +119,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             }
 
             const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
-            let res: CdmObjectDefinitionBase;
+            let res: CdmObjectBase;
 
             // if this is a special request for a resolved attribute, look that up now
             const seekResAtt: number = CdmObjectReferenceBase.offsetAttributePromise(this.namedReference);
@@ -120,7 +127,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 const entName: string = this.namedReference.substring(0, seekResAtt);
                 const attName: string = this.namedReference.slice(seekResAtt + CdmObjectReferenceBase.resAttToken.length);
                 // get the entity
-                const ent: CdmObjectDefinition
+                const ent: CdmObject
                     = (this.ctx.corpus).resolveSymbolReference(resOpt, this.inDocument, entName, cdmObjectType.entityDef, true);
 
                 if (!ent) {
@@ -134,9 +141,11 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 }
 
                 // get the resolved attribute
-                const ra: ResolvedAttribute
-                    = ent.fetchResolvedAttributes(resOpt)
-                        .get(attName);
+                const ras: ResolvedAttributeSet = ent.fetchResolvedAttributes(resOpt);
+                let ra: ResolvedAttribute;
+                if (ras !== undefined) {
+                    ra = ras.get(attName);
+                }
                 if (ra) {
                     res = ra.target as CdmAttribute;
                 } else {
@@ -149,8 +158,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 }
             } else {
                 // normal symbolic reference, look up from the Corpus, it knows where everything is
-                res =
-                    (this.ctx.corpus).resolveSymbolReference(resOpt, this.inDocument, this.namedReference, this.objectType, true);
+                res = this.ctx.corpus.resolveSymbolReference(resOpt, this.inDocument, this.namedReference, this.objectType, true);
             }
 
             return res;
@@ -160,18 +168,21 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
 
     public createSimpleReference(resOpt?: resolveOptions): CdmObjectReference {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
         if (this.namedReference) {
             return this.copyRefObject(resOpt, this.namedReference, true);
         }
 
-        return this.copyRefObject(resOpt, this.declaredPath + this.explicitReference.getName(), true);
+        const newDeclaredPath: string = this.declaredPath && this.declaredPath.endsWith('/(ref)') ?
+            this.declaredPath.substring(0, this.declaredPath.length - 6) : this.declaredPath;
+
+        return this.copyRefObject(resOpt, newDeclaredPath, true);
     }
 
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
         const copy: CdmObjectReferenceBase = this.copyRefObject(
             resOpt,
@@ -182,12 +193,14 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             host as CdmObjectReferenceBase);
         if (resOpt.saveResolutionsOnCopy) {
             copy.explicitReference = this.explicitReference;
-            copy.inDocument = this.inDocument;
         }
         copy.appliedTraits.clear();
         for (const trait of this.appliedTraits) {
             copy.appliedTraits.push(trait);
         }
+
+        // Don't do anything else after this, as it may cause InDocument to become dirty
+        copy.inDocument = this.inDocument;
 
         return copy;
     }
@@ -230,10 +243,48 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
-            return this.fetchResolvedReference(resOpt) as unknown as T;
+            let def: T = this.fetchResolvedReference(resOpt) as unknown as T;
+            if (def !== undefined) {
+                if (isCdmObjectReference(def)) {
+                    def = def.fetchResolvedReference() as unknown as T;
+                }
+            }
+            if (def !== undefined && !isCdmObjectReference(def)) {
+                return def;
+            }
+        }
+        // return p.measure(bodyCode);
+    }
+
+    public async fetchObjectDefinitionAsync<T extends CdmObjectDefinition>(resOpt?: resolveOptions): Promise<T> {
+        // let bodyCode = () =>
+        {
+            if (!resOpt) {
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+            }
+
+            if (!resOpt.wrtDoc) {
+                return undefined;
+            }
+
+            const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
+            if (!await wrtDoc.indexIfNeeded(resOpt, true)) {
+                Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Could not index document ${wrtDoc.atCorpusPath}.`, this.fetchObjectDefinitionAsync.name);
+                return null;
+            }
+
+            let def: T = this.fetchResolvedReference(resOpt) as unknown as T;
+            if (def !== undefined) {
+                if (isCdmObjectReference(def)) {
+                    def = def.fetchResolvedReference() as unknown as T;
+                }
+            }
+            if (def !== undefined && !isCdmObjectReference(def)) {
+                return def;
+            }
         }
         // return p.measure(bodyCode);
     }
@@ -241,7 +292,18 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return (this.namedReference || this.explicitReference) ? true : false;
+            if (!this.namedReference && !this.explicitReference) {
+                Logger.error(
+                    CdmObjectReferenceBase.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['namedReference', 'explicitReference'], true),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -255,15 +317,38 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 if (this.namedReference) {
                     path = pathFrom + this.namedReference;
                 } else {
-                    path = pathFrom;
+                    // when an object is defined inline inside a reference, we need a path to the reference
+                    // AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
+                    // defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
+                    // gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
+                    // entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
+                    // object at the same level, like anywhere there is a collection of references or the collection of attributes.
+                    // so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
+                    // extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
+                    // the inline defined object.
+                    // ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
+                    // the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
+                    // ANY reference, not just inline ones
+                    if (this.explicitReference !== undefined) {
+                        // ref path is name of defined object
+                        path = `${pathFrom}${this.explicitReference.getName()}`;
+                        // inline object path is a request for the defintion. setting the declaredPath
+                        // keeps the visit on the explcitReference from using the defined object name
+                        // as the path to that object
+                        (this.explicitReference as CdmObjectDefinitionBase).declaredPath = path;
+                    } else {
+                        path = pathFrom;
+                    }
                 }
+                this.declaredPath = `${path}/(ref)`;
             }
-            this.declaredPath = path;
+            const refPath: string = this.declaredPath;
 
-            if (preChildren && preChildren(this, path)) {
+            if (preChildren && preChildren(this, refPath)) {
                 return false;
             }
             if (this.explicitReference && !this.namedReference) {
+                this.explicitReference.owner = this.owner;
                 if (this.explicitReference.visit(path, preChildren, postChildren)) {
                     return true;
                 }
@@ -273,12 +358,12 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             }
 
             if (this.appliedTraits) {
-                if (this.appliedTraits.visitArray(`${path}/appliedTraits/`, preChildren, postChildren)) {
+                if (this.appliedTraits.visitArray(`${refPath}/appliedTraits/`, preChildren, postChildren)) {
                     return true;
                 }
             }
 
-            if (postChildren && postChildren(this, path)) {
+            if (postChildren && postChildren(this, refPath)) {
                 return true;
             }
 
@@ -301,7 +386,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             // find and cache the complete set of attributes
             const rasb: ResolvedAttributeSetBuilder = new ResolvedAttributeSetBuilder();
             rasb.ras.setAttributeContext(under);
-            const def: CdmObjectDefinition = this.fetchObjectDefinition(resOpt);
+            let def: CdmObjectDefinition = this.fetchObjectDefinition(resOpt);
             if (def) {
                 let acpRef: AttributeContextParameters;
                 if (under) {
@@ -346,13 +431,21 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             const kind: string = 'rts';
             if (this.namedReference && !this.appliedTraits) {
                 const ctx: resolveContext = this.ctx as resolveContext;
-                let cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, '', true);
+                const objDef: CdmObjectDefinition = this.fetchObjectDefinition(resOpt);
+                let cacheTag: string = ctx.corpus.createDefinitionCacheTag(
+                    resOpt,
+                    this,
+                    kind,
+                    '',
+                    true,
+                    objDef !== undefined ? objDef.atCorpusPath : undefined
+                );
                 let rtsResult: ResolvedTraitSet = cacheTag ? ctx.cache.get(cacheTag) : undefined;
 
                 // store the previous reference symbol set, we will need to add it with
@@ -361,7 +454,6 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 resOpt.symbolRefSet = new SymbolSet();
 
                 if (!rtsResult) {
-                    const objDef: CdmObjectDefinition = this.fetchObjectDefinition(resOpt);
                     if (objDef !== undefined) {
                         rtsResult = objDef.fetchResolvedTraits(resOpt);
                         if (rtsResult) {
@@ -372,7 +464,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                         ctx.corpus.registerDefinitionReferenceSymbols(objDef, kind, resOpt.symbolRefSet);
 
                         // get the new cache tag now that we have the list of docs
-                        cacheTag = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, '', true);
+                        cacheTag = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, '', true, objDef.atCorpusPath);
                         if (cacheTag) {
                             ctx.cache.set(cacheTag, rtsResult);
                         }

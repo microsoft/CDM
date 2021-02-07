@@ -1,4 +1,7 @@
-﻿namespace read_local_save_adls
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace read_local_save_adls
 {
     using System;
     using System.Collections.Generic;
@@ -24,7 +27,7 @@
 
     class Program
     {
-        const string modelJsonRoot = @"../../../../../";
+        const string modelJsonRoot = @"../../../../../sample-data/";
 
         static async Task Main(string[] args)
         {
@@ -39,7 +42,7 @@
             // ------------------------------------------------------------------------------------------------------------
             // Set up adapters for managing access to different files-system locations
 
-            // Fake cdm, normaly use the github adapter
+            // Fake cdm, normaly use the CDM Standards adapter
             // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));
 

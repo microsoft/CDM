@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
@@ -28,7 +31,7 @@ public class DataPartitionTest extends ModelJsonTestBase {
    * 1. Manifest is read directly.
    * 2. Manifest is obtained by converting a model.json.
    */
-  @Test
+  // @Test
   public void testModelJsonDataPartitionLocationConsistency() throws ExecutionException, InterruptedException, IOException {
     final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonDataPartitionLocationConsistency", null);
     final CdmManifestDefinition manifestRead =

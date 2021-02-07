@@ -1,0 +1,182 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/FinancialDimensions/DimensionCombinationEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Parameter/BankCodaParameters.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankCodaParameterEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PrefixNewBankAccounts",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsAutoCreateNewBankAccounts",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Auto create new bank accounts",
+          "description": ""
+        },
+        {
+          "name": "AccountNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Account number",
+          "description": ""
+        },
+        {
+          "name": "CostAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Cost",
+          "description": ""
+        },
+        {
+          "name": "IsOverrideStatementInCaseOfNoMatching",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Override statement in case of no matching",
+          "description": ""
+        },
+        {
+          "name": "RevenueAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Revenue",
+          "description": ""
+        },
+        {
+          "name": "SalesTaxGroup",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemSalesTaxGroup",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountNumberDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Account number",
+          "description": ""
+        },
+        {
+          "name": "CostAccountDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Cost",
+          "description": ""
+        },
+        {
+          "name": "RevenueAccountDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Revenue",
+          "description": ""
+        },
+        {
+          "name": "CodaDeviation",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Deviation %",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_AccountNumberCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_CostCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_RevenueCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankCodaParameters"
+          },
+          "name": "BackingTable_BankCodaParametersRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "CODA - bank parameters"
+    }
+  ]
+}

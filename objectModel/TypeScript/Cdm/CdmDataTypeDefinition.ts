@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmAttributeContext,
     CdmCorpusContext,
@@ -5,6 +8,8 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
+    Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
@@ -42,7 +47,7 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmDataTypeDefinition;
@@ -64,7 +69,17 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.dataTypeName ? true : false;
+            if (!this.dataTypeName) {
+                Logger.error(
+                    CdmDataTypeDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['dataTypeName']),
+                    this.validate.name);
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -124,7 +139,7 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             return this.isDerivedFromDef(resOpt, this.getExtendsDataTypeRef(), this.getName(), base);

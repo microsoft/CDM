@@ -1,0 +1,75 @@
+{
+    "$schema": "../../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "/clickstream/_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "AggPageViewDetailDaily",
+            "extendsEntity": "CdmEntity",
+            "description": "Aggregate page view detail daily.",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": "dateId"
+                },
+                {
+                    "attributeGroupReference": "clientUtcDate"
+                },
+                {
+                    "attributeGroupReference": "environmentId"
+                },
+                {
+                    "attributeGroupReference": "clientVersion"
+                },
+                {
+                    "attributeGroupReference": "browserLocale"
+                },
+                {
+                    "attributeGroupReference": "userSessionAuthInfo"
+                },
+                {
+                    "name": "reverseIp",
+                    "entity": "ReverseIp",
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "selectsSubAttribute": {
+                            "selects": "some",
+                            "selectsSomeTakeNames": [
+                                "ripContinent",
+                                "ripCountry",
+                                "ripStateProvince",
+                                "ripCity"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "clientSize",
+                    "dataType": "string"
+                },
+                {
+                    "name": "screenSize",
+                    "dataType": "string"
+                },
+                {
+                    "attributeGroupReference": "productChannelId"
+                },
+                {
+                    "attributeGroupReference": "productInfo"
+                },
+                {
+                    "attributeGroupReference": "visitsCount"
+                },
+                {
+                    "attributeGroupReference": "pageViewCount"
+                },
+                {
+                    "attributeGroupReference": "pageDuration"
+                }
+            ]
+        }
+    ]
+}

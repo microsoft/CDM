@@ -1,0 +1,164 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Reference/DirRelationshipTypeTable.cdm.json"
+    },
+    {
+      "corpusPath": "DimensionHierarchyLevel.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMHierarchyType.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DimensionRelationshipConstraint",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BackingEntityType",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Color",
+          "dataType": "DimensionRelationshipConstraintColor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DirRelationshipTypeTable",
+          "dataType": "DirRelationshipTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LeftDimensionHierarchyLevel",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LeftReferenceAttribute",
+          "dataType": "RefFieldId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OMHierarchyType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RelationshipConstraintType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RightDimensionHierarchyLevel",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RightReferenceAttribute",
+          "dataType": "RefFieldId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DirRelationshipTypeTable"
+          },
+          "name": "Relationship_DirRelationshipTypeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchyLevel"
+          },
+          "name": "Relationship_LeftDimensionHierarchyLevelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMHierarchyType"
+          },
+          "name": "Relationship_OMHierarchyTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchyLevel"
+          },
+          "name": "Relationship_RightDimensionHierarchyLevelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Select relationships"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DimensionRelationshipConstraintColor",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DirRelationshipTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefFieldId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

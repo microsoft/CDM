@@ -1,6 +1,9 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmPurposeDefinition
-from cdm.utilities import ResolveOptions, CopyOptions
+from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils
 
 from . import utils
 from .types import Purpose
@@ -29,5 +32,5 @@ class PurposePersistence:
         result.explanation = instance.explanation
         result.purposeName = instance.purpose_name
         result.extendsPurpose = PurposeReferencePersistence.to_data(instance.extends_purpose, res_opt, options) if instance.extends_purpose else None
-        result.exhibitsTraits = utils.array_copy_data(res_opt, instance.exhibits_traits, options)
+        result.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, instance.exhibits_traits, options)
         return result

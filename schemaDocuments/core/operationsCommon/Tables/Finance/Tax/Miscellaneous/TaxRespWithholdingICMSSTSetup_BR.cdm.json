@@ -1,0 +1,134 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CFOPTable_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Group/CFOPGroup_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxRespWithholdingICMSSTSetup_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CFOPCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "CFOP code",
+          "description": ""
+        },
+        {
+          "name": "CFOPRelation",
+          "dataType": "CFOPRelation",
+          "isNullable": true,
+          "displayName": "CFOP relation",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentIssuer",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiverTaxationCode",
+          "dataType": "ReceiverTaxationCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SenderTaxationCode",
+          "dataType": "SenderTaxationCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RespWithholdingICMSST",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CFOPTable_BR"
+          },
+          "name": "Relationship_CFOPTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFOPGroup_BR"
+          },
+          "name": "Relationship_CFOPGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Responsible for withholding the ICMS-ST setup"
+    },
+    {
+      "dataTypeName": "CFOPRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReceiverTaxationCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SenderTaxationCode_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

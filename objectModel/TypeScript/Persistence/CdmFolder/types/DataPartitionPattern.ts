@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { FileStatus, TraitReference } from '.';
 
 /**
@@ -19,6 +22,10 @@ export abstract class DataPartitionPattern implements FileStatus {
      */
     public rootLocation: string;
 
+    /**
+     * The glob pattern to use for searching partitions.
+     */
+    public globPattern?: string;
     /**
      * The regular expression to use for searching partitions.
      */

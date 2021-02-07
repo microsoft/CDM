@@ -1,0 +1,259 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxReportHierarchyVersion_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxReportHierarchyNode_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CanMatch",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "The selected node is used to match the transaction record",
+          "description": ""
+        },
+        {
+          "name": "CanPost",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "The selected node is used to post sales tax payments",
+          "description": ""
+        },
+        {
+          "name": "CanSettle",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "The selected node is used to settle taxes",
+          "description": ""
+        },
+        {
+          "name": "ComboDisplayValue",
+          "dataType": "TaxReportHrchyNodeComboDisplayValue_IN",
+          "description": ""
+        },
+        {
+          "name": "ComboDisplayValueStr",
+          "dataType": "TaxReportHrchyNodeComboDisplayValue_IN",
+          "description": ""
+        },
+        {
+          "name": "DisplayValue",
+          "dataType": "TaxReportHrchyNodeDisplayValue_IN",
+          "description": ""
+        },
+        {
+          "name": "Enable",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LeftId",
+          "dataType": "TaxReportHrchyNodeLeftRightId_IN",
+          "description": ""
+        },
+        {
+          "name": "Level",
+          "dataType": "Level",
+          "description": ""
+        },
+        {
+          "name": "NodeId",
+          "dataType": "TaxReportHrchyNodeId_IN",
+          "description": ""
+        },
+        {
+          "name": "NodeType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ParentId",
+          "dataType": "TaxReportHrchyNodeId_IN",
+          "description": ""
+        },
+        {
+          "name": "RefClassId",
+          "dataType": "ClassId",
+          "description": ""
+        },
+        {
+          "name": "RefEnumId",
+          "dataType": "TaxReportHrchyNodeRefEnumId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefEnumValue",
+          "dataType": "TaxReportHrchyNodeRefEnumValue_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefFieldId",
+          "dataType": "RefFieldId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RightId",
+          "dataType": "TaxReportHrchyNodeLeftRightId_IN",
+          "description": ""
+        },
+        {
+          "name": "TaxReportHierarchyVersion_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GTEReferenceBindingVersion",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GTEReferenceSequence",
+          "dataType": "SequenceNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GTERuntimeRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GTERuntimeTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxReportHierarchyVersion_IN"
+          },
+          "name": "Relationship_TaxReportHierarchyVersion_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales tax hierarchy node"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxReportHrchyNodeComboDisplayValue_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxReportHrchyNodeDisplayValue_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxReportHrchyNodeLeftRightId_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Level",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxReportHrchyNodeId_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ClassId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxReportHrchyNodeRefEnumId_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxReportHrchyNodeRefEnumValue_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefFieldId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SequenceNumber",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -41,11 +44,11 @@
                 Explanation = instance.Explanation,
                 TraitName = instance.TraitName,
                 ExtendsTrait = Utils.JsonForm(instance.ExtendsTrait, resOpt, options),
-                HasParameters = Utils.ListCopyData(resOpt, instance.Parameters, options),
+                HasParameters = CopyDataUtils.ListCopyData(resOpt, instance.Parameters, options),
                 Elevated = instance.Elevated == true ? (bool?)true : null,
                 Ugly = instance.Ugly == true ? (bool?)true : null,
                 AssociatedProperties = instance.AssociatedProperties
-            }; ;
+            };
         }
     }
 }

@@ -1,8 +1,11 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 import json
 import random
 import urllib
 
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING, Optional
 
 from cdm.utilities.network.cdm_http_request import CdmHttpRequest
 
@@ -19,7 +22,7 @@ class NetworkAdapter:
     will be used as specified in the class.
     """
 
-    DEFAULT_TIMEOUT = 2000
+    DEFAULT_TIMEOUT = 6000
 
     DEFAULT_NUMBER_OF_RETRIES = 2
 
@@ -27,16 +30,40 @@ class NetworkAdapter:
 
     DEFAULT_SHORTEST_WAIT_TIME = 500
 
+    @property
+    def timeout(self) -> int:
+        return self._timeout
+
+    @timeout.setter
+    def timeout(self, val: int) -> None:
+        self._timeout = val if val is not None and val >= 0 else self.DEFAULT_TIMEOUT
+
+    @property
+    def maximum_timeout(self) -> int:
+        return self._maximum_timeout
+
+    @maximum_timeout.setter
+    def maximum_timeout(self, val: int) -> None:
+        self._maximum_timeout = val if val is not None and val >= 0 else self.DEFAULT_MAXIMUM_TIMEOUT
+
+    @property
+    def number_of_retries(self) -> int:
+        return self._number_of_retries
+
+    @number_of_retries.setter
+    def number_of_retries(self, val: int) -> None:
+        self._number_of_retries = val if val is not None and val >= 0 else self.DEFAULT_NUMBER_OF_RETRIES
+
     def __init__(self) -> None:
         self.timeout = self.DEFAULT_TIMEOUT  # type: int
         self.maximum_timeout = self.DEFAULT_MAXIMUM_TIMEOUT  # type: int
         self.number_of_retries = self.DEFAULT_NUMBER_OF_RETRIES  # type: int
         self.wait_time_callback = self._default_get_wait_time
 
-    def _set_up_cdm_request(self, path: str, headers: Dict, method: str) -> 'CdmHttpRequest':
+    def _set_up_cdm_request(self, path: str, headers: Optional[Dict], method: str) -> 'CdmHttpRequest':
         request = CdmHttpRequest(path)
 
-        request.headers = headers
+        request.headers = headers or {}
         request.method = method
         request.timeout = self.timeout
         request.maximum_timeout = self.maximum_timeout
@@ -45,17 +72,17 @@ class NetworkAdapter:
         return request
 
     async def _read(self, request: 'CdmHttpRequest') -> str:
-        result = await self._http_client.send_async(request, self.wait_time_callback)
+        result = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
         if result is None:
             raise Exception('The result of a request is undefined.')
 
         if result.is_successful is False:
-            raise urllib.error.HTTPError(url=request.requested_url, code=result.status_code, msg='Failed to read', hdrs=result.response_headers, fp=None)
+            raise urllib.error.HTTPError(url=request._strip_sas_sig(), code=result.status_code, msg='Failed to read', hdrs=result.response_headers, fp=None)
 
         return result.content
 
-    def _default_get_wait_time(self, response: 'CdmHttpResponse', has_failed: bool, retry_number: int) -> int:
+    def _default_get_wait_time(self, response: 'CdmHttpResponse', has_failed: bool, retry_number: int) -> Optional[int]:
         """
         Callback function for a CDM Http client, it does exponential backoff.
         :param response: The response received by system's Http client.

@@ -1,11 +1,13 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
+    CardinalitySettings,
     CdmAttributeItem,
     CdmAttributeResolutionGuidance,
-    CdmCollection,
     CdmCorpusContext,
     CdmObjectDefinition,
     CdmObjectDefinitionBase,
-    cdmObjectType,
     CdmPurposeReference,
     CdmTraitCollection,
     CdmTraitDefinition,
@@ -21,7 +23,16 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
     public purpose: CdmPurposeReference;
     public name: string;
     public readonly appliedTraits: CdmTraitCollection;
+    /**
+     * @internal
+     */
+    public attributeCount: number;
     public resolutionGuidance: CdmAttributeResolutionGuidance;
+
+    /**
+     * Cardinality setting for projections
+     */
+    public cardinality: CardinalitySettings;
 
     constructor(ctx: CdmCorpusContext, name: string) {
         super(ctx);
@@ -29,6 +40,7 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
         {
             this.name = name;
             this.appliedTraits = new CdmTraitCollection(this.ctx, this);
+            this.attributeCount = 0;
         }
         // return p.measure(bodyCode);
     }

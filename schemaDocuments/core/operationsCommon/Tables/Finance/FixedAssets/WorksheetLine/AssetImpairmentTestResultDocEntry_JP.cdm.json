@@ -1,0 +1,290 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AssetDocumentEntry_JP.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetImpairmentIndicator_JP.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/WorksheetHeader/AssetImpairmentTestResultDocument_JP.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetImpairmentTestResultDocEntry_JP",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccDepreciation",
+          "dataType": "AssetAmount",
+          "isNullable": true,
+          "displayName": "Accumulated depreciation",
+          "description": ""
+        },
+        {
+          "name": "AcquisitionPrice",
+          "dataType": "AssetAcquisitionPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllocationPriority",
+          "dataType": "AssetImpairmentAllocationPriority_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetDocumentEntry_JP",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpectedScrapValue",
+          "dataType": "AssetScrapValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FairValue",
+          "dataType": "AssetFairValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HoldingEntry",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Impairment",
+          "dataType": "AssetImpairment_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImpairmentAdjustment",
+          "dataType": "AssetImpairmentAdjustment_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImpairmentAllocationMethod",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ImpairmentAmtCalculated",
+          "dataType": "AssetImpairmentAdjustment_JP",
+          "isNullable": true,
+          "displayName": "Impairment amount after allocation",
+          "description": ""
+        },
+        {
+          "name": "ImpairmentAmtFrom",
+          "dataType": "AssetImpairmentAdjustment_JP",
+          "isNullable": true,
+          "displayName": "Impairment amount allocated from other fixed assets",
+          "description": ""
+        },
+        {
+          "name": "ImpairmentAmtTo",
+          "dataType": "AssetImpairmentAdjustment_JP",
+          "isNullable": true,
+          "displayName": "Impairment amount allocated to other fixed assets",
+          "description": ""
+        },
+        {
+          "name": "IsSharedAsset",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetBookValue",
+          "dataType": "AssetNetBookValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetSellingPrice",
+          "dataType": "AssetAmount",
+          "isNullable": true,
+          "displayName": "Net selling price",
+          "description": ""
+        },
+        {
+          "name": "Percent",
+          "dataType": "AssetImpairmentProportionPercent_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProrationMethodOverride",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RecoverableAmountRef",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResultDocument",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "SharedAssetType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UndiscountedCashFlowRef",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDocumentEntry_JP"
+          },
+          "name": "Relationship_AssetDocumentEntry_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetImpairmentIndicator_JP"
+          },
+          "name": "Relationship_RecoverableAmountRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetImpairmentTestResultDocument_JP"
+          },
+          "name": "Relationship_TestResultDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetImpairmentIndicator_JP"
+          },
+          "name": "Relationship_UndiscountedCashFlowRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Asset impairment test result line"
+    },
+    {
+      "dataTypeName": "AssetAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetAcquisitionPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetImpairmentAllocationPriority_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetScrapValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetFairValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetImpairment_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetImpairmentAdjustment_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetNetBookValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetImpairmentProportionPercent_JP",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as http from 'http';
 import * as https from 'https';
 import { CdmHttpResponse } from '../Utilities/Network/CdmHttpResponse'
@@ -30,7 +33,6 @@ export async function request(protocol: string, host: string, path: string, meth
                 break;
             default:
                 reject(new Error('Protocol does not exist.'));
-
                 return;
         }
 
@@ -60,7 +62,7 @@ export async function request(protocol: string, host: string, path: string, meth
                 cdmHttpResponse.reason = res.statusMessage;
 
                 if (res.headers !== undefined) {
-                    let headers = Object.entries(res.headers);
+                    const headers = Object.entries(res.headers);
 
                     // Covert the incoming headers back to the CDM Http headers format.
                     headers.forEach((header: [string, string | string[]]) => {

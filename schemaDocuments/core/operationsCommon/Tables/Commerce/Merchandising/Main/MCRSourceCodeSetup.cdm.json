@@ -1,0 +1,244 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "Catalog.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/CommerceCustomers/Main/MCRTargetSetup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRSourceCodeSetup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActualCost",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Actual cost",
+          "description": ""
+        },
+        {
+          "name": "Catalog",
+          "dataType": "CatalogRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Name",
+          "displayName": "Description",
+          "description": ""
+        },
+        {
+          "name": "DistributionQty",
+          "dataType": "MCRDistributionQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FutureOrderDate",
+          "dataType": "FuturesDate",
+          "isNullable": true,
+          "displayName": "Future order date",
+          "description": ""
+        },
+        {
+          "name": "MailDate",
+          "dataType": "MCRMailDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MailingCosts",
+          "dataType": "MCRMailingCosts",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnlyCatalogPlans",
+          "dataType": "MCROnlyCatalogPlans",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OtherCost",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Other cost",
+          "description": ""
+        },
+        {
+          "name": "PrintingCosts",
+          "dataType": "MCRPrintingCosts",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjOrderDate",
+          "dataType": "FromDate",
+          "isNullable": true,
+          "displayName": "Projected first order date",
+          "description": ""
+        },
+        {
+          "name": "ProjOrders",
+          "dataType": "MCRProjOrders",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjReturns",
+          "dataType": "MCRProjReturns",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjSales",
+          "dataType": "MCRProjSales",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceID",
+          "dataType": "MCRSourceID",
+          "displayName": "Source code ID",
+          "description": ""
+        },
+        {
+          "name": "TargetID",
+          "dataType": "MCRTargetID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Catalog"
+          },
+          "name": "Relationship_CatalogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRTargetSetup"
+          },
+          "name": "Relationship_MCRTargetSetupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Source code setup"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CatalogRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRDistributionQty",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FuturesDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "MCRMailDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "MCRMailingCosts",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCROnlyCatalogPlans",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRPrintingCosts",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "MCRProjOrders",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRProjReturns",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRProjSales",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRSourceID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRTargetID",
+      "extendsDataType": "string"
+    }
+  ]
+}

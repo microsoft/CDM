@@ -1,0 +1,259 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "VendPromissoryNoteJour.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendPromissoryNoteInvoice",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RecipientAccountNum",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAccountNum",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "displayName": "Account",
+          "description": ""
+        },
+        {
+          "name": "InvoiceAmountCur",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Gross amount",
+          "description": ""
+        },
+        {
+          "name": "InvoiceAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceCompany",
+          "dataType": "CompanyId",
+          "isNullable": true,
+          "displayName": "Company accounts",
+          "description": ""
+        },
+        {
+          "name": "InvoiceDate",
+          "dataType": "InvoiceDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceId",
+          "dataType": "VendInvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "displayName": "Invoice voucher number",
+          "description": ""
+        },
+        {
+          "name": "PromissoryNoteId",
+          "dataType": "VendPromissoryNoteID",
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPromissoryNoteJour"
+          },
+          "name": "Relationship_VendPromissoryNoteJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_InvoiceAccountNumRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_RecipientAccountNumRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransInvoiceIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Promissory note invoices"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPromissoryNoteID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

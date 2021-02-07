@@ -1,0 +1,217 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CustomJournalTable_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/WorksheetHeader/FactureJour_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/SubledgerVoucherGeneralJournalEntry.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustomCorrectionTable_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CorrectionAdminCharge",
+          "dataType": "CustomAmount_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Issuance fee",
+          "description": ""
+        },
+        {
+          "name": "CorrectionDate",
+          "dataType": "TransDate",
+          "displayName": "KTS date",
+          "description": ""
+        },
+        {
+          "name": "CorrectionId",
+          "dataType": "CustomCorrectionId_RU",
+          "description": ""
+        },
+        {
+          "name": "CorrectionJournalId",
+          "dataType": "CustomCorrectionJournalId_RU",
+          "description": ""
+        },
+        {
+          "name": "CorrectionReason",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectionStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostCorrection",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Include to the cost price",
+          "description": ""
+        },
+        {
+          "name": "CounteragentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureId",
+          "dataType": "FactureId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalId",
+          "dataType": "CustomJournalId_RU",
+          "isReadOnly": true,
+          "displayName": "Customs journal",
+          "description": ""
+        },
+        {
+          "name": "LedgerVoucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "GL voucher",
+          "description": ""
+        },
+        {
+          "name": "Storno",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Credit correction",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustomJournalTable_RU"
+          },
+          "name": "Relationship_CustomJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SubledgerVoucherGeneralJournalEntry"
+          },
+          "name": "Relationship_SubledgerVoucherGeneralJournalEntryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customs value correction"
+    },
+    {
+      "dataTypeName": "CustomAmount_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustomCorrectionId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustomCorrectionJournalId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FactureId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustomJournalId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

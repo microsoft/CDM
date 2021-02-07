@@ -1,0 +1,216 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjJournalName.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/WorkCalendarTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PSAParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApprActiveInvoiceProposal",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Approve invoice proposals",
+          "description": ""
+        },
+        {
+          "name": "BudgetMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContractLineFeeJournalNameId",
+          "dataType": "ProjJournalNameId",
+          "isNullable": true,
+          "displayName": "Default fee journal name",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjProposalSalesUpdate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Update item quantity",
+          "description": ""
+        },
+        {
+          "name": "PSAActivityDisplayDefault",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAActivityLookupSubproject",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Activity lookup to include subprojects",
+          "description": ""
+        },
+        {
+          "name": "PSAActivityLookupTask",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Activity lookup to include tasks",
+          "description": ""
+        },
+        {
+          "name": "ReqControl",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqControlProjectOverride",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Project Override",
+          "description": ""
+        },
+        {
+          "name": "ReqHourProjectOverride",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Project Override",
+          "description": ""
+        },
+        {
+          "name": "ReqHourValidate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Hour validation",
+          "description": ""
+        },
+        {
+          "name": "ReqItemProjectOverride",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Project Override",
+          "description": ""
+        },
+        {
+          "name": "ReqItemValidate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Item validation",
+          "description": ""
+        },
+        {
+          "name": "SchedDefaultCalendar",
+          "dataType": "CalendarId",
+          "isNullable": true,
+          "displayName": "Default calendar",
+          "description": ""
+        },
+        {
+          "name": "EnableHourScheduling",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable hour scheduling",
+          "description": ""
+        },
+        {
+          "name": "EnableSchedulingWorkflow",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Enable resource request workflow",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjJournalName"
+          },
+          "name": "Relationship_ProjJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkCalendarTable"
+          },
+          "name": "Relationship_WorkCalendarTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "PSA Parameters"
+    },
+    {
+      "dataTypeName": "ProjJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CalendarId",
+      "extendsDataType": "string"
+    }
+  ]
+}

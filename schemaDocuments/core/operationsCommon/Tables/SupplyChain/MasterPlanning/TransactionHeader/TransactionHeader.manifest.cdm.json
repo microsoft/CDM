@@ -1,0 +1,67 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "manifestName": "TransactionHeader",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "ReqDemPlanTaskCollectionLog",
+      "entityPath": "ReqDemPlanTaskCollectionLog.cdm.json/ReqDemPlanTaskCollectionLog"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "ReqProcessList",
+      "entityPath": "ReqProcessList.cdm.json/ReqProcessList"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "ReqDemPlanTaskCollectionLog.cdm.json/ReqDemPlanTaskCollectionLog",
+      "fromEntityAttribute": "Relationship_ReqDemPlanGeneratedForecastRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Transaction/ReqDemPlanGeneratedForecast.cdm.json/ReqDemPlanGeneratedForecast",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Transaction/ReqDemPlanImportedForecast.cdm.json/ReqDemPlanImportedForecast",
+      "fromEntityAttribute": "Relationship_TaskCollectionRelationshipId",
+      "toEntity": "ReqDemPlanTaskCollectionLog.cdm.json/ReqDemPlanTaskCollectionLog",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Transaction/ReqDemPlanGeneratedForecast.cdm.json/ReqDemPlanGeneratedForecast",
+      "fromEntityAttribute": "Relationship_ReqDemPlanTaskCollectionLogRelationshipId",
+      "toEntity": "ReqDemPlanTaskCollectionLog.cdm.json/ReqDemPlanTaskCollectionLog",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/TransactionLine/ReqDemPlanTaskLog.cdm.json/ReqDemPlanTaskLog",
+      "fromEntityAttribute": "Relationship_ReqDemPlanTaskCollectionLogRelationshipId",
+      "toEntity": "ReqDemPlanTaskCollectionLog.cdm.json/ReqDemPlanTaskCollectionLog",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "ReqProcessList.cdm.json/ReqProcessList",
+      "fromEntityAttribute": "Relationship_ReqPlanRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlan.cdm.json/ReqPlan",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "ReqProcessList.cdm.json/ReqProcessList",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/WorksheetLine/ReqUnscheduledOrders.cdm.json/ReqUnscheduledOrders",
+      "fromEntityAttribute": "Relationship_ReqProcessListRelationshipId",
+      "toEntity": "ReqProcessList.cdm.json/ReqProcessList",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Transaction/ReqLog.cdm.json/ReqLog",
+      "fromEntityAttribute": "Relationship_ReqProcessListRelationshipId",
+      "toEntity": "ReqProcessList.cdm.json/ReqProcessList",
+      "toEntityAttribute": "RecId"
+    }
+  ]
+}

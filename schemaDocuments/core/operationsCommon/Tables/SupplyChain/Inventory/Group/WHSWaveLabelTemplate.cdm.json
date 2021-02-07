@@ -1,0 +1,141 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "WHSWaveLabelType.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWaveLabelTemplate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LabelTemplateDescription",
+          "dataType": "WHSWaveLabelTemplateDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LabelTemplateName",
+          "dataType": "WHSWaveLabelTemplateName",
+          "description": ""
+        },
+        {
+          "name": "PackedQueryRun",
+          "dataType": "PackedQueryRun",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaveStepCode",
+          "dataType": "WHSWaveStepCode",
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "description": ""
+        },
+        {
+          "name": "WaveLabelTypeId",
+          "dataType": "WHSWaveLabelTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWaveLabelType"
+          },
+          "name": "Relationship_WHSWaveLabelTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Wave label templates"
+    },
+    {
+      "dataTypeName": "WHSWaveLabelTemplateDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWaveLabelTemplateName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PackedQueryRun",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSWaveStepCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWaveLabelTypeId",
+      "extendsDataType": "string"
+    }
+  ]
+}

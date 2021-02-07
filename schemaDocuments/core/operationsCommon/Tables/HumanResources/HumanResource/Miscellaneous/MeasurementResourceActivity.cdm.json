@@ -1,0 +1,127 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "MeasurementActivity.cdm.json"
+    },
+    {
+      "corpusPath": "MeasurementResource.cdm.json"
+    },
+    {
+      "corpusPath": "MeasurementSourceSystem.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MeasurementResourceActivity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Resource",
+          "dataType": "MeasurementResourceRecId",
+          "description": ""
+        },
+        {
+          "name": "Activity",
+          "dataType": "MeasurementActivityRecId",
+          "description": ""
+        },
+        {
+          "name": "SourceSystem",
+          "dataType": "MeasurementSourceSystemRecId",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDateTime",
+          "isNullable": true,
+          "displayName": "Valid to",
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDateTime",
+          "displayName": "Valid from",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "MeasurementActivity"
+          },
+          "name": "Relationship_MeasurementActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MeasurementResource"
+          },
+          "name": "Relationship_MeasurementResourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MeasurementSourceSystem"
+          },
+          "name": "Relationship_MeasurementSourceSystemRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Resource assignment to activities"
+    },
+    {
+      "dataTypeName": "MeasurementResourceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MeasurementActivityRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MeasurementSourceSystemRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ValidToDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidFromDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

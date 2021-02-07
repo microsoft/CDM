@@ -1,0 +1,253 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxRegistrationNumbers_IN.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TaxSalesTaxPaymentHistoryDetails_IN.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TaxTrans_IN.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxSalesTaxPaymentHistoryDetailsTrans_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Mark",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Mark",
+          "description": ""
+        },
+        {
+          "name": "PayableAmountMST",
+          "dataType": "TaxAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Payable amount",
+          "description": ""
+        },
+        {
+          "name": "PayableAmountToSettle",
+          "dataType": "TaxPayableAmountToSettle_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RecoverableAmountMST",
+          "dataType": "TaxAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Recoverable amount",
+          "description": ""
+        },
+        {
+          "name": "RecoverableAmountToSettle",
+          "dataType": "TaxRecoverableAmountToSettle_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Source",
+          "dataType": "TaxModuleTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "displayName": "Tax code",
+          "description": ""
+        },
+        {
+          "name": "TaxRegistrationNumbers_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxSalesTaxPaymentHistoryDetails_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxTrans_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UtilizedPayableAmountMST",
+          "dataType": "TaxPaidAmount_IN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UtilizedRecoverableAmountMST",
+          "dataType": "TaxUtilizedAmount_IN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_TaxRegistrationNumbers_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxSalesTaxPaymentHistoryDetails_IN"
+          },
+          "name": "Relationship_TaxSalesTaxPaymentHistoryDetails_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTrans_IN"
+          },
+          "name": "Relationship_TaxTrans_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transactions"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxPayableAmountToSettle_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxRecoverableAmountToSettle_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxModuleTypeId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxPaidAmount_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxUtilizedAmount_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

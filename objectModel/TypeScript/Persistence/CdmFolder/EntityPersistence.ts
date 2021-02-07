@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmAttributeItem,
     CdmCorpusContext,
@@ -7,14 +11,14 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeContext,
     AttributeGroupReference,
     AttributeResolutionGuidance,
     Entity,
     EntityAttribute,
-    EntityReference,
+    EntityReferenceDefinition,
     TraitReference,
     TypeAttribute
 } from './types';
@@ -22,39 +26,33 @@ import * as utils from './utils';
 
 export class EntityPersistence {
     public static fromData(ctx: CdmCorpusContext, object: Entity): CdmEntityDefinition {
+        if (!object) {
+            return undefined;
+        }
+
         const entity: CdmEntityDefinition = ctx.corpus.MakeObject(cdmObjectType.entityDef, object.entityName);
         entity.extendsEntity = CdmFolder.EntityReferencePersistence.fromData(ctx, object.extendsEntity);
         entity.extendsEntityResolutionGuidance =
             CdmFolder.AttributeResolutionGuidancePersistence.fromData(ctx, object.extendsEntityResolutionGuidance);
 
-        if (object.explanation) {
-            entity.explanation = object.explanation;
-        }
+        entity.explanation = utils.propertyFromDataToString(object.explanation);
 
         utils.addArrayToCdmCollection<CdmTraitReference>(
             entity.exhibitsTraits,
             utils.createTraitReferenceArray(ctx, object.exhibitsTraits)
         );
-        if (object.sourceName) {
-            entity.sourceName = object.sourceName;
-        }
-        if (object.displayName) {
-            entity.displayName = object.displayName;
-        }
-        if (object.description) {
-            entity.description = object.description;
-        }
-        if (object.version) {
-            entity.version = object.version;
-        }
-        if (object.cdmSchemas) {
-            entity.cdmSchemas = object.cdmSchemas;
-        }
+
+        entity.sourceName = utils.propertyFromDataToString(object.sourceName);
+        entity.displayName = utils.propertyFromDataToString(object.displayName);
+        entity.description = utils.propertyFromDataToString(object.description);
+        entity.version = utils.propertyFromDataToString(object.version);
+        entity.cdmSchemas = object.cdmSchemas;
+
         if (object.attributeContext) {
             entity.attributeContext = CdmFolder.AttributeContextPersistence.fromData(ctx, object.attributeContext);
         }
 
-        utils.addArrayToCdmCollection<CdmAttributeItem>(entity.attributes, utils.createAttributeArray(ctx, object.hasAttributes));
+        utils.addArrayToCdmCollection<CdmAttributeItem>(entity.attributes, utils.createAttributeArray(ctx, object.hasAttributes, entity.entityName));
 
         return entity;
     }
@@ -66,10 +64,10 @@ export class EntityPersistence {
             explanation: instance.explanation,
             entityName: instance.entityName,
             extendsEntity: instance.extendsEntity ?
-                instance.extendsEntity.copyData(resOpt, options) as (string | EntityReference) : undefined,
+                instance.extendsEntity.copyData(resOpt, options) as (string | EntityReferenceDefinition) : undefined,
             extendsEntityResolutionGuidance: instance.extendsEntityResolutionGuidance ?
                 instance.extendsEntityResolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
-            exhibitsTraits: utils.arrayCopyData<string | TraitReference>(resOpt, exhibitsTraits, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, exhibitsTraits, options)
         };
 
         if (instance.sourceName) {
@@ -91,7 +89,7 @@ export class EntityPersistence {
         // after the properties so they show up first in doc
         if (instance.attributes) {
             object.hasAttributes =
-                utils.arrayCopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(
+            copyDataUtils.arrayCopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(
                     resOpt, instance.attributes, options);
             object.attributeContext = instance.attributeContext ?
                 instance.attributeContext.copyData(resOpt, options) as AttributeContext : undefined;

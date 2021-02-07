@@ -1,0 +1,126 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxWithholdParameters_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CrossCompanyPayment",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Apply tax on cross company payments",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TCSActivate",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Activate TCS",
+          "description": ""
+        },
+        {
+          "name": "TCSInvoice",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Invoice",
+          "description": ""
+        },
+        {
+          "name": "TCSPayment",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Payment",
+          "description": ""
+        },
+        {
+          "name": "TDSActivate",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Activate TDS",
+          "description": ""
+        },
+        {
+          "name": "TDSInvoice",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Invoice",
+          "description": ""
+        },
+        {
+          "name": "TDSPayment",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Payment",
+          "description": ""
+        },
+        {
+          "name": "EnableWarningMsg",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Warn before applying taxes to invoice payments that don't have taxes",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Withholding tax parameters"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    }
+  ]
+}

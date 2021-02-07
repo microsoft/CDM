@@ -1,7 +1,10 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_object import CdmObject
 from .cdm_object_simple import CdmObjectSimple
@@ -34,13 +37,15 @@ class CdmParameterDefinition(CdmObjectSimple):
 
         self._declared_path = None  # type: Optional[str]
 
+        self._TAG = CdmParameterDefinition.__name__
+
     @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.PARAMETER_DEF
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmParameterDefinition'] = None) -> 'CdmParameterDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmParameterDefinition(self.ctx, self.name)
@@ -66,11 +71,14 @@ class CdmParameterDefinition(CdmObjectSimple):
         return copy
 
     def validate(self) -> bool:
-        return bool(self.name)
+        if not bool(self.name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = path_from + self.name

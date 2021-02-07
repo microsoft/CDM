@@ -1,0 +1,82 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AccountantLogisticsLocation_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Reference/LogisticsLocationRole.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AccountantLogisticsLocationRole_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountantLogisticsLocation",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Location",
+          "description": ""
+        },
+        {
+          "name": "LocationRole",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Location role",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AccountantLogisticsLocation_BR"
+          },
+          "name": "Relationship_AccountantLogisticsLocation_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsLocationRole"
+          },
+          "name": "Relationship_LogisticsLocationRoleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Accountant location roles"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

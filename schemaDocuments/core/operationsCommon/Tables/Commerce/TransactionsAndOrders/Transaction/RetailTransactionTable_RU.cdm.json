@@ -1,0 +1,205 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailStoreTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailTerminalTable.cdm.json"
+    },
+    {
+      "corpusPath": "RetailTransactionTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailTransactionTable_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Channel",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EKLZSerialNumber",
+          "dataType": "RetaiEKLZSerialNumber_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentSerialNumber",
+          "dataType": "RetailFiscalDocumentSerialNumber_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalPrinterSerialNumber",
+          "dataType": "RetailFiscalPrinterSerialNumber_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalPrinterShiftID",
+          "dataType": "RetailFiscalPrinterShiftID_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "KPKNumber",
+          "dataType": "RetailKPKNumber_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Origin",
+          "dataType": "RetailConnDistributionLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplicationCounterFromOrigin",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Store",
+          "dataType": "RetailStoreId",
+          "description": ""
+        },
+        {
+          "name": "Terminal",
+          "dataType": "RetailTerminalId",
+          "description": ""
+        },
+        {
+          "name": "TransactionId",
+          "dataType": "RetailTransactionId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreTable"
+          },
+          "name": "Relationship_RetailStoreTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTransactionTable"
+          },
+          "name": "Relationship_RetailTransactionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transactions"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetaiEKLZSerialNumber_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFiscalDocumentSerialNumber_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFiscalPrinterSerialNumber_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFiscalPrinterShiftID_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailKPKNumber_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailConnDistributionLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    }
+  ]
+}

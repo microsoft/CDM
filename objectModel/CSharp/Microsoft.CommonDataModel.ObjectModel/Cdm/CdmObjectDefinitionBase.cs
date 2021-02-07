@@ -1,15 +1,10 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmObjectDefinitionBase.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
-    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using System.Collections.Generic;
 
     public abstract class CdmObjectDefinitionBase : CdmObjectBase, CdmObjectDefinition
     {
@@ -45,6 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.ExhibitsTraits.Clear();
             foreach (var trait in this.ExhibitsTraits)
                 copy.ExhibitsTraits.Add(trait);
+            copy.InDocument = this.InDocument; // if gets put into a new document, this will change. until, use the source
         }
 
         /// <inheritdoc />
@@ -58,14 +54,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            resOpt.FromMoniker = null;
             return (dynamic)this;
         }
 
-                internal bool VisitDef(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
+        internal bool VisitDef(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
             if (this.ExhibitsTraits != null)
                 if (this.ExhibitsTraits.VisitList(pathFrom + "/exhibitsTraits/", preChildren, postChildren))
@@ -107,7 +102,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             string name;
@@ -123,6 +118,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 cdmObjectRef.ExplicitReference = this;
                 cdmObjectRef.InDocument = this.InDocument;
             }
+            return cdmObjectRef;
+        }
+
+        /// Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
+        /// into some final document. 
+        internal override CdmObjectReference CreatePortableReference(ResolveOptions resOpt)
+        {
+            CdmObjectReferenceBase cdmObjectRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.MapReferenceType(this.ObjectType), "portable", true) as CdmObjectReferenceBase;
+            cdmObjectRef.ExplicitReference = this.Copy() as CdmObjectDefinition;
+            cdmObjectRef.InDocument = this.InDocument; // where it started life
+            cdmObjectRef.Owner = this.Owner;
+
             return cdmObjectRef;
         }
     }

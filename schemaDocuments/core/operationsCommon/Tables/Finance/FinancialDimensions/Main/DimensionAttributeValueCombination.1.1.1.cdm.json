@@ -1,0 +1,143 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Group/DimensionHierarchy.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "MainAccount.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DimensionAttributeValueCombination",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountStructure",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayValue",
+          "dataType": "DimensionDisplayValue",
+          "displayName": "Combination display",
+          "description": ""
+        },
+        {
+          "name": "Hash",
+          "dataType": "DimensionHashContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimensionType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaForCreation",
+          "dataType": "SelectableDataArea",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImpliedDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MainAccount",
+          "dataType": "MainAccountRecId",
+          "isNullable": true,
+          "displayName": "MainAccount record Id",
+          "description": ""
+        },
+        {
+          "name": "MainAccountValue",
+          "dataType": "DimensionValue",
+          "isNullable": true,
+          "displayName": "MainAccount dimension value",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchy"
+          },
+          "name": "Relationship_AccountStructureRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_MainAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Dimension code combination"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DimensionDisplayValue",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionHashContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MainAccountRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DimensionValue",
+      "extendsDataType": "string"
+    }
+  ]
+}

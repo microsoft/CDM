@@ -1,0 +1,166 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Transaction/ProjInvoiceJour.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxAgent.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjInvoiceJour_TH",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "NoteFormat",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjInvoiceJour",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonTableRef",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceAmountCur",
+          "dataType": "TaxUnrealizedSalesRefInvoiceAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceId",
+          "dataType": "TaxUnrealizedSalesRefInvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAgent",
+          "dataType": "TaxAgentRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsPrinted",
+          "dataType": "IsPrinted_TH",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjInvoiceJour"
+          },
+          "name": "Relationship_ProjInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxAgent"
+          },
+          "name": "Relationship_TaxAgentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project Invoice Journal for Thailand"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxUnrealizedSalesRefInvoiceAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxUnrealizedSalesRefInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAgentRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "IsPrinted_TH",
+      "extendsDataType": "integer"
+    }
+  ]
+}

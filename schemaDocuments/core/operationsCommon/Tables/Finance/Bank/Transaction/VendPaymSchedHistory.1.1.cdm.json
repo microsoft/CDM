@@ -1,0 +1,239 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymSched.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "VendPaymSched.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendPaymSchedHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExtRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ExtTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LowestAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Minimum",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "VendPaymSchedId",
+          "description": ""
+        },
+        {
+          "name": "Notes",
+          "dataType": "Notes",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfPayment",
+          "dataType": "PositiveNumber",
+          "isNullable": true,
+          "displayName": "Number of payments",
+          "description": ""
+        },
+        {
+          "name": "PaymSchedBy",
+          "dataType": "VendPaymSchedBy",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodUnit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Payment per",
+          "description": ""
+        },
+        {
+          "name": "QtyUnit",
+          "dataType": "Days",
+          "isNullable": true,
+          "displayName": "Change",
+          "description": ""
+        },
+        {
+          "name": "TaxDistribution",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDateTime",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDateTime",
+          "description": ""
+        },
+        {
+          "name": "PaymentType_ES",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CopyPreciselyToInvoice",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Copy payment schedule to invoice",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PaymSched"
+          },
+          "name": "Relationship_PaymSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymSched"
+          },
+          "name": "Relationship_VendPaymSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payment schedule (vendor) history"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendPaymSchedId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Notes",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PositiveNumber",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendPaymSchedBy",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Days",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ValidFromDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

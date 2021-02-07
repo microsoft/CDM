@@ -1,0 +1,669 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/AccountingDistributionTemplate.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CashDisc.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Group/FiscalDocModel_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Parameter/FiscalDocumentType_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FiscalEstablishment_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Transaction/FiscalDocument_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymSched.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendBankAccount.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendLedger.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymModeSpec.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymModeTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchComplementaryInvoiceHeader",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccessKey_BR",
+          "dataType": "EFDocAccessKey_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountingDistributionTemplate",
+          "dataType": "AccountingDistributionTemplateRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CanceledInvoice",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDisc",
+          "dataType": "VendCashDiscCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscAmount",
+          "dataType": "VendCashDiscAmount",
+          "isNullable": true,
+          "displayName": "Cash discount",
+          "description": ""
+        },
+        {
+          "name": "CashDiscDate",
+          "dataType": "VendCashDiscDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscPercent",
+          "dataType": "DiscPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ComplementaryType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ComplementedFiscalDocument",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostLedgerVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "displayName": "Costing voucher",
+          "description": ""
+        },
+        {
+          "name": "Currency",
+          "dataType": "VendCurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "DocumentDate",
+          "isNullable": true,
+          "displayName": "Invoice date",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentType",
+          "dataType": "FiscalDocumentTypeRecID_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishment_BR",
+          "dataType": "FiscalEstablishmentRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FixedDueDate",
+          "dataType": "PurchFixedDueDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Issuer",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Model",
+          "dataType": "FiscalDocumentModel_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Number",
+          "dataType": "Num",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Payment",
+          "dataType": "VendPaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymId",
+          "dataType": "PaymId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymSched",
+          "dataType": "PaymSchedId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonTableRef_BR",
+          "dataType": "ReasonTableRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Series",
+          "dataType": "FiscalDocumentSeries_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettleVoucher",
+          "dataType": "PurchSettlementType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentHeader",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Specie",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ThirdPartyPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Posting date",
+          "description": ""
+        },
+        {
+          "name": "VendBankAccount",
+          "dataType": "VendBankAccountId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendFinalUser",
+          "dataType": "CustVendFinalUser_BR",
+          "isNullable": true,
+          "displayName": "Use and consumption",
+          "description": ""
+        },
+        {
+          "name": "VendPaymModeSpec",
+          "dataType": "PaymSpec",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendPaymModeTable",
+          "dataType": "VendPaymMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendTable",
+          "dataType": "VendInvoiceAccount",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AccountingDistributionTemplate"
+          },
+          "name": "Relationship_AccountingDistributionTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CashDisc"
+          },
+          "name": "Relationship_CashDiscRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_DeliveryPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocModel_BR"
+          },
+          "name": "Relationship_FiscalDocModel_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocumentType_BR"
+          },
+          "name": "Relationship_FiscalDocumentTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalEstablishment_BR"
+          },
+          "name": "Relationship_FiscalEstablishmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocument_BR"
+          },
+          "name": "Relationship_OriginalFiscalDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymSched"
+          },
+          "name": "Relationship_PaymSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentHeader"
+          },
+          "name": "Relationship_SourceDocumentHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_ThirdPartyPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendBankAccount"
+          },
+          "name": "Relationship_VendBankAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeSpec"
+          },
+          "name": "Relationship_VendPaymModeSpecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeTable"
+          },
+          "name": "Relationship_VendPaymModeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase complementary invoice"
+    },
+    {
+      "dataTypeName": "EFDocAccessKey_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AccountingDistributionTemplateRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendCashDiscCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendCashDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendCashDiscDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DiscPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "FiscalDocumentTypeRecID_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FiscalEstablishmentRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchFixedDueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "FiscalDocumentModel_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Num",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymSchedId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReasonTableRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FiscalDocumentSeries_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchSettlementType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendFinalUser_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PaymSpec",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendInvoiceAccount",
+      "extendsDataType": "string"
+    }
+  ]
+}

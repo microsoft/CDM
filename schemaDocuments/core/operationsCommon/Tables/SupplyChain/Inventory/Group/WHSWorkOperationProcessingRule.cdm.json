@@ -1,0 +1,113 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WHSWorkProcessingPolicy.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/BatchGroup.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWorkOperationProcessingRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PolicyName",
+          "dataType": "WHSWorkProcessingPolicyName",
+          "description": ""
+        },
+        {
+          "name": "WorkTransType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Operation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Operation",
+          "description": ""
+        },
+        {
+          "name": "ProcessingMethod",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "DeferredProcessingThreshold",
+          "dataType": "WHSWorkDeferredProcessingThreshold",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeferredProcessingBatchGroupId",
+          "dataType": "BatchGroupId",
+          "isNullable": true,
+          "displayName": "Deferred processing batch group",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkProcessingPolicy"
+          },
+          "name": "Relationship_WorkProcessingPolicyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BatchGroup"
+          },
+          "name": "Relationship_BatchGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Work operation processing rule"
+    },
+    {
+      "dataTypeName": "WHSWorkProcessingPolicyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkDeferredProcessingThreshold",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BatchGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

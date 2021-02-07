@@ -1,0 +1,122 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "PlanActivity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WMSLocation.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PlanActivityLocation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventLocationDataAreaId",
+          "dataType": "DataAreaId",
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "description": ""
+        },
+        {
+          "name": "PlanActivity",
+          "dataType": "PlanActivityRefRecId",
+          "description": ""
+        },
+        {
+          "name": "WMSLocationDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WMSLocationId",
+          "dataType": "WMSLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlanActivity"
+          },
+          "name": "Relationship_PlanActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSLocation"
+          },
+          "name": "Relationship_WMSLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Plan activity locations"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlanActivityRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WMSLocationId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventFiscalLIFOJournalName.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/JournalError.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/UserGroupInfo.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventFiscalLIFOJournalTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BlockUserGroupId",
+          "dataType": "JournalBlockUserGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BlockUserId",
+          "dataType": "JournalBlockUserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "deletePostedLines",
+          "dataType": "JournalDeletePostedLines",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "JournalDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDate",
+          "dataType": "InventFiscalLIFOEndDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FinalReportClosed",
+          "dataType": "InventFiscalLIFOFinalReportClosed",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IncludeWIP",
+          "dataType": "InventFiscalLIFOIncludeWIP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalId",
+          "dataType": "InventFiscalLIFOJournalId",
+          "description": ""
+        },
+        {
+          "name": "JournalNameId",
+          "dataType": "InventFiscalLIFOJournalNameId",
+          "description": ""
+        },
+        {
+          "name": "JournalType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfLines",
+          "dataType": "JournalNumOfLines",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Posted",
+          "dataType": "JournalPosted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Closed",
+          "description": ""
+        },
+        {
+          "name": "PostedDateTime",
+          "dataType": "JournalPostedDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Closed on",
+          "description": ""
+        },
+        {
+          "name": "PostedUserId",
+          "dataType": "JournalPostedUserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Closed by",
+          "description": ""
+        },
+        {
+          "name": "SessionId",
+          "dataType": "JournalSessionId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionLoginDateTime",
+          "dataType": "JournalSessionLoginDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "InventFiscalLIFOStartDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SystemBlocked",
+          "dataType": "JournalSystemBlocked",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseNormalValue",
+          "dataType": "InventFiscalLIFOUseNormalValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventFiscalLIFOJournalName"
+          },
+          "name": "Relationship_InventFiscalLIFOJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JournalError"
+          },
+          "name": "Relationship_JournalErrorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "UserGroupInfo"
+          },
+          "name": "Relationship_UserGroupInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal LIFO journal table"
+    },
+    {
+      "dataTypeName": "JournalBlockUserGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalBlockUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalDeletePostedLines",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOEndDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOFinalReportClosed",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOIncludeWIP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalNumOfLines",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalPosted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalPostedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JournalPostedUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalSessionId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalSessionLoginDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOStartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JournalSystemBlocked",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOUseNormalValue",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,6 +13,10 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 public class AttributeGroupReferencePersistence {
 
   public static CdmAttributeGroupReference fromData(final CdmCorpusContext ctx, final JsonNode obj) {
+    return fromData(ctx, obj, null);
+  }
+
+  public static CdmAttributeGroupReference fromData(final CdmCorpusContext ctx, final JsonNode obj, final String entityName) {
     if (obj == null) {
       return null;
     }
@@ -22,7 +29,7 @@ public class AttributeGroupReferencePersistence {
       if (obj.get("attributeGroupReference").isValueNode() && obj.get("attributeGroupReference") != null) {
         attributeGroup = obj.get("attributeGroupReference").asText();
       } else {
-        attributeGroup = AttributeGroupPersistence.fromData(ctx, obj.get("attributeGroupReference"));
+        attributeGroup = AttributeGroupPersistence.fromData(ctx, obj.get("attributeGroupReference"), entityName);
       }
     }
 

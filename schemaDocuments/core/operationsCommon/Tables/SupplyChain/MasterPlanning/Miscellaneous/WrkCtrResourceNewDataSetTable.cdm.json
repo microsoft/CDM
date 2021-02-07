@@ -1,0 +1,107 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/WrkCtrTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WrkCtrResourceNewDataSetTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "WrkCtrId",
+          "dataType": "WrkCtrIdBase",
+          "description": ""
+        },
+        {
+          "name": "WrkCtrType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Type",
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "WrkCtrWorker",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SysDataCacheContextId",
+          "dataType": "SysDataCacheContextId",
+          "isNullable": true,
+          "displayName": "Cache context id",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_WrkCtrTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Unassigned resources"
+    },
+    {
+      "dataTypeName": "WrkCtrIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WrkCtrWorker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SysDataCacheContextId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

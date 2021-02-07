@@ -1,0 +1,80 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CatExternalCatalog.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatExternalCatalogQuote",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExpirationDate",
+          "dataType": "CatExternalCatalogExpirationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExternalCatalog",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Number",
+          "dataType": "CatExternalCatalogNumber",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CatExternalCatalog"
+          },
+          "name": "Relationship_CatExternalCatalogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "External catalog quotation"
+    },
+    {
+      "dataTypeName": "CatExternalCatalogExpirationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CatExternalCatalogNumber",
+      "extendsDataType": "string"
+    }
+  ]
+}

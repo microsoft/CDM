@@ -1,8 +1,6 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmFolderDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -92,17 +90,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.Name);
+            if (string.IsNullOrWhiteSpace(this.Name))
+            {
+                Logger.Error(nameof(CdmFolderDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Name" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
-
             return false;
         }
 
@@ -132,10 +130,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
             return null;
         }
 
@@ -147,7 +141,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="adapter">The storage adapter where the document can be found.</param>
         /// <param name="forceReload">If true, reload the object from file and replace the current object with it.</param>
         /// <returns>The <see cref="CdmDocumentDefinition"/>.</returns>
-        internal async Task<CdmDocumentDefinition> FetchDocumentFromFolderPathAsync(string objectPath, StorageAdapter adapter, bool forceReload = false)
+        internal async Task<CdmDocumentDefinition> FetchDocumentFromFolderPathAsync(string objectPath, StorageAdapter adapter, bool forceReload = false, ResolveOptions resOpt = null)
         {
             string docName;
             string remainingPath;
@@ -181,7 +175,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             // go get the doc
-            doc = await this.Corpus.Persistence.LoadDocumentFromPathAsync(this, docName, doc);
+            doc = await this.Corpus.Persistence.LoadDocumentFromPathAsync(this, docName, doc, resOpt);
 
             return doc;
         }
@@ -196,22 +190,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override T FetchObjectDefinition<T>(ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
-
             return default(T);
         }
 
         /// <inheritdoc />
         internal override ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
-
             return null;
         }
 
@@ -222,68 +206,79 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="adapter">The storage adapter where the folder can be found.</param>
         /// <param name="makeFolder">Create the folder if it doesn't exist.</param>
         /// <returns>The <see cref="CdmFolderDefinition"/>.</returns>
-        internal async Task<CdmFolderDefinition> FetchChildFolderFromPathAsync(string path, bool makeFolder = false)
+        internal CdmFolderDefinition FetchChildFolderFromPath(string path, bool makeFolder = false)
         {
             string name;
-            string remainingPath;
-            int first = path.IndexOf('/', 0);
-            if (first < 0)
-            {
-                name = path;
-                remainingPath = "";
-            }
-            else
-            {
-                name = StringUtils.Slice(path, 0, first);
-                remainingPath = StringUtils.Slice(path, first + 1);
-            }
+            string remainingPath = path;
+            CdmFolderDefinition childFolder = this;
 
-            if (name.ToLowerInvariant() == this.Name.ToLowerInvariant())
+            while (childFolder != null && remainingPath.IndexOf('/') != -1)
             {
+                int first = remainingPath.IndexOf('/');
+                if (first < 0)
+                {
+                    name = path;
+                    remainingPath = "";
+                }
+                else
+                {
+                    name = StringUtils.Slice(remainingPath, 0, first);
+                    remainingPath = StringUtils.Slice(remainingPath, first + 1);
+                }
+
+                if (name.ToLowerInvariant() != childFolder.Name.ToLowerInvariant())
+                {
+                    Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)this.Ctx, $"Invalid path '{path}'", nameof(FetchChildFolderFromPath));
+                    return null;
+                }
+
                 // the end?
                 if (remainingPath.Length == 0)
-                    return this;
+                {
+                    return childFolder;
+                }
+
+                first = remainingPath.IndexOf('/');
+                string childFolderName = remainingPath;
+                if (first != -1)
+                {
+                    childFolderName = StringUtils.Slice(remainingPath, 0, first);
+                } 
+                else
+                {
+                    // the last part of the path will be considered part of the part depending on the makeFolder flag.
+                    break;
+                }
+
                 // check children folders
                 CdmFolderDefinition result = null;
                 if (this.ChildFolders != null)
                 {
-                    foreach (var f in this.ChildFolders)
+                    foreach (var folder in childFolder.ChildFolders)
                     {
-                        result = await f.FetchChildFolderFromPathAsync(remainingPath, makeFolder);
-                        if (result != null)
+                        if (childFolderName.ToLowerInvariant() == folder.Name.ToLowerInvariant())
+                        {
+                            // found our folder.
+                            result = folder;
                             break;
+                        }
                     }
                 }
-                if (result != null)
-                    return result;
 
-                // get the next folder
-                first = remainingPath.IndexOf("/");
-                name = first > 0 ? remainingPath.Slice(0, first) : remainingPath;
-
-                if (first != -1)
+                if (result == null)
                 {
-                    var childPath = await this.ChildFolders.Add(name).FetchChildFolderFromPathAsync(remainingPath, makeFolder);
-                    if (childPath == null)
-                    {
-                        Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)this.Ctx, $"Invalid path '{path}'", nameof(FetchChildFolderFromPathAsync));
-                    }
-                    return childPath;
+                    result = childFolder.ChildFolders.Add(childFolderName);
                 }
 
-                if (makeFolder)
-                {
-                    // huh, well need to make the fold here
-                    return await this.ChildFolders.Add(name).FetchChildFolderFromPathAsync(remainingPath, makeFolder);
-                }
-                else
-                {
-                    // good enough, return where we got to
-                    return this;
-                }
+                childFolder = result;
             }
 
-            return null;
+            if (makeFolder)
+            {
+                childFolder = childFolder.ChildFolders.Add(remainingPath);
+            }
+
+            return childFolder;
         }
 
         /// <inheritdoc />

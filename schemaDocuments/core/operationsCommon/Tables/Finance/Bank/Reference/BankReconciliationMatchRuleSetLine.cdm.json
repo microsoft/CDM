@@ -1,0 +1,95 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BankReconciliationMatchRule.cdm.json"
+    },
+    {
+      "corpusPath": "BankReconciliationMatchRuleSet.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankReconciliationMatchRuleSetLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BankReconciliationMatchRule",
+          "dataType": "BankReconciliationMatchRuleRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankReconciliationMatchRuleSet",
+          "dataType": "BankReconciliationMatchRuleSetRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BankReconciliationMatchRule"
+          },
+          "name": "Relationship_BankReconciliationMatchRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankReconciliationMatchRuleSet"
+          },
+          "name": "Relationship_BankReconciliationMatchRuleSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Reconciliation matching rule set lines"
+    },
+    {
+      "dataTypeName": "BankReconciliationMatchRuleRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BankReconciliationMatchRuleSetRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

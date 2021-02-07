@@ -1,0 +1,184 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/SalesPackageAppearance.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/TransactionHeader/WMSBillOfLading.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WMSBillOfLadingCarrier",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "additionalInfo",
+          "dataType": "WMSBOLAdditionalInfo",
+          "isNullable": true,
+          "displayName": "Describe items",
+          "description": ""
+        },
+        {
+          "name": "billOfLadingId",
+          "dataType": "WMSBillOfLadingId",
+          "description": ""
+        },
+        {
+          "name": "handlingPackageType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Handling unit",
+          "description": ""
+        },
+        {
+          "name": "handlingQty",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "displayName": "Handling quantity",
+          "description": ""
+        },
+        {
+          "name": "hazardousMaterial",
+          "dataType": "WMSHazardousMaterial",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "packageAppearance",
+          "dataType": "WMSPackageAppearance",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "packagePackageType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Package unit",
+          "description": ""
+        },
+        {
+          "name": "packageQty",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "displayName": "Package quantity",
+          "description": ""
+        },
+        {
+          "name": "pdsCWHandlingQty",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "displayName": "Handling CW quantity",
+          "description": ""
+        },
+        {
+          "name": "pdsCWPackageQty",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "displayName": "Package CW quantity",
+          "description": ""
+        },
+        {
+          "name": "weight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SalesPackageAppearance"
+          },
+          "name": "Relationship_SalesPackageAppearanceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSBillOfLading"
+          },
+          "name": "Relationship_WMSBillOfLadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bill of lading items"
+    },
+    {
+      "dataTypeName": "WMSBOLAdditionalInfo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSBillOfLadingId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WMSHazardousMaterial",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WMSPackageAppearance",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCWInventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

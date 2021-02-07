@@ -1,0 +1,103 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WHSCrossDockTemplate.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSCrossDockTemplateSupplySource",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CrossDockTemplateId",
+          "dataType": "WHSCrossDockTemplateId",
+          "description": ""
+        },
+        {
+          "name": "SupplySource",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "PackedQueryRun",
+          "dataType": "PackedQueryRun",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SequenceNumber",
+          "dataType": "WHSSeqNum",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSCrossDockTemplate"
+          },
+          "name": "Relationship_WHSCrossDockTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Cross docking supply source"
+    },
+    {
+      "dataTypeName": "WHSCrossDockTemplateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PackedQueryRun",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSSeqNum",
+      "extendsDataType": "integer"
+    }
+  ]
+}

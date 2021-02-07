@@ -1,5 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmFolder } from '..';
 import {
+    CardinalitySettings,
     CdmCorpusContext,
     cdmDataFormat,
     cdmObjectType,
@@ -7,11 +11,14 @@ import {
     CdmTypeAttributeDefinition,
     copyOptions,
     Logger,
-    resolveOptions
+    resolveOptions,
+    traitToPropertyMap
 } from '../../internal';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeResolutionGuidance,
     DataTypeReference,
+    Projection,
     PurposeReference,
     TraitReference,
     TypeAttribute
@@ -19,7 +26,7 @@ import {
 import * as utils from './utils';
 
 export class TypeAttributePersistence {
-    public static fromData(ctx: CdmCorpusContext, object: TypeAttribute): CdmTypeAttributeDefinition {
+    public static fromData(ctx: CdmCorpusContext, object: TypeAttribute, entityName?: string): CdmTypeAttributeDefinition {
         const typeAttribute: CdmTypeAttributeDefinition = ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, object.name);
 
         if (object.explanation) {
@@ -28,6 +35,37 @@ export class TypeAttributePersistence {
 
         typeAttribute.purpose = CdmFolder.PurposeReferencePersistence.fromData(ctx, object.purpose);
         typeAttribute.dataType = CdmFolder.DataTypeReferencePersistence.fromData(ctx, object.dataType);
+
+        if (object.cardinality) {
+            let minCardinality: string;
+            if (object.cardinality.minimum) {
+                minCardinality = object.cardinality.minimum;
+            }
+
+            let maxCardinality: string;
+            if (object.cardinality.maximum) {
+                maxCardinality = object.cardinality.maximum;
+            }
+
+            if (!minCardinality || !maxCardinality) {
+                Logger.error(TypeAttributePersistence.name, ctx, 'Both minimum and maximum are required for the Cardinality property.', this.fromData.name);
+            }
+
+            if (!CardinalitySettings.isMinimumValid(minCardinality)) {
+                Logger.error(TypeAttributePersistence.name, ctx, `Invalid minimum cardinality ${minCardinality}.`, this.fromData.name);
+            }
+
+            if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
+                Logger.error(TypeAttributePersistence.name, ctx, `Invalid maximum cardinality ${maxCardinality}.`, this.fromData.name);
+            }
+
+            if (minCardinality && maxCardinality && CardinalitySettings.isMinimumValid(minCardinality) && CardinalitySettings.isMaximumValid(maxCardinality)) {
+                typeAttribute.cardinality = new CardinalitySettings(typeAttribute);
+                typeAttribute.cardinality.minimum = minCardinality;
+                typeAttribute.cardinality.maximum = maxCardinality;
+            }
+        }
+
         typeAttribute.attributeContext =
             CdmFolder.AttributeContextReferencePersistence.fromData(ctx, object.attributeContext);
         utils.addArrayToCdmCollection<CdmTraitReference>(
@@ -37,38 +75,25 @@ export class TypeAttributePersistence {
         typeAttribute.resolutionGuidance =
             CdmFolder.AttributeResolutionGuidancePersistence.fromData(ctx, object.resolutionGuidance);
 
-        if (object.isReadOnly) {
-            typeAttribute.isReadOnly = object.isReadOnly;
+        if (object.isPrimaryKey && entityName) {
+            const t2pMap: traitToPropertyMap = new traitToPropertyMap(typeAttribute);
+            t2pMap.updatePropertyValue('isPrimaryKey', entityName + '/(resolvedAttributes)/' + typeAttribute.name);
         }
-        if (object.isNullable) {
-            typeAttribute.isNullable = object.isNullable;
-        }
-        if (object.sourceName) {
-            typeAttribute.sourceName = object.sourceName;
-        }
-        if (object.sourceOrdering) {
-            typeAttribute.sourceOrdering = object.sourceOrdering;
-        }
-        if (object.displayName) {
-            typeAttribute.displayName = object.displayName;
-        }
-        if (object.description) {
-            typeAttribute.description = object.description;
-        }
-        if (object.valueConstrainedToList) {
-            typeAttribute.valueConstrainedToList = object.valueConstrainedToList;
-        }
-        if (object.maximumLength) {
-            typeAttribute.maximumLength = object.maximumLength;
-        }
-        if (object.maximumValue) {
-            typeAttribute.maximumValue = object.maximumValue;
-        }
-        if (object.minimumValue) {
-            typeAttribute.minimumValue = object.minimumValue;
-        }
-        if (object.dataFormat) {
-            typeAttribute.dataFormat = this.dataTypeFromData(object.dataFormat);
+
+        typeAttribute.isReadOnly = utils.propertyFromDataToBool(object.isReadOnly);
+        typeAttribute.isNullable = utils.propertyFromDataToBool(object.isNullable);
+        typeAttribute.sourceName = utils.propertyFromDataToString(object.sourceName);
+        typeAttribute.sourceOrdering = utils.propertyFromDataToInt(object.sourceOrdering);
+        typeAttribute.displayName = utils.propertyFromDataToString(object.displayName);
+        typeAttribute.description = utils.propertyFromDataToString(object.description);
+        typeAttribute.valueConstrainedToList = utils.propertyFromDataToBool(object.valueConstrainedToList);
+        typeAttribute.maximumLength = utils.propertyFromDataToInt(object.maximumLength);
+        typeAttribute.maximumValue = utils.propertyFromDataToString(object.maximumValue);
+        typeAttribute.minimumValue = utils.propertyFromDataToString(object.minimumValue);
+        typeAttribute.projection = CdmFolder.ProjectionPersistence.fromData(ctx, object.projection)
+
+        if (object.dataFormat !== undefined) {
+            typeAttribute.dataFormat = TypeAttributePersistence.dataTypeFromData(object.dataFormat);
             if (typeAttribute.dataFormat === undefined) {
                 Logger.warning(
                     TypeAttributePersistence.name,
@@ -78,13 +103,18 @@ export class TypeAttributePersistence {
                 );
             }
         }
-        if (object.defaultValue) {
+        if (object.defaultValue !== undefined) {
             typeAttribute.defaultValue = object.defaultValue;
         }
 
         return typeAttribute;
     }
+
     public static toData(instance: CdmTypeAttributeDefinition, resOpt: resolveOptions, options: copyOptions): TypeAttribute {
+        if (!instance) {
+            return undefined;
+        }
+
         const appliedTraits: CdmTraitReference[] = instance.appliedTraits ?
             instance.appliedTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty) : undefined;
         const object: TypeAttribute = {
@@ -94,11 +124,14 @@ export class TypeAttributePersistence {
                 : undefined,
             dataType: instance.dataType ? instance.dataType.copyData(resOpt, options) as (string | DataTypeReference) : undefined,
             name: instance.name,
-            appliedTraits: utils.arrayCopyData<string | TraitReference>(resOpt, appliedTraits, options),
+            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, appliedTraits, options),
             resolutionGuidance: instance.resolutionGuidance
                 ? instance.resolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
             attributeContext: instance.attributeContext ? instance.attributeContext.copyData(resOpt, options) as string : undefined
         };
+
+        object.projection = instance.projection ? instance.projection.copyData(resOpt, options) as Projection : undefined;
+
         const isReadOnly: boolean = instance.getProperty('isReadOnly') as boolean;
         object.isReadOnly = isReadOnly ? isReadOnly : undefined;
 
@@ -108,7 +141,7 @@ export class TypeAttributePersistence {
         object.sourceName = instance.getProperty('sourceName') as string;
 
         const sourceOrdering: number = instance.getProperty('sourceOrdering') as number;
-        object.sourceOrdering = !isNaN(sourceOrdering) ? sourceOrdering : undefined;
+        object.sourceOrdering = !isNaN(sourceOrdering) && sourceOrdering !== 0 ? sourceOrdering : undefined;
 
         object.displayName = instance.getProperty('displayName') as string;
         object.description = instance.getProperty('description') as string;
@@ -126,8 +159,10 @@ export class TypeAttributePersistence {
         const dataFormat: cdmDataFormat = instance.getProperty('dataFormat') as cdmDataFormat;
         object.dataFormat = dataFormat !== cdmDataFormat.unknown ? this.dataTypeToData(dataFormat) : undefined;
 
-        const defaultValue: any = instance.getProperty('');
-        if (defaultValue) {
+        const defaultValue: any = instance.getProperty('defaultValue');
+        if (defaultValue instanceof Array) {
+            object.defaultValue = (defaultValue as Array<any>).length > 0 ? defaultValue : undefined;
+        } else if (defaultValue) {
             object.defaultValue = defaultValue;
         }
 
@@ -153,6 +188,8 @@ export class TypeAttributePersistence {
                 return cdmDataFormat.double;
             case 'time':
                 return cdmDataFormat.time;
+            case 'date':
+                return cdmDataFormat.date;
             case 'datetime':
                 return cdmDataFormat.dateTime;
             case 'datetimeoffset':
@@ -170,7 +207,7 @@ export class TypeAttributePersistence {
             case 'json':
                 return cdmDataFormat.json;
             default:
-                return undefined;
+                return cdmDataFormat.unknown;
         }
     }
 

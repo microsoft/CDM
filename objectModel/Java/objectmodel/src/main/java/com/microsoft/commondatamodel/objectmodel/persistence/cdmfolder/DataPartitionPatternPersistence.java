@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
@@ -6,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DataPartitionPattern;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 public class DataPartitionPatternPersistence {
 
@@ -15,6 +19,10 @@ public class DataPartitionPatternPersistence {
                 obj.getName());
 
         newPattern.setRootLocation(obj.getRootLocation());
+
+        if (obj.getGlobPattern() != null) {
+            newPattern.setGlobPattern(obj.getGlobPattern());
+        }
 
         if (obj.getRegularExpression() != null) {
             newPattern.setRegularExpression(obj.getRegularExpression());
@@ -55,6 +63,7 @@ public class DataPartitionPatternPersistence {
         result.setLastFileModifiedTime(instance.getLastFileModifiedTime());
         result.setExplanation(instance.getExplanation());
         result.setRootLocation(instance.getRootLocation());
+        result.setGlobPattern(instance.getGlobPattern());
         result.setRegularExpression(instance.getRegularExpression());
         result.setParameters(instance.getParameters());
         result.setSpecializedSchema(instance.getSpecializedSchema());

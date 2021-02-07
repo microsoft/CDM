@@ -1,0 +1,108 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReleaseUpdateValidation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BcpCount",
+          "dataType": "SysInt64",
+          "isNullable": true,
+          "displayName": "Bulk copy row count",
+          "description": ""
+        },
+        {
+          "name": "Log",
+          "dataType": "Log",
+          "isNullable": true,
+          "displayName": "Log error messages",
+          "description": ""
+        },
+        {
+          "name": "ShadowCount",
+          "dataType": "SysInt64",
+          "isNullable": true,
+          "displayName": "Shadow row count",
+          "description": ""
+        },
+        {
+          "name": "ShadowTableName",
+          "dataType": "TableName",
+          "isNullable": true,
+          "displayName": "Shadow table name",
+          "description": ""
+        },
+        {
+          "name": "SourceCount",
+          "dataType": "SysInt64",
+          "isNullable": true,
+          "displayName": "Source row count",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Status",
+          "description": ""
+        },
+        {
+          "name": "TabId",
+          "dataType": "RefTableId",
+          "displayName": "Table ID",
+          "description": ""
+        },
+        {
+          "name": "TargetCount",
+          "dataType": "SysInt64",
+          "isNullable": true,
+          "displayName": "Target row count",
+          "description": ""
+        }
+      ],
+      "displayName": "Compare data upgrade row counts"
+    },
+    {
+      "dataTypeName": "SysInt64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Log",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TableName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

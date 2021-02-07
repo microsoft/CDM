@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -30,7 +33,7 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
   /**
    * Whether debugging files should be written or not.
    */
-  private final boolean doesWriteTestDebuggingFiles = TestHelper.doesWriteTestDebuggingFiles;
+  private final boolean doesWriteTestDebuggingFiles = false;
   private final String TESTS_SUBPATH =
       new File(
           new File("persistence", "modeljson"),

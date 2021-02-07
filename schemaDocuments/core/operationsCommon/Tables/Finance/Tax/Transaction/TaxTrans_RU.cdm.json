@@ -1,0 +1,263 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustVendTransPostingLog_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/GoodsInRouteJour_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Transaction/MarkupTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "TaxTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/Group/VATOperationCodeTable_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxTrans_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustVendTransPostingLog_RU",
+          "dataType": "CustVendTransPostingLogRecId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GoodsInRouteId_RU",
+          "dataType": "GoodsInRouteId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GoodsInRouteToDelivery_RU",
+          "dataType": "GoodsInRouteToDelivery_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarkupTransRecId_RU",
+          "dataType": "MarkupTransRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OffsetLedgerDimension_RU",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "displayName": "Corr. account",
+          "description": ""
+        },
+        {
+          "name": "TaxSourceType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxTrans",
+          "dataType": "TaxTransRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxUnroundAmount_RU",
+          "dataType": "TaxAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxUnroundAmountCur_RU",
+          "dataType": "TaxAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATOperationCode_RU",
+          "dataType": "VATOperationCode_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATTaxAgentVendAccount_RU",
+          "dataType": "VATTaxAgentVendAccount_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustVendTransPostingLog_RU"
+          },
+          "name": "Relationship_CustVendTransPostingLog_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "GoodsInRouteJour_RU"
+          },
+          "name": "Relationship_GoodsInRouteJour_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MarkupTrans"
+          },
+          "name": "Relationship_MarkupTrans_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_OffsetLedgerDimension_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTrans"
+          },
+          "name": "Relationship_TaxTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VATOperationCodeTable_RU"
+          },
+          "name": "Relationship_VATOperationCodeTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VATTaxAgentVendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Posted sales tax information for Russia country fields"
+    },
+    {
+      "dataTypeName": "CustVendTransPostingLogRecId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "GoodsInRouteId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "GoodsInRouteToDelivery_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MarkupTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDimensionAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VATOperationCode_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VATTaxAgentVendAccount_RU",
+      "extendsDataType": "string"
+    }
+  ]
+}

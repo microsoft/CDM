@@ -1,12 +1,14 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
-{
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
+{
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// The type attribute persistence.
@@ -19,7 +21,8 @@
             // Do a conversion between CDM data format and model.json data type.
             attribute.DataFormat = DataTypeFromData(obj.DataType);
 
-            attribute.Description = obj.Description;
+            if (!string.IsNullOrWhiteSpace(obj.Description))
+                attribute.Description = obj.Description;
 
             if (obj.IsHidden == true)
             {
@@ -41,10 +44,10 @@
             {
                 Name = instance.Name,
                 DataType = DataTypeToData(instance.DataFormat),
-                Description = instance.Description
+                Description = instance.GetProperty("description")
             };
 
-            await Utils.ProcessAnnotationsToData(instance.Ctx, attribute, instance.AppliedTraits);
+            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, attribute, instance.AppliedTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
 
@@ -67,6 +70,10 @@
                     return CdmDataFormat.Int64;
                 case "double":
                     return CdmDataFormat.Double;
+                case "date":
+                    return CdmDataFormat.Date;
+                case "time":
+                    return CdmDataFormat.Time;
                 case "datetime":
                     return CdmDataFormat.DateTime;
                 case "datetimeoffset":
@@ -103,7 +110,9 @@
                 case CdmDataFormat.Binary:
                     return "boolean";
                 case CdmDataFormat.Time:
+                    return "time";
                 case CdmDataFormat.Date:
+                    return "date";
                 case CdmDataFormat.DateTime:
                     return "dateTime";
                 case CdmDataFormat.DateTimeOffset:

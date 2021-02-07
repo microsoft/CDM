@@ -1,17 +1,24 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmImport extends CdmObjectSimple {
 
   private String moniker;
   private String corpusPath;
-  private CdmDocumentDefinition doc;
+  private CdmDocumentDefinition document;
 
   public CdmImport(final CdmCorpusContext ctx, final String corpusPath, final String moniker) {
     super(ctx);
@@ -30,17 +37,19 @@ public class CdmImport extends CdmObjectSimple {
 
   /**
    * Gets or sets the document.
+   * @return CdmDocumentDefinition
    */
-  CdmDocumentDefinition getDoc() {
-    return doc;
+  CdmDocumentDefinition getDocument() {
+    return document;
   }
 
-  void setDoc(final CdmDocumentDefinition doc) {
-    this.doc = doc;
+  void setDocument(final CdmDocumentDefinition document) {
+    this.document = document;
   }
 
   /**
    * Gets or sets the import path.
+   * @return String
    */
   public String getCorpusPath() {
     return corpusPath;
@@ -52,6 +61,7 @@ public class CdmImport extends CdmObjectSimple {
 
   /**
    * Gets or sets the import moniker.
+   * @return String
    */
   public String getMoniker() {
     return moniker;
@@ -61,13 +71,13 @@ public class CdmImport extends CdmObjectSimple {
     this.moniker = value;
   }
 
-  CdmDocumentDefinition getResolvedDocument() {
-    return this.doc;
-  }
-
   @Override
   public boolean validate() {
-    return false;
+    if (StringUtils.isNullOrTrimEmpty(this.corpusPath)) {
+      Logger.error(CdmImport.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("corpusPath"))));
+      return false;
+    }
+    return true;
   }
 
   @Override
@@ -77,8 +87,9 @@ public class CdmImport extends CdmObjectSimple {
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolved options
+   * @param host host
+   * @return CDM Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -87,7 +98,7 @@ public class CdmImport extends CdmObjectSimple {
   @Deprecated
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmImport copy;
@@ -100,7 +111,7 @@ public class CdmImport extends CdmObjectSimple {
       copy.setMoniker(this.getMoniker());
     }
 
-    copy.setDoc(doc);
+    copy.setDocument(document);
     return copy;
   }
 }

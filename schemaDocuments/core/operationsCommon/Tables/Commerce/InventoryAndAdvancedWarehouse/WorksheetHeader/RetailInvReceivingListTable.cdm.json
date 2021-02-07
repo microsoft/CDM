@@ -1,0 +1,145 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailStoreTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailInvReceivingListTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Deliverynotenumber",
+          "dataType": "RetailVendRef",
+          "isNullable": true,
+          "displayName": "Delivery note number",
+          "description": ""
+        },
+        {
+          "name": "DriverDetails",
+          "dataType": "RetailDriverDetails",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsOpenInHQ",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "store inventory data not open in headquarter",
+          "description": ""
+        },
+        {
+          "name": "LinesLastRefreshedFromHQ",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Ordernumber",
+          "dataType": "RetailReferenceNo",
+          "displayName": "Order number",
+          "description": ""
+        },
+        {
+          "name": "storeId",
+          "dataType": "RetailStoreId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StoreInventoryId",
+          "dataType": "RetailHandheldId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Type",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreTable"
+          },
+          "name": "Relationship_RetailStoreTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Receiving inventory"
+    },
+    {
+      "dataTypeName": "RetailVendRef",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDriverDetails",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailReferenceNo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailHandheldId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,17 +1,26 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmConstantEntityDefinition,
     CdmCorpusContext,
     CdmEntityDefinition,
     CdmEntityReference,
+    CdmObject,
     cdmObjectType,
-    CdmTraitReference
+    CdmProjection,
+    CdmTraitReference,
+    copyOptions,
+    resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
 import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
+import { ProjectionPersistence } from './Projections/ProjectionPersistence';
 import {
     ConstantEntity,
     Entity,
-    EntityReference
+    EntityReferenceDefinition,
+    Projection
 } from './types';
 import * as utils from './utils';
 
@@ -20,15 +29,42 @@ function isConstantEntity(object: Entity | ConstantEntity): object is ConstantEn
 }
 
 export class EntityReferencePersistence extends cdmObjectRefPersistence {
-    public static fromData(ctx: CdmCorpusContext, object: string | EntityReference): CdmEntityReference {
+    public static fromData(ctx: CdmCorpusContext, object: string | EntityReferenceDefinition | Projection): CdmEntityReference {
         if (!object) { return; }
         let simpleReference: boolean = true;
-        let entity: string | CdmEntityDefinition | CdmConstantEntityDefinition;
+        let entity: string | CdmEntityDefinition | CdmConstantEntityDefinition | CdmProjection;
         let appliedTraits: CdmTraitReference[];
         if (typeof (object) === 'string') {
             entity = object;
         } else {
             simpleReference = false;
+            entity = this.getEntityReference(ctx, object);
+        }
+
+        const entityReference: CdmEntityReference = ctx.corpus.MakeRef(cdmObjectType.entityRef, entity, simpleReference);
+
+        if (typeof (object) !== 'string' && 'appliedTraits' in object) {
+            appliedTraits = utils.createTraitReferenceArray(ctx, object.appliedTraits);
+        }
+        if (appliedTraits) {
+            utils.addArrayToCdmCollection<CdmTraitReference>(entityReference.appliedTraits, appliedTraits);
+        }
+
+        return entityReference;
+    }
+
+    public static toData(instance: CdmEntityReference, resOpt: resolveOptions, options: copyOptions): any {
+        if (instance.explicitReference !== undefined && instance.explicitReference instanceof CdmProjection) {
+            return ProjectionPersistence.toData(instance.explicitReference as CdmProjection, resOpt, options) as Projection;
+        }
+        else {
+            return cdmObjectRefPersistence.toData(instance, resOpt, options);
+        }
+    }
+
+    private static getEntityReference(ctx: CdmCorpusContext, object: any): string | CdmEntityDefinition | CdmConstantEntityDefinition | CdmProjection {
+        let entity: any = undefined;
+        if ('entityReference' in object) {
             if (typeof (object.entityReference) === 'string') {
                 entity = object.entityReference;
             } else if (isConstantEntity(object.entityReference)) {
@@ -36,15 +72,10 @@ export class EntityReferencePersistence extends cdmObjectRefPersistence {
             } else {
                 entity = CdmFolder.EntityPersistence.fromData(ctx, object.entityReference);
             }
+        } else if ('source' in object || 'operations' in object) {
+            entity = ProjectionPersistence.fromData(ctx, object);
         }
 
-        const entityReference: CdmEntityReference = ctx.corpus.MakeRef(cdmObjectType.entityRef, entity, simpleReference);
-
-        if (typeof (object) !== 'string') {
-            appliedTraits = utils.createTraitReferenceArray(ctx, object.appliedTraits);
-        }
-        utils.addArrayToCdmCollection<CdmTraitReference>(entityReference.appliedTraits, appliedTraits);
-
-        return entityReference;
+        return entity;
     }
 }

@@ -1,0 +1,155 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/WorksheetHeader/RAssetAdjustmentTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetStandardTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Main/RAssetTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RAssetAdjustmentTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "RAssetId",
+          "displayName": "Fixed assets",
+          "description": ""
+        },
+        {
+          "name": "AdjustmentTableRecId",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "AssetStandardId",
+          "dataType": "RAssetStandardId",
+          "description": ""
+        },
+        {
+          "name": "Factor",
+          "dataType": "Factor",
+          "isNullable": true,
+          "displayName": "Ratio",
+          "description": ""
+        },
+        {
+          "name": "NewCost",
+          "dataType": "RAssetAmount",
+          "isNullable": true,
+          "displayName": "Replacement cost",
+          "description": ""
+        },
+        {
+          "name": "OldCost",
+          "dataType": "RAssetAmount",
+          "isNullable": true,
+          "displayName": "Balance cost",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetAdjustmentTable"
+          },
+          "name": "Relationship_RAssetAdjustmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetStandardTable"
+          },
+          "name": "Relationship_RAssetStandardTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTable"
+          },
+          "name": "Relationship_RAssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "FA revaluation lines"
+    },
+    {
+      "dataTypeName": "RAssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RAssetStandardId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Factor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RAssetAmount",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

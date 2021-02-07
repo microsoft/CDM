@@ -1,0 +1,84 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailCatalogIntOrgProductValidation.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailCatalogIntOrgProductError",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CatalogIntOrgProductValidation",
+          "dataType": "RefRecId",
+          "displayName": "-",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "dataType": "RetailCatalogValidationErrorMessage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ErrorType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Ignore",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Ignore",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailCatalogIntOrgProductValidation"
+          },
+          "name": "Relationship_CatalogIntOrgProductValidationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Catalog product validation errors"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCatalogValidationErrorMessage",
+      "extendsDataType": "string"
+    }
+  ]
+}

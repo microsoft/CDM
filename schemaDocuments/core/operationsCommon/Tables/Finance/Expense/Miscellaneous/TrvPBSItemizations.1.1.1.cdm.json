@@ -1,0 +1,118 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvPBSItemizations",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CCTransUniqueID",
+          "dataType": "TrvCCTransUniqueID",
+          "description": ""
+        },
+        {
+          "name": "SubCategoryCode",
+          "dataType": "TrvPbsSubCategoryCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountCurr",
+          "dataType": "AmountCur",
+          "displayName": "Transaction amount",
+          "description": ""
+        },
+        {
+          "name": "AmountLocal",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Amount in local currency",
+          "description": ""
+        },
+        {
+          "name": "ExchCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "ExchCodeLocal",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "displayName": "Local currency code",
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TrvTransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Credit card itemizations"
+    },
+    {
+      "dataTypeName": "TrvCCTransUniqueID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvPbsSubCategoryCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvTransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

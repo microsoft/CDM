@@ -1,0 +1,193 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/PurchLine.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/ConsignmentReplenishmentOrderLine.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PdsVendBatchInfo",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountryOfOrigin1",
+          "dataType": "PdsCountryOfOrigin1",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountryOfOrigin2",
+          "dataType": "PdsCountryOfOrigin2",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRef",
+          "dataType": "PdsVendBatchInfoSource",
+          "description": ""
+        },
+        {
+          "name": "UseVendBatchDate",
+          "dataType": "PdsUseVendBatchDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseVendBatchExp",
+          "dataType": "PdsUseVendBatchExp",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendBatchDate",
+          "dataType": "PdsVendBatchDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendBatchId",
+          "dataType": "PdsVendBatchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendExpiryDate",
+          "dataType": "PdsVendExpiryDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRefType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegion1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegion2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ConsignmentReplenishmentOrderLine"
+          },
+          "name": "Relationship_ConsignmentReplenishmentOrderLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor batch information"
+    },
+    {
+      "dataTypeName": "PdsCountryOfOrigin1",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCountryOfOrigin2",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsVendBatchInfoSource",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PdsUseVendBatchDate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsUseVendBatchExp",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsVendBatchDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PdsVendBatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsVendExpiryDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

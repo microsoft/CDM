@@ -1,0 +1,219 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TaxationCodeTable_BR.cdm.json"
+    },
+    {
+      "corpusPath": "TaxExemptCodeTable.cdm.json"
+    },
+    {
+      "corpusPath": "TaxGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "TaxTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Parameter/VATSchedule_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxGroupData",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExemptTax",
+          "dataType": "TaxExemptTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntracomVAT",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Intra-community VAT",
+          "description": ""
+        },
+        {
+          "name": "TaxationCodeTable_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Taxation code",
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "description": ""
+        },
+        {
+          "name": "TaxExemptCode",
+          "dataType": "TaxExemptCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "description": ""
+        },
+        {
+          "name": "UseTax",
+          "dataType": "TaxUseTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATScheduleName_IN",
+          "dataType": "VATScheduleRecId_IN",
+          "isNullable": true,
+          "displayName": "VAT schedule",
+          "description": ""
+        },
+        {
+          "name": "ReverseCharge_W",
+          "dataType": "TaxReverseCharge",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReverseCharge",
+          "dataType": "TaxReverseCharge",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxationCodeTable_BR"
+          },
+          "name": "Relationship_TaxationCodeTable_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxExemptCodeTable"
+          },
+          "name": "Relationship_TaxExemptCodeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VATSchedule_IN"
+          },
+          "name": "Relationship_VATScheduleName_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales tax group"
+    },
+    {
+      "dataTypeName": "TaxExemptTax",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxExemptCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxUseTax",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VATScheduleRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxReverseCharge",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSLoadBuildTemplate.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSLoadTemplate.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSLoadBuildTemplateLoadTemplate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LoadBuildTemplate",
+          "dataType": "TMSLoadBuildTemplateId",
+          "description": ""
+        },
+        {
+          "name": "LoadTemplate",
+          "dataType": "WHSLoadTemplateId",
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "TMSLoadTemplateAssignmentSequence",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TMSLoadBuildTemplate"
+          },
+          "name": "Relationship_TMSLoadBuildTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadTemplate"
+          },
+          "name": "Relationship_WHSLoadTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Load building load template relations"
+    },
+    {
+      "dataTypeName": "TMSLoadBuildTemplateId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSLoadTemplateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSLoadTemplateAssignmentSequence",
+      "extendsDataType": "integer"
+    }
+  ]
+}

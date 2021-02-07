@@ -1,0 +1,65 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResDistinctProductVariant.cdm.json"
+    },
+    {
+      "corpusPath": "PCProductConfiguration.cdm.json",
+      "moniker": "base_PCProductConfiguration"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PCVariantConfiguration",
+      "extendsEntity": "base_PCProductConfiguration/PCProductConfiguration",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DistinctProductVariant",
+          "dataType": "RefRecId",
+          "displayName": "Product variant",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResDistinctProductVariant"
+          },
+          "name": "Relationship_DistingProductVariantRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Variant configuration"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.storage;
 
 import com.microsoft.aad.adal4j.AuthenticationContext;
@@ -30,7 +33,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-public class AzureStorageAdapter implements StorageAdapter {
+public class AzureStorageAdapter extends StorageAdapterBase {
     // TODO-BQ: 8/7/2019 Move to TimeUtils class
     private static final String RFC_1123_DATETIME_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
 
@@ -142,44 +145,18 @@ public class AzureStorageAdapter implements StorageAdapter {
         return null;
     }
 
-    public void clearCache() {
-    }
-
-    @Override
-    public void setLocationHint(final String locationHint) {
-        this.locationHint = locationHint;
-    }
-
-    @Override
-    public String getLocationHint() {
-        return this.locationHint;
-    }
-
-    @Override
-    public String fetchConfig() {
-        throw new UnsupportedOperationException("UNIMPLEMENTED METHOD");
-    }
-
-    public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
-        return CompletableFuture.completedFuture(null);
-    }
-
-    public CompletableFuture<List<String>> fetchAllFilesAsync(final String folderCorpusPath) {
-        return CompletableFuture.completedFuture(null);
-    }
-
     private Future<AuthenticationResult> generateBearerToken() {
         final ClientCredential clientCredentials = new ClientCredential(clientId, secret);
         return context.acquireToken(resource, clientCredentials, null);
     }
 
-    /// <summary>
-    /// Generates a HTTP request message with required headers to work with Azure
-    /// Storage API.
-    /// </summary>
-    /// <param name="httpMethod">Type of HTTP request</param>
-    /// <param name="path">URL of a resource</param>
-    /// <returns>Constructed HTTP request message</returns>
+    /**
+     * Generates a HTTP request message with required headers to work with Azure Storage API.
+     *
+     * @param method Type of HTTP request
+     * @param path URL of a resource
+     * @return Constructed HTTP request message.
+     */
     private HttpRequestBase buildMessage(final String method, final String path) throws InterruptedException, ExecutionException {
         final String fullPath = "https://" + hostname + root + path;
         final HttpRequestBase result;
@@ -210,10 +187,5 @@ public class AzureStorageAdapter implements StorageAdapter {
     private boolean ensurePath(final String pathFor) {
         // Folders don't explicitly exist in an Azure Storage FS
         return pathFor.lastIndexOf("/") != -1;
-    }
-
-    @Override
-    public void updateConfig(final String config) throws IOException {
-        throw new UnsupportedOperationException("UNIMPLEMENTED METHOD");
     }
 }

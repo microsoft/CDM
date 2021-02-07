@@ -1,0 +1,269 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.cdm.json"
+    },
+    {
+      "corpusPath": "VendPackingSlipTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendPackingSlipTransHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DeviationQty",
+          "dataType": "PurchDeviationQty_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseAmount",
+          "dataType": "TaxAmountExcise_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseValue",
+          "dataType": "TaxValueExcise_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventQty",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQty",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWRemain",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "displayName": "CW remaining quantity",
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "PurchDeliveredQty",
+          "isNullable": true,
+          "displayName": "Received",
+          "description": ""
+        },
+        {
+          "name": "ReasonTableRef",
+          "dataType": "ReasonRefRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Remain",
+          "dataType": "PurchQty",
+          "isNullable": true,
+          "displayName": "Remaining quantity",
+          "description": ""
+        },
+        {
+          "name": "RemainInvent",
+          "dataType": "InventQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDateTime",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDateTime",
+          "description": ""
+        },
+        {
+          "name": "ValueMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Value",
+          "description": ""
+        },
+        {
+          "name": "VATAmount",
+          "dataType": "TaxAmountVAT_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATValue",
+          "dataType": "TaxValueVAT_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendPackingSlipTrans",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPackingSlipTrans"
+          },
+          "name": "Relationship_VendPackingSlipTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor product receipt line history"
+    },
+    {
+      "dataTypeName": "PurchDeviationQty_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountExcise_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxValueExcise_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWInventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchDeliveredQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReasonRefRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ValidFromDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountVAT_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxValueVAT_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

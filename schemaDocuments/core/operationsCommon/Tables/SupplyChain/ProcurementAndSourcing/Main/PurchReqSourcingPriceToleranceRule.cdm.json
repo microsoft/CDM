@@ -1,0 +1,141 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Parameter/PurchReqSourcingPolicyRule.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/Workflow/Main/SysPolicyRule.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchReqSourcingPriceToleranceRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AmountLimit",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountLimitCurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnableAmountLimit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable amount limit",
+          "description": ""
+        },
+        {
+          "name": "EnablePercentageLimit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable percentage limit",
+          "description": ""
+        },
+        {
+          "name": "EnablePriceTolerance",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable price tolerance",
+          "description": ""
+        },
+        {
+          "name": "PercentageLimit",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Percentage",
+          "description": ""
+        },
+        {
+          "name": "PolicyRule",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchReqSourcingPolicyRule"
+          },
+          "name": "Relationship_PurchReqSourcingPolicyRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysPolicyRule"
+          },
+          "name": "Relationship_SysPolicyRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase requisition to purchase order price tolerance rule"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

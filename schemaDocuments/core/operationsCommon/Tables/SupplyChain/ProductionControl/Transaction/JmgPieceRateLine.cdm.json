@@ -1,0 +1,157 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPieceRateTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/ProdTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgPieceRateLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "JobId",
+          "dataType": "JmgJobId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OprNum",
+          "dataType": "OprNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PieceRateId",
+          "dataType": "JmgPieceRateId",
+          "description": ""
+        },
+        {
+          "name": "Price",
+          "dataType": "Price",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Rate",
+          "description": ""
+        },
+        {
+          "name": "ProdId",
+          "dataType": "ProdId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalQty",
+          "dataType": "ProdQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalSeconds",
+          "dataType": "JmgSeconds",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPieceRateTable"
+          },
+          "name": "Relationship_JmgPieceRateTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_ProdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Piecework productions"
+    },
+    {
+      "dataTypeName": "JmgJobId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OprNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgPieceRateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Price",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgSeconds",
+      "extendsDataType": "integer"
+    }
+  ]
+}

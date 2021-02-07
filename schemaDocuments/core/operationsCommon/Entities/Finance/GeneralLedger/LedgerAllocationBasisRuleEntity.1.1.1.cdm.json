@@ -1,0 +1,106 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/LedgerAllocationBasisRule.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerAllocationBasisRuleEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IsActive",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Active",
+          "description": ""
+        },
+        {
+          "name": "BasisId",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Basis ID",
+          "description": ""
+        },
+        {
+          "name": "DateInterval",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Date interval",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpirationDate",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Expiration date",
+          "description": ""
+        },
+        {
+          "name": "EffectiveDate",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Effective date",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocationBasisRule"
+          },
+          "name": "BackingTable_LedgerAllocationBasisRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger allocation basis"
+    }
+  ]
+}

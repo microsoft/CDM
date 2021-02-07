@@ -1,0 +1,132 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetModel.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetTransactionCode.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetProposalConfiguration.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetProposalSource",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetModelId",
+          "dataType": "BudgetModelId",
+          "description": ""
+        },
+        {
+          "name": "BudgetModelType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetSubModelId",
+          "dataType": "BudgetModelSubId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetTransactionCode",
+          "dataType": "BudgetTransactionCodeRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetProposalConfiguration",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetModelDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetModel"
+          },
+          "name": "Relationship_BudgetModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetTransactionCode"
+          },
+          "name": "Relationship_BudgetTransactionCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetProposalConfiguration"
+          },
+          "name": "Relationship_BudgetProposalConfigurationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Proposal sources"
+    },
+    {
+      "dataTypeName": "BudgetModelId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetModelSubId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetTransactionCodeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    }
+  ]
+}

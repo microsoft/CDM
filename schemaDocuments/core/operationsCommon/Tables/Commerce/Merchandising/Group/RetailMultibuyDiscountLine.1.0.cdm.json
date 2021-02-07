@@ -1,0 +1,98 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Miscellaneous/RetailDiscountMultibuy.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailMultibuyDiscountLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "multibuyId",
+          "dataType": "RetailMultibuyDiscountId",
+          "description": ""
+        },
+        {
+          "name": "priceDiscPct",
+          "dataType": "RetailPriceDiscPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "qtyLowest",
+          "dataType": "RetailQtyLowest",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailDiscountMultibuy"
+          },
+          "name": "Relationship_RetailDiscountMultiBuyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Quantity discount configuration"
+    },
+    {
+      "dataTypeName": "RetailMultibuyDiscountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailPriceDiscPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailQtyLowest",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

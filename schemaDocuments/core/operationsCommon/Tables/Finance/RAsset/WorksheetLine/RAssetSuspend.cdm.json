@@ -1,0 +1,132 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Main/RAssetTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RAssetSuspend",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Assetid",
+          "dataType": "RAssetId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ChangeDate",
+          "dataType": "RAssetDepStartDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Date",
+          "description": ""
+        },
+        {
+          "name": "ChangeTime",
+          "dataType": "TimeOfDay",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Time",
+          "description": ""
+        },
+        {
+          "name": "SuspendEnd",
+          "dataType": "RAssetDepStartDate",
+          "isNullable": true,
+          "displayName": "Finish date",
+          "description": ""
+        },
+        {
+          "name": "SuspendStart",
+          "dataType": "RAssetLastDepDate",
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "UserId",
+          "dataType": "UserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTable"
+          },
+          "name": "Relationship_RAssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Temporary closing-down"
+    },
+    {
+      "dataTypeName": "RAssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetDepStartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TimeOfDay",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "RAssetLastDepDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    }
+  ]
+}

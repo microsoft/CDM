@@ -1,0 +1,87 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PlanConstraint.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PlanSequenceConstraintValue",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ConstraintValueRole",
+          "dataType": "ConstraintRoleType",
+          "description": ""
+        },
+        {
+          "name": "PlanConstraint",
+          "dataType": "PlanConstraintRefRecid",
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasure",
+          "dataType": "RefRecId",
+          "displayName": "Unit of measure",
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "dataType": "ConstraintValue",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PlanConstraint"
+          },
+          "name": "Relationship_PlanConstraintRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Plan constraint values"
+    },
+    {
+      "dataTypeName": "ConstraintRoleType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PlanConstraintRefRecid",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ConstraintValue",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

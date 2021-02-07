@@ -1,0 +1,152 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EGAISClient_RU.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/WorksheetHeader/EGAISWaybillJour_RU.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EGAISRequestRepealWB_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Client",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "displayName": "Counteragent",
+          "description": ""
+        },
+        {
+          "name": "Direction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplyId",
+          "dataType": "EGAISReplyId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestDateTime",
+          "dataType": "EGAISRequestRepealWBDateTime_RU",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RequestNum",
+          "dataType": "EGAISRequestRepealWBNum_RU",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "StatusIssue",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Version",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaybillJour",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "displayName": "EGAIS BOL",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISClient_RU"
+          },
+          "name": "Relationship_EGAISClient_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISWaybillJour_RU"
+          },
+          "name": "Relationship_EGAISWaybillJour_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "EGAIS BOL repeal requests"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EGAISReplyId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EGAISRequestRepealWBDateTime_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EGAISRequestRepealWBNum_RU",
+      "extendsDataType": "string"
+    }
+  ]
+}

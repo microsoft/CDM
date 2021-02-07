@@ -1,0 +1,221 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetModel.cdm.json"
+    },
+    {
+      "corpusPath": "LedgerPeriodCode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Group/DimensionHierarchy.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerRRGEQueries_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurrencyForCalc",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FirstOnly",
+          "dataType": "LedgerRRGEFirstOnly_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ModelNum",
+          "dataType": "BudgetModelId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Period",
+          "dataType": "LedgerRRGEPeriodCode_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PointSignNum",
+          "dataType": "LedgerRRGEPointSignNum_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Query",
+          "dataType": "PackedQueryRun",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QueryId",
+          "dataType": "LedgerRRGEQueryId_W",
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Scale",
+          "dataType": "LedgerRRGEScale_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TypeByCorrect",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DimensionHierarchy",
+          "dataType": "DimensionHierarchyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetModel"
+          },
+          "name": "Relationship_BudgetModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerPeriodCode"
+          },
+          "name": "Relationship_LedgerPeriodCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchy"
+          },
+          "name": "Relationship_DimensionHierarchyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Queries"
+    },
+    {
+      "dataTypeName": "LedgerRRGEFirstOnly_W",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BudgetModelId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerRRGEPeriodCode_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerRRGEPointSignNum_W",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PackedQueryRun",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "LedgerRRGEQueryId_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerRRGEScale_W",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DimensionHierarchyId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

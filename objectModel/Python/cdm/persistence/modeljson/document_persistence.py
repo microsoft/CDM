@@ -1,4 +1,7 @@
-﻿from typing import List, Optional, Union, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import List, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmDocumentDefinition
@@ -55,6 +58,7 @@ class DocumentPersistence:
             entity = await EntityPersistence.to_data(cdm_entity, res_opt, options, ctx)
             if cdm_entity.owner and cdm_entity.owner.object_type == CdmObjectType.DOCUMENT_DEF:
                 document = cdm_entity.owner  # type: CdmDocumentDefinition
+                entity.imports = []
                 for element in document.imports:
                     imp = CdmImportPersistence.to_data(element, res_opt, options)
                     # the corpus path in the imports are relative to the document where it was defined.

@@ -1,0 +1,84 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategoryAttribute.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResProductCategoryAttributeEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ProductCategoryHierarchyName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Product category hierarchy name",
+          "description": ""
+        },
+        {
+          "name": "ProductCategoryName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Product category name",
+          "description": ""
+        },
+        {
+          "name": "AttributeModifier",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductAttributeTypeName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Attribute type name",
+          "description": ""
+        },
+        {
+          "name": "ProductAttributeName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Attribute name",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategoryAttribute"
+          },
+          "name": "BackingTable_EcoResCategoryAttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Product category attributes"
+    }
+  ]
+}

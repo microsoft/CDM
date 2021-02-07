@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -10,10 +13,12 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,7 +31,6 @@ public abstract class CdmObjectBase implements CdmObject {
   private CdmObjectType objectType;
   private CdmObject owner;
   private boolean resolvingTraits = false;
-  private boolean resolvingAttributes = false;
   private String declaredPath;
   private Map<String, ResolvedTraitSetBuilder> traitCache;
 
@@ -40,11 +44,11 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param instance
-   * @param resOpt
-   * @param options
-   * @param <T>
-   * @return
+   * @param instance  instance
+   * @param resOpt Resolved option
+   * @param options Copy Options
+   * @param <T> Type
+   * @return CDM Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -58,21 +62,30 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param instance
-   * @param resOpt
-   * @param options
-   * @param classInterface
-   * @param <T>
-   * @return
+   * @param instance instance
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @param classInterface class interface
+   * @param <T> Type
+   * @return CDM Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
   public static <T extends CdmObject> Object copyData(
           final T instance,
-          final ResolveOptions resOpt,
-          final CopyOptions options,
+          ResolveOptions resOpt,
+          CopyOptions options,
           final Class<T> classInterface) {
+
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(instance, instance.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
+    if (options == null) {
+      options = new CopyOptions();
+    }
+
     final String persistenceTypeName = "CdmFolder";
     return PersistenceLayer.toData(instance, resOpt, options, persistenceTypeName, classInterface);
   }
@@ -88,7 +101,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
       if (l == 1) {
         // just one argument, use the shortcut syntax
-        final Object val = rt.getParameterValues().fetchValue(0);
+        final Object val = ProtectParameterValues(resOpt, rt.getParameterValues().getValues().get(0));
 
         if (val != null) {
           traitRef.getArguments().add(null, val);
@@ -96,7 +109,7 @@ public abstract class CdmObjectBase implements CdmObject {
       } else {
         for (int i = 0; i < l; i++) {
           final CdmParameterDefinition param = rt.getParameterValues().fetchParameter(i);
-          final Object val = rt.getParameterValues().getValues().get(i);
+          final Object val = ProtectParameterValues(resOpt, rt.getParameterValues().getValues().get(i));
 
           if (val != null) {
             traitRef.getArguments().add(param.getName(), val);
@@ -115,35 +128,21 @@ public abstract class CdmObjectBase implements CdmObject {
     }
 
     // always make it a property when you can, however the dataFormat traits should be left alone
-    if (rt.getTrait().getAssociatedProperties() != null
-        && !rt.getTrait().isDerivedFrom("is.dataFormat", resOpt)) {
+    // also the wellKnown is the first constrained list that uses the datatype to hold the table instead of the default value property.
+    // so until we figure out how to move the enums away from default value, show that trait too
+    if (rt.getTrait().getAssociatedProperties() != null && !rt.getTrait().isDerivedFrom("is.dataFormat", resOpt) && !(rt.getTrait().getTraitName().equals("is.constrainedList.wellKnown"))) {
       traitRef.setFromProperty(true);
     }
     return traitRef;
   }
 
-  static ResolveOptions copyResolveOptions(final ResolveOptions resOpt) {
-    final ResolveOptions resOptCopy = new ResolveOptions();
-    resOptCopy.setWrtDoc(resOpt.getWrtDoc());
-    resOptCopy.setRelationshipDepth(resOpt.getRelationshipDepth());
-
-    if (null != resOpt.getDirectives()) {
-      resOptCopy.setDirectives(resOpt.getDirectives().copy());
-    }
-
-    resOptCopy.setLocalizeReferencesFor(resOpt.getLocalizeReferencesFor());
-    resOptCopy.setIndexingDoc(resOpt.getIndexingDoc());
-
-    return resOptCopy;
-  }
-
   /**
    * Calls the Visit function on all objects in the collection.
-   * @param items
-   * @param path
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param items Items
+   * @param path path
+   * @param preChildren pre visit callback
+   * @param postChildren post visit callback
+   * @return Boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -170,7 +169,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @return
+   * @return string path
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -181,7 +180,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param declaredPath
+   * @param declaredPath Declared path
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -225,7 +224,7 @@ public abstract class CdmObjectBase implements CdmObject {
     if (this.getInDocument() == null) {
       return "NULL:/NULL/" + this.declaredPath;
     } else {
-      return this.getInDocument().getAtCorpusPath() + "/" + this.declaredPath;
+      return this.getInDocument().getAtCorpusPath() + "/" + (this.declaredPath != null ? this.declaredPath : "");
     }
   }
 
@@ -254,11 +253,26 @@ public abstract class CdmObjectBase implements CdmObject {
     return;
   }
 
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOptl) {
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOptl Resolved Options
+   * @return Resolved Attribute Set Builder
+   */
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOptl) {
     return constructResolvedAttributes(resOptl, null);
   }
 
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved Options
+   * @param under CDM attribute context
+   * @return Resolved Attribute Set Builder
+   */
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
                                                           final CdmAttributeContext under) {
     // Intentionally return null
     return null;
@@ -266,16 +280,20 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolve Options
+   * @return Resolved trait set
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Override
   @Deprecated
-  public ResolvedTraitSet fetchResolvedTraits(final ResolveOptions resOpt) {
+  public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
     boolean wasPreviouslyResolving = this.getCtx().getCorpus().isCurrentlyResolving;
     this.getCtx().getCorpus().isCurrentlyResolving = true;
+
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
 
     final String kind = "rtsb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
@@ -337,10 +355,34 @@ public abstract class CdmObjectBase implements CdmObject {
     return rtsbAll.getResolvedTraitSet();
   }
 
+  @Deprecated
+  public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt) {
+    return this.fetchObjectFromCache(resOpt, null);
+  }
+  /**
+   * @param resOpt Resolve Options
+   * @param acpInContext Attribute Context Parameters
+   * @return Resolved attribute set builder
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext) {
+    String kind = "rasb";
+    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    String cacheTag = ctx.getCorpus().createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
+
+    Object rasbCache = null;
+    if (cacheTag != null) {
+      rasbCache = ctx.getCache().get(cacheTag);
+    }
+    return (ResolvedAttributeSetBuilder)rasbCache;
+  }
+
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolve Options
+   * @return Resolved attribute set
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -352,28 +394,44 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @param acpInContext
-   * @return
+   * @param resOpt Resolve Options
+   * @param acpInContext Attribute context
+   * @return Resolved attribute set
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Override
   @Deprecated
-  public ResolvedAttributeSet fetchResolvedAttributes(final ResolveOptions resOpt,
+  public ResolvedAttributeSet fetchResolvedAttributes(ResolveOptions resOpt,
                                                       final AttributeContextParameters acpInContext) {
     boolean wasPreviouslyResolving = this.getCtx().getCorpus().isCurrentlyResolving;
     this.getCtx().getCorpus().isCurrentlyResolving = true;
 
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
+    boolean inCircularReference = false;
+    boolean wasInCircularReference = resOpt.inCircularReference;
+    if (this.objectType == CdmObjectType.EntityDef) {
+      CdmEntityDefinition entity = (CdmEntityDefinition) this;
+        inCircularReference = resOpt.currentlyResolvingEntities.contains(entity);
+        resOpt.currentlyResolvingEntities.add(entity);
+        resOpt.inCircularReference = inCircularReference;
+
+        // uncomment this line as a test to turn off allowing cycles
+        //if (inCircularReference) {
+        //    return new ResolvedAttributeSet();
+        //}
+    }
+
     final String kind = "rasb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
-    String cacheTag = ctx.getCorpus()
-            .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
-    Object rasbCache = null;
-    if (cacheTag != null) {
-      rasbCache = ctx.getCache().get(cacheTag);
-    }
+    ResolvedAttributeSetBuilder rasbResult = null;
+    ResolvedAttributeSetBuilder rasbCache = this.fetchObjectFromCache(resOpt, acpInContext);
     CdmAttributeContext underCtx = null;
+
+    int currentDepth = resOpt.depthInfo.getCurrentDepth();
 
     // store the previous document set, we will need to add it with
     // children found from the constructResolvedTraits call
@@ -383,116 +441,117 @@ public abstract class CdmObjectBase implements CdmObject {
     }
     resOpt.setSymbolRefSet(new SymbolSet());
 
-    // get the moniker that was found and needs to be appended to all
-    // refs in the children attribute context nodes
-    final String fromMoniker = resOpt.getFromMoniker();
-    resOpt.setFromMoniker(null);
+    // if using the cache passes the maxDepth, we cannot use it
+    if (rasbCache != null && resOpt.depthInfo.getMaxDepth() != null
+        && resOpt.depthInfo.getCurrentDepth() + rasbCache.getResolvedAttributeSet().getDepthTraveled() > resOpt.depthInfo.getMaxDepth()) {
+      rasbCache = null;
+    }
 
     if (rasbCache == null) {
-      if (this.resolvingAttributes) {
-        // re-entered this attribute through some kind of self or looping reference.
-        this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
-        return new ResolvedAttributeSet();
-      }
-      this.resolvingAttributes = true;
-
-      // if a new context node is needed for these attributes, make it now
-      if (acpInContext != null) {
-        underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
-      }
+      // a new context node is needed for these attributes,
+      // this tree will go into the cache, so we hang it off a placeholder parent
+      // when it is used from the cache (or now), then this placeholder parent is ignored and the things under it are
+      // put into the 'receiving' tree
+      underCtx = CdmAttributeContext.getUnderContextForCacheContext(resOpt, this.getCtx(), acpInContext);
 
       rasbCache = this.constructResolvedAttributes(resOpt, underCtx);
-      this.resolvingAttributes = false;
 
-      // register set of possible docs
-      final CdmObjectDefinition oDef = this.fetchObjectDefinition(resOpt);
-      if (oDef != null) {
-        ctx.getCorpus()
-                .registerDefinitionReferenceSymbols(oDef, kind, resOpt.getSymbolRefSet());
+      if (rasbCache != null) {
+        // register set of possible docs
+        final CdmObjectDefinition oDef = this.fetchObjectDefinition(resOpt);
+        if (oDef != null) {
+          ctx.getCorpus()
+                  .registerDefinitionReferenceSymbols(oDef, kind, resOpt.getSymbolRefSet());
 
-        // get the new cache tag now that we have the list of docs
-        cacheTag = ctx.getCorpus()
-                .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
+          // get the new cache tag now that we have the list of docs
+          String cacheTag = ctx.getCorpus()
+                  .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
 
-        // save this as the cached version
-        if (!StringUtils.isNullOrTrimEmpty(cacheTag) && rasbCache != null) {
-          ctx.getCache().put(cacheTag, rasbCache);
-        }
-
-        if (!StringUtils.isNullOrTrimEmpty(fromMoniker)
-            && acpInContext != null
-            && this instanceof CdmObjectReference
-            && ((CdmObjectReference) this).getNamedReference() != null) {
-          // create a fresh context
-          final CdmAttributeContext oldContext = (CdmAttributeContext) acpInContext.getUnder()
-              .getContents()
-              .get(acpInContext.getUnder().getContents().size() - 1);
-          acpInContext.getUnder()
-              .getContents()
-              .removeAt(acpInContext.getUnder().getContents().size() - 1);
-          underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
-
-          CdmAttributeContext newContext =
-              oldContext.copyAttributeContextTree(
-                  resOpt,
-                  underCtx,
-                  ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet(),
-                  null,
-                  fromMoniker);
-
-          // Since THIS should be a reference to a thing found in a moniker document,
-          // it already has a moniker in the reference.
-          // This function just added that same moniker to everything in the sub-tree
-          // but now this one symbol has too many.
-          // Remove one.
-          String monikerPathAdded = fromMoniker + "/";
-          if (newContext.getDefinition() != null
-              && newContext.getDefinition().getNamedReference() != null
-              && newContext.getDefinition().getNamedReference().startsWith(monikerPathAdded)) {
-            // Slice it off the front.
-            newContext
-                .getDefinition()
-                .setNamedReference(
-                    newContext
-                        .getDefinition()
-                        .getNamedReference()
-                        .substring(monikerPathAdded.length()));
+          // save this as the cached version
+          if (!StringUtils.isNullOrTrimEmpty(cacheTag) && rasbCache != null) {
+            ctx.getCache().put(cacheTag, rasbCache);
           }
+          // get the 'underCtx' of the attribute set from the acp that is wired into
+          // the target tree
+          underCtx = rasbCache.getResolvedAttributeSet().getAttributeContext() != null
+                  ? rasbCache.getResolvedAttributeSet().getAttributeContext().getUnderContextFromCacheContext(resOpt, acpInContext)
+                  : null;
         }
-      }
-    } else {
-      // cache found. if we are building a context, then fix what we got instead of making a new one
-      if (acpInContext != null) {
-        // make the new context
-        underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
-
-        //    TODO-BQ: 2019-08-16 Refactor.
-        ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet()
-                .getAttributeContext()
-            .copyAttributeContextTree(
-                resOpt,
-                underCtx,
-                ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet(),
-                null,
-                fromMoniker);
       }
     }
+    else {
+      // get the 'underCtx' of the attribute set from the cache. The one stored there was build with a different
+      // acp and is wired into the fake placeholder. so now build a new underCtx wired into the output tree but with
+      // copies of all cached children
+      underCtx = rasbCache.getResolvedAttributeSet().getAttributeContext() != null
+              ? rasbCache.getResolvedAttributeSet().getAttributeContext().getUnderContextFromCacheContext(resOpt, acpInContext)
+              : null;
+      //underCtx.validateLineage(resOpt); // debugging
+    }
+
+    if (rasbCache != null) {
+      // either just built something or got from cache
+      // either way, same deal: copy resolved attributes and copy the context tree associated with it
+      // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
+      // 2. deep copy the tree.
+
+      // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
+      rasbResult = new ResolvedAttributeSetBuilder();
+      rasbResult.setResolvedAttributeSet(((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet().copy());
+
+      // 2. deep copy the tree and map the context references.
+      if (underCtx != null) { // null context? means there is no tree, probably 0 attributes came out
+        if (underCtx.associateTreeCopyWithAttributes(resOpt, rasbResult.getResolvedAttributeSet()) == false) {
+          return null;
+        }
+      }
+    }
+
+    if (this instanceof CdmEntityAttributeDefinition) {
+      // if we hit the maxDepth, we are now going back up
+      resOpt.depthInfo.setCurrentDepth(currentDepth);
+      // now at the top of the chain where max depth does not influence the cache
+      if (resOpt.depthInfo.getCurrentDepth() == 0) {
+        resOpt.depthInfo.setMaxDepthExceeded(false);;
+      }
+    }
+
+    if (!inCircularReference && this.objectType == CdmObjectType.EntityDef) {
+      // should be removed from the root level only
+      // if it is in a circular reference keep it there
+      resOpt.currentlyResolvingEntities.remove(this);
+    }
+    resOpt.inCircularReference = wasInCircularReference;
 
     // merge child document set with current
     currDocRefSet.merge(resOpt.getSymbolRefSet());
     resOpt.setSymbolRefSet(currDocRefSet);
-    if (rasbCache instanceof ResolvedAttributeSetBuilder) {
-      this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
-      return ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet();
-    }
 
     this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
-    return null;
+    return rasbResult != null ? rasbResult.getResolvedAttributeSet() : null;
+  }
+
+  private static Object ProtectParameterValues(ResolveOptions resOpt, Object val) {
+    if (val != null) {
+      // the value might be a contant entity object, need to protect the original
+      CdmConstantEntityDefinition cEnt = null;
+      if (val instanceof CdmEntityReference) {
+        cEnt = (CdmConstantEntityDefinition) ((CdmEntityReference) val).getExplicitReference();
+      }
+      if (cEnt != null) {
+        // copy the constant entity AND the reference that holds it
+        cEnt = (CdmConstantEntityDefinition) cEnt.copy(resOpt);
+        val = ((CdmEntityReference)val).copy(resOpt);
+        ((CdmEntityReference)val).setExplicitReference(cEnt);
+      }
+    }
+    return val;
   }
 
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return Resolved traits set map
    */
   @Deprecated
   public Map<String, ResolvedTraitSetBuilder> getTraitCache() {
@@ -502,6 +561,7 @@ public abstract class CdmObjectBase implements CdmObject {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param traitCache cache of trait
    */
   @Deprecated
   public void setTraitCache(final Map<String, ResolvedTraitSetBuilder> traitCache) {

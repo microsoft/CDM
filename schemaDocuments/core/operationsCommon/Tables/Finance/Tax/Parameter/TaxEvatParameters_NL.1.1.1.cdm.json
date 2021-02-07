@@ -1,0 +1,271 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxVATNumTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Miscellaneous/KeyVaultCertificateTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxEvatParameters_NL",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ServiceTimeOut",
+          "dataType": "TaxBapiTimeOut",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactId",
+          "dataType": "TaxContactId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactName",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactPersonType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "VAT contact type",
+          "description": ""
+        },
+        {
+          "name": "ContactPersonTypeICL",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "ICP contact type",
+          "description": ""
+        },
+        {
+          "name": "ContactPhone",
+          "dataType": "Phone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalGroup",
+          "dataType": "VATNum",
+          "isNullable": true,
+          "displayName": "Fiscal group",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PartOfFiscalGroup",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Company part of fiscal group",
+          "description": ""
+        },
+        {
+          "name": "ContactInitials",
+          "dataType": "ContactInitials_NL",
+          "isNullable": true,
+          "displayName": "Contact initials",
+          "description": ""
+        },
+        {
+          "name": "ContactPrefix",
+          "dataType": "ContactPrefix_NL",
+          "isNullable": true,
+          "displayName": "Contact prefix",
+          "description": ""
+        },
+        {
+          "name": "ERFormatMappingId",
+          "dataType": "ERFormatMappingId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SubmitServiceURL",
+          "dataType": "URL",
+          "isNullable": true,
+          "displayName": "Digipoort Delivery URL",
+          "description": ""
+        },
+        {
+          "name": "StatusServiceURL",
+          "dataType": "URL",
+          "isNullable": true,
+          "displayName": "Digipoort Status URL",
+          "description": ""
+        },
+        {
+          "name": "AuthorizationAddress",
+          "dataType": "URL",
+          "isNullable": true,
+          "displayName": "Authorization Address",
+          "description": ""
+        },
+        {
+          "name": "KeyVaultCertificateCA",
+          "dataType": "KeyVaultCertificateRef",
+          "isNullable": true,
+          "displayName": "Server Certificate",
+          "description": ""
+        },
+        {
+          "name": "KeyVaultCertificateAuth",
+          "dataType": "KeyVaultCertificateRef",
+          "isNullable": true,
+          "displayName": "Client Certificate",
+          "description": ""
+        },
+        {
+          "name": "CertificateAuth",
+          "dataType": "DigitalCertificateSubject",
+          "isNullable": true,
+          "displayName": "Client Certificate",
+          "description": ""
+        },
+        {
+          "name": "CertificateCA",
+          "dataType": "DigitalCertificateSubject",
+          "isNullable": true,
+          "displayName": "Server Certificate",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxVATNumTable"
+          },
+          "name": "Relationship_FiscalGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KeyVaultCertificateTable"
+          },
+          "name": "Relationship_KeyVaultCertificateTableCARelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KeyVaultCertificateTable"
+          },
+          "name": "Relationship_KeyVaultCertificateTableAuthRelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Electronic tax declaration parameters"
+    },
+    {
+      "dataTypeName": "TaxBapiTimeOut",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxContactId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Phone",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VATNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ContactInitials_NL",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ContactPrefix_NL",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ERFormatMappingId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "URL",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KeyVaultCertificateRef",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DigitalCertificateSubject",
+      "extendsDataType": "string"
+    }
+  ]
+}

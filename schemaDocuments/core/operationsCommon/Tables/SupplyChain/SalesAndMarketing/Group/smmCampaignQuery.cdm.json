@@ -1,0 +1,109 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/smmCampaignTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmCampaignQuery",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CampaignId",
+          "dataType": "smmCampaignId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "smmCampaignQueryDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NameId",
+          "dataType": "smmCampaignQueryName",
+          "description": ""
+        },
+        {
+          "name": "QueryClId",
+          "dataType": "ClassId",
+          "displayName": "Class description",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "smmCampaignTable"
+          },
+          "name": "Relationship_smmCampaignTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Campaign queries"
+    },
+    {
+      "dataTypeName": "smmCampaignId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmCampaignQueryDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmCampaignQueryName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ClassId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

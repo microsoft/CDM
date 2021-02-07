@@ -1,0 +1,285 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustomsBillOfEntryNumberTable_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchParmUpdate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CheckCreditMax",
+          "dataType": "VendCreditMaxCheck",
+          "isNullable": true,
+          "displayName": "Check credit limit",
+          "description": ""
+        },
+        {
+          "name": "CreditRemaining",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Credit remaining quantity",
+          "description": ""
+        },
+        {
+          "name": "CustomsBillOfEntry_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Bill of entry",
+          "description": ""
+        },
+        {
+          "name": "CustomsBillOfEntryNumberTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Number",
+          "description": ""
+        },
+        {
+          "name": "CustomsImportOrderType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDateTime",
+          "dataType": "EndDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LateSelection",
+          "dataType": "LateSelection",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LateSelectionQuery",
+          "dataType": "LateSelectionQuery",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "description": ""
+        },
+        {
+          "name": "Proforma",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Pro forma",
+          "description": ""
+        },
+        {
+          "name": "PurchId_SA",
+          "dataType": "PurchId",
+          "isNullable": true,
+          "displayName": "Zakat information PO",
+          "description": ""
+        },
+        {
+          "name": "SpecQty",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Quantity",
+          "description": ""
+        },
+        {
+          "name": "SplitDeliveryInformation_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SplitInventProfileType_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Splitting by kinds of activity",
+          "description": ""
+        },
+        {
+          "name": "SplitPostingProfile_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Splitting by posting profiles",
+          "description": ""
+        },
+        {
+          "name": "StartDateTime",
+          "dataType": "StartDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Storno",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Credit correction",
+          "description": ""
+        },
+        {
+          "name": "StornoPhysical_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Credit correction (physical)",
+          "description": ""
+        },
+        {
+          "name": "SumBy",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Summary update for",
+          "description": ""
+        },
+        {
+          "name": "SumIncludePending",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Include pending invoices",
+          "description": ""
+        },
+        {
+          "name": "SumNum",
+          "dataType": "Num",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SumPurchId",
+          "dataType": "PurchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustomsBillOfEntryNumberTable_IN"
+          },
+          "name": "Relationship_CustomsBillOfEntryNumberTable_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTable_SARelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_SummaryPurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase order - update"
+    },
+    {
+      "dataTypeName": "VendCreditMaxCheck",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EndDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LateSelection",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LateSelectionQuery",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "StartDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Num",
+      "extendsDataType": "string"
+    }
+  ]
+}

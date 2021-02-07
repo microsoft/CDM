@@ -1,0 +1,160 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "HcmBudgetPurposeType.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "HcmPositionForecastCompensationGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AnnualHours",
+          "dataType": "Hours",
+          "isNullable": true,
+          "displayName": "Annual regular hours",
+          "description": ""
+        },
+        {
+          "name": "BasisDate",
+          "dataType": "HcmPositionForecastBasisDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompensationGroupId",
+          "dataType": "HcmPositionForecastCompensationGroupId",
+          "description": ""
+        },
+        {
+          "name": "CompensationType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExternalId",
+          "dataType": "HcmBudgetExternalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HcmBudgetPurposeType",
+          "dataType": "HcmBudgetPurposeTypeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StepRule",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlanId",
+          "dataType": "HRMCompFixedPlanId",
+          "isNullable": true,
+          "displayName": "Compensation fixed plan",
+          "description": ""
+        },
+        {
+          "name": "IsHourlyWageCalculationEnabled",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable hourly rate calculation",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "HcmBudgetPurposeType"
+          },
+          "name": "Relationship_HcmBudgetPurposeTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Compensation groups"
+    },
+    {
+      "dataTypeName": "Hours",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "HcmPositionForecastBasisDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "HcmPositionForecastCompensationGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmBudgetExternalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmBudgetPurposeTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HRMCompFixedPlanId",
+      "extendsDataType": "string"
+    }
+  ]
+}

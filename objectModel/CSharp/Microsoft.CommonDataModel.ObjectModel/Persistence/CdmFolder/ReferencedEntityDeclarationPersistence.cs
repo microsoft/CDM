@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -17,14 +20,16 @@
                 CdmObjectType.ReferencedEntityDeclarationDef,
                 (string)obj["entityName"]);
 
-            var entityPath = (string)(obj["entityPath"] != null ? obj["entityPath"] :  obj["entityDeclaration"]);
+            var entityPath = (string)(obj["entityPath"] != null ? obj["entityPath"] : obj["entityDeclaration"]);
 
             if (entityPath == null)
             {
                 Logger.Error(nameof(ReferencedEntityDeclarationPersistence), ctx, "Couldn't find entity path or similar.", "FromData");
             }
 
-            if (entityPath != null && entityPath.IndexOf(":") == -1)
+            // The entity path has to be absolute.
+            // If the namespace is not present then add the "prefixPath" which has the absolute folder path.
+            if (entityPath != null && entityPath.IndexOf(":/") == -1)
             {
                 entityPath = $"{prefixPath}{entityPath}";
             }
@@ -33,12 +38,12 @@
 
             if (obj["lastFileStatusCheckTime"] != null)
             {
-                newRef.LastFileStatusCheckTime = DateTimeOffset.Parse(obj.Value<string>("lastFileStatusCheckTime"));
+                newRef.LastFileStatusCheckTime = DateTimeOffset.Parse(obj["lastFileStatusCheckTime"].ToString());
             }
 
             if (obj["lastFileModifiedTime"] != null)
             {
-                newRef.LastFileModifiedTime = DateTimeOffset.Parse(obj.Value<string>("lastFileModifiedTime"));
+                newRef.LastFileModifiedTime = DateTimeOffset.Parse(obj["lastFileModifiedTime"].ToString());
             }
 
             if (obj["explanation"] != null)
@@ -64,7 +69,7 @@
                 Explanation = instance.Explanation,
                 EntityName = instance.EntityName,
                 EntityPath = instance.EntityPath,
-                ExhibitsTraits = Utils.ListCopyData(resOpt, instance.ExhibitsTraits, options)
+                ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options)
             };
 
             return result;

@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="TypeAttribute.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
 {
@@ -15,7 +12,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public JToken Purpose { get; set; }
         public JToken DataType { get; set; }
         public List<JToken> AppliedTraits { get; set; }
-        public string AttributeContext { get; set; }
+        public dynamic AttributeContext { get; set; }
         public bool? IsPrimaryKey { get; set; }
         public bool? IsReadOnly { get; set; }
         public bool? IsNullable { get; set; }
@@ -24,7 +21,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public int? SourceOrdering { get; set; }
         public string DisplayName { get; set; }
         public string Description { get; set; }
-
+        public Projection Projection { get; set; }
         public string MaximumValue { get; set; }
         public string MinimumValue { get; set; }
         public int? MaximumLength { get; set; }

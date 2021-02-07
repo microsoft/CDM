@@ -1,0 +1,162 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerFundType.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerFund",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FundClass",
+          "dataType": "FundClass",
+          "description": ""
+        },
+        {
+          "name": "FundGASB34",
+          "dataType": "FundGASB34",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FundName",
+          "dataType": "FundName",
+          "description": ""
+        },
+        {
+          "name": "FundNumber",
+          "dataType": "FundNumber",
+          "description": ""
+        },
+        {
+          "name": "IsMajor",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Major fund",
+          "description": ""
+        },
+        {
+          "name": "LedgerFundType",
+          "dataType": "RefRecId",
+          "displayName": "Fund type",
+          "description": ""
+        },
+        {
+          "name": "OverrideYearEndOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Override selected year-end option",
+          "description": ""
+        },
+        {
+          "name": "YearEndOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DoReduceCarryForwardBudget_PSN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Reduce carry-forward budget",
+          "description": ""
+        },
+        {
+          "name": "PSNIsReinstateCFBudget",
+          "dataType": "PSNIsReinstateCFBudget",
+          "isNullable": true,
+          "displayName": "Reinstate the budget when a carry-forward purchase order is canceled or reduced",
+          "description": ""
+        },
+        {
+          "name": "PSNTreasurerFundReport",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Treasurer’s fund report",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerFundType"
+          },
+          "name": "Relationship_LedgerFundTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fund"
+    },
+    {
+      "dataTypeName": "FundClass",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FundGASB34",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FundName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FundNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PSNIsReinstateCFBudget",
+      "extendsDataType": "integer"
+    }
+  ]
+}

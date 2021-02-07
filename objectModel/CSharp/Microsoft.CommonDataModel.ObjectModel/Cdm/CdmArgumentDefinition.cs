@@ -1,14 +1,13 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmArgumentDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
+    using System.Collections.Generic;
 
     public class CdmArgumentDefinition : CdmObjectSimple
     {
@@ -60,7 +59,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmArgumentDefinition copy;
@@ -83,7 +82,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     // Value is a string or JValue
                     copy.Value = (string)this.Value;
-                }    
+                }
             }
             copy.ResolvedParameter = this.ResolvedParameter;
             copy.Explanation = this.Explanation;
@@ -93,7 +92,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return this.Value != null ? true : false;
+            if (this.Value == null)
+            {
+                Logger.Error(nameof(CdmArgumentDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Value" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         internal CdmParameterDefinition GetParameterDef()
@@ -110,7 +114,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 path = this.DeclaredPath;
                 if (string.IsNullOrEmpty(path))
                 {
-                    path = pathFrom + (this.Value != null ? "value/" : "");
+                    path = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
                     this.DeclaredPath = path;
                 }
             }
@@ -123,7 +127,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 Type valueType = this.Value.GetType();
                 if (this.Value is CdmObject valueAsJObject)
                 {
-                    if (valueAsJObject.Visit(path, preChildren, postChildren))
+                    if (valueAsJObject.Visit($"{path}/value/", preChildren, postChildren))
                         return true;
                 }
             }
@@ -137,14 +141,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string tag = "";
             dynamic val = this.Value;
             if (val != null)
-            { 
+            {
                 if (this.Value is CdmObject)
                 {
-                    CdmObject valObj = val;
-                    if (valObj.Id != null)
-                        tag = (string)val.Id;
-                    else
-                        tag = (string)val;
+                    tag = (string)val.Id;
                 }
                 else
                 {

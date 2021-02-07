@@ -1,30 +1,21 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="ADLSAdapter.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Storage
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 {
+    using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
+    using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net.Http;
-    using System.Net.Http.Headers;
+    using System.Security.Cryptography;
     using System.Text;
     using System.Threading.Tasks;
-    using System.Net;
 
-    using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
-    using Microsoft.IdentityModel.Clients.ActiveDirectory;
-
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
-    using System.Security.Cryptography;
-    using Microsoft.CommonDataModel.ObjectModel.Storage;
-
-    public class MockADLSAdapter : NetworkAdapter, StorageAdapter
+    public class MockADLSAdapter : NetworkAdapter
     {
         private AuthenticationContext Context;
 
@@ -57,8 +48,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Storage
         /// The account/shared key.
         /// </summary>
         public string SharedKey { get; private set; }
-
-        public string LocationHint { get; set; }
 
         /// <summary>
         /// The predefined ADLS resource.
@@ -116,13 +105,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Storage
         }
 
         /// <inheritdoc />
-        public bool CanRead()
+        public override bool CanRead()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public async Task<string> ReadAsync(string corpusPath)
+        public override async Task<string> ReadAsync(string corpusPath)
         {
             String url = this.CreateAdapterPath(corpusPath);
             var request = await this.BuildRequest(url, HttpMethod.Get);
@@ -133,13 +122,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Storage
         }
 
         /// <inheritdoc />
-        public bool CanWrite()
+        public override bool CanWrite()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public async Task WriteAsync(string corpusPath, string data)
+        public override async Task WriteAsync(string corpusPath, string data)
         {
             if (ensurePath($"{this.Root}{corpusPath}") == false)
             {
@@ -162,13 +151,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Storage
         }
 
         /// <inheritdoc />
-        public string CreateAdapterPath(string corpusPath)
+        public override string CreateAdapterPath(string corpusPath)
         {
             return $"https://{this.Hostname}{this.Root}{corpusPath}";
         }
 
         /// <inheritdoc />
-        public string CreateCorpusPath(string adapterPath)
+        public override string CreateCorpusPath(string adapterPath)
         {
             var prefix = $"https://{this.Hostname}{this.Root}";
             if (!string.IsNullOrEmpty(adapterPath) && adapterPath.StartsWith(prefix))
@@ -178,32 +167,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Storage
 
             return null;
         }
-
-        /// <inheritdoc />
-        public void ClearCache()
-        {
-            return;
-        }
-
-        /// <inheritdoc />
-        public async Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
-        {
-            // TODO
-            return null;
-        }
-
-        /// <inheritdoc />
-        public async Task<List<string>> FetchAllFilesAsync(string currFullPath)
-        {
-            // TODO
-            return null;
-        }
-
+        
         /// <summary>
         /// Returns the headers with the applied shared key.
         /// </summary>
         /// <param name="sharedKey">The account/shared key.</param>
-        /// <param name="url">The URL.</param>
+        /// <param name="url">The URL with sorted query parameters</param>
         /// <param name="method">The HTTP method.</param>
         /// <param name="content">The string content.</param>
         /// <param name="contentType">The content type.</param>
@@ -345,16 +314,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Storage
 
             // Folders are only of virtual kind in Azure Storage
             return true;
-        }
-
-        string StorageAdapter.FetchConfig()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateConfig(string configs)
-        {
-            throw new NotImplementedException();
         }
     }
 }

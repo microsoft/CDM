@@ -1,0 +1,620 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/WorksheetHeader/FactureJour_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/WorksheetHeader/SalesBookTable_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesBookTrans_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FactureId",
+          "dataType": "FactureId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountName",
+          "dataType": "CustName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountNum",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountInclVAT",
+          "dataType": "AmountMSTinclVAT_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountLiableToVAT0",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Amount w\\o VAT",
+          "description": ""
+        },
+        {
+          "name": "AmountLiableToVAT10",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Amount w\\o VAT",
+          "description": ""
+        },
+        {
+          "name": "AmountLiableToVAT20",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Amount w\\o VAT",
+          "description": ""
+        },
+        {
+          "name": "AmountNotLiableToVAT",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Base amount (not liable to VAT)",
+          "description": ""
+        },
+        {
+          "name": "Annulment",
+          "dataType": "SalesPurchBookAnnulment_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectedFactureDate",
+          "dataType": "FactureDate_RU",
+          "isNullable": true,
+          "displayName": "Facture date",
+          "description": ""
+        },
+        {
+          "name": "CorrectedFactureExternalId",
+          "dataType": "FactureExternalId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectedSalesBookTable_RU",
+          "dataType": "SalesPurchBookRecId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectingFactureId",
+          "dataType": "FactureId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectionType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureDate",
+          "dataType": "FactureDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureDate_External",
+          "dataType": "FactureDate_External_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureExternalId",
+          "dataType": "FactureExternalId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureJour_RU",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "JointCorrection",
+          "dataType": "FactureJointCorrection_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "SalesBookLineNum_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentCompany",
+          "dataType": "CompanyId",
+          "isNullable": true,
+          "displayName": "Legal entity of the payment",
+          "description": ""
+        },
+        {
+          "name": "PaymentDate",
+          "dataType": "PaymTransDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentRecIdRef",
+          "dataType": "PaymentRefRecId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefOriginalFacture",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRevisedFacture",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReverseDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReverseTrans",
+          "dataType": "Correct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RevisionSeqNumber",
+          "dataType": "RevisionNum_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RevisionType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesBookTable_RU",
+          "dataType": "SalesPurchBookRecId_RU",
+          "description": ""
+        },
+        {
+          "name": "SettlementDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Date of settlement",
+          "description": ""
+        },
+        {
+          "name": "TaxAmountVAT10",
+          "dataType": "TaxAmountVAT10_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountVAT20",
+          "dataType": "TaxAmountVAT20_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountCurInclVAT",
+          "dataType": "AmountCurInclVAT_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CommissionAgent",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OperationTypeCodes",
+          "dataType": "FactureOperationTypeCodes_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymDocumentNum",
+          "dataType": "DocumentNum",
+          "isNullable": true,
+          "displayName": "Payment document number",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTransPaymentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJour_AmountDiffRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJour_CreditNoteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJour_InvoiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJour_PrepaymentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJour_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJour_TaxCorrection_CustRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJour_TaxCorrection_CustPurchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJour_TaxCorrection_VendRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJourOriginalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJourRevisedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_RefCorrectingFactureJour_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesBookTable_RU"
+          },
+          "name": "Relationship_SalesBookTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesBookTable_RU"
+          },
+          "name": "Relationship_SalesBookTableCorrected_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTable_CommissionAgentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales book lines"
+    },
+    {
+      "dataTypeName": "FactureId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMSTinclVAT_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesPurchBookAnnulment_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FactureDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "FactureExternalId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesPurchBookRecId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FactureDate_External_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FactureJointCorrection_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SalesBookLineNum_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymTransDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PaymentRefRecId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Correct",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RevisionNum_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxAmountVAT10_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountVAT20_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountCurInclVAT_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FactureOperationTypeCodes_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentNum",
+      "extendsDataType": "string"
+    }
+  ]
+}

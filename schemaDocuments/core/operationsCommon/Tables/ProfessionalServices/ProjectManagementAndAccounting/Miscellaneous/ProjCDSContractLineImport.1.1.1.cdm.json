@@ -1,0 +1,118 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjCDSContractLineImport",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ContractId",
+          "dataType": "ProjInvoiceProjId",
+          "description": ""
+        },
+        {
+          "name": "ContractLine",
+          "dataType": "integer",
+          "displayName": "Contract line",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjectId",
+          "dataType": "ProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAContractLineItems",
+          "dataType": "PSAContractLineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionId",
+          "dataType": "guid",
+          "displayName": "Transaction ID",
+          "description": ""
+        },
+        {
+          "name": "ForecastInvoiceFrequency",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "ProjInvoiceProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSAContractLineNum",
+      "extendsDataType": "string"
+    }
+  ]
+}

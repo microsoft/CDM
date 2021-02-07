@@ -1,0 +1,145 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRFraudDetail",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MCRFraudArea",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRFraudRuleDescription",
+          "dataType": "MCRRuleDescription",
+          "isNullable": true,
+          "displayName": "Fraud Rule Description",
+          "description": ""
+        },
+        {
+          "name": "MCRFraudType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRInventRefId",
+          "dataType": "InventRefId",
+          "isNullable": true,
+          "displayName": "InventRefId",
+          "description": ""
+        },
+        {
+          "name": "MCRKeyID",
+          "dataType": "MCRKeyID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRScore",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Score",
+          "description": ""
+        },
+        {
+          "name": "MCRUser",
+          "dataType": "MCRUser",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRRuleId",
+          "dataType": "MCRUpSellRule",
+          "isNullable": true,
+          "displayName": "RuleId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesIdMCRInventIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fraud details setup"
+    },
+    {
+      "dataTypeName": "MCRRuleDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRKeyID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRUser",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRUpSellRule",
+      "extendsDataType": "string"
+    }
+  ]
+}

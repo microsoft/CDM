@@ -1,0 +1,193 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "LedgerAllocationBasisRule.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "LedgerAllocationRule.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerAllocationRuleDestination",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BasisId",
+          "dataType": "LedgerAllocationBasisID",
+          "isNullable": true,
+          "displayName": "Basis ID",
+          "description": ""
+        },
+        {
+          "name": "FixedPercent",
+          "dataType": "LedgerAllocatePct",
+          "isNullable": true,
+          "displayName": "Fixed percentage",
+          "description": ""
+        },
+        {
+          "name": "FixedWeight",
+          "dataType": "LedgerAllocationFixedWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RuleID",
+          "dataType": "LedgerAllocationRuleID",
+          "description": ""
+        },
+        {
+          "name": "ToCompany",
+          "dataType": "SelectableDataArea",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "To account",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocationBasisRule"
+          },
+          "name": "Relationship_LedgerAllocationBasisRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocationRule"
+          },
+          "name": "Relationship_LedgerAllocationRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_ToDefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_ToLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger allocation rule destination"
+    },
+    {
+      "dataTypeName": "LedgerAllocationBasisID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerAllocatePct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerAllocationFixedWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerAllocationRuleID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

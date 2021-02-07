@@ -1,12 +1,10 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="ResolveContext.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
 
@@ -17,6 +15,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         public CdmStatusLevel ReportAtLevel { get; set; }
         public CdmCorpusDefinition Corpus { get; set; }
         public EventCallback StatusEvent { get; set; }
+        ///<inheritdoc/>
+        public EventList Events { get; }
+        ///<inheritdoc/>
+        public string CorrelationId { get; set; }
 
         internal string RelativePath;
         internal IDictionary<string, dynamic> Cache;
@@ -27,6 +29,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             this.StatusEvent = statusEvent;
             this.Cache = new ConcurrentDictionary<string, object>();
             this.Corpus = corpus;
+            this.Events = new EventList();
         }
 
         internal void PushScope(CdmTraitDefinition currentTrait)

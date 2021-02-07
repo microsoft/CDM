@@ -1,0 +1,116 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailKeyboardButtonControl",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "buttonControlId",
+          "dataType": "RetailButtonControlId",
+          "description": ""
+        },
+        {
+          "name": "defaultColor",
+          "dataType": "RetailDefaultColorEx3",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "defaultFont",
+          "dataType": "RetailDefaultFont",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "defaultFontSize",
+          "dataType": "RetailDefaultFontSize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "defaultFontStyle",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Default font style",
+          "description": ""
+        },
+        {
+          "name": "name",
+          "dataType": "RetailNameEx5",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Keyboard control"
+    },
+    {
+      "dataTypeName": "RetailButtonControlId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailDefaultColorEx3",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDefaultFont",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDefaultFontSize",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailNameEx5",
+      "extendsDataType": "string"
+    }
+  ]
+}

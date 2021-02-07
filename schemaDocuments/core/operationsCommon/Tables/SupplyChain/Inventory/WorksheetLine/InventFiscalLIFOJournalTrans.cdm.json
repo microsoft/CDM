@@ -1,0 +1,269 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventFiscalLIFOGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventFiscalLIFOJournalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "JournalError.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventFiscalLIFOJournalTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Individual",
+          "dataType": "InventFiscalLIFOIndividual",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventFiscalLIFOGroup",
+          "dataType": "InventFiscalLIFOGroupRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemGroup",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalId",
+          "dataType": "InventFiscalLIFOJournalId",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NormalValue",
+          "dataType": "InventFiscalLIFONormalValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyIssue",
+          "dataType": "InventFiscalLIFOQtyIssue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyPrimo",
+          "dataType": "InventFiscalLIFOQtyPrimo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyReceipt",
+          "dataType": "InventFiscalLIFOQtyReceipt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemainQty",
+          "dataType": "InventFiscalLIFORemainQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "JournalTransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitId",
+          "dataType": "InventUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitValue",
+          "dataType": "InventFiscalLIFOUnitValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WIPIncluded",
+          "dataType": "InventFiscalLIFOWIPIncluded",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Yr",
+          "dataType": "InventFiscalLIFOYear",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventFiscalLIFOGroup"
+          },
+          "name": "Relationship_InventFiscalLIFOGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventFiscalLIFOJournalTable"
+          },
+          "name": "Relationship_InventFiscalLIFOJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JournalError"
+          },
+          "name": "Relationship_JournalErrorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal LIFO journal lines"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOIndividual",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOGroupRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFONormalValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOQtyIssue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOQtyPrimo",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOQtyReceipt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFORemainQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JournalTransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOUnitValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOWIPIncluded",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventFiscalLIFOYear",
+      "extendsDataType": "integer"
+    }
+  ]
+}

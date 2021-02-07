@@ -1,0 +1,110 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WorkflowTrackingCommentTable.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WorkflowTrackingArgumentTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DataType",
+          "dataType": "WorkflowTrackingArgumentType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "WorkflowTrackingArgumentSequence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TrackingDate",
+          "dataType": "WorkflowDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TrackingId",
+          "dataType": "WorkflowTrackingId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "dataType": "WorkflowTrackingArgumentValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowTrackingCommentTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowTrackingCommentTable"
+          },
+          "name": "Relationship_TrackingCommentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Workflow tracking arguments table"
+    },
+    {
+      "dataTypeName": "WorkflowTrackingArgumentType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkflowTrackingArgumentSequence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WorkflowDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WorkflowTrackingId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowTrackingArgumentValue",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

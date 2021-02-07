@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,6 +21,8 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,18 +31,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @deprecated This class is extremely likely to be removed in the public interface, and not meant
  * to be called externally at all. Please refrain from using it.
  */
+@Deprecated
 public class TraitToPropertyMap {
-  private static final Logger LOGGER = LoggerFactory.getLogger(TraitToPropertyMap.class);
-
   private CdmObject host;
   private static Map<CdmTraitName, List<CdmPropertyName>> TRAIT_TO_LIST_OF_PROPERTIES_MAP = new ConcurrentHashMap<>();
+  private static String[] dataFormatTraitNames =  {
+    "is.dataFormat.integer",
+    "is.dataFormat.small",
+    "is.dataFormat.big",
+    "is.dataFormat.floatingPoint",
+    "is.dataFormat.guid",
+    "is.dataFormat.character",
+    "is.dataFormat.array",
+    "is.dataFormat.byte",
+    "is.dataFormat.time",
+    "is.dataFormat.date",
+    "is.dataFormat.timeOffset",
+    "is.dataFormat.boolean",
+    "is.dataFormat.numeric.shaped",
+    "means.content.text.JSON"
+  };
 
   static {
     TRAIT_TO_LIST_OF_PROPERTIES_MAP.put(CdmTraitName.VERSION,
@@ -65,6 +83,12 @@ public class TraitToPropertyMap {
             CdmPropertyName.MAXIMUM_LENGTH));
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   * @param host CdmObject 
+   */
+  @Deprecated
   public TraitToPropertyMap(final CdmObject host) {
     this.host = host;
   }
@@ -73,10 +97,25 @@ public class TraitToPropertyMap {
     return (null == node) ? null : node.asText();
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   * @param propertyName CdmPropertyName 
+   * @return Object
+   */
+  @Deprecated
   public Object fetchPropertyValue(final CdmPropertyName propertyName) {
     return this.fetchPropertyValue(propertyName, false);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   * @param propertyName CdmPropertyName
+   * @param  onlyFromProperty boolean
+   * @return Object
+   */
+  @Deprecated
   public Object fetchPropertyValue(
       final CdmPropertyName propertyName,
       final boolean onlyFromProperty) {
@@ -101,6 +140,12 @@ public class TraitToPropertyMap {
             this.fetchTraitReferenceName(CdmTraitName.SOURCE_ORDERING),
             "ordinal");
       case IS_PRIMARY_KEY:
+        if (this.host instanceof CdmTypeAttributeDefinition) {
+          CdmTypeAttributeDefinition typeAttribute = (CdmTypeAttributeDefinition) this.host;
+          if (!onlyFromProperty && typeAttribute.getPurpose() != null && typeAttribute.getPurpose().getNamedReference().equals("identifiedBy")) {
+            return true;
+          }
+        }
         return this.fetchTraitReferenceName(CdmTraitName.IS_IDENTIFIED_BY, onlyFromProperty) != null;
       case IS_NULLABLE:
         return this.fetchTraitReferenceName(CdmTraitName.IS_NULLABLE, onlyFromProperty) != null;
@@ -141,15 +186,37 @@ public class TraitToPropertyMap {
     return null;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   * @param  traitName Object
+   * @return CdmTraitReference
+   */
+  @Deprecated
   public CdmTraitReference fetchTraitReferenceName(final Object traitName) {
     return this.fetchTraitReferenceName(traitName, false);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   * @param  traitName Object
+   * @param onlyFromProperty boolean 
+   * @return CdmTraitReference
+   */
+  @Deprecated
   private CdmTraitReference fetchTraitReferenceName(final Object traitName, final boolean onlyFromProperty) {
-    final int traitIndex = this.getTraits().indexOf(traitName.toString(), onlyFromProperty);
+    final int traitIndex = this.getTraits() != null ? this.getTraits().indexOf(traitName.toString(), onlyFromProperty) : -1;
     return (traitIndex == -1) ? null : this.getTraits().get(traitIndex);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   * @param propertyName CdmPropertyName
+   * @param newValue Object
+   */
+  @Deprecated
   public void updatePropertyValue(final CdmPropertyName propertyName, final Object newValue) {
     final Enum traitName = this.mapTraitName(propertyName);
     final List<CdmPropertyName> listOfProps = this.TRAIT_TO_LIST_OF_PROPERTIES_MAP.get(traitName);
@@ -178,6 +245,9 @@ public class TraitToPropertyMap {
           this.updateTraitArgument(CdmTraitName.SOURCE_ORDERING, "ordinal",
               newValue.toString()); // TODO-BQ: Check if should use toString or (String)
           break;
+        case IS_PRIMARY_KEY:
+          this.updateTraitArgument(CdmTraitName.IS_IDENTIFIED_BY, "", newValue);
+          break;
         case IS_READ_ONLY:
           this.setBooleanTrait(CdmTraitName.IS_READ_ONLY, (boolean) newValue);
           break;
@@ -194,12 +264,7 @@ public class TraitToPropertyMap {
           this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MINIMUM_VALUE.toString(), newValue);
           break;
         case MAXIMUM_LENGTH:
-          if (newValue == null || (newValue instanceof Integer) && (Integer) newValue == -1) {
-            this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MAXIMUM_LENGTH.toString(), null);
-          } else {
-            this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MAXIMUM_LENGTH.toString(), newValue.toString());
-          }
-
+          this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MAXIMUM_LENGTH.toString(), newValue);
           break;
         case DATA_FORMAT:
           this.dataFormatToTraits(newValue.toString());
@@ -212,13 +277,17 @@ public class TraitToPropertyMap {
   }
 
   private void dataFormatToTraits(final String dataFormat) {
-    // if this is going to be called many times, then need to remove dynamic dataformat traits that are left behind.
-    // but ... probably not. in fact, this is probably never used because data formats come from data type which is not an attribute
+    // reset the current dataFormat
+    for (String traitName : dataFormatTraitNames) {
+      this.removeTrait(traitName);
+    }
     switch (CdmDataFormat.fromString(dataFormat)) {
       case Int16:
-      case Int32:
         this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER, true);
         this.fetchOrCreateTrait(CdmDataFormatTrait.SMALL, true);
+        break;
+      case Int32:
+        this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER, true);
         break;
       case Int64:
         this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER, true);
@@ -233,6 +302,8 @@ public class TraitToPropertyMap {
         break;
       case Guid:
         this.fetchOrCreateTrait(CdmDataFormatTrait.GUID, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.CHARACTER, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY, true);
         break;
       case String:
         this.fetchOrCreateTrait(CdmDataFormatTrait.CHARACTER, true);
@@ -246,6 +317,7 @@ public class TraitToPropertyMap {
         this.fetchOrCreateTrait(CdmDataFormatTrait.BYTE, true);
         break;
       case Binary:
+        this.fetchOrCreateTrait(CdmDataFormatTrait.BYTE, true);
         this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY, true);
         break;
       case Time:
@@ -308,12 +380,8 @@ public class TraitToPropertyMap {
     return null;
   }
 
-  private CdmTraitReference fetchOrCreateTrait(final Object trait) {
-    return this.fetchOrCreateTrait(trait, false);
-  }
-
   private CdmTraitReference fetchOrCreateTrait(Object traitName, final boolean simpleRef) {
-    Object trait;
+    CdmTraitReference trait;
     if (traitName instanceof String) {
       traitName = traitName.toString();
     } else if (traitName instanceof Enum) {
@@ -322,18 +390,11 @@ public class TraitToPropertyMap {
 
     trait = fetchTraitReferenceName(traitName, true);
     if (trait == null) {
-      trait = this.getCtx().getCorpus().makeObject(CdmObjectType.TraitRef, (String) traitName, false);
-
-      if (this.host instanceof CdmObjectReference) {
-        ((CdmObjectReference) this.host).getAppliedTraits().add((CdmTraitReference) trait);
-      } else if (this.host instanceof CdmTypeAttributeDefinition) {
-        ((CdmTypeAttributeDefinition) this.host).getAppliedTraits().add((CdmTraitReference) trait);
-      } else {
-        ((CdmObjectDefinition) this.host).getExhibitsTraits().add((CdmTraitReference) trait);
-      }
+      trait = this.getCtx().getCorpus().makeObject(CdmObjectType.TraitRef, (String) traitName, simpleRef);
+      trait.setFromProperty(true);
+      this.getTraits().add(trait);
     }
-    ((CdmTraitReference) trait).setFromProperty(true);
-    return (CdmTraitReference) trait;
+    return trait;
   }
 
   private List<String> getSingleAttTraitTable(final Object trait, final String argName,
@@ -368,22 +429,24 @@ public class TraitToPropertyMap {
               if ("localizedTable".equals(esName) || lookup || corr) {
                 final List<Object> result = new ArrayList<>();
                 final List<List<String>> rawValues = cEnt.getConstantValues();
-                for (final List<String> rawValue : rawValues) {
-                  final Map<String, String> row = new LinkedHashMap<>();
-                  if (rawValue.size() == 2
-                      || (lookup && rawValue.size() == 4)
-                      || (corr && rawValue.size() == 5)) {
-                    row.put("languageTag", rawValue.get(0));
-                    row.put("displayText", rawValue.get(1));
-                    if (lookup || corr) {
-                      row.put("attributeValue", rawValue.get(2));
-                      row.put("displayOrder", rawValue.get(3));
-                      if (corr) {
-                        row.put("correlatedValue", rawValue.get(4));
-                      }
-                    }
-                  }
-                  result.add(row);
+                if (rawValues != null) {
+                 for (final List<String> rawValue : rawValues) {
+                   final Map<String, String> row = new LinkedHashMap<>();
+                   if (rawValue.size() == 2
+                       || (lookup && rawValue.size() == 4)
+                       || (corr && rawValue.size() == 5)) {
+                     row.put("languageTag", rawValue.get(0));
+                     row.put("displayText", rawValue.get(1));
+                     if (lookup || corr) {
+                       row.put("attributeValue", rawValue.get(2));
+                       row.put("displayOrder", rawValue.get(3));
+                       if (corr) {
+                         row.put("correlatedValue", rawValue.get(4));
+                       }
+                     }
+                   }
+                   result.add(row);
+                 }
                 }
                 return result;
               } else {
@@ -458,16 +521,7 @@ public class TraitToPropertyMap {
   }
 
   private void removeTrait(final String traitName) {
-    if (this.getHost() instanceof CdmObjectReference) {
-      ((CdmObjectReference) this.getHost())
-          .getAppliedTraits().remove(traitName, true); // validate a known prop?
-    } else if (this.getHost() instanceof CdmAttribute) {
-      ((CdmAttribute) this.getHost())
-          .getAppliedTraits().remove(traitName, true); // validate a known prop?
-    } else {
-      ((CdmObjectDefinition) this.getHost())
-          .getExhibitsTraits().remove(traitName, true); // validate a known prop?
-    }
+    this.getTraits().remove(traitName, true);
   }
 
   private void setBooleanTrait(final Enum traitName, final boolean value) {
@@ -633,10 +687,10 @@ public class TraitToPropertyMap {
       if (isInteger && isBig) {
         baseType = CdmDataFormat.Int64;
       }
-      if (isInteger && isSmall) {
+      else if (isInteger && isSmall) {
         baseType = CdmDataFormat.Int16;
       }
-      if (isInteger) {
+      else if (isInteger) {
         baseType = CdmDataFormat.Int32;
       }
     }
@@ -727,14 +781,14 @@ public class TraitToPropertyMap {
         newDefault = this.getCtx().getCorpus().makeRef(CdmObjectType.EntityRef, cEnt, false);
         this.updateTraitArgument(trait, "default", newDefault);
       } else {
-        LOGGER.error("Default value missing languageTag or displayText.");
+        Logger.error(TraitToPropertyMap.class.getSimpleName(), this.host.getCtx(), "Default value missing languageTag or displayText.");
       }
     } else {
-      LOGGER.error("Default value type not supported. Please use ArrayNode.");
+      Logger.error(TraitToPropertyMap.class.getSimpleName(), this.host.getCtx(), "Default value type not supported. Please use ArrayNode.");
     }
   }
 
-  public static Object fetchTraitReferenceArgumentValue(final Object traitRef, final String argName) {
+  private static Object fetchTraitReferenceArgumentValue(final Object traitRef, final String argName) {
     if (traitRef instanceof ResolvedTrait) {
       return fetchTraitReferenceArgumentValue((ResolvedTrait) traitRef, argName);
     }
@@ -744,12 +798,12 @@ public class TraitToPropertyMap {
     return null;
   }
 
-  public static Object fetchTraitReferenceArgumentValue(final ResolvedTrait traitRef, final String argName) {
+  private static Object fetchTraitReferenceArgumentValue(final ResolvedTrait traitRef, final String argName) {
     return traitRef == null ? null
         : traitRef.getParameterValues().fetchParameterValue(argName).getValue();
   }
 
-  public static Object fetchTraitReferenceArgumentValue(final CdmTraitReference traitRef, final String argName) {
+  private static Object fetchTraitReferenceArgumentValue(final CdmTraitReference traitRef, final String argName) {
     return traitRef == null ? null : traitRef.getArguments().fetchValue(argName);
   }
 }

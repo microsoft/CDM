@@ -1,0 +1,229 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/ExportImportIndia/WorksheetHeader/EximEPCGSchemeTable_IN.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EximEPCGSchemeApprove_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AnnualAverageMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Annual average",
+          "description": ""
+        },
+        {
+          "name": "CIFFactor",
+          "dataType": "Factor",
+          "isNullable": true,
+          "displayName": "CIF factor",
+          "description": ""
+        },
+        {
+          "name": "Currency",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyPct",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Currency pct",
+          "description": ""
+        },
+        {
+          "name": "DutyExportObligationAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Export obligation amount",
+          "description": ""
+        },
+        {
+          "name": "DutySavedPct",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Duty saved pct.",
+          "description": ""
+        },
+        {
+          "name": "ExportObligationAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Export obligation amount",
+          "description": ""
+        },
+        {
+          "name": "ExportObligationPeriod",
+          "dataType": "Days_IN",
+          "isNullable": true,
+          "displayName": "Obligation period",
+          "description": ""
+        },
+        {
+          "name": "ImportValue",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Import value",
+          "description": ""
+        },
+        {
+          "name": "LeviedPct",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Pct. to be levied",
+          "description": ""
+        },
+        {
+          "name": "OrigLicenseNum",
+          "dataType": "EximLicenseNum_IN",
+          "isNullable": true,
+          "displayName": "License number",
+          "description": ""
+        },
+        {
+          "name": "OrigSchemeId",
+          "dataType": "EximEPCGId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealizedInvoices",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Realized invoices",
+          "description": ""
+        },
+        {
+          "name": "SchemeTableRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EximEPCGSchemeTable_IN"
+          },
+          "name": "Relationship_EximEPCGSchemeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EximEPCGSchemeTable_IN"
+          },
+          "name": "Relationship_OrigEximEPCGSchemeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Approval EPCG schemes"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Factor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Days_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EximLicenseNum_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EximEPCGId_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

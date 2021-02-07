@@ -1,0 +1,188 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Transaction/TrvExpTrans.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvExpPerdiemData",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExchangeCode",
+          "dataType": "TrvCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "LegalEntity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MealDeduction",
+          "dataType": "TrvTransactionCurrencyAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Meal reduction",
+          "description": ""
+        },
+        {
+          "name": "NumberOfBreakfast",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Breakfast",
+          "description": ""
+        },
+        {
+          "name": "NumberOfDinner",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Dinner",
+          "description": ""
+        },
+        {
+          "name": "NumberOfHrsDay",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumberOfLunch",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Lunch",
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TrvDateStd",
+          "displayName": "Transaction date",
+          "description": ""
+        },
+        {
+          "name": "TrvExpTrans",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TypeOfDate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Day",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_LegalEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvExpTrans"
+          },
+          "name": "Relationship_TrvExpTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Meal reductions"
+    },
+    {
+      "dataTypeName": "TrvCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LegalEntity",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TrvTransactionCurrencyAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TrvRealBasePositive",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TrvDateStd",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

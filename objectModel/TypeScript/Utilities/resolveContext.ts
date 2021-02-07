@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmCorpusContext } from '../Cdm/CdmCorpusContext';
 import {
     CdmCorpusDefinition,
@@ -9,20 +12,36 @@ import {
     resolveContextScope,
     resolveOptions
 } from '../internal';
+import { EventList } from './Logging/EventList';
 
 export class resolveContext implements CdmCorpusContext {
+    /**
+     * @internal
+     */
     public scopeStack: resolveContextScope[];
+    /**
+     * @internal
+     */
     public currentScope: resolveContextScope;
     public reportAtLevel: cdmStatusLevel;
     public statusEvent: EventCallback;
+    public events: EventList;
+    public correlationId: string;
     public currentDoc?: CdmDocumentDefinition;
+    /**
+     * @internal
+     */
     public relativePath?: string;
     public corpusPathRoot?: string;
+    /**
+     * @internal
+     */
     public cache: Map<string, any>;
     public corpus: CdmCorpusDefinition;
-    constructor(corpus: CdmCorpusDefinition, statusRpt?: EventCallback, reportAtLevel?: cdmStatusLevel) {
+    constructor(corpus: CdmCorpusDefinition, statusEvent?: EventCallback, reportAtLevel?: cdmStatusLevel) {
         this.reportAtLevel = reportAtLevel !== undefined ? reportAtLevel : cdmStatusLevel.info;
-        this.statusEvent = statusRpt;
+        this.statusEvent = statusEvent;
+        this.events = new EventList();
         this.cache = new Map<string, any>();
         this.corpus = corpus;
     }

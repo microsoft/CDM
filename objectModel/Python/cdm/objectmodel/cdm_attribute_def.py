@@ -1,11 +1,15 @@
-﻿from typing import TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import TYPE_CHECKING
 
 from .cdm_attribute_item import CdmAttributeItem
 from .cdm_trait_collection import CdmTraitCollection
 from .cdm_object_def import CdmObjectDefinition
+from .projections.cardinality_settings import CardinalitySettings
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmTraitDefinition, CdmTraitReference
+    from cdm.objectmodel import CdmCorpusContext
     from cdm.resolvedmodel import ResolvedTraitSet, ResolvedTraitSetBuilder
     from cdm.utilities import ResolveOptions, VisitCallback
 
@@ -23,9 +27,15 @@ class CdmAttribute(CdmObjectDefinition, CdmAttributeItem):
         # properties that guide the resolution of this attribute and interact with directives
         self.resolution_guidance = None  # type: Optional[CdmAttributeResolutionGuidanceDefinition]
 
-        # Internal
+        # cardinality settings for projections
+        self.cardinality = None  # type: Optional[CardinalitySettings]
 
+        # Internal
+        # the attribute's applied traits.
         self._applied_traits = CdmTraitCollection(self.ctx, self)
+
+        # Indicates the number of attributes held within this attribute.
+        self._attribute_count = 0  # type: int
 
     @property
     def applied_traits(self) -> 'CdmTraitCollection':
@@ -53,14 +63,18 @@ class CdmAttribute(CdmObjectDefinition, CdmAttributeItem):
         return self.name
 
     def _visit_att(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        if self.purpose and self.purpose.visit('{}/purpose/'.format(path_from), pre_children, post_children):
-            return True
+        if self.purpose:
+            self.purpose.owner = self
+            if self.purpose.visit('{}/purpose/'.format(path_from), pre_children, post_children):
+                return True
 
         if self.applied_traits and self.applied_traits._visit_array('{}/appliedTraits/'.format(path_from), pre_children, post_children):
             return True
 
-        if self.resolution_guidance and self.resolution_guidance.visit('{}/resolutionGuidance/'.format(path_from), pre_children, post_children):
-            return True
+        if self.resolution_guidance:
+            self.resolution_guidance.owner = self
+            if self.resolution_guidance.visit('{}/resolutionGuidance/'.format(path_from), pre_children, post_children):
+                return True
 
         if self._visit_def(path_from, pre_children, post_children):
             return True

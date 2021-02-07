@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,13 +13,11 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Ref
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ReferencedEntityDeclarationPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ReferencedEntityDeclarationPersistence.class);
-
   public static CdmEntityDeclarationDefinition fromData(
       final CdmCorpusContext ctx,
       final String prefixPath,
@@ -28,10 +29,12 @@ public class ReferencedEntityDeclarationPersistence {
         ? obj.get("entityPath").asText()
         : obj.get("entityDeclaration").asText();
     if (entityPath == null) {
-      LOGGER.error("Couldn't find entity path or similar.");
+      Logger.error(ReferencedEntityDeclarationPersistence.class.getSimpleName(), ctx, "Couldn't find entity path or similar.", "fromData");
     }
 
-    if (entityPath != null && !entityPath.contains(":")) {
+    // The entity path has to be absolute.
+    // If the namespace is not present then add the "prefixPath" which has the absolute folder path.
+    if (entityPath != null && !entityPath.contains(":/")) {
       entityPath = prefixPath + entityPath;
     }
 

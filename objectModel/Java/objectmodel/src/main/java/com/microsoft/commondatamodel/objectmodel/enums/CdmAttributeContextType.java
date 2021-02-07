@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.enums;
 
@@ -17,5 +18,19 @@ public enum CdmAttributeContextType {
   EntityReferenceExtends,
   GeneratedRound,
   GeneratedSet,
-  PassThrough
+  PassThrough,
+  Projection,
+  Source,
+  Operations,
+  OperationAddCountAttribute,
+  OperationAddSupportingAttribute,
+  OperationAddTypeAttribute,
+  OperationExcludeAttributes,
+  OperationArrayExpansion,
+  OperationCombineAttributes,
+  OperationRenameAttributes,
+  OperationReplaceAsForeignKey,
+  OperationIncludeAttributes,
+  OperationAddAttributeGroup,
+  Unknown
 }

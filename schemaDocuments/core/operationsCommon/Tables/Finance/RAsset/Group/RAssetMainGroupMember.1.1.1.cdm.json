@@ -1,0 +1,137 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RAssetGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RAssetMainGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RAssetStandardTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RAssetMainGroupMember",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetGroup",
+          "dataType": "RAssetGroupId",
+          "description": ""
+        },
+        {
+          "name": "AssetMainGroupId",
+          "dataType": "RAssetMainGroupId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "AssetStandardId",
+          "dataType": "RAssetStandardId",
+          "description": ""
+        },
+        {
+          "name": "QuotaUsagePeriod",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Service life by rate",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetGroup"
+          },
+          "name": "Relationship_RAssetGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetMainGroup"
+          },
+          "name": "Relationship_RAssetMainGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetStandardTable"
+          },
+          "name": "Relationship_RAssetStandardTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "FA group value models"
+    },
+    {
+      "dataTypeName": "RAssetGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetMainGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetStandardId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

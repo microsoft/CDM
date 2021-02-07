@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     AttributeGroup,
     ConstantEntity,
@@ -13,6 +16,7 @@ export abstract class DocumentContent {
     public jsonSchemaSemanticVersion: string;
     public imports?: Import[];
     public definitions: (Trait | DataType | Purpose | AttributeGroup | Entity | ConstantEntity)[];
+    public documentVersion: string;
 
     /**
      * @deprecated

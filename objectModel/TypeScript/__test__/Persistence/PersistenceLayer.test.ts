@@ -1,7 +1,15 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusDefinition,
+    CdmDocumentDefinition,
+    CdmEntityDefinition,
+    CdmFolderDefinition,
     CdmManifestDefinition,
-    cdmStatusLevel
+    cdmObjectType,
+    cdmStatusLevel,
+    CdmTypeAttributeDefinition
 } from '../../internal';
 import { LocalAdapter, RemoteAdapter } from '../../Storage';
 import { testHelper } from '../testHelper';
@@ -57,7 +65,7 @@ describe('Persistence.PersistenceLayerTest', () => {
 
         // Swap out the adapter for a fake one so that we aren't actually saving files.
         const allDocs: Map<string, string> = new Map<string, string>();
-        const testAdapter = new TestStorageAdapter(allDocs);
+        const testAdapter: TestStorageAdapter = new TestStorageAdapter(allDocs);
         corpus.storage.setAdapter('local', testAdapter);
 
         const newManifestName: string = 'empty.MANIFEST.CDM.json';
@@ -121,5 +129,66 @@ describe('Persistence.PersistenceLayerTest', () => {
         done();
 
         // TODO: Do the same check for ODI.json files here once ODI is ported.
+    });
+
+    /**
+     * Testing that type attribute properties (ex. IsReadOnly, isPrimaryKey) are not persisted in model.json format.
+     */
+    it('TestModelJsonTypeAttributePersistence', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestModelJsonTypeAttributePersistence');
+        // we need to create a second adapter to the output folder to fool the OM into thinking it's different
+        // this is because there is a bug currently that prevents us from saving and then loading a model.json
+        corpus.storage.mount('alternateOutput', new LocalAdapter(testHelper.getActualOutputFolderPath(testsSubpath, 'TestModelJsonTypeAttributePersistence')));
+
+        // create manifest
+        const entityName: string = 'TestTypeAttributePersistence';
+        const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
+        const outputRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('output');
+        const manifest: CdmManifestDefinition = corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'tempAbstract');
+        manifest.imports.push('cdm:/foundations.cdm.json', undefined);
+        localRoot.documents.push(manifest);
+
+        // create entity
+        const doc: CdmDocumentDefinition = corpus.MakeObject<CdmDocumentDefinition>(cdmObjectType.documentDef, `${entityName}.cdm.json`);
+        doc.imports.push('cdm:/foundations.cdm.json', undefined);
+        localRoot.documents.push(doc, doc.name);
+        const entityDef: CdmEntityDefinition = doc.definitions.push(cdmObjectType.entityDef, entityName) as CdmEntityDefinition;
+
+        // create type attribute
+        const cdmTypeAttributeDefinition: CdmTypeAttributeDefinition =
+            corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, entityName, false);
+        cdmTypeAttributeDefinition.isReadOnly = true;
+        entityDef.attributes.push(cdmTypeAttributeDefinition);
+
+        manifest.entities.push(entityDef);
+
+        const manifestResolved: CdmManifestDefinition = await manifest.createResolvedManifestAsync('default', undefined);
+        outputRoot.documents.push(manifestResolved);
+        manifestResolved.imports.push('cdm:/foundations.cdm.json');
+        await manifestResolved.saveAsAsync('model.json', true);
+        const newManifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('alternateOutput:/model.json');
+
+        const newEnt: CdmEntityDefinition =
+            await corpus.fetchObjectAsync<CdmEntityDefinition>(newManifest.entities.allItems[0].entityPath, manifest);
+        const typeAttribute: CdmTypeAttributeDefinition = newEnt.attributes.allItems[0] as CdmTypeAttributeDefinition;
+        expect(typeAttribute.isReadOnly)
+            .toBeTruthy();
+        done();
+    });
+
+    /**
+     * Test that the persistence layer handles the case when the persistence format cannot be found.
+     */
+    it('TestMissingPersistenceFormat', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestMissingPersistenceFormat');
+        const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder(corpus.storage.defaultNamespace);
+
+        const manifest: CdmManifestDefinition = corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'someManifest');
+        folder.documents.push(manifest);
+        // trying to save to an unsupported format should return false and not fail
+        const succeded: boolean = await manifest.saveAsAsync('manifest.unSupportedExtension');
+        expect(succeded)
+            .toBeFalsy();
+        done();
     });
 });

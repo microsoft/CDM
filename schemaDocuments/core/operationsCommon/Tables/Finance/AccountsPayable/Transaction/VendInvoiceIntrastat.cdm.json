@@ -1,0 +1,374 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCounty.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressState.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatPort.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatStatProc.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatTransactionCode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatTransportMode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/LedgerJournalTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Miscellaneous/NGPCodesTable_FR.cdm.json"
+    },
+    {
+      "corpusPath": "VendInvoiceJour.cdm.json"
+    },
+    {
+      "corpusPath": "VendTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendInvoiceIntrastat",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountyOrigDest",
+          "dataType": "AddressCountyOrigDest",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatCommodity",
+          "dataType": "IntrastatCommodityId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntraUnit",
+          "dataType": "IntrastatConvert",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NGPCodesTable_FR",
+          "dataType": "NGPCodesTableFRId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigCountryRegionId",
+          "dataType": "ItemOrigCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigStateId",
+          "dataType": "ItemOrigStateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Port",
+          "dataType": "IntrastatPortId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StatisticsFactor",
+          "dataType": "IntrastatMarkupPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StatProcId",
+          "dataType": "IntrastatProcId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionCode",
+          "dataType": "IntrastatTransactionCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Transport",
+          "dataType": "IntrastatTransport",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceJour",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Intracode",
+          "dataType": "DEL_IntrastatItemCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCounty"
+          },
+          "name": "Relationship_AddressCounty_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressState"
+          },
+          "name": "Relationship_AddressState_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_IntrastatCommodityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatPort"
+          },
+          "name": "Relationship_IntrastatPortRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatStatProc"
+          },
+          "name": "Relationship_IntrastatStatProcRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatTransactionCode"
+          },
+          "name": "Relationship_IntrastatTransactionCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatTransportMode"
+          },
+          "name": "Relationship_IntrastatTransportModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NGPCodesTable_FR"
+          },
+          "name": "Relationship_NGPCodesTable_FRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceJour"
+          },
+          "name": "Relationship_VendinvoiceJour_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Intrastat information of vendor invoices"
+    },
+    {
+      "dataTypeName": "AddressCountyOrigDest",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatCommodityId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "IntrastatConvert",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NGPCodesTableFRId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ItemOrigCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemOrigStateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatPortId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatMarkupPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "IntrastatProcId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatTransactionCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "IntrastatTransport",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DEL_IntrastatItemCodeId",
+      "extendsDataType": "string"
+    }
+  ]
+}

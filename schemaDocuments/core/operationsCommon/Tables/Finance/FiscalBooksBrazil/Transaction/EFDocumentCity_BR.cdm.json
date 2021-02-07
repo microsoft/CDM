@@ -1,0 +1,137 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "FiscalDocument_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EFDocumentCity_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FiscalDocument_BR",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "RPSDate",
+          "dataType": "InvoiceDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RPSExportDate",
+          "dataType": "RPSDateTime_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RPSImportDate",
+          "dataType": "RPSDateTime_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RPSNumber",
+          "dataType": "InvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RPSStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RPSType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RPSValidationNumber",
+          "dataType": "RPSValidationNumber_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocument_BR"
+          },
+          "name": "Relationship_FiscalDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Electronic fiscal document for services"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InvoiceDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RPSDateTime_BR",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RPSValidationNumber_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

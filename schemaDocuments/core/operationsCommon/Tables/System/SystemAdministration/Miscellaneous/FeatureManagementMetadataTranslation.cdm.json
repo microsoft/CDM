@@ -1,0 +1,81 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "FeatureManagementMetadata.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FeatureManagementMetadataTranslation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FeatureManagementMetadata",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "LanguageId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayName",
+          "dataType": "FeatureDisplayName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "FeatureManagementMetadata"
+          },
+          "name": "Relationship_FeatureManagementMetadataRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Feature management metadata translation"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FeatureDisplayName",
+      "extendsDataType": "string"
+    }
+  ]
+}

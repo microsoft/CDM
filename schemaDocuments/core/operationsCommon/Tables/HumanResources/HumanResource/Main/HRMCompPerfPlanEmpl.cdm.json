@@ -1,0 +1,149 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/HumanResources/HumanResource/Reference/HRMCompPerfPlan.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/HumanResources/HumanResource/Reference/HRMCompPerfRating.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "HRMCompPerfPlanEmpl",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CompPerfRatingId",
+          "dataType": "HRMCompPerfRatingId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PerfPlanId",
+          "dataType": "HRMCompPerfPlanId",
+          "description": ""
+        },
+        {
+          "name": "RatingLevel",
+          "dataType": "HcmRatingLevelRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RatingModel",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Rating source",
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "HcmCompFromDate",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "HcmCompToDate",
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "HcmWorkerRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "HRMCompPerfPlan"
+          },
+          "name": "Relationship_HRMCompPerfPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "HRMCompPerfRating"
+          },
+          "name": "Relationship_HRMCompPerfRatingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Compensation employee performance plan"
+    },
+    {
+      "dataTypeName": "HRMCompPerfRatingId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HRMCompPerfPlanId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmRatingLevelRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmCompFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "HcmCompToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "HcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

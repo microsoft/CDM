@@ -1,7 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package example;
 
 import com.microsoft.commondatamodel.objectmodel.storage.AdlsAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.GithubAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.CdmStandardsAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.RemoteAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -25,7 +28,7 @@ public class Program {
     while (true) {
       System.out.println("List of storage adapters:");
       System.out.println("  1: LocalAdapter");
-      System.out.println("  2: GithubAdapter");
+      System.out.println("  2: CdmStandardsAdapter");
       System.out.println("  3: RemoteAdapter");
       System.out.println("  4: ADLSAdapter");
       System.out.println("Pick a number to configure that storage adapter or press [enter] to exit.");
@@ -44,11 +47,11 @@ public class Program {
           case 1:
             configureLocalAdapter();
             break;
-          // Github adapter.
+          // CDM Standards adapter.
           case 2:
-            configureGithubAdapter();
+            configureCdmStandardsAdapter();
             break;
-          // Remote Adapter
+          // Remote adapter
           case 3:
             configureRemoteAdapter();
             break;
@@ -87,39 +90,39 @@ public class Program {
     System.out.println();
   }
 
-  static void configureGithubAdapter() {
-    // Default values for the optional parameters used by the Github adapter.
+  static void configureCdmStandardsAdapter() {
+    // Default values for the optional parameters used by the CDM Standards adapter.
     String timeout = "2000";
     String maximumTimeout = "10000";
     String numberOfRetries = "2";
 
     // Ask the user if optional parameters should be configured, or if defaults should just be used.
-    if (configureOptionalParameters("GithubAdapter")) {
+    if (configureOptionalParameters("CdmStandardsAdapter")) {
       // Configure optional parameters.
       timeout = getOptionalParameterValueFromUser(
           ConfigureParameters.Timeout,
-          "GithubAdapter",
+          "CdmStandardsAdapter",
           timeout
           /* this is just to show what the value should look like. */);
       maximumTimeout = getOptionalParameterValueFromUser(
           ConfigureParameters.MaximumTimeout,
-          "GithubAdapter",
+          "CdmStandardsAdapter",
           maximumTimeout);
       numberOfRetries = getOptionalParameterValueFromUser(
           ConfigureParameters.NumberOfRetries,
-          "GithubAdapter",
+          "CdmStandardsAdapter",
           numberOfRetries);
     }
 
-    // Create a Github adapter with the parameter values given by the user.
-    final GithubAdapter adapter = new GithubAdapter();
+    // Create a CDM Standards adapter with the parameter values given by the user.
+    final CdmStandardsAdapter adapter = new CdmStandardsAdapter();
     adapter.setTimeout(Duration.ofMillis(Integer.parseInt(timeout)));
     adapter.setMaximumTimeout(Duration.ofMillis(Integer.parseInt(maximumTimeout)));
     adapter.setNumberOfRetries(Integer.parseInt(numberOfRetries));
     // waitTimeCallback is another optional parameter and can also be configured here.
 
     // List the newly configured adapter's properties.
-    System.out.println("\nGithubAdapter configured. Properties of this GithubAdapter are:");
+    System.out.println("\nCdmStandardsAdapter configured. Properties of this CdmStandardsAdapter are:");
     System.out.println("  "
         + ConfigureParameters.Timeout
         + ": "

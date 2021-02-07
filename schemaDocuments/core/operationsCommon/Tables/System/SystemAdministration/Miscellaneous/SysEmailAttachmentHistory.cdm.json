@@ -1,0 +1,82 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysEmailHistory.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysEmailAttachmentHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FileName",
+          "dataType": "Filename",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContentType",
+          "dataType": "SysEmailReadContentType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EmailRecId",
+          "dataType": "RecId",
+          "isNullable": true,
+          "displayName": "Email history record ID",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysEmailHistory"
+          },
+          "name": "Relationship_EmailRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Email attachment history"
+    },
+    {
+      "dataTypeName": "Filename",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailReadContentType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

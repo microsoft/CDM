@@ -1,0 +1,248 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Group/MarkupTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/PurchLine.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendInvoiceTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendLedger.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EInvoice/Group/CFDIWithholdingType_MX.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchLine_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountryRegionName_RU",
+          "dataType": "CustInvoiceCountryName_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeviationQty_RU",
+          "dataType": "PurchDeviationQty_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceGTDId_RU",
+          "dataType": "CustFreeInvoiceGTDId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarkupCode_RU",
+          "dataType": "MarkupCodeVend_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile_RU",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceAgreementDate_RU",
+          "dataType": "PriceAgreementDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchLine",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "RefReturnInvoiceTrans_W",
+          "dataType": "RefReturnInvoiceTrans_W",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SADInvoiceLineNo_PL",
+          "dataType": "PlSADInvoiceLineNo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceDate_MY",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Original invoice date",
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceId_MY",
+          "dataType": "InvoiceId",
+          "isNullable": true,
+          "displayName": "Original invoice number",
+          "description": ""
+        },
+        {
+          "name": "WithholdingTypeCode_MX",
+          "dataType": "CFDIWithholdingTypeCode_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "MarkupTable"
+          },
+          "name": "Relationship_MarkupCodeVendRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceTrans"
+          },
+          "name": "Relationship_VendInvoiceTrans_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFDIWithholdingType_MX"
+          },
+          "name": "Relationship_CFDIWithholdingType_MXRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase order line information for countries"
+    },
+    {
+      "dataTypeName": "CustInvoiceCountryName_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchDeviationQty_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustFreeInvoiceGTDId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MarkupCodeVend_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceAgreementDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefReturnInvoiceTrans_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PlSADInvoiceLineNo",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CFDIWithholdingTypeCode_MX",
+      "extendsDataType": "string"
+    }
+  ]
+}

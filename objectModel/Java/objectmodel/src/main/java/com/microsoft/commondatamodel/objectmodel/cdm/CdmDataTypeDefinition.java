@@ -1,14 +1,21 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
 
@@ -29,14 +36,18 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.dataTypeName);
+    if (StringUtils.isNullOrTrimEmpty(this.dataTypeName)) {
+      Logger.error(CdmDataTypeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("dataTypeName"))));
+      return false;
+    }
+    return true;
   }
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolve options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -51,7 +62,7 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     CdmDataTypeDefinition copy;
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     if (host == null) {
@@ -76,7 +87,11 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return this.isDerivedFromDef(resOpt, this.getExtendsDataType(), this.getName(), baseDef);
   }
 
@@ -99,9 +114,11 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
       return false;
     }
 
-    if (this.getExtendsDataType() != null && this.getExtendsDataType()
-        .visit(path + "/extendsDataType/", preChildren, postChildren)) {
-      return true;
+    if (this.getExtendsDataType() != null) {
+      this.getExtendsDataType().setOwner(this);
+      if (this.getExtendsDataType().visit(path + "/extendsDataType/", preChildren, postChildren)) {
+        return true;
+      }
     }
 
     if (this.visitDef(path, preChildren, postChildren)) {
@@ -117,19 +134,35 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
     //rtsb.CleanUp();
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @return ResolvedAttributeSetBuilder
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param under attribue context
+   * @return ResolvedAttributeSetBuilder
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
     // Return null intentionally
     return null;
   }
 
   /**
    * Gets or sets the data type name.
+   * @return String 
    */
   public String getDataTypeName() {
     return this.dataTypeName;
@@ -141,6 +174,7 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the data type extended by this data type.
+   * @return CdmDataTypeReference
    */
   public CdmDataTypeReference getExtendsDataType() {
     return this.extendsDataType;

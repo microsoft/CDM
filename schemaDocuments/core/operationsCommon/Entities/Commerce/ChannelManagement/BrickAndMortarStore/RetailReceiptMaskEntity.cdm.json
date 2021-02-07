@@ -1,0 +1,77 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Miscellaneous/RetailReceiptMasks.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailReceiptMaskEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FunctionalityProfileId",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Functionality profile",
+          "description": ""
+        },
+        {
+          "name": "IsIndependent",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Independent sequence",
+          "description": ""
+        },
+        {
+          "name": "Mask",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiptTransactionType",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailReceiptMasks"
+          },
+          "name": "BackingTable_RetailReceiptMasksRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Receipt numbering"
+    }
+  ]
+}

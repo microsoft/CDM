@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.storage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,15 +22,15 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Implementation of the storage adapter interface which operates with GitHub repos.
+ * @deprecated Please use the CdmStandardsAdapter instead.
  */
-public class GithubAdapter extends NetworkAdapter implements StorageAdapter {
+@Deprecated
+public class GithubAdapter extends NetworkAdapter {
 
   private static final String ghHost = "raw.githubusercontent.com";
   private static final String ghPath = "/Microsoft/CDM/master/schemaDocuments";
   private static final String ghRawRoot = "https://" + ghHost + ghPath;
   static final String TYPE = "github";
-
-  private String locationHint;
 
   /**
    * Default constructor.
@@ -46,8 +49,9 @@ public class GithubAdapter extends NetworkAdapter implements StorageAdapter {
       configObject.set(stringJsonNodeEntry.getKey(), stringJsonNodeEntry.getValue());
     }
 
-    if (this.locationHint != null){
-      configObject.put("locationHint", this.locationHint);
+    String locationHint = getLocationHint();
+    if (locationHint != null){
+      configObject.put("locationHint", locationHint);
     }
     resultConfig.set("config", configObject);
     try {
@@ -57,10 +61,12 @@ public class GithubAdapter extends NetworkAdapter implements StorageAdapter {
     }
   }
 
+  @Override
   public boolean canRead() {
     return true;
   }
 
+  @Override
   public CompletableFuture<String> readAsync(final String corpusPath) {
     return CompletableFuture.supplyAsync(() -> {
 
@@ -77,31 +83,12 @@ public class GithubAdapter extends NetworkAdapter implements StorageAdapter {
     });
   }
 
-  public boolean canWrite() {
-    return false;
-  }
-
-  public CompletableFuture<Void> writeAsync(final String corpusPath, final String data) {
-    return CompletableFuture.completedFuture(null);
-  }
-
-  public void clearCache() {
-    // Left blank intentionally
-  }
-
-  public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
-    return CompletableFuture.completedFuture(OffsetDateTime.now());
-  }
-
-  public CompletableFuture<List<String>> fetchAllFilesAsync(final String currFullPath) {
-    // TODO
-    return CompletableFuture.completedFuture(null);
-  }
-
+  @Override
   public String createAdapterPath(final String corpusPath) {
     return GithubAdapter.ghRawRoot + corpusPath;
   }
 
+  @Override
   public String createCorpusPath(final String adapterPath) {
     final String ghRoot = GithubAdapter.ghRawRoot;
 
@@ -123,16 +110,6 @@ public class GithubAdapter extends NetworkAdapter implements StorageAdapter {
     this.updateNetworkConfig(config);
     final JsonNode configsJson = JMapper.MAP.readTree(config);
 
-    this.locationHint = configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null;
-  }
-
-  @Override
-  public void setLocationHint(final String locationHint) {
-    this.locationHint = locationHint;
-  }
-
-  @Override
-  public String getLocationHint() {
-    return this.locationHint;
+    this.setLocationHint(configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null);
   }
 }

@@ -1,0 +1,255 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/Kanban.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/KanbanCard.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "KanbanStatusUpdate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutoUpdate",
+          "dataType": "KanbanAutoUpdate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeleteKanban",
+          "dataType": "KanbanRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutedDateTime",
+          "dataType": "DateTimeExecuted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FirstTimeThrough",
+          "dataType": "KanbanJobFirstTimeThrough",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Kanban",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "displayName": "Kanban",
+          "description": ""
+        },
+        {
+          "name": "KanbanCard",
+          "dataType": "KanbanCardRecId",
+          "isNullable": true,
+          "displayName": "Kanban card",
+          "description": ""
+        },
+        {
+          "name": "KanbanId",
+          "dataType": "KanbanId",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "QuantityReceived",
+          "dataType": "KanbanQuantityReceived",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuantityScrapped",
+          "dataType": "KanbanQuantityScrapped",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionDateTime",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WantedStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "New status",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Kanban"
+          },
+          "name": "Relationship_DeleteKanbanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Kanban"
+          },
+          "name": "Relationship_KanbanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "KanbanCard"
+          },
+          "name": "Relationship_KanbanCardRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Kanban handling unit status updates"
+    },
+    {
+      "dataTypeName": "KanbanAutoUpdate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "KanbanRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DateTimeExecuted",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "KanbanJobFirstTimeThrough",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "KanbanCardRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "KanbanId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KanbanQuantityReceived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "KanbanQuantityScrapped",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

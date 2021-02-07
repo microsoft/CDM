@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from .annotation import Annotation
 from .annotation_trait_mapping import AnnotationTraitMapping
 from .attribute import Attribute

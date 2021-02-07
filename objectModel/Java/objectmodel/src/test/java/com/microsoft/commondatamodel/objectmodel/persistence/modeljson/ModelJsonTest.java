@@ -1,18 +1,24 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
-import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
@@ -34,25 +40,19 @@ import org.testng.annotations.Test;
 
 public class ModelJsonTest extends ModelJsonTestBase {
   private static final String LOCAL = "local";
-  private static final String MODEL_JSON = "model.json";
-
-  /**
-   * Whether debugging files should be written or not.
-   */
-  private final boolean doesWriteTestDebuggingFiles = TestHelper.doesWriteTestDebuggingFiles;
   private final String TESTS_SUBPATH = new File(new File("persistence", "modeljson"), "modeljson").toString();
 
   @Test
-  public void testFromAndToData() throws Exception {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFromAndToData", null);
+  public void testModelJsonFromAndToData() throws Exception {
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH,"testModelJsonFromAndToData", null);
 
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-        MODEL_JSON,
+            CdmConstants.MODEL_JSON_EXTENSION,
         cdmCorpus.getStorage().fetchRootFolder(LOCAL))
         .join();
     final Model obtainedModelJson = ManifestPersistence.toData(cdmManifest, null, null).join();
 
-    this.handleOutput("testFromAndToData", MODEL_JSON, obtainedModelJson);
+    this.handleOutput("testModelJsonFromAndToData",CdmConstants. MODEL_JSON_EXTENSION, obtainedModelJson);
   }
 
   @Test
@@ -76,56 +76,56 @@ public class ModelJsonTest extends ModelJsonTestBase {
         cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/model.json").get();
     final Model obtainedModelJson = ManifestPersistence.toData(manifest, null, null).get();
 
-    this.handleOutput("testLoadingModelJsonWithInvalidPath", MODEL_JSON, obtainedModelJson);
+    this.handleOutput("testLoadingModelJsonWithInvalidPath", CdmConstants.MODEL_JSON_EXTENSION, obtainedModelJson);
   }
 
-  @Test
-  public void testLoadingCdmFolderAndSavingModelJson() throws Exception {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingCdmFolderAndSavingModelJson", null);
+  //@Test
+  public void testLoadingCdmFolderAndModelJsonToData() throws Exception {
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingCdmFolderAndModelJsonToData", null);
 
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-        "default.manifest.cdm.json",
+        "default" + CdmConstants.MANIFEST_EXTENSION,
         cdmCorpus.getStorage().fetchRootFolder(LOCAL)).join();
     final Model obtainedModelJson = ManifestPersistence.toData(cdmManifest, null, null).get();
 
-    this.handleOutput("testLoadingCdmFolderAndSavingModelJson", MODEL_JSON, obtainedModelJson);
+    this.handleOutput("testLoadingCdmFolderAndModelJsonToData", CdmConstants.MODEL_JSON_EXTENSION, obtainedModelJson);
   }
 
   @Test
-  public void testLoadingModelJsonResultAndSavingCdmFolder() throws IOException, InterruptedException, JSONException {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingModelJsonResultAndSavingCdmFolder", null);
+  public void TestLoadingModelJsonResultAndCdmFolderToData() throws IOException, InterruptedException, JSONException {
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestLoadingModelJsonResultAndCdmFolderToData", null);
 
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-        "model.json",
+            CdmConstants.MODEL_JSON_EXTENSION,
         cdmCorpus.getStorage().fetchRootFolder(LOCAL))
         .join();
     final ManifestContent obtainedCdmFolder = com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence.toData(cdmManifest, null, null);
-    this.handleOutput("testLoadingModelJsonResultAndSavingCdmFolder", "cdmFolder.json", obtainedCdmFolder);
+    this.handleOutput("TestLoadingModelJsonResultAndCdmFolderToData", "cdmFolder" + CdmConstants.CDM_EXTENSION, obtainedCdmFolder);
   }
 
   @Test
-  public void testLoadingModelJsonAndSavingCdmFolder() throws Exception {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingModelJsonAndSavingCdmFolder", null);
+  public void testLoadingModelJsonAndCdmFolderToData() throws Exception {
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingModelJsonAndCdmFolderToData", null);
 
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-        MODEL_JSON,
+            CdmConstants.MODEL_JSON_EXTENSION,
         cdmCorpus.getStorage().fetchRootFolder(LOCAL))
         .join();
     final ManifestContent obtainedCdmFolder = com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence.toData(cdmManifest, null, null);
 
-    this.handleOutput("testLoadingModelJsonAndSavingCdmFolder", "cdmFolder.json", obtainedCdmFolder);
+    this.handleOutput("testLoadingModelJsonAndCdmFolderToData", "cdmFolder" + CdmConstants.CDM_EXTENSION, obtainedCdmFolder);
   }
 
   /*
    Test loading CDM folder result files and save as model.json.
    */
   @Test
-  public void testLoadingCdmFolderResultAndSavingModelJson()
+  public void testLoadingCdmFolderResultAndModelJsonToData()
       throws IOException, InterruptedException, JSONException, ExecutionException {
     final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH,
-            "testLoadingCdmFolderResultAndSavingModelJson", null);
+            "testLoadingCdmFolderResultAndModelJsonToData", null);
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-        "result.model.manifest.cdm.json",
+        "result.model" + CdmConstants.MANIFEST_EXTENSION,
         cdmCorpus.getStorage().fetchRootFolder(LOCAL))
         .join();
 
@@ -135,7 +135,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
     obtainedModelJson.getEntities().forEach(entity -> removeDescriptionFromEntityIfEmpty(JMapper.MAP.valueToTree(entity)));
     obtainedModelJson.setDescription(null);
 
-    this.handleOutput("testLoadingCdmFolderResultAndSavingModelJson", "model.json", obtainedModelJson);
+    this.handleOutput("testLoadingCdmFolderResultAndModelJsonToData", CdmConstants.MODEL_JSON_EXTENSION, obtainedModelJson);
   }
 
   /**
@@ -148,7 +148,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
 
       final CdmManifestDefinition cdmManifest =
           corpus.<CdmManifestDefinition>fetchObjectAsync(
-              "model.json",
+                  CdmConstants.MODEL_JSON_EXTENSION,
               corpus.getStorage().fetchRootFolder("local"))
               .get();
 
@@ -203,7 +203,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
 
     final CdmManifestDefinition manifest =
         corpus.<CdmManifestDefinition>fetchObjectAsync(
-            "model.json",
+                CdmConstants.MODEL_JSON_EXTENSION,
             corpus.getStorage().fetchRootFolder("local"))
             .join();
 
@@ -258,17 +258,17 @@ public class ModelJsonTest extends ModelJsonTestBase {
     this.handleOutput("testReferenceModels", "model.json", obtainedModelJson);
   }
 
-  /*
-  Tests loading Model.json and converting to a CdmFolder.
+  /**
+   * Tests loading Model.json and converting to a CdmFolder.
    */
   @Test
-  public void testExtensibilityLoadingModelJsonAndSavingCdmFolder()
+  public void testExtensibilityLoadingModelJsonAndCdmFolderToData()
       throws InterruptedException, IOException, JSONException, ExecutionException {
     final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH,
-            "testExtensibilityLoadingModelJsonAndSavingCdmFolder", null);
+            "testExtensibilityLoadingModelJsonAndCdmFolderToData", null);
 
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-        "model.json",
+            CdmConstants.MODEL_JSON_EXTENSION,
         cdmCorpus.getStorage().fetchRootFolder(LOCAL))
         .get();
 
@@ -280,8 +280,8 @@ public class ModelJsonTest extends ModelJsonTestBase {
     obtainedCdmFolder.getEntities().forEach(entity -> removeEntityDeclarationFromEntity(JMapper.MAP.valueToTree(entity)));
 
     this.handleOutput(
-        "testExtensibilityLoadingModelJsonAndSavingCdmFolder",
-        "cdmFolder.json",
+        "testExtensibilityLoadingModelJsonAndCdmFolderToData",
+        "cdmFolder" + CdmConstants.CDM_EXTENSION,
         obtainedCdmFolder);
   }
 
@@ -300,7 +300,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
     localRoot.getDocuments().add(manifestAbstract);
     final CdmManifestDefinition manifestResolved = manifestAbstract.createResolvedManifestAsync("default", "").join();
     manifestResolved.getImports().add("cdm:/foundations.cdm.json", "");
-    manifestResolved.saveAsAsync("model.json", true).join();
+    manifestResolved.saveAsAsync(CdmConstants.MODEL_JSON_EXTENSION, true).join();
     // expect only one instance of "$type"
     final String modelFromFile = new String(Files.readAllBytes(
         new File(testActualOutputPath, "model.json").toPath()),
@@ -309,18 +309,81 @@ public class ModelJsonTest extends ModelJsonTestBase {
     Assert.assertEquals(modelFromFile.indexOf("$type"), modelFromFile.lastIndexOf("$type"));
   }
 
+  /**
+   * Tests that a description on a CdmFolder entity sets the description on the ModelJson entity.
+   */
+  @Test
+  public void testSettingModelJsonEntityDescription() {
+    CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+    CdmManifestDefinition cdmManifest = cdmCorpus.makeObject(CdmObjectType.ManifestDef, "test");
+    CdmDocumentDefinition document = cdmCorpus.makeObject(CdmObjectType.DocumentDef, "entity" + CdmConstants.CDM_EXTENSION);
+
+    CdmFolderDefinition folder = cdmCorpus.getStorage().fetchRootFolder("local");
+    folder.getDocuments().add(document);
+
+    CdmEntityDefinition entity = (CdmEntityDefinition) document.getDefinitions().add(CdmObjectType.EntityDef, "entity");
+    entity.setDescription("test description");
+
+    cdmManifest.getEntities().add(entity);
+    folder.getDocuments().add(cdmManifest);
+
+    Model obtainedModelJson = ManifestPersistence.toData(cdmManifest, null, null).join();
+
+    Assert.assertEquals(obtainedModelJson.getEntities().get(0).getDescription(), "test description");
+  }
+
+  /**
+   * Tests that the "date" and "time" data types are correctly loaded/saved from/to a model.json.
+   */
+  @Test
+  public void testLoadingAndSavingDateAndTimeDataTypes() throws InterruptedException {
+    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingAndSavingDateAndTimeDataTypes", null);
+
+    // Load the manifest and resolve it
+    CdmManifestDefinition manifest = (CdmManifestDefinition) cdmCorpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
+    CdmManifestDefinition resolvedManifest = manifest.createResolvedManifestAsync("resolved", null).join();
+
+    // Convert loaded manifest to model.json
+    Model modelJson = ManifestPersistence.toData(resolvedManifest, null, null).join();
+
+    // Verify that the attributes' data types were correctly persisted as "date" and "time"
+    Assert.assertEquals(((LocalEntity) modelJson.getEntities().get(0)).getAttributes().get(0).getDataType(), "date");
+    Assert.assertEquals(((LocalEntity) modelJson.getEntities().get(0)).getAttributes().get(1).getDataType(), "time");
+
+    // Now check that these attributes' data types are still "date" and "time" when loading the model.json back to manifest
+    // We first need to create a second adapter to the input folder to fool the OM into thinking it's different
+    // This is because there's a bug that currently prevents us from saving and then loading a model.json under the same namespace
+    cdmCorpus.getStorage().mount("local2", new LocalAdapter(TestHelper.getInputFolderPath(TESTS_SUBPATH, "testLoadingAndSavingDateAndTimeDataTypes")));
+
+    CdmManifestDefinition manifestFromModelJson = (CdmManifestDefinition) cdmCorpus.fetchObjectAsync("local2:/model.json").join();
+    CdmEntityDefinition entity = (CdmEntityDefinition) cdmCorpus.fetchObjectAsync(manifestFromModelJson.getEntities().get(0).getEntityPath(), manifestFromModelJson).join();
+
+    // Verify that the attributes' data types were correctly loaded as "date" and "time"
+    Assert.assertEquals(((CdmTypeAttributeDefinition) entity.getAttributes().get(0)).fetchDataFormat(), CdmDataFormat.Date);
+    Assert.assertEquals(((CdmTypeAttributeDefinition) entity.getAttributes().get(1)).fetchDataFormat(), CdmDataFormat.Time);
+  }
+
   private void handleOutput(
       final String testName,
       final String outputFileName,
-      final Object actualOutput)
+      final Object actualOutput,
+      final boolean doesWriteTestDebuggingFiles)
       throws IOException, InterruptedException, JSONException {
     final String data = JMapper.MAP.valueToTree(actualOutput).toString();
-    if (this.doesWriteTestDebuggingFiles) {
+    if (doesWriteTestDebuggingFiles) {
       TestHelper.writeActualOutputFileContent(TESTS_SUBPATH, testName, outputFileName, data);
     }
 
     final String expectedOutput = TestHelper.getExpectedOutputFileContent(TESTS_SUBPATH, testName, outputFileName);
     JSONAssert.assertEquals(expectedOutput, data, false);
+  }
+
+  private void handleOutput(
+          final String testName,
+          final String outputFileName,
+          final Object actualOutput)
+          throws InterruptedException, JSONException, IOException {
+    handleOutput(testName, outputFileName, actualOutput, false);
   }
 
   private void removeEntityDeclarationFromEntity(final JsonNode entity) {

@@ -1,0 +1,158 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjCategory.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollTaxCodeDefaultDimension",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CategoryDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CategoryID",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "CompanyInfoRecId",
+          "displayName": "Legal entity",
+          "description": ""
+        },
+        {
+          "name": "PayrollTaxCode",
+          "dataType": "PayrollTaxCodeRecId",
+          "description": ""
+        },
+        {
+          "name": "VendAccountNum",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "displayName": "Vendor",
+          "description": ""
+        },
+        {
+          "name": "VendDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyInfo_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DimensionAttributeValueSet_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategory_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax code default dimension"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CompanyInfoRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PayrollTaxCodeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    }
+  ]
+}

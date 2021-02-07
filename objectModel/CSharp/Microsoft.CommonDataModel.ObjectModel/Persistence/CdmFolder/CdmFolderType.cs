@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmFolderType.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
@@ -43,6 +40,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             RegisteredClasses.Register<CdmTraitDefinition, TraitPersistence>();
             RegisteredClasses.Register<CdmTraitReference, TraitReferencePersistence>();
             RegisteredClasses.Register<CdmTypeAttributeDefinition, TypeAttributePersistence>();
+            RegisteredClasses.Register<CdmProjection, ProjectionPersistence>();
+            RegisteredClasses.Register<CdmOperationAddCountAttribute, OperationAddCountAttributePersistence>();
+            RegisteredClasses.Register<CdmOperationAddSupportingAttribute, OperationAddSupportingAttributePersistence>();
+            RegisteredClasses.Register<CdmOperationAddTypeAttribute, OperationAddTypeAttributePersistence>();
+            RegisteredClasses.Register<CdmOperationExcludeAttributes, OperationExcludeAttributesPersistence>();
+            RegisteredClasses.Register<CdmOperationArrayExpansion, OperationArrayExpansionPersistence>();
+            RegisteredClasses.Register<CdmOperationCombineAttributes, OperationCombineAttributesPersistence>();
+            RegisteredClasses.Register<CdmOperationRenameAttributes, OperationRenameAttributesPersistence>();
+            RegisteredClasses.Register<CdmOperationReplaceAsForeignKey, OperationReplaceAsForeignKeyPersistence>();
+            RegisteredClasses.Register<CdmOperationIncludeAttributes, OperationIncludeAttributesPersistence>();
+            RegisteredClasses.Register<CdmOperationAddAttributeGroup, OperationAddAttributeGroupPersistence>();
         }
     }
 }

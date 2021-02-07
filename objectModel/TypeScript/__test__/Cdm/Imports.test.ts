@@ -1,6 +1,15 @@
-import { CdmDocumentDefinition } from '../../Cdm/CdmDocumentDefinition';
-import { CdmManifestDefinition } from '../../Cdm/CdmManifestDefinition';
-import { CdmCorpusDefinition, cdmStatusLevel, StorageAdapter } from '../../internal';
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { 
+    CdmCorpusDefinition,
+    CdmDocumentDefinition,
+    CdmManifestDefinition,
+    cdmStatusLevel,
+    resolveOptions,
+    importsLoadStrategy,
+    StorageAdapter
+} from '../../internal';
 import { LocalAdapter } from '../../Storage';
 import { testHelper } from '../testHelper';
 
@@ -17,8 +26,10 @@ describe('Cdm/ImportsTest', () => {
     it('TestEntityWithMissingImport', async () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestEntityWithMissingImport');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
+        const resOpt = new resolveOptions();
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
-        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/missingImport.cdm.json');
+        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/missingImport.cdm.json', null, resOpt);
         expect(doc)
             .not
             .toBeUndefined();
@@ -26,7 +37,7 @@ describe('Cdm/ImportsTest', () => {
             .toBe(1);
         expect(doc.imports.allItems[0].corpusPath)
             .toBe('missing.cdm.json');
-        expect((doc.imports.allItems[0]).doc)
+        expect((doc.imports.allItems[0]).document)
             .toBeUndefined();
     });
 
@@ -36,19 +47,21 @@ describe('Cdm/ImportsTest', () => {
     it('TestEntityWithMissingNestedImportsAsync', async () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestEntityWithMissingNestedImportsAsync');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
+        const resOpt = new resolveOptions();
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
-        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/missingNestedImport.cdm.json');
+        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/missingNestedImport.cdm.json', null, resOpt);
         expect(doc)
             .not
             .toBeUndefined();
         expect(doc.imports.length)
             .toBe(1);
-        const firstImport: CdmDocumentDefinition = (doc.imports.allItems[0]).doc;
+        const firstImport: CdmDocumentDefinition = (doc.imports.allItems[0]).document;
         expect(firstImport.imports.length)
             .toBe(1);
         expect(firstImport.name)
             .toBe('notMissing.cdm.json');
-        const nestedImport: CdmDocumentDefinition = (firstImport.imports.allItems[0]).doc;
+        const nestedImport: CdmDocumentDefinition = (firstImport.imports.allItems[0]).document;
         expect(nestedImport)
             .toBeUndefined();
     });
@@ -59,19 +72,22 @@ describe('Cdm/ImportsTest', () => {
     it('TestEntityWithSameImportsAsync', async () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestEntityWithSameImportsAsync');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
+        const resOpt = new resolveOptions();
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
-        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/multipleImports.cdm.json');
+
+        const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/multipleImports.cdm.json', null, resOpt);
         expect(doc)
             .not
             .toBeUndefined();
         expect(doc.imports.length)
             .toBe(2);
-        const firstImport: CdmDocumentDefinition = (doc.imports.allItems[0]).doc;
+        const firstImport: CdmDocumentDefinition = (doc.imports.allItems[0]).document;
         expect(firstImport.name)
             .toBe('missingImport.cdm.json');
         expect(firstImport.imports.length)
             .toBe(1);
-        const secondImport: CdmDocumentDefinition = (doc.imports.allItems[1]).doc;
+        const secondImport: CdmDocumentDefinition = (doc.imports.allItems[1]).document;
         expect(secondImport.name)
             .toBe('notMissing.cdm.json');
     });
@@ -103,27 +119,29 @@ describe('Cdm/ImportsTest', () => {
     it('TestLoadingSameImportsAsync', async () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestLoadingSameImportsAsync');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
+        const resOpt = new resolveOptions();
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
-        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json');
+        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', null, resOpt);
         expect(mainDoc)
             .not
             .toBeUndefined();
         expect(mainDoc.imports.length)
             .toBe(2);
-        const firstImport: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).doc;
-        const secondImport: CdmDocumentDefinition = (mainDoc.imports.allItems[1]).doc;
+        const firstImport: CdmDocumentDefinition = mainDoc.imports.allItems[0].document;
+        const secondImport: CdmDocumentDefinition = mainDoc.imports.allItems[1].document;
 
         // since these two imports are loaded asyncronously, we need to make sure that
         // the import that they share (targetImport) was loaded, and that the
         // targetImport doc is attached to both of these import objects
         expect(firstImport.imports.length)
             .toBe(1);
-        expect(firstImport.imports.allItems[0].doc)
+        expect(firstImport.imports.allItems[0].document)
             .toBeDefined();
 
         expect(secondImport.imports.length)
             .toBe(1);
-        expect(secondImport.imports.allItems[0].doc)
+        expect(secondImport.imports.allItems[0].document)
             .toBeDefined();
     });
 
@@ -133,8 +151,10 @@ describe('Cdm/ImportsTest', () => {
     it('TestLoadingSameMissingImportsAsync', async () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestLoadingSameMissingImportsAsync');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
+        const resOpt = new resolveOptions();
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
-        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json');
+        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', null, resOpt);
         expect(mainDoc)
             .not
             .toBeUndefined();
@@ -142,17 +162,17 @@ describe('Cdm/ImportsTest', () => {
             .toBe(2);
 
         // make sure imports loaded correctly, despite them missing imports
-        const firstImport: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).doc;
-        const secondImport: CdmDocumentDefinition = (mainDoc.imports.allItems[1]).doc;
+        const firstImport: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).document;
+        const secondImport: CdmDocumentDefinition = (mainDoc.imports.allItems[1]).document;
 
         expect(firstImport.imports.length)
             .toBe(1);
-        expect(firstImport.imports.allItems[0].doc)
+        expect(firstImport.imports.allItems[0].document)
             .toBeUndefined();
 
         expect(secondImport.imports.length)
             .toBe(1);
-        expect(firstImport.imports.allItems[0].doc)
+        expect(firstImport.imports.allItems[0].document)
             .toBeUndefined();
     });
 
@@ -162,29 +182,31 @@ describe('Cdm/ImportsTest', () => {
     it('TestLoadingAlreadyPresentImportsAsync', async () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestLoadingAlreadyPresentImportsAsync');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
+        const resOpt = new resolveOptions();
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
         // load the first doc
-        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json');
+        const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', null, resOpt);
         expect(mainDoc)
             .not
             .toBeUndefined();
         expect(mainDoc.imports.length)
             .toBe(1);
 
-        const importDoc: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).doc;
+        const importDoc: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).document;
         expect(importDoc)
             .toBeDefined();
 
         // now load the second doc, which uses the same import
         // the import should not be loaded again, it should be the same object
-        const secondDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('secondEntity.cdm.json');
+        const secondDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('secondEntity.cdm.json', null, resOpt);
         expect(secondDoc)
             .not
             .toBeUndefined();
         expect(secondDoc.imports.length)
             .toBe(1);
 
-        const secondImportDoc: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).doc;
+        const secondImportDoc: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).document;
         expect(secondImportDoc)
             .toBeDefined();
 

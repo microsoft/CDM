@@ -1,12 +1,20 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
+    CdmConstants,
     CdmCorpusContext,
     CdmDocumentDefinition,
+    CdmEntityDefinition,
     CdmFolderDefinition,
     cdmObjectType,
+    CdmTraitReference,
     copyOptions,
+    Logger,
     resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeGroup,
     ConstantEntity,
@@ -17,14 +25,17 @@ import {
     Purpose,
     Trait
 } from './types';
-import * as utils from './utils';
 
 export class DocumentPersistence {
-    // Whether this persistence class has async methods.
+    /**
+     * Whether this persistence class has async methods.
+     */
     public static readonly isPersistenceAsync: boolean = false;
 
-    // The file format/extension types this persistence class supports.
-    public static readonly formats: string[] = ['.cdm.json'];
+    /**
+     * The file format/extension types this persistence class supports.
+     */
+    public static readonly formats: string[] = [CdmConstants.cdmExtension];
 
     public static fromObject(ctx: CdmCorpusContext, name: string, namespace: string, path: string, object: DocumentContent): CdmDocumentDefinition {
         const document: CdmDocumentDefinition = ctx.corpus.MakeObject(cdmObjectType.documentDef, name);
@@ -39,12 +50,9 @@ export class DocumentPersistence {
             if (object.schemaVersion) {
                 document.jsonSchemaSemanticVersion = object.schemaVersion;
             }
-            if (object.jsonSchemaSemanticVersion) {
-                document.jsonSchemaSemanticVersion = object.jsonSchemaSemanticVersion;
-            }
-            if (document.jsonSchemaSemanticVersion !== '0.9.0') {
-                // tslint:disable-next-line:no-suspicious-comment
-                // TODO: validate that this is a version we can understand with the OM
+
+            if (object.documentVersion) {
+                document.documentVersion = object.documentVersion;
             }
 
             if (object.imports) {
@@ -71,6 +79,31 @@ export class DocumentPersistence {
             }
         }
 
+        let isResolvedDoc: boolean = false;
+        if (document.definitions.length === 1 && document.definitions.allItems[0].objectType == cdmObjectType.entityDef) {
+            const entity: CdmEntityDefinition = document.definitions.allItems[0] as CdmEntityDefinition;
+            const resolvedTrait: CdmTraitReference = entity.exhibitsTraits.item('has.entitySchemaAbstractionLevel');
+            // Tries to figure out if the document is in resolved form by looking for the schema abstraction trait
+            // or the presence of the attribute context.
+            isResolvedDoc = resolvedTrait != null && resolvedTrait.arguments.allItems[0].value == 'resolved';
+            isResolvedDoc = isResolvedDoc || !!entity.attributeContext;
+        }
+
+        if (object.jsonSchemaSemanticVersion) {
+            document.jsonSchemaSemanticVersion = object.jsonSchemaSemanticVersion;
+            if (DocumentPersistence.compareJsonSemanticVersion(ctx, document.jsonSchemaSemanticVersion) > 0) {
+                let message: string = 'This ObjectModel version supports json semantic version ' + CdmDocumentDefinition.currentJsonSchemaSemanticVersion + ' at maximum.';
+                message += ' Trying to load a document with version ' + document.jsonSchemaSemanticVersion;
+                if (isResolvedDoc) {
+                    Logger.warning(DocumentPersistence.name, ctx, message, 'fromData');
+                } else {
+                    Logger.error(DocumentPersistence.name, ctx, message, 'fromData');
+                }
+            }
+        } else {
+            Logger.warning(DocumentPersistence.name, ctx, 'jsonSemanticVersion is a required property of a document.', 'fromData');
+        }
+
         return document;
     }
 
@@ -84,9 +117,36 @@ export class DocumentPersistence {
         return {
             $schema: instance.schema,
             jsonSchemaSemanticVersion: instance.jsonSchemaSemanticVersion,
-            imports: utils.arrayCopyData<Import>(resOpt, instance.imports, options),
-            definitions: utils.arrayCopyData<Trait | DataType | Purpose | AttributeGroup | Entity | ConstantEntity>(
-                resOpt, instance.definitions, options)
+            imports: copyDataUtils.arrayCopyData<Import>(resOpt, instance.imports, options),
+            definitions: copyDataUtils.arrayCopyData<Trait | DataType | Purpose | AttributeGroup | Entity | ConstantEntity>(
+                resOpt, instance.definitions, options),
+            documentVersion: instance.documentVersion
         };
+    }
+
+    /**
+     * Compares the document version with the json semantic version supported.
+     * 1 => if documentSemanticVersion > jsonSemanticVersion
+     * 0 => if documentSemanticVersion == jsonSemanticVersion or if documentSemanticVersion is invalid
+     * -1 => if documentSemanticVersion < jsonSemanticVersion
+     */
+    private static compareJsonSemanticVersion(ctx: CdmCorpusContext, documentSemanticVersion: string): number {
+        const docSemanticVersionSplit: number[] = documentSemanticVersion.split(".").map(x => Number(x));
+        const currSemanticVersionSplit: number[] = CdmDocumentDefinition.currentJsonSchemaSemanticVersion.split(".").map(x => Number(x));
+
+        const errorMessage: string = 'jsonSemanticVersion must be set using the format <major>.<minor>.<patch>.';
+
+        if (docSemanticVersionSplit.length !== 3 || docSemanticVersionSplit.includes(NaN)) {
+            Logger.warning(DocumentPersistence.name, ctx, errorMessage, 'compareJsonSemanticVersion');
+            return 0;
+        }
+
+        for (let i = 0; i < 3; ++i) {
+            if (docSemanticVersionSplit[i] !== currSemanticVersionSplit[i]) {
+                return docSemanticVersionSplit[i] < currSemanticVersionSplit[i] ? -1 : 1;
+            }
+        }
+
+        return 0;
     }
 }

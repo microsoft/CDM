@@ -1,0 +1,187 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/DirAddressBook.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendRequestManagementParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ProspectiveVendorAddressBook",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Default address book for prospective vendors",
+          "description": ""
+        },
+        {
+          "name": "ProspectiveVendorEffectivePeriod",
+          "dataType": "VendRequestEffectivePeriod",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultCompany",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "displayName": "Default company",
+          "description": ""
+        },
+        {
+          "name": "ExistingVendorAddressVisible",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Address",
+          "description": ""
+        },
+        {
+          "name": "ExistingVendorDBAVisible",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "DBA name",
+          "description": ""
+        },
+        {
+          "name": "ExistingVendorEmailVisible",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Email address",
+          "description": ""
+        },
+        {
+          "name": "ExistingVendorPhoneVisible",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Telephone",
+          "description": ""
+        },
+        {
+          "name": "IsVendorPortalAdminEnabled",
+          "dataType": "VendVendorPortalAdministratorEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorCategorySelectionLevel",
+          "dataType": "VendorCategorySelectionLevel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorCategorySelectionLevelEnabled",
+          "dataType": "VendorCategorySelectionLevelEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsAutoSubmitProspectiveVendorRegistrationToWorkflow",
+          "dataType": "VendProspectiveVendorAutoSubmitRegistrationToWorkflow",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsAutoConfirmBatchable",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Automatically confirm in batch run",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DirAddressBook"
+          },
+          "name": "Relationship_DirAddressBookRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor request management parameters"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendRequestEffectivePeriod",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendVendorPortalAdministratorEnabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendorCategorySelectionLevel",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendorCategorySelectionLevelEnabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendProspectiveVendorAutoSubmitRegistrationToWorkflow",
+      "extendsDataType": "integer"
+    }
+  ]
+}

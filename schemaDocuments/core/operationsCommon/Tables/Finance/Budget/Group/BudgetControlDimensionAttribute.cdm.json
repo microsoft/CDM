@@ -1,0 +1,93 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetControlConfiguration.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetPrimaryLedgerDimensionAttribute.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetControlDimensionAttribute",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetControlConfiguration",
+          "dataType": "BudgetControlConfigurationRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPrimaryLedgerDimensionAttribute",
+          "dataType": "RefRecId",
+          "displayName": "Budget dimensions",
+          "description": ""
+        },
+        {
+          "name": "Ordinal",
+          "dataType": "DimensionOrdinal",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetControlConfiguration"
+          },
+          "name": "Relationship_BudgetControlConfigurationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPrimaryLedgerDimensionAttribute"
+          },
+          "name": "Relationship_BudgetPrimaryLedgerDimensionAttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget control dimensions"
+    },
+    {
+      "dataTypeName": "BudgetControlConfigurationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DimensionOrdinal",
+      "extendsDataType": "integer"
+    }
+  ]
+}

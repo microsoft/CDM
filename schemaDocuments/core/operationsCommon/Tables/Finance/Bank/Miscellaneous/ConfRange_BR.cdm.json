@@ -1,0 +1,108 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ConfTableSelection_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ConfRange_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ConfGroupId",
+          "dataType": "ConfGroupId_BR",
+          "description": ""
+        },
+        {
+          "name": "FieldName",
+          "dataType": "FieldName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Range",
+          "dataType": "Range",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TableName",
+          "dataType": "TableName",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ConfTableSelection_BR"
+          },
+          "name": "Relationship_ConfTableSelectionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Field range"
+    },
+    {
+      "dataTypeName": "ConfGroupId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FieldName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Range",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TableName",
+      "extendsDataType": "string"
+    }
+  ]
+}

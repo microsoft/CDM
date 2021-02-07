@@ -1,0 +1,268 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceJour.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/WorksheetHeader/FactureJour_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/WorksheetHeader/RestoredVATLogTable_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RestoredVATSalesTaxTrans_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustInvoiceJourRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Factor",
+          "dataType": "Factor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureDate",
+          "dataType": "FactureDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureExternalId",
+          "dataType": "FactureExternalId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureId",
+          "dataType": "FactureId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureModule",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrevPeriod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmount",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxReducedDirect",
+          "dataType": "TaxAmountDirectVAT10_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxReducedIndirect",
+          "dataType": "TaxAmountIndirectVAT10_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxStandardDirect",
+          "dataType": "TaxAmountDirectVAT20_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxStandardIndirect",
+          "dataType": "TaxAmountIndirectVAT20_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_CustInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RestoredVATLogTable_RU"
+          },
+          "name": "Relationship_RestoredVATLogTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "VAT distribution"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Factor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FactureDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "FactureExternalId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FactureId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAmountDirectVAT10_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountIndirectVAT10_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountDirectVAT20_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountIndirectVAT20_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

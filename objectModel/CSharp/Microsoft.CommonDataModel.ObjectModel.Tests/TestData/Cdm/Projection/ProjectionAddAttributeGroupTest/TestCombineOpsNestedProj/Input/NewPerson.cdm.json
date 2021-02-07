@@ -1,0 +1,40 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "NewPerson",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "PersonInfo",
+                    "entity": {
+                        "operations": [
+                            {
+                                "$type": "addAttributeGroup",
+                                "attributeGroupName": "PersonAttributeGroup"
+                            }
+                        ],
+                        "source": {
+                            "operations": [
+                                {
+                                    "$type": "excludeAttributes",
+                                    "excludeAttributes": [
+                                        "age",
+                                        "phoneNumber"
+                                    ]
+                                }
+                            ],
+                            "source": "Person"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

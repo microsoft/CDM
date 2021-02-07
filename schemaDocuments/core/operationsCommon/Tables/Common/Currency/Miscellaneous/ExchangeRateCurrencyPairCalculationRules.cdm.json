@@ -1,0 +1,141 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/ExchangeRateType.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ExchangeRateCurrencyPairCalculationRules",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurrencyFrom",
+          "dataType": "CurrencyCode",
+          "displayName": "From currency",
+          "description": ""
+        },
+        {
+          "name": "CurrencyTo",
+          "dataType": "CurrencyCode",
+          "displayName": "To currency",
+          "description": ""
+        },
+        {
+          "name": "CurrencyTriangulation",
+          "dataType": "CurrencyCode",
+          "displayName": "Triangulation currency",
+          "description": ""
+        },
+        {
+          "name": "DataArea",
+          "dataType": "SelectableDataArea",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaTableAll",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateType",
+          "dataType": "ExchangeRateTypeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateTypeTableAll",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyFromRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyToRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyTriangulationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_ExchangeRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Exchange rate calculation rules for currency pairs"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ExchangeRateTypeRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

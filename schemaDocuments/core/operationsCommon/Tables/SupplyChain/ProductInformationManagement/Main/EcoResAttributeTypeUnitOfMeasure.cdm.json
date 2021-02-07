@@ -1,0 +1,75 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResAttributeType.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResAttributeTypeUnitOfMeasure",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AttributeType",
+          "dataType": "RefRecId",
+          "displayName": "Attribute type",
+          "description": ""
+        },
+        {
+          "name": "DefaultUnitOfMeasure",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Default unit of measure",
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasureClass",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Unit of measure class",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResAttributeType"
+          },
+          "name": "Relationship_AttributeTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Unit of measure for the attribute type"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

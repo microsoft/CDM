@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
 
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
@@ -10,6 +13,10 @@
         public static CdmE2ERelationship FromData(CdmCorpusContext ctx, E2ERelationship dataObj)
         {
             var relationship = ctx.Corpus.MakeObject<CdmE2ERelationship>(CdmObjectType.E2ERelationshipDef);
+            if (!string.IsNullOrWhiteSpace(dataObj.Name))
+            {
+                relationship.Name = dataObj.Name;
+            }
             relationship.FromEntity = dataObj.FromEntity;
             relationship.FromEntityAttribute = dataObj.FromEntityAttribute;
             relationship.ToEntity = dataObj.ToEntity;
@@ -21,6 +28,7 @@
         {
             return new E2ERelationship
             {
+                Name = !string.IsNullOrWhiteSpace(instance.Name) ? instance.Name : null,
                 FromEntity = instance.FromEntity,
                 FromEntityAttribute = instance.FromEntityAttribute,
                 ToEntity = instance.ToEntity,

@@ -1,0 +1,180 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetModel.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetSource.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetSourceTracking",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetModelDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetModelId",
+          "dataType": "BudgetModelId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetModelSubModelId",
+          "dataType": "BudgetModelSubId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetModelType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetSource",
+          "dataType": "RefRecId",
+          "displayName": "Budget source tracking",
+          "description": ""
+        },
+        {
+          "name": "Category",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "IsDefaultBudgetModel",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Is default budget model",
+          "description": ""
+        },
+        {
+          "name": "IsDeletePending",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsSimulation",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SequenceNumber",
+          "dataType": "SequenceNum",
+          "displayName": "Sequence number",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TrackingDate",
+          "dataType": "TransDate",
+          "description": ""
+        },
+        {
+          "name": "TrackingNumber",
+          "dataType": "Num",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TrackingUser",
+          "dataType": "UserId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetModel"
+          },
+          "name": "Relationship_BudgetModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetSource"
+          },
+          "name": "Relationship_BudgetSourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget source tracking"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetModelId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetModelSubId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SequenceNum",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Num",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,22 +1,25 @@
-# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmStatusLevel
 from cdm.utilities import EventCallback, ResolveContextScope
+from cdm.utilities.logging.event_list import EventList
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusDefinition, CdmDocumentDefinition
 
 
 class CdmCorpusContext:
-    def __init__(self, corpus: 'CdmCorpusDefinition', status_event: 'EventCallback', report_at_level: Optional['CdmStatusLevel'] = None) -> None:
+    def __init__(self, corpus: 'CdmCorpusDefinition', status_event: 'EventCallback', \
+                    report_at_level: Optional['CdmStatusLevel'] = None, \
+                    correlation_id: Optional[str] = None) -> None:
         self.corpus = corpus  # type: CdmCorpusDefinition
         self.report_at_level = report_at_level or CdmStatusLevel.INFO  # type: CdmStatusLevel
         self.status_event = status_event  # type: EventCallback
+        self.events = EventList() # type: EventList
+        self.correlation_id = correlation_id or None # type: Optional[str]
 
         # --- internal ---
         self._cache = {}  # type: Dict[str, Any]
@@ -36,7 +39,7 @@ class CdmCorpusContext:
         if not self._scope_stack:
             self._scope_stack = []
 
-        current_trait = current_trait if current_trait else (self._current_scope.current_trait if self._current_scope else None)
+        current_trait = current_trait if current_trait else (self._current_scope._current_trait if self._current_scope else None)
 
         ctx_new = ResolveContextScope(current_trait=current_trait, current_parameter=0)
         self._current_scope = ctx_new

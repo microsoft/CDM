@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmConstantEntityDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -52,7 +49,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmConstantEntityDefinition copy;
@@ -68,7 +65,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             copy.EntityShape = (CdmEntityReference)this.EntityShape.Copy(resOpt);
-            copy.ConstantValues = this.ConstantValues; // is a deep copy needed? 
+            if (this.ConstantValues != null)
+            {
+                // deep copy the content
+                copy.ConstantValues = new List<List<string>>();
+                foreach(var row in this.ConstantValues)
+                {
+                    copy.ConstantValues.Add(new List<string>(row));
+                }
+            }
             this.CopyDef(resOpt, copy);
             return copy;
         }
@@ -82,7 +87,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 string entityName = (pathSplit.Length > 0) ? pathSplit[0].ToString() : string.Empty;
                 Logger.Warning(nameof(CdmConstantEntityDefinition), this.Ctx, $"constant entity '{entityName}' defined without a constant value.");
             }
-            return this.EntityShape != null;
+            if (this.EntityShape == null)
+            {
+                Logger.Error(nameof(CdmConstantEntityDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "EntityShape" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         [Obsolete]
@@ -94,17 +104,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
-
             return false;
         }
 
         /// <inheritdoc />
         public override string GetName()
         {
+            // make up a name if one not given
+            if (this.ConstantEntityName == null)
+            {
+                if (this.EntityShape != null)
+                    return $"Constant{ this.EntityShape.FetchObjectDefinitionName()}";
+
+                return "ConstantEntity";
+            }
             return this.ConstantEntityName;
         }
 
@@ -148,8 +161,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
             if (this.EntityShape != null)
+            {
+                this.EntityShape.Owner = this;
                 if (this.EntityShape.Visit(path + "/entityShape/", preChildren, postChildren))
                     return true;
+            }
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;
@@ -200,16 +216,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // metadata library
                 ResolvedAttributeSet ras = this.FetchResolvedAttributes(resOpt);
                 // query validation and binding
-                int l = ras.Set.Count;
-                for (int i = 0; i < l; i++)
+                if (ras != null)
                 {
-                    string name = ras.Set[i].ResolvedName;
-                    if (resultAtt == -1 && name == attReturn)
-                        resultAtt = i;
-                    if (searchAtt == -1 && name == attSearch)
-                        searchAtt = i;
-                    if (resultAtt >= 0 && searchAtt >= 0)
-                        break;
+                    int l = ras.Set.Count;
+                    for (int i = 0; i < l; i++)
+                    {
+                        string name = ras.Set[i].ResolvedName;
+                        if (resultAtt == -1 && name == attReturn)
+                            resultAtt = i;
+                        if (searchAtt == -1 && name == attSearch)
+                            searchAtt = i;
+                        if (resultAtt >= 0 && searchAtt >= 0)
+                            break;
+                    }
                 }
             }
 

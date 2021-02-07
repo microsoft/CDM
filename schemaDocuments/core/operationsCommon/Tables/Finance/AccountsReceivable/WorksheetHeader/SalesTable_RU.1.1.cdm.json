@@ -1,0 +1,179 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/TransactionHeader/AgreementHeaderExt_RU.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventProfile_RU.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesTable_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AgreementHeaderExt_RU",
+          "dataType": "AgreementHeaderExtRecId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsigneeAccount_RU",
+          "dataType": "CustAccountConsignee_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsignorAccount_RU",
+          "dataType": "VendAccountConsignor_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventProfileId_RU",
+          "dataType": "InventProfileId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventProfileType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventProfileUseRelated_RU",
+          "dataType": "InventProfileUseRelated_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoicePostingType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceAgreementDate_RU",
+          "dataType": "PriceAgreementDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AgreementHeaderExt_RU"
+          },
+          "name": "Relationship_AgreementHeaderExt_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventProfile_RU"
+          },
+          "name": "Relationship_InventProfile_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales order header information for Russia"
+    },
+    {
+      "dataTypeName": "AgreementHeaderExtRecId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustAccountConsignee_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccountConsignor_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventProfileId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventProfileUseRelated_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PriceAgreementDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

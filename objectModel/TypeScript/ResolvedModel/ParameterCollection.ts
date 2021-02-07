@@ -1,8 +1,11 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmParameterDefinition } from '../internal';
 
 /**
-     * @internal
-     */
+ * @internal
+ */
 export class ParameterCollection {
     public sequence: CdmParameterDefinition[];
     public lookup: Map<string, CdmParameterDefinition>;

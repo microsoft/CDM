@@ -1,7 +1,12 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
-import { configObjectType, StorageAdapter } from './StorageAdapter';
+import { StorageUtils } from '../Utilities/StorageUtils';
+import { configObjectType } from './StorageAdapter';
+import { StorageAdapterBase } from './StorageAdapterBase';
 
 let readFile, writeFile, stat, mkdir, readdir;
 
@@ -13,14 +18,12 @@ if (fs.readFile) {
     readdir = util.promisify(fs.readdir);
 }
 
-export class LocalAdapter implements StorageAdapter {
+export class LocalAdapter extends StorageAdapterBase {
     public root: string;
     /**
      * @internal
      */
     public fullRoot: string;
-
-    public locationHint: string;
 
     /**
      * @internal
@@ -28,6 +31,7 @@ export class LocalAdapter implements StorageAdapter {
     public readonly type: string = 'local';
 
     constructor(root?: string) {
+        super();
         if (root) {
             this.root = root;
             this.fullRoot = path.resolve(root);
@@ -67,9 +71,12 @@ export class LocalAdapter implements StorageAdapter {
     }
 
     public createAdapterPath(corpusPath: string): string {
-        if (corpusPath.includes(':')) {
-            corpusPath = corpusPath.slice(corpusPath.indexOf(':') + 1);
+        const pathTuple: [string, string] = StorageUtils.splitNamespacePath(corpusPath);
+        if (!pathTuple) {
+            return undefined;
         }
+        corpusPath = pathTuple[1];
+
         if (path.isAbsolute(this.fullRoot)) {
             return path.join(this.fullRoot, corpusPath);
         }
@@ -93,10 +100,6 @@ export class LocalAdapter implements StorageAdapter {
         }
 
         return; // signal that we didn't recognize path as one for this adapter
-    }
-
-    public clearCache(): void {
-        return;
     }
 
     public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
@@ -152,7 +155,7 @@ export class LocalAdapter implements StorageAdapter {
             this.locationHint = configJson.locationHint;
         }
 
-        this.fullRoot = path.join(__dirname, this.root);
+        this.fullRoot = path.resolve(this.root);
     }
 
     private async dirExists(folderPath: string): Promise<boolean> {

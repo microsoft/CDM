@@ -1,10 +1,9 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import datetime
 import json
+import warnings
 from typing import Dict, List, Optional
 
 from cdm.storage.network import NetworkAdapter
@@ -20,19 +19,17 @@ class GithubAdapter(NetworkAdapter, StorageAdapterBase):
 
     def __init__(self) -> None:
         super().__init__()
+        super(NetworkAdapter, self).__init__()
+        super(StorageAdapterBase, self).__init__()
 
-        self.location_hint = None
+        warnings.warn('GithubAdapter is deprecated. Please use the CdmStandardsAdapter instead.', DeprecationWarning)
 
         # --- internal ---
         self._type = 'github'
-        self._is_folder = {}  # type: Dict[str, bool]
         self._http_client = CdmHttpClient(self._raw_root)  # type: CdmHttpClient
 
     def can_read(self) -> bool:
         return True
-
-    def can_write(self) -> bool:
-        return False
 
     def create_adapter_path(self, corpus_path: str) -> str:
         return self._raw_root + corpus_path
@@ -42,16 +39,6 @@ class GithubAdapter(NetworkAdapter, StorageAdapterBase):
             return adapter_path[len(self._raw_root):]
 
         # Signal that we did not recognize path as one for self adapter.
-        return None
-
-    def clear_cache(self) -> None:
-        self._is_folder = {}
-
-    async def compute_last_modified_time_async(self, adapter_path: str) -> Optional[datetime.datetime]:
-        return datetime.datetime.now()
-
-    async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
-        # Implement later.
         return None
 
     def fetch_config(self) -> str:
@@ -84,6 +71,3 @@ class GithubAdapter(NetworkAdapter, StorageAdapterBase):
 
         if config_json.get('locationHint'):
             self.location_hint = config_json["locationHint"]
-
-    async def write_async(self, corpus_path: str, data: str) -> None:
-        raise NotImplementedError()

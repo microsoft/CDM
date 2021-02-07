@@ -1,0 +1,624 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.cdm.json"
+    },
+    {
+      "corpusPath": "VendInvoice4PaymJour_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendInvoice4PaymTrans_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PurchId",
+          "dataType": "PurchId",
+          "description": ""
+        },
+        {
+          "name": "Category",
+          "dataType": "PurchCategory",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "VendCurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscAmount",
+          "dataType": "PurchDiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscPercent",
+          "dataType": "PurchDiscPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseAmount",
+          "dataType": "TaxAmountExcise_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseAmountMST",
+          "dataType": "TaxAmountExciseMST_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseValue",
+          "dataType": "TaxValueExcise_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExternalItemId",
+          "dataType": "PurchExternalItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InternalInvoice4PaymId",
+          "dataType": "PurchInternalInvoice4PaymId_RU",
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Invoice4PaymDate",
+          "dataType": "Invoice4PaymDate_RU",
+          "description": ""
+        },
+        {
+          "name": "Invoice4PaymId",
+          "dataType": "VendInvoice4PaymId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "displayName": "Item",
+          "description": ""
+        },
+        {
+          "name": "LineAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Amount",
+          "description": ""
+        },
+        {
+          "name": "LineAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "The amount in the accounting currency",
+          "description": ""
+        },
+        {
+          "name": "LineAmountTax",
+          "dataType": "LineAmountTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDisc",
+          "dataType": "PurchLineDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "description": ""
+        },
+        {
+          "name": "LinePercent",
+          "dataType": "PurchLinePercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MultiLnDisc",
+          "dataType": "PurchMultiLnDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MultiLnPercent",
+          "dataType": "PurchMultiLnPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "ItemFreeTxt",
+          "isNullable": true,
+          "displayName": "Description",
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceGroupId",
+          "dataType": "NumberSequenceGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigPurchId",
+          "dataType": "PurchIdOrig",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQty",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceUnit",
+          "dataType": "PriceUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchMarkup",
+          "dataType": "PurchMarkup",
+          "isNullable": true,
+          "displayName": "Charges",
+          "description": ""
+        },
+        {
+          "name": "PurchPrice",
+          "dataType": "PurchPrice",
+          "isNullable": true,
+          "displayName": "Unit price",
+          "description": ""
+        },
+        {
+          "name": "PurchUnit",
+          "dataType": "PurchUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "PurchQty",
+          "isNullable": true,
+          "displayName": "Quantity",
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountMST",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "The sales tax amount, in the accounting currency",
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATAmount",
+          "dataType": "TaxAmountVAT_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATAmountMST",
+          "dataType": "TaxAmountVATMST_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATValue",
+          "dataType": "TaxValueVAT_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_EcoResCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoice4PaymJour_RU"
+          },
+          "name": "Relationship_Invoice4PaymJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceGroup"
+          },
+          "name": "Relationship_NumberSequenceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableOrigRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor invoice for payment lines"
+    },
+    {
+      "dataTypeName": "PurchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchCategory",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchDiscPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountExcise_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountExciseMST_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxValueExcise_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchExternalItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchInternalInvoice4PaymId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Invoice4PaymDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendInvoice4PaymId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineAmountTax",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchLineDisc",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchLinePercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchMultiLnDisc",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchMultiLnPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemFreeTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NumberSequenceGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchIdOrig",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCWInventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceUnit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchMarkup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchUnit",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAmountVAT_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountVATMST_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxValueVAT_RU",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

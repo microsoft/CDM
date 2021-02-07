@@ -1,0 +1,106 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EventRule.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EventRuleRel",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RuleRelId",
+          "dataType": "EventRuleRelId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CudInstanceRelationType",
+          "dataType": "EventInstanceRelationType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CudTableId",
+          "dataType": "EventCudTableId",
+          "description": ""
+        },
+        {
+          "name": "ParentId",
+          "dataType": "EventRuleRelId",
+          "isNullable": true,
+          "displayName": "Parent rule relation ID",
+          "description": ""
+        },
+        {
+          "name": "QbdsNo",
+          "dataType": "EventDataSourceNo",
+          "description": ""
+        },
+        {
+          "name": "RuleId",
+          "dataType": "EventRuleId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EventRule"
+          },
+          "name": "Relationship_EventRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Alerts - rule relation"
+    },
+    {
+      "dataTypeName": "EventRuleRelId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EventInstanceRelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EventCudTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EventDataSourceNo",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EventRuleId",
+      "extendsDataType": "string"
+    }
+  ]
+}

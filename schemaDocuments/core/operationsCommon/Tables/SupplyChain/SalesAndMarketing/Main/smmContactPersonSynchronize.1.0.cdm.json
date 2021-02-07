@@ -1,0 +1,133 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ContactPerson.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmContactPersonSynchronize",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ContactPersonId",
+          "dataType": "ContactPersonId",
+          "description": ""
+        },
+        {
+          "name": "Deleted",
+          "dataType": "smmContactDeleted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EntryId",
+          "dataType": "smmContactPersonOutlookEntryID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastSyncAxDateTime",
+          "dataType": "smmDateTimeLastSynchronized",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OutlookSyncType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserId",
+          "dataType": "UserId",
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "CrmWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ContactPerson"
+          },
+          "name": "Relationship_ContactPersonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Contact synchronize"
+    },
+    {
+      "dataTypeName": "ContactPersonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmContactDeleted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "smmContactPersonOutlookEntryID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmDateTimeLastSynchronized",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CrmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,338 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSRoute.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/WorksheetLine/TMSRouteSegment.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSRouteSegmentContainer.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSRouteSegmentLoad.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/WHSContainerTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/WHSLoadLine.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSRouteSegmentLoadLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ContainerId",
+          "dataType": "TMSContainerId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContainerRecId",
+          "dataType": "TMSContainerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestinationPostalCode",
+          "dataType": "TMSPostalCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Generated",
+          "dataType": "TMSGenerated",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Id",
+          "dataType": "WHSLoadId",
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadLineRecId",
+          "dataType": "TMSLoadLineRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarkupCode",
+          "dataType": "MarkupCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginPostalCode",
+          "dataType": "TMSPostalCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "TMSQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RateCur",
+          "dataType": "TMSRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RateId",
+          "dataType": "TMSId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RateNote",
+          "dataType": "TMSApptNote",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RateType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteCode",
+          "dataType": "TMSRouteCode",
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "TMSSequence",
+          "description": ""
+        },
+        {
+          "name": "ShipmentRefRecId",
+          "dataType": "TMSShipmentRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRoute"
+          },
+          "name": "Relationship_TMSRouteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteSegment"
+          },
+          "name": "Relationship_TMSRouteSegmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteSegmentContainer"
+          },
+          "name": "Relationship_TMSRouteSegmentContainerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteSegmentLoad"
+          },
+          "name": "Relationship_TMSRouteSegmentLoadRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSContainerTable"
+          },
+          "name": "Relationship_WHSContainerTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadLine"
+          },
+          "name": "Relationship_WHSLoadLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Route Segment Load Line"
+    },
+    {
+      "dataTypeName": "TMSContainerId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSContainerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSPostalCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSGenerated",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSLoadId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSLoadLineRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MarkupCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSApptNote",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSSequence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSShipmentRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

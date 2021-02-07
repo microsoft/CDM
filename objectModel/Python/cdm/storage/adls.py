@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import base64
 from collections import OrderedDict
@@ -21,6 +19,7 @@ import urllib.parse
 import adal
 import dateutil.parser
 
+from cdm.utilities import StorageUtils
 from cdm.utilities.network.cdm_http_client import CdmHttpClient
 from cdm.storage.network import NetworkAdapter
 
@@ -30,31 +29,55 @@ from .base import StorageAdapterBase
 class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     """Azure Data Lake Storage Gen2 storage adapter"""
 
+    ADLS_DEFAULT_TIMEOUT = 9000
+    HTTP_DEFAULT_MAX_RESULTS = 5000
+
     def __init__(self, hostname: Optional[str] = None, root: Optional[str] = None, **kwargs) -> None:
         super().__init__()
+        super(NetworkAdapter, self).__init__()
+        super(StorageAdapterBase, self).__init__()
 
         # --- internal ---
-        self._file_system = None  # type: Optional[str]
+        self._adapter_paths = {}  # type: Dict[str, str]
+        self._root_blob_contrainer = None  # type: Optional[str]
+        self._formatted_hostname = None  # type: Optional[str]
         self._http_authorization = 'Authorization'
         self._http_client = CdmHttpClient()  # type: CdmHttpClient
+        self._http_xms_continuation = 'x-ms-continuation'
         self._http_xms_date = 'x-ms-date'
+        self._http_xms_version = 'x-ms-version'
         self._http_xms_version = 'x-ms-version'
         self._resource = "https://storage.azure.com"  # type: Optional[str]
         self._type = 'adls'
         self._root = None
-        self._sub_path = None  # type: Optional[str]
+        self._sas_token = None
+        self._unescaped_root_sub_path = None # type: Optional[str]
+        self._escaped_root_sub_path = None # type: Optional[str]
+        self._file_modified_time_cache = {}  # type: Dict[str, datetime]
+        self.http_max_results = self.HTTP_DEFAULT_MAX_RESULTS # type: int
+        self.timeout = self.ADLS_DEFAULT_TIMEOUT # type: int
 
         if root and hostname:
             self.root = root  # type: Optional[str]
             self.hostname = hostname  # type: Optional[str]
-            self.tenant = kwargs.get('tenant', None)  # type: Optional[str]
             self.client_id = kwargs.get('client_id', None)  # type: Optional[str]
             self.secret = kwargs.get('secret', None)  # type: Optional[str]
             self.shared_key = kwargs.get('shared_key', None)  # type: Optional[str]
-            self.location_hint = None  # type: Optional[str]
+            self.sas_token = kwargs.get('sas_token', None)  # type: Optional[str]
+            self.token_provider = kwargs.get('token_provider', None) # type: Optional[TokenProvider]
 
             # --- internal ---
-            self._auth_context = adal.AuthenticationContext('https://login.windows.net/' + self.tenant) if self.tenant else Non
+            self._tenant = kwargs.get('tenant', None)  # type: Optional[str]
+            self._auth_context = adal.AuthenticationContext('https://login.windows.net/' + self.tenant) if self.tenant else None
+
+    @property
+    def hostname(self) -> str:
+        return self._hostname
+
+    @hostname.setter
+    def hostname(self, value: str):
+        self._hostname = value
+        self._formatted_hostname = self._format_hostname(self._hostname)
 
     @property
     def root(self) -> str:
@@ -62,8 +85,27 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
     @root.setter
     def root(self, value: str):
-        self._root = value
-        self._extract_filesystem_and_sub_path(self._root)
+        self._root = self._extract_root_blob_container_and_sub_path(value)
+
+    @property
+    def tenant(self) -> str:
+        return self._tenant
+
+    @property
+    def sas_token(self) -> str:
+        return self._sas_token
+
+    @sas_token.setter
+    def sas_token(self, value: str):
+        """
+         The SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
+        :param value: SAS token
+        """
+        if value:
+            # Remove the leading question mark, so we can append this token to URLs that already have it
+            self._sas_token = value[1:] if value.startswith('?') else value
+        else:
+            self._sas_token = None
 
     def can_read(self) -> bool:
         return True
@@ -72,57 +114,105 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         return True
 
     def clear_cache(self) -> None:
-        pass
+        self._file_modified_time_cache.clear()
 
-    async def compute_last_modified_time_async(self, adapter_path: str) -> Optional[datetime]:
-        request = self._build_request(adapter_path, 'HEAD')
+    async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime]:
+        cachedValue = None
+        if self._is_cache_enabled:
+             cachedValue = self._file_modified_time_cache.get(corpus_path)
 
-        try:
-            cdm_response = await self._http_client.send_async(request, self.wait_time_callback)
+        if cachedValue is not None:
+            return cachedValue        
+        else:
+            adapter_path = self.create_adapter_path(corpus_path)
+            request = self._build_request(adapter_path, 'HEAD')
+
+            cdm_response = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
             if cdm_response.status_code == HTTPStatus.OK:
-                return dateutil.parser.parse(typing.cast(str, cdm_response.response_headers['Last-Modified']))
-        except Exception:
-            pass
+                lastTime = dateutil.parser.parse(typing.cast(str, cdm_response.response_headers['Last-Modified']))
+                if lastTime is not None and self._is_cache_enabled:
+                    self._file_modified_time_cache[corpus_path] = lastTime
+                return lastTime
 
-        return None
+            return None
 
     def create_adapter_path(self, corpus_path: str) -> str:
-        if corpus_path.startswith('//'):
+        if corpus_path and corpus_path.startswith('//'):
             corpus_path = corpus_path[1:]
 
-        return 'https://' + self.hostname + self.root + self._format_corpus_path(corpus_path)
+        formatted_corpus_path = self._format_corpus_path(corpus_path)
+        if formatted_corpus_path is None:
+            return None
+
+        if formatted_corpus_path in self._adapter_paths:
+            return self._adapter_paths[formatted_corpus_path]
+        else:
+            return 'https://' + self.hostname + self._get_escaped_root() + self._escape_path(formatted_corpus_path)
 
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:
-        base = 'https://' + self.hostname + self.root
+        if adapter_path:
+            start_index = len('https://')
+            end_index = adapter_path.find('/', start_index + 1)
 
-        if adapter_path and adapter_path.startswith(base):
-            return adapter_path[len(base):]
+            if end_index < start_index:
+                raise Exception('Unexpected adapter path:', adapter_path)
+
+            hostname = self._format_hostname(adapter_path[start_index:end_index])
+
+            if hostname == self._formatted_hostname and adapter_path[end_index:].startswith(self._get_escaped_root()):
+                escaped_corpus_path = adapter_path[end_index + len(self._get_escaped_root()):]
+                corpus_path = urllib.parse.unquote(escaped_corpus_path)
+
+                if corpus_path not in self._adapter_paths:
+                    self._adapter_paths[corpus_path] = adapter_path
+
+                return corpus_path
 
         # Signal that we did not recognize path as one for this adapter.
         return None
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
-        url = 'https://{}/{}'.format(self.hostname, self._file_system)
-        directory = urllib.parse.urljoin(self._sub_path, self._format_corpus_path(folder_corpus_path))
+        if folder_corpus_path is None:
+            return None
+
+        url = 'https://{}/{}'.format(self._formatted_hostname, self._root_blob_contrainer)
+        escaped_folder_corpus_path = self._escape_path(folder_corpus_path)
+        directory = self._escaped_root_sub_path + self._format_corpus_path(escaped_folder_corpus_path)
         if directory.startswith('/'):
             directory = directory[1:]
 
-        request = self._build_request('{}?directory={}&recursive=True&resource=filesystem'.format(url, directory), 'GET')
-        cdm_response = await self._http_client.send_async(request, self.wait_time_callback)
+        continuation_token = None
+        results = []
 
-        if cdm_response.status_code == HTTPStatus.OK:
-            results = []
-            data = json.loads(cdm_response.content)
+        while True:
+            if continuation_token is None:
+                request = self._build_request('{}?directory={}&maxResults={}&recursive=True&resource=filesystem'.format(url, directory, self.http_max_results), 'GET')
+            else:
+                request = self._build_request('{}?continuation={}&directory={}&maxResults={}&recursive=True&resource=filesystem'.format(url, urllib.parse.quote(continuation_token), directory, self.http_max_results), 'GET')
 
-            for path in data['paths']:
-                if 'isDirectory' not in path or path['isDirectory'] != 'true':
-                    name = path['name']  # type: str
-                    name_without_sub_path = name[len(self._sub_path) + 1:] if self._sub_path and name.startswith(self._sub_path) else name
+            cdm_response = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
-                    results.append(self._format_corpus_path(name_without_sub_path))
-            return results
+            if cdm_response.status_code == HTTPStatus.OK:
+                continuation_token =  cdm_response.response_headers.get(self._http_xms_continuation)
+                data = json.loads(cdm_response.content)
 
-        return None
+                for path in data['paths']:
+                    if 'isDirectory' not in path or path['isDirectory'] != 'true':
+                        name = path['name']  # type: str
+                        name_without_root_sub_path = name[len(self._unescaped_root_sub_path) + 1:] if self._unescaped_root_sub_path and name.startswith(self._unescaped_root_sub_path) else name
+
+                        filepath = self._format_corpus_path(name_without_root_sub_path)
+                        results.append(filepath)
+
+                        lastTimeString = path.get('lastModified')
+                        if lastTimeString is not None and self._is_cache_enabled:
+                            self._file_modified_time_cache[filepath] = dateutil.parser.parse(lastTimeString)
+
+            if(continuation_token is None):
+                break
+
+        return results
+
 
     def fetch_config(self) -> str:
         result_config = {'type': self._type}
@@ -170,16 +260,20 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         # Check first for clientId/secret auth.
         if configs_json.get('tenant') and configs_json.get('clientId'):
-            self.tenant = configs_json['tenant']
+            self._tenant = configs_json['tenant']
             self.client_id = configs_json['clientId']
 
             # Check for a secret, we don't really care is it there, but it is nice if it is.
             if configs_json.get('secret'):
                 self.secret = configs_json['secret']
 
-        # Check then for shared key auth.
+        # Check for shared key auth
         if configs_json.get('sharedKey'):
             self.shared_key = configs_json['sharedKey']
+
+        # Check for SAS token auth
+        if configs_json.get('sasToken'):
+            self.sas_token = configs_json['sasToken']
 
         if configs_json.get('locationHint'):
             self.location_hint = configs_json['locationHint']
@@ -191,20 +285,19 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         request = self._build_request(url + '?resource=file', 'PUT')
 
-        await self._http_client.send_async(request, self.wait_time_callback)
+        await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
-        request = self._build_request(url + '?action=append&position=0', 'PATCH', data)
-        request.content_type = 'application/json'
+        request = self._build_request(url + '?action=append&position=0', 'PATCH', data, 'application/json; charset=utf-8')
 
-        await self._http_client.send_async(request, self.wait_time_callback)
+        await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
         request = self._build_request(url + '?action=flush&position=' + str(len(data)), 'PATCH')
 
-        await self._http_client.send_async(request, self.wait_time_callback)
+        await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
     def _apply_shared_key(self, shared_key: str, url: str, method: str, content: Optional[str] = None, content_type: Optional[str] = None):
         headers = OrderedDict()
-        headers[self._http_xms_date] = format_date_time(mktime(datetime.utcnow().timetuple()))
+        headers[self._http_xms_date] = format_date_time(mktime(datetime.now().timetuple()))
         headers[self._http_xms_version] = '2018-06-17'
 
         content_length = 0
@@ -218,9 +311,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         builder.append('\n')  # Verb.
         builder.append('\n')  # Content-Encoding.
         builder.append('\n')  # Content-Language.
-        builder.append(content_length + '\n' if content_length else '\n')  # Content length.
+        builder.append(str(content_length) + '\n' if content_length else '\n')  # Content length.
         builder.append('\n')  # Content-md5.
-        builder.append(content_type + '; charset=utf-8\n' if content_type else '\n')  # Content-type.
+        builder.append(content_type + '\n' if content_type else '\n')  # Content-type.
         builder.append('\n')  # Date.
         builder.append('\n')  # If-modified-since.
         builder.append('\n')  # If-match.
@@ -243,7 +336,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
             for parameter in query_parameters:
                 key_value_pair = parameter.split('=')
-                builder.append('\n{}:{}'.format(key_value_pair[0], key_value_pair[1]))
+                builder.append('\n{}:{}'.format(key_value_pair[0].lower(), urllib.parse.unquote(key_value_pair[1])))
 
         # Hash the payload.
         data_to_hash = ''.join(builder).rstrip()
@@ -258,13 +351,28 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         return headers
 
+    def _apply_sas_token(self, url: str) -> str:
+        """
+        Appends SAS token to the given URL.
+        :param url: URL to be appended with the SAS token
+        :return: URL with the SAS token appended
+        """
+        return '{}{}{}'.format(url, '?' if '?' not in url else '&', self.sas_token)
+
     def _build_request(self, url: str, method: str = 'GET', content: Optional[str] = None, content_type: Optional[str] = None):
         if self.shared_key is not None:
             request = self._set_up_cdm_request(url, self._apply_shared_key(self.shared_key, url, method, content, content_type), method)
-        else:
+        elif self.sas_token is not None:
+            request = self._set_up_cdm_request(self._apply_sas_token(url), None, method)
+        elif self.tenant is not None and self.client_id is not None and self.secret is not None:
             token = self._generate_bearer_token()
             headers = {'Authorization': token['tokenType'] + ' ' + token['accessToken']}
             request = self._set_up_cdm_request(url, headers, method)
+        elif self.token_provider is not None:
+            headers = {'Authorization': self.token_provider.get_token()}
+            request = self._set_up_cdm_request(url, headers, method)
+        else:
+            raise Exception('Adls adapter is not configured with any auth method')
 
         if content is not None:
             request.content = content
@@ -272,39 +380,63 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         return request
 
-    def _extract_filesystem_and_sub_path(self, root: str) -> None:
+    def _escape_path(self, unescaped_path: str):
+        return urllib.parse.quote(unescaped_path).replace('%2F', '/')
+
+    def _extract_root_blob_container_and_sub_path(self, root: str) -> str:
         # No root value was set
         if not root:
-            self._file_system = ''
-            self._sub_path = ''
-            return
+            self._root_blob_contrainer = ''
+            self._update_root_sub_path('')
+            return ''
 
-        # Remove leading /
+        # Remove leading and trailing /
         prep_root = root[1:] if root[0] == '/' else root
+        prep_root = prep_root[0: len(prep_root) - 1] if prep_root[len(prep_root) - 1] == '/' else prep_root
 
         # Root contains only the file-system name, e.g. "fs-name"
         if prep_root.find('/') == -1:
-            self._file_system = prep_root
-            self._sub_path = ''
-            return
+            self._root_blob_contrainer = prep_root
+            self._update_root_sub_path('')
+            return '/{}'.format(self._root_blob_contrainer)
 
         # Root contains file-system name and folder, e.g. "fs-name/folder/folder..."
         prep_root_array = prep_root.split('/')
-        self._file_system = prep_root_array[0]
-        self._sub_path = '/'.join(prep_root_array[1:])
+        self._root_blob_contrainer = prep_root_array[0]
+        self._update_root_sub_path('/'.join(prep_root_array[1:])) 
+        return '/{}/{}'.format(self._root_blob_contrainer, self._unescaped_root_sub_path)
 
-    def _format_corpus_path(self, corpus_path: str) -> str:
-        if corpus_path.startswith('adls:'):
-            corpus_path = corpus_path[5:]
-        elif corpus_path and corpus_path[0] != '/':
+    def _format_corpus_path(self, corpus_path: str) -> Optional[str]:
+        path_tuple = StorageUtils.split_namespace_path(corpus_path)
+        if not path_tuple:
+            return None
+
+        corpus_path = path_tuple[1]
+
+        if corpus_path and corpus_path[0] != '/':
             corpus_path = '/' + corpus_path
         return corpus_path
 
+    def _format_hostname(self, hostname: str) -> str:
+        hostname = hostname.replace('.blob.', '.dfs.')
+        port = ':443'
+        if port in hostname:
+            hostname = hostname[0:-len(port)]
+        return hostname
+
     def _generate_bearer_token(self):
+        # In-memory token cache is handled by adal by default.
         return self._auth_context.acquire_token_with_client_credentials(self._resource, self.client_id, self.secret)
 
-    def _try_from_base64_string(self, content: str) -> bool:
+    def _get_escaped_root(self):
+        return '/' + self._root_blob_contrainer + '/' + self._escaped_root_sub_path if self._escaped_root_sub_path else '/' + self._root_blob_contrainer
+
+    def _try_from_base64_string(self, content: str) -> Optional[bytes]:
         try:
             return base64.b64decode(content)
         except Exception:
             return None
+    
+    def _update_root_sub_path(self, value: str):
+        self._unescaped_root_sub_path = value
+        self._escaped_root_sub_path = self._escape_path(value)

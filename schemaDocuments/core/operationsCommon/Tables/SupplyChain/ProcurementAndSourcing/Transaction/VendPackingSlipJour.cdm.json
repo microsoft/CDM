@@ -1,0 +1,684 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvMode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventBuyerGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Transaction/OfficialsTrans_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/TransportationDocument.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendPackingSlipJour",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "OrderAccount",
+          "dataType": "VendAccount",
+          "displayName": "Order account",
+          "description": ""
+        },
+        {
+          "name": "ConsigneeAccount_RU",
+          "dataType": "CustAccountConsignee_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsignorAccount_RU",
+          "dataType": "VendAccountConsignor_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountryRegionId",
+          "dataType": "AddressCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode_W",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryDate",
+          "dataType": "TransDate",
+          "description": ""
+        },
+        {
+          "name": "DeliveryName",
+          "dataType": "VendName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryType",
+          "dataType": "PurchDlvAddrType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvMode",
+          "dataType": "VendDlvModeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvTerm",
+          "dataType": "VendDlvTermId",
+          "isNullable": true,
+          "displayName": "Terms",
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "DocumentDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDisc_RU",
+          "dataType": "PurchEndDiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FreightSlipNum",
+          "dataType": "FreightSlipNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FreightSlipType",
+          "dataType": "VendFreightSlipType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GRNNumber_IN",
+          "dataType": "GoodsReceiptNote_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanyCompanyId",
+          "dataType": "InterCompanyCompanyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanyPosted",
+          "dataType": "InterCompanyPosted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanySalesId",
+          "dataType": "InterCompanySalesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatDispatch",
+          "dataType": "IntrastatDispatchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatFulfillmentDate_HU",
+          "dataType": "IntrastatFulfillmentDate_HU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventProfileType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAccount",
+          "dataType": "VendInvoiceAccount",
+          "description": ""
+        },
+        {
+          "name": "InvoiceIssueDueDate_W",
+          "dataType": "InvoiceIssueDueDate_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemBuyerGroupId",
+          "dataType": "ItemBuyerGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "VendLanguageId",
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceGroup",
+          "dataType": "NumberSequenceGroupId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OffSessionId_RU",
+          "dataType": "OffSessionId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrderBalance_RU",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackingSlipId",
+          "dataType": "ProductReceiptId",
+          "description": ""
+        },
+        {
+          "name": "PackingSlipNumberingCode_LT",
+          "dataType": "LtDocNumberingCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchaseType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchId",
+          "dataType": "PurchIdBase",
+          "description": ""
+        },
+        {
+          "name": "ReceiptListDeviationType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqAttention",
+          "dataType": "PurchReqAttention",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Requester",
+          "dataType": "PurchRequester",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReturnItemNum",
+          "dataType": "ReturnItemNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentHeader",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Source document header",
+          "description": ""
+        },
+        {
+          "name": "TransportationDocument",
+          "dataType": "TransportationDocumentRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_ConsigneeAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_ConsignorAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_DeliveryPostalAddress_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvMode"
+          },
+          "name": "Relationship_DlvModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventBuyerGroup"
+          },
+          "name": "Relationship_InventBuyerGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_InvoiceVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceGroup"
+          },
+          "name": "Relationship_NumberSequenceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OfficialsTrans_RU"
+          },
+          "name": "Relationship_OfficialsTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_OrderVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentHeader"
+          },
+          "name": "Relationship_SourceDocumentHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TransportationDocument"
+          },
+          "name": "Relationship_TransportationDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor product receipts"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccountConsignee_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccountConsignor_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchDlvAddrType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendDlvModeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendDlvTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchEndDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FreightSlipNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendFreightSlipType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "GoodsReceiptNote_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InterCompanyCompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InterCompanyPosted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InterCompanySalesId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatDispatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatFulfillmentDate_HU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendInvoiceAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceIssueDueDate_W",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ItemBuyerGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendLanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NumberSequenceGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OffSessionId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "ProductReceiptId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LtDocNumberingCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchReqAttention",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRequester",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ReturnItemNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransportationDocumentRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

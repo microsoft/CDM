@@ -1,0 +1,702 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Miscellaneous/RetailOfflineProfile.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlanSched.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Group/RetailFunctionalityProfile.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/Parameter/RetailSalesTaxOverrideGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailStoreTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Payments/Main/RetailTenderTypeTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Parameter/RetailTillLayout.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "RetailPubRetailChannelTable.cdm.json",
+      "moniker": "base_RetailPubRetailChannelTable"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailPubRetailStoreTable",
+      "extendsEntity": "base_RetailPubRetailChannelTable/RetailPubRetailChannelTable",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "closingMethod",
+          "dataType": "RetailClosingMethod",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "createLabelsForZeroPrice",
+          "dataType": "RetailCreateLabelsForZeroPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "cultureName",
+          "dataType": "LanguageId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DatabaseName",
+          "dataType": "RetailDatabaseName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "functionalityProfile",
+          "dataType": "RetailFunctionalityProfileId",
+          "isNullable": true,
+          "displayName": "Functionality profile",
+          "description": ""
+        },
+        {
+          "name": "generatesItemLabels",
+          "dataType": "RetailGeneratesItemLabels",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "generatesShelfLabels",
+          "dataType": "RetailGeneratesShelfLabels",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "hideTrainingMode",
+          "dataType": "RetailHideTrainingMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationIdForCustomerOrder",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "displayName": "Shipping warehouse",
+          "description": ""
+        },
+        {
+          "name": "inventoryLookup",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Inventory lookup",
+          "description": ""
+        },
+        {
+          "name": "itemIdOnReceipt",
+          "dataType": "RetailItemIdOnReceipt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "layoutId",
+          "dataType": "RetailLayoutId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maximumPostingDifference",
+          "dataType": "RetailMaxDifferenceAmount",
+          "isNullable": true,
+          "displayName": "Posting",
+          "description": ""
+        },
+        {
+          "name": "maximumTextLengthOnReceipt",
+          "dataType": "RetailMaximumTextLengthOnReceipt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maxRoundingAmount",
+          "dataType": "RetailMaxRoundingAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maxRoundingTaxAmount",
+          "dataType": "RetailMaxRoundingTaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maxShiftDifferenceAmount",
+          "dataType": "RetailMaxDifferenceAmount",
+          "isNullable": true,
+          "displayName": "Shift",
+          "description": ""
+        },
+        {
+          "name": "maxTransactionDifferenceAmount",
+          "dataType": "RetailMaxDifferenceAmount",
+          "isNullable": true,
+          "displayName": "Transaction",
+          "description": ""
+        },
+        {
+          "name": "numberOfTopOrBottomLines",
+          "dataType": "RetailNumberOfTopOrBottomLines",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OfflineProfile",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "oneStatementPerDay",
+          "dataType": "RetailOneStatementPerDay",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "openFrom",
+          "dataType": "RetailFromTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "openTo",
+          "dataType": "RetailToTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Password",
+          "dataType": "RetailDBPassword",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "phone",
+          "dataType": "Phone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "poItemFilter",
+          "dataType": "RetailPOItemFilter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "removeAddTender",
+          "dataType": "RetailTenderTypeId",
+          "isNullable": true,
+          "displayName": "Remove/add payment method",
+          "description": ""
+        },
+        {
+          "name": "replicationCounter",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailReqPlanIdSched",
+          "dataType": "RetailReqPlanIdSched",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoundingAccountLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Rounding account",
+          "description": ""
+        },
+        {
+          "name": "roundingTaxAccount",
+          "dataType": "RetailRoundingTaxAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "separateStmtPerStaffTerminal",
+          "dataType": "RetailseparateStmtPerStaffTerminal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "serviceChargePct",
+          "dataType": "RetailServiceChargePct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "serviceChargePrompt",
+          "dataType": "RetailServiceChargePrompt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SQLServerName",
+          "dataType": "ServerName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "statementMethod",
+          "dataType": "RetailStatementMethod",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "stmtCalcBatchEndTime",
+          "dataType": "TimeOfDay",
+          "isNullable": true,
+          "displayName": "Transaction end time",
+          "description": ""
+        },
+        {
+          "name": "StoreNumber",
+          "dataType": "RetailStoreId",
+          "description": ""
+        },
+        {
+          "name": "StoreOriginId",
+          "dataType": "RetailOriginId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StoreOriginRecVersion",
+          "dataType": "RetailOriginRecVersion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "taxGroup",
+          "dataType": "TaxGroup",
+          "description": ""
+        },
+        {
+          "name": "TaxGroupDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxIdentificationNumber",
+          "dataType": "RetailTaxIdNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxOverrideGroup",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Sales tax override group",
+          "description": ""
+        },
+        {
+          "name": "tenderDeclarationCalculation",
+          "dataType": "RetailTenderDeclarationCalculation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseCustomerBasedTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use customer-based taxes",
+          "description": ""
+        },
+        {
+          "name": "UseDefaultCustAccount",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Automatically add customer at POS",
+          "description": ""
+        },
+        {
+          "name": "UseDestinationBasedTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use destination-based tax",
+          "description": ""
+        },
+        {
+          "name": "UserName",
+          "dataType": "RetailDBUserName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "bankDropCalculation",
+          "dataType": "RetailBankDropCalculation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "startAmountCalculation",
+          "dataType": "RetailStartAmountCalculation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationForCustomerOrderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailOfflineProfile"
+          },
+          "name": "Relationship_OfflineProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlanSched"
+          },
+          "name": "Relationship_ReqPlanSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailFunctionalityProfile"
+          },
+          "name": "Relationship_RetailFunctionalityProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailSalesTaxOverrideGroup"
+          },
+          "name": "Relationship_RetailSalesTaxOverrideGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreTable"
+          },
+          "name": "Relationship_RetailStoreTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTenderTypeTable"
+          },
+          "name": "Relationship_RetailTenderTypeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTillLayout"
+          },
+          "name": "Relationship_RetailTillLayoutRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Published store"
+    },
+    {
+      "dataTypeName": "RetailClosingMethod",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailCreateLabelsForZeroPrice",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDatabaseName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFunctionalityProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailGeneratesItemLabels",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailGeneratesShelfLabels",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailHideTrainingMode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailItemIdOnReceipt",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailLayoutId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailMaxDifferenceAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailMaximumTextLengthOnReceipt",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailMaxRoundingAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailMaxRoundingTaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailNumberOfTopOrBottomLines",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailOneStatementPerDay",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailFromTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "RetailToTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "RetailDBPassword",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Phone",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailPOItemFilter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailTenderTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailReqPlanIdSched",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailRoundingTaxAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailseparateStmtPerStaffTerminal",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailServiceChargePct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailServiceChargePrompt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ServerName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStatementMethod",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TimeOfDay",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailOriginId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailOriginRecVersion",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTaxIdNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTenderDeclarationCalculation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailDBUserName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailBankDropCalculation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailStartAmountCalculation",
+      "extendsDataType": "integer"
+    }
+  ]
+}

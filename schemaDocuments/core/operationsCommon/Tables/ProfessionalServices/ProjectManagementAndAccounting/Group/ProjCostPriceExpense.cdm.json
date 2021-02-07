@@ -1,0 +1,226 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PriceDiscGroup.cdm.json"
+    },
+    {
+      "corpusPath": "ProjCategory.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjInvoiceTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjCostPriceExpense",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CategoryId",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostPrice",
+          "dataType": "ProjCostPriceCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjId",
+          "dataType": "ProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSACustAccount",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAPriceGroupId",
+          "dataType": "ProjPriceGroupID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAProjInvoiceProjId",
+          "dataType": "ProjInvoiceProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Resource",
+          "dataType": "ResourceRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "displayName": "Effective date",
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "ProjWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExtensionHash",
+          "dataType": "ProjExtensionHash",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscGroup"
+          },
+          "name": "Relationship_PriceDiscGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjInvoiceTable"
+          },
+          "name": "Relationship_ProjInvoiceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project - expense cost price"
+    },
+    {
+      "dataTypeName": "ProjCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjCostPriceCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjPriceGroupID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjInvoiceProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ResourceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjExtensionHash",
+      "extendsDataType": "string"
+    }
+  ]
+}

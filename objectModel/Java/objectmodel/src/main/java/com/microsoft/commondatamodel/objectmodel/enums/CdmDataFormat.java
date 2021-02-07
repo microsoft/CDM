@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.enums;
 
 import java.util.Collections;
@@ -22,8 +25,6 @@ public enum CdmDataFormat {
   Decimal,
   Guid,
   Json,
-  PK,
-  Int,
   Unknown;
 
   private static final Map<String, CdmDataFormat> LOWERCASE_ENUM_MAP;

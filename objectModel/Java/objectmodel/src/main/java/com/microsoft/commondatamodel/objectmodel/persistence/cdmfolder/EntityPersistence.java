@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -11,6 +14,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Ent
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +22,9 @@ import java.util.stream.Collectors;
 public class EntityPersistence {
 
   public static CdmEntityDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
+    if (obj == null) {
+      return null;
+    }
 
     final CdmEntityDefinition entity =
         ctx.getCorpus()
@@ -26,14 +33,15 @@ public class EntityPersistence {
                 obj.has("entityName")
                     ? obj.get("entityName").asText()
                     : null);
+
     entity.setExtendsEntity(EntityReferencePersistence.fromData(ctx, obj.get("extendsEntity")));
+
+    entity.setExplanation(Utils.propertyFromDataToString(obj.get("explanation")));
+
     entity.setExtendsEntityResolutionGuidance(
         AttributeResolutionGuidancePersistence.fromData(
             ctx,
             obj.get("extendsEntityResolutionGuidance")));
-
-    if (obj.get("explanation") != null)
-      entity.setExplanation(obj.get("explanation").asText());
 
     Utils.addListToCdmCollection(
         entity.getExhibitsTraits(),
@@ -48,15 +56,17 @@ public class EntityPersistence {
 
     Utils.addListToCdmCollection(
         entity.getAttributes(),
-        Utils.createAttributeList(ctx, obj.get("hasAttributes")));
-    entity.setSourceName(obj.has("sourceName") ? obj.get("sourceName").asText() : null);
-    entity.setDisplayName(obj.has("displayName") ? obj.get("displayName").asText() : null);
-    entity.setDescription(obj.has("description") ? obj.get("description").asText() : null);
-    entity.setVersion(obj.has("version") ? obj.get("version").asText() : null);
+        Utils.createAttributeList(ctx, obj.get("hasAttributes"), entity.getEntityName()));
+
+    entity.setSourceName(Utils.propertyFromDataToString(obj.get("sourceName")));
+    entity.setDisplayName(Utils.propertyFromDataToString(obj.get("displayName")));
+    entity.setDescription(Utils.propertyFromDataToString(obj.get("description")));
+    entity.setVersion(Utils.propertyFromDataToString(obj.get("version")));
     entity.setCdmSchemas(obj.has("cdmSchemas")
-        ? null
-        : JMapper.MAP.convertValue(obj.get("cdmSchemas"), new TypeReference<List<String>>() {
+            ? null
+            : JMapper.MAP.convertValue(obj.get("cdmSchemas"), new TypeReference<List<String>>() {
     }));
+
     return entity;
   }
 

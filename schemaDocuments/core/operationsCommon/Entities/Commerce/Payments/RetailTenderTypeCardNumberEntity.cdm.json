@@ -1,0 +1,77 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Payments/Main/RetailTenderTypeCardNumbers.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailTenderTypeCardNumberEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CardNumberFrom",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Card number from",
+          "description": ""
+        },
+        {
+          "name": "CardNumberLength",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CardNumberTo",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Card number to",
+          "description": ""
+        },
+        {
+          "name": "CardTypeId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTenderTypeCardNumbers"
+          },
+          "name": "BackingTable_RetailTenderTypeCardNumbersRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payment card numbers"
+    }
+  ]
+}

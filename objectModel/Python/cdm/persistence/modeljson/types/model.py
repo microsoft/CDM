@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from datetime import datetime
 from typing import List
@@ -27,18 +25,20 @@ class Model(DataObject):
             "lastFileStatusCheckTime": "cdm:lastFileStatusCheckTime",
             "lastChildFileModifiedTime": "cdm:lastChildFileModifiedTime",
             "lastFileModifiedTime": "cdm:lastFileModifiedTime",
+            "documentVersion": "cdm:documentVersion",
             "traits": "cdm:traits"
         })
 
         self.json_sort({"version": 1, "type": -2})
 
-        self.application = ''  # type: str
-        self.version = ''  # type: str
-        self.entities = []  # <JToken> # type: list
-        self.relationships = []  # type: List[SingleKeyRelationship]
-        self.referenceModels = []  # type: List[ReferenceModel]
-        self.culture = ''  # type: str
+        self.application = None  # type: str
+        self.version = None  # type: str
+        self.entities = None  # <JToken> # type: list
+        self.relationships = None  # type: List[SingleKeyRelationship]
+        self.referenceModels = None  # type: List[ReferenceModel]
+        self.culture = None  # type: str
         self.modifiedTime = None  # type: datetime
-        self.imports = []  # <JToken> # type: list
+        self.imports = None  # <JToken> # type: list
         self.lastFileStatusCheckTime = None  # type: datetime
         self.lastChildFileModifiedTime = None  # type: datetime
+        self.documentVersion = None  # type: str

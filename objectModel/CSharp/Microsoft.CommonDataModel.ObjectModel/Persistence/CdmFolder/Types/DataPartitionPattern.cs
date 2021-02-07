@@ -1,11 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DataPartitionPattern.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-// <summary>
-//   The representation of data partition pattern in the CDM Folders format.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
 {
@@ -32,6 +26,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         /// Gets or sets the starting location corpus path for searching for inferred data partitions.
         /// </summary>
         public string RootLocation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the glob pattern string to use for searching partitions.
+        /// </summary>
+        public string GlobPattern { get; set; }
 
         /// <summary>
         /// Gets or sets the regular expression string to use for searching partitions.

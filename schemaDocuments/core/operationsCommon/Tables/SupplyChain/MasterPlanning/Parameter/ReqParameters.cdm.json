@@ -1,0 +1,441 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlanSched.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlanForecast.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/WorkCalendarTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutoCopyStaticPlan",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Copy the complete and updated static master plan to the dynamic master plan",
+          "description": ""
+        },
+        {
+          "name": "BundleSize",
+          "dataType": "ReqCalcBundleSize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrentDaySchedFrom",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrentReqPlanIdForecast",
+          "dataType": "ReqPlanIdForecast",
+          "isNullable": true,
+          "displayName": "Current forecast plan",
+          "description": ""
+        },
+        {
+          "name": "CurrentReqPlanIdSchedDynamic",
+          "dataType": "ReqPlanIdSched",
+          "isNullable": true,
+          "displayName": "Current dynamic master plan",
+          "description": ""
+        },
+        {
+          "name": "CurrentReqPlanIdSchedStatic",
+          "dataType": "ReqPlanIdSched",
+          "isNullable": true,
+          "displayName": "Current static master plan",
+          "description": ""
+        },
+        {
+          "name": "DefaultCollectPerPeriodJournal",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultCollectPerPeriodPurch",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultMarkUpdate",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DynamicNegativeDays",
+          "dataType": "ReqDynamicNegativeDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarginCalendarDays",
+          "dataType": "CalendarDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRCurrentReqPlanIdContinuity",
+          "dataType": "MCRCurrentReqPlanIdContinuity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqAbortFirmIfError",
+          "dataType": "ReqAbortFirmIfError",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPOCollectPerBuyer",
+          "dataType": "ReqPOCollectPerBuyer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPOCollectPerPurchAgreement",
+          "dataType": "ReqPOCollectPerPurchAgreement",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPOCollectPerVendor",
+          "dataType": "ReqPOCollectPerVendor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPOSearchPurchAgreement",
+          "dataType": "ReqPOSearchPurchAgreement",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqSearchTradeAgreement",
+          "dataType": "ReqSearchTradeAgreement",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqSearchTradeMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqTimeFutures",
+          "dataType": "ReqTime",
+          "isNullable": true,
+          "displayName": "Start time for calculating delays",
+          "description": ""
+        },
+        {
+          "name": "ReqTimePoDefault",
+          "dataType": "ReqTimePoDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StandardReqGroupId",
+          "dataType": "ReqGroupId",
+          "isNullable": true,
+          "displayName": "General coverage group",
+          "description": ""
+        },
+        {
+          "name": "TodaysdateCalendarId",
+          "dataType": "CalendarId",
+          "isNullable": true,
+          "displayName": "Today's date calendar",
+          "description": ""
+        },
+        {
+          "name": "UseCache",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemFilterPreUpdate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Pre-processing: Automatically filter by items with direct demand",
+          "description": ""
+        },
+        {
+          "name": "ItemFilterPreCoverage",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post-processing: Automatically filter by items with direct demand",
+          "description": ""
+        },
+        {
+          "name": "ReqInactive",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Disable all planning processes",
+          "description": ""
+        },
+        {
+          "name": "FirmingBundleSize",
+          "dataType": "ReqCalcFirmingBundleSize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SkipPreallocatingRecIds",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreallocatedRecIdBlockSize",
+          "dataType": "RecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccurateOpSchedFiniteCapacity",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Accurate finite capacity for Operation Scheduling",
+          "description": ""
+        },
+        {
+          "name": "DefaultNumberOfThreads",
+          "dataType": "ReqCalcDefaultNumberOfThreads",
+          "isNullable": true,
+          "displayName": "Number of threads",
+          "description": ""
+        },
+        {
+          "name": "ReqCalcTimeoutInMinutes",
+          "dataType": "Minutes",
+          "isNullable": true,
+          "displayName": "Planning process timeout in minutes.",
+          "description": ""
+        },
+        {
+          "name": "PriceType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlanSched"
+          },
+          "name": "Relationship_CurrentDynamicMasterPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlanForecast"
+          },
+          "name": "Relationship_CurrentForecastPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlanSched"
+          },
+          "name": "Relationship_CurrentStaticMasterPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqGroup"
+          },
+          "name": "Relationship_ReqGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkCalendarTable"
+          },
+          "name": "Relationship_TodaysDateWorkCalendarTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Master planning parameters"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqCalcBundleSize",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqPlanIdForecast",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqPlanIdSched",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqDynamicNegativeDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CalendarDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRCurrentReqPlanIdContinuity",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqAbortFirmIfError",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqPOCollectPerBuyer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqPOCollectPerPurchAgreement",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqPOCollectPerVendor",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqPOSearchPurchAgreement",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqSearchTradeAgreement",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "ReqTimePoDefault",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "ReqGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CalendarId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqCalcFirmingBundleSize",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ReqCalcDefaultNumberOfThreads",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Minutes",
+      "extendsDataType": "integer"
+    }
+  ]
+}

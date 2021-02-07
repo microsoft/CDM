@@ -1,7 +1,12 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import * as fs from 'fs';
 import {
     CdmCorpusDefinition,
     CdmDataPartitionDefinition,
     CdmEntityDeclarationDefinition,
+    CdmFolderDefinition,
     CdmLocalEntityDeclarationDefinition,
     CdmManifestDefinition,
     cdmObjectType,
@@ -10,7 +15,7 @@ import {
     resolveOptions
 } from '../../../../internal';
 import { CdmFolder } from '../../../../Persistence';
-import { DataPartition, EntityDeclarationDefinition, ManifestContent } from '../../../../Persistence/CdmFolder/types';
+import { DataPartition, EntityDeclarationDefinition, ManifestContent, KeyValPair } from '../../../../Persistence/CdmFolder/types';
 import { LocalAdapter } from '../../../../Storage';
 import { testHelper } from '../../../testHelper';
 
@@ -20,7 +25,7 @@ describe('Persistence.CdmFolder.DataPartition', () => {
     /// </summary>
     const testsSubpath: string = 'Persistence/CdmFolder/DataPartition';
 
-    const doesWriteTestDebuggingFiles: boolean = testHelper.doesWriteTestDebuggingFiles;
+    const doesWriteTestDebuggingFiles: boolean = false;
 
     /**
      * Testing for Manifest instance with local entity declaration having data partitions.
@@ -53,20 +58,26 @@ describe('Persistence.CdmFolder.DataPartition', () => {
         expect(relativePartition.specializedSchema)
             .toBe('teststring');
 
-        expect(relativePartition.arguments.length)
-            .toEqual(4);
+        const testList: string[] = relativePartition.arguments.get('test');
 
-        expect(relativePartition.arguments[0])
-            .toEqual({ name: 'test', value: 'something' });
-        expect(relativePartition.arguments[1])
-            .toEqual({ name: 'KEY', value: 'VALUE' });
-        expect(relativePartition.arguments[2])
-            .toEqual({ name: 'test', value: 'somethingelse' });
-        expect(relativePartition.arguments[3])
-            .toEqual({ name: 'test', value: 'anotherthing' });
+        expect(testList.length)
+            .toEqual(3);
+        expect(testList[0])
+            .toEqual('something');
+        expect(testList[1])
+            .toEqual('somethingelse');
+        expect(testList[2])
+            .toEqual('anotherthing');
 
-        expect(relativePartition.arguments.find(x => x.name && x.name === 'wrong'))
-            .toBeUndefined();
+        const keyList: string[] = relativePartition.arguments.get('KEY');
+
+        expect(keyList.length)
+            .toEqual(1);
+        expect(keyList[0])
+            .toEqual('VALUE');
+
+        expect(relativePartition.arguments.has('wrong'))
+            .toBeFalsy();
 
         const absolutePartition: CdmDataPartitionDefinition = entity.dataPartitions.allItems[1];
         expect(absolutePartition.location)
@@ -106,18 +117,22 @@ describe('Persistence.CdmFolder.DataPartition', () => {
     /**
      * Testing programatically creating manifest with partitions and persisting
      */
-    it('TestProgrammaticallyCreatePartitions', () => {
+    it('TestProgrammaticallyCreatePartitions', async () => {
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
-        corpus.storage.mount('local', new LocalAdapter());
         const manifest: CdmManifestDefinition = corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'manifest');
         const entity: CdmEntityDeclarationDefinition = manifest.entities.push('entity');
 
         const relativePartition: CdmDataPartitionDefinition =
             corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, 'relative partition');
         relativePartition.location = 'relative/path';
+        relativePartition.arguments.set('test1', [ 'argument1' ]);
+        relativePartition.arguments.set('test2', [ 'argument2', 'argument3' ]);
+
         const absolutePartition: CdmDataPartitionDefinition =
             corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, 'absolute partition');
         absolutePartition.location = 'local:/absolute/path';
+        // add an empty arguments list to test empty list should not be displayed in ToData json.
+        absolutePartition.arguments.set('test', []);
 
         entity.dataPartitions.push(relativePartition);
         entity.dataPartitions.push(absolutePartition);
@@ -134,7 +149,26 @@ describe('Persistence.CdmFolder.DataPartition', () => {
 
         expect(relativePartitionData.location)
             .toBe(relativePartition.location);
+        const argumentsList: KeyValPair[] = relativePartitionData.arguments;
+        expect(argumentsList.length)
+            .toBe(3);
+        expect(argumentsList[0].name)
+            .toBe('test1');
+        expect(argumentsList[0].value)
+            .toBe('argument1');
+        expect(argumentsList[1].name)
+            .toBe('test2');
+        expect(argumentsList[1].value)
+            .toBe('argument2');
+        expect(argumentsList[2].name)
+            .toBe('test2');
+        expect(argumentsList[2].value)
+            .toBe('argument3');
+
         expect(absolutePartitionData.location)
             .toBe(absolutePartition.location);
+        // test if empty argument list is set to null
+        expect(absolutePartitionData.arguments)
+            .toBeUndefined();
     });
 });

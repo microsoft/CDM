@@ -1,0 +1,83 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSFreightBillType",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EngineAssembly",
+          "dataType": "TMSEngineAssembly",
+          "description": ""
+        },
+        {
+          "name": "EngineType",
+          "dataType": "TMSEngineType",
+          "description": ""
+        },
+        {
+          "name": "FreightBillTypeId",
+          "dataType": "TMSFreightBillTypeId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Freight bill type"
+    },
+    {
+      "dataTypeName": "TMSEngineAssembly",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSEngineType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSFreightBillTypeId",
+      "extendsDataType": "string"
+    }
+  ]
+}

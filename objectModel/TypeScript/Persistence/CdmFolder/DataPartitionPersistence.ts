@@ -1,12 +1,15 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
     CdmDataPartitionDefinition,
     cdmObjectType,
-    cdmStatusLevel,
     CdmTraitReference,
     copyOptions,
     resolveOptions
 } from '../../internal';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
 import {
@@ -40,7 +43,10 @@ export class DataPartitionPersistence {
             newPartition.lastFileModifiedTime = new Date(dataObj.lastFileModifiedTime);
         }
         if (dataObj.exhibitsTraits) {
-            utils.addArrayToCdmCollection<CdmTraitReference>(newPartition.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
+            utils.addArrayToCdmCollection<CdmTraitReference>(
+                newPartition.exhibitsTraits, 
+                utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits)
+            );
         }
         if (dataObj.arguments) {
             for (const argument of dataObj.arguments) {
@@ -65,10 +71,12 @@ export class DataPartitionPersistence {
                     );
                 }
 
-                newPartition.arguments.push({
-                    name: argName,
-                    value: argValue
-                });
+                if (newPartition.arguments.has(argName)) {
+                    newPartition.arguments.get(argName)
+                        .push(argValue);
+                } else {
+                    newPartition.arguments.set(argName, [argValue]);
+                }
             }
         }
 
@@ -85,18 +93,21 @@ export class DataPartitionPersistence {
             location: instance.location,
             lastFileStatusCheckTime: timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime),
             lastFileModifiedTime: timeUtils.getFormattedDateString(instance.lastFileModifiedTime),
-            exhibitsTraits: utils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options),
-            arguments: [],
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options),
+            arguments: undefined,
             specializedSchema: instance.specializedSchema
         };
 
-        if (instance.lastFileStatusCheckTime) {
-            dataCopy.lastFileStatusCheckTime = instance.lastFileStatusCheckTime.toISOString();
+        const argumentsCopy: KeyValPair[] = [];
+        if (instance.arguments) {
+            instance.arguments.forEach((argValueList: string[], key: string) => {
+                argValueList.forEach((argValue: string) => {
+                    argumentsCopy.push({name: key, value: argValue});
+                });
+            });
         }
-        if (instance.lastFileModifiedTime) {
-            dataCopy.lastFileModifiedTime = instance.lastFileModifiedTime.toISOString();
-        }
-        dataCopy.arguments = [...instance.arguments];
+
+        dataCopy.arguments = argumentsCopy.length > 0 ? argumentsCopy : undefined;
 
         return dataCopy;
     }

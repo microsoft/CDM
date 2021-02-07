@@ -1,7 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
-import { StorageAdapter } from './StorageAdapter';
+import { StorageAdapterBase } from './StorageAdapterBase';
 
 let readFile;
 
@@ -9,13 +12,15 @@ if (fs.readFile) {
     readFile = util.promisify(fs.readFile);
 }
 
-export class ResourceAdapter implements StorageAdapter {
-    public root: string;
+export class ResourceAdapter extends StorageAdapterBase {
+    private readonly ROOT: string = 'Microsoft.CommonDataModel.ObjectModel.Resources';
+    private resourcesPath: string;
 
     public locationHint: string;
 
     constructor() {
-        this.root = path.join(__dirname, '../Resources');
+        super();
+        this.resourcesPath = path.join(__dirname, '..', 'Resources');
     }
 
     public canRead(): boolean {
@@ -23,70 +28,28 @@ export class ResourceAdapter implements StorageAdapter {
     }
 
     public async readAsync(corpusPath: string): Promise<string> {
-        try {
-            const adapterPath: string = this.createAdapterPath(corpusPath);
-            const content: string = await readFile(adapterPath, 'utf-8') as string;
-            if (content === undefined || content === '') {
-                throw new Error(`The requested document '${adapterPath}' is empty`);
-            }
-
-            return content;
-        } catch (err) {
-            throw (err);
+        const adapterPath: string = this.resourcesPath + corpusPath;
+        const content: string = await readFile(adapterPath, 'utf-8') as string;
+        if (content === undefined || content === '') {
+            throw new Error(`The requested document '${adapterPath}' is empty`);
         }
-    }
 
-    public canWrite(): boolean {
-        return false;
-    }
-
-    public async writeAsync(corpusPath: string, data: string): Promise<void> {
-        throw new Error('Method not implemented.');
+        return content;
     }
 
     public createAdapterPath(corpusPath: string): string {
-        if (corpusPath === undefined || corpusPath === '') {
+        if (!corpusPath) {
             return undefined;
         }
 
-        return path.join(this.root, corpusPath);
+        return this.ROOT + corpusPath;
     }
 
     public createCorpusPath(adapterPath: string): string {
-        if (adapterPath === undefined || adapterPath === '' || adapterPath.startsWith('http')) {
+        if (!adapterPath || !adapterPath.startsWith(this.ROOT)) {
             return undefined;
         }
 
-        // Make this a file system path and normalize it.
-        const formattedAdapterPath: string = path.resolve(adapterPath)
-            .replace(/\\/g, '/');
-        const formattedRoot: string = this.root.replace(/\\/g, '/');
-
-        // Might not be an adapterPath that we understand, check that first.
-        if (formattedAdapterPath.startsWith(formattedRoot)) {
-            return formattedAdapterPath.slice(formattedRoot.length);
-        }
-
-        return undefined;
-    }
-
-    public clearCache(): void {
-        return;
-    }
-
-    public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
-        return new Date();
-    }
-
-    public async fetchAllFilesAsync(folderCorpusPath: string): Promise<string[]> {
-        return undefined;
-    }
-
-    public fetchConfig(): string {
-        throw new Error('Method not implemented.');
-    }
-
-    public updateConfig(config: string): void {
-        throw new Error('Method not implemented.');
+        return adapterPath.substring(this.ROOT.length);
     }
 }

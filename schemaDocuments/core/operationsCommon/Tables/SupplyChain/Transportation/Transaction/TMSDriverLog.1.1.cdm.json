@@ -1,0 +1,135 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TMSAppointment.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSDriverLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActualEndUTCDateTime",
+          "dataType": "TMSActualEndUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActualStartUTCDateTime",
+          "dataType": "TMSActualStartUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AppointmentAlert",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ApptDrop",
+          "dataType": "TMSApptDrop",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ApptId",
+          "dataType": "TMSApptId",
+          "description": ""
+        },
+        {
+          "name": "DriverLicense",
+          "dataType": "TMSDriverLicense",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DriverName",
+          "dataType": "TMSDriverName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TMSAppointment"
+          },
+          "name": "Relationship_TMSAppointmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Driver Log"
+    },
+    {
+      "dataTypeName": "TMSActualEndUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSActualStartUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSApptDrop",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSApptId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSDriverLicense",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSDriverName",
+      "extendsDataType": "string"
+    }
+  ]
+}

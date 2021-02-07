@@ -1,22 +1,21 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmImport.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
+    using System.Collections.Generic;
 
     public class CdmImport : CdmObjectSimple
     {
         /// <summary>
         /// Gets or sets the document that has been resolved for this import.
         /// </summary>
-        internal CdmDocumentDefinition Doc { get; set; }
+        internal CdmDocumentDefinition Document { get; set; }
 
         /// <summary>
         /// Gets or sets the import path.
@@ -59,7 +58,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmImport copy;
@@ -75,14 +74,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.Moniker = this.Moniker;
             }
 
-            copy.Doc = this.Doc;
+            copy.Document = this.Document;
             return copy;
         }
 
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.CorpusPath);
+            if (string.IsNullOrWhiteSpace(this.CorpusPath))
+            {
+                Logger.Error(nameof(CdmImport), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "CorpusPath" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         [Obsolete("InstanceFromData is deprecated. Please use the Persistence Layer instead.")]
@@ -99,15 +103,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (postChildren != null && postChildren.Invoke(this, pathFrom))
                 return true;
             return false;
-        }
-
-        // Returns the document that has been resolved for this import.
-        internal CdmDocumentDefinition ResolvedDocument
-        {
-             get
-             {
-                 return this.Doc;
-             }
         }
     }
 }

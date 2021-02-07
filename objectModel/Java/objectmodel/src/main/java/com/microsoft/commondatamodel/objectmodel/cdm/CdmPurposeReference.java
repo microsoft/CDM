@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -19,10 +20,10 @@ public class CdmPurposeReference extends CdmObjectReferenceBase {
 
   /**
    *
-   * @param resOpt
-   * @param refTo
-   * @param simpleReference
-   * @return
+   * @param resOpt Resolved options
+   * @param refTo ref object
+   * @param simpleReference boolean simple reference
+   * @return CdmObjectReferenceBase
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -36,10 +37,10 @@ public class CdmPurposeReference extends CdmObjectReferenceBase {
   }
 
   /**
-   * @param resOpt
-   * @param refTo
-   * @param simpleReference
-   * @return
+   * @param resOpt Resolved options
+   * @param refTo ref object
+   * @param simpleReference boolean simple reference
+   * @return CdmObjectReferenceBase
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -59,10 +60,10 @@ public class CdmPurposeReference extends CdmObjectReferenceBase {
 
   /**
    *
-   * @param pathRoot
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param pathRoot path root
+   * @param preChildren Pre children
+   * @param postChildren post children
+   * @return boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -74,9 +75,9 @@ public class CdmPurposeReference extends CdmObjectReferenceBase {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved option
+   * @param options copy options
+   * @return object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.

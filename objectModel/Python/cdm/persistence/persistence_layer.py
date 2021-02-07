@@ -1,27 +1,27 @@
-﻿import importlib
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+import importlib
 from collections import OrderedDict
 from typing import Any, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.objectmodel import CdmCorpusDefinition
-from cdm.utilities import AttributeResolutionDirectiveSet, CdmError, logger, ResolveOptions
+from cdm.utilities import AttributeResolutionDirectiveSet, CdmError, logger, ResolveOptions, StorageUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmObject
     from cdm.utilities import CopyOptions, JObject
 
 
-CDM_FOLDER = 'CdmFolder'
-MODEL_JSON = 'ModelJson'
-ODI = 'Odi'
-
-
 class PersistenceLayer:
-    _CDM_EXTENSION = CdmCorpusDefinition._CDM_EXTENSION
-    _FOLIO_EXTENSION = '.folio.' + CdmCorpusDefinition._CDM_EXTENSION
-    _MANIFEST_EXTENSION = '.manifest.' + CdmCorpusDefinition._CDM_EXTENSION
-    _MODEL_JSON_EXTENSION = 'model.json'
-    _ODI_EXTENSION = 'odi.json'
+    CDM_EXTENSION = '.cdm.json'
+    FOLIO_EXTENSION = '.folio.cdm.json'
+    MANIFEST_EXTENSION = '.manifest.cdm.json'
+    MODEL_JSON_EXTENSION = 'model.json'
+    ODI_EXTENSION = 'odi.json'
+    CDM_FOLDER = 'CdmFolder'
+    MODEL_JSON = 'ModelJson'
+    ODI = 'Odi'
 
     def __init__(self, corpus: 'CdmCorpusDefinition'):
         self._corpus = corpus
@@ -53,19 +53,19 @@ class PersistenceLayer:
         arglist = list(args)
         persistence_type = arglist.pop()
         object_type = arglist.pop()
-        return cls.fetch_persistence_class(object_type, persistence_type).from_data(arglist)
+        return cls.fetch_persistence_class(object_type, persistence_type).from_data(*arglist)
 
     @classmethod
-    def to_data(cls, instance: 'CdmObject', res_opt: 'ResolveOptions', persistence_type: str, copy_options: 'CopyOptions') -> 'JObject':
+    def to_data(cls, instance: 'CdmObject', res_opt: 'ResolveOptions', copy_options: 'CopyOptions', persistence_type: str) -> 'JObject':
         """
         * @param instance the instance that is going to be serialized.
-        * @param res_opt Rnformation about how to resolve the instance.
-        * @param persistence_type a type supported by the persistence layer. Can by any of PersistenceTypes.
+        * @param res_opt information about how to resolve the instance.
         * @param copy_options set of options to specify how the output format.
+        * @param persistence_type a type supported by the persistence layer. Can by any of PersistenceTypes.
         """
         return cls.fetch_persistence_class(instance.object_type, persistence_type).to_data(instance, res_opt, copy_options)
 
-    async def _load_document_from_path_async(self, folder: 'CdmFolderDefinition', doc_name: str, doc_container: 'CdmDocumentDefinition') \
+    async def _load_document_from_path_async(self, folder: 'CdmFolderDefinition', doc_name: str, doc_container: 'CdmDocumentDefinition', res_opt: Optional[ResolveOptions] = None) \
             -> 'CdmDocumentDefinition':
         #  go get the doc
         doc_content = None  # type: Optional[CdmDocumentDefinition]
@@ -76,27 +76,43 @@ class PersistenceLayer:
 
         try:
             if adapter.can_read():
+                # log message used by navigator, do not change or remove
+                logger.debug(self._TAG, self._ctx, 'request file: {}'.format(doc_path), self._load_document_from_path_async.__name__)
                 json_data = await adapter.read_async(doc_path)
-                fs_modified_time = await adapter.compute_last_modified_time_async(adapter.create_adapter_path(doc_path))
-                logger.info(self._TAG, self._ctx, 'read file: {}'.format(doc_path), self._load_document_from_path_async.__name__)
+                # log message used by navigator, do not change or remove
+                logger.debug(self._TAG, self._ctx, 'received file: {}'.format(doc_path), self._load_document_from_path_async.__name__)
+            else:
+                raise Exception('Storage Adapter is not enabled to read.')
         except Exception as e:
-            logger.error(self._TAG, self._ctx, 'could not read {} from the \'{}\' namespace.\n Reason: \n{}'.format(
-                doc_path, folder.namespace, e), self._load_document_from_path_async.__name__)
+            # log message used by navigator, do not change or remove
+            logger.debug(self._TAG, self._ctx, 'fail file: {}'.format(doc_path), self._load_document_from_path_async.__name__)
+            
+            message = 'Could not read {} from the \'{}\' namespace.\n Reason: {}'.format(doc_path, folder.namespace, e)
+            # when shallow validation is enabled, log messages about being unable to find referenced documents as warnings instead of errors.
+            if res_opt and res_opt.shallow_validation:
+                logger.warning(self._TAG, self._ctx, message, self._load_document_from_path_async.__name__)
+            else:
+                logger.error(self._TAG, self._ctx, message, self._load_document_from_path_async.__name__)
             return None
+
+        try:
+            fs_modified_time = await adapter.compute_last_modified_time_async(doc_path)
+        except Exception as e:
+            logger.warning(self._TAG, self._ctx, 'Failed to compute file last modified time. Reason {}'.format(e), self._load_document_from_path_async.__name__)
 
         if not doc_name:
             logger.error(self._TAG, self._ctx, 'Document name cannot be null or empty.', self._load_document_from_path_async.__name__)
             return None
 
         # If loading an odi.json/model.json file, check that it is named correctly.
-        if doc_name.lower().endswith(self._ODI_EXTENSION) and not doc_name.lower() == self._ODI_EXTENSION:
+        if doc_name.lower().endswith(self.ODI_EXTENSION) and not doc_name.lower() == self.ODI_EXTENSION:
             logger.error(self._TAG, self._ctx, 'Failed to load \'{}\', as it\'s not an acceptable file name. It must be {}.'.format(
-                doc_name, self._ODI_EXTENSION), self._load_document_from_path_async.__name__)
+                doc_name, self.ODI_EXTENSION), self._load_document_from_path_async.__name__)
             return None
 
-        if doc_name.lower().endswith(self._MODEL_JSON_EXTENSION) and not doc_name.lower() == self._MODEL_JSON_EXTENSION:
+        if doc_name.lower().endswith(self.MODEL_JSON_EXTENSION) and not doc_name.lower() == self.MODEL_JSON_EXTENSION:
             logger.error(self._TAG, self._ctx, 'Failed to load \'{}\', as it\'s not an acceptable file name. It must be {}.'.format(
-                doc_name, self._MODEL_JSON_EXTENSION), self._load_document_from_path_async.__name__)
+                doc_name, self.MODEL_JSON_EXTENSION), self._load_document_from_path_async.__name__)
             return None
 
         # Fetch the correct persistence class to use.
@@ -134,7 +150,7 @@ class PersistenceLayer:
                 # it would be really rude to just kill that old object and replace it with this replicant, especially because
                 # the caller has no idea this happened. so... sigh ... instead of returning the new object return the one that
                 # was just killed off but make it contain everything the new document loaded.
-                doc_content = doc_content.copy(ResolveOptions(wrt_doc=doc_container), doc_container)
+                doc_content = doc_content.copy(ResolveOptions(wrt_doc=doc_container, directives=self._ctx.corpus.default_resolution_directives), doc_container)
 
             folder.documents.append(doc_content, doc_name)
             doc_content._file_system_modified_time = fs_modified_time
@@ -153,7 +169,12 @@ class PersistenceLayer:
 
         persistence_module_name = '{}_persistence'.format(object_name)
         persistence_class_name = ''.join([x.title() for x in persistence_module_name.split('_')])
-        persistence_module = importlib.import_module('cdm.persistence.{}.{}'.format(persistence_type.lower(), persistence_module_name))
+
+        if persistence_class_name == 'ProjectionPersistence':
+            # Projection persistence class is in a nested folder
+            persistence_module = importlib.import_module('cdm.persistence.{}.projections.{}'.format(persistence_type.lower(), persistence_module_name))
+        else:
+            persistence_module = importlib.import_module('cdm.persistence.{}.{}'.format(persistence_type.lower(), persistence_module_name))
         PersistenceClass = getattr(persistence_module, persistence_class_name, None)
 
         if not PersistenceClass:
@@ -197,17 +218,17 @@ class PersistenceLayer:
 
         # what kind of document is requested?
         # check file extensions using a case-insensitive ordinal string comparison.
-        persistence_type = MODEL_JSON if new_name.lower().endswith(self._MODEL_JSON_EXTENSION) else \
-            (ODI if new_name.lower().endswith(self._ODI_EXTENSION) else CDM_FOLDER)
+        persistence_type = self.MODEL_JSON if new_name.lower().endswith(self.MODEL_JSON_EXTENSION) else \
+            (self.ODI if new_name.lower().endswith(self.ODI_EXTENSION) else self.CDM_FOLDER)
 
-        if persistence_type == ODI and new_name.lower() != self._ODI_EXTENSION:
+        if persistence_type == self.ODI and new_name.lower() != self.ODI_EXTENSION:
             logger.error(self._TAG, self._ctx, 'Failed to persist \'{}\', as it\'s not an acceptable filename. It must be {}'.format(
-                new_name, self._ODI_EXTENSION), self._save_document_as_async.__name__)
+                new_name, self.ODI_EXTENSION), self._save_document_as_async.__name__)
             return False
 
-        if persistence_type == MODEL_JSON and new_name.lower() != self._MODEL_JSON_EXTENSION:
+        if persistence_type == self.MODEL_JSON and new_name.lower() != self.MODEL_JSON_EXTENSION:
             logger.error(self._TAG, self._ctx, 'Failed to persist \'{}\', as it\'s not an acceptable filename. It must be {}'.format(
-                new_name, self._MODEL_JSON_EXTENSION), self._save_document_as_async.__name__)
+                new_name, self.MODEL_JSON_EXTENSION), self._save_document_as_async.__name__)
             return False
 
         # save the object into a json blob
@@ -245,7 +266,7 @@ class PersistenceLayer:
             logger.error(self._TAG, self._ctx, 'Failed to persist \'{}\''.format(new_name), self._save_document_as_async.__name__)
             return False
 
-        if persistence_type == ODI:
+        if persistence_type == self.ODI:
             await self._save_odi_documents(persisted_doc, adapter, new_name)
             return True
 
@@ -260,12 +281,14 @@ class PersistenceLayer:
             content = persisted_doc.encode()
             await adapter.write_async(new_path, content)
 
+            doc._file_system_modified_time = await adapter.compute_last_modified_time_async(new_path)
+
             # Write the adapter's config.
-            if options.is_top_level_document:
+            if options._is_top_level_document:
                 await self._corpus.storage.save_adapters_config_async('/config.json', adapter)
 
                 # The next document won't be top level, so reset the flag.
-                options.is_top_level_document = False
+                options._is_top_level_document = False
         except Exception as e:
             logger.error(self._TAG, self._ctx, 'Failed to write to the file \'{}\' for reason \'{}\''.format(new_name, e),
                          self._save_document_as_async.__name__)
@@ -274,7 +297,7 @@ class PersistenceLayer:
         # if we also want to save referenced docs, then it depends on what kind of thing just got saved
         # if a model.json there are none. If a manifest or definition doc then ask the docs to do the right things
         # definition will save imports, manifests will save imports, schemas, sub manifests
-        if save_referenced and persistence_type == CDM_FOLDER:
+        if save_referenced and persistence_type == self.CDM_FOLDER:
             saved_linked_docs = await doc._save_linked_documents_async(options)
             if not saved_linked_docs:
                 logger.error(self._TAG, self._ctx, 'Failed to save linked documents for file \'{}\''.format(new_name), self._save_document_as_async.__name__)
@@ -304,9 +327,14 @@ class PersistenceLayer:
         # ask the adapter to make it happen.
         try:
             old_document_path = doc.documentPath
-            new_document_path = old_document_path[0: len(old_document_path) - len(self._ODI_EXTENSION)] + new_name
+            new_document_path = old_document_path[0: len(old_document_path) - len(self.ODI_EXTENSION)] + new_name
+            # Remove namespace from path
+            path_tuple = StorageUtils.split_namespace_path(new_document_path)
+            if not path_tuple:
+                logger.error(self._TAG, self._ctx, 'The object path cannot be null or empty.', self._save_odi_documents.__name__)
+                return
             content = doc.encode()
-            await adapter.write_async(new_document_path, content)
+            await adapter.write_async(path_tuple[1], content)
         except Exception as e:
             logger.error(self._TAG, self._ctx, 'Failed to write to the file \'{}\' for reason {}.'.format(
                 doc.documentPath, e), self._save_odi_documents.__name__)

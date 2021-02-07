@@ -1,0 +1,77 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/TransactionLine/GeneralJournalAccountEntry.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/SubledgerJournalAccountEntry.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "GeneralJournalAccountEntrySubledgerJournalAccountEntry",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "GeneralJournalAccountEntry",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SubledgerJournalAccountEntry",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "GeneralJournalAccountEntry"
+          },
+          "name": "Relationship_GeneralJournalAccountEntryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SubledgerJournalAccountEntry"
+          },
+          "name": "Relationship_SubledgerJournalAccountEntryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesQuotationLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRSalesQuotationLineOverride",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ListPrice",
+          "dataType": "MCROriginalUnitPrice",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ListPriceCurrencyCode",
+          "dataType": "CustCurrencyCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceOverride",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Price override",
+          "description": ""
+        },
+        {
+          "name": "ReasonCode",
+          "dataType": "RetailInformationSubcodeId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reason code",
+          "description": ""
+        },
+        {
+          "name": "RetailInfocodeId",
+          "dataType": "RetailInfocodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesQuotationLine",
+          "dataType": "MCRSalesQuotationLineOverrideRefRecId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_MCRListPriceCurrencyCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesQuotationLine"
+          },
+          "name": "Relationship_SalesQuotationLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Quotation lines"
+    },
+    {
+      "dataTypeName": "MCROriginalUnitPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailInformationSubcodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailInfocodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRSalesQuotationLineOverrideRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

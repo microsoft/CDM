@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { ModelJson } from '..';
 import {
     CdmCorpusContext,
@@ -21,7 +24,9 @@ export class EntityPersistence {
     ): Promise<CdmEntityDefinition> {
         const entity: CdmEntityDefinition = ctx.corpus.MakeObject(cdmObjectType.entityDef, object.name);
 
-        entity.description = object.description;
+        if (object.description && object.description.trim() !== '') {
+            entity.description = object.description;
+        }
 
         await ModelJson.utils.processAnnotationsFromData(ctx, object, entity.exhibitsTraits);
 
@@ -65,7 +70,7 @@ export class EntityPersistence {
         const result: LocalEntity = {
             $type: 'LocalEntity',
             name: instance.entityName,
-            description: instance.description,
+            description: instance.getProperty('description') as string,
             isHidden: undefined,
             annotations: undefined,
             'cdm:traits': undefined,
@@ -74,11 +79,21 @@ export class EntityPersistence {
             schemas: undefined,
             'cdm:imports': undefined
         };
-        await ModelJson.utils.processAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (instance.attributes !== undefined) {
             result.attributes = [];
             for (const element of instance.attributes.allItems) {
+                if (element.objectType !== cdmObjectType.typeAttributeDef) {
+                    Logger.error(
+                        EntityPersistence.name,
+                        ctx,
+                        `Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported.`
+                    );
+
+                    return undefined;
+                }
+
                 const attribute: Attribute =
                     await ModelJson.TypeAttributePersistence.toData(element as CdmTypeAttributeDefinition, resOpt, options);
                 if (attribute !== undefined) {

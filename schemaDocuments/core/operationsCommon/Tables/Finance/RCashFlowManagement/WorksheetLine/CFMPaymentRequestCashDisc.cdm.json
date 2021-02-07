@@ -1,0 +1,80 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RCashFlowManagement/WorksheetHeader/CFMPaymentRequestTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CFMPaymentRequestCashDisc",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CashDiscAmount",
+          "dataType": "CFMCashDiscPositiveAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscdate",
+          "dataType": "CashDiscdate",
+          "description": ""
+        },
+        {
+          "name": "PaymentRequestTable",
+          "dataType": "CFMPaymentRequestRef",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestTable"
+          },
+          "name": "Relationship_PaymentRequestTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payment request cash discount"
+    },
+    {
+      "dataTypeName": "CFMCashDiscPositiveAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CashDiscdate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CFMPaymentRequestRef",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

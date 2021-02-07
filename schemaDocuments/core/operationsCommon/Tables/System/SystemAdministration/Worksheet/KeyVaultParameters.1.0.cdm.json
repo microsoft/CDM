@@ -1,0 +1,121 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "KeyVaultParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Url",
+          "dataType": "KeyVaultDefaultUrl",
+          "description": ""
+        },
+        {
+          "name": "AppClientId",
+          "dataType": "KeyVaultAppClientId",
+          "description": ""
+        },
+        {
+          "name": "SecretKey",
+          "dataType": "KeyVaultSecretKey",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClientSecretKey",
+          "dataType": "KeyVaultClientSecretKey",
+          "description": ""
+        },
+        {
+          "name": "EnabledForSealedBidding",
+          "dataType": "PurchRFQSealedBidEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Key Vault parameters"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KeyVaultDefaultUrl",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KeyVaultAppClientId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KeyVaultSecretKey",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KeyVaultClientSecretKey",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "PurchRFQSealedBidEnabled",
+      "extendsDataType": "integer"
+    }
+  ]
+}

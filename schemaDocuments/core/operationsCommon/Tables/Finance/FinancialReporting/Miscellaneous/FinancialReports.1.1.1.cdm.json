@@ -1,0 +1,120 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FinancialReports",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ReportName",
+          "dataType": "FinancialReportName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DesignId",
+          "dataType": "FinancialReportDesignId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CanView",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Viewable",
+          "description": ""
+        },
+        {
+          "name": "CanDesign",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Editable",
+          "description": ""
+        },
+        {
+          "name": "Folder",
+          "dataType": "FinancialReportFolder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastModifiedBy",
+          "dataType": "FinancialReportLastModifiedBy",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastModifiedDate",
+          "dataType": "FinancialReportLastModifiedDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Financial reports"
+    },
+    {
+      "dataTypeName": "FinancialReportName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FinancialReportDesignId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "FinancialReportFolder",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FinancialReportLastModifiedBy",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FinancialReportLastModifiedDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

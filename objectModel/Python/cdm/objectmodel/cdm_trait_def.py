@@ -1,13 +1,11 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Optional, List, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.resolvedmodel import ParameterCollection
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_collection import CdmCollection
@@ -46,6 +44,8 @@ class CdmTraitDefinition(CdmObjectDefinition):
         self._all_parameters = None
         self._parameters = None
 
+        self._TAG = CdmTraitDefinition.__name__
+
     @property
     def parameters(self) -> 'CdmCollection[CdmParameterDefinition]':
         if self._parameters is None:
@@ -66,7 +66,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmTraitDefinition'] = None) -> 'CdmTraitDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmTraitDefinition(self.ctx, self.trait_name, None)
@@ -94,6 +94,8 @@ class CdmTraitDefinition(CdmObjectDefinition):
         from cdm.utilities import SymbolSet
 
         from .cdm_corpus_def import CdmCorpusDefinition
+
+        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
         kind = 'rtsb'
         ctx = self.ctx
@@ -128,13 +130,13 @@ class CdmTraitDefinition(CdmObjectDefinition):
         if self._base_is_known_to_have_parameters:
             cache_tag_extra = str(self.extends_trait.id)
 
-        cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
+        cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
         rts_result = ctx._cache.get(cache_tag) if cache_tag else None
 
         # store the previous reference symbol set, we will need to add it with
         # children found from the _construct_resolved_traits call
-        curr_sym_ref_set = res_opt.symbol_ref_set or SymbolSet()
-        res_opt.symbol_ref_set = SymbolSet()
+        curr_sym_ref_set = res_opt._symbol_ref_set or SymbolSet()
+        res_opt._symbol_ref_set = SymbolSet()
 
         # if not, then make one and save it
         if not rts_result:
@@ -172,34 +174,38 @@ class CdmTraitDefinition(CdmObjectDefinition):
             rts_result.merge(res_trait, False)
 
             # register set of possible symbols
-            ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt.symbol_ref_set)
+            ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt._symbol_ref_set)
             # get the new cache tag now that we have the list of docs
-            cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
+            cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
             if cache_tag:
                 ctx._cache[cache_tag] = rts_result
         else:
             # cache found
             # get the SymbolSet for this cached object
             key = CdmCorpusDefinition._fetch_cache_key_from_object(self, kind)
-            res_opt.symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
+            res_opt._symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
 
         # merge child document set with current
-        curr_sym_ref_set.merge(res_opt.symbol_ref_set)
-        res_opt.symbol_ref_set = curr_sym_ref_set
+        curr_sym_ref_set._merge(res_opt._symbol_ref_set)
+        res_opt._symbol_ref_set = curr_sym_ref_set
 
         return rts_result
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
+        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         if base == self.trait_name:
             return True
         return self._is_derived_from_def(res_opt, self.extends_trait, self.trait_name, base)
 
     def validate(self) -> bool:
-        return bool(self.trait_name)
+        if not bool(self.trait_name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['trait_name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = path_from + self.trait_name
@@ -208,8 +214,10 @@ class CdmTraitDefinition(CdmObjectDefinition):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.extends_trait and self.extends_trait.visit('{}/extendsTrait/'.format(path), pre_children, post_children):
-            return True
+        if self.extends_trait:
+            self.extends_trait.owner = self
+            if self.extends_trait.visit('{}/extendsTrait/'.format(path), pre_children, post_children):
+                return True
 
         if self.parameters and self.parameters._visit_array('{}/hasParameters/'.format(path), pre_children, post_children):
             return True

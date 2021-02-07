@@ -1,0 +1,549 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CustBillOfExchangeJour.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/WorksheetLine/BankLCExportLine.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "CustCollectionLetterJour.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustFineSetup_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustInterestSetup_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "CustInvoiceJour.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/CustInvoiceTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "CustTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Miscellaneous/CustTransEPRemit_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesQuotationTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustTransOpen",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "CustAccount",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCurDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountMST",
+          "dataType": "AmountMSTDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankDiscNoticeDeadline",
+          "dataType": "BankDiscNoticeDeadline",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankLCExportLine",
+          "dataType": "BankLCLineRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscDate",
+          "dataType": "CustCashDiscDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscountLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Alternative cash discount account",
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchAdjUnrealized",
+          "dataType": "AmountMSTDebCred",
+          "isNullable": true,
+          "displayName": "Unrealized exchange rate adjustment",
+          "description": ""
+        },
+        {
+          "name": "ExchAdjUnrealizedReporting",
+          "dataType": "CustExchAdjustment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FineAmount_BR",
+          "dataType": "FineAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FineAmountPaymCur_BR",
+          "dataType": "FineAmount_BR",
+          "isNullable": true,
+          "displayName": "Fine amount currency",
+          "description": ""
+        },
+        {
+          "name": "FineCode_BR",
+          "dataType": "CustFineCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterestAmount_BR",
+          "dataType": "FinInterestAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterestAmountPaymCur_BR",
+          "dataType": "FinInterestAmount_BR",
+          "isNullable": true,
+          "displayName": "Interest amount currency",
+          "description": ""
+        },
+        {
+          "name": "InterestCode_BR",
+          "dataType": "CustInterestCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastInterestDate",
+          "dataType": "CustLastInterestDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PossibleCashDisc",
+          "dataType": "CustCashDiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "CustTransRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyAmount",
+          "dataType": "AmountMSTSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettledLinePercent_IN",
+          "dataType": "Percent",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettledTotalAmount_IN",
+          "dataType": "AmountCurDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettlementPriorityCashDiscDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Cash discount date",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdAmountOrigin_IN",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Amount origin",
+          "description": ""
+        },
+        {
+          "name": "TCSAmount_IN",
+          "dataType": "TaxWithholdAmountCur",
+          "isNullable": true,
+          "displayName": "TCS",
+          "description": ""
+        },
+        {
+          "name": "TDSAmount_IN",
+          "dataType": "TaxWithholdAmountCur",
+          "isNullable": true,
+          "displayName": "TDS",
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseCashDisc",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CollectionLetter",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Collection letter",
+          "description": ""
+        },
+        {
+          "name": "CollectionLetterCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Valid collection letter code",
+          "description": ""
+        },
+        {
+          "name": "CovStatus",
+          "dataType": "CovStatus",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxDistribution",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustBillOfExchangeJour"
+          },
+          "name": "Relationship_BankBillOfExchangeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankLCExportLine"
+          },
+          "name": "Relationship_BankLCExportLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CashDiscountLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustCollectionLetterJour"
+          },
+          "name": "Relationship_CustCollectionLetterJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustFineSetup_BR"
+          },
+          "name": "Relationship_CustFineSetup_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInterestSetup_BR"
+          },
+          "name": "Relationship_CustInterestSetup_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_CustInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceTable"
+          },
+          "name": "Relationship_CustInvoiceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTransEPRemit_BR"
+          },
+          "name": "Relationship_CustTransEPRemit_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesQuotationTable"
+          },
+          "name": "Relationship_SalesQuotationTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Open customer transactions"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCurDebCred",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMSTDebCred",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankDiscNoticeDeadline",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BankLCLineRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustCashDiscDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustExchAdjustment",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FineAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustFineCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FinInterestAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustInterestCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustLastInterestDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustCashDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountMSTSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxWithholdAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CovStatus",
+      "extendsDataType": "integer"
+    }
+  ]
+}

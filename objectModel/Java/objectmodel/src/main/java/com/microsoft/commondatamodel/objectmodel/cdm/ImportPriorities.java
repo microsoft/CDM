@@ -1,4 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
+
+import com.microsoft.commondatamodel.objectmodel.utilities.ImportInfo;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,18 +14,27 @@ import java.util.Map;
  */
 @Deprecated
 public class ImportPriorities {
-  private final Map<CdmDocumentDefinition, Integer> importPriority;
+  private final Map<CdmDocumentDefinition, ImportInfo> importPriority;
   private final Map<String, CdmDocumentDefinition> monikerPriorityMap;
+  private boolean hasCircularImport;
 
   ImportPriorities() {
     this.importPriority = new LinkedHashMap<>();
     this.monikerPriorityMap = new LinkedHashMap<>();
+    this.hasCircularImport = false;
   }
 
   public ImportPriorities copy() {
     final ImportPriorities copy = new ImportPriorities();
-    this.importPriority.forEach(copy.importPriority::put);
-    this.monikerPriorityMap.forEach(copy.monikerPriorityMap::put);
+    if (this.importPriority != null) {
+      this.importPriority.forEach(copy.importPriority::put);
+    }
+
+    if (this.monikerPriorityMap != null) {
+      this.monikerPriorityMap.forEach(copy.monikerPriorityMap::put);
+    }
+
+    copy.hasCircularImport = this.hasCircularImport;
     return copy;
   }
 
@@ -28,7 +42,15 @@ public class ImportPriorities {
     return monikerPriorityMap;
   }
 
-  Map<CdmDocumentDefinition, Integer> getImportPriority() {
+  Map<CdmDocumentDefinition, ImportInfo> getImportPriority() {
     return importPriority;
+  }
+
+  boolean getHasCircularImport() {
+    return hasCircularImport;
+  }
+
+  void setHasCircularImport(boolean value) {
+    this.hasCircularImport = value;
   }
 }

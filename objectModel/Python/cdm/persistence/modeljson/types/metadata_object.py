@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import List, Optional
 
@@ -18,7 +16,7 @@ class MetadataObject(JObject):
     def __init__(self):
         super().__init__()
 
-        self.name = ''  # type: str
-        self.description = ''  # type: str
+        self.name = None  # type: str
+        self.description = None  # type: str
         self.annotations = None  # type: Optional[List[Annotation]]
         self.traits = None  # type: Optional[List]

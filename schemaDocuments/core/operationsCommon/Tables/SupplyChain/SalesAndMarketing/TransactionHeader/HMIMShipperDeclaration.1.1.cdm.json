@@ -1,0 +1,143 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSShipmentTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "HMIMShipperDeclaration",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ShipperName",
+          "dataType": "VendName",
+          "isNullable": true,
+          "displayName": "Shipper",
+          "description": ""
+        },
+        {
+          "name": "ShipperAddress",
+          "dataType": "HMIMShipperDeclarationAddress",
+          "isNullable": true,
+          "displayName": "Shipper address",
+          "description": ""
+        },
+        {
+          "name": "ConsigneeName",
+          "dataType": "VendName",
+          "isNullable": true,
+          "displayName": "Consignee",
+          "description": ""
+        },
+        {
+          "name": "ConsigneeAddress",
+          "dataType": "HMIMShipperDeclarationAddress",
+          "isNullable": true,
+          "displayName": "Consignee address",
+          "description": ""
+        },
+        {
+          "name": "AirWaybillNum",
+          "dataType": "HMIMAirWaybillNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipmentId",
+          "dataType": "WHSShipmentId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Warning",
+          "dataType": "Description255",
+          "isNullable": true,
+          "displayName": "WARNING",
+          "description": ""
+        },
+        {
+          "name": "FooterMsg",
+          "dataType": "Description255",
+          "isNullable": true,
+          "displayName": "Footer declaration",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipmentTable"
+          },
+          "name": "Relationship_WHSShipmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Shipper's declaration"
+    },
+    {
+      "dataTypeName": "VendName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMShipperDeclarationAddress",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMAirWaybillNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSShipmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description255",
+      "extendsDataType": "string"
+    }
+  ]
+}

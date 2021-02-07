@@ -1,0 +1,117 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetControlDimensionAttribute.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetGroupMember.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetGroupMemberCriteria",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetControlDimensionAttribute",
+          "dataType": "RefRecId",
+          "displayName": "Budget control dimensions",
+          "description": ""
+        },
+        {
+          "name": "BudgetGroupMember",
+          "dataType": "RefRecId",
+          "displayName": "Budget group members",
+          "description": ""
+        },
+        {
+          "name": "IsFromOpen",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Is from range value exclusive",
+          "description": ""
+        },
+        {
+          "name": "IsToOpen",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Is to range value exclusive",
+          "description": ""
+        },
+        {
+          "name": "RangeFrom",
+          "dataType": "DimensionValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RangeTo",
+          "dataType": "DimensionValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WildCardString",
+          "dataType": "DimensionValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetControlDimensionAttribute"
+          },
+          "name": "Relationship_BudgetControlDimensionAttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetGroupMember"
+          },
+          "name": "Relationship_BudgetGroupMemberRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget group member criteria"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DimensionValue",
+      "extendsDataType": "string"
+    }
+  ]
+}

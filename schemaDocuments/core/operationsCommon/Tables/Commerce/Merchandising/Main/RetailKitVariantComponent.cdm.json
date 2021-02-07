@@ -1,0 +1,125 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResDistinctProduct.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResDistinctProductVariant.cdm.json"
+    },
+    {
+      "corpusPath": "RetailKitComponent.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailKitVariantComponent",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Component",
+          "dataType": "EcoResDistinctProductRecId",
+          "description": ""
+        },
+        {
+          "name": "ComponentRecId",
+          "dataType": "RetailKitComponentRecId",
+          "displayName": "Identify the retail kit component substitutes",
+          "description": ""
+        },
+        {
+          "name": "KitVariant",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "Qty",
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasure",
+          "dataType": "UnitOfMeasureRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResDistinctProduct"
+          },
+          "name": "Relationship_ComponentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResDistinctProductVariant"
+          },
+          "name": "Relationship_KitVariantRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailKitComponent"
+          },
+          "name": "Relationship_RetailKitComponentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail Kit Configurations"
+    },
+    {
+      "dataTypeName": "EcoResDistinctProductRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailKitComponentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

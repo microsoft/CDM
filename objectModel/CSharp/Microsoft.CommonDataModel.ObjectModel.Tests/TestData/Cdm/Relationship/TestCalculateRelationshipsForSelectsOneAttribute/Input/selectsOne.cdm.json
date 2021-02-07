@@ -1,0 +1,69 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "selectsOne",
+            "hasAttributes": [
+                {
+                    "name": "att",
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "AorB",
+                            "hasAttributes": [
+                                {
+                                    "name": "aOption",
+                                    "entity": {
+                                        "entityReference": "A",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "A/(resolvedAttributes)/aId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "bOption",
+                                    "entity": {
+                                        "entityReference": "B",
+                                        "appliedTraits": [
+                                            {
+                                                "traitReference": "is.identifiedBy",
+                                                "arguments": [
+                                                    "B/(resolvedAttributes)/bId"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "resolutionGuidance": {
+                        "imposedDirectives": [
+                            "selectOne"
+                        ],
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "name": "attId"
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "attWithNoRelationships"
+                }
+            ]
+        }
+    ]
+}

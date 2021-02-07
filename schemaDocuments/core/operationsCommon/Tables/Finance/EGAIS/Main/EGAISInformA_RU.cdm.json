@@ -1,0 +1,248 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EGAISClient_RU.cdm.json"
+    },
+    {
+      "corpusPath": "EGAISAlcoholProduction_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EGAISInformA_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AlcoholProduction",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Alcohol product",
+          "description": ""
+        },
+        {
+          "name": "BottlingDate",
+          "dataType": "EGAISBottlingDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfirmationDate",
+          "dataType": "EGAISFixDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfirmationId",
+          "dataType": "EGAISFixNumber_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Consignee",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Consignee",
+          "description": ""
+        },
+        {
+          "name": "MarkType",
+          "dataType": "EGAISMarkType_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginalClient",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Producer/importer",
+          "description": ""
+        },
+        {
+          "name": "ProductConformity",
+          "dataType": "String50",
+          "isNullable": true,
+          "displayName": "Conformity documents",
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RegId",
+          "dataType": "EGAISInformARegId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RegIdInternal",
+          "dataType": "EGAISInformARegId_RU",
+          "isNullable": true,
+          "displayName": "Internal ID",
+          "description": ""
+        },
+        {
+          "name": "Shipper",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Shipper",
+          "description": ""
+        },
+        {
+          "name": "ShippingDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Shipping date",
+          "description": ""
+        },
+        {
+          "name": "WaybillDate",
+          "dataType": "EGAISWaybillDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaybillNum",
+          "dataType": "EGAISWaybillNum_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISClient_RU"
+          },
+          "name": "Relationship_ConsigneeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISClient_RU"
+          },
+          "name": "Relationship_EGAISClient_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISAlcoholProduction_RU"
+          },
+          "name": "Relationship_ProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISClient_RU"
+          },
+          "name": "Relationship_ShipperRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "@@EGAIS:CertificatesA"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EGAISBottlingDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EGAISFixDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EGAISFixNumber_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EGAISMarkType_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "String50",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EGAISInformARegId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EGAISWaybillDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EGAISWaybillNum_RU",
+      "extendsDataType": "string"
+    }
+  ]
+}

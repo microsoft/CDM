@@ -1,0 +1,135 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Commerce/ChannelManagement/BrickAndMortarStore/RetailStoreEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Commerce/ChannelManagement/OnlineStore/RetailOnlineChannelEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Commerce/ChannelManagement/CallCenter/RetailCallCenterEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/Miscellaneous/RetailDlvModeChannelExploded.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailDlvModeChannelExplodedEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DlvMode",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OMOperatingUnit",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvMode_Code",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "PartyNumber",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "OperatingUnitNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreEntity"
+          },
+          "name": "Relationship_RetailStoreEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailOnlineChannelEntity"
+          },
+          "name": "Relationship_RetailOnlineChannelEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailCallCenterEntity"
+          },
+          "name": "Relationship_RetailCallCenterEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailDlvModeChannelExploded"
+          },
+          "name": "BackingTable_RetailDlvModeChannelExplodedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Delivery Modes"
+    }
+  ]
+}

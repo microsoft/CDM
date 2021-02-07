@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="NetworkAdapter.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
@@ -18,13 +15,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     /// <summary>
     /// Network adapter is an abstract class that contains logic for adapters dealing with data across network.
     /// </summary>
-    public abstract class NetworkAdapter : IDisposable
+    public abstract class NetworkAdapter : StorageAdapterBase, IDisposable
     {
         protected CdmHttpClient httpClient;
-
-        protected TimeSpan? timeout = null;
-        protected TimeSpan? maximumTimeout = null;
-        protected int numberOfRetries;
 
         // Use some default values in milliseconds in the case a user doesn't set them up.
         protected const double DefaultTimeout = 2000;
@@ -32,61 +25,40 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         protected const int DefaultNumberOfRetries = 2;
         protected const int DefaultShortestTimeWait = 500;
 
+        protected int numberOfRetries = DefaultNumberOfRetries;
+
         protected CdmHttpClient.Callback waitTimeCallback = null;
 
         protected bool IsDisposed { get; private set; }
 
-        /// <summary>
-        /// The default network adapter constructor called when the object is created by a user through code.
-        /// </summary>
-        protected NetworkAdapter()
+        ~NetworkAdapter()
         {
+            this.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        /// The network adapter constructor called when the object is created through a JSON config.
+        /// The timeout for an HTTP request, default is 2000ms.
         /// </summary>
-        protected NetworkAdapter(string configs)
-        {
-           
-        }
+        public TimeSpan? Timeout { get; set; } = TimeSpan.FromMilliseconds(DefaultTimeout);
 
         /// <summary>
-        /// The timeout for an HTTP request.
+        /// The maximum timeout for all retried HTTP requests, default is 10000ms.
         /// </summary>
-        public TimeSpan? Timeout
-        {
-            get
-            {
-                return this.timeout != null ? this.timeout : TimeSpan.FromMilliseconds(DefaultTimeout);
-            }
-            set
-            {
-                this.timeout = value;
-            }
-        }
-
+        public TimeSpan? MaximumTimeout { get; set; } = TimeSpan.FromMilliseconds(DefaultMaximumTimeout);
 
         /// <summary>
-        /// The maximum timeout for all retried HTTP requests.
+        /// The maximum number of retries for an HTTP request, default is 2.
+        /// Setting NumberOfRetries to negative value won't be effective.
         /// </summary>
-        public TimeSpan? MaximumTimeout
-        {
-            get
-            {
-                return this.maximumTimeout != null ? this.maximumTimeout : TimeSpan.FromMilliseconds(DefaultMaximumTimeout);
+        public int NumberOfRetries {
+            get{
+                return this.numberOfRetries;
             }
-            set
-            {
-                this.maximumTimeout = value;
+            set{
+                this.numberOfRetries = value < 0 ? DefaultNumberOfRetries : value;
             }
         }
-
-        /// <summary>
-        /// The maximum number of retries for an HTTP request, default is 0.
-        /// </summary>
-        public int NumberOfRetries { get; set; }
-
 
         /// <summary>
         /// The wait time callback that gets called after each request is executed.
@@ -105,33 +77,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
         public async Task<CdmHttpResponse> ExecuteRequest(CdmHttpRequest httpRequest)
         {
-            try
+            var response = await this.httpClient.SendAsync(httpRequest, this.WaitTimeCallback, this.Ctx);
+
+            if (response == null)
             {
-                var res = await this.httpClient.SendAsync(httpRequest, this.WaitTimeCallback);
-
-                if (res == null)
-                {
-                    throw new Exception("The result of a request is undefined.");
-                }
-
-                if (!res.IsSuccessful)
-                {
-                    throw new HttpRequestException(
-                        $"HTTP {res.StatusCode} - {res.Reason}. Response headers: {string.Join(", ", res.ResponseHeaders.Select(m => m.Key + ":" + m.Value).ToArray())}. URL: {httpRequest.RequestedUrl}");
-                }
-
-                return res;
+                throw new Exception("The result of a request is undefined.");
             }
-            catch (Exception err)
+
+            if (!response.IsSuccessful)
             {
-                throw (err);
+                throw new HttpRequestException(
+                    $"HTTP {response.StatusCode} - {response.Reason}. Response headers: {string.Join(", ", response.ResponseHeaders.Select(m => m.Key + ":" + m.Value).ToArray())}. URL: {httpRequest.StripSasSig()}");
             }
+
+            return response;
         }
 
-        ~NetworkAdapter()
+        /// <summary>
+        /// Sets up the CDM request that can be used by CDM Http Client.
+        /// </summary>
+        /// <param name="path">Partial or full path to a network location.</param>
+        /// <param name="method">The method.</param>
+        /// <returns>The <see cref="CdmHttpRequest"/>, representing CDM Http request.</returns>
+        protected CdmHttpRequest SetUpCdmRequest(string path, HttpMethod method)
         {
-            this.Dispose();
-            GC.SuppressFinalize(this);
+            return SetUpCdmRequest(path, null, method);
         }
 
         /// <summary>
@@ -145,7 +115,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             var httpRequest = new CdmHttpRequest(path, this.NumberOfRetries);
 
-            httpRequest.Headers = headers;
+            httpRequest.Headers = headers ?? new Dictionary<string, string>();
             httpRequest.Timeout = this.Timeout;
             httpRequest.MaximumTimeout = this.MaximumTimeout;
             httpRequest.Method = method;

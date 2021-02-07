@@ -1,6 +1,11 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -11,6 +16,10 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 public class AttributeGroupPersistence {
 
   public static CdmAttributeGroupDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
+    return fromData(ctx, obj, null);
+  }
+
+  public static CdmAttributeGroupDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj, final String entityName) {
     if (obj == null) {
       return null;
     }
@@ -30,7 +39,7 @@ public class AttributeGroupPersistence {
 
     if (obj.get("members") != null) {
       for (final JsonNode att : obj.get("members")) {
-        attributeGroup.getMembers().add((Utils.createAttribute(ctx, att)));
+        attributeGroup.getMembers().add((Utils.createAttribute(ctx, att, entityName)));
       }
     }
 
@@ -47,7 +56,8 @@ public class AttributeGroupPersistence {
       result.setAttributeContext((String) instance.getAttributeContext().copyData(resOpt, options));
     }
 
-    result.setMembers(Utils.listCopyDataAsArrayNode(instance.getMembers(), resOpt, options));
+    ArrayNode members = Utils.listCopyDataAsArrayNode(instance.getMembers(), resOpt, options);
+    result.setMembers(members != null ? members : JsonNodeFactory.instance.arrayNode());
     return result;
   }
 }

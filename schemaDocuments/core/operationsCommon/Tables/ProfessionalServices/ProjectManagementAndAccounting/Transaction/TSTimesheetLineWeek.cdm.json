@@ -1,0 +1,283 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/WorksheetHeader/ProjJournalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjPeriodTable.cdm.json"
+    },
+    {
+      "corpusPath": "TSTimesheetLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/TSTimesheetTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TSTimesheetLineWeek",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DayFrom",
+          "dataType": "TSPeriodFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DayTo",
+          "dataType": "TSPeriodTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExternalComments",
+          "dataType": "TSExternalComments",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Hours",
+          "dataType": "TSWeeklyHours",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InternalComments",
+          "dataType": "TSInternalComments",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalId",
+          "dataType": "ProjJournalId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodDate",
+          "dataType": "ProjPeriodFrom",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjPeriodId",
+          "dataType": "ProjPeriodId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjTransDate",
+          "dataType": "ProjTransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPrice",
+          "dataType": "ProjSalesPriceEmpl",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TimesheetNbr",
+          "dataType": "TSTimesheetNbr",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "JournalTransDate",
+          "isNullable": true,
+          "displayName": "Voucher date",
+          "description": ""
+        },
+        {
+          "name": "TransId",
+          "dataType": "ProjTransIdBase",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TSTimesheetLine",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjJournalTable"
+          },
+          "name": "Relationship_ProjJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjPeriodTable"
+          },
+          "name": "Relationship_ProjPeriodTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TSTimesheetLine"
+          },
+          "name": "Relationship_TSTimesheetLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TSTimesheetTable"
+          },
+          "name": "Relationship_TSTimesheetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Timesheet weekly hours"
+    },
+    {
+      "dataTypeName": "TSPeriodFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TSPeriodTo",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TSExternalComments",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TSWeeklyHours",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TSInternalComments",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjPeriodFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjPeriodId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjSalesPriceEmpl",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TSTimesheetNbr",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalTransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjTransIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

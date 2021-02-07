@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -12,8 +13,10 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetB
 import com.microsoft.commondatamodel.objectmodel.utilities.CdmException;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -33,22 +36,37 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   }
 
   /**
-   * @param pathFrom
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param pathFrom Path from
+   * @param preChildren Pre children
+   * @param postChildren Post children
+   * @return boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Override
   @Deprecated
   public boolean visitRef(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    return (this.arguments != null && this.arguments
-        .visitList(pathFrom + "/arguments/", preChildren, postChildren));
+    boolean result = false;
+    if (this.arguments != null && this.arguments.size() > 0) {
+      // custom enumeration of args to force a path onto these things that just might not have a name
+      int lItem = this.arguments.size();
+      for (int iItem = 0; iItem < lItem; iItem++) {
+        CdmArgumentDefinition element = this.arguments.get(iItem);
+        if (element != null) {
+          String argPath = pathFrom + "/arguments/a" + iItem;
+          if (element.visit(argPath, preChildren, postChildren)) {
+            result = true;
+            break;
+          }
+        }
+      }
+    }
+    return result;
   }
 
   /**
    * Gets the trait reference argument.
+   * @return CdmArgumentCollection
    */
   public CdmArgumentCollection getArguments() {
     return this.arguments;
@@ -56,6 +74,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
 
   /**
    * Gets or sets true if the trait was generated from a property and false it was directly loaded.
+   * @return boolean
    */
   public boolean isFromProperty() {
     return this.fromProperty;
@@ -105,48 +124,55 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
     }
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  public ResolvedTraitSet fetchResolvedTraits(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
+    if (resOpt == null) {
+        resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     final String kind = "rtsb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
 
     // Get referenced trait.
     final CdmTraitDefinition trait = this.fetchObjectDefinition(resOpt);
     ResolvedTraitSet rtsTrait = null;
-    if (null == trait) {
+    if (trait == null) {
       return this.createEmptyResolvedTraitSet(ctx.getCorpus(), resOpt);
     }
 
     // See if one is already cached getCache() by name unless there are parameter.
-    if (null == trait.thisIsKnownToHaveParameters) {
+    if (trait.thisIsKnownToHaveParameters == null) {
       // Never been resolved, it will happen soon, so why not now?
       rtsTrait = trait.fetchResolvedTraits(resOpt);
     }
 
-    final boolean cacheByName = trait.thisIsKnownToHaveParameters == null
-        ? true
-        : trait.thisIsKnownToHaveParameters;
+    final boolean cacheByPath = trait.thisIsKnownToHaveParameters == null || !trait.thisIsKnownToHaveParameters;
     String cacheTag = ctx.getCorpus()
-        .createDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
+        .createDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.getAtCorpusPath());
     Object rtsResult = null;
 
-    if (null != cacheTag) {
+    if (cacheTag != null) {
       rtsResult = ctx.getCache().get(cacheTag);
     }
 
     // Store the previous reference symbol set, we will need to add it with
     // children found from the constructResolvedTraits call.
     SymbolSet currSymRefSet = resOpt.getSymbolRefSet();
-    if (null == currSymRefSet) {
+    if (currSymRefSet == null) {
       currSymRefSet = new SymbolSet();
     }
 
     resOpt.setSymbolRefSet(new SymbolSet());
 
     // If not, then make one and save it.
-    if (null == rtsResult) {
+    if (rtsResult == null) {
       // Get the set of resolutions, should just be this one trait.
-      if (null == rtsTrait) {
+      if (rtsTrait == null) {
         // Store current symbol ref set.
         final SymbolSet newSymbolRefSet = resOpt.getSymbolRefSet();
         resOpt.setSymbolRefSet(new SymbolSet());
@@ -154,19 +180,19 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
         rtsTrait = trait.fetchResolvedTraits(resOpt);
 
         // Bubble up symbol reference set from children.
-        if (null != newSymbolRefSet) {
+        if (newSymbolRefSet != null) {
           newSymbolRefSet.merge(resOpt.getSymbolRefSet());
         }
 
         resOpt.setSymbolRefSet(newSymbolRefSet);
       }
 
-      if (null != rtsTrait) {
+      if (rtsTrait != null) {
         rtsResult = rtsTrait.deepCopy();
       }
 
       // Now if there are argument for this application, set the values in the array.
-      if (null != this.getArguments() && null != rtsResult) {
+      if (this.getArguments() != null && rtsResult != null) {
         // If never tried to line up arguments with parameters, do that.
         if (!this.resolvedArguments) {
           this.resolvedArguments = true;
@@ -175,7 +201,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
           Object aValue;
 
           int iArg = 0;
-          if (null != this.getArguments()) {
+          if (this.getArguments() != null) {
             for (final CdmArgumentDefinition argumentDef : this.getArguments()) {
               try {
                 paramFound = param.resolveParameter(iArg, argumentDef.getName());
@@ -191,7 +217,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
             }
           }
         }
-        if (null != this.getArguments()) {
+        if (this.getArguments() != null) {
           for (final CdmArgumentDefinition argumentDef : this.getArguments()) {
             ((ResolvedTraitSet) rtsResult).setParameterValueFromArgument(trait, argumentDef);
           }
@@ -205,8 +231,8 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
 
       // Get the new getCache() tag now that we have the list of symbols.
       cacheTag = ctx.getCorpus()
-          .createDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
-      if (null != cacheTag && " ".equalsIgnoreCase(cacheTag)) {
+          .createDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.getAtCorpusPath());
+      if (cacheTag != null && cacheTag.trim().length() > 0) {
         ctx.getCache().put(cacheTag, rtsResult);
       }
     } else {
@@ -276,13 +302,23 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
     return copy;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
                                                           final CdmAttributeContext under) {
     // return null intentionally
     return null;
@@ -294,9 +330,9 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   }
 
   /**
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved option
+   * @param options copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -311,17 +347,34 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
    * Returns a map from parameter names to the final argument values for a strait reference.
    * Values come (in this order) from base trait defaults then default overrides on inheritance
    * then values supplied on this reference
+   * @param resOpt Resolved option
+   * @return Map of string to object
    */
   public Map<String, Object> fetchFinalArgumentValues(ResolveOptions resOpt) {
     Map<String, Object> finalArgs = new LinkedHashMap<>();
     // get resolved traits does all the work, just clean up the answers
     ResolvedTraitSet rts = this.fetchResolvedTraits(resOpt);
-    if (rts == null) {
+    if (rts == null || rts.getSize() != 1) {
+        // well didn't get the traits. maybe imports are missing or maybe things are just not defined yet.
+        // this function will try to fake up some answers then from the arguments that are set on this reference only
+        if (this.getArguments() != null && this.getArguments().size() > 0) {
+          int unNamedCount = 0;
+          for (final CdmArgumentDefinition arg : this.getArguments()) {
+            // if no arg name given, use the position in the list.
+            String argName = arg.getName();
+            if (StringUtils.isNullOrTrimEmpty(argName)) {
+              argName = String.valueOf(unNamedCount);
+            }
+            finalArgs.put(argName, arg.getValue());
+            unNamedCount++;
+          }
+          return finalArgs;
+        }
       return null;
     }
     // there is only one resolved trait
     ResolvedTrait rt = rts.getFirst();
-    if (rt.getParameterValues() != null && rt.getParameterValues().length() > 0) {
+    if (rt != null && rt.getParameterValues() != null && rt.getParameterValues().length() > 0) {
       final int l = rt.getParameterValues().length();
       for (int i = 0; i < l; i++) {
         final CdmParameterDefinition p = rt.getParameterValues().fetchParameter(i);
@@ -363,10 +416,22 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
     return rts;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @return boolean
+   */
+  @Deprecated
   public boolean isResolvedArguments() {
     return resolvedArguments;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resolvedArguments boolan
+   */
+  @Deprecated
   public void setResolvedArguments(boolean resolvedArguments) {
     this.resolvedArguments = resolvedArguments;
   }

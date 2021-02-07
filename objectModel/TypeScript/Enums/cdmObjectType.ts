@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 export enum cdmObjectType {
     error,
     import,
@@ -29,5 +32,16 @@ export enum cdmObjectType {
     dataPartitionDef,
     dataPartitionPatternDef,
     attributeResolutionGuidanceDef,
-    e2eRelationshipDef
+    e2eRelationshipDef,
+    operationAddCountAttributeDef,
+    operationAddSupportingAttributeDef,
+    operationAddTypeAttributeDef,
+    operationExcludeAttributesDef,
+    operationArrayExpansionDef,
+    operationCombineAttributesDef,
+    operationRenameAttributesDef,
+    operationReplaceAsForeignKeyDef,
+    operationIncludeAttributesDef,
+    operationAddAttributeGroupDef,
+    projectionDef
 }

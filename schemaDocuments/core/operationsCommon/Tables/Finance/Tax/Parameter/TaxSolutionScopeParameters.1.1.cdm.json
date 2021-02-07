@@ -1,0 +1,124 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceTable.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxSolutionScopeParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TaxJournalName",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Tax journal name for settlement",
+          "description": ""
+        },
+        {
+          "name": "InterimSettlementLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Interim settlement account",
+          "description": ""
+        },
+        {
+          "name": "TaxJournalVoucherSeries",
+          "dataType": "TaxEngineTaxJournalVoucherSeries",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxSolutionScopeSetup",
+          "dataType": "TaxSolutionScopeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxDocumentPostingMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxCalculationResultValidationModeWithEmptyTaxComponent",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxCalculationResultValidationModeWithZeroTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_InterimSettlementLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_NumberSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax solution scope parameters"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxEngineTaxJournalVoucherSeries",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxSolutionScopeRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

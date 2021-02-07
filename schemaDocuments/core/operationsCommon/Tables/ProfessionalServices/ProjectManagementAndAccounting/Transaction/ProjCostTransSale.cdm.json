@@ -1,0 +1,266 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjFundingSource.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjControl.cdm.json"
+    },
+    {
+      "corpusPath": "ProjCostTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjCostTransSale",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ControlId",
+          "dataType": "ProjControlId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ControlVersion",
+          "dataType": "ProjControlVersion",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FundingSource",
+          "dataType": "ProjFundingSourceRefId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerSalesAmount",
+          "dataType": "ProjLedgerAccruedAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerSalesPosted",
+          "dataType": "ProjLedgerSalesPosted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerTransdate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Total",
+          "description": ""
+        },
+        {
+          "name": "ProjProposalId_IN",
+          "dataType": "ProjProposalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPrice",
+          "dataType": "ProjSalesPriceCost",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAsPerOriginalInvoice_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Tax as per original invoice",
+          "description": ""
+        },
+        {
+          "name": "TransId",
+          "dataType": "ProjCostTransId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TransStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WIPPeriod",
+          "dataType": "ProjPeriodFrom",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Estimate date",
+          "description": ""
+        },
+        {
+          "name": "WIPType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjFundingSource"
+          },
+          "name": "Relationship_FundingSourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjControl"
+          },
+          "name": "Relationship_ProjControlRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCostTrans"
+          },
+          "name": "Relationship_ProjCostTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Expense"
+    },
+    {
+      "dataTypeName": "ProjControlId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjControlVersion",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjFundingSourceRefId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjLedgerAccruedAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjLedgerSalesPosted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjProposalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjSalesPriceCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjCostTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjPeriodFrom",
+      "extendsDataType": "date"
+    }
+  ]
+}

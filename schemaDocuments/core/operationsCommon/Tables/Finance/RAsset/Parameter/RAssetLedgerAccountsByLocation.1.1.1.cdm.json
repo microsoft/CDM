@@ -1,0 +1,204 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetLocation.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetStandardTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Main/RAssetTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RAssetLedgerAccountsByLocation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountCode",
+          "dataType": "RAssetTableGroupAll",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationBonusLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Account for depr.bonus",
+          "description": ""
+        },
+        {
+          "name": "Location",
+          "dataType": "RAssetLocationId",
+          "description": ""
+        },
+        {
+          "name": "Num",
+          "dataType": "PostingProfileAccountRelation",
+          "isNullable": true,
+          "displayName": "Account relation",
+          "description": ""
+        },
+        {
+          "name": "BookId",
+          "dataType": "AssetBookId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationGroupId",
+          "dataType": "AssetDepreciationGroupId_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DepreciationBonusLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetGroup"
+          },
+          "name": "Relationship_RAssetGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetLocation"
+          },
+          "name": "Relationship_RAssetLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetStandardTable"
+          },
+          "name": "Relationship_RAssetStandardRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTable"
+          },
+          "name": "Relationship_RAssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "GL accounts for location"
+    },
+    {
+      "dataTypeName": "RAssetTableGroupAll",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RAssetLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PostingProfileAccountRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationGroupId_W",
+      "extendsDataType": "string"
+    }
+  ]
+}

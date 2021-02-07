@@ -1,0 +1,287 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CustInvoiceJour.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FiscalEstablishment_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustInvoiceSalesLink",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "salesId",
+          "dataType": "SalesIdBase",
+          "description": ""
+        },
+        {
+          "name": "CustomerRef",
+          "dataType": "CustRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "deliveryName",
+          "dataType": "CustName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishment_BR",
+          "dataType": "FiscalEstablishmentRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "invoiceAccount",
+          "dataType": "CustInvoiceAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "invoiceDate",
+          "dataType": "TransDate",
+          "description": ""
+        },
+        {
+          "name": "invoiceId",
+          "dataType": "InvoiceId",
+          "description": ""
+        },
+        {
+          "name": "InvoicePostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "invoicingName",
+          "dataType": "CustName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "orderAccount",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "origSalesId",
+          "dataType": "SalesIdOrig",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "parmId",
+          "dataType": "ParmId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchaseOrder",
+          "dataType": "CustPurchaseOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_CustInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTable_orderAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_DeliveryPostalAddress_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalEstablishment_BR"
+          },
+          "name": "Relationship_FiscalEstablishment_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_InvoicePostalAddress_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_salesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTable_salesIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer invoice - sales order relation table"
+    },
+    {
+      "dataTypeName": "SalesIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustRef",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FiscalEstablishmentRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustInvoiceAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesIdOrig",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPurchaseOrder",
+      "extendsDataType": "string"
+    }
+  ]
+}

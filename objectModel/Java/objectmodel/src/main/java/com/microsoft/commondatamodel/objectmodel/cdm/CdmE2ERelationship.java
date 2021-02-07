@@ -1,10 +1,18 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
+
+import java.util.ArrayList;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
@@ -48,7 +56,11 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
       return true;
     }
 
-    return postChildren != null && postChildren.invoke(this, path);
+    if (postChildren != null && postChildren.invoke(this, path)) {
+      return true;
+    }
+
+    return false;
   }
 
   @Override
@@ -93,23 +105,38 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
     return false;
   }
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.fromEntity)
-        && !Strings.isNullOrEmpty(this.fromEntityAttribute)
-        && !Strings.isNullOrEmpty(this.toEntity)
-        && !Strings.isNullOrEmpty(this.toEntityAttribute);
+    ArrayList<String> missingFields = new ArrayList<String>();
+    if (StringUtils.isNullOrTrimEmpty(this.fromEntity)) {
+      missingFields.add("fromEntity");
+    }
+    if (StringUtils.isNullOrTrimEmpty(this.fromEntityAttribute)) {
+      missingFields.add("fromEntityAttribute");
+    }
+    if (StringUtils.isNullOrTrimEmpty(this.toEntity)) {
+      missingFields.add("toEntity");
+    }
+    if (StringUtils.isNullOrTrimEmpty(this.toEntityAttribute)) {
+      missingFields.add("toEntityAttribute");
+    }
+
+    if (missingFields.size() > 0) {
+      Logger.error(CdmE2ERelationship.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      return false;
+    }
+    return true;
   }
 
   /**
-   * 
-   * @param resOpt
-   * @param options
-   * @return
+   *
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -123,7 +150,7 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmE2ERelationship copy;

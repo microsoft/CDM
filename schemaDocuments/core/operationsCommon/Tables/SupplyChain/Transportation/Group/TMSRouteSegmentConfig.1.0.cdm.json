@@ -1,0 +1,344 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSCarrier.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSCarrierGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "TMSCarrierService.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "TMSHubMaster.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "TMSMode.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "TMSRouteConfig.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "TMSRouteHubConfig.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSRouteSegmentConfig",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RouteStartHubCode",
+          "dataType": "TMSRouteStartHubCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierCode",
+          "dataType": "TMSCarrierCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierGroupCode",
+          "dataType": "TMSCarrierGroupCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierServiceCode",
+          "dataType": "TMSCarrierServiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FreightTermCode",
+          "dataType": "TMSFreightTermCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAccountType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ModeCode",
+          "dataType": "TMSModeCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "TMSName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponsibleForPayment",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteConfigCode",
+          "dataType": "TMSRouteConfigCode",
+          "description": ""
+        },
+        {
+          "name": "RouteEndHubCode",
+          "dataType": "TMSRouteEndHubCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "TMSSequence",
+          "description": ""
+        },
+        {
+          "name": "VendorCode",
+          "dataType": "TMSVendorCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorInvoiceCode",
+          "dataType": "TMSVendorInvoiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrier"
+          },
+          "name": "Relationship_TMSCarrierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrierGroup"
+          },
+          "name": "Relationship_TMSCarrierGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrierService"
+          },
+          "name": "Relationship_TMSCarrierServiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSHubMaster"
+          },
+          "name": "Relationship_TMSHubMasterEndRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSHubMaster"
+          },
+          "name": "Relationship_TMSHubMasterStartRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSMode"
+          },
+          "name": "Relationship_TMSModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteConfig"
+          },
+          "name": "Relationship_TMSRouteConfigRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteHubConfig"
+          },
+          "name": "Relationship_TMSRouteEndHubConfigRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteHubConfig"
+          },
+          "name": "Relationship_TMSRouteStartHubConfigRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableInvoiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Route segment configuration"
+    },
+    {
+      "dataTypeName": "TMSRouteStartHubCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierGroupCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierServiceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSFreightTermCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSModeCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteConfigCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteEndHubCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSSequence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSVendorCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSVendorInvoiceCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

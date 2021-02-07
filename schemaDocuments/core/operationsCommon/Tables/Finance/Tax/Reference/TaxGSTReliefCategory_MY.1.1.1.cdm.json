@@ -1,0 +1,92 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxGSTReliefCategory_MY",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ReliefCategoryId",
+          "dataType": "TaxGSTReliefCategoryId_MY",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReliefItemNumber",
+          "dataType": "TaxGSTReliefItemNumber_MY",
+          "description": ""
+        },
+        {
+          "name": "ReliefSchedule",
+          "dataType": "TaxGSTReliefSchedule_MY",
+          "description": ""
+        },
+        {
+          "name": "ReliefCategoryEntityKey",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "GST relief category entity key",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "GST relief category"
+    },
+    {
+      "dataTypeName": "TaxGSTReliefCategoryId_MY",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxGSTReliefItemNumber_MY",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxGSTReliefSchedule_MY",
+      "extendsDataType": "string"
+    }
+  ]
+}

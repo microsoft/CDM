@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Union, List
 
 from .purpose import *
@@ -10,4 +13,4 @@ class PurposeReference(JObject):
         super().__init__()
 
         self.purposeReference = None  # type: Union[str, Purpose]
-        self.appliedTraits = []  # type: List[Union[str, TraitReference]]
+        self.appliedTraits = None  # type: List[Union[str, TraitReference]]

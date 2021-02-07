@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmAttributeContext,
     CdmCorpusContext,
@@ -5,6 +8,8 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
+    Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
@@ -66,7 +71,7 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
         let copy: CdmManifestDeclarationDefinition;
         if (!host) {
@@ -88,7 +93,26 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
      * @inheritdoc
      */
     public validate(): boolean {
-        return this.manifestName && this.definition ? true : false;
+        const missingFields: string[] = [];
+        if (!this.manifestName) {
+            missingFields.push('manifestName');
+        }
+        if (!this.definition) {
+            missingFields.push('definition');
+        }
+
+        if (missingFields.length > 0) {
+            Logger.error(
+                CdmManifestDeclarationDefinition.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, missingFields),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -130,17 +154,11 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
      * @inheritdoc
      */
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false; // makes no sense
     }
 
     /**
      * @inheritdoc
-     */
-    /**
      * @internal
      */
     public constructResolvedTraits(rtsb: ResolvedTraitSetBuilder, resOpt: resolveOptions): void {
@@ -149,8 +167,6 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
 
     /**
      * @inheritdoc
-     */
-    /**
      * @internal
      */
     public constructResolvedAttributes(resOpt: resolveOptions, under?: CdmAttributeContext): ResolvedAttributeSetBuilder {
@@ -161,7 +177,7 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
      * @inheritdoc
      */
     public async fileStatusCheckAsync(): Promise<void> {
-        const fullPath: string  = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.definition, this.inDocument);
+        const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.definition, this.inDocument);
         const modifiedTime: Date = await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
 
         this.lastFileStatusCheckTime = new Date();

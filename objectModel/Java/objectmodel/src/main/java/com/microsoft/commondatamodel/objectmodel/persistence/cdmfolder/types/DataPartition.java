@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -33,7 +36,7 @@ public class DataPartition extends FileStatus {
 
     /**
      * Gets the corpus path for the data file location.
-     * @return
+     * @return String
      */
     public String getLocation() {
         return this.location;
@@ -41,7 +44,7 @@ public class DataPartition extends FileStatus {
 
     /**
      * Sets the corpus path for the data file location.
-     * @param location
+     * @param location String
      */
     public void setLocation(final String location) {
         this.location = location;
@@ -49,7 +52,7 @@ public class DataPartition extends FileStatus {
 
     /**
      * Gets the exhibited traits.
-     * @return
+     * @return ArrayNode
      */
     public ArrayNode getExhibitsTraits() {
         return this.exhibitsTraits;
@@ -57,7 +60,7 @@ public class DataPartition extends FileStatus {
 
     /**
      * Sets the exhibited traits.
-     * @param exhibitsTraits
+     * @param exhibitsTraits Arraynode
      */
     public void setExhibitsTraits(final ArrayNode exhibitsTraits) {
         this.exhibitsTraits = exhibitsTraits;
@@ -65,7 +68,7 @@ public class DataPartition extends FileStatus {
 
     /**
      * Gets the list of key value pairs to give names for the replacement values from the RegEx.
-     * @return
+     * @return List of KVP
      */
     public List<KeyValuePair<String,String>> getArguments() {
         return this.arguments;
@@ -73,7 +76,7 @@ public class DataPartition extends FileStatus {
 
     /**
      * Sets the list of key value pairs to give names for the replacement values from the RegEx.
-     * @param arguments
+     * @param arguments List of KVP
      */
     public void setArguments(final List<KeyValuePair<String,String>> arguments) {
         this.arguments = arguments;
@@ -81,7 +84,7 @@ public class DataPartition extends FileStatus {
 
     /**
      * Gets the path of a specialized schema to use specifically for the partitions generated.
-     * @return
+     * @return String
      */
     public String getSpecializedSchema() {
         return this.specializedSchema;
@@ -89,7 +92,7 @@ public class DataPartition extends FileStatus {
 
     /**
      * Sets the path of a specialized schema to use specifically for the partitions generated.
-     * @param specializedSchema
+     * @param specializedSchema String
      */
     public void setSpecializedSchema(final String specializedSchema) {
         this.specializedSchema = specializedSchema;

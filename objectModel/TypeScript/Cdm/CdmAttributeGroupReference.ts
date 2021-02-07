@@ -1,8 +1,11 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmAttributeGroupDefinition,
     CdmAttributeItem,
     CdmCorpusContext,
-    CdmObjectDefinition,
+    CdmObject,
     CdmObjectReferenceBase,
     cdmObjectType,
     ResolvedEntityReferenceSet,
@@ -39,6 +42,12 @@ export class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
         // let bodyCode = () =>
         {
             if (!host) {
+                // for inline attribute group definition, the owner information is lost here when a ref object created
+                // updating it here
+                if (this.explicitReference && this.explicitReference.objectType === cdmObjectType.attributeGroupDef && !this.explicitReference.owner) {
+                    this.explicitReference.owner = this.owner;
+                }
+
                 return new CdmAttributeGroupReference(this.ctx, refTo, simpleReference);
             } else {
                 return host.copyToHost(this.ctx, refTo, simpleReference);
@@ -62,10 +71,10 @@ export class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
-            const ref: CdmObjectDefinition = this.fetchResolvedReference(resOpt);
+            const ref: CdmObject = this.fetchResolvedReference(resOpt);
             if (ref) {
                 return (ref as CdmAttributeGroupDefinition).fetchResolvedEntityReference(resOpt);
             }

@@ -1,0 +1,129 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Main/MCRSourceCodeSetup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesQuotationTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRSalesQuotationTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DeliveryCompanyName",
+          "dataType": "CompanyName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceOverride",
+          "dataType": "MCRPriceOverride",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesQuotationTable",
+          "dataType": "MCRSalesQuotationTableRefRecId",
+          "description": ""
+        },
+        {
+          "name": "SOAllocPriority",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Sales order priority for fulfillment",
+          "description": ""
+        },
+        {
+          "name": "SourceId",
+          "dataType": "MCRSourceID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "MCRSourceCodeSetup"
+          },
+          "name": "Relationship_MCRSourceCodeSetupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesQuotationTable"
+          },
+          "name": "Relationship_SalesQuotationTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales quotation"
+    },
+    {
+      "dataTypeName": "CompanyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRPriceOverride",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRSalesQuotationTableRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MCRSourceID",
+      "extendsDataType": "string"
+    }
+  ]
+}

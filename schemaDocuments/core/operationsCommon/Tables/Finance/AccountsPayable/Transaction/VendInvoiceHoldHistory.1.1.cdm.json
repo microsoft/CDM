@@ -1,0 +1,188 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/TransactionHeader/VendInvoiceInfoTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "VendInvoiceJour.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendInvoiceHoldHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CalculatedDueDate_PSN",
+          "dataType": "Deadline",
+          "isNullable": true,
+          "displayName": "Calculated due date",
+          "description": ""
+        },
+        {
+          "name": "HoldBy_PSN",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Hold placed by",
+          "description": ""
+        },
+        {
+          "name": "HoldReleaseDate_PSN",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "displayName": "Hold release date",
+          "description": ""
+        },
+        {
+          "name": "HoldReleasedBy_PSN",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Hold released by",
+          "description": ""
+        },
+        {
+          "name": "HoldStartDate_PSN",
+          "dataType": "FromDate",
+          "isNullable": true,
+          "displayName": "Hold start date",
+          "description": ""
+        },
+        {
+          "name": "InvoicePaymHold_PSN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Invoice payment hold",
+          "description": ""
+        },
+        {
+          "name": "ReasonTableRef_PSN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId_PSN",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SecurityRole_PSN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "User role",
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceJour_PSN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceInfoTable"
+          },
+          "name": "Relationship_VendInvoiceInfoTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceJour"
+          },
+          "name": "Relationship_VendInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor invoice payment hold history"
+    },
+    {
+      "dataTypeName": "Deadline",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "FromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

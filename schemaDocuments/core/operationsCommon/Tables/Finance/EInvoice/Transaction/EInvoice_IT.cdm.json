@@ -1,0 +1,179 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EInvoice_IT",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "XMLOutgoingSignedBy",
+          "dataType": "UserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Signed by user ID",
+          "description": ""
+        },
+        {
+          "name": "CertSubj",
+          "dataType": "DigitalCertificateSubject",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EInvoiceFileName",
+          "dataType": "EInvoiceFileName_IT",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EInvoiceTransmissionName",
+          "dataType": "EInvoiceTransmissionName_IT",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RegistrationDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "eInvoice registration date",
+          "description": ""
+        },
+        {
+          "name": "RegistrationID",
+          "dataType": "EInvoiceID_IT",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "XMLOutgoing",
+          "dataType": "XML",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Outgoing XML",
+          "description": ""
+        },
+        {
+          "name": "XMLOutgoingCreatedBy",
+          "dataType": "UserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Created by user ID",
+          "description": ""
+        },
+        {
+          "name": "XMLOutgoingCreatedDateTime",
+          "dataType": "TransDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Created date",
+          "description": ""
+        },
+        {
+          "name": "XMLOutgoingSigned",
+          "dataType": "XML",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Signed outgoing XML",
+          "description": ""
+        },
+        {
+          "name": "XMLOutgoingSignedDateTime",
+          "dataType": "TransDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Signed date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Electronic invoices"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DigitalCertificateSubject",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EInvoiceFileName_IT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EInvoiceTransmissionName_IT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EInvoiceID_IT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "XML",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

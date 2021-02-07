@@ -1,0 +1,635 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailChannelTable.cdm.json"
+    },
+    {
+      "corpusPath": "RetailStatementTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailStoreTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailTerminalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailPosBatchTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TerminalId",
+          "dataType": "RetailTerminalId",
+          "description": ""
+        },
+        {
+          "name": "BatchID",
+          "dataType": "RetailPosBatchID",
+          "description": ""
+        },
+        {
+          "name": "CancellationCharges",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Channel",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CloseDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Closed date",
+          "description": ""
+        },
+        {
+          "name": "CloseDateTimeUtc",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "displayName": "Closed time",
+          "description": ""
+        },
+        {
+          "name": "ClosedAtTerminal",
+          "dataType": "RetailTerminalId",
+          "description": ""
+        },
+        {
+          "name": "CloseTime",
+          "dataType": "TimeOfDay",
+          "isNullable": true,
+          "displayName": "Closed time",
+          "description": ""
+        },
+        {
+          "name": "CustomersCount",
+          "dataType": "Counter",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Customer sales",
+          "description": ""
+        },
+        {
+          "name": "CustomerOrdersCanceled",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerOrdersEdited",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerOrdersPlaced",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerOrdersVoidedLines",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepositCollected",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepositRedeemed",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepositRefunded",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscountTotal",
+          "dataType": "Amount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Discounts",
+          "description": ""
+        },
+        {
+          "name": "LogonsCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Logon",
+          "description": ""
+        },
+        {
+          "name": "NoSaleCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Open drawer",
+          "description": ""
+        },
+        {
+          "name": "Origin",
+          "dataType": "RetailConnDistributionLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaidToAccountTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "To account",
+          "description": ""
+        },
+        {
+          "name": "Posted",
+          "dataType": "Posted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplicationCounter",
+          "dataType": "RetailReplicationCounter",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReturnsTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Returns",
+          "description": ""
+        },
+        {
+          "name": "RoundedAmountTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Rounded",
+          "description": ""
+        },
+        {
+          "name": "SalesCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Sales",
+          "description": ""
+        },
+        {
+          "name": "SalesTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Sales",
+          "description": ""
+        },
+        {
+          "name": "StaffId",
+          "dataType": "RetailStaffId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "StartDateTimeUtc",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "displayName": "Start time",
+          "description": ""
+        },
+        {
+          "name": "StartTime",
+          "dataType": "TimeOfDay",
+          "isNullable": true,
+          "displayName": "Start time",
+          "description": ""
+        },
+        {
+          "name": "StatementId",
+          "dataType": "RetailStatementId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StoreId",
+          "dataType": "RetailStoreId",
+          "description": ""
+        },
+        {
+          "name": "TaxTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Taxes",
+          "description": ""
+        },
+        {
+          "name": "TransactionsCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Number of transactions",
+          "description": ""
+        },
+        {
+          "name": "VoidsCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Voided sales",
+          "description": ""
+        },
+        {
+          "name": "GoodsSoldQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Items sold",
+          "description": ""
+        },
+        {
+          "name": "PriceOverrideTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Manual price reductions",
+          "description": ""
+        },
+        {
+          "name": "ReceiptCopiesCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Receipt copies",
+          "description": ""
+        },
+        {
+          "name": "ReceiptCopiesTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Receipt copies",
+          "description": ""
+        },
+        {
+          "name": "ReturnsCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Returns",
+          "description": ""
+        },
+        {
+          "name": "ReturnsGrandTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Grand return",
+          "description": ""
+        },
+        {
+          "name": "SalesGrandTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Grand sales",
+          "description": ""
+        },
+        {
+          "name": "ServicesSoldQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Services sold",
+          "description": ""
+        },
+        {
+          "name": "SuspendedCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Suspended",
+          "description": ""
+        },
+        {
+          "name": "SuspendedTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Suspended",
+          "description": ""
+        },
+        {
+          "name": "TrainingCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Training",
+          "description": ""
+        },
+        {
+          "name": "TrainingTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Training",
+          "description": ""
+        },
+        {
+          "name": "GiftCardsTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GiftCardCashOutTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Gift card cash out total",
+          "description": ""
+        },
+        {
+          "name": "ReceiptsCount",
+          "dataType": "Counter",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Cash receipts",
+          "description": ""
+        },
+        {
+          "name": "SalesTotalIncludingTax",
+          "dataType": "Amount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Total Sales including VAT",
+          "description": ""
+        },
+        {
+          "name": "SalesTotalExcludingTax",
+          "dataType": "Amount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Total Sales excluding VAT",
+          "description": ""
+        },
+        {
+          "name": "VoidedSalesTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Voided amount",
+          "description": ""
+        },
+        {
+          "name": "ShiftReturnsTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Total cash returns",
+          "description": ""
+        },
+        {
+          "name": "ShiftSalesTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Total cash sales",
+          "description": ""
+        },
+        {
+          "name": "ChargeTotal",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Charge totals",
+          "description": ""
+        },
+        {
+          "name": "ZeroSalesCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Zero sales",
+          "description": ""
+        },
+        {
+          "name": "HasPendingOfflineTransactions",
+          "dataType": "RetailHasPendingOfflineTransactions",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Error",
+          "dataType": "RetailEodShiftValidationError",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ErrorCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ErrorCodeDateTime",
+          "dataType": "RetailEodShiftValidationErrorCodeDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ErrorCodeEditUser",
+          "dataType": "RetailEodShiftValidationErrorCodeEditUser",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarkForFinancialStatement",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Mark for financial statement",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelTable"
+          },
+          "name": "Relationship_RetailChannelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStatementTable"
+          },
+          "name": "Relationship_RetailStatementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreTable"
+          },
+          "name": "Relationship_RetailStoreTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalTableCloseRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Shifts"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailPosBatchID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TimeOfDay",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "Counter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailConnDistributionLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Posted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailStaffId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStatementId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailHasPendingOfflineTransactions",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEodShiftValidationError",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailEodShiftValidationErrorCodeDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailEodShiftValidationErrorCodeEditUser",
+      "extendsDataType": "string"
+    }
+  ]
+}

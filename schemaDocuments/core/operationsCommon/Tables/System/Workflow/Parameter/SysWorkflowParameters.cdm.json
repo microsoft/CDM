@@ -1,0 +1,145 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/SysEmailSystemTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysWorkflowParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExecutionUserId",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Workflow execution user",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SiteURL",
+          "dataType": "WorkflowSiteURL",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkItemEmailId",
+          "dataType": "SysEmailSystemId",
+          "isNullable": true,
+          "displayName": "Workflow notifications",
+          "description": ""
+        },
+        {
+          "name": "AddAttachments",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Add attachments",
+          "description": ""
+        },
+        {
+          "name": "NumberOfTasks",
+          "dataType": "SysEmailAttachmentBatchCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowApproverValidation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Disallow approval by submitter",
+          "description": ""
+        },
+        {
+          "name": "NumberOfMessagesPerBatch",
+          "dataType": "SysWorkflowBatchBundleSize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreventExternalWorkItemCompletion",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "@ApplicationFoundation:PreventExternalWorkItemCompletion",
+          "description": ""
+        },
+        {
+          "name": "MaxMessageRetries",
+          "dataType": "WorkflowMessageMaxRetries",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysEmailSystemTable"
+          },
+          "name": "Relationship_SysEmailSystemTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Email attachment notification"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WorkflowSiteURL",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailSystemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailAttachmentBatchCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SysWorkflowBatchBundleSize",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WorkflowMessageMaxRetries",
+      "extendsDataType": "integer"
+    }
+  ]
+}

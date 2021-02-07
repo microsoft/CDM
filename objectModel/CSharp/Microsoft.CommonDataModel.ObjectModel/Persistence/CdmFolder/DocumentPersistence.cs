@@ -1,12 +1,15 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using System.Collections.Generic;
+    using System.Linq;
 
     public class DocumentPersistence
     {
@@ -18,7 +21,12 @@
         /// <summary>
         /// The file format/extension types this persistence class supports.
         /// </summary>
-        public static readonly string[] Formats = { ".cdm.json" };
+        public static readonly string[] Formats = { PersistenceLayer.CdmExtension };
+
+        /// <summary>
+        /// The maximum json semantic version supported by this ObjectModel version.
+        /// </summary>
+        public static readonly string JsonSemanticVersion = CdmDocumentDefinition.CurrentJsonSchemaSemanticVersion;
 
         public static CdmDocumentDefinition FromObject(CdmCorpusContext ctx, string name, string nameSpace, string path, DocumentContent obj)
         {
@@ -27,9 +35,15 @@
             doc.Namespace = nameSpace;
 
             if (!string.IsNullOrEmpty(obj.Schema))
+            {
                 doc.Schema = obj.Schema;
-            if (DynamicObjectExtensions.HasProperty(obj, "JsonSchemaSemanticVersion") && !string.IsNullOrEmpty(obj.JsonSchemaSemanticVersion))
-                doc.JsonSchemaSemanticVersion = obj.JsonSchemaSemanticVersion;
+            }
+
+            if (!string.IsNullOrEmpty(obj.DocumentVersion))
+            {
+                doc.DocumentVersion = obj.DocumentVersion;
+            }
+
             if (obj.Imports != null)
             {
                 foreach (var importObj in obj.Imports)
@@ -44,18 +58,61 @@
                 {
                     dynamic d = obj.Definitions[i];
                     if (d["dataTypeName"] != null)
+                    {
                         doc.Definitions.Add(DataTypePersistence.FromData(ctx, d));
+                    }
                     else if (d["purposeName"] != null)
+                    {
                         doc.Definitions.Add(PurposePersistence.FromData(ctx, d));
+                    }
                     else if (d["attributeGroupName"] != null)
+                    {
                         doc.Definitions.Add(AttributeGroupPersistence.FromData(ctx, d));
+                    }
                     else if (d["traitName"] != null)
+                    {
                         doc.Definitions.Add(TraitPersistence.FromData(ctx, d));
+                    }
                     else if (d["entityShape"] != null)
+                    {
                         doc.Definitions.Add(ConstantEntityPersistence.FromData(ctx, d));
+                    }
                     else if (d["entityName"] != null)
+                    {
                         doc.Definitions.Add(EntityPersistence.FromData(ctx, d));
+                    }
                 }
+            }
+
+            var isResolvedDoc = false;
+            if (doc.Definitions.Count == 1 && doc.Definitions[0] is CdmEntityDefinition entity)
+            {
+                var resolvedTrait = entity.ExhibitsTraits.Item("has.entitySchemaAbstractionLevel");
+                // Tries to figure out if the document is in resolved form by looking for the schema abstraction trait
+                // or the presence of the attribute context.
+                isResolvedDoc = resolvedTrait != null && string.Equals(resolvedTrait.Arguments[0].Value, "resolved");
+                isResolvedDoc = isResolvedDoc || entity.AttributeContext != null;
+            }
+
+            if (!string.IsNullOrEmpty(obj.JsonSchemaSemanticVersion))
+            {
+                doc.JsonSchemaSemanticVersion = obj.JsonSchemaSemanticVersion;
+                if (CompareJsonSemanticVersion(ctx, doc.JsonSchemaSemanticVersion) > 0)
+                {
+                    var message = $"This ObjectModel version supports json semantic version {JsonSemanticVersion} at maximum. Trying to load a document with version {doc.JsonSchemaSemanticVersion}.";
+                    if (isResolvedDoc)
+                    {
+                        Logger.Warning(nameof(DocumentPersistence), ctx, message, nameof(FromData));
+                    }
+                    else
+                    {
+                        Logger.Error(nameof(DocumentPersistence), ctx, message, nameof(FromData));
+                    }
+                }
+            }
+            else
+            {
+                Logger.Warning(nameof(DocumentPersistence), ctx, "jsonSemanticVersion is a required property of a document.", nameof(FromData));
             }
 
             return doc;
@@ -74,8 +131,48 @@
                 Schema = instance.Schema,
                 JsonSchemaSemanticVersion = instance.JsonSchemaSemanticVersion,
                 Imports = Utils.ListCopyData<Import>(resOpt, instance.Imports, options),
-                Definitions = Utils.ListCopyData(resOpt, instance.Definitions, options)
+                Definitions = CopyDataUtils.ListCopyData(resOpt, instance.Definitions, options),
+                DocumentVersion = instance.DocumentVersion
             };
+        }
+
+        /// <summary>
+        /// Compares the document version with the json semantic version supported.
+        /// </summary>
+        /// <param name="documentSemanticVersion"></param>
+        /// <returns>
+        /// 1 => if documentSemanticVersion > JsonSemanticVersion
+        /// 0 => if documentSemanticVersion == JsonSemanticVersion or if documentSemanticVersion is invalid
+        /// -1 => if documentSemanticVersion < JsonSemanticVersion
+        /// </returns>
+        private static int CompareJsonSemanticVersion(CdmCorpusContext ctx, string documentSemanticVersion)
+        {
+            var docSemanticVersionSplit = documentSemanticVersion.Split('.');
+            var currSemanticVersionSplit = JsonSemanticVersion.Split('.').Select(value => int.Parse(value)).ToList();
+
+            var errorMessage = "jsonSemanticVersion must be set using the format <major>.<minor>.<patch>.";
+
+            if (docSemanticVersionSplit.Length != 3)
+            {
+                Logger.Warning(nameof(DocumentPersistence), ctx, errorMessage, nameof(CompareJsonSemanticVersion));
+                return 0;
+            }
+
+            for (var i = 0; i < 3; ++i)
+            {
+                if (!int.TryParse(docSemanticVersionSplit[i], out int version))
+                {
+                    Logger.Warning(nameof(DocumentPersistence), ctx, errorMessage, nameof(CompareJsonSemanticVersion));
+                    return 0;
+                }
+
+                if (version != currSemanticVersionSplit[i])
+                {
+                    return version < currSemanticVersionSplit[i] ? -1 : 1;
+                }
+            }
+
+            return 0;
         }
     }
 }

@@ -1,0 +1,126 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxationCodeTable_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AtoCotepeTaxCode",
+          "dataType": "TaxationCode_BR",
+          "isNullable": true,
+          "displayName": "SPED code",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Name",
+          "isNullable": true,
+          "displayName": "Description",
+          "description": ""
+        },
+        {
+          "name": "FiscalValue",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "FromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InputCode",
+          "dataType": "char",
+          "isNullable": true,
+          "displayName": "Input taxation code",
+          "description": ""
+        },
+        {
+          "name": "OutputCode",
+          "dataType": "char",
+          "isNullable": true,
+          "displayName": "Output taxation code",
+          "description": ""
+        },
+        {
+          "name": "TaxationCode",
+          "dataType": "TaxationCode_BR",
+          "description": ""
+        },
+        {
+          "name": "TaxType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Taxation code"
+    },
+    {
+      "dataTypeName": "TaxationCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ToDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

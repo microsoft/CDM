@@ -1,8 +1,11 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from datetime import datetime, timezone
 from typing import cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, time_utils
+from cdm.utilities import ResolveOptions, time_utils, logger, Errors
 
 from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
 from .cdm_file_status import CdmFileStatus
@@ -22,6 +25,8 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         self.last_file_modified_time = None  # type: Optional[datetime]
 
         self.last_file_status_check_time = None  # type: Optional[datetime]
+
+        self._TAG = CdmReferencedEntityDeclarationDefinition.__name__
 
     @property
     def data_partitions(self) -> Optional['CdmCollection[CdmDataPartitionDefinition]']:
@@ -43,7 +48,7 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmReferencedEntityDeclarationDefinition'] = None) -> 'CdmReferencedEntityDeclarationDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmReferencedEntityDeclarationDefinition(self.ctx, self.entity_name)
@@ -59,7 +64,16 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         return copy
 
     def validate(self) -> bool:
-        return bool(self.entity_name and self.entity_path)
+        missing_fields = []
+        if not bool(self.entity_name):
+            missing_fields.append('entity_name')
+        if not bool(self.entity_path):
+            missing_fields.append('entity_path')
+
+        if missing_fields:
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            return False
+        return True
 
     def get_name(self) -> str:
         return self.entity_name
@@ -77,7 +91,7 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._compute_last_modified_time_async(full_path, self)
 
         self.last_file_status_check_time = datetime.now(timezone.utc)
-        self.last_file_modified_time = time_utils.max_time(modified_time, self.last_file_modified_time)
+        self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
 
         await self.report_most_recent_time_async(self.last_file_modified_time)
 

@@ -1,0 +1,69 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WrkCtrActivityRequirement.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WrkCtrActivityCertificateRequirement",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityRequirement",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "CertificateType",
+          "dataType": "HcmCertificateTypeRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrActivityRequirement"
+          },
+          "name": "Relationship_ActivityRequirementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Certificate requirement"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmCertificateTypeRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

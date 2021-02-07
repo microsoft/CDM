@@ -1,0 +1,132 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BankStmtISOAccountStatement.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankStmtISOCashBalance",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AmountCreditDebitIndicator",
+          "dataType": "BankStatementAmountDrCrIndicator",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankStatementBalanceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankStmtISOAccountStatement",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashBalanceAmount",
+          "dataType": "BankStmtISODecimal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FundsType",
+          "dataType": "BankStatementIdentificationText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemCount",
+          "dataType": "BankStmtISONumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TypeCode",
+          "dataType": "BankStatementIdentificationText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankStmtISOAccountStatement"
+          },
+          "name": "Relationship_Relation1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bank statement cash balance"
+    },
+    {
+      "dataTypeName": "BankStatementAmountDrCrIndicator",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BankStmtISODecimal",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankStatementIdentificationText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankStmtISONumber",
+      "extendsDataType": "integer"
+    }
+  ]
+}

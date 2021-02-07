@@ -1,0 +1,152 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "LedgerFiscalCloseGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "Ledger.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Reference/DimensionAttributeSet.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerFiscalCloseLedgerOptions",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LedgerFiscalCloseGroup",
+          "dataType": "LedgerFiscalCloseGroupRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Ledger",
+          "dataType": "LedgerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetainedEarningsMainAccount",
+          "dataType": "MainAccountNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferBalanceSheetDimensions",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfitLossCloseDimension",
+          "dataType": "DimensionEnumeration",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfitLossDefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerFiscalCloseGroup"
+          },
+          "name": "Relationship_LedgerFiscalCloseGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Ledger"
+          },
+          "name": "Relationship_LedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_ProfitLossDefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeSet"
+          },
+          "name": "Relationship_ProfitLossCloseDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal close ledger options"
+    },
+    {
+      "dataTypeName": "LedgerFiscalCloseGroupRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MainAccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DimensionEnumeration",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

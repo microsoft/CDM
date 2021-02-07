@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -26,6 +27,13 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
     this.setObjectType(CdmObjectType.AttributeResolutionGuidanceDef);
   }
 
+  
+  /** 
+   * @param pathFrom Path From
+   * @param preChildren Pre Children
+   * @param postChildren Post Children
+   * @return boolean
+   */
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
     if (preChildren != null && preChildren.invoke(this, pathFrom)) {
@@ -60,7 +68,11 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
     return postChildren != null && postChildren.invoke(this, pathFrom);
   }
 
-  void updateAttributeDefaults(String attName) {
+  
+  /** 
+   * @param attName Attribute Name
+   */
+  void updateAttributeDefaults(String attName, final CdmObject owner) {
     // handle the cardinality and expansion group.
     // default is one, but if there is some hint of an array, make it work
     if (this.cardinality == null) {
@@ -81,11 +93,9 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
         this.expansion.setMaximumExpansion(5);
       }
       if (this.expansion.getCountAttribute() == null) {
-        this.expansion.setCountAttribute(this.getCtx().getCorpus()
-                .makeObject(CdmObjectType.TypeAttributeDef, "count"));
-        this.expansion.getCountAttribute()
-                .setDataType(this.getCtx().getCorpus().makeObject(CdmObjectType.DataTypeRef,
-                        "integer", true));
+        this.expansion.setCountAttribute(this.getCtx().getCorpus().fetchArtifactAttribute("count"));
+        this.expansion.countAttribute.setOwner(owner);
+        this.expansion.countAttribute.setInDocument(owner.getInDocument());
       }
     }
     // entity by ref. anything mentioned?
@@ -97,15 +107,11 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
         if (this.entityByReference.doesAlwaysIncludeForeignKey() == null) {
           this.entityByReference.setAlwaysIncludeForeignKey(false);
         }
-        if (this.entityByReference.getReferenceOnlyAfterDepth() == null) {
-          this.entityByReference.setReferenceOnlyAfterDepth(2);
-        }
         if (this.entityByReference.getForeignKeyAttribute() == null) {
           // make up a fk
-          this.entityByReference.setForeignKeyAttribute(this.getCtx().getCorpus()
-                  .makeObject(CdmObjectType.TypeAttributeDef, "id"));
-          this.entityByReference.getForeignKeyAttribute().setDataType(this.getCtx().getCorpus()
-                  .makeObject(CdmObjectType.DataTypeRef, "entityId", true));
+          this.entityByReference.setForeignKeyAttribute(this.getCtx().getCorpus().fetchArtifactAttribute("id"));
+          this.entityByReference.getForeignKeyAttribute().setOwner(owner);
+          this.entityByReference.getForeignKeyAttribute().setInDocument(owner.getInDocument());
         }
       }
     }
@@ -116,11 +122,10 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
       }
       if ("one".equals(this.selectsSubAttribute.getSelects())) {
         if (this.selectsSubAttribute.getSelectedTypeAttribute() == null) {
-          // make up a fk
-          this.selectsSubAttribute.setSelectedTypeAttribute(this.getCtx().getCorpus()
-                  .makeObject(CdmObjectType.TypeAttributeDef, "type"));
-          this.selectsSubAttribute.getSelectedTypeAttribute().setDataType(this.getCtx()
-                  .getCorpus().makeObject(CdmObjectType.DataTypeRef, "entityName", true));
+          // make up a type indicator
+          this.selectsSubAttribute.setSelectedTypeAttribute(this.getCtx().getCorpus().fetchArtifactAttribute("type"));
+          this.selectsSubAttribute.getSelectedTypeAttribute().setOwner(owner);
+          this.selectsSubAttribute.getSelectedTypeAttribute().setInDocument(owner.getInDocument());
         }
       }
     }
@@ -174,11 +179,16 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
   /**
    * If true, this attribute definition will be removed from the final resolved attribute list of an
    * entity.
+   * @return boolean
    */
   public Boolean getRemoveAttribute() {
     return this.removeAttribute;
   }
 
+  
+  /** 
+   * @param value boolean
+   */
   public void setRemoveAttribute(final Boolean value) {
     this.removeAttribute = value;
   }
@@ -186,22 +196,32 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
   /**
    * A list of Strings, one for each 'directive' that should be always imposed at this attribute
    * definition.
+   * @return List of String
    */
   public List<String> getImposedDirectives() {
     return this.imposedDirectives;
   }
 
+  
+  /** 
+   * @param value List of Strings
+   */
   public void setImposedDirectives(final List<String> value) {
     this.imposedDirectives = value;
   }
 
   /**
    * A list of Strings, one for each 'directive' that should be removed if previously imposed.
+   * @return List of Strings
    */
   public List<String> getRemovedDirectives() {
     return this.removedDirectives;
   }
 
+  
+  /** 
+   * @param value List of Strings
+   */
   public void setRemovedDirectives(final List<String> value) {
     this.removedDirectives = value;
   }
@@ -209,11 +229,16 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
   /**
    * The supplied attribute definition will be added to the CdmEntityDefinition after this attribute definition
    * with a trait indicating its supporting role on this.
+   * @return CdmTypeAttributeDefinition
    */
   public CdmTypeAttributeDefinition getAddSupportingAttribute() {
     return this.addSupportingAttribute;
   }
 
+  
+  /** 
+   * @param value CdmTypeAttributeDefinition
+   */
   public void setAddSupportingAttribute(final CdmTypeAttributeDefinition value) {
     this.addSupportingAttribute = value;
   }
@@ -222,11 +247,16 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
    * If 'one' then there is a single instance of the attribute or entity used. 'many' indicates
    * multiple instances and the 'expansion' properties will describe array enumeration to use when
    * needed.
+   * @return String
    */
   public String getCardinality() {
     return this.cardinality;
   }
 
+  
+  /** 
+   * @param value  String
+   */
   public void setCardinality(final String value) {
     this.cardinality = value;
   }
@@ -237,26 +267,40 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
    * from entities and array (o)rdinal. examples: '{a}{o}.{m}' could produce 'address2.city',
    * '{a}{o}' gives 'city1'. Using '{A}' or '{M}' will uppercase the first letter of the name
    * portions.
+   * @return String
    */
   public String getRenameFormat() {
     return this.renameFormat;
   }
 
+  
+  /** 
+   * @param value String
+   */
   public void setRenameFormat(final String value) {
     this.renameFormat = value;
   }
 
   /**
    * Parameters that control array expansion if inline repeating of attributes is needed.
+   * @return Explanation
    */
   public Expansion getExpansion() {
     return this.expansion;
   }
 
+  
+  /** 
+   * @param value Explanation
+   */
   public void setExpansion(final Expansion value) {
     this.expansion = value;
   }
 
+  
+  /** 
+   * @return Expansion
+   */
   public Expansion makeExpansion() {
     return new Expansion();
   }
@@ -264,15 +308,24 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
   /**
    * Parameters that control the use of foreign keys to reference entity instances instead of
    * embedding the entity in a nested way.
+   * @return EntityByReference
    */
   public EntityByReference getEntityByReference() {
     return this.entityByReference;
   }
 
+  
+  /** 
+   * @param value Entity by reference
+   */
   public void setEntityByReference(final EntityByReference value) {
     this.entityByReference = value;
   }
 
+  
+  /** 
+   * @return EntityByReference
+   */
   public EntityByReference makeEntityByReference() {
     return new EntityByReference();
   }
@@ -281,19 +334,32 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
    * Used to indicate that this attribute select either 'one' or 'all' of the sub-attributes from an
    * entity. If the 'structured' directive is set, this trait causes resolved attributes to end up
    * in groups rather than a flattened list.
+   * @return SelectsSubAttribute
    */
   public SelectsSubAttribute getSelectsSubAttribute() {
     return this.selectsSubAttribute;
   }
 
+  
+  /** 
+   * @param value SelectsSubAttribute
+   */
   public void setSelectsSubAttribute(final SelectsSubAttribute value) {
     this.selectsSubAttribute = value;
   }
 
+  
+  /** 
+   * @return SelectsSubAttribute
+   */
   public SelectsSubAttribute makeSelectsSubAttribute() {
     return new SelectsSubAttribute();
   }
 
+  
+  /** 
+   * @return boolean
+   */
   @Override
   public boolean validate() {
     return true;
@@ -301,9 +367,9 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -314,10 +380,16 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
     return CdmObjectBase.copyData(this, resOpt, options, CdmAttributeResolutionGuidance.class);
   }
 
+  
+  /** 
+   * @param resOpt Resolved Options
+   * @param host CDM Object
+   * @return CdmObject
+   */
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmAttributeResolutionGuidance copy;
@@ -375,8 +447,8 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
 
   /**
    *
-   * @param addIn
-   * @return
+   * @param addIn CdmAttributeResolutionGuidance
+   * @return CdmAttributeResolutionGuidance
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmImport
 from cdm.utilities import ResolveOptions, CopyOptions
@@ -23,6 +26,7 @@ class ImportPersistence:
     def to_data(instance: CdmImport, res_opt: ResolveOptions, options: CopyOptions) -> Import:
         result = Import()
         result.corpusPath = instance.corpus_path
-        result.moniker = instance.moniker
+        if instance.moniker:
+            result.moniker = instance.moniker
 
         return result

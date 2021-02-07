@@ -1,0 +1,165 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Group/DimensionConstraintTree.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Group/DimensionHierarchyLevel.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DimensionConstraintNode",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActiveFrom",
+          "dataType": "DimensionActiveFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActiveTo",
+          "dataType": "DimensionActiveTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DimensionConstraintTree",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Dimension constraint tree",
+          "description": ""
+        },
+        {
+          "name": "DimensionHierarchyLevel",
+          "dataType": "RefRecId",
+          "displayName": "Dimension set level",
+          "description": ""
+        },
+        {
+          "name": "HasErrorInChildren",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsOptional",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "The type of access to the ledger account alias",
+          "description": ""
+        },
+        {
+          "name": "IsOverlapping",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "displayName": "Constraint name",
+          "description": ""
+        },
+        {
+          "name": "Ordinal",
+          "dataType": "DimensionOrdinal",
+          "description": ""
+        },
+        {
+          "name": "ParentConstraintNode",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Parent constraint",
+          "description": ""
+        },
+        {
+          "name": "TemporaryConstraintNode",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Temporary constraint node",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionConstraintTree"
+          },
+          "name": "Relationship_DimensionConstraintTreeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchyLevel"
+          },
+          "name": "Relationship_DimensionHierarchyLevelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Dimension constraint"
+    },
+    {
+      "dataTypeName": "DimensionActiveFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DimensionActiveTo",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionOrdinal",
+      "extendsDataType": "integer"
+    }
+  ]
+}

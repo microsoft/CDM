@@ -1,0 +1,118 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "JmgRegistrationActionPaneTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgRegistrationButtonTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActionPaneSetupID",
+          "dataType": "JmgActionPaneRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ButtonFunction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ButtonSetupType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FKey",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Label",
+          "dataType": "JmgLabel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "JmgButtonSequence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "JmgRegistrationActionPaneTable"
+          },
+          "name": "Relationship_JmgRegistrationActionPaneTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Button setup"
+    },
+    {
+      "dataTypeName": "JmgActionPaneRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgLabel",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgButtonSequence",
+      "extendsDataType": "integer"
+    }
+  ]
+}

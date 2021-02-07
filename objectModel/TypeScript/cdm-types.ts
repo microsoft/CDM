@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 // for availability in the npm package, export your stuff here(after adding it to internal.ts).
 
 export {
@@ -41,6 +44,7 @@ export {
     cdmStatusLevel,
     consoleSpewCatcher,
     cdmDataFormat,
+    importsLoadStrategy,
     spewCatcher,
     stringSpewCatcher,
     cdmAttributeContextType,
@@ -82,3 +86,4 @@ export {
 } from './internal';
 export { AttributeResolutionDirectiveSet } from './Utilities/AttributeResolutionDirectiveSet';
 export * from './Storage';
+export * from './Utilities/StorageUtils';

@@ -1,0 +1,224 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSCarrier.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSCarrierGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Group/TMSCarrierService.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Group/TMSRouteConfig.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSChargeOverride",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "WHSAccountNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierCode",
+          "dataType": "TMSCarrierCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierGroupCode",
+          "dataType": "TMSCarrierGroupCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierServiceCode",
+          "dataType": "TMSCarrierServiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustManual",
+          "dataType": "TMSManual",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ModuleType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "RoutePlanCode",
+          "dataType": "TMSRouteCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendAccount",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrier"
+          },
+          "name": "Relationship_TMSCarrierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrierGroup"
+          },
+          "name": "Relationship_TMSCarrierGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrierService"
+          },
+          "name": "Relationship_TMSCarrierServiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteConfig"
+          },
+          "name": "Relationship_TMSRouteConfigRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Override charges"
+    },
+    {
+      "dataTypeName": "WHSAccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierGroupCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierServiceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSManual",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSRouteCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    }
+  ]
+}

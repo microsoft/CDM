@@ -1,0 +1,123 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AssetDepRateSchedule_JP.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetDepRate_JP",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetDepRateSchedule_JP",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "DepreciationMethod",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "DepreciationRate",
+          "dataType": "AssetDepreciationRate_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GuaranteedDepreciationRate",
+          "dataType": "AssetGuaranteedDeprecationRate_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RevisedDepreciation",
+          "dataType": "AssetRevisedDepreciation_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UsefulLife",
+          "dataType": "AssetServiceLife",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepRateSchedule_JP"
+          },
+          "name": "Relationship_AssetDepRateSchedule_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Depreciation rates for fixed assets"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetDepreciationRate_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetGuaranteedDeprecationRate_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetRevisedDepreciation_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetServiceLife",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

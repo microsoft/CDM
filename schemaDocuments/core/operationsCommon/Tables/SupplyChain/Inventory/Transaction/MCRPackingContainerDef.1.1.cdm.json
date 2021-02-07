@@ -1,0 +1,120 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRPackingContainerDef",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MCRContainerCost",
+          "dataType": "CostPrice",
+          "isNullable": true,
+          "displayName": "Container cost",
+          "description": ""
+        },
+        {
+          "name": "MCRContainerName",
+          "dataType": "MCRJobId",
+          "isNullable": true,
+          "displayName": "Container definition",
+          "description": ""
+        },
+        {
+          "name": "MCRMaxAvailable",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Containers available",
+          "description": ""
+        },
+        {
+          "name": "MCRSolutionId",
+          "dataType": "MCRSolutionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRVolumeLimit",
+          "dataType": "Volume",
+          "isNullable": true,
+          "displayName": "Volume limit",
+          "description": ""
+        },
+        {
+          "name": "MCRWeightLimit",
+          "dataType": "MCRWeightNoZero",
+          "isNullable": true,
+          "displayName": "Weight limit",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Packing container limits"
+    },
+    {
+      "dataTypeName": "CostPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRJobId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRSolutionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Volume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRWeightNoZero",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -1,4 +1,7 @@
-﻿from typing import Optional, List, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import Optional, List, TYPE_CHECKING
 import dateutil.parser
 
 from cdm.enums import CdmObjectType
@@ -20,7 +23,8 @@ class DataPartitionPersistence:
                         local_extension_trait_def_list: List['CdmTraitDefinition'], document_folder: 'CdmFolderDefinition') \
             -> Optional['CdmDataPartitionDefinition']:
         data_partition = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, data.name if data.get('name') else None)
-        data_partition.description = data.get('description')
+        if data.get('description') and not data.get('description').isspace():
+            data_partition.description = data.get('description')
         data_partition.location = ctx.corpus.storage.create_relative_corpus_path(ctx.corpus.storage.adapter_path_to_corpus_path(data.location), document_folder)
 
         if not data_partition.location:
@@ -75,14 +79,14 @@ class DataPartitionPersistence:
 
         # filter description since it is mapped to a property
         exhibits_traits = filter(lambda t: t.named_reference != 'is.localized.describedAs', instance.exhibits_traits)
-        await utils.process_annotations_to_data(instance.ctx, result, exhibits_traits)
+        utils.process_traits_and_annotations_to_data(instance.ctx, result, exhibits_traits)
 
         t2pm = TraitToPropertyMap(instance)
 
-        is_hidden_trait = t2pm.fetch_trait_reference('is.hidden')
+        is_hidden_trait = t2pm._fetch_trait_reference('is.hidden')
         result.isHidden = bool(is_hidden_trait) or None
 
-        csv_trait = t2pm.fetch_trait_reference('is.partition.format.CSV')
+        csv_trait = t2pm._fetch_trait_reference('is.partition.format.CSV')
         if csv_trait:
             csv_format_settings = utils.create_csv_format_settings(csv_trait)
 

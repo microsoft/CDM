@@ -1,0 +1,238 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/ExportImportIndia/WorksheetHeader/EximDEPBSchemesTable_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxRegistrationNumbers_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxLedgerAccountGroup_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EximDEPBSchemesLine_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CertificateNum",
+          "dataType": "EximLicenseNum_IN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Certificate number",
+          "description": ""
+        },
+        {
+          "name": "DutyEntitlementValue",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Duty entitlement",
+          "description": ""
+        },
+        {
+          "name": "ExtensionApplyDuty",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Duty entitlement",
+          "description": ""
+        },
+        {
+          "name": "ExtensionPeriod",
+          "dataType": "Days_IN",
+          "isNullable": true,
+          "displayName": "Value",
+          "description": ""
+        },
+        {
+          "name": "ExtensiontPeriodUnit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Extension",
+          "description": ""
+        },
+        {
+          "name": "IECTaxRegistrationNumberTable",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "IEC number",
+          "description": ""
+        },
+        {
+          "name": "ImportExpiryDateTime",
+          "dataType": "TransDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Import expiration date/time",
+          "description": ""
+        },
+        {
+          "name": "LicenseStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RevisionDateTime",
+          "dataType": "TransDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Issue date/time",
+          "description": ""
+        },
+        {
+          "name": "SchemeTableRecId",
+          "dataType": "EximDEPBSchemesTableRecId_IN",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TaxLedgerAccountGroup",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Tax ledger posting group",
+          "description": ""
+        },
+        {
+          "name": "Text",
+          "dataType": "EximTxt_IN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalComponentAmount",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Component amount in total",
+          "description": ""
+        },
+        {
+          "name": "VersionNum",
+          "dataType": "Version",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EximDEPBSchemesTable_IN"
+          },
+          "name": "Relationship_EximDEPBSchemesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_IECTaxRegistrationNumberTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxLedgerAccountGroup_IN"
+          },
+          "name": "Relationship_TaxLedgerAccountGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "DEPB schemes lines"
+    },
+    {
+      "dataTypeName": "EximLicenseNum_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Days_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EximDEPBSchemesTableRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EximTxt_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Version",
+      "extendsDataType": "integer"
+    }
+  ]
+}

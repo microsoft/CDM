@@ -1,0 +1,134 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/LeanProductionFlowModel.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/WrkCtrResourceGroup.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LeanWorkCellCapacity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AverageThroughputQuantity",
+          "dataType": "LeanAverageThroughputQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CapacityPeriod",
+          "dataType": "LeanCapacityPeriod",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CapacityUnitOfMeasure",
+          "dataType": "UnitOfMeasureRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductionFlowModel",
+          "dataType": "LeanProductionFlowModelRefRecId",
+          "description": ""
+        },
+        {
+          "name": "ValidFromDate",
+          "dataType": "LeanCapacityValidFromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidToDate",
+          "dataType": "LeanCapacityValidToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkCell",
+          "dataType": "WrkCtrResourceGroupRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LeanProductionFlowModel"
+          },
+          "name": "Relationship_LeanProductionFlowModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrResourceGroup"
+          },
+          "name": "Relationship_WrkCtrResourceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Work cell capacities"
+    },
+    {
+      "dataTypeName": "LeanAverageThroughputQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LeanCapacityPeriod",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LeanProductionFlowModelRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LeanCapacityValidFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LeanCapacityValidToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WrkCtrResourceGroupRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -8,6 +9,7 @@ public interface CdmObjectDefinition extends CdmObject {
 
   /**
    * Gets or sets the object explanation.
+   * @return string explanation
    */
   String getExplanation();
 
@@ -15,18 +17,14 @@ public interface CdmObjectDefinition extends CdmObject {
 
   /**
    * Gets the object exhibits traits.
+   * @return Cdm Trait Collection
    */
   CdmTraitCollection getExhibitsTraits();
 
   /**
    * all objectDefs have some kind of name,
    * this method returns the name independent of the name of the name property.
+   * @return String Name
    */
   String getName();
-
-  /**
-   * Returns true if the object (or the referenced object) is an extension
-   * from the specified symbol name in some way.
-   */
-  boolean isDerivedFrom(String baseDef, ResolveOptions resOpt);
 }

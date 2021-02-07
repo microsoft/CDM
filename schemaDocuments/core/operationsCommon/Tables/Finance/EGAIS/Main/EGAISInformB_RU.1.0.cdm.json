@@ -1,0 +1,208 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EGAISClient_RU.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "EGAISInformA_RU.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventBatch.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EGAISInformB_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Consignee",
+          "dataType": "RefRecId",
+          "displayName": "Consignee",
+          "description": ""
+        },
+        {
+          "name": "Direction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InformA",
+          "dataType": "RefRecId",
+          "displayName": "Certificate A",
+          "description": ""
+        },
+        {
+          "name": "InventBatchId",
+          "dataType": "InventBatchId",
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RegId",
+          "dataType": "EGAISInformBRegId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Parent registration ID",
+          "description": ""
+        },
+        {
+          "name": "RegIdNew",
+          "dataType": "EGAISInformBRegId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Shipper",
+          "dataType": "RefRecId",
+          "displayName": "Shipper",
+          "description": ""
+        },
+        {
+          "name": "ShippingDate",
+          "dataType": "TransDate",
+          "displayName": "Shipping date",
+          "description": ""
+        },
+        {
+          "name": "WaybillDate",
+          "dataType": "EGAISWaybillDate_RU",
+          "description": ""
+        },
+        {
+          "name": "WaybillNum",
+          "dataType": "EGAISWaybillNum_RU",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISClient_RU"
+          },
+          "name": "Relationship_ConsigneeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISInformA_RU"
+          },
+          "name": "Relationship_EGAISInformA_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventBatch"
+          },
+          "name": "Relationship_InventBatchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISClient_RU"
+          },
+          "name": "Relationship_ShipperRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Certificates B"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventBatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EGAISInformBRegId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EGAISWaybillDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EGAISWaybillNum_RU",
+      "extendsDataType": "string"
+    }
+  ]
+}

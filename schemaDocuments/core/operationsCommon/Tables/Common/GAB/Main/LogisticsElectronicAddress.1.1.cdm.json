@@ -1,0 +1,189 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DirPartyTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsLocation.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LogisticsElectronicAddress",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountryRegionCode",
+          "dataType": "LogisticsCountryRegionCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsInstantMessage",
+          "dataType": "LogisticsIsInstantMessage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsMobilePhone",
+          "dataType": "LogisticsIsMobilePhone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsPrimary",
+          "dataType": "LogisticsIsPrimary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsPrivate",
+          "dataType": "LogisticsIsPrivate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Location",
+          "dataType": "LogisticsLocationRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Locator",
+          "dataType": "LogisticsElectronicAddressLocator",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LocatorExtension",
+          "dataType": "PhoneLocal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrivateForParty",
+          "dataType": "DirPartyPrivateLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ElectronicAddressRoles",
+          "dataType": "DirPartyContactLocationRoleNames",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailMarketingOptIn",
+          "dataType": "RetailMarketingOptIn",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_DirPartyTable_PrivateForPartyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsLocation"
+          },
+          "name": "Relationship_LogisticsLocation_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Communication details"
+    },
+    {
+      "dataTypeName": "LogisticsCountryRegionCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsIsInstantMessage",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LogisticsIsMobilePhone",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LogisticsIsPrimary",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LogisticsIsPrivate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LogisticsLocationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LogisticsElectronicAddressLocator",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PhoneLocal",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DirPartyPrivateLocationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DirPartyContactLocationRoleNames",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailMarketingOptIn",
+      "extendsDataType": "integer"
+    }
+  ]
+}

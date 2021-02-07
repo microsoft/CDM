@@ -1,0 +1,326 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceJour.cdm.json"
+    },
+    {
+      "corpusPath": "CustPackingSlipJour.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.cdm.json"
+    },
+    {
+      "corpusPath": "SalesParmTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesShippingStat",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CartonsQty",
+          "dataType": "CartonsQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryDate",
+          "dataType": "SalesShippingDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FreightZone",
+          "dataType": "CustFreightZoneId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GrossWeight",
+          "dataType": "GrossWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceId",
+          "dataType": "InvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetWeight",
+          "dataType": "ItemNetWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Nolabels",
+          "dataType": "PrintCopies",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigSalesId",
+          "dataType": "SalesIdOrig",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackingSlipId",
+          "dataType": "PackingSlipId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "InventQty",
+          "displayName": "Number of units",
+          "description": ""
+        },
+        {
+          "name": "SalesId",
+          "dataType": "SalesId",
+          "description": ""
+        },
+        {
+          "name": "TableRefId",
+          "dataType": "TradeLineRefId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitWeight",
+          "dataType": "UnitPackingWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Volume",
+          "dataType": "Volume",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VolumeQty_BR",
+          "dataType": "VolumeQty_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VolumeType_BR",
+          "dataType": "VolumeType_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CredManConsignmentNote",
+          "dataType": "CredManConsignmentNote",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_CustInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPackingSlipJour"
+          },
+          "name": "Relationship_CustPackingSlipJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_OriginSalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesParmTable"
+          },
+          "name": "Relationship_SalesParmTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Shipping specification"
+    },
+    {
+      "dataTypeName": "CartonsQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesShippingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustFreightZoneId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "GrossWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemNetWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PrintCopies",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SalesIdOrig",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PackingSlipId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TradeLineRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitPackingWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Volume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VolumeQty_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VolumeType_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CredManConsignmentNote",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PaymDueDateLimit_ES",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "GroupDescription",
+          "dataType": "DueDateLimitGroupDescription_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GroupId",
+          "dataType": "DueDateLimitGroupId_ES",
+          "description": ""
+        },
+        {
+          "name": "PeriodUnit",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyUnit",
+          "dataType": "DueDateLimitQtyUnit_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Due date limits"
+    },
+    {
+      "dataTypeName": "DueDateLimitGroupDescription_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDateLimitGroupId_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDateLimitQtyUnit_ES",
+      "extendsDataType": "integer"
+    }
+  ]
+}

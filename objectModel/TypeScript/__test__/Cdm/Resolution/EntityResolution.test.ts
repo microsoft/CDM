@@ -1,19 +1,30 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as fs from 'fs';
-import { CdmObject } from '../../../Cdm/CdmObject';
-import { stringSpewCatcher } from '../../../Cdm/stringSpewCatcher';
+
 import {
+    CdmAttributeContext,
+    CdmAttributeGroupDefinition,
+    CdmAttributeGroupReference,
+    CdmAttributeItem,
+    CdmAttributeReference,
     CdmCorpusDefinition,
     CdmEntityDeclarationDefinition,
     CdmEntityDefinition,
     CdmManifestDefinition,
+    CdmObject,
     CdmReferencedEntityDeclarationDefinition,
-    cdmStatusLevel
+    cdmStatusLevel,
+    importsLoadStrategy,
+    resolveOptions,
+    stringSpewCatcher
 } from '../../../internal';
+import { ResolvedAttributeSet } from '../../../ResolvedModel/ResolvedAttributeSet';
 import { ResolvedEntity } from '../../../ResolvedModel/ResolvedEntity';
 import { LocalAdapter } from '../../../Storage';
 import { AttributeResolutionDirectiveSet } from '../../../Utilities/AttributeResolutionDirectiveSet';
 import { isReferencedEntityDeclarationDefinition } from '../../../Utilities/cdmObjectTypeGuards';
-import { resolveOptions } from '../../../Utilities/resolveOptions';
 import { testHelper } from '../../testHelper';
 
 /**
@@ -23,14 +34,14 @@ import { testHelper } from '../../testHelper';
 describe('Cdm/Resolution/EntityResolution', () => {
     const testsSubpath: string = 'Cdm/Resolution/EntityResolution';
     const schemaDocsRoot: string = testHelper.schemaDocumentsPath;
-    const doesWriteDebuggingFiles: boolean = testHelper.doesWriteTestDebuggingFiles;
+    const doesWriteDebuggingFiles: boolean = false;
 
     /**
      * Test whether or not the test corpus can be resolved
      */
     it('TestResolveTestCorpus', async () => {
         // this test takes more time than jest expects tests to take
-        jest.setTimeout(100000);
+        jest.setTimeout(500000);
 
         // tslint:disable-next-line: non-literal-fs-path
         expect(fs.existsSync(schemaDocsRoot))
@@ -45,7 +56,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
 
         const localAdapter: LocalAdapter = new LocalAdapter(schemaDocsRoot);
         cdmCorpus.storage.mount('local', localAdapter);
-        const manifest: CdmManifestDefinition = await cdmCorpus.createRootManifest('local:/standards.manifest.cdm.json');
+        const manifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(testHelper.cdmStandardsSchemaPath);
         expect(manifest)
             .toBeTruthy();
         const directives: AttributeResolutionDirectiveSet =
@@ -57,7 +68,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
             .toBeGreaterThanOrEqual(1);
 
         // setting back expected test timeout.
-        jest.setTimeout(5000);
+        jest.setTimeout(10000);
     });
 
     /**
@@ -84,9 +95,9 @@ describe('Cdm/Resolution/EntityResolution', () => {
     /**
      * Test if the mini dyn resolved entities match
      */
-    it('TestResolvedMiniDyn', async () => {
-        await resolveSaveDebuggingFileAndAssert('TestResolvedMiniDyn', 'MiniDyn');
-    });
+    // it('TestResolvedMiniDyn', async () => {
+    //     await resolveSaveDebuggingFileAndAssert('TestResolvedMiniDyn', 'MiniDyn');
+    // });
 
     /**
      * Test if the overrides resolved entities match
@@ -98,8 +109,8 @@ describe('Cdm/Resolution/EntityResolution', () => {
     /**
      * Test if the POVResolution resolved entities match
      */
-    it('TestResolvedPov', async () => {
-        await resolveSaveDebuggingFileAndAssert('TestResolvedPov', 'POVResolution');
+    it('TestResolvedPovResolution', async () => {
+        await resolveSaveDebuggingFileAndAssert('TestResolvedPovResolution', 'POVResolution');
     });
 
     /**
@@ -107,6 +118,159 @@ describe('Cdm/Resolution/EntityResolution', () => {
      */
     it('TestResolvedWebClicks', async () => {
         await resolveSaveDebuggingFileAndAssert('TestResolvedWebClicks', 'webClicks');
+    });
+
+    /**
+     * Test that monikered references on resolved entities can be resolved correctly, previously
+     * the inclusion of the resolvedFrom moniker stopped the source document from being found
+     */
+    it('TestResolveWithExtended', async (done) => {
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolveWithExtended');
+        cdmCorpus.setEventCallback(
+            (level, msg) => {
+                expect(msg.indexOf('unable to resolve the reference'))
+                    .toBe(-1);
+            },
+            cdmStatusLevel.warning);
+
+        const ent: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync('local:/sub/Account.cdm.json/Account');
+        await ent.createResolvedEntityAsync('Account_');
+        done();
+    });
+
+    /**
+     * Testing that attributes that have the same name in extended entity are properly replaced
+     */
+    it('TestAttributesThatAreReplaced', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestAttributesThatAreReplaced');
+        corpus.storage.mount('cdm', new LocalAdapter(testHelper.schemaDocumentsPath));
+
+        const extendedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/extended.cdm.json/extended');
+        const resExtendedEnt: CdmEntityDefinition = await extendedEntity.createResolvedEntityAsync('resExtended');
+
+        // the attribute from the base class should be merged with the attribute
+        // from the extended class into a single attribute
+        expect(resExtendedEnt.attributes.length)
+            .toBe(1);
+
+        // check that traits from the base class merged with the traits from the extended class
+        const attribute: CdmAttributeItem = resExtendedEnt.attributes.allItems[0];
+        // base trait
+        expect(attribute.appliedTraits.indexOf('means.identity.brand')).not
+            .toEqual(-1);
+        // extended trait
+        expect(attribute.appliedTraits.indexOf('means.identity.company.name')).not
+            .toEqual(-1);
+
+        // make sure the attribute context and entity foreign key were maintained correctly
+        const foreignKeyForBaseAttribute: CdmAttributeContext =
+            ((resExtendedEnt.attributeContext.contents.allItems[1] as CdmAttributeContext)
+                .contents.allItems[1] as CdmAttributeContext);
+        expect(foreignKeyForBaseAttribute.name)
+            .toBe('_generatedAttributeSet');
+        const fkReference: CdmAttributeReference =
+            ((foreignKeyForBaseAttribute.contents.allItems[0] as CdmAttributeContext).contents.allItems[0] as CdmAttributeContext)
+                .contents.allItems[0] as CdmAttributeReference;
+        expect(fkReference.namedReference)
+            .toBe('resExtended/hasAttributes/regardingObjectId');
+        done();
+    });
+
+    /**
+     * Test that resolved attribute limit is calculated correctly and respected
+     */
+    it('TestResolvedAttributeLimit', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolvedAttributeLimit');
+
+        const mainEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/mainEntity.cdm.json/mainEntity');
+        let resOpt: resolveOptions = new resolveOptions(mainEntity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
+
+        // if attribute limit is reached, entity should be null
+        resOpt.resolvedAttributeLimit = 4;
+        let resEnt: CdmEntityDefinition = await mainEntity.createResolvedEntityAsync(`${mainEntity.entityName}_zeroAtts`, resOpt);
+        expect(resEnt)
+            .toBeUndefined();
+
+        // when the attribute limit is set to null, there should not be a limit on the possible number of attributes
+        resOpt.resolvedAttributeLimit = undefined;
+        let ras: ResolvedAttributeSet = mainEntity.fetchResolvedAttributes(resOpt);
+        resEnt = await mainEntity.createResolvedEntityAsync(`${mainEntity.entityName}_normalized_referenceOnly`, resOpt);
+
+        // there are 5 total attributes
+        expect(ras.resolvedAttributeCount)
+            .toBe(5);
+        expect(ras.set.length)
+            .toBe(5);
+        expect(mainEntity.attributes.length)
+            .toBe(3);
+        // there are 2 attributes grouped in an entity attribute
+        // and 2 attributes grouped in an attribute group
+        expect(((mainEntity.attributes.allItems[2] as CdmAttributeGroupReference).explicitReference as CdmAttributeGroupDefinition).members.length)
+            .toBe(2);
+
+        // using the default limit number
+        resOpt = new resolveOptions(mainEntity.inDocument);
+        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly']));
+        ras = mainEntity.fetchResolvedAttributes(resOpt);
+        resEnt = await mainEntity.createResolvedEntityAsync(`${mainEntity.entityName}_normalized_referenceOnly`, resOpt);
+
+        // there are 5 total attributes
+        expect(ras.resolvedAttributeCount)
+            .toBe(5);
+        expect(ras.set.length)
+            .toBe(5);
+        expect(mainEntity.attributes.length)
+            .toBe(3);
+        // there are 2 attributes grouped in an entity attribute
+        // and 2 attributes grouped in an attribute group
+        expect(((mainEntity.attributes.allItems[2] as CdmAttributeGroupReference).explicitReference as CdmAttributeGroupDefinition).members.length)
+            .toBe(2);
+
+        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'structured']));
+        ras = mainEntity.fetchResolvedAttributes(resOpt);
+        resEnt = await mainEntity.createResolvedEntityAsync(`${mainEntity.entityName}_normalized_structured`, resOpt);
+
+        // there are 5 total attributes
+        expect(ras.resolvedAttributeCount)
+            .toBe(5);
+        // the attribute count is different because one attribute is a group that contains two different attributes
+        expect(ras.set.length)
+            .toBe(4);
+        expect(mainEntity.attributes.length)
+            .toBe(3);
+        // again there are 2 attributes grouped in an entity attribute
+        // and 2 attributes grouped in an attribute group
+        expect(((mainEntity.attributes.allItems[2] as CdmAttributeGroupReference).explicitReference as CdmAttributeGroupDefinition).members.length)
+            .toBe(2);
+        done();
+    });
+
+    /**
+     * Test that "is.linkedEntity.name" and "is.linkedEntity.identifier" traits are set when "selectedTypeAttribute" and "foreignKeyAttribute"
+     * are present in the entity's resolution guidance.
+     */
+    it('TestSettingTraitsForResolutionGuidanceAttributes', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSettingTraitsForResolutionGuidanceAttributes');
+        corpus.storage.mount('cdm', new LocalAdapter(testHelper.schemaDocumentsPath));
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Customer.cdm.json/Customer');
+
+        // Resolve with default directives to get "is.linkedEntity.name" trait.
+        let resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
+        let resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync('resolved', resOpt);
+
+        expect(resolvedEntity.attributes.allItems[1].appliedTraits.item('is.linkedEntity.name'))
+            .not
+            .toBeUndefined();
+
+        // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
+        resOpt = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['referenceOnly'])));
+        resolvedEntity = await entity.createResolvedEntityAsync('resolved2', resOpt);
+
+        expect(resolvedEntity.attributes.allItems[0].appliedTraits.item('is.linkedEntity.identifier'))
+            .not
+            .toBeUndefined();
+
+        done();
     });
 
     /**
@@ -177,8 +341,11 @@ describe('Cdm/Resolution/EntityResolution', () => {
                         currentFile = ent as CdmObject;
                     }
                     corpusPath = cdmCorpus.storage.createAbsoluteCorpusPath(ent.entityPath, currentFile);
-                    const newEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(corpusPath);
-                    const resOpt: resolveOptions = { wrtDoc: newEnt.inDocument, directives: directives };
+                    const resOpt: resolveOptions = new resolveOptions();
+                    resOpt.importsLoadStrategy = importsLoadStrategy.load;
+                    const newEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(corpusPath, null, resOpt);
+                    resOpt.wrtDoc = newEnt.inDocument;
+                    resOpt.directives = directives;
                     const resEnt: ResolvedEntity = newEnt.getResolvedEntity(resOpt);
                     if (spew) {
                         resEnt.spew(resOpt, spew, ' ', true);

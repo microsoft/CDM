@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.datapartition;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -5,9 +8,11 @@ import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.KeyValuePair;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
@@ -17,7 +22,12 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -72,9 +82,8 @@ public class DataPartitionTest {
    * Testing programmatically creating manifest with partitions and persisting.
    */
   @Test
-  public void testProgrammaticallyCreatePartitions() {
+  public void testProgrammaticallyCreatePartitions() throws IOException, InterruptedException {
     final CdmCorpusDefinition corpus = new CdmCorpusDefinition();
-    corpus.getStorage().mount("local", new LocalAdapter());
     final CdmManifestDefinition manifest =
         corpus.makeObject(CdmObjectType.ManifestDef, "manifest");
     final CdmEntityDeclarationDefinition entity = manifest.getEntities().add("entity");
@@ -82,9 +91,19 @@ public class DataPartitionTest {
     final CdmDataPartitionDefinition relativePartition =
         corpus.makeObject(CdmObjectType.DataPartitionDef, "relative partition");
     relativePartition.setLocation("relative/path");
+    relativePartition.getArguments().put("test1", new ArrayList<String>() {{
+        add("argument1");
+    }});
+    relativePartition.getArguments().put("test2", new ArrayList<String>() {{
+        add("argument2");
+        add("argument3");
+    }});
+
     final CdmDataPartitionDefinition absolutePartition =
         corpus.makeObject(CdmObjectType.DataPartitionDef, "absolute partition");
     absolutePartition.setLocation("local:/absolute/path");
+    // add an empty arguments list to test empty list should not be displayed in ToData json.
+    absolutePartition.getArguments().put("test", new ArrayList());
 
     entity.getDataPartitions().add(relativePartition);
     entity.getDataPartitions().add(absolutePartition);
@@ -101,8 +120,22 @@ public class DataPartitionTest {
     Assert.assertEquals(
         relativePartition.getLocation(),
         relativePartitionData.get("location").asText());
+    Assert.assertEquals(3, relativePartitionData.get("arguments").size());
+    final JsonNode argumentList = relativePartitionData.get("arguments");
+    Assert.assertEquals(2, argumentList.get(0).size());
+    Assert.assertEquals("test1", argumentList.get(0).get("name").asText());
+    Assert.assertEquals("argument1", argumentList.get(0).get("value").asText());
+    Assert.assertEquals(2, argumentList.get(1).size());
+    Assert.assertEquals("test2", argumentList.get(1).get("name").asText());
+    Assert.assertEquals("argument2", argumentList.get(1).get("value").asText());
+    Assert.assertEquals(2, argumentList.get(2).size());
+    Assert.assertEquals("test2", argumentList.get(2).get("name").asText());
+    Assert.assertEquals("argument3", argumentList.get(2).get("value").asText());
+
     Assert.assertEquals(
         absolutePartition.getLocation(),
         absolutePartitionData.get("location").asText());
+    // test if empty argument list is set to null
+    Assert.assertNull(absolutePartitionData.get("arguments"));
   }
 }

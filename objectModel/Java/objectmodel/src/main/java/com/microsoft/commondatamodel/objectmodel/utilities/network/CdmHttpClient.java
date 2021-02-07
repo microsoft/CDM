@@ -1,13 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.utilities.network;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -21,6 +18,16 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * CDM Http Client is an HTTP client which implements retry logic to execute retries in the case of failed requests.
@@ -68,9 +75,13 @@ public class CdmHttpClient {
      * @param cdmHttpRequest The CDM Http request.
      * @param callback       The callback that gets executed after the request finishes.
      * @return A CompletableFuture object, representing the CDM Http response.
+     * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+     * to be called externally at all. Please refrain from using it.
      */
+    @Deprecated
     public CompletableFuture<CdmHttpResponse> sendAsync(final CdmHttpRequest cdmHttpRequest,
-                                                        final Callback callback) {
+                                                        final Callback callback,
+                                                        final CdmCorpusContext ctx) {
         final CompletableFuture<CdmHttpResponse> response = new CompletableFuture<>();
         CompletableFuture.runAsync(() -> {
             //  Merge headers first.
@@ -81,7 +92,7 @@ public class CdmHttpClient {
                 // Wait for all the requests to finish, if the time exceeds maximum timeout throw the CDM timed out exception.
                 TimeLimitedNetworkBlockExecutor.runWithTimeout(() -> {
                     try {
-                        final CdmHttpResponse cdmHttpResponse = sendAsyncHelper(cdmHttpRequest, callback);
+                        final CdmHttpResponse cdmHttpResponse = sendAsyncHelper(cdmHttpRequest, callback, ctx);
                         if (cdmHttpRequest != null) {
                             response.complete(cdmHttpResponse);
                         }
@@ -104,7 +115,8 @@ public class CdmHttpClient {
      * @return A CompletableFuture object, representing the CDM Http response.
      */
     private CdmHttpResponse sendAsyncHelper(final CdmHttpRequest cdmHttpRequest,
-                                            final Callback callback) {
+                                            final Callback callback,
+                                            final CdmCorpusContext ctx) {
         URI fullUri = null;
         try {
             if (this.apiEndpoint != null) {
@@ -146,7 +158,20 @@ public class CdmHttpClient {
             boolean hasFailed = false;
             CdmHttpResponse cdmHttpResponse = null;
             try {
+                final Instant startTime = java.time.Instant.now();
+                if (ctx != null)
+                {
+                    Logger.info(CdmHttpClient.class.getSimpleName(), ctx, Logger.format("Sending request {0}, request type: {1}, request url: {2}, retry number: {3}.", cdmHttpRequest.getRequestId(), httpRequest.getMethod(), cdmHttpRequest.stripSasSig(), retryNumber), "SendAsyncHelper");
+                }
+
                 final HttpResponse response = client.execute(httpRequest);
+
+                if (ctx != null)
+                {
+                    final Instant endTime = java.time.Instant.now();
+                    Logger.info(CdmHttpClient.class.getSimpleName(), ctx, Logger.format("Response {0} received, elapsed time: {1} ms.", cdmHttpRequest.getRequestId(), Duration.between(startTime, endTime).toMillis()), "SendAsyncHelper");
+                }
+
                 if (response != null) {
                     cdmHttpResponse = new CdmHttpResponse(response.getStatusLine().getStatusCode());
                     final HttpEntity responseEntity = response.getEntity();
@@ -174,8 +199,16 @@ public class CdmHttpClient {
                     if (retryNumber != 0) {
                         throw new CdmNumberOfRetriesExceededException();
                     } else {
-                        throw (exception instanceof ConnectTimeoutException) ? new CdmTimedOutException(
-                                exception.getMessage()) : new RuntimeException(exception);
+                        if (exception instanceof ConnectTimeoutException) {
+                            if (ctx != null)
+                            {
+                                Logger.info(CdmHttpClient.class.getSimpleName(), ctx, Logger.format("Request {0} timeout after {1} s.", cdmHttpRequest.getRequestId(), cdmHttpRequest.getTimeout().getSeconds()), "SendAsyncHelper");
+                            }
+
+                            throw new CdmTimedOutException(exception.getMessage());
+                        } else {
+                            throw new RuntimeException(exception);
+                        }
                     }
                 }
             }

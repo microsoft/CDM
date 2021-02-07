@@ -1,0 +1,87 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetControlConfiguration.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/UserGroupInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetOverrideUserGroupOption",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetControlConfiguration",
+          "dataType": "BudgetControlConfigurationRecId",
+          "description": ""
+        },
+        {
+          "name": "DefaultOverBudgetOption",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "UserGroupInfo",
+          "dataType": "BudgetOverrideUserGroupInfo",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetControlConfiguration"
+          },
+          "name": "Relationship_BudgetControlConfigurationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "UserGroupInfo"
+          },
+          "name": "Relationship_UserGroupInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Over budget permissions"
+    },
+    {
+      "dataTypeName": "BudgetControlConfigurationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetOverrideUserGroupInfo",
+      "extendsDataType": "string"
+    }
+  ]
+}

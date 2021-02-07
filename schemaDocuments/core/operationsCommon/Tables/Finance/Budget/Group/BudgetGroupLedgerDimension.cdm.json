@@ -1,0 +1,107 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/Ledger.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetGroupLedgerDimension",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetControlLedgerDimension",
+          "dataType": "LedgerDimensionBudgetControl",
+          "description": ""
+        },
+        {
+          "name": "BudgetGroup",
+          "dataType": "RefRecId",
+          "displayName": "Budget groups",
+          "description": ""
+        },
+        {
+          "name": "PrimaryLedger",
+          "dataType": "LedgerRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetGroup"
+          },
+          "name": "Relationship_BudgetGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Ledger"
+          },
+          "name": "Relationship_LedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget group ledger dimension"
+    },
+    {
+      "dataTypeName": "LedgerDimensionBudgetControl",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

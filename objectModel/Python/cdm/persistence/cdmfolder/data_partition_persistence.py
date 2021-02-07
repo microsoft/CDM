@@ -1,12 +1,15 @@
-﻿from typing import TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import TYPE_CHECKING
 import dateutil.parser
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmDataPartitionDefinition
-from cdm.utilities import logger, time_utils
+from cdm.utilities import logger, time_utils, copy_data_utils
 
 from . import utils
-from .types import DataPartition
+from .types import Argument, DataPartition
 
 
 if TYPE_CHECKING:
@@ -61,17 +64,22 @@ class DataPartitionPersistence:
         data_partition = DataPartition()
 
         data_partition.location = instance.location
+        data_partition.name = instance.name
         data_partition.specializedSchema = instance.specialized_schema
-        data_partition.lastFileStatusCheckTime = time_utils.get_formatted_date_string(instance.last_file_status_check_time)
-        data_partition.lastFileModifiedTime = time_utils.get_formatted_date_string(instance.last_file_modified_time)
-        data_partition.exhibitsTraits = utils.array_copy_data(res_opt, instance.exhibits_traits, options)
+        data_partition.lastFileStatusCheckTime = time_utils._get_formatted_date_string(instance.last_file_status_check_time)
+        data_partition.lastFileModifiedTime = time_utils._get_formatted_date_string(instance.last_file_modified_time)
+        data_partition.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, instance.exhibits_traits, options)
 
+        arguments = []
         if instance.arguments:
-            data_partition.arguments = []
             for argument_name, argument_list in instance.arguments.items():
                 for argument_value in argument_list:
-                    argument = {}
-                    argument[argument_name] = argument_value
-                    data_partition.arguments.append(argument)
+                    argument = Argument()
+                    argument.name = argument_name
+                    argument.value = argument_value
+                    arguments.append(argument)
+
+        if len(arguments) > 0:
+            data_partition.arguments = arguments
 
         return data_partition

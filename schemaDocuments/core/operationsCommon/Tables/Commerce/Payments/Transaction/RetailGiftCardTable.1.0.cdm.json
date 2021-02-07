@@ -1,0 +1,252 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailChannelTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailTerminalTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailGiftCardTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "currencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "entryId",
+          "dataType": "RetailGiftCardId",
+          "description": ""
+        },
+        {
+          "name": "MCRGiftCardType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "replicationCounter",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "reserved",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Locked",
+          "description": ""
+        },
+        {
+          "name": "reservedByChannel",
+          "dataType": "RetailChannelRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "reservedByTerminalId",
+          "dataType": "RetailTerminalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActiveFrom",
+          "dataType": "RetailGiftCardActiveFrom",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpiryDate",
+          "dataType": "RetailGiftCardExpireDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FaceValue",
+          "dataType": "RetailGiftCardFaceValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxBalanceMST",
+          "dataType": "RetailGiftCardMaxBalanceMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinReloadMST",
+          "dataType": "RetailGiftCardMinReloadMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NonReloadable",
+          "dataType": "RetailGiftCardNonReloadable",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OneTimeRedemption",
+          "dataType": "RetailGiftCardOneTimeRedemption",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReservedByTransactionId",
+          "dataType": "RetailTransactionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelTable"
+          },
+          "name": "Relationship_RetailChannelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Gift card table"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailGiftCardId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailChannelRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailGiftCardActiveFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailGiftCardExpireDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailGiftCardFaceValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailGiftCardMaxBalanceMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailGiftCardMinReloadMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailGiftCardNonReloadable",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailGiftCardOneTimeRedemption",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    }
+  ]
+}

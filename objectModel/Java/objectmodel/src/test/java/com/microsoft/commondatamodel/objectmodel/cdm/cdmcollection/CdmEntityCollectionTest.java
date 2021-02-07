@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm.cdmcollection;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
@@ -8,10 +11,17 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinit
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.InterceptLog;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.logging.log4j.Level;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -95,30 +105,38 @@ public class CdmEntityCollectionTest {
    */
   @Test
   public void testManifestCannotAddEntityDefinitionWithoutCreatingDocument() {
-    // Use try-with-resources to ensure that interceptLog is removed after the test to not interrupt
-    // with other tests.
-    try (final InterceptLog interceptLog = new InterceptLog(CdmEntityCollection.class)) {
-      final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
-      cdmCorpus.getStorage().setDefaultNamespace("local");
+    Map<String, Object> logCapture = new HashMap<String, Object> ();
+    logCapture.put("count", 0);
+    logCapture.put("level", null);
+    logCapture.put("message", null);
 
-      cdmCorpus.getStorage().mount("local", new LocalAdapter("C:\\Root\\Path"));
+    final EventCallback callback = (CdmStatusLevel statusLevel, String message) -> {
+      logCapture.put("count", ((int)logCapture.get("count")) + 1);
+      logCapture.put("level", statusLevel);
+      logCapture.put("message", message);
+    };
 
-      final CdmManifestDefinition manifest =
-          new CdmManifestDefinition(cdmCorpus.getCtx(), "manifest");
-      manifest.setFolderPath("/");
-      manifest.setNamespace("local");
+    final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+    cdmCorpus.setEventCallback(callback, CdmStatusLevel.Error);
 
-      final CdmEntityDefinition entity =
-          new CdmEntityDefinition(manifest.getCtx(), "entityName", null);
+    cdmCorpus.getStorage().setDefaultNamespace("local");
 
-      manifest.getEntities().add(entity);
+    cdmCorpus.getStorage().mount("local", new LocalAdapter("C:\\Root\\Path"));
 
-      // User verifyNumLogEvents(int) to ensure that logs are captured.
-      interceptLog.verifyNumLogEvents(1);
-      interceptLog.assertLoggedLevel(Level.ERROR);
-      interceptLog.assertLoggedMessage("Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest.");
-      Assert.assertEquals(0, manifest.getEntities().getCount());
-    }
+    final CdmManifestDefinition manifest =
+        new CdmManifestDefinition(cdmCorpus.getCtx(), "manifest");
+    manifest.setFolderPath("/");
+    manifest.setNamespace("local");
+
+    final CdmEntityDefinition entity =
+        new CdmEntityDefinition(manifest.getCtx(), "entityName", null);
+
+    manifest.getEntities().add(entity);
+
+    Assert.assertEquals(1, logCapture.get("count"));
+    Assert.assertEquals(CdmStatusLevel.Error, logCapture.get("level"));
+    Assert.assertEquals("CdmEntityCollection | Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest. | add", logCapture.get("message"));
+    Assert.assertEquals(0, manifest.getEntities().getCount());
   }
 
   @Test

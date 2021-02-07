@@ -1,0 +1,197 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchAgreementHeader.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendBankAccount.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchAgreementSubcontractor",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "End date",
+          "description": ""
+        },
+        {
+          "name": "MaximumAmount_PSN",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Maximum amount",
+          "description": ""
+        },
+        {
+          "name": "PercentParticipation",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Percent participation",
+          "description": ""
+        },
+        {
+          "name": "PurchAgreementHeader",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "PurchAgreementVendorType_PSN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "SubcontractorID",
+          "dataType": "VendAccount",
+          "displayName": "Subcontractor",
+          "description": ""
+        },
+        {
+          "name": "VendAccount_PSN",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendBankAccountDataAreaID_PSN",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendBankAccountID_PSN",
+          "dataType": "BankAccountID",
+          "isNullable": true,
+          "displayName": "Bank",
+          "description": ""
+        },
+        {
+          "name": "VendTable",
+          "dataType": "VendAccount",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PurchAgreementHeader"
+          },
+          "name": "Relationship_PurchAgreementHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_SubContractorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendBankAccount"
+          },
+          "name": "Relationship_VendBankAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase agreement subcontractors"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankAccountID",
+      "extendsDataType": "string"
+    }
+  ]
+}

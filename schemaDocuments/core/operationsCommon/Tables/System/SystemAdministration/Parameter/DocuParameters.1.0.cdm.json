@@ -1,0 +1,133 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DocuParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActiveTable",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use Active document tables",
+          "description": ""
+        },
+        {
+          "name": "ArchivePath",
+          "dataType": "FilePath",
+          "isNullable": true,
+          "displayName": "Azure storage",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxFileSizeInDatabase",
+          "dataType": "DocuMaxFileSize",
+          "isNullable": true,
+          "displayName": "Max. file size in database",
+          "description": ""
+        },
+        {
+          "name": "MaxFileSizeInFileSystem",
+          "dataType": "DocuMaxFileSize",
+          "isNullable": true,
+          "displayName": "Max. file size in file system",
+          "description": ""
+        },
+        {
+          "name": "SubmitToWorkflow",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Submit document files to workflow",
+          "description": ""
+        },
+        {
+          "name": "WebAppsServerURL",
+          "dataType": "URLBase",
+          "isNullable": true,
+          "displayName": "Office Web Apps Server",
+          "description": ""
+        },
+        {
+          "name": "WebAppsSharedSecret",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultSharePointServer",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Default SharePoint server",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Document management parameters"
+    },
+    {
+      "dataTypeName": "FilePath",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DocuMaxFileSize",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "URLBase",
+      "extendsDataType": "string"
+    }
+  ]
+}

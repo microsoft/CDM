@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,7 +12,7 @@ public class TypeAttribute {
     private JsonNode purpose;
     private JsonNode dataType;
     private ArrayNode appliedTraits;
-    private String attributeContext;
+    private JsonNode attributeContext;
     private Boolean isPrimaryKey;
     private Boolean isReadOnly;
     private Boolean isNullable;
@@ -24,6 +27,7 @@ public class TypeAttribute {
     private Boolean valueConstrainedToList;
     private JsonNode defaultValue;
     private JsonNode resolutionGuidance;
+    private JsonNode projection;
 
     public String getExplanation() {
         return explanation;
@@ -65,11 +69,11 @@ public class TypeAttribute {
         this.appliedTraits = appliedTraits;
     }
 
-    public String getAttributeContext() {
+    public JsonNode getAttributeContext() {
         return attributeContext;
     }
 
-    public void setAttributeContext(final String attributeContext) {
+    public void setAttributeContext(final JsonNode attributeContext) {
         this.attributeContext = attributeContext;
     }
 
@@ -183,5 +187,13 @@ public class TypeAttribute {
 
     public void setResolutionGuidance(final JsonNode resolutionGuidance) {
         this.resolutionGuidance = resolutionGuidance;
+    }
+
+    public JsonNode getProjection() {
+        return projection;
+    }
+
+    public void setProjection(final JsonNode projection) {
+        this.projection = projection;
     }
 }

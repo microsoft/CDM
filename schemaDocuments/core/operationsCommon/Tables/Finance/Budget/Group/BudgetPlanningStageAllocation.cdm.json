@@ -1,0 +1,93 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetPlanningAllocationSchedule.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetPlanningWorkflowStage.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanningStageAllocation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetPlanningAllocationSchedule",
+          "dataType": "BudgetPlanningAllocationScheduleRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanningWorkflowStage",
+          "dataType": "BudgetPlanningWorkflowStageRecId",
+          "displayName": "Budget planning workflow and stage",
+          "description": ""
+        },
+        {
+          "name": "Ordinal",
+          "dataType": "BudgetPlanLayoutElementOrdinal",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanningAllocationSchedule"
+          },
+          "name": "Relationship_BudgetPlanningAllocationScheduleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanningWorkflowStage"
+          },
+          "name": "Relationship_BudgetPlanningWorkflowStageRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget planning allocation stages"
+    },
+    {
+      "dataTypeName": "BudgetPlanningAllocationScheduleRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningWorkflowStageRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanLayoutElementOrdinal",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmTMCallListGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityNumber",
+          "dataType": "smmActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CallListID",
+          "dataType": "smmTMCallListID",
+          "description": ""
+        },
+        {
+          "name": "CreateDate",
+          "dataType": "smmTMCallCreateDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "smmTMCallListDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDateTime",
+          "dataType": "smmTMCallListFromDateTime",
+          "description": ""
+        },
+        {
+          "name": "KMCollectionId",
+          "dataType": "KMCollectionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RespWorker",
+          "dataType": "smmTMCallResponsibleWorker",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDateTime",
+          "dataType": "smmTMCallListToDateTime",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Call list group table"
+    },
+    {
+      "dataTypeName": "smmActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmTMCallListID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmTMCallCreateDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "smmTMCallListDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmTMCallListFromDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "KMCollectionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmTMCallResponsibleWorker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmTMCallListToDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

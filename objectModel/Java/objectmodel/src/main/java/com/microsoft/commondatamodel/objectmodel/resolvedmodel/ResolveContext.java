@@ -1,11 +1,19 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveContextScope;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.EventList;
+
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -19,10 +27,25 @@ public class ResolveContext implements CdmCorpusContext {
   private ResolveContextScope currentScope;
   private CdmCorpusDefinition corpus;
   private String relativePath;
+  private CdmStatusLevel reportAtLevel;
+  private EventCallback statusEvent;
+  private EventList events;
+  private String correlationId;
 
   public ResolveContext(final CdmCorpusDefinition corpus) {
+    this(corpus, null);
+  }
+
+  public ResolveContext(final CdmCorpusDefinition corpus, final EventCallback statusEvent) {
+    this(corpus, statusEvent, null);
+  }
+
+  public ResolveContext(final CdmCorpusDefinition corpus, final EventCallback statusEvent, CdmStatusLevel reportAtLevel) {
+    this.reportAtLevel = reportAtLevel != null ? reportAtLevel : CdmStatusLevel.Info;
+    this.statusEvent = statusEvent;
     this.cache = new LinkedHashMap<>();
     this.corpus = corpus;
+    this.events = new EventList();
   }
 
   @Override
@@ -33,6 +56,39 @@ public class ResolveContext implements CdmCorpusContext {
   @Override
   public void setCorpus(final CdmCorpusDefinition value) {
     this.corpus = value;
+  }
+
+  @Override
+  public CdmStatusLevel getReportAtLevel() {
+    return this.reportAtLevel;
+  }
+
+  @Override
+  public void setReportAtLevel(final CdmStatusLevel value) {
+    this.reportAtLevel = value;
+  }
+
+  @Override
+  public EventCallback getStatusEvent() {
+    return this.statusEvent;
+  }
+
+  @Override
+  public void setStatusEvent(final EventCallback value) { this.statusEvent = value; }
+
+  @Override
+  public EventList getEvents() {
+    return events;
+  }
+
+  @Override
+  public String getCorrelationId() {
+    return correlationId;
+  }
+
+  @Override
+  public void setCorrelationId(String correlationId) {
+    this.correlationId = correlationId;
   }
 
   public void pushScope(CdmTraitDefinition currentTrait) {
@@ -86,7 +142,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @return
+   * @return String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -97,7 +153,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @param relativePath
+   * @param relativePath String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -108,7 +164,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @return
+   * @return Stack of ResolveContextScope
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -119,7 +175,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @return
+   * @return ResolveContextScope
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -130,7 +186,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @return
+   * @return String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -141,7 +197,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @param corpusPathRoot
+   * @param corpusPathRoot String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -152,7 +208,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @return
+   * @return Map of String to Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

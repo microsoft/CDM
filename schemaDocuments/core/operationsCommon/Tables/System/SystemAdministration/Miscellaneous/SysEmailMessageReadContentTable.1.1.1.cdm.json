@@ -1,0 +1,120 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysEmailMessageReadTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysEmailMessageReadContentTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Content",
+          "dataType": "SysEmailContents",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContentEncoding",
+          "dataType": "SysEmailReadContentEncoding",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContentType",
+          "dataType": "SysEmailReadContentType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "SysEmailDescriptionType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SysEmailMessageReadTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SysEmailMessageReadTable"
+          },
+          "name": "Relationship_SysEmailMessageReadTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Email message content"
+    },
+    {
+      "dataTypeName": "SysEmailContents",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailReadContentEncoding",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailReadContentType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailDescriptionType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

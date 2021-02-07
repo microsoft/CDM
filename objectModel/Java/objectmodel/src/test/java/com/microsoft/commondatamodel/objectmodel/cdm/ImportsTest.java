@@ -1,11 +1,17 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import static org.testng.Assert.assertNotNull;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import java.io.File;
+
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -21,17 +27,21 @@ public class ImportsTest {
             this.createStorageAdapterForTest("testEntityWithMissingImport");
 
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
+    final ResolveOptions resOpt = new ResolveOptions();
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
     final CdmDocumentDefinition doc =
             cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync(
-                    "local:/missingImport.cdm.json"
+                    "local:/missingImport.cdm.json",
+                    null,
+                    resOpt
             ).join();
     assertNotNull(doc);
     Assert.assertEquals(doc.getImports().getCount(), 1);
     Assert.assertEquals(
             doc.getImports().get(0).getCorpusPath(),
             "missing.cdm.json");
-    Assert.assertNull((doc.getImports().get(0)).getDoc());
+    Assert.assertNull((doc.getImports().get(0)).getDocument());
   }
 
   @Test
@@ -40,18 +50,22 @@ public class ImportsTest {
             this.createStorageAdapterForTest("testEntityWithMissingNestedImports");
 
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
+    final ResolveOptions resOpt = new ResolveOptions();
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
     final CdmDocumentDefinition doc =
             cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync(
-                    "local:/missingNestedImport.cdm.json"
+                    "local:/missingNestedImport.cdm.json",
+                    null,
+                    resOpt
             ).join();
 
     assertNotNull(doc);
     Assert.assertEquals(doc.getImports().getCount(), 1);
-    final CdmDocumentDefinition firstImport = doc.getImports().getAllItems().get(0).getDoc();
+    final CdmDocumentDefinition firstImport = doc.getImports().get(0).getDocument();
     Assert.assertEquals(firstImport.getImports().getCount(), 1);
     Assert.assertEquals(firstImport.getName(), "notMissing.cdm.json");
-    final CdmDocumentDefinition nestedImport = firstImport.getImports().getAllItems().get(0).getDoc();
+    final CdmDocumentDefinition nestedImport = firstImport.getImports().get(0).getDocument();
     Assert.assertNull(nestedImport);
   }
 
@@ -60,15 +74,17 @@ public class ImportsTest {
     final StorageAdapter localAdapter = this.createStorageAdapterForTest("testEntityWithSameImports");
 
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
+    final ResolveOptions resOpt = new ResolveOptions();
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
-    final CdmDocumentDefinition doc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("local:/multipleImports.cdm.json").join();
+    final CdmDocumentDefinition doc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("local:/multipleImports.cdm.json", null, resOpt).join();
 
     assertNotNull(doc);
     Assert.assertEquals(doc.getImports().getCount(), 2);
-    final CdmDocumentDefinition firstImport = doc.getImports().getAllItems().get(0).getDoc();
+    final CdmDocumentDefinition firstImport = doc.getImports().get(0).getDocument();
     Assert.assertEquals(firstImport.getName(), "missingImport.cdm.json");
     Assert.assertEquals(firstImport.getImports().getCount(), 1);
-    final CdmDocumentDefinition secondImport = doc.getImports().getAllItems().get(1).getDoc();
+    final CdmDocumentDefinition secondImport = doc.getImports().get(1).getDocument();
     Assert.assertEquals(secondImport.getName(), "notMissing.cdm.json");
   }
 
@@ -100,21 +116,23 @@ public class ImportsTest {
   public void testLoadingSameImports() throws InterruptedException {
     final StorageAdapter localAdapter = this.createStorageAdapterForTest("testLoadingSameImportsAsync");
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
+    final ResolveOptions resOpt = new ResolveOptions();
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
-    CdmDocumentDefinition mainDoc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("mainEntity.cdm.json").join();
+    CdmDocumentDefinition mainDoc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("mainEntity.cdm.json", null, resOpt).join();
     Assert.assertNotNull(mainDoc);
     Assert.assertEquals(mainDoc.getImports().getCount(), 2);
 
-    CdmDocumentDefinition firstImport = mainDoc.getImports().get(0).getDoc();
-    CdmDocumentDefinition secondImport = mainDoc.getImports().get(1).getDoc();
+    CdmDocumentDefinition firstImport = mainDoc.getImports().get(0).getDocument();
+    CdmDocumentDefinition secondImport = mainDoc.getImports().get(1).getDocument();
 
     // Since these two imports are loaded asynchronously, we need to make sure that
     // the import that they share (targetImport) was loaded, and that the
     // targetImport doc is attached to both of these import objects.
     Assert.assertEquals(firstImport.getImports().getCount(), 1);
-    Assert.assertNotNull(firstImport.getImports().get(0).getDoc());
+    Assert.assertNotNull(firstImport.getImports().get(0).getDocument());
     Assert.assertEquals(secondImport.getImports().getCount(), 1);
-    Assert.assertNotNull(secondImport.getImports().get(0).getDoc());
+    Assert.assertNotNull(secondImport.getImports().get(0).getDocument());
   }
 
   /**
@@ -124,20 +142,22 @@ public class ImportsTest {
   public void testLoadingSameMissingImports() throws InterruptedException {
     final StorageAdapter localAdapter = this.createStorageAdapterForTest("testLoadingSameMissingImportsAsync");
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
+    final ResolveOptions resOpt = new ResolveOptions();
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
-    CdmDocumentDefinition mainDoc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("mainEntity.cdm.json").join();
+    CdmDocumentDefinition mainDoc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("mainEntity.cdm.json", null, resOpt).join();
     Assert.assertNotNull(mainDoc);
     Assert.assertEquals(mainDoc.getImports().getCount(), 2);
 
     // Make sure imports loaded correctly, despite them missing imports.
-    CdmDocumentDefinition firstImport = mainDoc.getImports().get(0).getDoc();
-    CdmDocumentDefinition secondImport = mainDoc.getImports().get(0).getDoc();
+    CdmDocumentDefinition firstImport = mainDoc.getImports().get(0).getDocument();
+    CdmDocumentDefinition secondImport = mainDoc.getImports().get(0).getDocument();
 
     Assert.assertEquals(firstImport.getImports().getCount(), 1);
-    Assert.assertNull(firstImport.getImports().get(0).getDoc());
+    Assert.assertNull(firstImport.getImports().get(0).getDocument());
 
     Assert.assertEquals(secondImport.getImports().getCount(), 1);
-    Assert.assertNull(firstImport.getImports().get(0).getDoc());
+    Assert.assertNull(firstImport.getImports().get(0).getDocument());
   }
 
   /**
@@ -147,13 +167,15 @@ public class ImportsTest {
   public void testLoadingAlreadyPresentImports() throws InterruptedException {
     final StorageAdapter localAdapter = this.createStorageAdapterForTest("testLoadingAlreadyPresentImportsAsync");
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
+    final ResolveOptions resOpt = new ResolveOptions();
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
     // Load the first doc.
-    CdmDocumentDefinition mainDoc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("mainEntity.cdm.json").join();
+    CdmDocumentDefinition mainDoc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("mainEntity.cdm.json", null, resOpt).join();
     Assert.assertNotNull(mainDoc);
     Assert.assertEquals(mainDoc.getImports().getCount(), 1);
 
-    CdmDocumentDefinition importDoc = mainDoc.getImports().get(0).getDoc();
+    CdmDocumentDefinition importDoc = mainDoc.getImports().get(0).getDocument();
     Assert.assertNotNull(importDoc);
 
     // Now load the second doc, which uses the same import.
@@ -162,7 +184,7 @@ public class ImportsTest {
     Assert.assertNotNull(secondDoc);
     Assert.assertEquals(secondDoc.getImports().getCount(), 1);
 
-    CdmDocumentDefinition secondImportDoc = mainDoc.getImports().get(0).getDoc();
+    CdmDocumentDefinition secondImportDoc = mainDoc.getImports().get(0).getDocument();
     Assert.assertNotNull(secondImportDoc);
 
     Assert.assertEquals(importDoc, secondImportDoc);

@@ -1,0 +1,147 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TmpConfSummation_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BatchId",
+          "dataType": "ConfDelimitedByAlias_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FieldName",
+          "dataType": "FieldName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GroupName",
+          "dataType": "ConfLayoutGroupName_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LayoutGroupId",
+          "dataType": "ConfLayoutGroupId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LayoutLineType",
+          "dataType": "ConfLayoutLineTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineCount",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SummaryCountValue",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SummaryTotalValue",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TableName",
+          "dataType": "TableName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Summation on fields"
+    },
+    {
+      "dataTypeName": "ConfDelimitedByAlias_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FieldName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfLayoutGroupName_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfLayoutGroupId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfLayoutLineTypeId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TableName",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PSAProjSchedRole.cdm.json"
+    },
+    {
+      "corpusPath": "ResResourceIdentifier.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/Project/Miscellaneous/PSASchedRole.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ResExtendFulfillmentTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RootActivity",
+          "dataType": "ActivityRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivityResource",
+          "dataType": "ActivityResourceRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Resource",
+          "dataType": "ResourceRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResourceCategory",
+          "dataType": "ResourceCategoryRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AddedToTeamByFulfillment",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExtendFulfillmentMemo",
+          "dataType": "ResExtendFulfillmentNotification",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FulfillByWorker",
+          "dataType": "HcmWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PSAProjSchedRole"
+          },
+          "name": "Relationship_ActivityResourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ResResourceIdentifier"
+          },
+          "name": "Relationship_ResourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PSASchedRole"
+          },
+          "name": "Relationship_ResourceCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "ActivityRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ActivityResourceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ResourceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ResourceCategoryRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ResExtendFulfillmentNotification",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

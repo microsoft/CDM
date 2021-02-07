@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package example;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
@@ -32,7 +35,7 @@ import java.util.concurrent.ExecutionException;
  *  ------------------------------------------------------------------------------------------------
  */
 public class Program {
-  private static final String MODEL_JSON_ROOT = "..";
+  private static final String MODEL_JSON_ROOT = "../sample-data";
   private static final String PATH_FROM_EXE_TO_EXAMPLE_ROOT = "../";
 
   public static void main(final String[] args) throws ExecutionException, InterruptedException {
@@ -46,7 +49,7 @@ public class Program {
     // ---------------------------------------------------------------------------------------------
     // Set up adapters for managing access to local FS, remote and ADLS locations.
 
-    // Fake cdm, normally use the github adapter.
+    // Fake cdm, normally use the CDM Standards adapter.
     // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there.
     cdmCorpus.getStorage().mount(
         "cdm",
@@ -101,7 +104,7 @@ public class Program {
         CdmObjectType.TypeAttributeDef,
         "NewAttribute",
         false);
-    newAttribute.updateDataFormat(CdmDataFormat.String.toString());
+    newAttribute.updateDataFormat(CdmDataFormat.String);
     newEntity.getAttributes().add(newAttribute);
 
     // Call will create EntityDeclarationDefinition

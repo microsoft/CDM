@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
 import java.util.List;
@@ -27,6 +30,10 @@ public class InterceptLog implements AutoCloseable {
    * Adds a mock appender to the test logger to capture logged error messages.
    */
   public InterceptLog(final Class<?> classInterceptLogsFor) {
+    this(classInterceptLogsFor, Level.ERROR);
+  }
+
+  public InterceptLog(final Class<?> classInterceptLogsFor, final Level level) {
     logEventCaptor = ArgumentCaptor.forClass(LogEvent.class);
 
     appender = Mockito.mock(Appender.class);
@@ -38,7 +45,7 @@ public class InterceptLog implements AutoCloseable {
 
     testLogger = (Logger) LogManager.getLogger(classInterceptLogsFor);
     config.addLoggerAppender(testLogger, appender);
-    testLogger.setLevel(Level.ERROR); // Only capture errors.
+    testLogger.setLevel(level);
     ctx.updateLoggers();
   }
 

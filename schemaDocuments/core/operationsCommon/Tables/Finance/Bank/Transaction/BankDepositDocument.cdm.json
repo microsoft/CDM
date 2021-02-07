@@ -1,0 +1,174 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankDepositDocument",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountId",
+          "dataType": "CompanyBankAccountId",
+          "description": ""
+        },
+        {
+          "name": "AccountingCurrencyAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankCurrency",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankCurrencyAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankTransType",
+          "dataType": "BankTransactionType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepositNum",
+          "dataType": "BankDepositNum",
+          "description": ""
+        },
+        {
+          "name": "PaymReference",
+          "dataType": "PaymReference",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionCurrency",
+          "dataType": "BankTransCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionCurrencyAmount",
+          "dataType": "BankTransAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Txt",
+          "dataType": "TransTxt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyAmount",
+          "dataType": "AmountMSTSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bank deposit"
+    },
+    {
+      "dataTypeName": "CompanyBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankTransactionType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankDepositNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymReference",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankTransCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankTransAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TransTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMSTSecondary",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

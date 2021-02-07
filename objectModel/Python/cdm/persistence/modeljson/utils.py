@@ -1,12 +1,18 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from datetime import datetime
 from typing import TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.persistence.cdmfolder import TraitReferencePersistence
-from cdm.utilities import JObject, logger
+from cdm.utilities import logger
+from cdm.utilities import namevaluepair
 
 from . import ArgumentPersistence, extension_helper
 from .types import CsvFormatSettings
+from cdm.persistence.modeljson.types import Annotation
+from cdm.utilities.namevaluepair import NameValuePair
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmArgumentDefinition, CdmCorpusContext, CdmCollection, CdmTraitCollection, CdmTraitReference
@@ -17,13 +23,23 @@ annotation_to_trait_map = {
 }
 
 ignored_traits = (
-    'is.modelConversion.otherAnnotations',
     'is.propertyContent.multiTrait',
     'is.modelConversion.referenceModelMap',
     'is.modelConversion.modelVersion',
     'means.measurement.version',
-    'is.partition.format.CSV'
+    'is.CDM.entityVersion',
+    'is.partition.format.CSV',
+    'is.partition.culture',
+    'is.managedBy',
+    'is.hidden'
 )
+
+# Traits to ignore if they come from properties.
+# These traits become properties on the model.json. To avoid persisting both a trait
+# and a property on the model.json, we filter these traits out.
+model_json_property_traits = {
+    'is.localized.describedAs'
+}
 
 _TAG = 'Utils'
 
@@ -100,7 +116,10 @@ async def process_annotations_from_data(ctx: 'CdmCorpusContext', obj: 'MetadataO
     if obj.get('annotations'):
         for annotation in obj.get('annotations'):
             if not should_annotation_go_into_a_single_trait(annotation.name):
-                multi_trait_annotations.append(annotation)
+                cdm_element = NameValuePair()
+                cdm_element.name = annotation.name
+                cdm_element.value = annotation.value
+                multi_trait_annotations.append(cdm_element)
             else:
                 inner_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, convert_annotation_to_trait(annotation.name))
                 inner_trait.arguments.append(await ArgumentPersistence.from_data(ctx, annotation))
@@ -108,18 +127,18 @@ async def process_annotations_from_data(ctx: 'CdmCorpusContext', obj: 'MetadataO
 
         if multi_trait_annotations:
             other_annotations_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.modelConversion.otherAnnotations', False)  # type: CdmTraitReference
-            other_annotations_trait.is_from_property = True
+            other_annotations_trait.is_from_property = False
             annotations_argument = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'annotations')  # type: CdmArgumentDefinition
             annotations_argument.value = multi_trait_annotations
             other_annotations_trait.arguments.append(annotations_argument)
             traits.append(other_annotations_trait)
 
-        if obj.get('traits'):
-            for trait in obj.get('traits'):
-                traits.append(TraitReferencePersistence.from_data(ctx, trait))
+    if obj.get('traits'):
+        for trait in obj.get('traits'):
+            traits.append(TraitReferencePersistence.from_data(ctx, trait))
 
 
-async def process_annotations_to_data(ctx: 'CdmCorpusContext', entity_object: 'MetadataObject', traits: 'CdmTraitCollection'):
+def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_object: 'MetadataObject', traits: 'CdmTraitCollection'):
     if traits is None:
         return
 
@@ -133,24 +152,19 @@ async def process_annotations_to_data(ctx: 'CdmCorpusContext', entity_object: 'M
 
         if trait.named_reference == 'is.modelConversion.otherAnnotations':
             for annotation in trait.arguments[0].value:
-                if isinstance(annotation, dict) and annotation.get('name'):
+                if isinstance(annotation, NameValuePair):
+                    element = Annotation()
+                    element.name = annotation.name
+                    element.value = annotation.value
+                    annotations.append(element)
+                elif isinstance(annotation, dict) and annotation.get('name'):
                     annotations.append(annotation)
                 else:
                     logger.warning(_TAG, ctx, 'Unsupported annotation type.')
 
-        elif not trait.is_from_property:
-            annotation_name = trait_to_annotation_name(trait.named_reference)
-
-            if annotation_name is not None and trait.arguments is not None \
-               and isinstance(trait.arguments, list) and len(trait.arguments) == 1:
-                argument = await ArgumentPersistence.to_data(trait.arguments[0], None, None)
-
-                if argument is not None:
-                    argument.name = annotation_name
-                    annotations.append(argument)
-            elif trait.named_reference not in ignored_traits:
-                extension = TraitReferencePersistence.to_data(trait, None, None)
-                extensions.append(extension)
+        elif trait.named_reference not in ignored_traits and not trait.named_reference.startswith('is.dataFormat') and not (trait.named_reference in model_json_property_traits and trait.is_from_property):
+            extension = TraitReferencePersistence.to_data(trait, None, None)
+            extensions.append(extension)
 
         if annotations:
             entity_object.annotations = annotations

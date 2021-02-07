@@ -1,0 +1,102 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WorkflowElementLinkTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "WorkflowElementTable.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WorkflowElementOutcomeTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ElementLinkTable",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ElementTable",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "WorkflowConfigurationElementName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Outcome",
+          "dataType": "WorkflowOutcomeName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowElementLinkTable"
+          },
+          "name": "Relationship_WorkflowElementLinkTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowElementTable"
+          },
+          "name": "Relationship_WorkflowElementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Workflow element choices"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WorkflowConfigurationElementName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkflowOutcomeName",
+      "extendsDataType": "string"
+    }
+  ]
+}

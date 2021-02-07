@@ -1,0 +1,171 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AgreementLineHistory.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/CommissionSalesGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvMode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjCategory.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AgreementLineDefaultHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AgreementLineHistory",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ProjectActivityNumber",
+          "dataType": "ProjActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjectActivityNumberDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ProjectCategory",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjectCategoryDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "SalesCommissionGroup",
+          "dataType": "CommissSalesGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesCommissionGroupDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "SalesModeOfDelivery",
+          "dataType": "DlvModeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesModeOfDeliveryDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AgreementLineHistory"
+          },
+          "name": "Relationship_AgreementLineHistoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CommissionSalesGroup"
+          },
+          "name": "Relationship_CommissionSalesGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvMode"
+          },
+          "name": "Relationship_DlvModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Agreement line history"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CommissSalesGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DlvModeId",
+      "extendsDataType": "string"
+    }
+  ]
+}

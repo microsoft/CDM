@@ -1,0 +1,235 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailCustTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "accountNum",
+          "dataType": "CustAccount",
+          "description": ""
+        },
+        {
+          "name": "Image",
+          "dataType": "RetailImageAttributeValueText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "nonChargableAccount",
+          "dataType": "RetailNonChargableAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostAsShipment",
+          "dataType": "RetailPostAsShipment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "receiptEmail",
+          "dataType": "RetailReceiptEmail",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "receiptOption",
+          "dataType": "RetailReceiptOption",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "requiresApproval",
+          "dataType": "RetailRequiresApproval",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReturnTaxGroup_W",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "displayName": "Sales tax group for returns",
+          "description": ""
+        },
+        {
+          "name": "useOrderNumberReference",
+          "dataType": "RetailUseOrderNumberReference",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccountAsync",
+          "dataType": "RetailAsyncCustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BlockCustomerForLoyaltyEnrollment",
+          "dataType": "RetailBlockCustomerForLoyaltyEnrollment",
+          "isNullable": true,
+          "displayName": "Block customer for loyalty enrollment",
+          "description": ""
+        },
+        {
+          "name": "OptOutPersonalization",
+          "dataType": "RetailOptOutPersonalization",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OptOutWebActivityTracking",
+          "dataType": "RetailOptOutWebActivityTracking",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "B2BCustomerHierarchyNode",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsB2BAdmin",
+          "dataType": "RetailCustTableIsB2BAdmin",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeading_ReturnTaxGroup_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customers (Retail)"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailImageAttributeValueText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailNonChargableAccount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPostAsShipment",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailReceiptEmail",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReceiptOption",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailRequiresApproval",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailUseOrderNumberReference",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAsyncCustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailBlockCustomerForLoyaltyEnrollment",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailOptOutPersonalization",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailOptOutWebActivityTracking",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCustTableIsB2BAdmin",
+      "extendsDataType": "integer"
+    }
+  ]
+}

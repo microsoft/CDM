@@ -1,0 +1,129 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FiscalOrganization_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FBSpedEcfForeignBankAccount_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BankAccountTable",
+          "dataType": "BankAccountID",
+          "description": ""
+        },
+        {
+          "name": "ContactDocumentId",
+          "dataType": "FBSpedEcfContactDocumentID_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactDocumentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactName",
+          "dataType": "FBSpedEcfContactName_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalOrganization",
+          "dataType": "FiscalOrganizationRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalOrganization_BR"
+          },
+          "name": "Relationship_FiscalOrganizationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_BankAccountTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Foreign bank accounts"
+    },
+    {
+      "dataTypeName": "BankAccountID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBSpedEcfContactDocumentID_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBSpedEcfContactName_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalOrganizationRecId_BR",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

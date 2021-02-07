@@ -1,0 +1,1296 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InventTransferCombinedLineDelivery.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatPort.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatSpecMovement_CZ.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatStatProc.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatTransactionCode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatTransportMode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventTransferTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCounty.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressState.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventTransferLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AmountValue",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Invoiced amount",
+          "description": ""
+        },
+        {
+          "name": "ATPApplyDemandTimeFence",
+          "dataType": "SalesATPApplyDemandTimeFence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ATPApplySupplyTimeFence",
+          "dataType": "SalesATPApplySupplyTimeFence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ATPBackwardDemandTimeFence",
+          "dataType": "SalesATPBackwardDemandTimeFence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ATPBackwardSupplyTimeFence",
+          "dataType": "SalesATPBackwardSupplyTimeFence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ATPInclPlannedOrders",
+          "dataType": "SalesATPInclPlannedOrders",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ATPTimeFence",
+          "dataType": "SalesATPTimeFence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AutoReservation",
+          "dataType": "InventTransferAutoReservation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CombinedTransferOrderLineDelivery",
+          "dataType": "InventTransferCombinedLineDeliveryRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryDateControlType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HHTHandheldUserId",
+          "dataType": "RetailUserIdEx2",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HHTTransDate",
+          "dataType": "RetailDateEx2",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HHTTransTime",
+          "dataType": "RetailTimeEx2",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatCommodity",
+          "dataType": "IntrastatCommodityId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatFulfillmentDate_HU",
+          "dataType": "IntrastatFulfillmentDate_HU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatSpecMove_CZ",
+          "dataType": "IntrastatSpecMove_CZ",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimIdTo_RU",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransIdShipment",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransIdReceive",
+          "dataType": "InventTransIdReceive",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransIdScrap",
+          "dataType": "InventTransIdScrap",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransIdTransitFrom",
+          "dataType": "InventTransIdReceiveTransit",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransIdTransitTo",
+          "dataType": "InventTransIdShipmentTransit",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemIdInventoried",
+          "description": ""
+        },
+        {
+          "name": "LineAmount_RU",
+          "dataType": "LineAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigCountryRegionId",
+          "dataType": "ItemOrigCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigCountyId",
+          "dataType": "ItemOrigCountyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigStateId",
+          "dataType": "ItemOrigStateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OverDeliveryPct",
+          "dataType": "InventTransferOverDeliveryPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyReceived",
+          "dataType": "PdsCWQtyReceived",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyReceiveNow",
+          "dataType": "PdsCWQtyReceiveNow",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyRemainReceive",
+          "dataType": "PdsCWQtyRemainReceive",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyRemainShip",
+          "dataType": "PdsCWQtyRemainShip",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyScrapped",
+          "dataType": "PdsCWQtyScrapped",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyShipNow",
+          "dataType": "PdsCWQtyShipNow",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyShipped",
+          "dataType": "PdsCWQtyShipped",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyTransfer",
+          "dataType": "PdsCWQtyTransfer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsOverrideFEFO",
+          "dataType": "PdsOverrideFEFO",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Port",
+          "dataType": "IntrastatPortId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Price_RU",
+          "dataType": "PriceCur",
+          "isNullable": true,
+          "displayName": "Unit price",
+          "description": ""
+        },
+        {
+          "name": "PriceUnit_RU",
+          "dataType": "PriceUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyReceived",
+          "dataType": "InventTransferQtyReceived",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyReceiveNow",
+          "dataType": "InventTransferQtyReceived",
+          "isNullable": true,
+          "displayName": "Receive now",
+          "description": ""
+        },
+        {
+          "name": "QtyRemainReceive",
+          "dataType": "InventTransferQtyRemain",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Receive remain",
+          "description": ""
+        },
+        {
+          "name": "QtyRemainShip",
+          "dataType": "InventTransferQtyRemain",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Ship remain",
+          "description": ""
+        },
+        {
+          "name": "QtyScrapped",
+          "dataType": "InventTransferQtyScrapped",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyShipNow",
+          "dataType": "InventTransferQtyShipped",
+          "isNullable": true,
+          "displayName": "Ship now",
+          "description": ""
+        },
+        {
+          "name": "QtyShipped",
+          "dataType": "InventTransferQtyShipped",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyTransfer",
+          "dataType": "InventTransferQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiveDate",
+          "dataType": "InventTransferReceiveDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemainStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailAreaId",
+          "dataType": "RetailAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailInfocodeIdEx2",
+          "dataType": "RetailInfocodeIdEx2",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailInformationSubcodeIdEx2",
+          "dataType": "RetailInformationSubcodeIdEx2",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailReplenishRefRecId",
+          "dataType": "RetailReplenishRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailReplenishRefTableId",
+          "dataType": "RetailReplenishRefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipDate",
+          "dataType": "InventTransferShipDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StatisticalValue",
+          "dataType": "StatisticalValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StatProcId",
+          "dataType": "IntrastatProcId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionCode",
+          "dataType": "IntrastatTransactionCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferId",
+          "dataType": "InventTransferId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Transport",
+          "dataType": "IntrastatTransport",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnderDeliveryPct",
+          "dataType": "InventTransferUnderDeliveryPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitId",
+          "dataType": "InventUnitId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DimensionDefaultShipFrom",
+          "dataType": "InventSiteLinkedDimensionValueSet",
+          "isNullable": true,
+          "displayName": "From dimension",
+          "description": ""
+        },
+        {
+          "name": "DimensionDefaultShipTo",
+          "dataType": "InventSiteLinkedDimensionValueSet",
+          "isNullable": true,
+          "displayName": "To dimension",
+          "description": ""
+        },
+        {
+          "name": "Intracode",
+          "dataType": "DEL_IntrastatItemCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode_IN",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension_IN",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseTariffCodes_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Exempt_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDirectSettlement_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDSA_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromExciseRecordType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromExciseType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HSNCodeTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvntCostPrice_IN",
+          "dataType": "CostPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ITCCategory_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetAmount_IN",
+          "dataType": "NetAmount_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NonBusinessUsagePercentage_IN",
+          "dataType": "Percent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchPrice_IN",
+          "dataType": "UnitPrice_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Retention_IN",
+          "dataType": "RetentionAmt_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTaxFormTypes_IN",
+          "dataType": "SalesTaxFormTypesRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceAccountingCodeTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceCategory_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup_IN",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup_IN",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDirectSettlement_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDSA_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToExciseRecordType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToExciseType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToITCCategory_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitId_IN",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitPrice_IN",
+          "dataType": "UnitPrice_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATPriceType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATRetentionCode_IN",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetAmount",
+          "dataType": "Amount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitPrice",
+          "dataType": "UnitPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransferCombinedLineDelivery"
+          },
+          "name": "Relationship_CombinedTransferOrderLineDeliveryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_IntrastatCommodityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatPort"
+          },
+          "name": "Relationship_IntrastatPortRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatSpecMovement_CZ"
+          },
+          "name": "Relationship_IntrastatSpecMovement_CZRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatStatProc"
+          },
+          "name": "Relationship_IntrastatStatProcRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatTransactionCode"
+          },
+          "name": "Relationship_IntrastatTransactionCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatTransportMode"
+          },
+          "name": "Relationship_IntrastatTransportModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimTo_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransferTable"
+          },
+          "name": "Relationship_InventTransferTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_OriginCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCounty"
+          },
+          "name": "Relationship_OriginCountyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressState"
+          },
+          "name": "Relationship_OriginStateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_ReceiveInventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_ScrapInventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_ShipmentInventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_TransitFromInventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_TransitToInventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DimensionDefaultShipFromRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DimensionDefaultShipToRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transfer order lines"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesATPApplyDemandTimeFence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SalesATPApplySupplyTimeFence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SalesATPBackwardDemandTimeFence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SalesATPBackwardSupplyTimeFence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SalesATPInclPlannedOrders",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SalesATPTimeFence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventTransferAutoReservation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventTransferCombinedLineDeliveryRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailUserIdEx2",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDateEx2",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailTimeEx2",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "IntrastatCommodityId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "IntrastatFulfillmentDate_HU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "IntrastatSpecMove_CZ",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransIdShipment",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransIdReceive",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransIdScrap",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransIdReceiveTransit",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransIdShipmentTransit",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemIdInventoried",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemOrigCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemOrigCountyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemOrigStateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransferOverDeliveryPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "PdsCWQtyReceived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWQtyReceiveNow",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWQtyRemainReceive",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWQtyRemainShip",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWQtyScrapped",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWQtyShipNow",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWQtyShipped",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWQtyTransfer",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsOverrideFEFO",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "IntrastatPortId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceUnit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventTransferQtyReceived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventTransferQtyRemain",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventTransferQtyScrapped",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventTransferQtyShipped",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventTransferQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventTransferReceiveDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailInfocodeIdEx2",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailInformationSubcodeIdEx2",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReplenishRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailReplenishRefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventTransferShipDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "StatisticalValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "IntrastatProcId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatTransactionCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransferId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatTransport",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransferUnderDeliveryPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteLinkedDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DEL_IntrastatItemCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CostPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NetAmount_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitPrice_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetentionAmt_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesTaxFormTypesRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitPrice",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

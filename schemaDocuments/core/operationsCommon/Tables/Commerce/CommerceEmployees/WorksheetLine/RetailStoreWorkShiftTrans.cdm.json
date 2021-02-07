@@ -1,0 +1,229 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/CommerceEmployees/Main/RetailStaffTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailStoreTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/CommerceEmployees/WorksheetHeader/RetailStoreWorkShiftTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailTerminalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/Parameter/RetailWorkShiftSetup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailStoreWorkShiftTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "closingDate",
+          "dataType": "RetailEndingDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "closingTime",
+          "dataType": "RetailEndingTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "openingDate",
+          "dataType": "RetailStartingDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "openingTime",
+          "dataType": "RetailStartingTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "replicationCounter",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "shiftDate",
+          "dataType": "RetailShiftDate",
+          "description": ""
+        },
+        {
+          "name": "shiftId",
+          "dataType": "RetailWorkShiftId",
+          "description": ""
+        },
+        {
+          "name": "statementCode",
+          "dataType": "RetailStatementCode",
+          "description": ""
+        },
+        {
+          "name": "statementMethod",
+          "dataType": "RetailStatementMethod",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StoreRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStaffTable"
+          },
+          "name": "Relationship_RetailStaffTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreTable"
+          },
+          "name": "Relationship_RetailStoreTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreWorkShiftTable"
+          },
+          "name": "Relationship_RetailStoreWorkShiftTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailWorkShiftSetup"
+          },
+          "name": "Relationship_RetailWorkShiftSetupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Work shift trans"
+    },
+    {
+      "dataTypeName": "RetailEndingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailEndingTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "RetailStartingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailStartingTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailShiftDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailWorkShiftId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStatementCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStatementMethod",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

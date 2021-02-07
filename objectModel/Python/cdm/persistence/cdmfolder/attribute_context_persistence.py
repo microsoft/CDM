@@ -1,9 +1,12 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional
 
 from cdm.enums import CdmObjectType, CdmAttributeContextType
-from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext
+from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext, CdmCollection
 from cdm.persistence import PersistenceLayer
-from cdm.utilities import CopyOptions, ResolveOptions
+from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils
 
 from . import utils
 from .attribute_context_reference_persistence import AttributeContextReferencePersistence
@@ -23,7 +26,21 @@ map_type_name_to_enum = {
     'addedAttributeExpansionTotal': CdmAttributeContextType.ADDED_ATTRIBUTE_EXPANSION_TOTAL,
     'addedAttributeSelectedType': CdmAttributeContextType.ADDED_ATTRIBUTE_SELECTED_TYPE,
     'generatedRound': CdmAttributeContextType.GENERATED_ROUND,
-    'generatedSet': CdmAttributeContextType.GENERATED_SET
+    'generatedSet': CdmAttributeContextType.GENERATED_SET,
+    'projection': CdmAttributeContextType.PROJECTION,
+    'source': CdmAttributeContextType.SOURCE,
+    'operations': CdmAttributeContextType.OPERATIONS,
+    'operationAddCountAttribute': CdmAttributeContextType.OPERATION_ADD_COUNT_ATTRIBUTE,
+    'operationAddSupportingAttribute': CdmAttributeContextType.OPERATION_ADD_SUPPORTING_ATTRIBUTE,
+    'operationAddTypeAttribute': CdmAttributeContextType.OPERATION_ADD_TYPE_ATTRIBUTE,
+    'operationExcludeAttributes': CdmAttributeContextType.OPERATION_EXCLUDE_ATTRIBUTES,
+    'operationArrayExpansion': CdmAttributeContextType.OPERATION_ARRAY_EXPANSION,
+    'operationCombineAttributes': CdmAttributeContextType.OPERATION_COMBINE_ATTRIBUTES,
+    'operationRenameAttributes': CdmAttributeContextType.OPERATION_RENAME_ATTRIBUTES,
+    'operationReplaceAsForeignKey': CdmAttributeContextType.OPERATION_REPLACE_AS_FOREIGN_KEY,
+    'operationIncludeAttributes': CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES,
+    'operationAddAttributeGroup': CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP,
+    'unknown': CdmAttributeContextType.UNKNOWN
 }
 
 map_enum_to_type_name = {
@@ -36,7 +53,21 @@ map_enum_to_type_name = {
     CdmAttributeContextType.ADDED_ATTRIBUTE_EXPANSION_TOTAL: 'addedAttributeExpansionTotal',
     CdmAttributeContextType.ADDED_ATTRIBUTE_SELECTED_TYPE: 'addedAttributeSelectedType',
     CdmAttributeContextType.GENERATED_ROUND: 'generatedRound',
-    CdmAttributeContextType.GENERATED_SET: 'generatedSet'
+    CdmAttributeContextType.GENERATED_SET: 'generatedSet',
+    CdmAttributeContextType.PROJECTION: 'projection',
+    CdmAttributeContextType.SOURCE: 'source',
+    CdmAttributeContextType.OPERATIONS: 'operations',
+    CdmAttributeContextType.OPERATION_ADD_COUNT_ATTRIBUTE: 'operationAddCountAttribute',
+    CdmAttributeContextType.OPERATION_ADD_SUPPORTING_ATTRIBUTE: 'operationAddSupportingAttribute',
+    CdmAttributeContextType.OPERATION_ADD_TYPE_ATTRIBUTE: 'operationAddTypeAttribute',
+    CdmAttributeContextType.OPERATION_EXCLUDE_ATTRIBUTES: 'operationExcludeAttributes',
+    CdmAttributeContextType.OPERATION_ARRAY_EXPANSION: 'operationArrayExpansion',
+    CdmAttributeContextType.OPERATION_COMBINE_ATTRIBUTES: 'operationCombineAttributes',
+    CdmAttributeContextType.OPERATION_RENAME_ATTRIBUTES: 'operationRenameAttributes',
+    CdmAttributeContextType.OPERATION_REPLACE_AS_FOREIGN_KEY: 'operationReplaceAsForeignKey',
+    CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES: 'operationIncludeAttributes',
+    CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP: 'operationAddAttributeGroup',
+    CdmAttributeContextType.UNKNOWN: 'unknown'
 }
 
 
@@ -81,6 +112,13 @@ class AttributeContextPersistence:
                 else:
                     attribute_context.contents.append(AttributeContextPersistence.from_data(ctx, elem))
 
+        if data.get('lineage'):
+            if attribute_context.lineage is None:
+                attribute_context.lineage = CdmCollection(ctx, attribute_context, CdmObjectType.ATTRIBUTE_CONTEXT_REF)
+
+            for elem in data.lineage:
+                attribute_context.lineage.append(AttributeContextReferencePersistence.from_data(ctx, elem))
+
         return attribute_context
 
     @staticmethod
@@ -93,9 +131,12 @@ class AttributeContextPersistence:
         result.name = instance.name
         result.type = map_enum_to_type_name[instance.type]
         result.parent = AttributeContextReferencePersistence.to_data(instance.parent, res_opt, options) if instance.parent is not None else None
-        result.definition = PersistenceLayer.to_data(instance.definition, res_opt, 'CdmFolder', options) if instance.definition is not None else None
+        definition = PersistenceLayer.to_data(instance.definition, res_opt, options,
+                                              PersistenceLayer.CDM_FOLDER) if instance.definition is not None else None
+        result.definition = definition if isinstance(definition, str) else None
         # I know the trait collection names look wrong. but I wanted to use the def baseclass
-        result.appliedTraits = utils.array_copy_data(res_opt, exhibits_traits, options)
-        result.contents = utils.array_copy_data(res_opt, instance.contents, options)
+        result.appliedTraits = copy_data_utils._array_copy_data(res_opt, exhibits_traits, options)
+        result.contents = copy_data_utils._array_copy_data(res_opt, instance.contents, options)
+        result.lineage = copy_data_utils._array_copy_data(res_opt, instance.lineage, options)
 
         return result

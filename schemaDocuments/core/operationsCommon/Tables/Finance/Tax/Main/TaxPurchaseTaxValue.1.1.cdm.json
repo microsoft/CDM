@@ -1,0 +1,134 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TaxPurchaseTaxTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxPurchaseTaxValue",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Percent",
+          "dataType": "PurchaseDutyPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxPurchaseTaxTable",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDate",
+          "displayName": "From date",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDate",
+          "displayName": "To date",
+          "description": ""
+        },
+        {
+          "name": "TaxCalcMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxLimitMax",
+          "dataType": "TaxBaseMax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxLimitMin",
+          "dataType": "TaxBaseMin",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxPurchaseTaxTable"
+          },
+          "name": "Relationship_TaxPurchaseTaxTableFKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase duty value"
+    },
+    {
+      "dataTypeName": "PurchaseDutyPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ValidFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxBaseMax",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxBaseMin",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

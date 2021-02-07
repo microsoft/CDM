@@ -1,10 +1,17 @@
-import { AttributeResolutionGuidance , EntityReference , PurposeReference, TraitReference } from '.';
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { AttributeResolutionGuidance, CardinalitySettings, EntityReferenceDefinition, Projection, PurposeReference, TraitReference } from '.';
 
 export abstract class EntityAttribute {
-    public explanation?: string;
-    public purpose?: (string | PurposeReference);
     public name: string;
-    public entity: string | EntityReference;
+    public explanation?: string;
+    public description?: string;
+    public displayName?: string;
+    public purpose?: (string | PurposeReference);
+    public isPolymorphicSource?: boolean;
+    public entity: string | EntityReferenceDefinition | Projection;
     public appliedTraits?: (string | TraitReference)[];
-    public resolutionGuidance? : AttributeResolutionGuidance;
+    public resolutionGuidance?: AttributeResolutionGuidance;
+    public cardinality?: CardinalitySettings;
 }

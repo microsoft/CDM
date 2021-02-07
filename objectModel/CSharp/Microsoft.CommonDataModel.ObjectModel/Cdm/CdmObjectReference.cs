@@ -1,14 +1,10 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmObjectReference.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using System;
-    using System.Collections.Generic;
 
     public interface CdmObjectReference : CdmObject
     {
@@ -32,7 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         bool SimpleNamedReference { get; set; }
 
-        [Obsolete()]
-        CdmObjectDefinition GetResolvedReference(ResolveOptions resOpt = null);
+        [Obsolete("Only for internal use.")]
+        CdmObject FetchResolvedReference(ResolveOptions resOpt = null);
     }
 }

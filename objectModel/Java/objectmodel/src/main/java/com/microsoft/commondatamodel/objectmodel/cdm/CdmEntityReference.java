@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -17,6 +18,10 @@ public class CdmEntityReference extends CdmObjectReferenceBase implements CdmObj
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved Options
+   * @param refTo Object reference
+   * @param simpleReference Simple reference
+   * @return CdmObjectReferenceBase
    */
   @Override
   @Deprecated
@@ -27,9 +32,16 @@ public class CdmEntityReference extends CdmObjectReferenceBase implements CdmObj
     return this.copyRefObject(resOpt, refTo, simpleReference, null);
   }
 
-  /**
+
+  
+  /** 
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved Options
+   * @param refTo Object reference
+   * @param simpleReference Simple reference
+   * @param host Host
+   * @return CdmObjectReferenceBase
    */
   @Override
   @Deprecated
@@ -47,9 +59,9 @@ public class CdmEntityReference extends CdmObjectReferenceBase implements CdmObj
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -62,10 +74,10 @@ public class CdmEntityReference extends CdmObjectReferenceBase implements CdmObj
 
   /**
    *
-   * @param pathRoot
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param pathRoot Path root
+   * @param preChildren Pre children
+   * @param postChildren Post children
+   * @return Boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

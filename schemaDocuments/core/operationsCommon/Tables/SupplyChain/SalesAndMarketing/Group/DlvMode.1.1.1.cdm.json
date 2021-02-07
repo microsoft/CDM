@@ -1,0 +1,176 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatTransportMode.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Group/MarkupGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DlvMode",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Code",
+          "dataType": "DlvModeId",
+          "description": ""
+        },
+        {
+          "name": "MarkupGroup",
+          "dataType": "DeliveryMarkupGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRExpedite",
+          "dataType": "MCRExpedite",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipCarrierAccountCode",
+          "dataType": "ShipCarrierAccountCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipCarrierDlvType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipCarrierId",
+          "dataType": "ShipCarrierId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipCarrierName",
+          "dataType": "ShipCarrierName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Transport",
+          "dataType": "IntrastatTransport",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Txt",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DOMPriority",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Priority",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatTransportMode"
+          },
+          "name": "Relationship_IntrastatTransportModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MarkupGroup"
+          },
+          "name": "Relationship_MarkupGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Mode of delivery"
+    },
+    {
+      "dataTypeName": "DlvModeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DeliveryMarkupGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRExpedite",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ShipCarrierAccountCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ShipCarrierId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ShipCarrierName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatTransport",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    }
+  ]
+}

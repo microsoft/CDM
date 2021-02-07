@@ -1,8 +1,13 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
+    Logger,
     resolveOptions,
     VisitCallback
 } from '../internal';
@@ -30,7 +35,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
         let copy: CdmE2ERelationship;
@@ -52,7 +57,32 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     }
 
     public validate(): boolean {
-        return this.fromEntity !== null && this.fromEntityAttribute !== null && this.toEntity !== null && this.toEntityAttribute !== null;
+        const missingFields: string[] = [];
+        if (!this.fromEntity) {
+            missingFields.push('fromEntity');
+        }
+        if (!this.fromEntityAttribute) {
+            missingFields.push('fromEntityAttribute');
+        }
+        if (!this.toEntity) {
+            missingFields.push('toEntity');
+        }
+        if (!this.toEntityAttribute) {
+            missingFields.push('toEntityAttribute');
+        }
+
+        if (missingFields.length > 0) {
+            Logger.error(
+                CdmE2ERelationship.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, missingFields),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     public getName(): string {
@@ -62,10 +92,10 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         let path: string = '';
         if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
             if (!this.declaredPath) {
                 this.declaredPath = pathFrom + this.name;
             }
+            path = this.declaredPath;
         }
 
         if (preChildren && preChildren(this, path)) {
@@ -82,10 +112,6 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     }
 
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 }

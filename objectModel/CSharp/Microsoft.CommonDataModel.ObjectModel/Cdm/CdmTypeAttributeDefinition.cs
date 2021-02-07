@@ -1,15 +1,14 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmTypeAttributeDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
+    using System.Collections.Generic;
 
     public class CdmTypeAttributeDefinition : CdmAttribute
     {
@@ -22,6 +21,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Gets or sets the type attribute's attribute context.
         /// </summary>
         public CdmAttributeContextReference AttributeContext { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type attribute's attribute projection.
+        /// </summary>
+        public CdmProjection Projection
+        {
+            get => this.projection;
+            set
+            {
+                if (value != null)
+                    value.Owner = this;
+                this.projection = value;
+            }
+        }
 
         /// <summary>
         /// Gets whether the type attribute is the primary key.
@@ -220,6 +233,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         private TraitToPropertyMap TraitToPropertyMap { get; }
+        private CdmProjection projection;
 
         /// <summary>
         /// Constructs a CdmTypeAttributeDefinition.
@@ -231,6 +245,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             this.ObjectType = CdmObjectType.TypeAttributeDef;
             this.TraitToPropertyMap = new TraitToPropertyMap(this);
+            this.AttributeCount = 1;
         }
 
         [Obsolete]
@@ -250,7 +265,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmTypeAttributeDefinition copy;
@@ -275,29 +290,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.Name);
+            List<string> missingFields = new List<string>();
+            if (string.IsNullOrWhiteSpace(this.Name))
+                missingFields.Add("Name");
+            if (Cardinality != null)
+            {
+                if (string.IsNullOrWhiteSpace(Cardinality.Minimum))
+                    missingFields.Add("Cardinality.Minimum");
+                if (string.IsNullOrWhiteSpace(Cardinality.Maximum))
+                    missingFields.Add("Cardinality.Maximum");
+            }
+            if (missingFields.Count > 0)
+            {
+                Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                return false;
+            }
+            if (Cardinality != null)
+            {
+                if (!CardinalitySettings.IsMinimumValid(Cardinality.Minimum))
+                {
+                    Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, $"Invalid minimum cardinality {Cardinality.Minimum}.", nameof(Validate));
+                    return false;
+                }
+                if (!CardinalitySettings.IsMaximumValid(Cardinality.Maximum))
+                {
+                    Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, $"Invalid maximum cardinality {Cardinality.Maximum}.", nameof(Validate));
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
-
             return false;
-        }
-
-        internal CdmDataTypeReference GetDataTypeRef()
-        {
-            return this.DataType;
-        }
-
-        internal CdmDataTypeReference SetDataTypeRef(CdmDataTypeReference dataType)
-        {
-            this.DataType = dataType as CdmDataTypeReference;
-            return dataType;
         }
 
         /// <inheritdoc />
@@ -317,9 +344,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
-            if (this.DataType?.Visit(path + "/dataType/", preChildren, postChildren) == true)
+            if (this.DataType?.Visit($"{path}/dataType/", preChildren, postChildren) == true)
                 return true;
-            if (this.AttributeContext?.Visit(path + "/attributeContext/", preChildren, postChildren) == true)
+            if (this.AttributeContext?.Visit($"{path}/attributeContext/", preChildren, postChildren) == true)
+                return true;
+            if (this.Projection?.Visit($"{path}/projection/", preChildren, postChildren) == true)
                 return true;
             if (this.VisitAtt(path, preChildren, postChildren))
                 return true;
@@ -345,7 +374,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 CdmAttributeReference replacement = new CdmAttributeReference(this.Ctx, this.Name, true)
                 {
                     Ctx = this.Ctx,
-                    ExplicitReference = this
+                    ExplicitReference = this.Copy() as CdmObjectDefinition,
+                    InDocument = this.InDocument,
+                    Owner = this,
                 };
                 rtsb.ReplaceTraitParameterValue(resOpt, "does.elevateAttribute", "attribute", "this.attribute", replacement);
             }
@@ -378,25 +409,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // renameFormat is not currently supported for type attributes
             resGuideWithDefault.renameFormat = null;
 
-            resGuideWithDefault.UpdateAttributeDefaults(null);
+            resGuideWithDefault.UpdateAttributeDefaults(null, this);
             AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 
+            // TODO: remove the resolution guidance if projection is being used
             // from the traits of the datatype, purpose and applied here, see if new attributes get generated
             rasb.ApplyTraits(arc);
             rasb.GenerateApplierAttributes(arc, false); // false = don't apply these traits to added things
             // this may have added symbols to the dependencies, so merge them
             resOpt.SymbolRefSet.Merge(arc.ResOpt.SymbolRefSet);
 
+            if (this.Projection != null)
+            {
+                ProjectionDirective projDirective = new ProjectionDirective(resOpt, this);
+                ProjectionContext projCtx = this.Projection.ConstructProjectionContext(projDirective, under, rasb.ResolvedAttributeSet);
+
+                ResolvedAttributeSet ras = this.Projection.ExtractResolvedAttributes(projCtx, under);
+                rasb.ResolvedAttributeSet = ras;
+            }
+
             return rasb;
         }
 
         public override ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
-
             return null;
         }
     }

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package example;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeResolutionGuidance;
@@ -13,6 +16,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import java.util.concurrent.ExecutionException;
 
@@ -51,10 +55,10 @@ public class Program {
     // Configure storage adapters to point at the target local manifest location and at the fake public standards
     String pathFromExeToExampleRoot = "../../";
 
-    cdmCorpus.getStorage().mount("local", new LocalAdapter(pathFromExeToExampleRoot + "6-create-net-new-entities"));
+    cdmCorpus.getStorage().mount("local", new LocalAdapter(pathFromExeToExampleRoot + "6-create-net-new-entities/sample-data"));
     cdmCorpus.getStorage().setDefaultNamespace("local"); // local is our default. so any paths that start out navigating without a device tag will assume local
 
-    // Fake cdm, normaly use the github adapter
+    // Fake cdm, normaly use the CDM Standards adapter
     // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there
     cdmCorpus.getStorage().mount("cdm", new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));
 
@@ -71,7 +75,7 @@ public class Program {
     // Make the temp manifest and add it to the root of the local documents in the corpus
     CdmManifestDefinition manifestAbstract = cdmCorpus.makeObject(CdmObjectType.ManifestDef, "tempAbstract");
 
-    // Add the temp manifest to the root of the local documents in the corpus
+    // Add the temp manifest to the root of the local adapter in the corpus
     CdmFolderDefinition localRoot = cdmCorpus.getStorage().fetchRootFolder("local");
     localRoot.getDocuments().add(manifestAbstract);
 
@@ -84,7 +88,7 @@ public class Program {
     // Add type attributes to the entity instance
     CdmTypeAttributeDefinition personAttributeId = createEntityAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_PERSON_ENTITY_NAME + "Id", "identifiedBy", "entityId");
     personEntity.getAttributes().add(personAttributeId);
-    CdmTypeAttributeDefinition personAttributeName = createEntityAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_PERSON_ENTITY_NAME + "Name", "hasA", "string");
+    CdmTypeAttributeDefinition personAttributeName = createEntityAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_PERSON_ENTITY_NAME + "Name", "hasA", "name");
     personEntity.getAttributes().add(personAttributeName);
     // Add properties to the entity instance
     personEntity.setDisplayName(CUSTOM_PERSON_ENTITY_NAME);
@@ -106,7 +110,7 @@ public class Program {
     // Add type attributes to the entity instance
     CdmTypeAttributeDefinition accountAttributeId = createEntityAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_ACCOUNT_ENTITY_NAME + "Id", "identifiedBy", "entityId");
     accountEntity.getAttributes().add(accountAttributeId);
-    CdmTypeAttributeDefinition accountAttributeName = createEntityAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_ACCOUNT_ENTITY_NAME + "Name", "hasA", "string");
+    CdmTypeAttributeDefinition accountAttributeName = createEntityAttributeWithPurposeAndDataType(cdmCorpus, CUSTOM_ACCOUNT_ENTITY_NAME + "Name", "hasA", "name");
     accountEntity.getAttributes().add(accountAttributeName);
     // Add properties to the entity instance
     accountEntity.setDisplayName(CUSTOM_ACCOUNT_ENTITY_NAME);
@@ -186,7 +190,7 @@ public class Program {
   }
 
   /**
-   * Create an type attribute definition instance.
+   * Create an type attribute definition instance with provided data type.
    *
    * @param cdmCorpus     The CDM corpus.
    * @param attributeName The directives to use while getting the resolved entities.
@@ -195,9 +199,22 @@ public class Program {
    * @return The instance of type attribute definition.
    */
   private static CdmTypeAttributeDefinition createEntityAttributeWithPurposeAndDataType(CdmCorpusDefinition cdmCorpus, String attributeName, String purpose, String dataType) {
+    CdmTypeAttributeDefinition entityAttribute = createEntityAttributeWithPurpose(cdmCorpus, attributeName, purpose);
+    entityAttribute.setDataType(cdmCorpus.makeRef(CdmObjectType.DataTypeRef, dataType, true));
+    return entityAttribute;
+  }
+  
+  /**
+   * Create an type attribute definition instance with provided purpose.
+   *
+   * @param cdmCorpus     The CDM corpus.
+   * @param attributeName The directives to use while getting the resolved entities.
+   * @param purpose       The manifest to be resolved.
+   * @return The instance of type attribute definition.
+   */
+  private static CdmTypeAttributeDefinition createEntityAttributeWithPurpose(CdmCorpusDefinition cdmCorpus, String attributeName, String purpose) {
     CdmTypeAttributeDefinition entityAttribute = cdmCorpus.makeObject(CdmObjectType.TypeAttributeDef, attributeName, false);
     entityAttribute.setPurpose(cdmCorpus.makeRef(CdmObjectType.PurposeRef, purpose, true));
-    entityAttribute.setDataType(cdmCorpus.makeRef(CdmObjectType.DataTypeRef, dataType, true));
     return entityAttribute;
   }
 

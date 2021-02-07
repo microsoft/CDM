@@ -1,0 +1,82 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysTaskRecorderFormContext.cdm.json"
+    },
+    {
+      "corpusPath": "SysTaskRecorderNodeUserAction.cdm.json",
+      "moniker": "base_SysTaskRecorderNodeUserAction"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysTaskRecorderNodeFormUserAction",
+      "extendsEntity": "base_SysTaskRecorderNodeUserAction/SysTaskRecorderNodeUserAction",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FormContextId",
+          "dataType": "SysTaskRecorderFormContextId",
+          "isNullable": true,
+          "displayName": "Form ID",
+          "description": ""
+        },
+        {
+          "name": "ControlLabel",
+          "dataType": "SysTaskRecorderNodeControlLabel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ControlLabelId",
+          "dataType": "SysTaskRecorderNodeControlLabel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysTaskRecorderFormContext"
+          },
+          "name": "Relationship_FormContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Form user action"
+    },
+    {
+      "dataTypeName": "SysTaskRecorderFormContextId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysTaskRecorderNodeControlLabel",
+      "extendsDataType": "string"
+    }
+  ]
+}

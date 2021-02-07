@@ -1,0 +1,291 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvMode.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PurchRFQTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchRFQReplyTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurrencyCode",
+          "dataType": "VendCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryDate",
+          "dataType": "DlvDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscPercent",
+          "dataType": "PurchEndDiscPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvMode",
+          "dataType": "VendDlvModeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvTerm",
+          "dataType": "VendDlvTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DoSeal",
+          "dataType": "PurchRFQDoSeal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Payment",
+          "dataType": "VendPaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Rank",
+          "dataType": "PurchRFQRank",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFQId",
+          "dataType": "PurchRFQId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RFQMark",
+          "dataType": "PurchRFQMark",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalScore",
+          "dataType": "PurchRFQTotalScore",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "PurchRFQValidDate",
+          "isNullable": true,
+          "displayName": "Effective date",
+          "description": ""
+        },
+        {
+          "name": "ValidityDateEnd",
+          "dataType": "ExpirationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidityDateStart",
+          "dataType": "EffectiveDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "PurchRFQValidDate",
+          "isNullable": true,
+          "displayName": "Expiration date",
+          "description": ""
+        },
+        {
+          "name": "VendRef",
+          "dataType": "VendRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplyProgressStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvMode"
+          },
+          "name": "Relationship_DlvModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQTable"
+          },
+          "name": "Relationship_PurchRFQTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Request for quotation vendor reply"
+    },
+    {
+      "dataTypeName": "VendCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DlvDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchEndDiscPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendDlvModeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendDlvTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQDoSeal",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendPaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQRank",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchRFQId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQMark",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchRFQTotalScore",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchRFQValidDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ExpirationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EffectiveDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendRef",
+      "extendsDataType": "string"
+    }
+  ]
+}

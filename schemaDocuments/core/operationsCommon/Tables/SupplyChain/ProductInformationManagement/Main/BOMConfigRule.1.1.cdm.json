@@ -1,0 +1,230 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BOM.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "BOMConfigRoute.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "BOMTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Group/ConfigGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "InventTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResConfiguration.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BOMConfigRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BOMId",
+          "dataType": "BOMId",
+          "description": ""
+        },
+        {
+          "name": "ChosenGroupId",
+          "dataType": "ConfigGroupId",
+          "description": ""
+        },
+        {
+          "name": "ChosenItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DerivedConfigId",
+          "dataType": "EcoResItemConfigurationName",
+          "isNullable": true,
+          "displayName": "Derived configuration",
+          "description": ""
+        },
+        {
+          "name": "DerivedGroupId",
+          "dataType": "ConfigGroupId",
+          "isNullable": true,
+          "displayName": "Derived group",
+          "description": ""
+        },
+        {
+          "name": "DerivedItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "displayName": "Derived item number",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Method",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOM"
+          },
+          "name": "Relationship_BOMRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BOMConfigRoute"
+          },
+          "name": "Relationship_BOMConfigRouteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BOMTable"
+          },
+          "name": "Relationship_BOMTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ConfigGroup"
+          },
+          "name": "Relationship_ChosenConfigGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_ChosenInventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ConfigGroup"
+          },
+          "name": "Relationship_DerivedConfigGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_DerivedInventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResConfiguration"
+          },
+          "name": "Relationship_EcoResConfigurationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Configuration rules"
+    },
+    {
+      "dataTypeName": "BOMId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfigGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemConfigurationName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

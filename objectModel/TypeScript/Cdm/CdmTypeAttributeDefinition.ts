@@ -1,6 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { cdmDataFormat } from '../Enums/cdmDataFormat';
 import {
     AttributeResolutionContext,
+    CardinalitySettings,
     CdmAttribute,
     CdmAttributeContext,
     CdmAttributeContextReference,
@@ -9,9 +13,14 @@ import {
     CdmCorpusContext,
     CdmDataTypeReference,
     CdmObject,
-    CdmObjectBase,
     cdmObjectType,
+    CdmProjection,
+    Errors,
+    Logger,
+    ProjectionContext,
+    ProjectionDirective,
     ResolvedAttribute,
+    ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
     ResolvedEntityReferenceSet,
     ResolvedTraitSet,
@@ -94,18 +103,18 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public set dataFormat(val: cdmDataFormat) {
         this.traitToPropertyMap.updatePropertyValue('dataFormat', val);
     }
-    public get defaultValue(): string {
-        return this.traitToPropertyMap.fetchPropertyValue('defaultValue') as string;
+    public get defaultValue(): object {
+        return this.traitToPropertyMap.fetchPropertyValue('defaultValue') as object;
     }
-    public set defaultValue(val: string) {
+    public set defaultValue(val: object) {
         this.traitToPropertyMap.updatePropertyValue('defaultValue', val);
     }
 
     public dataType: CdmDataTypeReference;
     public attributeContext?: CdmAttributeContextReference;
+    public projection?: CdmProjection;
 
     private readonly traitToPropertyMap: traitToPropertyMap;
-    private readonly t2pm: traitToPropertyMap;
 
     constructor(ctx: CdmCorpusContext, name: string) {
         super(ctx, name);
@@ -113,10 +122,14 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
         {
             this.objectType = cdmObjectType.typeAttributeDef;
             this.traitToPropertyMap = new traitToPropertyMap(this);
+            this.attributeCount = 1;
         }
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public getProperty(propertyName: string): any {
         return this.traitToPropertyMap.fetchPropertyValue(propertyName, true);
     }
@@ -133,7 +146,7 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmTypeAttributeDefinition;
@@ -156,7 +169,39 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.name ? true : false;
+            const missingFields: string[] = [];
+            if (!this.name) {
+                missingFields.push('name');
+            }
+            if (this.cardinality) {
+                if (!this.cardinality.minimum) {
+                    missingFields.push('cardinality.minimum');
+                }
+                if (!this.cardinality.maximum) {
+                    missingFields.push('cardinality.maximum');
+                }
+            }
+
+            if (missingFields.length > 0) {
+                Logger.error(CdmTypeAttributeDefinition.name, this.ctx, Errors.validateErrorString(this.atCorpusPath, missingFields), this.validate.name);
+
+                return false;
+            }
+
+            if (this.cardinality) {
+                if (!CardinalitySettings.isMinimumValid(this.cardinality.minimum)) {
+                    Logger.error(CdmTypeAttributeDefinition.name, this.ctx, `Invalid minimum cardinality ${this.cardinality.minimum}`, this.validate.name);
+
+                    return false;
+                }
+                if (!CardinalitySettings.isMaximumValid(this.cardinality.maximum)) {
+                    Logger.error(CdmTypeAttributeDefinition.name, this.ctx, `Invalid maximum cardinality ${this.cardinality.maximum}`, this.validate.name);
+
+                    return false;
+                }
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -164,10 +209,6 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this);
-            }
-
             return false;
         }
         // return p.measure(bodyCode);
@@ -219,6 +260,12 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             }
             if (this.attributeContext) {
                 if (this.attributeContext.visit(`${path}/attributeContext/`, preChildren, postChildren)) {
+                    return true;
+                }
+            }
+            if (this.projection) {
+                this.projection.owner = this;
+                if (this.projection.visit(`${path}/projection/`, preChildren, postChildren)) {
                     return true;
                 }
             }
@@ -300,11 +347,20 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             resGuideWithDefault.updateAttributeDefaults(undefined);
             const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 
+            // TODO: remove the resolution guidance if projection is being used
             // from the traits of the datatype, purpose and applied here, see if new attributes get generated
             rasb.applyTraits(arc);
             rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
             // this may have added symbols to the dependencies, so merge them
             resOpt.symbolRefSet.merge(arc.resOpt.symbolRefSet);
+
+            if (this.projection) {
+                const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this);
+                const projCtx: ProjectionContext = this.projection.constructProjectionContext(projDirective, under, rasb.ras);
+
+                const ras: ResolvedAttributeSet = this.projection.extractResolvedAttributes(projCtx);
+                rasb.ras = ras;
+            }
 
             return rasb;
         }
@@ -314,10 +370,6 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public fetchResolvedEntityReference(resOpt: resolveOptions): ResolvedEntityReferenceSet {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this);
-            }
-
             return undefined;
         }
         // return p.measure(bodyCode);

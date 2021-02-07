@@ -1,0 +1,137 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/WorksheetLine/VendOverdueCITPITTurnJournalLine_W.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendOverdueCITPITJournalLineDetail_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LedgerAccount",
+          "dataType": "DimensionDisplayValueLTR",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "description": ""
+        },
+        {
+          "name": "LineRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "OverdueAmountCur",
+          "dataType": "AmountCurDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Overdue amount in transaction currency",
+          "description": ""
+        },
+        {
+          "name": "OverdueAmountMST",
+          "dataType": "AmountMSTDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Overdue amount",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendOverdueCITPITTurnJournalLine_W"
+          },
+          "name": "Relationship_VendOverdueCITPITTurnJournalLine_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Overdue vendor debt turnover CIT and PIT line details"
+    },
+    {
+      "dataTypeName": "DimensionDisplayValueLTR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountCurDebCred",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMSTDebCred",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

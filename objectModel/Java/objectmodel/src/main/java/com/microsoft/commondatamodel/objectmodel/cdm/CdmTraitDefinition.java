@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -13,10 +14,15 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CdmException;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CdmTraitDefinition extends CdmObjectDefinitionBase {
@@ -28,7 +34,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   private Boolean elevated;
   private Boolean ugly;
   private List<String> associatedProperties;
-  ParameterCollection allParameters;
+  private ParameterCollection allParameters;
   private boolean hasSetFlags;
   private CdmCollection<CdmParameterDefinition> parameters;
 
@@ -49,8 +55,16 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
     return getTraitName();
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  public ResolvedTraitSet fetchResolvedTraits(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
     final String kind = "rtsb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
     // this may happen 0, 1 or 2 times. so make it fast
@@ -158,7 +172,11 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     if (baseDef.equalsIgnoreCase(this.traitName)) {
       return true;
     }
@@ -197,6 +215,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the trait associated properties.
+   * @return List of strings
    */
   public List<String> getAssociatedProperties() {
     return this.associatedProperties;
@@ -216,6 +235,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the trait elevated.
+   * @return boolean
    */
   public Boolean getElevated() {
     return this.elevated;
@@ -227,6 +247,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the trait extended by this trait.
+   * @return CdmTraitReference
    */
   public CdmTraitReference getExtendsTrait() {
     return this.extendsTrait;
@@ -238,6 +259,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets the trait parameters.
+   * @return CdmCollection of CdmParameterDefinition
    */
   public CdmCollection<CdmParameterDefinition> getParameters() {
     if (this.parameters == null) {
@@ -248,6 +270,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the trait name.
+   * @return String
    */
   public String getTraitName() {
     return this.traitName;
@@ -259,6 +282,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets if trait is user facing or not.
+   * @return Boolean
    */
   public Boolean getUgly() {
     return this.ugly;
@@ -293,14 +317,18 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.traitName);
+    if (StringUtils.isNullOrTrimEmpty(this.traitName)) {
+      Logger.error(CdmTraitDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("traitName"))));
+      return false;
+    }
+    return true;
   }
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved option
+   * @param options copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -314,7 +342,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmTraitDefinition copy;
@@ -329,7 +357,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
     copy.setExtendsTrait(
             (CdmTraitReference) (this.extendsTrait == null ? null : this.extendsTrait.copy(resOpt)));
-    copy.setAllParameters(null);
+    copy.allParameters = null;
     copy.setUgly(this.ugly);
     copy.setAssociatedProperties(this.associatedProperties);
     this.copyDef(resOpt, copy);
@@ -337,34 +365,29 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   }
 
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param under attribute context
+   * @return ResolvedAttributeSetBuilder
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
                                                           final CdmAttributeContext under) {
     // return null intentionally
     return null;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
-  }
-
-  /**
-   * Gets allParameters.
-   *
-   * @return Value of allParameters.
-   */
-  public ParameterCollection getAllParameters() {
-    return allParameters;
-  }
-
-  /**
-   * Sets new allParameters.
-   *
-   * @param allParameters New value of allParameters.
-   */
-  public void setAllParameters(final ParameterCollection allParameters) {
-    this.allParameters = allParameters;
   }
 
   @Override

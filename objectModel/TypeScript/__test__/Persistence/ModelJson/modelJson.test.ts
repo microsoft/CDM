@@ -1,13 +1,21 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { Stopwatch } from 'ts-stopwatch';
 import {
+    CdmConstants,
     CdmCorpusDefinition,
+    cdmDataFormat,
     CdmDocumentDefinition,
     CdmEntityDeclarationDefinition,
+    CdmEntityDefinition,
     CdmFolderDefinition,
     CdmManifestDefinition,
+    cdmObjectType,
     CdmReferencedEntityDeclarationDefinition,
     cdmStatusLevel,
-    CdmTraitReference
+    CdmTraitReference,
+    CdmTypeAttributeDefinition
 } from '../../../internal';
 import { CdmFolder, ModelJson } from '../../../Persistence';
 import {
@@ -16,7 +24,8 @@ import {
     Import,
     ManifestContent
 } from '../../../Persistence/CdmFolder/types';
-import { Model } from '../../../Persistence/ModelJson/types';
+import { LocalEntity, Model } from '../../../Persistence/ModelJson/types';
+import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
 
 /**
@@ -30,25 +39,28 @@ describe('Persistence.ModelJson.ModelJson', () => {
      */
     const testsSubpath: string = 'Persistence/ModelJson/ModelJson';
 
-    const doesWriteTestDebuggingFiles: boolean = testHelper.doesWriteTestDebuggingFiles;
+    const cdmExtension: string = CdmConstants.cdmExtension;
+
+    const modelJsonExtension: string = CdmConstants.modelJsonExtension;
+
+    const manifestExtension: string = CdmConstants.manifestExtension;
 
     /**
      * Test ManifestPersistence fromData and toData and save it back to a file.
      */
-    it('TestFromAndToData', async () => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestFromAndToData');
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+    it('TestModelJsonFromAndToData', async () => {
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestModelJsonFromAndToData');
         const stopwatch: Stopwatch = new Stopwatch();
 
         stopwatch.start();
         const absPath: string = cdmCorpus.storage.createAbsoluteCorpusPath(
-            'model.json', cdmCorpus.storage.fetchRootFolder('local'));
+            modelJsonExtension, cdmCorpus.storage.fetchRootFolder('local'));
 
         const cdmManifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(absPath);
         const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
-        HandleOutput('TestFromAndToData', 'model.json', obtainedModelJson);
+        HandleOutput('TestModelJsonFromAndToData', modelJsonExtension, obtainedModelJson);
 
         expect(stopwatch.getTime())
             .toBeLessThan(800);
@@ -57,37 +69,35 @@ describe('Persistence.ModelJson.ModelJson', () => {
     /**
      * Test loading CDM folder files and save the model.json file
      */
-    it('TestLoadingCdmFolderAndSavingModelJson', async () => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadingCdmFolderAndSavingModelJson');
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+    it('TestLoadingCdmFolderAndModelJsonToData', async () => {
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingCdmFolderAndModelJsonToData');
         const absPath: string =
-            cdmCorpus.storage.createAbsoluteCorpusPath('default.manifest.cdm.json', cdmCorpus.storage.fetchRootFolder('local'));
+            cdmCorpus.storage.createAbsoluteCorpusPath(`default${manifestExtension}`, cdmCorpus.storage.fetchRootFolder('local'));
         const stopwatch: Stopwatch = new Stopwatch();
         stopwatch.start();
         const cdmManifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(absPath);
         stopwatch.stop();
 
         expect(stopwatch.getTime())
-            .toBeLessThan(5000);
+            .toBeLessThan(8500);
         stopwatch.reset();
 
         stopwatch.start();
         const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
-        HandleOutput('TestLoadingCdmFolderAndSavingModelJson', 'model.json', obtainedModelJson);
+        HandleOutput('TestLoadingCdmFolderAndModelJsonToData', modelJsonExtension, obtainedModelJson);
 
         expect(stopwatch.getTime())
-            .toBeLessThan(5000);
+            .toBeLessThan(8500);
     });
 
     /**
      * Test loading model json result files and save it as CDM folder files.
      */
-    it('TestLoadingModelJsonResultAndSavingCdmFolder', async () => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadingModelJsonResultAndSavingCdmFolder');
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
-        const absPath: string = cdmCorpus.storage.createAbsoluteCorpusPath('model.json', cdmCorpus.storage.fetchRootFolder('local'));
+    it('TestLoadingModelJsonResultAndCdmFolderToData', async () => {
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingModelJsonResultAndCdmFolderToData');
+        const absPath: string = cdmCorpus.storage.createAbsoluteCorpusPath(modelJsonExtension, cdmCorpus.storage.fetchRootFolder('local'));
 
         const stopwatch: Stopwatch = new Stopwatch();
 
@@ -104,7 +114,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const obtainedCdmFolder: ManifestContent = CdmFolder.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
-        HandleOutput('TestLoadingModelJsonResultAndSavingCdmFolder', 'cdmFolder.json', obtainedCdmFolder);
+        HandleOutput('TestLoadingModelJsonResultAndCdmFolderToData', `cdmFolder${cdmExtension}`, obtainedCdmFolder);
 
         expect(stopwatch.getTime())
             .toBeLessThan(1500);
@@ -114,15 +124,14 @@ describe('Persistence.ModelJson.ModelJson', () => {
      * Test if when loading a model.json file the foundations is imported correctly.
      */
     it('TestManifestFoundationImport', async (done) => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestManifestFoundationImport');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestManifestFoundationImport');
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message1: string) => {
             if (statusLevel >= cdmStatusLevel.error) {
                 throw new Error(message1);
             }
         });
         const cdmManifest: CdmManifestDefinition =
-            await corpus.fetchObjectAsync<CdmManifestDefinition>('model.json', corpus.storage.fetchRootFolder('local'));
+            await corpus.fetchObjectAsync<CdmManifestDefinition>(modelJsonExtension, corpus.storage.fetchRootFolder('local'));
         done();
     });
 
@@ -133,7 +142,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         // the corpus path in the imports are relative to the document where it was defined.
         // when saving in model.json the documents are flattened to the manifest level
         // so it is necessary to recalculate the path to be relative to the manifest.
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('notImportantLocation');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('notImportant', 'notImportantLocation');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const manifest: CdmManifestDefinition = new CdmManifestDefinition(corpus.ctx, 'manifest');
@@ -169,11 +178,9 @@ describe('Persistence.ModelJson.ModelJson', () => {
     /**
      * Test loading model.json files and save it as CDM folder files.
      */
-    it('TestLoadingModelJsonAndSavingCdmFolder', async () => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadingModelJsonAndSavingCdmFolder');
-
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
-        const absPath: string = cdmCorpus.storage.createAbsoluteCorpusPath('model.json', cdmCorpus.storage.fetchRootFolder('local'));
+    it('TestLoadingModelJsonAndCdmFolderToData', async () => {
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingModelJsonAndCdmFolderToData');
+        const absPath: string = cdmCorpus.storage.createAbsoluteCorpusPath(modelJsonExtension, cdmCorpus.storage.fetchRootFolder('local'));
         const stopwatch: Stopwatch = new Stopwatch();
 
         stopwatch.start();
@@ -189,7 +196,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const obtainedCdmFolder: ManifestContent = CdmFolder.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
-        HandleOutput('TestLoadingModelJsonAndSavingCdmFolder', 'cdmFolder.json', obtainedCdmFolder);
+        HandleOutput('TestLoadingModelJsonAndCdmFolderToData', `cdmFolder${cdmExtension}`, obtainedCdmFolder);
 
         expect(stopwatch.getTime())
             .toBeLessThan(1000);
@@ -198,12 +205,10 @@ describe('Persistence.ModelJson.ModelJson', () => {
     /**
      * Test loading CDM folder result files and save as model.json
      */
-    it('TestLoadingCdmFolderResultAndSavingModelJson', async () => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadingCdmFolderResultAndSavingModelJson');
-
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+    it('TestLoadingCdmFolderResultAndModelJsonToData', async () => {
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingCdmFolderResultAndModelJsonToData');
         const absPath: string = cdmCorpus.storage.createAbsoluteCorpusPath(
-            'result.model.manifest.cdm.json',
+            `result.model${manifestExtension}`,
             cdmCorpus.storage.fetchRootFolder('local')
         );
         const stopwatch: Stopwatch = new Stopwatch();
@@ -221,7 +226,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
-        HandleOutput('TestLoadingCdmFolderResultAndSavingModelJson', 'model.json', obtainedModelJson);
+        HandleOutput('TestLoadingCdmFolderResultAndModelJsonToData', modelJsonExtension, obtainedModelJson);
 
         expect(stopwatch.getTime())
             .toBeLessThan(1500);
@@ -230,11 +235,11 @@ describe('Persistence.ModelJson.ModelJson', () => {
     /**
      * Tests loading Model.json and converting to CdmFolder
      */
-    it('TestExtensibilityLoadingModelJsonAndSavingCdmFolder', async () => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestExtensibilityLoadingModelJsonAndSavingCdmFolder');
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+    it('TestExtensibilityLoadingModelJsonAndCdmFolderToData', async () => {
+        const cdmCorpus: CdmCorpusDefinition =
+            testHelper.getLocalCorpus(testsSubpath, 'TestExtensibilityLoadingModelJsonAndCdmFolderToData');
         const absPath: string = cdmCorpus.storage.createAbsoluteCorpusPath(
-            'model.json',
+            modelJsonExtension,
             cdmCorpus.storage.fetchRootFolder('local')
         );
         const cdmManifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(absPath);
@@ -259,18 +264,17 @@ describe('Persistence.ModelJson.ModelJson', () => {
             }
         });
 
-        HandleOutput('TestExtensibilityLoadingModelJsonAndSavingCdmFolder', 'cdmFolder.json', obtainedCdmFolder);
+        HandleOutput('TestExtensibilityLoadingModelJsonAndCdmFolderToData', `cdmFolder${cdmExtension}`, obtainedCdmFolder);
     });
 
     it('TestReferenceModels', async () => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestReferenceModels');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestReferenceModels');
 
         const manifest: CdmManifestDefinition =
-            await corpus.fetchObjectAsync<CdmManifestDefinition>('model.json', corpus.storage.fetchRootFolder('local'));
+            await corpus.fetchObjectAsync<CdmManifestDefinition>(modelJsonExtension, corpus.storage.fetchRootFolder('local'));
 
         // entity with same modelId but different location
-        const referenceEntity1: CdmReferencedEntityDeclarationDefinition = 
+        const referenceEntity1: CdmReferencedEntityDeclarationDefinition =
             new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity1');
         referenceEntity1.entityPath = 'remote:/contoso/entity1.model.json/Entity1';
         const modelIdTrait1: CdmTraitReference = referenceEntity1.exhibitsTraits.push('is.propertyContent.multiTrait');
@@ -303,7 +307,65 @@ describe('Persistence.ModelJson.ModelJson', () => {
         manifest.entities.push(referenceEntity4);
 
         const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(manifest, undefined, undefined);
-        HandleOutput('TestReferenceModels', 'model.json', obtainedModelJson);
+        HandleOutput('TestReferenceModels', modelJsonExtension, obtainedModelJson);
+    });
+
+    /**
+     * Tests that a description on a CdmFolder entity sets the description on the ModelJson entity.
+     */
+    it('TestSettingModelJsonEntityDescription', async () => {
+        const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+        cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
+        const cdmManifest: CdmManifestDefinition = cdmCorpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'test');
+        const document: CdmDocumentDefinition = cdmCorpus.MakeObject<CdmDocumentDefinition>(cdmObjectType.documentDef, `entity${cdmExtension}`);
+
+        const folder: CdmFolderDefinition = cdmCorpus.storage.fetchRootFolder('local');
+        folder.documents.push(document);
+
+        const entity: CdmEntityDefinition = document.definitions.push(cdmObjectType.entityDef, 'entity') as CdmEntityDefinition;
+        entity.description = 'test description';
+
+        cdmManifest.entities.push(entity);
+        folder.documents.push(cdmManifest);
+
+        const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
+
+        expect(obtainedModelJson.entities[0].description)
+            .toEqual('test description');
+    });
+
+    /**
+     * Tests that the "date" and "time" data types are correctly loaded/saved from/to a model.json.
+     */
+    it('TestLoadingAndSavingDateAndTimeDataTypes', async () => {
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingAndSavingDateAndTimeDataTypes');
+
+        // Load the manifest and resolve it
+        const manifest: CdmManifestDefinition = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
+        const resolvedManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync('resolved', undefined);
+
+        // Convert loaded manifest to model.json
+        const modelJson: Model = await ModelJson.ManifestPersistence.toData(resolvedManifest, undefined, undefined);
+
+        // Verify that the attributes' data types were correctly persisted as "date" and "time"
+        expect((modelJson.entities[0] as LocalEntity).attributes[0].dataType)
+            .toEqual('date');
+        expect((modelJson.entities[0] as LocalEntity).attributes[1].dataType)
+            .toEqual('time');
+
+        // Now check that these attributes' data types are still "date" and "time" when loading the model.json back to manifest
+        // We first need to create a second adapter to the input folder to fool the OM into thinking it's different
+        // This is because there's a bug that currently prevents us from saving and then loading a model.json under the same namespace
+        cdmCorpus.storage.mount('local2', new LocalAdapter(testHelper.getInputFolderPath(testsSubpath, 'TestLoadingAndSavingDateAndTimeDataTypes')));
+
+        const manifestFromModelJson: CdmManifestDefinition = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local2:/model.json');
+        const entity: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(manifestFromModelJson.entities.allItems[0].entityPath, manifestFromModelJson);
+
+        // Verify that the attributes' data types were correctly loaded as "date" and "time"
+        expect((entity.attributes.allItems[0] as CdmTypeAttributeDefinition).dataFormat)
+            .toEqual(cdmDataFormat.date);
+        expect((entity.attributes.allItems[1] as CdmTypeAttributeDefinition).dataFormat)
+            .toEqual(cdmDataFormat.time);
     });
 
     /**
@@ -314,7 +376,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
      * @param outputFileName The name of the output file. Used both for expected and actual output.
      * @param actualOutput The output obtained through operations, that is to be compared with the expected output.
      */
-    function HandleOutput(testName: string, outputFileName: string, actualOutput: object): void {
+    function HandleOutput(testName: string, outputFileName: string, actualOutput: object, doesWriteTestDebuggingFiles?: boolean): void {
         const actualOutputSerialized: string = JSON.stringify(actualOutput);
         if (doesWriteTestDebuggingFiles) {
             testHelper.writeActualOutputFileContent(testsSubpath, testName, outputFileName, actualOutputSerialized);

@@ -1,0 +1,129 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/HumanResources/HRM/HcmWorkerEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/HumanResources/HRM/PayrollPayCycleEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/HumanResources/Payroll/WorksheetHeader/PayrollEarningStatement.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollEarningStatementHeaderEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EarningsStatementNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Note",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayPeriod",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayCycle",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayPeriodEndDate",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "PayCycleId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "PersonnelNumber",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "Company",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "HcmWorkerEntity"
+          },
+          "name": "Relationship_WorkerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollPayCycleEntity"
+          },
+          "name": "Relationship_PayCycleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollEarningStatement"
+          },
+          "name": "BackingTable_PayrollEarningStatementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Earnings statement header"
+    }
+  ]
+}

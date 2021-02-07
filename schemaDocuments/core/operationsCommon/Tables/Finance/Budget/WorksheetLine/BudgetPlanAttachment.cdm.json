@@ -1,0 +1,104 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/WorksheetHeader/BudgetPlanHeader.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetPlanningStage.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanAttachment",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetPlanHeader",
+          "dataType": "BudgetPlanHeaderRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanningStage",
+          "dataType": "BudgetPlanningStageRecId",
+          "description": ""
+        },
+        {
+          "name": "Filename",
+          "dataType": "BudgetPlanAttachmentFilename",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanHeader"
+          },
+          "name": "Relationship_BudgetPlanHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanningStage"
+          },
+          "name": "Relationship_BudgetPlanningStageRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget plan attachments"
+    },
+    {
+      "dataTypeName": "BudgetPlanHeaderRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningStageRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanAttachmentFilename",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,398 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventSiteGate_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventSiteGateEntry_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApproverEmployee",
+          "dataType": "HcmWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ArrivalDateAndTime",
+          "dataType": "InventSiteGateEntryArrivalDateAndTime_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChallanDate",
+          "dataType": "ChallanDate_IN",
+          "description": ""
+        },
+        {
+          "name": "ChallanNumber",
+          "dataType": "ChallanNumber_IN",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DriverMobilePhone",
+          "dataType": "DriverMobilePhone_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EntryId",
+          "dataType": "InventSiteGateEntryId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExitDateAndTime",
+          "dataType": "InventSiteGateEntryExitDateAndTime_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "description": ""
+        },
+        {
+          "name": "InventSiteGate",
+          "dataType": "InventSiteGateRecId_IN",
+          "description": ""
+        },
+        {
+          "name": "OriginCity",
+          "dataType": "OriginCity_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReferenceDocumentType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ReferencePartyId",
+          "dataType": "InventSiteGateRefPartyId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetrunableGatePassNumber",
+          "dataType": "RetrunableGatePassNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SkipMeasurement",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Skip measurement",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TransportationCompanyName",
+          "dataType": "TransportationCompanyName_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportationDriverName",
+          "dataType": "TransportationDriverName_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportationReceiptDate",
+          "dataType": "TransportationReceiptDate_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportationReceiptNumber",
+          "dataType": "TransportationReceiptNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "VehicleNumber",
+          "dataType": "VehicleNumber_IN",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSiteGate_IN"
+          },
+          "name": "Relationship_InventSiteGateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_PurchaseOrderVendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_PurchaseReturnOrderVendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_ReturnableGatePassReturnVendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_ReturnableGatePassVendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_SalesOrderCustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_SalesReturnOrderCustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_StockTransferInInventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_StockTransferOutInventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_SubContractInventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_SubContractReturnInventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Gate entry"
+    },
+    {
+      "dataTypeName": "HcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventSiteGateEntryArrivalDateAndTime_IN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ChallanDate_IN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ChallanNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DriverMobilePhone_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteGateEntryId_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteGateEntryExitDateAndTime_IN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteGateRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "OriginCity_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteGateRefPartyId_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetrunableGatePassNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransportationCompanyName_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransportationDriverName_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransportationReceiptDate_IN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TransportationReceiptNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VehicleNumber_IN",
+      "extendsDataType": "string"
+    }
+  ]
+}

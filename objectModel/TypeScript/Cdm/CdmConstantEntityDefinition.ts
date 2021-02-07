@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     AttributeContextParameters,
     CdmAttributeContext,
@@ -7,6 +10,7 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
     Logger,
     ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
@@ -29,7 +33,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             this.objectType = cdmObjectType.constantEntityDef;
-            this.constantEntityName = constantEntityName
+            this.constantEntityName = constantEntityName;
         }
         // return p.measure(bodyCode);
     }
@@ -38,7 +42,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
             let copy: CdmConstantEntityDefinition;
             if (!host) {
@@ -48,7 +52,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
                 copy.ctx = this.ctx;
                 copy.constantEntityName = this.constantEntityName;
             }
-            
+
             copy.entityShape = <CdmEntityReference>this.entityShape.copy(resOpt);
             copy.constantValues = this.constantValues; // is a deep copy needed?
             this.copyDef(resOpt, copy);
@@ -66,8 +70,17 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
                 const entityName: string = (pathSplit.length > 0) ? pathSplit[0] : ``;
                 Logger.warning(this.constantEntityName, this.ctx, `constant entity '${entityName}' defined without a constant value.'`);
             }
+            if (this.entityShape === undefined) {
+                Logger.error(
+                    CdmConstantEntityDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['entityShape']),
+                    this.validate.name);
 
-            return this.entityShape ? true : false;
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -83,10 +96,6 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this);
-            }
-
             return false;
         }
         // return p.measure(bodyCode);
@@ -95,6 +104,15 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     public getName(): string {
         // let bodyCode = () =>
         {
+            // make up a name if one not given
+            if (this.constantEntityName === undefined) {
+                if (this.entityShape !== undefined) {
+                    return `Constant${this.entityShape.fetchObjectDefinitionName()}`;
+                }
+
+                return 'ConstantEntity';
+            }
+
             return this.constantEntityName;
         }
         // return p.measure(bodyCode);
@@ -234,18 +252,21 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
             if (resultAtt === -1 || searchAtt === -1) {
                 // metadata library
                 const ras: ResolvedAttributeSet = this.fetchResolvedAttributes(resOpt);
+
                 // query validation and binding
-                const l: number = ras.set.length;
-                for (let i: number = 0; i < l; i++) {
-                    const name: string = ras.set[i].resolvedName;
-                    if (resultAtt === -1 && name === attReturn) {
-                        resultAtt = i;
-                    }
-                    if (searchAtt === -1 && name === attSearch) {
-                        searchAtt = i;
-                    }
-                    if (resultAtt >= 0 && searchAtt >= 0) {
-                        break;
+                if (ras !== undefined) {
+                    const l: number = ras.set.length;
+                    for (let i: number = 0; i < l; i++) {
+                        const name: string = ras.set[i].resolvedName;
+                        if (resultAtt === -1 && name === attReturn) {
+                            resultAtt = i;
+                        }
+                        if (searchAtt === -1 && name === attSearch) {
+                            searchAtt = i;
+                        }
+                        if (resultAtt >= 0 && searchAtt >= 0) {
+                            break;
+                        }
                     }
                 }
             }

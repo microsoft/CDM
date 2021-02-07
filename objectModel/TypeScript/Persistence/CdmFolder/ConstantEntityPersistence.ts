@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmFolder } from '..';
 import {
     CdmConstantEntityDefinition,
@@ -8,7 +11,7 @@ import {
 } from '../../internal';
 import {
     ConstantEntity,
-    EntityReference
+    EntityReferenceDefinition
 } from './types';
 
 export class ConstantEntityPersistence {
@@ -30,7 +33,7 @@ export class ConstantEntityPersistence {
         return {
             explanation: instance.explanation,
             constantEntityName: instance.constantEntityName,
-            entityShape: instance.entityShape ? instance.entityShape.copyData(resOpt, options) as (string | EntityReference) : undefined,
+            entityShape: instance.entityShape ? instance.entityShape.copyData(resOpt, options) as (string | EntityReferenceDefinition) : undefined,
             constantValues: instance.constantValues
         };
     }

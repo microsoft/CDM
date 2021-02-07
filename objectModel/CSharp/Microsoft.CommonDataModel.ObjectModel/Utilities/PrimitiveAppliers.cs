@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="PrimitiveAppliers.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 {
@@ -24,6 +21,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 return true;
             }
         };
+        internal static AttributeResolutionApplier isRemovedInternal = new AttributeResolutionApplier
+        {
+            MatchName = "is.removed.internal",
+            Priority = 10,
+            OverridesBase = false,
+            WillRemove = (ApplierContext appCtx) =>
+            {
+                return appCtx.ResAttSource.ApplierState?.Flex_remove == true;
+            }
+        };
 
         internal static AttributeResolutionApplier doesReferenceEntity = new AttributeResolutionApplier
         {
@@ -32,14 +39,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             OverridesBase = true,
             WillRemove = (ApplierContext appCtx) =>
             {
-                var visible = true;
-                if (appCtx.ResAttSource != null)
-                {
-                    // all others go away
-                    visible = false;
-                    if (appCtx.ResAttSource.Target == appCtx.ResGuide.entityByReference.foreignKeyAttribute)
-                        visible = true;
-                }
+                // Return always false for the time being.
+                //var visible = true;
+                //if (appCtx.ResAttSource != null)
+                //{
+                //    // all others go away
+                //    visible = false;
+                //    if (appCtx.ResAttSource.Target == appCtx.ResGuide.entityByReference.foreignKeyAttribute)
+                //        visible = true;
+                //}
                 return false;
             },
             WillRoundAdd = (ApplierContext appCtx) =>
@@ -301,7 +309,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                         return replaced;
                     };
                     string result;
-                    string srcName = appCtx.ResAttSource.previousResolvedName;
+                    string srcName = appCtx.ResAttSource.PreviousResolvedName;
                     if (iN < 0 && iO < 0)
                     {
                         result = format;
@@ -339,7 +347,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 bool isNorm = dir?.Has("normalized") == true;
                 bool isArray = dir?.Has("isArray") == true;
                 bool isRefOnly = dir?.Has("referenceOnly") == true;
-                bool alwaysAdd = appCtx.ResGuide.entityByReference.alwaysIncludeForeignKey == true;
+                bool alwaysAdd = appCtx.ResGuide.entityByReference.foreignKeyAttribute != null &&
+                                   appCtx.ResGuide.entityByReference.alwaysIncludeForeignKey == true;
+
                 bool doFKOnly = isRefOnly && (isNorm == false || isArray == false);
                 bool visible = true;
                 if (doFKOnly && appCtx.ResAttSource != null)
@@ -357,7 +367,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 bool isNorm = dir?.Has("normalized") == true;
                 bool isArray = dir?.Has("isArray") == true;
                 bool isRefOnly = dir?.Has("referenceOnly") == true;
-                bool alwaysAdd = appCtx.ResGuide.entityByReference.alwaysIncludeForeignKey == true;
+                bool alwaysAdd = appCtx.ResGuide.entityByReference.foreignKeyAttribute != null &&
+                                    appCtx.ResGuide.entityByReference.alwaysIncludeForeignKey == true;
                 // add a foreign key and remove everything else when asked to do so.
                 // however, avoid doing this for normalized arrays, since they remove all atts anyway
                 bool doFKOnly = (isRefOnly || alwaysAdd) && (isNorm == false || isArray == false);
@@ -396,7 +407,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 bool isNorm = dir?.Has("normalized") == true;
                 bool isArray = dir?.Has("isArray") == true;
                 bool isRefOnly = dir?.Has("referenceOnly") == true;
-                bool alwaysAdd = appCtx.ResGuide.entityByReference.alwaysIncludeForeignKey == true;
+                bool alwaysAdd = appCtx.ResGuide.entityByReference.foreignKeyAttribute != null &&
+                                   appCtx.ResGuide.entityByReference.alwaysIncludeForeignKey == true;
+
                 // add a foreign key and remove everything else when asked to do so.
                 // however, avoid doing this for normalized arrays, since they remove all atts anyway
                 bool doFKOnly = (isRefOnly || alwaysAdd) && (isNorm == false || isArray == false);
@@ -516,7 +529,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                         ResolvedAttribute template = state.Array_template as ResolvedAttribute;
                         appCtx.ResAttNew.Target = template.Target;
                         // copy the template
-                        appCtx.ResAttNew.ResolvedName = state.Array_template.previousResolvedName;
+                        appCtx.ResAttNew.ResolvedName = state.Array_template.PreviousResolvedName;
                         appCtx.ResAttNew.ResolvedTraits = template.ResolvedTraits.DeepCopy();
                         appCtx.ResGuideNew = appCtx.ResGuide; // just take the source, because this is not a new attribute that may have different settings
                         appCtx.Continue = state.Flex_currentOrdinal < state.Array_finalOrdinal;

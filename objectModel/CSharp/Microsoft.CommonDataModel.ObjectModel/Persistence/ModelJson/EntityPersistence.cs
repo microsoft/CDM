@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -16,7 +19,9 @@
         public static async Task<CdmEntityDefinition> FromData(CdmCorpusContext ctx, LocalEntity obj, List<CdmTraitDefinition> extensionTraitDefList, List<CdmTraitDefinition> localExtensionTraitDefList)
         {
             var entity = ctx.Corpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, obj.Name);
-            entity.Description = obj.Description;
+
+            if (!string.IsNullOrWhiteSpace(obj.Description))
+                entity.Description = obj.Description;
 
             await Utils.ProcessAnnotationsFromData(ctx, obj, entity.ExhibitsTraits);
 
@@ -46,17 +51,24 @@
             var result = new LocalEntity
             {
                 Name = instance.EntityName,
-                Description = instance.Description,
+                Description = instance.GetProperty("description"),
                 Type = "LocalEntity"
             };
-            
-            await Utils.ProcessAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
-            
+
+            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+
             if (instance.Attributes != null)
             {
                 result.Attributes = new List<Attribute>();
-                foreach (dynamic element in instance.Attributes)
+                foreach (CdmAttributeItem element in instance.Attributes)
                 {
+                    if (element.ObjectType != CdmObjectType.TypeAttributeDef)
+                    {
+                        Logger.Error(nameof(EntityPersistence), (ResolveContext)ctx, "Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported.");
+
+                        return null;
+                    }
+
                     // TODO: handle when attribute is something else other than CdmTypeAttributeDefinition.
                     var attribute = await TypeAttributePersistence.ToData(element as CdmTypeAttributeDefinition, resOpt, options);
                     if (attribute != null)

@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
     using System;
     using System.Collections.Concurrent;
@@ -29,7 +32,7 @@
         /// <summary>
         /// The file format/extension types this persistence class supports.
         /// </summary>
-        public static readonly string[] Formats = { PersistenceLayer.FetchModelJsonExtension() };
+        public static readonly string[] Formats = { PersistenceLayer.ModelJsonExtension};
 
         public static async Task<CdmManifestDefinition> FromObject(CdmCorpusContext ctx, Model obj, CdmFolderDefinition folder)
         {
@@ -60,6 +63,11 @@
             manifest.LastFileModifiedTime = obj.ModifiedTime;
             manifest.LastChildFileModifiedTime = obj.LastChildFileModifiedTime;
             manifest.LastFileStatusCheckTime = obj.LastFileStatusCheckTime;
+
+            if (!string.IsNullOrEmpty(obj.DocumentVersion))
+            {
+                manifest.DocumentVersion = obj.DocumentVersion;
+            }
 
             if (obj.Application != null)
             {
@@ -191,7 +199,6 @@
             CreateExtensionDocAndAddToFolderAndImports(ctx, extensionTraitDefList, folder);
             #endregion
 
-
             return manifest;
         }
 
@@ -223,6 +230,7 @@
 
                 // import the cdm extensions into this new document that has the custom extensions
                 extensionDoc.Imports.Add("cdm:/extensions/base.extension.cdm.json");
+                extensionDoc.JsonSchemaSemanticVersion = "1.0.0";
 
                 // add the extension doc to the folder, will wire everything together as needed
                 folder.Documents.Add(extensionDoc);
@@ -237,7 +245,8 @@
                 Description = instance.Explanation,
                 ModifiedTime = instance.LastFileModifiedTime,
                 LastChildFileModifiedTime = instance.LastChildFileModifiedTime,
-                LastFileStatusCheckTime = instance.LastFileStatusCheckTime
+                LastFileStatusCheckTime = instance.LastFileStatusCheckTime,
+                DocumentVersion = instance.DocumentVersion
             };
 
             TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
@@ -290,7 +299,7 @@
                 }
             }
 
-            await Utils.ProcessAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
 
             if (instance.Entities != null && instance.Entities.Count > 0)
             {

@@ -1,0 +1,198 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysTestJobTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysTestTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActualLineCount",
+          "dataType": "SysTestLineCount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Actual line count",
+          "description": ""
+        },
+        {
+          "name": "CoverageData",
+          "dataType": "SysTestCodeCoverageData",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CoveragePercent",
+          "dataType": "SysTestCoveragePercent",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CoveredLineCount",
+          "dataType": "SysTestLineCount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Coverage line count",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumberOfRecordsInserted",
+          "dataType": "NumberOfRecords",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParentTestNodeId",
+          "dataType": "SysTestNodeId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "DateExecuted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartTime",
+          "dataType": "TimeOfDay",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TestJobId",
+          "dataType": "SysTestJobId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TestNodeId",
+          "dataType": "SysTestNodeId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TestsElementName",
+          "dataType": "IdentifierName",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TestsElementType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TimeInMS",
+          "dataType": "TimeInMS",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysTestJobTable"
+          },
+          "name": "Relationship_SysTestJobTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tests"
+    },
+    {
+      "dataTypeName": "SysTestLineCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SysTestCodeCoverageData",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "SysTestCoveragePercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NumberOfRecords",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SysTestNodeId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DateExecuted",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TimeOfDay",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "SysTestJobId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IdentifierName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TimeInMS",
+      "extendsDataType": "integer"
+    }
+  ]
+}

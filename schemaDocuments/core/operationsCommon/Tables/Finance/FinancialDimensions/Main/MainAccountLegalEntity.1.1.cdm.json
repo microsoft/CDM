@@ -1,0 +1,256 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Reference/DimensionAttributeSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "MainAccount.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/ExchangeRateType.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MainAccountLegalEntity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutoAllocate",
+          "dataType": "LedgerAutoAllocate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FixedDimensions",
+          "dataType": "DimensionEnumeration",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ExchangeAdjustmentRateType",
+          "dataType": "ExchangeRateTypeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MainAccount",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ReportingExchangeAdjustmentRateType",
+          "dataType": "ExchangeRateTypeRecId",
+          "isNullable": true,
+          "displayName": "Reporting currency exchange rate type",
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxDirection",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Sales tax direction",
+          "description": ""
+        },
+        {
+          "name": "TaxFree",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Exempt",
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroupHeadingDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxTableDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidateTaxCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Validate sales tax",
+          "description": ""
+        },
+        {
+          "name": "TotalByPeriod_FR",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Total by period",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DimensionAttributeValueSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeSet"
+          },
+          "name": "Relationship_FixedDimensionsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_MainAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_ExchangeAdjustmentRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_ReportingExchangeAdjustmentRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Main account legal entity"
+    },
+    {
+      "dataTypeName": "LedgerAutoAllocate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DimensionEnumeration",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ExchangeRateTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    }
+  ]
+}

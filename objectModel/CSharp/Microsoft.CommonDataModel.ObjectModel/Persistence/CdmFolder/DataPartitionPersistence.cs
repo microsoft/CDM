@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -29,12 +32,12 @@
 
             if (obj["lastFileStatusCheckTime"] != null)
             {
-                newPartition.LastFileStatusCheckTime = DateTimeOffset.Parse(obj.Value<string>("lastFileStatusCheckTime"));
+                newPartition.LastFileStatusCheckTime = DateTimeOffset.Parse(obj["lastFileStatusCheckTime"].ToString());
             }
 
             if (obj["lastFileModifiedTime"] != null)
             {
-                newPartition.LastFileModifiedTime = DateTimeOffset.Parse(obj.Value<string>("lastFileModifiedTime"));
+                newPartition.LastFileModifiedTime = DateTimeOffset.Parse(obj["lastFileModifiedTime"].ToString());
             }
 
             if (obj["exhibitsTraits"] != null)
@@ -86,16 +89,20 @@
         public static DataPartition ToData(CdmDataPartitionDefinition instance, ResolveOptions resOpt, CopyOptions options)
         {
             var argumentsCopy = new List<Argument>();
-            foreach (var argumentList in instance.Arguments)
+            if (instance.Arguments != null)
             {
-                foreach (var argumentValue in argumentList.Value)
+                foreach (var argumentList in instance.Arguments)
                 {
-                    argumentsCopy.Add(new Argument()
-                        {
-                            Name = argumentList.Key,
-                            Value = argumentValue
-                        }
-                    );
+                    foreach (var argumentValue in argumentList.Value)
+                    {
+                        argumentsCopy.Add(
+                            new Argument()
+                            {
+                                Name = argumentList.Key,
+                                Value = argumentValue
+                            }
+                        );
+                    }
                 }
             }
 
@@ -105,8 +112,8 @@
                 Location = instance.Location,
                 LastFileStatusCheckTime = TimeUtils.GetFormattedDateString(instance.LastFileStatusCheckTime),
                 LastFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastFileModifiedTime),
-                ExhibitsTraits = Utils.ListCopyData(resOpt, instance.ExhibitsTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options),
-                Arguments = argumentsCopy,
+                ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options),
+                Arguments = argumentsCopy.Count() > 0 ? argumentsCopy : null,
                 SpecializedSchema = instance.SpecializedSchema
             };
 

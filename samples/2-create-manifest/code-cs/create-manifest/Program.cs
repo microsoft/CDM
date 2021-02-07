@@ -1,4 +1,7 @@
-﻿namespace create_manifest
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace create_manifest
 {
     using System;
     using System.Collections.Generic;
@@ -37,10 +40,10 @@
             // Configure storage adapters to point at the target local manifest location and at the fake public standards
             string pathFromExeToExampleRoot = "../../../../../../";
 
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "2-create-manifest"));
+            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "2-create-manifest/sample-data"));
             cdmCorpus.Storage.DefaultNamespace = "local"; // local is our default. so any paths that start out navigating without a device tag will assume local
 
-            // Fake cdm, normaly use the github adapter
+            // Fake cdm, normaly use the CDM Standards adapter
             // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));
 
@@ -113,7 +116,7 @@
                     header += att.Name;
                 }
 
-                Directory.CreateDirectory(cdmCorpus.Storage.CorpusPathToAdapterPath($"local:/{ entDef.EntityName}"));
+                Directory.CreateDirectory(cdmCorpus.Storage.CorpusPathToAdapterPath($"local:/{entDef.EntityName}"));
                 File.WriteAllText(partPath, header);
             }
 

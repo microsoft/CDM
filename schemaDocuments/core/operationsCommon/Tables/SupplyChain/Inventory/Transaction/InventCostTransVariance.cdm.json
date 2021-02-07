@@ -1,0 +1,252 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/BOMCostGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "InventCostTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventCostTransVariance",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CostAmount",
+          "dataType": "CostAmountNonMonetary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostAmountPosted",
+          "dataType": "CostAmountPosted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostAmountPostedSecCur_RU",
+          "dataType": "CostAmountSecCur_RU",
+          "isNullable": true,
+          "displayName": "Financial cost amount",
+          "description": ""
+        },
+        {
+          "name": "CostAmountSecCur_RU",
+          "dataType": "CostAmountSecCur_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostGroupId",
+          "dataType": "CostGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventCostTransRefRecId",
+          "dataType": "InventCostTransRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "isPosted",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Posted",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Level",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OffsetLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Posting",
+          "dataType": "InventPostingType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingOffset",
+          "dataType": "InventPostingType",
+          "isNullable": true,
+          "displayName": "Offset account transaction type",
+          "description": ""
+        },
+        {
+          "name": "Split",
+          "dataType": "InventCostSplit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VarianceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOMCostGroup"
+          },
+          "name": "Relationship_BOMCostGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventCostTrans"
+          },
+          "name": "Relationship_InventCostTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_OffsetLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Inventory cost variances"
+    },
+    {
+      "dataTypeName": "CostAmountNonMonetary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmountPosted",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmountSecCur_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventCostTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDimensionAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventPostingType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostSplit",
+      "extendsDataType": "integer"
+    }
+  ]
+}

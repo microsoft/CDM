@@ -1,8 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CdmLocalEntityDeclarationDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -10,7 +7,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     /// <summary>
     /// The object model implementation for local entity declaration.
@@ -75,7 +74,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrWhiteSpace(this.EntityName);
+            if (string.IsNullOrWhiteSpace(this.EntityName))
+            {
+                Logger.Error(nameof(CdmLocalEntityDeclarationDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "EntityName" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />
@@ -83,7 +87,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmLocalEntityDeclarationDefinition copy;
@@ -170,31 +174,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseName, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this);
-            }
-
             return false; // makes no sense
         }
 
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
-            DateTimeOffset? modifiedTime = await (this.Ctx.Corpus as CdmCorpusDefinition).ComputeLastModifiedTimeAsync(fullPath, this);
+            using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
+            {
+                string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
+                DateTimeOffset? modifiedTime = await this.Ctx.Corpus.ComputeLastModifiedTimeAsync(fullPath, this);
 
-            foreach (var partition in this.DataPartitions)
-                await partition.FileStatusCheckAsync();
+                // check patterns first as this is a more performant way of querying file modification times 
+                // from ADLS and we can cache the times for reuse in the individual partition checks below
+                foreach (var pattern in this.DataPartitionPatterns)
+                {
+                    await pattern.FileStatusCheckAsync();
+                }
 
-            foreach (var pattern in this.DataPartitionPatterns)
-                await pattern.FileStatusCheckAsync();
+                foreach (var partition in this.DataPartitions)
+                {
+                    await partition.FileStatusCheckAsync();
+                }
 
-            // update modified times
-            this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
-            this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
+                // update modified times
+                this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
+                this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
 
-            await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
+                await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
+            }
         }
 
         /// <inheritdoc />

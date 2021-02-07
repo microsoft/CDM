@@ -1,9 +1,8 @@
-﻿# ------------------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ------------------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from .adls import ADLSAdapter
+from .cdm_standards import CdmStandardsAdapter
 from .github import GithubAdapter
 from .base import StorageAdapterBase
 from .local import LocalAdapter
@@ -13,6 +12,7 @@ from .storage_manager import StorageManager
 
 __all__ = [
     'ADLSAdapter',
+    'CdmStandardsAdapter',
     'GithubAdapter',
     'StorageAdapterBase',
     'LocalAdapter',

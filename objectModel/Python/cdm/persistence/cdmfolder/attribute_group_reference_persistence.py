@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
@@ -13,7 +16,7 @@ if TYPE_CHECKING:
 
 class AttributeGroupReferencePersistence(CdmObjectRefPersistence):
     @staticmethod
-    def from_data(ctx: 'CdmCorpusContext', data: Union[str, 'AttributeGroupReference']) -> Optional['CdmAttributeGroupReference']:
+    def from_data(ctx: 'CdmCorpusContext', data: Union[str, 'AttributeGroupReference'], entity_name: Optional[str] = None) -> Optional['CdmAttributeGroupReference']:
         if not data:
             return None
 
@@ -27,6 +30,6 @@ class AttributeGroupReferencePersistence(CdmObjectRefPersistence):
             if isinstance(data.attributeGroupReference, str):
                 attribute_group = data.attributeGroupReference
             else:
-                attribute_group = AttributeGroupPersistence.from_data(ctx, data.attributeGroupReference)
+                attribute_group = AttributeGroupPersistence.from_data(ctx, data.attributeGroupReference, entity_name)
 
         return ctx.corpus.make_ref(CdmObjectType.ATTRIBUTE_GROUP_REF, attribute_group, simple_reference)

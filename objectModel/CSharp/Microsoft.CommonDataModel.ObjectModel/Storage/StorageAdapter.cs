@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="StorageAdapter.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
@@ -13,10 +10,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
     /// <summary>
     /// The CDM Def interface for an adapter object that can read and write documents from a data source.
-    /// This interface allows a user flexibility to interact with data from multiple sources without having 
-    /// to manually copy data to the location where the Object Model is running. This interface also allows 
-    /// users to create their own adapter if needed.
+    /// This was the previous method for a user to create their own storage adapter. The current method is 
+    /// to extend the StorageAdapterBase class.
     /// </summary>
+    [Obsolete("Please use the StorageAdapterBase class instead.")]
     public interface StorageAdapter
     {
         /// <summary>
@@ -79,4 +76,4 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         string FetchConfig();
     }
-}
+ }

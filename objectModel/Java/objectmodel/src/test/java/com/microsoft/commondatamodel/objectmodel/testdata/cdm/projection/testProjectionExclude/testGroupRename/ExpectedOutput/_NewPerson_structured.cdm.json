@@ -1,0 +1,144 @@
+{
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "local:/NewPerson.cdm.json",
+      "moniker": "resolvedFrom"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Resolved_NewPerson_structured",
+      "attributeContext": {
+        "type": "entity",
+        "name": "Resolved_NewPerson_structured",
+        "definition": "resolvedFrom/NewPerson",
+        "contents": [
+          {
+            "type": "entityReferenceExtends",
+            "name": "extends",
+            "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured",
+            "contents": [
+              {
+                "type": "entity",
+                "name": "CdmEntity",
+                "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/extends",
+                "definition": "resolvedFrom/CdmEntity"
+              }
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "PersonInfo",
+            "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured",
+            "definition": "resolvedFrom/NewPerson/hasAttributes/PersonInfo",
+            "contents": [
+              {
+                "type": "entity",
+                "name": "Person",
+                "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo",
+                "definition": "resolvedFrom/Person",
+                "contents": [
+                  {
+                    "type": "entityReferenceExtends",
+                    "name": "extends",
+                    "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person",
+                    "contents": [
+                      {
+                        "type": "entity",
+                        "name": "CdmEntity",
+                        "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person/extends",
+                        "definition": "resolvedFrom/CdmEntity"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "attributeDefinition",
+                    "name": "someGroup",
+                    "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person",
+                    "definition": "resolvedFrom/Person/hasAttributes/someGroup",
+                    "contents": [
+                      {
+                        "type": "attributeGroup",
+                        "name": "someGroup",
+                        "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person/someGroup",
+                        "definition": "resolvedFrom/Person/hasAttributes/someGroup",
+                        "contents": [
+                          {
+                            "type": "attributeDefinition",
+                            "name": "address",
+                            "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person/someGroup/someGroup",
+                            "definition": "resolvedFrom/Person/hasAttributes/someGroup/members/address"
+                          },
+                          {
+                            "type": "attributeDefinition",
+                            "name": "phoneNumber",
+                            "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person/someGroup/someGroup",
+                            "definition": "resolvedFrom/Person/hasAttributes/someGroup/members/phoneNumber"
+                          },
+                          {
+                            "type": "attributeDefinition",
+                            "name": "email",
+                            "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person/someGroup/someGroup",
+                            "definition": "resolvedFrom/Person/hasAttributes/someGroup/members/email"
+                          },
+                          {
+                            "type": "attributeDefinition",
+                            "name": "name",
+                            "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person/someGroup/someGroup",
+                            "definition": "resolvedFrom/Person/hasAttributes/someGroup/members/name",
+                            "contents": [
+                              "Resolved_NewPerson_structured/hasAttributes/PersonInfo/members/name"
+                            ]
+                          },
+                          {
+                            "type": "attributeDefinition",
+                            "name": "age",
+                            "parent": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person/someGroup/someGroup",
+                            "definition": "resolvedFrom/Person/hasAttributes/someGroup/members/age",
+                            "contents": [
+                              "Resolved_NewPerson_structured/hasAttributes/PersonInfo/members/age"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "PersonInfo",
+            "attributeContext": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo",
+            "members": [
+              {
+                "name": "name",
+                "appliedTraits": [
+                  "is.dataFormat.character",
+                  "is.dataFormat.big",
+                  "is.dataFormat.array"
+                ],
+                "attributeContext": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person/someGroup/someGroup/name",
+                "dataFormat": "String"
+              },
+              {
+                "name": "age",
+                "appliedTraits": [
+                  "is.dataFormat.integer"
+                ],
+                "attributeContext": "Resolved_NewPerson_structured/attributeContext/Resolved_NewPerson_structured/PersonInfo/Person/someGroup/someGroup/age",
+                "dataFormat": "Int32"
+              }
+            ]
+          }
+        }
+      ],
+      "version": "1.1"
+    }
+  ]
+}

@@ -1,5 +1,9 @@
-// tslint:disable: typedef non-literal-fs-path
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as fs from 'fs';
+import * as path from 'path';
+
 import { isArray, isDate, isObject, isString } from 'util';
 import { CdmCorpusDefinition, cdmStatusLevel } from '../internal';
 import { LocalAdapter, RemoteAdapter } from '../Storage';
@@ -11,9 +15,26 @@ enum testFolders {
 }
 
 export const testHelper = {
+    /**
+     * The path of the TestDataFolder.
+     * Here will be found input files and expected output files used by tests
+     */
     testDataPath: '__test__/TestData',
+    /**
+     * The path of the CDM Schema Documents Folder.
+     */
     schemaDocumentsPath: '../../schemaDocuments',
-    doesWriteTestDebuggingFiles: false,
+    /**
+     * The adapter path to the top-level manifest in the CDM Schema Documents folder. Used by tests where we resolve the corpus.
+     * This path is temporarily pointing to the applicationCommon manifest instead of standards due to performance issues when resolving
+     * the entire set of CDM standard schemas, after 8000+ F&O entities were added.
+     */
+    cdmStandardsSchemaPath: 'local:/core/applicationCommon/applicationCommon.manifest.cdm.json',
+    /**
+     * The path of the CDM Sample Schema Documents Folder.
+     */
+    sampleSchemaFolderPath: '../../samples/example-public-standards',
+
     getInputFolderPath: (testSubpath: string, testName: string) =>
         getTestFolderPath(testSubpath, testName, testFolders.Input),
     getExpectedOutputFolderPath: (testSubpath: string, testName: string) =>
@@ -105,7 +126,7 @@ export const testHelper = {
                     if (logError) {
                         // tslint:disable-next-line: no-console
                         console.log('object content not equal for key = ', key,
-                            ' expected[key] = ', (expected as object)[key], ' actual[key] = ', (actual as object)[key]);
+                                    ' expected[key] = ', (expected as object)[key], ' actual[key] = ', (actual as object)[key]);
                     }
 
                     return false;
@@ -129,6 +150,18 @@ export const testHelper = {
         }
 
         return false;
+    },
+    deleteFilesFromActualOutput(actualOutputFolderPath: string) {
+        const itemNameList: string[] = fs.readdirSync(actualOutputFolderPath);
+        itemNameList.forEach((itemName: string) => {
+            const itemPath: string = path.join(actualOutputFolderPath, itemName);
+            if (fs.lstatSync(itemPath).isFile()) {
+                fs.unlinkSync(itemPath);
+            } else if(fs.lstatSync(itemPath).isDirectory()) {
+                testHelper.deleteFilesFromActualOutput(itemPath);
+                fs.rmdirSync(itemPath)
+            }
+        });
     },
     assertSameObjectWasSerialized(expected: string, actual: string) {
         const deserializedExpected: string = JSON.parse(expected);
@@ -158,7 +191,7 @@ export const testHelper = {
         const pathOfInput: string = testHelper.getInputFolderPath(testsSubpath, testName);
 
         const localAdapter: LocalAdapter = new LocalAdapter(pathOfInput);
-        const cdmCorpus = new CdmCorpusDefinition();
+        const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         cdmCorpus.storage.mount('local', localAdapter);
         cdmCorpus.storage.defaultNamespace = 'local';
 
@@ -174,20 +207,20 @@ export const testHelper = {
      * Creates a corpus to be used by the tests.
      * @param testFilesRoot The root of the corpus files.
      */
-    getLocalCorpus(testFilesRoot: string): CdmCorpusDefinition {
+    getLocalCorpus(testSubpath: string, testName: string, testInputDir?: string): CdmCorpusDefinition {
+        testInputDir = testInputDir !== undefined ? testInputDir : testHelper.getInputFolderPath(testSubpath, testName);
+        const testOutputDir: string = testHelper.getActualOutputFolderPath(testSubpath, testName);
+
         const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         cdmCorpus.storage.defaultNamespace = 'local';
 
-        cdmCorpus.storage.mount('local', new LocalAdapter(testFilesRoot));
-
-        // Unmounts the default cdm and mounts the resource adapter. This will
-        // also implicitely test the resource adapter functionality.
-        cdmCorpus.storage.unMount('cdm');
+        cdmCorpus.storage.mount('local', new LocalAdapter(testInputDir));
+        cdmCorpus.storage.mount('cdm', new LocalAdapter(testHelper.schemaDocumentsPath));
 
         const remoteAdapter: RemoteAdapter = new RemoteAdapter();
         remoteAdapter.hosts = new Map<string, string>([['contoso', 'http://contoso.com']]);
-
         cdmCorpus.storage.mount('remote', remoteAdapter);
+        cdmCorpus.storage.mount('output', new LocalAdapter(testOutputDir));
 
         // Set empty callback to avoid breaking tests due too many errors in logs,
         // change the event callback to console or file status report if wanted.
@@ -217,9 +250,9 @@ function getTestFolderPath(testSubpath: string, testName: string, use: testFolde
     const testFolderPath: string = `${testHelper.testDataPath}/${testSubpath}/${testName}/${folderName}`;
 
     if (use === testFolders.ActualOutput && !fs.existsSync(testFolderPath)) {
-        fs.mkdirSync(testFolderPath);
+        fs.mkdirSync(testFolderPath, { recursive: true });
     }
-    expectFileSystemPathToExist(testFolderPath, `Was unable to find direcotry ${testFolderPath}`);
+    // expectFileSystemPathToExist(testFolderPath, `Was unable to find direcotry ${testFolderPath}`);
 
     return testFolderPath;
 }
@@ -318,9 +351,5 @@ describe('testHelper', () => {
         }
         expect(expectFailed)
             .toBeTruthy();
-    });
-    it('WriteTestDebuggingFiles', () => {
-        expect(testHelper.doesWriteTestDebuggingFiles)
-            .toBeFalsy();
     });
 });

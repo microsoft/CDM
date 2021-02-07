@@ -1,7 +1,5 @@
-# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Iterable, TYPE_CHECKING
 
@@ -58,6 +56,7 @@ class ResolvedEntity:
         to.spew_line(indent + 'traits:')
         self.resolved_traits.spew(res_opt, to, indent + ' ', name_sort)
         to.spew_line('attributes:')
-        self.resolved_attributes.spew(res_opt, to, indent + ' ', name_sort)
+        if self.resolved_attributes is not None:
+            self.resolved_attributes.spew(res_opt, to, indent + ' ', name_sort)
         to.spew_line('relationships:')
         self.resolved_entity_references.spew(res_opt, to, indent + ' ', name_sort)

@@ -1,0 +1,219 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetHeader/LedgerJournalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Payments/Main/RetailTenderTypeCardTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRCCSettlementTotal",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BankReconID",
+          "dataType": "MCRCCBankReconID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CardTypeId",
+          "dataType": "RetailCardTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCodeDeposit",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "displayName": "Currency code deposit",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCodeRefund",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "displayName": "Currency code refunds",
+          "description": ""
+        },
+        {
+          "name": "MCRCCGeneralLedgerID",
+          "dataType": "LedgerJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumRecordsReconciled",
+          "dataType": "MCRCCNumRecsReconciled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumRecordsUnreconciled",
+          "dataType": "MCRCCNumRecsUnReconciled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettlementDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalDeposits",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Total deposits",
+          "description": ""
+        },
+        {
+          "name": "TotalRefunds",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Total refunds",
+          "description": ""
+        },
+        {
+          "name": "TotalUnReconciledDeposit",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Unreconciled deposit",
+          "description": ""
+        },
+        {
+          "name": "TotalUnreconciledRefund",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Unreconciled refund",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyDepositRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRefundRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTable"
+          },
+          "name": "Relationship_LedgerJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTenderTypeCardTable"
+          },
+          "name": "Relationship_RetailTenderTypeCardTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Credit card reconciled totals"
+    },
+    {
+      "dataTypeName": "MCRCCBankReconID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCardTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRCCNumRecsReconciled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRCCNumRecsUnReconciled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

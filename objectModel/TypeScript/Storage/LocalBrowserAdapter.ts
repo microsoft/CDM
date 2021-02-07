@@ -1,4 +1,7 @@
-import { StorageAdapter } from './StorageAdapter';
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { StorageAdapterBase } from './StorageAdapterBase';
 
 interface FileInfo {
     name: string;
@@ -12,11 +15,12 @@ interface FileInfo {
  * and then stored in this adapter. Any files that are needed must be loaded from that dialog
  * and cannot be pulled in in any other way.
  */
-export class LocalBrowserAdapter implements StorageAdapter {
+export class LocalBrowserAdapter extends StorageAdapterBase {
     private readonly folders: Set<string> = new Set<string>();
     private readonly fileMap: Map<string, FileInfo>;
 
     constructor(config) {
+        super();
         if (config.fileMap) {
             this.fileMap = config.fileMap;
             for (let path of this.fileMap.keys()) {
@@ -66,38 +70,11 @@ export class LocalBrowserAdapter implements StorageAdapter {
         return undefined;
     }
 
-    public canWrite(): boolean {
-        return false;
-    }
-
     public async dirExists(folderPath: string): Promise<boolean> {
         return this.folders.has(folderPath);
     }
 
-    public createAdapterPath(corpusPath: string): string {
-        return corpusPath;
-    }
-
-    public createCorpusPath(adapterPath: string): string {
-        return adapterPath;
-    }
-
-    public clearCache(): void {
-        return;
-    }
-
-    public async computeLastModifiedTimeAsync(adapterPath: string): Promise<Date> {
-        return undefined;
-    }
-
     public async fetchAllFilesAsync(folderCorpusPath: string): Promise<string[]> {
         return Array.from(this.fileMap.keys());
-    }
-
-    public fetchConfig(): string {
-        return undefined;
-    }
-
-    public updateConfig(config: string): void {
     }
 }

@@ -1,0 +1,107 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategoryHierarchy.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMInternalOrganization.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailInternalOrganization",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CategoryHierarchy",
+          "dataType": "EcoResCategoryHierarchyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InheritEnabled",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Inherit",
+          "description": ""
+        },
+        {
+          "name": "InternalOrganization",
+          "dataType": "RetailInternalOrgRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LastModifiedDateTime",
+          "dataType": "ModifiedDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last modified date",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategoryHierarchy"
+          },
+          "name": "Relationship_EcoResCategoryHierarchyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMInternalOrganization"
+          },
+          "name": "Relationship_OMInternalOrganizationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Internal organization"
+    },
+    {
+      "dataTypeName": "EcoResCategoryHierarchyId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailInternalOrgRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ModifiedDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

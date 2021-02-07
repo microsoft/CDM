@@ -1,0 +1,130 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendExchRateAdjustment",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ConsideredDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Considered date",
+          "description": ""
+        },
+        {
+          "name": "DateOfRate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Date of rate",
+          "description": ""
+        },
+        {
+          "name": "Dimensions",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Financial dimensions",
+          "description": ""
+        },
+        {
+          "name": "ExchPrinciple",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Method",
+          "description": ""
+        },
+        {
+          "name": "ExecutedDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Executed date",
+          "description": ""
+        },
+        {
+          "name": "Notes",
+          "dataType": "Notes",
+          "isNullable": true,
+          "displayName": "Notes",
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "PostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Reviewed",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Reviewed",
+          "description": ""
+        },
+        {
+          "name": "UseProfile",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use posting profile from",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Foreign currency revaluation"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Notes",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PostingProfile",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,225 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdGroupHeading.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxInformationVendTable_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CompositionScheme",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Composition scheme",
+          "description": ""
+        },
+        {
+          "name": "IsForeign",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Foreign vendor",
+          "description": ""
+        },
+        {
+          "name": "IsGTA",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "GTA – commercial vendor",
+          "description": ""
+        },
+        {
+          "name": "IsPreferential",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Preferential vendor",
+          "description": ""
+        },
+        {
+          "name": "IsSSI",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "SSI vendor",
+          "description": ""
+        },
+        {
+          "name": "NatureOfAssessee",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PANNumber",
+          "dataType": "PANNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PANReferenceNumber",
+          "dataType": "PANReferenceNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PANStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SSIValidityDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "SSI validity date",
+          "description": ""
+        },
+        {
+          "name": "TCSGroup",
+          "dataType": "TaxWithholdGroup",
+          "isNullable": true,
+          "displayName": "TCS group",
+          "description": ""
+        },
+        {
+          "name": "TDSGroup",
+          "dataType": "TaxWithholdGroup",
+          "isNullable": true,
+          "displayName": "TDS group",
+          "description": ""
+        },
+        {
+          "name": "VendTable",
+          "dataType": "AccountNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GSTCompositionScheme",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "GST composition scheme",
+          "description": ""
+        },
+        {
+          "name": "ApplyGSTTDS",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Apply GST TDS",
+          "description": ""
+        },
+        {
+          "name": "ApplyGSTTCS",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Apply GST TCS",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdGroupHeading"
+          },
+          "name": "Relationship_TaxWithholdGroupHeadingTCSRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdGroupHeading"
+          },
+          "name": "Relationship_TaxWithholdGroupHeadingTDSRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax Information of Vendor"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PANNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PANReferenceNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxWithholdGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AccountNum",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,281 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvMode.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventSite.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRPickingWorkbenchProfile",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustGroupId",
+          "dataType": "CustGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvMode",
+          "dataType": "CustDlvModeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemIdQuery",
+          "dataType": "MCRItemIDQuery",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LeadDays",
+          "dataType": "MCRLeadDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxLinesPerOrder",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Lines",
+          "description": ""
+        },
+        {
+          "name": "MaxOrders",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Orders",
+          "description": ""
+        },
+        {
+          "name": "MCRExpedite",
+          "dataType": "MCRExpedite",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "onlySingleLineOrders",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Single line orders",
+          "description": ""
+        },
+        {
+          "name": "ProfileDescription",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfileId",
+          "dataType": "MCRPickingProfile",
+          "displayName": "Profile",
+          "description": ""
+        },
+        {
+          "name": "Prompt",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PromptForContinuityItem",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prompt for continuity items",
+          "description": ""
+        },
+        {
+          "name": "PromptForItems",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prompt for items",
+          "description": ""
+        },
+        {
+          "name": "PromptForSalesIds",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prompt for sales IDs",
+          "description": ""
+        },
+        {
+          "name": "SOAllocHighPriority",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "High priority",
+          "description": ""
+        },
+        {
+          "name": "SOAllocLowPriority",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Low priority",
+          "description": ""
+        },
+        {
+          "name": "TenderTypeId",
+          "dataType": "MCRPickingWorkbenchTenderTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Warehouse",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustGroup"
+          },
+          "name": "Relationship_CustGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvMode"
+          },
+          "name": "Relationship_DlvModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSite"
+          },
+          "name": "Relationship_InventSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Picking workbench profile"
+    },
+    {
+      "dataTypeName": "CustGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustDlvModeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRItemIDQuery",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRLeadDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRExpedite",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRPickingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRPickingWorkbenchTenderTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    }
+  ]
+}

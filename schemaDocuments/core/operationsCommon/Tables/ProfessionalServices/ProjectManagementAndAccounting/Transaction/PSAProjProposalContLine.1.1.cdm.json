@@ -1,0 +1,121 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ProjProposalJour.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Miscellaneous/PSAContractLineItems.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PSAProjProposalContLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ContractLineNum",
+          "dataType": "PSAContractLineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Invoiced",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Invoiced",
+          "description": ""
+        },
+        {
+          "name": "InvoicedNow",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Now invoiced",
+          "description": ""
+        },
+        {
+          "name": "ProjProposalId",
+          "dataType": "ProjProposalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjProposalJour"
+          },
+          "name": "Relationship_ProjProposalJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PSAContractLineItems"
+          },
+          "name": "Relationship_PSAContractLineItemsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Proposal summary"
+    },
+    {
+      "dataTypeName": "PSAContractLineNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjProposalId",
+      "extendsDataType": "string"
+    }
+  ]
+}

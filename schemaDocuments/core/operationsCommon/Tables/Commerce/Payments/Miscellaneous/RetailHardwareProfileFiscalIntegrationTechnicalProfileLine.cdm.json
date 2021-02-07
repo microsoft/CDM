@@ -1,0 +1,72 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Payments/Group/RetailHardwareProfile.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailHardwareProfileFiscalIntegrationTechnicalProfileLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "HardwareProfileId",
+          "dataType": "RetailHardwareProfileId",
+          "isNullable": true,
+          "displayName": "Hardware profile",
+          "description": ""
+        },
+        {
+          "name": "FiscalTechnicalProfileId",
+          "dataType": "RetailFiscalIntegrationTechnicalProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailHardwareProfile"
+          },
+          "name": "Relationship_RetailHardwareProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Hardware profile fiscal integration technical profile line"
+    },
+    {
+      "dataTypeName": "RetailHardwareProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFiscalIntegrationTechnicalProfileId",
+      "extendsDataType": "string"
+    }
+  ]
+}

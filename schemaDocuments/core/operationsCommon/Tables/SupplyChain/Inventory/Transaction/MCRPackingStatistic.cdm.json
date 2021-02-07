@@ -1,0 +1,101 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRPackingStatistic",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MCRCubePercent",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Volume density",
+          "description": ""
+        },
+        {
+          "name": "MCRResultId",
+          "dataType": "MCRResultId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRSolutionId",
+          "dataType": "MCRSolutionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRWeightPercent",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Weight density",
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Solution value",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Packing summary statistics"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRResultId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRSolutionId",
+      "extendsDataType": "string"
+    }
+  ]
+}

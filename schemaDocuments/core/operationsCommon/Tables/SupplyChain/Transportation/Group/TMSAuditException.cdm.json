@@ -1,0 +1,191 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TMSBillingGroup.cdm.json"
+    },
+    {
+      "corpusPath": "TMSAuditMaster.cdm.json"
+    },
+    {
+      "corpusPath": "TMSCarrierAccessorial.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSHubAccessorial.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSAuditException",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AuditMasterId",
+          "dataType": "TMSAuditMasterId",
+          "description": ""
+        },
+        {
+          "name": "AuditToleranceMax",
+          "dataType": "TMSAuditToleranceMax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AuditToleranceMin",
+          "dataType": "TMSAuditToleranceMin",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AuditTypeMax",
+          "dataType": "TMSAuditTypeMax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AuditTypeMin",
+          "dataType": "TMSAuditTypeMin",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BillingGroupId",
+          "dataType": "TMSBillingGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierAccessorialId",
+          "dataType": "TMSCarrierAccessorialId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HubAccessorialId",
+          "dataType": "TMSHubAccessorialId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TMSBillingGroup"
+          },
+          "name": "Relationship_BillingGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSAuditMaster"
+          },
+          "name": "Relationship_TMSAuditMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrierAccessorial"
+          },
+          "name": "Relationship_TMSCarrierAccessorialRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSHubAccessorial"
+          },
+          "name": "Relationship_TMSHubAccessorialRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Audit exception"
+    },
+    {
+      "dataTypeName": "TMSAuditMasterId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSAuditToleranceMax",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSAuditToleranceMin",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSAuditTypeMax",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSAuditTypeMin",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSBillingGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierAccessorialId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSHubAccessorialId",
+      "extendsDataType": "string"
+    }
+  ]
+}

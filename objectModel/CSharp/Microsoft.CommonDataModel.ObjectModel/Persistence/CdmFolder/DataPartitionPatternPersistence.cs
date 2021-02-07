@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -15,6 +18,12 @@
         {
             var newPattern = ctx.Corpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, (string)obj["name"]);
             newPattern.RootLocation = (string)obj["rootLocation"];
+
+            if (obj["globPattern"] != null)
+            {
+                newPattern.GlobPattern = (string)obj["globPattern"];
+            }
+
             if (obj["regularExpression"] != null)
             {
                 newPattern.RegularExpression = (string)obj["regularExpression"];
@@ -27,12 +36,12 @@
 
             if (obj["lastFileStatusCheckTime"] != null)
             {
-                newPattern.LastFileStatusCheckTime = DateTimeOffset.Parse(obj.Value<string>("lastFileStatusCheckTime"));
+                newPattern.LastFileStatusCheckTime = DateTimeOffset.Parse(obj["lastFileStatusCheckTime"].ToString());
             }
 
             if (obj["lastFileModifiedTime"] != null)
             {
-                newPattern.LastFileModifiedTime = DateTimeOffset.Parse(obj.Value<string>("lastFileModifiedTime"));
+                newPattern.LastFileModifiedTime = DateTimeOffset.Parse(obj["lastFileModifiedTime"].ToString());
             }
 
             if (obj["explanation"] != null)
@@ -62,10 +71,11 @@
                 LastFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastFileModifiedTime),
                 Explanation = instance.Explanation,
                 RootLocation = instance.RootLocation,
-                RegularExpression = instance.RegularExpression.ToString(),
+                GlobPattern = instance.GlobPattern,
+                RegularExpression = instance.RegularExpression != null ? instance.RegularExpression.ToString() : null,
                 Parameters = instance.Parameters,
                 SpecializedSchema = instance.SpecializedSchema,
-                ExhibitsTraits = Utils.ListCopyData(resOpt, instance.ExhibitsTraits, options)
+                ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options)
             };
 
             return result;

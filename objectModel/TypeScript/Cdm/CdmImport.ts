@@ -1,9 +1,14 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
     CdmDocumentDefinition,
     CdmObject,
     cdmObjectSimple,
     cdmObjectType,
+    Errors,
+    Logger,
     resolveOptions,
     VisitCallback
 } from '../internal';
@@ -11,7 +16,10 @@ import {
 export class CdmImport extends cdmObjectSimple {
     public corpusPath: string;
     public moniker: string;
-    public doc: CdmDocumentDefinition;
+    /**
+     * @internal
+     */
+    public document: CdmDocumentDefinition;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.import;
@@ -40,7 +48,7 @@ export class CdmImport extends cdmObjectSimple {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmImport;
@@ -52,7 +60,7 @@ export class CdmImport extends cdmObjectSimple {
                 copy.corpusPath = this.corpusPath;
                 copy.moniker = this.moniker;
             }
-            copy.doc = this.doc;
+            copy.document = this.document;
 
             return copy;
         }
@@ -62,7 +70,18 @@ export class CdmImport extends cdmObjectSimple {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.corpusPath ? true : false;
+            if (!this.corpusPath) {
+                Logger.error(
+                    CdmImport.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['corpusPath']),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -81,12 +100,5 @@ export class CdmImport extends cdmObjectSimple {
             return false;
         }
         // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public get resolvedDocument(): CdmDocumentDefinition {
-        return this.doc;
     }
 }

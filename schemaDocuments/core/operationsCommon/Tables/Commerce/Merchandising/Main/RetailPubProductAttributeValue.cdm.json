@@ -1,0 +1,203 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResAttribute.cdm.json"
+    },
+    {
+      "corpusPath": "Catalog.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailInternalOrganization.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProduct.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailPubProductAttributeValue",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Attribute",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "Catalog",
+          "dataType": "CatalogRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateTimeValue",
+          "dataType": "AttributeValueDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FloatValue",
+          "dataType": "AttributeValueFloat",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InternalOrganization",
+          "dataType": "RetailInternalOrgRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntValue",
+          "dataType": "AttributeValueInt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "LanguageIdAll",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Product",
+          "dataType": "EcoResProductRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TextValue",
+          "dataType": "AttributeValueText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasure",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Unit of measure",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResAttribute"
+          },
+          "name": "Relationship_AttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Catalog"
+          },
+          "name": "Relationship_CatalogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailInternalOrganization"
+          },
+          "name": "Relationship_InternalOrganizationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_ProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Published listing attributes"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CatalogRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AttributeValueDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AttributeValueFloat",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailInternalOrgRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AttributeValueInt",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LanguageIdAll",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResProductRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AttributeValueText",
+      "extendsDataType": "string"
+    }
+  ]
+}

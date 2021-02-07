@@ -1,0 +1,197 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RTax25StdExpressionTable.cdm.json"
+    },
+    {
+      "corpusPath": "RTax25ProfitTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Main/RTax25StdSeq.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25StdExpressionLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ChannelFieldId",
+          "dataType": "FieldNum_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "RTax25StdLineNum",
+          "description": ""
+        },
+        {
+          "name": "LineType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Notes",
+          "dataType": "Notes",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Operator",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodLag",
+          "dataType": "Periods",
+          "isNullable": true,
+          "displayName": "Index",
+          "description": ""
+        },
+        {
+          "name": "PeriodType",
+          "dataType": "RTax25StdPeriodType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefIdFrom",
+          "dataType": "RTax25StdRefId",
+          "isNullable": true,
+          "displayName": "From",
+          "description": ""
+        },
+        {
+          "name": "RefIdTo",
+          "dataType": "RTax25StdRefId",
+          "isNullable": true,
+          "displayName": "To",
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTable",
+          "dataType": "RTax25ProfitTableRecId",
+          "description": ""
+        },
+        {
+          "name": "SeqNum",
+          "dataType": "RTax25StdSeqNum",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25StdExpressionTable"
+          },
+          "name": "Relationship_ExpressionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25StdSeq"
+          },
+          "name": "Relationship_RTax25StdSeqRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Standard expenses sequence line"
+    },
+    {
+      "dataTypeName": "FieldNum_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25StdLineNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Notes",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Periods",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25StdPeriodType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25StdRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25StdSeqNum",
+      "extendsDataType": "integer"
+    }
+  ]
+}

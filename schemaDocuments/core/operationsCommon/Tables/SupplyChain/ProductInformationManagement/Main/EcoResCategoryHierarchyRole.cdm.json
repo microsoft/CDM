@@ -1,0 +1,65 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResCategoryHierarchy.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResCategoryHierarchyRole",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CategoryHierarchy",
+          "dataType": "EcoResCategoryHierarchyId",
+          "description": ""
+        },
+        {
+          "name": "NamedCategoryHierarchyRole",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategoryHierarchy"
+          },
+          "name": "Relationship_EcoResCategoryHierarchyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Category hierarchy roles"
+    },
+    {
+      "dataTypeName": "EcoResCategoryHierarchyId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

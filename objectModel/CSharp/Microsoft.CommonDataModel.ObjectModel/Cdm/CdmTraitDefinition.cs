@@ -1,14 +1,12 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmTraitDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
 
@@ -30,8 +28,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public CdmTraitReference ExtendsTrait { get; set; }
 
-        public CdmCollection<CdmParameterDefinition> _hasParameters { get; set; }
+        private CdmCollection<CdmParameterDefinition> _hasParameters { get; set; }
+
         ParameterCollection AllParameters { get; set; }
+
         private bool HasSetFlags;
 
         /// <summary>
@@ -66,14 +66,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
-        internal CdmCollection<CdmParameterDefinition> HasParameterDefs
-        {
-            get
-            {
-                return this.Parameters;
-            }
-        }
-
         /// <summary>
         /// Constructs a CdmTraitDefinition.
         /// </summary>
@@ -94,7 +86,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmTraitDefinition copy;
@@ -133,7 +125,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // get parameters from base if there is one
             ParameterCollection prior = null;
             if (this.ExtendsTrait != null)
-                prior = this.FetchExtendsTrait().FetchObjectDefinition<CdmTraitDefinition>(resOpt).FetchAllParameters(resOpt);
+                prior = this.ExtendsTrait.FetchObjectDefinition<CdmTraitDefinition>(resOpt).FetchAllParameters(resOpt);
             this.AllParameters = new ParameterCollection(prior);
             if (this.Parameters != null)
             {
@@ -156,7 +148,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             if (baseDef == this.TraitName)
@@ -167,7 +159,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.TraitName);
+            if (string.IsNullOrWhiteSpace(this.TraitName))
+            {
+                Logger.Error(nameof(CdmTraitDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "TraitName" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />
@@ -183,31 +180,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     this.DeclaredPath = path;
                 }
             }
-            //trackVisits(path);
 
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
             if (this.ExtendsTrait != null)
+            {
+                this.ExtendsTrait.Owner = this;
                 if (this.ExtendsTrait.Visit(path + "/extendsTrait/", preChildren, postChildren))
                     return true;
+            }
             if (this.Parameters != null)
-                if (this._hasParameters.VisitList(path + "/hasParameters/", preChildren, postChildren))
+                if (this.Parameters.VisitList(path + "/hasParameters/", preChildren, postChildren))
                     return true;
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;
         }
 
-        internal CdmTraitReference FetchExtendsTrait()
-        {
-            return this.ExtendsTrait;
-        }
-
         internal override ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             const string kind = "rtsb";
@@ -250,7 +244,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.BaseIsKnownToHaveParameters == true)
                 cacheTagExtra = this.ExtendsTrait.Id.ToString();
 
-            string cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
+            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
             dynamic rtsResultDynamic = null;
             if (cacheTag != null)
                 ctx.Cache.TryGetValue(cacheTag, out rtsResultDynamic);
@@ -307,9 +301,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 rtsResult.Merge(resTrait, false);
 
                 // register set of possible symbols
-                ((CdmCorpusDefinition)ctx.Corpus).RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt), kind, resOpt.SymbolRefSet);
+                ctx.Corpus.RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt), kind, resOpt.SymbolRefSet);
                 // get the new cache tag now that we have the list of docs
-                cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
+                cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
                 if (!string.IsNullOrWhiteSpace(cacheTag))
                     ctx.Cache[cacheTag] = rtsResult;
             }

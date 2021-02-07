@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmTraitReference.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -77,13 +74,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             Dictionary<string, dynamic> finalArgs = new Dictionary<string, dynamic>();
             // get resolved traits does all the work, just clean up the answers
             ResolvedTraitSet rts = this.FetchResolvedTraits(resOpt);
-            if (rts == null)
+            if (rts == null || rts.Size != 1)
             {
+                // well didn't get the traits. maybe imports are missing or maybe things are just not defined yet.
+                // this function will try to fake up some answers then from the arguments that are set on this reference only
+                if (this.Arguments != null && this.Arguments.Count > 0)
+                {
+                    int unNamedCount = 0;
+                    foreach(var arg in this.Arguments)
+                    {
+                        // if no arg name given, use the position in the list.
+                        string argName = arg.Name;
+                        if (string.IsNullOrWhiteSpace(argName))
+                        {
+                            argName = unNamedCount.ToString();
+                        }
+                        finalArgs.Add(argName, arg.Value);
+                        unNamedCount++;
+                    }
+                    return finalArgs;
+                }
                 return null;
             }
             // there is only one resolved trait
             ResolvedTrait rt = rts.First;
-            if (rt.ParameterValues != null && rt.ParameterValues.Length > 0)
+            if (rt?.ParameterValues != null && rt.ParameterValues.Length > 0)
             {
                 int l = rt.ParameterValues.Length;
                 for (int i = 0; i < l; i++)
@@ -110,10 +125,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal override bool VisitRef(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            if (this.Arguments != null)
-                if (this.Arguments.VisitList(pathFrom + "/arguments/", preChildren, postChildren))
-                    return true;
-            return false;
+            bool result = false;
+            if (this.Arguments?.Count > 0)
+            {
+                // custom enumeration of args to force a path onto these things that just might not have a name
+                int lItem = this.Arguments.Count;
+                for (int iItem = 0; iItem < lItem; iItem++) {
+                    CdmArgumentDefinition element = this.Arguments[iItem];
+                    if (element != null)
+                    {
+                        string argPath = $"{pathFrom}/arguments/a{iItem}";
+                        if (element.Visit(argPath, preChildren, postChildren))
+                        {
+                            result = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         internal override ResolvedAttributeSetBuilder ConstructResolvedAttributes(ResolveOptions resOpt, CdmAttributeContext under = null)
@@ -125,16 +156,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             const string kind = "rtsb";
-            ResolveContext ctx = this.Ctx as ResolveContext;
+            var ctx = this.Ctx as ResolveContext;
             // get referenced trait
-            CdmTraitDefinition trait = this.FetchObjectDefinition<CdmTraitDefinition>(resOpt) as CdmTraitDefinition;
+            var trait = this.FetchObjectDefinition<CdmTraitDefinition>(resOpt);
             ResolvedTraitSet rtsTrait = null;
             if (trait == null)
-                return ((CdmCorpusDefinition)ctx.Corpus).CreateEmptyResolvedTraitSet(resOpt);
+                return ctx.Corpus.CreateEmptyResolvedTraitSet(resOpt);
 
             // see if one is already cached
             // cache by name unless there are parameter
@@ -144,13 +175,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 rtsTrait = trait.FetchResolvedTraits(resOpt);
             }
 
-            bool cacheByName = true;
+            bool cacheByPath = true;
             if (trait.ThisIsKnownToHaveParameters != null)
             {
-                cacheByName = !((bool)trait.ThisIsKnownToHaveParameters);
+                cacheByPath = !((bool)trait.ThisIsKnownToHaveParameters);
             }
 
-            string cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
+            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.AtCorpusPath);
             dynamic rtsResult = null;
             if (cacheTag != null)
                 ctx.Cache.TryGetValue(cacheTag, out rtsResult);
@@ -198,13 +229,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         int iArg = 0;
                         if (this.Arguments != null)
                         {
-                            foreach (CdmArgumentDefinition a in this.Arguments)
+                            foreach (CdmArgumentDefinition argument in this.Arguments)
                             {
-                                paramFound = param.ResolveParameter(iArg, a.Name);
-                                a.ResolvedParameter = paramFound;
-                                aValue = a.Value;
-                                aValue = ((CdmCorpusDefinition)ctx.Corpus).ConstTypeCheck(resOpt, this.InDocument, paramFound, aValue);
-                                a.Value = aValue;
+                                paramFound = param.ResolveParameter(iArg, argument.Name);
+                                argument.ResolvedParameter = paramFound;
+                                aValue = argument.Value;
+                                aValue = ctx.Corpus.ConstTypeCheck(resOpt, this.InDocument, paramFound, aValue);
+                                argument.Value = aValue;
                                 iArg++;
                             }
                         }
@@ -219,10 +250,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
 
                 // register set of possible symbols
-                ((CdmCorpusDefinition)ctx.Corpus).RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinition>(resOpt), kind, resOpt.SymbolRefSet);
+                ctx.Corpus.RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinition>(resOpt), kind, resOpt.SymbolRefSet);
 
                 // get the new cache tag now that we have the list of symbols
-                cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
+                cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.AtCorpusPath);
                 if (!string.IsNullOrWhiteSpace(cacheTag))
                     ctx.Cache[cacheTag] = rtsResult;
             }
@@ -231,7 +262,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // cache was found
                 // get the SymbolSet for this cached object
                 string key = CdmCorpusDefinition.CreateCacheKeyFromObject(this, kind);
-                ((CdmCorpusDefinition)ctx.Corpus).DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
+                ctx.Corpus.DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
                 resOpt.SymbolRefSet = tempDocRefSet;
             }
 

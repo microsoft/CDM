@@ -1,5 +1,8 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as fs from 'fs';
-import { CdmCorpusDefinition, CdmEntityDefinition, CdmFolderDefinition, cdmStatusLevel } from '../../../internal';
+import { CdmCorpusDefinition, CdmEntityDefinition, CdmFolderDefinition, cdmStatusLevel, CdmTypeAttributeDefinition } from '../../../internal';
 import { LocalAdapter } from '../../../Storage';
 import { AttributeResolutionDirectiveSet } from '../../../Utilities/AttributeResolutionDirectiveSet';
 import { resolveOptions } from '../../../Utilities/resolveOptions';
@@ -95,11 +98,70 @@ describe('Cdm.ResolutionGuidance', () => {
     });
 
     /**
-     * Resolution Guidance Test - With SelectsSubAttribute property
+     * Resolution Guidance Test - With SelectsSubAttribute - Take Names
      */
-    it('TestSelectsSubAttribute', async (done) => {
-        const testName: string = 'TestSelectsSubAttribute';
-        await runTest(testName, 'Sales');
+    it('TestSelectsSubAttributeTakeNames', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSelectsSubAttributeTakeNames');
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Sales.cdm.json/Sales');
+        const resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
+        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync('resolved', resOpt);
+
+        const att1: CdmTypeAttributeDefinition = resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition;
+        const att2: CdmTypeAttributeDefinition = resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition;
+
+        // Check that the attributes in selectsSomeTakeNames were added.
+        expect(att1.name)
+            .toBe('SalesProductProductId');
+        expect(att2.name)
+            .toBe('SalesProductProductColor');
+        done();
+    });
+
+    /**
+     * Resolution Guidance Test - With SelectsSubAttribute - Avoid Names
+     */
+    it('TestSelectsSubAttributeAvoidNames', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSelectsSubAttributeAvoidNames');
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Sales.cdm.json/Sales');
+        const resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
+        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync('resolved', resOpt);
+
+        // Check that the attributes in selectsSomeAvoidNames were not added.
+        resolvedEntity.attributes.allItems.forEach((att: CdmTypeAttributeDefinition) => {
+            expect(att.name).not
+                .toBe('SalesProductProductId');
+            expect(att.name).not
+                .toBe('SalesProductProductColor');
+        });
+        done();
+    });
+
+    /*
+     * Resolution Guidance Test - With structured/normal imposed directives.
+     * This test directly read imposed directives from json file instead of setting resOpt in code as runTest().
+     */
+    it('TestImposedDirectives', async (done) => {
+        const testName: string = 'TestImposedDirectives';
+        const testExpectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
+        const testActualOutputPath: string = testHelper.getActualOutputFolderPath(testsSubpath, testName);
+
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+        corpus.storage.mount('localActualOutput', new LocalAdapter(testActualOutputPath));
+        corpus.storage.mount('cdm', new LocalAdapter(schemaDocsPath));
+        const actualOutputFolder: CdmFolderDefinition =
+            await corpus.fetchObjectAsync<CdmFolderDefinition>('localActualOutput:/');
+
+        // Test "structured" imposed directive.
+        let entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Person_Structured.cdm.json/Person');
+        let resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync('Person_Resolved', undefined, actualOutputFolder);
+        await resolvedEntity.inDocument.saveAsAsync('Person_Structured_Resolved.cdm.json', true);
+        validateOutput('Person_Structured_Resolved.cdm.json', testExpectedOutputPath, testActualOutputPath);
+
+        // Test default imposed directive.
+        entity = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Person_Default.cdm.json/Person');
+        resolvedEntity = await entity.createResolvedEntityAsync('Person_Resolved', undefined, actualOutputFolder);
+        await resolvedEntity.inDocument.saveAsAsync('Person_Default_Resolved.cdm.json', true);
+        validateOutput('Person_Default_Resolved.cdm.json', testExpectedOutputPath, testActualOutputPath);
         done();
     });
 
@@ -121,10 +183,7 @@ describe('Cdm.ResolutionGuidance', () => {
         expect(srcEntityDef)
             .toBeDefined();
 
-        const resOpt: resolveOptions = {
-            wrtDoc: srcEntityDef.inDocument,
-            directives: new AttributeResolutionDirectiveSet()
-        };
+        const resOpt: resolveOptions = new resolveOptions(srcEntityDef.inDocument, new AttributeResolutionDirectiveSet());
 
         const actualOutputFolder: CdmFolderDefinition = await corpus.fetchObjectAsync<CdmFolderDefinition>('localActualOutput:/');
         let resolvedEntityDef: CdmEntityDefinition;

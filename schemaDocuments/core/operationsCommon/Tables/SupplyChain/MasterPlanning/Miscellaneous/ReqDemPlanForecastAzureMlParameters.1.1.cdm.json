@@ -1,0 +1,106 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ReqDemPlanDefaultAlgorithmParameters.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "ReqDemplanForecastIAKParameters.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Parameter/ReqDemPlanForecastParameters.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqDemPlanForecastAzureMlParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultAlgorithmParameter",
+          "dataType": "ReqDemPlanDefaultAlgorithmParameter",
+          "description": ""
+        },
+        {
+          "name": "ForecastIAKParameters",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "dataType": "ReqDemPlanAzureMlParameterValue",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ReqDemPlanDefaultAlgorithmParameters"
+          },
+          "name": "Relationship_ReqDemPlanDefaultAlgorithmParametersRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqDemplanForecastIAKParameters"
+          },
+          "name": "Relationship_ReqDemPlanForecastIAKParametersRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqDemPlanForecastParameters"
+          },
+          "name": "Relationship_ReqDemPlanForecastParametersRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Forecasting algorithm parameters"
+    },
+    {
+      "dataTypeName": "ReqDemPlanDefaultAlgorithmParameter",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ReqDemPlanAzureMlParameterValue",
+      "extendsDataType": "string"
+    }
+  ]
+}

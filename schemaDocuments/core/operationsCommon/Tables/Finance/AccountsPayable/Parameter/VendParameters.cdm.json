@@ -1,0 +1,1648 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerAllocateKey.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Reference/DimensionAttribute.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/PlTaxDueTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Group/DimensionHierarchy.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Group/RTax25ProfitTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendLedger.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Miscellaneous/VendWriteOffFinancialReasonsSetup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Main/JournalizingDefinition.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MCRRoyaltyJournalName",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Accrual journal name",
+          "description": ""
+        },
+        {
+          "name": "InvoicePeriod",
+          "dataType": "PaymTermId",
+          "isNullable": true,
+          "displayName": "Period between purchase order delivery date and invoice date",
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountDisc",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Primary discount posting",
+          "description": ""
+        },
+        {
+          "name": "AccountReceipt",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Primary receipt posting",
+          "description": ""
+        },
+        {
+          "name": "AdvancePostingProfile",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Posting profile with prepayment vendor invoice",
+          "description": ""
+        },
+        {
+          "name": "AgreementCreditLine_RU",
+          "dataType": "AgreementCreditLimit_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountDiffBookCorrection_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Amount difference in additional list",
+          "description": ""
+        },
+        {
+          "name": "AssetPaymentAllocation_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AutoSettle",
+          "dataType": "AutoSettle",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetSettle",
+          "dataType": "LedgerAllocateKeyId",
+          "isNullable": true,
+          "displayName": "Percentage of amount to allocate to cash flow forecast",
+          "description": ""
+        },
+        {
+          "name": "CashDisc",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Cash discount administration",
+          "description": ""
+        },
+        {
+          "name": "CashDiscForCreditNote",
+          "dataType": "CashDiscForCreditNote",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscForPartialPaym",
+          "dataType": "CashDiscForPartialPaym",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscVAT",
+          "dataType": "VendCashDiscVat",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CheckInvoice",
+          "dataType": "VendReuseInvoice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CheckTaxInvoice",
+          "dataType": "VendReuseTaxInvoice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClearingLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Liquidity account for payments",
+          "description": ""
+        },
+        {
+          "name": "ConfirmingInvoices",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Confirming invoices treatment",
+          "description": ""
+        },
+        {
+          "name": "CopyInvoiceDimension_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Inherit invoice dimensions",
+          "description": ""
+        },
+        {
+          "name": "CreateFactureUnpostPrepayment_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Create facture on nonposted payments",
+          "description": ""
+        },
+        {
+          "name": "CreditError",
+          "dataType": "VendCreditError",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreditInvoicingReport",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Apply the credit invoicing layout to vendor invoice reports",
+          "description": ""
+        },
+        {
+          "name": "CreditMaxCheck",
+          "dataType": "VendCreditMaxCheck",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreditNoteSettlementType",
+          "dataType": "PurchSettlementType",
+          "isNullable": true,
+          "displayName": "Default settlement type for credit notes",
+          "description": ""
+        },
+        {
+          "name": "CustomsLandingChargesPct_IN",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Landing charges pct.",
+          "description": ""
+        },
+        {
+          "name": "DebtsTransitLedgerDimension_RU",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Transit account",
+          "description": ""
+        },
+        {
+          "name": "DefaultVend",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "displayName": "One-time vendor account",
+          "description": ""
+        },
+        {
+          "name": "DimSettlementCtrlType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayExtendedPriceToleranceIcon",
+          "dataType": "DisplayExtendedPriceToleranceIcon",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayMiscChargeToleranceIcon",
+          "dataType": "DisplayInvoiceMiscChargeMatchIcon",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayPriceMatchIcon",
+          "dataType": "DisplayPriceMatchIcon",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayTotalPriceMatchIcon",
+          "dataType": "DisplayTotalPriceMatchIcon",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDateForIntracomVAT_W",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Document date for intra-community VAT",
+          "description": ""
+        },
+        {
+          "name": "DoPrintTransportationDocument",
+          "dataType": "TransportationDocumentPrint",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Due2Payment",
+          "dataType": "PaymTermId",
+          "isNullable": true,
+          "displayName": "Time between invoice due date and payment date",
+          "description": ""
+        },
+        {
+          "name": "DueToTransDate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Date treatment (promissory notes journals)",
+          "description": ""
+        },
+        {
+          "name": "ExtendedPriceToleranceAmount",
+          "dataType": "ExtendedPriceToleranceAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExtendedPriceTolerancePercentage",
+          "dataType": "ExtendedPriceTolerancePercentage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureIssuePeriod_RU",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Facture issue period",
+          "description": ""
+        },
+        {
+          "name": "IntracomVAT",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Intra-community VAT",
+          "description": ""
+        },
+        {
+          "name": "Invoice2Due",
+          "dataType": "PaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemDimAdjustLineControl_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Control item dimension for correction lines",
+          "description": ""
+        },
+        {
+          "name": "KeepSalesTaxAdjustmentsForPO",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Keep sales tax adjustments for PO invoices",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MandatoryInvoiceVATNum",
+          "dataType": "MandatoryInvoiceVATNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MandatoryTaxGroup",
+          "dataType": "CustVendMandatoryTaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MandatoryVATNum",
+          "dataType": "MandatoryAccountVATNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MatchedPackingSlipsInquiry",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Matched product receipts inquiry",
+          "description": ""
+        },
+        {
+          "name": "MatchingPolicy",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MatchingPolicyAllowOverride",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxMSTDiff",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Maximum penny difference",
+          "description": ""
+        },
+        {
+          "name": "MaxMSTOverUnder",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Maximum overpayment or underpayment",
+          "description": ""
+        },
+        {
+          "name": "MCRBrokerDifferentialJournal",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Differential journal name",
+          "description": ""
+        },
+        {
+          "name": "MCRBrokerExpenseJournal",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Expense journal name",
+          "description": ""
+        },
+        {
+          "name": "MCRBrokerManualJourPost",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Manual posting",
+          "description": ""
+        },
+        {
+          "name": "MCRProcurementCategory",
+          "dataType": "MCRProcurementCategory",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRRoyaltyLedgerDimension",
+          "dataType": "MCRRoyaltyLedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRRoyaltyOffsetLedgerDimension",
+          "dataType": "MCRRoyaltyOffsetDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRStartingDayOfWeekPeriod",
+          "dataType": "MCRRoyaltyStartingDayOfWeek",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MiscChargeTolerancePercentage",
+          "dataType": "MarkupVariancePercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MixedPayment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Warn if payment proposal uses multiple methods of payment",
+          "description": ""
+        },
+        {
+          "name": "NotesJournalsValidations",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Validations on promissory notes journals",
+          "description": ""
+        },
+        {
+          "name": "OverdueCITPITDimensionAttribute_W",
+          "dataType": "OverdueCITPITDimensionAttribute_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PolicyViolationAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostChargeAccount",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post to charge account in ledger",
+          "description": ""
+        },
+        {
+          "name": "PostingProfileInvoiceRemit",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Invoice remit",
+          "description": ""
+        },
+        {
+          "name": "PostingProfileNotes",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Promissory notes",
+          "description": ""
+        },
+        {
+          "name": "PostingProfileRemitNotes",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Remit promissory note",
+          "description": ""
+        },
+        {
+          "name": "PostInvoiceMatchDiscrepancies",
+          "dataType": "PostInvoiceMatchDiscrepancies",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostPackingSlip",
+          "dataType": "PurchPostPackingSlip",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrepaymentHandlingLayout_W",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrepaymentPostingProfile",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Posting profile for payment journal with prepayment",
+          "description": ""
+        },
+        {
+          "name": "PrimaryRelation_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Primary relation",
+          "description": ""
+        },
+        {
+          "name": "ProhibitVATinVendJournal_CZ",
+          "dataType": "CzProhibitVATinVendJournal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchAgreementAccountStructure_PSN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Account structure",
+          "description": ""
+        },
+        {
+          "name": "PurchAgreementFinancialDimension_PSN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Financial dimension",
+          "description": ""
+        },
+        {
+          "name": "ReversePrepayment_W",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Reverse on invoice date",
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTable",
+          "dataType": "RTax25ProfitTableProfit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25UnrealisedRevenueLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettlePrepaymentVATType_W",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShowAmountDebitCredit_JP",
+          "dataType": "LedgerShowAmountDebitCredit_CN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup_W",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "displayName": "Tax group for prepayment",
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup_W",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxOnPrepayment",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Sales tax on prepayment in payment journal",
+          "description": ""
+        },
+        {
+          "name": "TaxPeriodPaymentCode_PL",
+          "dataType": "PlTaxPeriodPaymentCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalPriceTolerancePercentage",
+          "dataType": "TotalPriceTolerancePercentage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseDocumentDate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use document date for vendor invoices",
+          "description": ""
+        },
+        {
+          "name": "UseExtendedPriceMatching",
+          "dataType": "UseExtendedPriceMatching",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseInvoiceMatching",
+          "dataType": "UseInvoiceMatching",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseMiscChargeMatching",
+          "dataType": "UseInvoiceMiscChargeMatching",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UsePurchConsumpAccount_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use account for purchase expenditure for product",
+          "description": ""
+        },
+        {
+          "name": "UseTotalPriceMatching",
+          "dataType": "UseTotalPriceMatching",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseVendAdvanceInvoice_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use prepayment invoice",
+          "description": ""
+        },
+        {
+          "name": "VatProcessGroupBy_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Group by lot ID",
+          "description": ""
+        },
+        {
+          "name": "VendConsInvoice_JP",
+          "dataType": "VendConsUseInvoice_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendDiscountOffsetMethod_psn",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceDefaultGroupType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceDocDate",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceGroupingEnable",
+          "dataType": "VendInvoiceGroupEnable",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceInternalDefaultGroup",
+          "dataType": "VendInvoiceInternalDefaultGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoicePolicy",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Validate invoices in the journal",
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceRefNumValidation_FI",
+          "dataType": "VendInvoiceRefNumValidation_FI",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceWebServiceDefaultGroup",
+          "dataType": "VendInvoiceWebServicesDefaultGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendNameFromVATNum",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use vendor name associated with tax exempt number when invoicing",
+          "description": ""
+        },
+        {
+          "name": "VendPaymentGroupingEnable",
+          "dataType": "VendPaymentGroupEnable",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendTaxRegisterApproval",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "W9Validation",
+          "dataType": "VendW9Validation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRBrokerProcurementCategory",
+          "dataType": "MCRBrokerProcurementCategory",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AutomaticHeaderMatching",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseFiscalInvoiceAccount",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchPrepayApplicationPolicy",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalculateInvoiceTotal",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Display invoice total on pending vendor invoices list",
+          "description": ""
+        },
+        {
+          "name": "ValidateTaxInvoiceDate_TH",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Valdate tax invoice date",
+          "description": ""
+        },
+        {
+          "name": "AllowedTaxInvoicePostingPeriod_TH",
+          "dataType": "AllowedTaxInvoicePostingPeriod_TH",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendTableChangeProposalIsEnabled",
+          "dataType": "VendTableChangeProposalIsEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChangeProposalDataEntityBehavior",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnableElectronicPaymentNumber",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable electronic payment number",
+          "description": ""
+        },
+        {
+          "name": "EditCashDiscountsWhenDueDateChanged",
+          "dataType": "EditCashDiscountsWhenDueDateChanged",
+          "isNullable": true,
+          "displayName": "Show due date and allow edit",
+          "description": ""
+        },
+        {
+          "name": "DefaultFilterForVendorTransactions",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Default filter for vendor transactions",
+          "description": ""
+        },
+        {
+          "name": "PurchBookFormatMappingID",
+          "dataType": "ERFormatMappingID",
+          "isNullable": true,
+          "displayName": "Purchase Book Format Mapping",
+          "description": ""
+        },
+        {
+          "name": "PurchBookAdditionalListFormatMappingID",
+          "dataType": "ERFormatMappingID",
+          "isNullable": true,
+          "displayName": "Purchase Book Additional List Format Mapping",
+          "description": ""
+        },
+        {
+          "name": "SettlementWriteOffEnabled",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable settle remainder",
+          "description": ""
+        },
+        {
+          "name": "SettlementWriteOffLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "displayName": "Default settle remainder account",
+          "description": ""
+        },
+        {
+          "name": "SettlementWriteOffReasonCode",
+          "dataType": "ReasonCode",
+          "isNullable": true,
+          "displayName": "Default reason code for settle remainder",
+          "description": ""
+        },
+        {
+          "name": "SettlementWriteOffJournalName",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Default journal name",
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceInUseRecoverEnable",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow vendor invoice recovery",
+          "description": ""
+        },
+        {
+          "name": "MaxInvoicesPerBatch",
+          "dataType": "PositiveNumber",
+          "isNullable": true,
+          "displayName": "Number of invoices per batch",
+          "description": ""
+        },
+        {
+          "name": "MaxWaitTimeForInvoiceScheduledStatus_Hours",
+          "dataType": "PositiveNumber",
+          "isNullable": true,
+          "displayName": "Hours before posting is rescheduled",
+          "description": ""
+        },
+        {
+          "name": "BypassValidationOfAccountingDistributions",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Let invoices be submitted to workflow with incomplete or incorrect accounting distributions",
+          "description": ""
+        },
+        {
+          "name": "PollingInterval_Minutes",
+          "dataType": "PositiveNumber",
+          "isNullable": true,
+          "displayName": "Frequency of background processing",
+          "description": ""
+        },
+        {
+          "name": "PlafondDateProposal_IT",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlafondAllowNegative_IT",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow negative plafond",
+          "description": ""
+        },
+        {
+          "name": "PlafondTaxGroup_IT",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "displayName": "Plafond tax group",
+          "description": ""
+        },
+        {
+          "name": "IntentLetterERFormatMappingId_IT",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Intent letter model format mapping",
+          "description": ""
+        },
+        {
+          "name": "AutomaticIntentLetterAssignment_IT",
+          "dataType": "AutomaticIntentLetterAssignment_IT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisablePaymentIDValidation_CH",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Disable payment ID validation",
+          "description": ""
+        },
+        {
+          "name": "PreventDuplicateTaxId",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prevent duplicating Federal tax IDs",
+          "description": ""
+        },
+        {
+          "name": "PSNJournalizingDefinition",
+          "dataType": "JournalizingDefinitionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSNActivatePurchasingCard",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Activate purchasing cards",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_ClearingLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DebtsTransitLedgerDimension_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_EcoResCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocateKey"
+          },
+          "name": "Relationship_LedgerAllocateKeyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_MCRBrokerDifferentialJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_MCRBrokerExpenseJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_MCRRoyaltyJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_MCRRoyaltyLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_MCRRoyaltyOffsetLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttribute"
+          },
+          "name": "Relationship_OverdueCITPITDimensionAttribute_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTerm_Due2PaymentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTerm_Invoice2DueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTerm_InvoicePeriodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlTaxDueTable"
+          },
+          "name": "Relationship_PlTaxDueTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchy"
+          },
+          "name": "Relationship_PurchAgreementAccountStructure_PSNRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttribute"
+          },
+          "name": "Relationship_PurchAgreementFinancialDimension_PSNRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RTax25UnrealisedRevenueLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_AdvancePostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PostingProfileInvoiceRemitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PostingProfileNotesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PostingProfileRemitNotesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PrepaymentPostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_EcoResCategory_BrokerProcurementCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_SettlementWriteOffLedgerDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendWriteOffFinancialReasonsSetup"
+          },
+          "name": "Relationship_SettlementWriteOffReasonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_SettlementWriteOffJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeading_PlafondTaxGroup_ITRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JournalizingDefinition"
+          },
+          "name": "Relationship_PSNJournalizingDefinitionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor parameters"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AgreementCreditLimit_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AutoSettle",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerAllocateKeyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CashDiscForCreditNote",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CashDiscForPartialPaym",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendCashDiscVat",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendReuseInvoice",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendReuseTaxInvoice",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendCreditError",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendCreditMaxCheck",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchSettlementType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DisplayExtendedPriceToleranceIcon",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DisplayInvoiceMiscChargeMatchIcon",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DisplayPriceMatchIcon",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DisplayTotalPriceMatchIcon",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransportationDocumentPrint",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ExtendedPriceToleranceAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ExtendedPriceTolerancePercentage",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MandatoryInvoiceVATNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustVendMandatoryTaxGroup",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MandatoryAccountVATNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRProcurementCategory",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MCRRoyaltyLedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MCRRoyaltyOffsetDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MCRRoyaltyStartingDayOfWeek",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MarkupVariancePercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "OverdueCITPITDimensionAttribute_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PostInvoiceMatchDiscrepancies",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchPostPackingSlip",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CzProhibitVATinVendJournal",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableProfit",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerShowAmountDebitCredit_CN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlTaxPeriodPaymentCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TotalPriceTolerancePercentage",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UseExtendedPriceMatching",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UseInvoiceMatching",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UseInvoiceMiscChargeMatching",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UseTotalPriceMatching",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendConsUseInvoice_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendInvoiceGroupEnable",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendInvoiceInternalDefaultGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendInvoiceRefNumValidation_FI",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendInvoiceWebServicesDefaultGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPaymentGroupEnable",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendW9Validation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRBrokerProcurementCategory",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AllowedTaxInvoicePostingPeriod_TH",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendTableChangeProposalIsEnabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EditCashDiscountsWhenDueDateChanged",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ERFormatMappingID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDimensionAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ReasonCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PositiveNumber",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AutomaticIntentLetterAssignment_IT",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalizingDefinitionId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}
