@@ -1,6 +1,6 @@
 # We welcome your feedback
 
-Do you use the Common Data Model (CDM) SDK?  If you do, please can you tell us which version(s) you use (C#/.NET, Java, Python, or TypeScript) by taking this [**short survey**](https://forms.office.com/r/hainr3a7rR).
+Do you use the Common Data Model SDK?  If you do, please can you tell us which version(s) you use (C#/.NET, Java, Python, or TypeScript) by taking this [**short survey**](https://forms.office.com/r/hainr3a7rR).
 
 # Common Data Model (CDM) Schema
 
