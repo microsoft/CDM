@@ -585,7 +585,8 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
         // bring over any imports in this document or other bobbles
         resolvedManifest.setSchema(this.getSchema());
-        resolvedManifest.setExplanation(this.explanation);
+        resolvedManifest.setExplanation(this.getExplanation());
+        resolvedManifest.setDocumentVersion(this.getDocumentVersion());
         for (CdmImport imp : this.getImports()) {
           resolvedManifest.getImports().add((CdmImport) imp.copy());
         }

@@ -5,6 +5,7 @@ import { CdmFolder } from '..';
 import {
     CdmAttributeContext,
     cdmAttributeContextType,
+    CdmCollection,
     CdmCorpusContext,
     cdmObjectType,
     CdmTraitReference,
@@ -12,6 +13,7 @@ import {
     resolveOptions
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
+import { AttributeContextReferencePersistence } from './AttributeContextReferencePersistence';
 import {
     AttributeContext,
     TraitReference
@@ -63,6 +65,13 @@ export class AttributeContextPersistence {
             }
         }
 
+        if (object.lineage) {
+            attributeContext.lineage = new CdmCollection(ctx, attributeContext, cdmObjectType.attributeContextRef);
+            for (const ct of object.lineage) {
+                attributeContext.lineage.push(AttributeContextReferencePersistence.fromData(ctx, ct));
+            }
+        }
+
         return attributeContext;
     }
     public static toData(instance: CdmAttributeContext, resOpt: resolveOptions, options: copyOptions): AttributeContext {
@@ -77,7 +86,8 @@ export class AttributeContextPersistence {
                 resOpt,
                 instance.exhibitsTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty),
                 options),
-            contents: copyDataUtils.arrayCopyData<string | AttributeContext>(resOpt, instance.contents, options)
+            contents: copyDataUtils.arrayCopyData<string | AttributeContext>(resOpt, instance.contents, options),
+            lineage: copyDataUtils.arrayCopyData<AttributeContext>(resOpt, instance.lineage, options)
         };
     }
     public static mapTypeNameToEnum(typeName: string): cdmAttributeContextType {

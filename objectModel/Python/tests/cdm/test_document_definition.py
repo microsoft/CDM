@@ -170,8 +170,8 @@ class DocumentDefinitionTests(unittest.TestCase):
 
     @async_test
     async def test_document_forcereload(self):
-        testName = 'testDocumentForceReload'
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, testName)  # type: CdmCorpusDefinition
+        test_name = 'test_document_force_reload'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         # load the document and entity the first time
         await corpus.fetch_object_async('doc.cdm.json/entity')
@@ -180,6 +180,25 @@ class DocumentDefinitionTests(unittest.TestCase):
 
         # if the reloaded doc is not indexed correctly, the entity will not be able to be found
         self.assertIsNotNone(reloadedEntity)
+
+    @async_test
+    async def test_document_version_set_on_resolution(self):
+        """Tests if the document_version is set on the resolved document"""
+        test_name = "test_document_version_set_on_resolution"
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+
+        manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')  # type: CdmManifestDefinition
+        document = await corpus.fetch_object_async('local:/Person.cdm.json')  # type: CdmDocumentDefinition
+
+        self.assertEqual('2.1.3', manifest.document_version)
+        self.assertEqual('1.5', document.document_version)
+
+        res_manifest = await manifest.create_resolved_manifest_async('res-{}'.format(manifest.name), None)  # type: CdmManifestDefinition
+        res_entity = await corpus.fetch_object_async(res_manifest.entities[0].entity_path, res_manifest)  # type: CdmEntityDefinition
+        res_document = res_entity.in_document
+
+        self.assertEqual('2.1.3', res_manifest.document_version)
+        self.assertEqual('1.5', res_document.document_version)
 
     def _mark_documents_to_index(self, documents: CdmDocumentCollection):
         """Sets the document's is_dirty flag to True and reset the import_priority."""

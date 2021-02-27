@@ -218,11 +218,16 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
             // Using the references present in the resolved entities, get an entity
             // create an imports doc with all the necessary resolved entity references and then resolve it
+            // sometimes they might send the docname, that makes sense a bit, don't include the suffix in the name
+            if (newManifestName.toLowerCase().endsWith('.manifest.cdm.json')) {
+                newManifestName = newManifestName.substring(0, newManifestName.length - '.manifest.cdm.json'.length);
+            }
             const resolvedManifest: CdmManifestDefinition = new CdmManifestDefinition(this.ctx, newManifestName);
 
             // bring over any imports in this document or other bobbles
             resolvedManifest.schema = this.schema;
             resolvedManifest.explanation = this.explanation;
+            resolvedManifest.documentVersion = this.documentVersion;
             for (const imp of this.imports) {
                 resolvedManifest.imports.push(imp.copy());
             }
@@ -288,7 +293,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
                 // Next create the resolved entity
                 const withDirectives: AttributeResolutionDirectiveSet = directives !== undefined ? directives :
-                                                                        this.ctx.corpus.defaultResolutionDirectives;
+                    this.ctx.corpus.defaultResolutionDirectives;
                 const resOpt: resolveOptions = new resolveOptions(entDef.inDocument, withDirectives?.copy());
 
                 Logger.debug(
@@ -481,7 +486,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 }
             }
             finally {
-                if(cacheContext != null) {
+                if (cacheContext != null) {
                     cacheContext.dispose()
                 }
             }

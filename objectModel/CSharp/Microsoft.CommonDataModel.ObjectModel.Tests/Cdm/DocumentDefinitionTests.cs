@@ -205,6 +205,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
+        /// Tests if the DocumentVersion is set on the resolved document
+        /// </summary>
+        [TestMethod]
+        public async Task TestDocumentVersionSetOnResolution()
+        {
+            var testName = "TestDocumentVersionSetOnResolution";
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
+            var document = await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/Person.cdm.json");
+
+            Assert.AreEqual("2.1.3", manifest.DocumentVersion);
+            Assert.AreEqual("1.5", document.DocumentVersion);
+
+            var resManifest = await manifest.CreateResolvedManifestAsync($"res-{manifest.Name}", null);
+            var resEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>(resManifest.Entities[0].EntityPath, resManifest);
+            var resDocument = resEntity.InDocument;
+
+            Assert.AreEqual("2.1.3", resManifest.DocumentVersion);
+            Assert.AreEqual("1.5", resDocument.DocumentVersion);
+        }
+
+        /// <summary>
         /// Sets the document's isDirty flag to true and reset the importPriority.
         /// </summary>
         /// <param name="documents"></param>

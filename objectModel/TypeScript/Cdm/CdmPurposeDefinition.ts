@@ -115,6 +115,7 @@ export class CdmPurposeDefinition extends CdmObjectDefinitionBase {
                 return false;
             }
             if (this.extendsPurpose) {
+                this.extendsPurpose.owner = this;
                 if (this.extendsPurpose.visit(`${path}/extendsPurpose/`, preChildren, postChildren)) {
                     return true;
                 }

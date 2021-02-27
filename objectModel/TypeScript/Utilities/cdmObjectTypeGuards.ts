@@ -44,7 +44,9 @@ import {
     CdmReferencedEntityDeclarationDefinition,
     CdmTraitDefinition,
     CdmTraitReference,
-    CdmTypeAttributeDefinition
+    CdmTypeAttributeDefinition,
+    refCounted,
+    ResolvedAttributeSet
 } from '../internal';
 
 export function isImport(obj: CdmObject): obj is CdmImport {
@@ -209,4 +211,8 @@ export function isOperationIncludeAttributes(obj: CdmObject): obj is CdmOperatio
 
 export function isOperationAddAttributeGroup(obj: CdmObject): obj is CdmOperationAddAttributeGroup {
     return obj && obj.objectType === cdmObjectType.operationAddAttributeGroupDef;
+}
+
+export function isResolvedAttributeSet(obj: refCounted): obj is ResolvedAttributeSet {
+    return obj && (obj as ResolvedAttributeSet).set !== undefined && (obj as ResolvedAttributeSet).resolvedName2resolvedAttribute !== undefined;
 }

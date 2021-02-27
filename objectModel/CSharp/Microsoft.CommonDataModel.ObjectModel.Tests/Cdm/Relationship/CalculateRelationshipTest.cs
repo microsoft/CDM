@@ -4,7 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Collections.Generic;
@@ -27,84 +27,84 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// Non projection scenario with the referenced entity having a primary key
         /// </summary>
         [TestMethod]
-        public void TestSimpleWithId()
+        public async Task TestSimpleWithId()
         {
             string testName = "TestSimpleWithId";
             string entityName = "Sales";
 
-            TestRun(testName, entityName);
+            await TestRun(testName, entityName);
         }
 
         /// <summary>
         /// Non projection scenario with the referenced entity not having any primary key
         /// </summary>
         [TestMethod]
-        public void TestSimpleWithoutId()
+        public async Task TestSimpleWithoutId()
         {
             string testName = "TestSimpleWithoutId";
             string entityName = "Sales";
 
-            TestRun(testName, entityName);
+            await TestRun(testName, entityName);
         }
 
         /// <summary>
         /// Projection scenario with the referenced entity not having any primary key
         /// </summary>
         [TestMethod]
-        public void TestWithoutIdProj()
+        public async Task TestWithoutIdProj()
         {
             string testName = "TestWithoutIdProj";
             string entityName = "Sales";
 
-            TestRun(testName, entityName);
+            await TestRun(testName, entityName);
         }
 
         /// <summary>
         /// Projection scenario with the referenced entity in a different folder
         /// </summary>
         [TestMethod]
-        public void TestDiffRefLocation()
+        public async Task TestDiffRefLocation()
         {
             string testName = "TestDiffRefLocation";
             string entityName = "Sales";
 
-            TestRun(testName, entityName);
+            await TestRun(testName, entityName);
         }
 
         /// <summary>
         /// Projection with composite keys
         /// </summary>
         [TestMethod]
-        public void TestCompositeProj()
+        public async Task TestCompositeProj()
         {
             string testName = "TestCompositeProj";
             string entityName = "Sales";
 
-            TestRun(testName, entityName);
+            await TestRun(testName, entityName);
         }
 
         /// <summary>
         /// Projection with nested composite keys
         /// </summary>
         [TestMethod]
-        public void TestNestedCompositeProj()
+        public async Task TestNestedCompositeProj()
         {
             string testName = "TestNestedCompositeProj";
             string entityName = "Sales";
 
-            TestRun(testName, entityName);
+            await TestRun(testName, entityName);
         }
 
         /// <summary>
         /// Projection with IsPolymorphicSource property set to true
         /// </summary>
         [TestMethod]
-        public void TestPolymorphicProj()
+        public async Task TestPolymorphicProj()
         {
             string testName = "TestPolymorphicProj";
             string entityName = "Person";
 
-            TestRun(testName, entityName);
+            await TestRun(testName, entityName);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// </summary>
         /// <param name="testName"></param>
         /// <param name="entityName"></param>
-        private void TestRun(string testName, string entityName)
+        private async Task TestRun(string testName, string entityName)
         {
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
             string inputFolder = TestHelper.GetInputFolderPath(testsSubpath, testName);
@@ -123,16 +123,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 Directory.CreateDirectory(actualOutputFolder);
             }
 
-            CdmManifestDefinition manifest = corpus.FetchObjectAsync<CdmManifestDefinition>($"local:/default.manifest.cdm.json").GetAwaiter().GetResult();
+            CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"local:/default.manifest.cdm.json");
             Assert.IsNotNull(manifest);
-            CdmEntityDefinition entity = corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest).GetAwaiter().GetResult();
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entity);
-            CdmEntityDefinition resolvedEntity = ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" }).GetAwaiter().GetResult();
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
 
-            AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputFolder, entityName, resolvedEntity);
+            await AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputFolder, entityName, resolvedEntity);
 
-            corpus.CalculateEntityGraphAsync(manifest).GetAwaiter().GetResult();
-            manifest.PopulateManifestRelationshipsAsync().GetAwaiter().GetResult();
+            await corpus.CalculateEntityGraphAsync(manifest);
+            await manifest.PopulateManifestRelationshipsAsync();
             string actualRelationshipsString = ListRelationships(corpus, entity, actualOutputFolder, entityName);
 
             string relationshipsFilename = $"REL_{entityName}.txt";
@@ -147,7 +147,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             outputFolder.Documents.Add(manifest);
 
             string manifestFileName = $"saved.manifest.cdm.json";
-            manifest.SaveAsAsync(manifestFileName, saveReferenced: true).GetAwaiter().GetResult();
+            await manifest.SaveAsAsync(manifestFileName, saveReferenced: true);
             string actualManifestPath = Path.Combine(actualOutputFolder, manifestFileName);
             if (!File.Exists(actualManifestPath))
             {
@@ -155,7 +155,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             }
             else
             {
-                CdmManifestDefinition savedManifest = corpus.FetchObjectAsync<CdmManifestDefinition>($"output:/{manifestFileName}").GetAwaiter().GetResult();
+                CdmManifestDefinition savedManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"output:/{manifestFileName}");
                 string actualSavedManifestRel = GetRelationshipStrings(savedManifest.Relationships);
                 string manifestRelationshipsFilename = $"MANIFEST_REL_{entityName}.txt";
                 File.WriteAllText(Path.Combine(actualOutputFolder, manifestRelationshipsFilename), actualSavedManifestRel);

@@ -102,15 +102,15 @@ class CdmOperationCombineAttributes(CdmOperationBase):
 
                 leaf_level_merge_pas_list.extend(leaf_level_list_for_current_select)
 
-        # Create a List of top-level PAS objects that will be get merged based on the selected attributes
+        # Create a list of top-level PAS objects that will be get merged based on the selected attributes
         pas_merge_list = []  # type: List[ProjectionAttributeState]
 
         # Run through the top-level PAS objects 
         for current_pas in proj_ctx._current_attribute_state_set._states:
-            if (proj_ctx._projection_directive._owner_type is CdmObjectType.ENTITY_DEF or proj_ctx._projection_directive._is_source_polymorphic) and (current_pas._current_resolved_attribute._resolved_name in leaf_level_combine_attribute_names):
+            if current_pas._current_resolved_attribute._resolved_name in leaf_level_combine_attribute_names:
                 # Attribute to Merge
 
-                if not(pas_merge_list.__contains__(current_pas)):
+                if current_pas not in pas_merge_list:
                     pas_merge_list.append(current_pas)
             else:
                 # Attribute to Pass Through

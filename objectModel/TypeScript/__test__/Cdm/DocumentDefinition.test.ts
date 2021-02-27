@@ -7,6 +7,7 @@ import {
     CdmDocumentDefinition,
     CdmEntityDefinition,
     CdmFolderDefinition,
+    CdmManifestDefinition,
     ImportInfo,
     resolveOptions
 } from '../../internal';
@@ -220,6 +221,31 @@ describe('Cdm/CdmDocumentDefinition', () => {
         // if the reloaded doc is not indexed correctly, the entity will not be able to be found
         expect(reloadedEntity).not
             .toBeUndefined();
+    });
+
+    /**
+     * Tests if the DocumentVersion is set on the resolved document
+     */
+    it('testDocumentVersionSetOnResolution', async () => {
+        const testName: string = "testDocumentVersionSetOnResolution";
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync("local:/default.manifest.cdm.json");
+        const document: CdmDocumentDefinition = await corpus.fetchObjectAsync("local:/Person.cdm.json");
+
+        expect(manifest.documentVersion)
+            .toEqual('2.1.3');
+        expect(document.documentVersion)
+            .toEqual('1.5');
+
+        const resManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync(`res-${manifest.name}`, null);
+        const resEntity: CdmEntityDefinition = await corpus.fetchObjectAsync(resManifest.entities.allItems[0].entityPath, resManifest);
+        var resDocument = resEntity.inDocument;
+
+        expect(resManifest.documentVersion)
+            .toEqual('2.1.3');
+        expect(resDocument.documentVersion)
+            .toEqual('1.5');
     });
 
     /**

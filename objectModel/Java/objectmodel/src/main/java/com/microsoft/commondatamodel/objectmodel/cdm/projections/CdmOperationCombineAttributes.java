@@ -8,7 +8,6 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
@@ -159,9 +158,7 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
 
         // Run through the top-level PAS objects
         for (ProjectionAttributeState currentPAS : projCtx.getCurrentAttributeStateSet().getStates()) {
-            if ((projCtx.getProjectionDirective().getOwnerType() == CdmObjectType.EntityDef ||
-                    projCtx.getProjectionDirective().getIsSourcePolymorphic()) &&
-                    leafLevelCombineAttributeNames.containsKey(currentPAS.getCurrentResolvedAttribute().getResolvedName())) {
+            if (leafLevelCombineAttributeNames.containsKey(currentPAS.getCurrentResolvedAttribute().getResolvedName())) {
                 // Attribute to Merge
 
                 if (!pasMergeList.contains(currentPAS)) {

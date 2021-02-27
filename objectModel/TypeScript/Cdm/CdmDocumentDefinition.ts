@@ -300,6 +300,10 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         return undefined;
     }
 
+    public fetchObjectDefinitionName(): string {
+        return this.name;
+    }
+
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         // let bodyCode = () =>
         {
@@ -501,8 +505,6 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         }
 
         this.needsIndexing = true;
-        this.importPriorities = undefined;
-        this.importsIndexed = false;
         this.declarationsIndexed = false;
         this.isValid = true;
 
@@ -723,8 +725,8 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             for (const imp of revImp) {
                 const impDoc: CdmDocumentDefinition = imp.document;
 
+                // moniker imports will be added to the end of the priority list later.
                 if (impDoc) {
-                    // moniker imports will be added to the end of the priority list later.
                     if (imp.document && !imp.moniker && !priorityMap.has(impDoc)) {
                         // add doc.
                         priorityMap.set(impDoc, new ImportInfo(sequence, false));
@@ -799,5 +801,64 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         }
 
         return sequence;
+    }
+
+    /**
+     * @internal
+     */
+    public importPathToDoc(docDest: CdmDocumentDefinition): string {
+        const avoidLoop: Set<CdmDocumentDefinition> = new Set<CdmDocumentDefinition>();
+        const internalImportPathToDoc: (docCheck: CdmDocumentDefinition, path: string) => string
+            = (docCheck: CdmDocumentDefinition, path: string): string => {
+                if (docCheck === docDest) {
+                    return '';
+                }
+                if (avoidLoop.has(docCheck)) {
+                    return undefined;
+                }
+                avoidLoop.add(docCheck);
+                // if the docDest is one of the monikered imports of docCheck, then add the moniker and we are cool
+                if (docCheck.importPriorities && docCheck.importPriorities.monikerPriorityMap && docCheck.importPriorities.monikerPriorityMap.size > 0) {
+                    for (const monPair of docCheck.importPriorities.monikerPriorityMap) {
+                        if (monPair[1] === docDest) {
+                            return `${path}${monPair[0]}/`;
+                        }
+                    }
+                }
+                // ok, what if the document can be reached directly from the imports here
+                let impInfo: ImportInfo;
+                if (docCheck.importPriorities && docCheck.importPriorities.importPriority && !docCheck.importPriorities.importPriority.has(docDest)) {
+                    impInfo = undefined;
+                }
+                if (impInfo && !impInfo.isMoniker) {
+                    // good enough
+                    return path;
+                }
+
+                // still nothing, now we need to check those docs deeper
+                if (docCheck.importPriorities && docCheck.importPriorities.monikerPriorityMap && docCheck.importPriorities.monikerPriorityMap.size > 0) {
+                    for (const monPair of docCheck.importPriorities.monikerPriorityMap) {
+                        const pathFound: string = internalImportPathToDoc(monPair[1], `${path}${monPair[0]}/`);
+                        if (pathFound != null) {
+                            return pathFound;
+                        }
+                    }
+                }
+                if (docCheck.importPriorities && docCheck.importPriorities.importPriority && docCheck.importPriorities.importPriority.size > 0) {
+                    for (const impInfoPair of docCheck.importPriorities.importPriority) {
+                        if (!impInfoPair[1].isMoniker) {
+                            const pathFound: string  = internalImportPathToDoc(impInfoPair[0], path);
+                            if (pathFound) {
+                                return pathFound;
+                            }
+                        }
+                    }
+                }
+                return undefined;
+
+            };
+
+        return internalImportPathToDoc(this, '');
+
     }
 }

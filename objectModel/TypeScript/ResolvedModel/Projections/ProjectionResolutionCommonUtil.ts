@@ -64,6 +64,7 @@ export class ProjectionResolutionCommonUtil {
         projDir: ProjectionDirective,
         ctx: CdmCorpusContext,
         source: CdmEntityReference,
+        rasSource: ResolvedAttributeSet,
         attrCtxParam: AttributeContextParameters
     ): Map<string, ProjectionAttributeState[]> {
         const polySources: Map<string, ProjectionAttributeState[]> = new Map<string, ProjectionAttributeState[]>();
@@ -75,6 +76,13 @@ export class ProjectionResolutionCommonUtil {
             if (attr.objectType === cdmObjectType.entityAttributeDef) {
                 const raSet: ResolvedAttributeSet = (attr as CdmEntityAttributeDefinition).fetchResolvedAttributes(projDir.resOpt);
                 for (const resAttr of raSet.set) {
+                    // we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
+                    // so steal them based on name
+                    var resAttSrc = rasSource.get(resAttr.resolvedName);
+                    if (resAttSrc != null) {
+                        resAttr.attCtx = resAttSrc.attCtx;
+                    }
+
                     const projAttrState: ProjectionAttributeState = new ProjectionAttributeState(ctx);
                     projAttrState.currentResolvedAttribute = resAttr;
                     projAttrState.previousStateList = undefined;

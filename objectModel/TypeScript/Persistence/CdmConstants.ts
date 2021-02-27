@@ -6,6 +6,4 @@ export class CdmConstants {
     public static cdmExtension : string = '.cdm.json';
 
     public static modelJsonExtension : string = 'model.json';
-
-    public static odiExtension : string = 'odi.json';
 }

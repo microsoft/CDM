@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { cdmDataFormat } from '../Enums/cdmDataFormat';
 import {
     AttributeResolutionContext,
     CardinalitySettings,
@@ -11,8 +10,10 @@ import {
     CdmAttributeReference,
     CdmAttributeResolutionGuidance,
     CdmCorpusContext,
+    cdmDataFormat,
     CdmDataTypeReference,
     CdmObject,
+    CdmObjectDefinition,
     cdmObjectType,
     CdmProjection,
     Errors,
@@ -112,7 +113,16 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
 
     public dataType: CdmDataTypeReference;
     public attributeContext?: CdmAttributeContextReference;
-    public projection?: CdmProjection;
+    private _projection: CdmProjection;
+    get projection(): CdmProjection {
+        return this._projection;
+    }
+    set projection(value: CdmProjection) {
+        if (value) {
+            value.owner = this;
+        }
+        this._projection = value;
+    }
 
     private readonly traitToPropertyMap: traitToPropertyMap;
 
@@ -264,7 +274,6 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
                 }
             }
             if (this.projection) {
-                this.projection.owner = this;
                 if (this.projection.visit(`${path}/projection/`, preChildren, postChildren)) {
                     return true;
                 }
@@ -287,12 +296,12 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public constructResolvedTraits(rtsb: ResolvedTraitSetBuilder, resOpt: resolveOptions): void {
         // let bodyCode = () =>
         {
-            // // get from datatype
+            // get from datatype
             if (this.dataType) {
                 rtsb.takeReference(this.dataType
                     .fetchResolvedTraits(resOpt));
             }
-            // // get from purpose
+            // get from purpose
             if (this.purpose) {
                 rtsb.mergeTraits(this.purpose
                     .fetchResolvedTraits(resOpt));
@@ -304,7 +313,9 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             if (rtsb.rts && rtsb.rts.hasElevated) {
                 const replacement: CdmAttributeReference = new CdmAttributeReference(this.ctx, this.name, true);
                 replacement.ctx = this.ctx;
-                replacement.explicitReference = this;
+                replacement.explicitReference = this.copy() as CdmObjectDefinition;
+                replacement.inDocument = this.inDocument;
+                replacement.owner = this;
                 rtsb.replaceTraitParameterValue(resOpt, 'does.elevateAttribute', 'attribute', 'this.attribute', replacement);
             }
 
@@ -344,7 +355,7 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             // renameFormat is not currently supported for type attributes
             resGuideWithDefault.renameFormat = undefined;
 
-            resGuideWithDefault.updateAttributeDefaults(undefined);
+            resGuideWithDefault.updateAttributeDefaults(undefined, this);
             const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 
             // TODO: remove the resolution guidance if projection is being used
@@ -358,7 +369,7 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
                 const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this);
                 const projCtx: ProjectionContext = this.projection.constructProjectionContext(projDirective, under, rasb.ras);
 
-                const ras: ResolvedAttributeSet = this.projection.extractResolvedAttributes(projCtx);
+                const ras: ResolvedAttributeSet = this.projection.extractResolvedAttributes(projCtx, under);
                 rasb.ras = ras;
             }
 

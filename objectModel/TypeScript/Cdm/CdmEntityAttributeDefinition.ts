@@ -65,10 +65,20 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
         this.traitToPropertyMap.updatePropertyValue('displayName', val);
     }
     public purpose: CdmPurposeReference;
+
+    private _entity: CdmEntityReference;
     /**
      * The entity attribute's entity reference.
      */
-    public entity: CdmEntityReference;
+    get entity(): CdmEntityReference {
+        return this._entity;
+    };
+    set entity(value: CdmEntityReference) {
+        if (value) {
+            value.owner = this;
+        }
+        this._entity = value;
+    }
 
     /**
      * For projection based models, a source is explicitly tagged as a polymorphic source for it to be recognized as such.
@@ -186,9 +196,6 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
             if (preChildren && preChildren(this, path)) {
                 return false;
             }
-            if (this.entity) {
-                this.entity.owner = this;
-            }
             if (this.entity.visit(`${path}/entity/`, preChildren, postChildren)) {
                 return true;
             }
@@ -283,7 +290,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                         const projDef: CdmProjection = ctxEntObjDef as CdmProjection;
                         const projCtx: ProjectionContext = projDef.constructProjectionContext(projDirective, under);
 
-                        const ras: ResolvedAttributeSet = projDef.extractResolvedAttributes(projCtx);
+                        const ras: ResolvedAttributeSet = projDef.extractResolvedAttributes(projCtx, under);
                         rasb.ras = ras;
                     }
                 } else {
@@ -404,12 +411,9 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                                                 const attName: string = attNamePath.split('/')
                                                     .pop();
                                                 // path should be absolute and without a namespace
-                                                let relativeEntPath: string =
+                                                let absoluteEntPath: string =
                                                     this.ctx.corpus.storage.createAbsoluteCorpusPath(entDef.atCorpusPath, entDef.inDocument);
-                                                if (relativeEntPath.startsWith(`${namespace}:`)) {
-                                                    relativeEntPath = relativeEntPath.slice(namespace.length + 1);
-                                                }
-                                                entReferences.push(relativeEntPath);
+                                                entReferences.push(absoluteEntPath);
                                                 attReferences.push(attName);
                                             }
                                         }
@@ -460,7 +464,8 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                     }
                 }
             }
-
+            // how ever they got here, mark every attribute from this entity attribute as now being 'owned' by this entityAtt
+            rasb.ras.setAttributeOwnership(this.name);
             rasb.ras.depthTraveled += 1;
 
             return rasb;
@@ -572,7 +577,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
         } else {
             resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
         }
-        resGuideWithDefault.updateAttributeDefaults(this.name);
+        resGuideWithDefault.updateAttributeDefaults(this.name, this);
 
         return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
     }
@@ -603,9 +608,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                     selectsOne = arc.resOpt.directives.has('selectOne');
                     isArray = arc.resOpt.directives.has('isArray');
                 }
-                // figure out the depth for the next level
-                const oldDepth: number = resOpt.depthInfo ? resOpt.depthInfo.currentDepth : undefined;
-                nextDepth = oldDepth;
+
                 // if this is a 'selectone', then skip counting this entity in the depth, else count it
                 if (!selectsOne) {
                     // if already a ref, who cares?

@@ -39,11 +39,6 @@ public class ProjectionCombineTest {
     );
 
     /**
-     * Path to foundations
-     */
-    private static final String foundationJsonPath = "cdm:/foundations.cdm.json";
-
-    /**
      * The path between TestDataPath and TestName.
      */
     private static final String TESTS_SUBPATH =
@@ -110,13 +105,22 @@ public class ProjectionCombineTest {
      * Test Entity Attribute with a Combine Attributes operation but IsPolymorphicSource flag set to false
      */
     @Test
-    public void TestFalseProj() throws InterruptedException {
-        String testName = "TestFalseProj";
-        String entityName = "Customer";
+    public void TestNonPolymorphicProj() throws InterruptedException {
+        String testName = "TestNonPolymorphicProj";
+        String entityName = "NewPerson";
 
-        for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
-        }
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+
+        CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+
+        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        // Combined attributes ["phoneNumber", "email"] into "contactAt"
+        Assert.assertEquals(4, resolvedEntity.getAttributes().getCount());
+        Assert.assertEquals("name", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName());
+        Assert.assertEquals("age", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName());
+        Assert.assertEquals("address", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName());
+        Assert.assertEquals("contactAt", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName());
     }
 
     /**
@@ -316,7 +320,6 @@ public class ProjectionCombineTest {
 
         CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
         corpus.getStorage().mount("expected", new LocalAdapter(expectedOutputPath));
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
         Assert.assertNotNull(entity);

@@ -38,11 +38,6 @@ describe('Cdm/Projection/ProjectionCombineTest', () => {
     ];
 
     /**
-     * Path to foundations
-     */
-    const foundationJsonPath: string = 'cdm:/foundations.cdm.json';
-
-    /**
      * The path between TestDataPath and TestName.
      */
     const testsSubpath: string = 'Cdm/Projection/TestProjectionCombine';
@@ -98,13 +93,27 @@ describe('Cdm/Projection/ProjectionCombineTest', () => {
     /**
      * Test Entity Attribute with a Combine Attributes operation but IsPolymorphicSource flag set to false
      */
-    it('TestFalseProj', async () => {
-        const testName: string = 'TestFalseProj';
-        const entityName: string = 'Customer';
+    it('TestNonPolymorphicProj', async () => {
+        const testName: string = 'TestNonPolymorphicProj';
+        const entityName: string = 'NewPerson';
 
-        for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
-        }
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
+
+        // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
+        // Combined attributes ['phoneNumber', 'email'] into 'contactAt'
+        expect(resolvedEntity.attributes.length)
+            .toEqual(4);
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+            .toEqual('name');
+        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
+            .toEqual('age');
+        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
+            .toEqual('address');
+        expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
+            .toEqual('contactAt');
     });
 
     /**
@@ -283,7 +292,6 @@ describe('Cdm/Projection/ProjectionCombineTest', () => {
 
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.storage.mount('expected', new LocalAdapter(expectedOutputPath));
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>(`local:/default.manifest.cdm.json`);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, resOpts, true);

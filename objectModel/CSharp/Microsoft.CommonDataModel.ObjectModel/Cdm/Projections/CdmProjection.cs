@@ -21,11 +21,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string Condition { get; set; }
 
         /// <summary>
-        /// Condition expression tree that is built out of a condition expression string
-        /// </summary>
-        internal Node ConditionExpressionTreeRoot { get; set; }
-
-        /// <summary>
         /// Property of a projection that holds a collection of operations
         /// </summary>
         public CdmOperationCollection Operations { get; }
@@ -226,18 +221,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return null;
             }
 
-            if (this.RunSequentially != null)
-            {
-                Logger.Error(nameof(CdmProjection), this.Ctx, "RunSequentially is not supported by this Object Model version.");
-            }
-
             ProjectionContext projContext;
-
-            string condition = string.IsNullOrWhiteSpace(this.Condition) ? "(true)" : this.Condition;
-
-            // Create an expression tree based on the condition
-            ExpressionTree tree = new ExpressionTree();
-            this.ConditionExpressionTreeRoot = tree.ConstructExpressionTree(condition);
 
             // Add projection to context tree
             AttributeContextParameters acpProj = new AttributeContextParameters
@@ -325,29 +309,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 };
             }
 
-            bool isConditionValid = false;
-            if (this.ConditionExpressionTreeRoot != null)
-            {
-                InputValues input = new InputValues()
-                {
-                    noMaxDepth = projDirective.HasNoMaximumDepth,
-                    isArray = projDirective.IsArray,
-
-                    referenceOnly = projDirective.IsReferenceOnly,
-                    normalized = projDirective.IsNormalized,
-                    structured = projDirective.IsStructured,
-                    isVirtual = projDirective.IsVirtual,
-
-                    nextDepth = projDirective.ResOpt.DepthInfo.CurrentDepth,
-                    maxDepth = projDirective.MaximumDepth,
-
-                    minCardinality = projDirective.Cardinality?._MinimumNumber,
-                    maxCardinality = projDirective.Cardinality?._MaximumNumber
-                };
-
-                isConditionValid = ExpressionTree.EvaluateExpressionTree(this.ConditionExpressionTreeRoot, input);
-            }
-
+            InputValues inputValues = new InputValues(projDirective);
+            bool isConditionValid = ExpressionTree.EvaluateCondition(this.Condition, inputValues);
             if (isConditionValid && this.Operations != null && this.Operations.Count > 0)
             {
                 // Just in case new operations were added programmatically, reindex operations
@@ -368,24 +331,49 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 // Start with an empty list for each projection
                 ProjectionAttributeStateSet pasOperations = new ProjectionAttributeStateSet(projContext.CurrentAttributeStateSet.Ctx);
+
+                // The attribute set that the operation will execute on
+                ProjectionAttributeStateSet operationWorkingAttributeSet;
+
+                // The attribute set containing the attributes from the source
+                ProjectionAttributeStateSet sourceAttributeSet = projContext.CurrentAttributeStateSet;
+
+                // Specifies if the operation is the first on the list to run
+                bool firstOperationToRun = true;
                 foreach (CdmOperationBase operation in this.Operations)
                 {
-                    if (operation.Condition != null)
+                    bool operationCondition = ExpressionTree.EvaluateCondition(operation.Condition, inputValues);
+
+                    if (!operationCondition)
                     {
-                        Logger.Error(nameof(CdmProjection), this.Ctx, "Condition on the operation level is not supported by this Object Model version.");
+                        // Skip this operation if the condition does not evaluate to true
+                        continue;
                     }
 
-                    if (operation.SourceInput != null)
+                    // If RunSequentially is not true then all the operations will receive the source input
+                    // Unless the operation overwrites this behavior using the SourceInput property
+                    bool sourceInput = operation.SourceInput != null ? (bool) operation.SourceInput : this.RunSequentially != true;
+
+                    // If this is the first operation to run it will get the source attribute set since the operations attribute set starts empty
+                    if (sourceInput || firstOperationToRun)
                     {
-                        Logger.Error(nameof(CdmProjection), this.Ctx, "SourceInput on the projection operation is not supported by this Object Model version.");
+                        projContext.CurrentAttributeStateSet = sourceAttributeSet;
+                        operationWorkingAttributeSet = pasOperations;
+                    }
+                    else
+                    {
+                        // Needs to create a copy since this set can be modified by the operation
+                        projContext.CurrentAttributeStateSet = pasOperations.Copy();
+                        operationWorkingAttributeSet = new ProjectionAttributeStateSet(projContext.CurrentAttributeStateSet.Ctx);
                     }
 
                     // Evaluate projections and apply to empty state
-                    ProjectionAttributeStateSet newPasOperations = operation.AppendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
+                    ProjectionAttributeStateSet newPasOperations = operation.AppendProjectionAttributeState(projContext, operationWorkingAttributeSet, acGenAttrSet);
 
                     // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state
                     if (newPasOperations != null)
                     {
+                        firstOperationToRun = false;
                         pasOperations = newPasOperations;
                     }
                 }

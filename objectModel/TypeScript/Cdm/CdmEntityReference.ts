@@ -7,6 +7,7 @@ import {
     CdmEntityDefinition,
     CdmObjectReferenceBase,
     cdmObjectType,
+    CdmProjection,
     resolveOptions,
     VisitCallback
 } from '../internal';
@@ -17,7 +18,7 @@ export class CdmEntityReference extends CdmObjectReferenceBase {
     }
 
     constructor(
-        ctx: CdmCorpusContext, entityRef: string | CdmEntityDefinition | CdmConstantEntityDefinition, simpleReference: boolean) {
+        ctx: CdmCorpusContext, entityRef: string | CdmEntityDefinition | CdmConstantEntityDefinition | CdmProjection, simpleReference: boolean) {
         super(ctx, entityRef, simpleReference);
         // let bodyCode = () =>
         {

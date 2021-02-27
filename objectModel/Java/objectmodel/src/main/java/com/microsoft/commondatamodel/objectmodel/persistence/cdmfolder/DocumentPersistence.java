@@ -51,8 +51,7 @@ public class DocumentPersistence {
       doc.setSchema(obj.getSchema());
     }
 
-    if (DynamicObjectExtensions.hasProperty(obj, "DocumentVersion") && !Strings
-            .isNullOrEmpty(obj.getDocumentVersion())) {
+    if (!Strings.isNullOrEmpty(obj.getDocumentVersion())) {
       doc.setDocumentVersion(obj.getDocumentVersion());
     }
 
@@ -158,7 +157,7 @@ public class DocumentPersistence {
       for (int i = 0; i < 3; ++i) {
           if (!docSemanticVersionSplit[i].equals(currSemanticVersionSplit[i])) {
               try {
-                Integer version = Integer.parseInt(docSemanticVersionSplit[i]);
+                int version = Integer.parseInt(docSemanticVersionSplit[i]);
                 return  version < Integer.parseInt(currSemanticVersionSplit[i]) ? -1 : 1;
               } catch (NumberFormatException e) {
                 Logger.warning(TAG, ctx, errorMessage, "compareJsonSemanticVersion");

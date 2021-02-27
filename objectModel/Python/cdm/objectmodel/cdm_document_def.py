@@ -536,7 +536,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             # still nothing, now we need to check those docs deeper
             if doc_check._import_priorities and doc_check._import_priorities.moniker_priority_map:
                 for key, value in doc_check._import_priorities.moniker_priority_map:
-                    path_found = _internal_import_path_to_doc(value, '{}{}'.format(path, key))
+                    path_found = _internal_import_path_to_doc(value, '{}{}/'.format(path, key))
                     if path_found:
                         return path_found
 

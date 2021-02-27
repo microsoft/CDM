@@ -6,6 +6,7 @@ import {
     ArgumentValue,
     CdmConstantEntityDefinition,
     CdmCorpusContext,
+    CdmEntityDefinition,
     CdmEntityReference,
     CdmObject,
     CdmObjectDefinition,
@@ -17,8 +18,8 @@ import {
 } from '../internal';
 
 /**
-     * @internal
-     */
+ * @internal
+ */
 export class ParameterValue {
     public get name(): string {
         // const bodyCode = () =>
@@ -79,7 +80,9 @@ export class ParameterValue {
                 if (!newEnt) {
                     return ov;
                 }
-                if (!oldEnt || oldEnt.getEntityShape().fetchObjectDefinition(resOpt) !== newEnt.getEntityShape().fetchObjectDefinition(resOpt)) {
+                // BUG
+                const entDefShape: CdmEntityDefinition = oldEnt.getEntityShape().fetchObjectDefinition(resOpt);
+                if (!oldEnt || entDefShape !== newEnt.getEntityShape().fetchObjectDefinition(resOpt)) {
                     return nv;
                 }
 
@@ -97,16 +100,41 @@ export class ParameterValue {
                 // make a set of rows in the old one and add the new ones. this will union the two
                 // find rows in the new one that are not in the old one. slow, but these are small usually
                 const unionedRows: Map<string, string[]> = new Map<string, string[]>();
-                let l: number = oldCv.length;
-                for (let i: number = 0; i < l; i++) {
+
+                // see if any of the entity atts are the primary key, meaning, the only thing that causes us to merge dups unique.
+                // i know this makes you think about a snake eating its own tail, but fetch the resolved attributes of the constant shape
+                let pkAtt: number = -1;
+                if (entDefShape) {
+                    var resOptShape = new resolveOptions(entDefShape.inDocument);
+                    var resAttsShape = entDefShape.fetchResolvedAttributes(resOptShape);
+                    if (resAttsShape) {
+                        pkAtt = resAttsShape.set.findIndex((ra) => ra.resolvedTraits.find(resOptShape, 'is.identifiedBy') != null);
+                    }
+                }
+
+                for (let i: number = 0; i < oldCv.length; i++) {
                     const row: string[] = oldCv[i];
-                    const key: string = row.reduce((prev: string, curr: string) => `${prev ? prev : ''}::${curr}`);
+                    let key: string;
+                    // the entity might have a PK, if so, only look at that values as the key
+                    if (pkAtt !== -1) {
+                        key = row[pkAtt];
+                    }
+                    else {
+                        key = row.join('::');
+                    }
                     unionedRows.set(key, row);
                 }
-                l = newCv.length;
-                for (let i: number = 0; i < l; i++) {
+
+                for (let i: number = 0; i < newCv.length; i++) {
                     const row: string[] = newCv[i];
-                    const key: string = row.reduce((prev: string, curr: string) => `${prev ? prev : ''}::${curr}`);
+                    let key: string;
+                    // the entity might have a PK, if so, only look at that values as the key
+                    if (pkAtt !== -1) {
+                        key = row[pkAtt];
+                    }
+                    else {
+                        key = row.join('::');
+                    }
                     unionedRows.set(key, row);
                 }
 
@@ -149,7 +177,7 @@ export class ParameterValue {
                     const rows: (object)[] = [];
                     const shapeAtts: ResolvedAttributeSet = entShape.fetchResolvedAttributes(resOpt);
 
-                    if (shapeAtts !== undefined) {
+                    if (shapeAtts && shapeAtts.set && shapeAtts.set.length > 0) {
                         for (const entVal of entValues) {
                             const rowData: string[] = entVal;
                             if (rowData && rowData.length) {

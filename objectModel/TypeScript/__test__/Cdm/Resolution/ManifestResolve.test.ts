@@ -92,4 +92,23 @@ describe('Cdm/Resolution/ManifestResolve', () => {
         expect(failed)
             .toBeFalsy();
     });
+
+    /**
+     * 
+     */
+    it('TestLinkedResolvedDocSavingNotDirtyingLogicalEntities', async () => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubPath, 'TestLinkedResolvedDocSavingNotDirtyingLogicalEntities');
+
+        const manifestAbstract: CdmManifestDefinition = corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'default');
+
+        manifestAbstract.imports.push('cdm:/foundations.cdm.json');
+        manifestAbstract.entities.push('B', 'local:/B.cdm.json/B');
+        corpus.storage.fetchRootFolder('output').documents.push(manifestAbstract);
+
+        await manifestAbstract.createResolvedManifestAsync('default-resolved', '{n}/{n}.cdm.json');
+
+        expect(!corpus.storage.namespaceFolders.get('local').documents.allItems[0].isDirty
+            && !corpus.storage.namespaceFolders.get('local').documents.allItems[1].isDirty)
+            .toBeTruthy();
+    });
 });

@@ -54,7 +54,13 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
             }
 
             copy.entityShape = <CdmEntityReference>this.entityShape.copy(resOpt);
-            copy.constantValues = this.constantValues; // is a deep copy needed?
+            if (this.constantValues) {
+                // deep copy the content
+                copy.constantValues = [];
+                for (const row of this.constantValues) {
+                    copy.constantValues.push(Object.assign([], row));
+                }
+            }
             this.copyDef(resOpt, copy);
 
             return copy;
@@ -170,6 +176,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
                 return false;
             }
             if (this.entityShape) {
+                this.entityShape.owner = this;
                 if (this.entityShape.visit(`${path}/entityShape/`, preChildren, postChildren)) {
                     return true;
                 }

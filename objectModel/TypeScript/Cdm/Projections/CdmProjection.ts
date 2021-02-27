@@ -41,17 +41,16 @@ export class CdmProjection extends CdmObjectDefinitionBase {
     public condition: string;
 
     /**
-     * Condition expression tree that is built out of a condition expression string
-     * @internal
-     */
-    public conditionExpressionTreeRoot: Node;
-
-    /**
      * Property of a projection that holds a collection of operations
      */
     public operations: CdmOperationCollection;
 
     private _source: CdmEntityReference;
+
+    /**
+     * If true, runs the operations sequentially so each operation receives the result of the previous one
+     */
+    runSequentially?: boolean;
 
     /**
      * Property of a projection that holds the source of the operation
@@ -68,11 +67,6 @@ export class CdmProjection extends CdmObjectDefinitionBase {
     }
 
     /**
-     * If true, runs the operations sequentially so each operation receives the result of the previous one
-     */
-    public runSequentially?: boolean;
-
-    /**
      * Projection constructor
      */
     constructor(ctx: CdmCorpusContext) {
@@ -87,7 +81,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         let copy: CdmProjection;
 
-        if (host == null) {
+        if (!host) {
             copy = new CdmProjection(this.ctx);
         } else {
             copy = host as CdmProjection;
@@ -101,6 +95,9 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         for (const operation of this.operations) {
             copy.operations.push(operation.copy() as CdmOperationBase);
         }
+
+        // Don't do anything else after this, as it may cause InDocument to become dirty
+        copy.inDocument = this.inDocument;
 
         return copy;
     }
@@ -236,20 +233,8 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         if (!attrCtx) {
             return undefined;
         }
-        
-        if (this.runSequentially !== undefined) {
-            Logger.error(
-                this.TAG, this.ctx,
-                'RunSequentially is not supported by this Object Model version.'
-            );
-        }
-        
-        let projContext: ProjectionContext;
-        const condition: string = this.condition ? this.condition : '(true)';
 
-        // create an expression tree based on the condition
-        const tree: ExpressionTree = new ExpressionTree();
-        this.conditionExpressionTreeRoot = tree.constructExpressionTree(condition);
+        let projContext: ProjectionContext;
 
         // Add projection to context tree
         const acpProj: AttributeContextParameters = {
@@ -295,7 +280,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
                 // If polymorphic keep original source as previous state
                 let polySourceSet: Map<string, ProjectionAttributeState[]> = null;
                 if (projDirective.isSourcePolymorphic) {
-                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, acpSourceProjection);
+                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, ras, acpSourceProjection);
                 }
 
                 // Now initialize projection attribute state
@@ -314,25 +299,8 @@ export class CdmProjection extends CdmObjectDefinitionBase {
             projContext.currentAttributeStateSet = pasSet;
         }
 
-        let isConditionValid: boolean = false;
-        if (this.conditionExpressionTreeRoot) {
-            const input: InputValues = new InputValues();
-            input.noMaxDepth = projDirective.hasNoMaximumDepth;
-            input.isArray = projDirective.isArray;
-
-            input.referenceOnly = projDirective.isReferenceOnly;
-            input.normalized = projDirective.isNormalized;
-            input.structured = projDirective.isStructured;
-            input.isVirtual = projDirective.isVirtual;
-
-            input.nextDepth = projDirective.resOpt.depthInfo.currentDepth;
-            input.maxDepth = projDirective.maximumDepth;
-
-            input.minCardinality = projDirective.cardinality?._minimumNumber;
-            input.maxCardinality = projDirective.cardinality?._maximumNumber;
-
-            isConditionValid = ExpressionTree.evaluateExpressionTree(this.conditionExpressionTreeRoot, input);
-        }
+        const inputValues: InputValues = new InputValues(projDirective);
+        const isConditionValid: boolean = ExpressionTree.evaluateCondition(this.condition, inputValues);
 
         if (isConditionValid && this.operations && this.operations.length > 0) {
             // Just in case new operations were added programmatically, reindex operations
@@ -351,26 +319,42 @@ export class CdmProjection extends CdmObjectDefinitionBase {
 
             // Start with an empty list for each projection
             let pasOperations: ProjectionAttributeStateSet = new ProjectionAttributeStateSet(projContext.currentAttributeStateSet.ctx);
+
+            // The attribute set that the operation will execute on
+            let operationWorkingAttributeSet;
+
+            // The attribute set containing the attributes from the source
+            const sourceAttributeSet: ProjectionAttributeStateSet = projContext.currentAttributeStateSet;
+
+            // Specifies if the operation is the first on the list to run
+            let firstOperationToRun: boolean = true;
             for (const operation of this.operations) {
-                if (operation.condition !== undefined) {
-                    Logger.error(
-                        this.TAG, this.ctx,
-                        'Condition on the operation level is not supported by this Object Model version.'
-                    );
+                const operationCondition: boolean = ExpressionTree.evaluateCondition(operation.condition, inputValues);
+
+                if (!operationCondition) {
+                    // Skip this operation if the condition does not evaluate to true
+                    continue;
                 }
 
-                if (operation.sourceInput !== undefined) {
-                    Logger.error(
-                        this.TAG, this.ctx,
-                        'SourceInput on the operation level is not supported by this Object Model version.'
-                    );
-                }
+                // If RunSequentially is not true then all the operations will receive the source input
+                // Unless the operation overwrites this behavior using the SourceInput property
+                const sourceInput: boolean = operation.sourceInput != null ? operation.sourceInput : !this.runSequentially;
 
+                // If this is the first operation to run it will get the source attribute set since the operations attribute set starts empty
+                if (sourceInput || firstOperationToRun) {
+                    projContext.currentAttributeStateSet = sourceAttributeSet;
+                    operationWorkingAttributeSet = pasOperations;
+                } else {
+                    // Needs to create a copy since this set can be modified by the operation
+                    projContext.currentAttributeStateSet = pasOperations.copy();
+                    operationWorkingAttributeSet = new ProjectionAttributeStateSet(projContext.currentAttributeStateSet.ctx);
+                }
                 // Evaluate projections and apply to empty state
-                const newPasOperations = operation.appendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
+                const newPasOperations = operation.appendProjectionAttributeState(projContext, operationWorkingAttributeSet, acGenAttrSet);
 
                 // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state
                 if (newPasOperations !== undefined) {
+                    firstOperationToRun = false;
                     pasOperations = newPasOperations;
                 }
             }
@@ -388,12 +372,12 @@ export class CdmProjection extends CdmObjectDefinitionBase {
      * Create resolved attribute set based on the CurrentResolvedAttribute array
      * @internal
      */
-    public extractResolvedAttributes(projCtx: ProjectionContext): ResolvedAttributeSet {
+    public extractResolvedAttributes(projCtx: ProjectionContext, attCtxUnder: CdmAttributeContext): ResolvedAttributeSet {
         const resolvedAttributeSet: ResolvedAttributeSet = new ResolvedAttributeSet();
-        resolvedAttributeSet.attributeContext = projCtx.currentAttributeContext;
+        resolvedAttributeSet.attributeContext = attCtxUnder;
 
         for (const pas of projCtx.currentAttributeStateSet.states) {
-            resolvedAttributeSet.merge(pas.currentResolvedAttribute, pas.currentResolvedAttribute.attCtx);
+            resolvedAttributeSet.merge(pas.currentResolvedAttribute);
         }
 
         return resolvedAttributeSet;

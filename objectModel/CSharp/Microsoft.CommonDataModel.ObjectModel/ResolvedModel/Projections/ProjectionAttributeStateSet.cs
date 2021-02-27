@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
@@ -43,6 +43,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 States.Add(pas);
             }
+        }
+
+        /// <summary>
+        /// Creates a copy of this projection attribute state set
+        /// </summary>
+        /// <returns></returns>
+        internal ProjectionAttributeStateSet Copy()
+        {
+            ProjectionAttributeStateSet copy = new ProjectionAttributeStateSet(Ctx);
+            copy.States.AddRange(this.States);
+
+            return copy;
         }
 
         /// <summary>

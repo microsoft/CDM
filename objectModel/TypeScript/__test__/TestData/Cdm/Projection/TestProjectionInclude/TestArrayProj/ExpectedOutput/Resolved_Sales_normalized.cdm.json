@@ -9,6 +9,17 @@
   "definitions": [
     {
       "entityName": "Resolved_Sales_normalized",
+      "exhibitsTraits": [
+        {
+          "traitReference": "has.entitySchemaAbstractionLevel",
+          "arguments": [
+            {
+              "name": "level",
+              "value": "resolved"
+            }
+          ]
+        }
+      ],
       "attributeContext": {
         "type": "entity",
         "name": "Resolved_Sales_normalized",
@@ -101,57 +112,47 @@
                                     "definition": "resolvedFrom/Product/hasAttributes/ProductName"
                                   }
                                 ]
-                              },
-                              {
-                                "type": "generatedSet",
-                                "name": "_generatedAttributeSet",
-                                "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/projection/source/ProductsOfThree/ThreeProductsBought",
-                                "contents": [
-                                  {
-                                    "type": "addedAttributeExpansionTotal",
-                                    "name": "ThreeProductsBoughtProductCount",
-                                    "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/projection/source/ProductsOfThree/ThreeProductsBought/_generatedAttributeSet",
-                                    "definition": "resolvedFrom/ProductsOfThree/hasAttributes/ThreeProductsBought/resolutionGuidance/countAttribute/ProductCount",
-                                    "contents": [
-                                      "Resolved_Sales_normalized/hasAttributes/ThreeProductsBoughtProductCount"
-                                    ]
-                                  },
-                                  {
-                                    "type": "generatedRound",
-                                    "name": "_generatedAttributeRound0",
-                                    "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/projection/source/ProductsOfThree/ThreeProductsBought/_generatedAttributeSet",
-                                    "contents": [
-                                      {
-                                        "type": "attributeDefinition",
-                                        "name": "ThreeProductsBought1ProductName",
-                                        "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/projection/source/ProductsOfThree/ThreeProductsBought/_generatedAttributeSet/_generatedAttributeRound0",
-                                        "definition": "resolvedFrom/Product/hasAttributes/ProductName",
-                                        "contents": [
-                                          "Resolved_Sales_normalized/hasAttributes/ThreeProductsBought1ProductName"
-                                        ]
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "type": "generatedRound",
-                                    "name": "_generatedAttributeRound2",
-                                    "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/projection/source/ProductsOfThree/ThreeProductsBought/_generatedAttributeSet",
-                                    "contents": [
-                                      {
-                                        "type": "attributeDefinition",
-                                        "name": "ThreeProductsBought3ProductName",
-                                        "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/projection/source/ProductsOfThree/ThreeProductsBought/_generatedAttributeSet/_generatedAttributeRound2",
-                                        "definition": "resolvedFrom/Product/hasAttributes/ProductName",
-                                        "contents": [
-                                          "Resolved_Sales_normalized/hasAttributes/ThreeProductsBought3ProductName"
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
                               }
                             ]
                           }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "generatedSet",
+                "name": "_generatedAttributeSet",
+                "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought",
+                "contents": [
+                  {
+                    "type": "operationIncludeAttributes",
+                    "name": "operation/index1/operationIncludeAttributes",
+                    "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet",
+                    "contents": [
+                      {
+                        "type": "attributeDefinition",
+                        "name": "ThreeProductsBoughtProductCount",
+                        "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/operation/index1/operationIncludeAttributes",
+                        "contents": [
+                          "Resolved_Sales_normalized/hasAttributes/ThreeProductsBoughtProductCount"
+                        ]
+                      },
+                      {
+                        "type": "attributeDefinition",
+                        "name": "ThreeProductsBought1ProductName",
+                        "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/operation/index1/operationIncludeAttributes",
+                        "contents": [
+                          "Resolved_Sales_normalized/hasAttributes/ThreeProductsBought1ProductName"
+                        ]
+                      },
+                      {
+                        "type": "attributeDefinition",
+                        "name": "ThreeProductsBought3ProductName",
+                        "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/operation/index1/operationIncludeAttributes",
+                        "contents": [
+                          "Resolved_Sales_normalized/hasAttributes/ThreeProductsBought3ProductName"
                         ]
                       }
                     ]
@@ -178,7 +179,7 @@
             "is.dataFormat.integer",
             "is.linkedEntity.array.count"
           ],
-          "attributeContext": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/projection/source/ProductsOfThree/ThreeProductsBought/_generatedAttributeSet/ThreeProductsBoughtProductCount",
+          "attributeContext": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/operation/index1/operationIncludeAttributes/ThreeProductsBoughtProductCount",
           "dataFormat": "Int32"
         },
         {
@@ -188,7 +189,7 @@
             "is.dataFormat.big",
             "is.dataFormat.array"
           ],
-          "attributeContext": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/projection/source/ProductsOfThree/ThreeProductsBought/_generatedAttributeSet/_generatedAttributeRound0/ThreeProductsBought1ProductName",
+          "attributeContext": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/operation/index1/operationIncludeAttributes/ThreeProductsBought1ProductName",
           "dataFormat": "String"
         },
         {
@@ -198,7 +199,7 @@
             "is.dataFormat.big",
             "is.dataFormat.array"
           ],
-          "attributeContext": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/projection/source/ProductsOfThree/ThreeProductsBought/_generatedAttributeSet/_generatedAttributeRound2/ThreeProductsBought3ProductName",
+          "attributeContext": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/operation/index1/operationIncludeAttributes/ThreeProductsBought3ProductName",
           "dataFormat": "String"
         },
         {

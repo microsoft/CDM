@@ -89,9 +89,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('date');
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('testType');
-        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -139,9 +138,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('date');
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('testType');
-        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -196,9 +194,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('date');
         expect((resolvedEntityWithReferenceOnly.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('testType');
-        expect((resolvedEntityWithReferenceOnly.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntityWithReferenceOnly.attributes.allItems[4] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
 
         // Now resolve the entity with the 'structured' directive
         resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>(['structured']));
@@ -254,9 +251,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('account');
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('someType');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -294,9 +290,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('account');
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('someType');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -334,9 +329,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('account');
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('someType');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -374,9 +368,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('account');
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('someType');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -410,9 +403,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('contactId');
         expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
             .toEqual('contactType');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**
@@ -450,9 +442,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('account');
         expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
             .toEqual('someType');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
         expect((resolvedEntity.attributes.allItems[8] as CdmTypeAttributeDefinition).name)
             .toEqual('homeAddress');
     });
@@ -483,9 +474,8 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
             .toEqual('new_contactId');
         expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
             .toEqual('contactType');
-        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).appliedTraits.item('is.linkedEntity.name'))
-            .not
-            .toBeUndefined();
+        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+            .toEqual('is.linkedEntity.name');
     });
 
     /**

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -9,6 +9,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Multiple test classes in projections test the attribute context tree generated for various scenarios.
@@ -144,7 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// <param name="expectedOutputPath"></param>
         /// <param name="entityName"></param>
         /// <param name="resolvedEntity"></param>
-        public static void ValidateAttributeContext(CdmCorpusDefinition corpus, string expectedOutputPath, string entityName, CdmEntityDefinition resolvedEntity)
+        public static async Task ValidateAttributeContext(CdmCorpusDefinition corpus, string expectedOutputPath, string entityName, CdmEntityDefinition resolvedEntity)
         {
             if (resolvedEntity.AttributeContext != null)
             {
@@ -160,7 +161,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
                 string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity, resolvedEntity.AttributeContext);
                 File.WriteAllText(actualStringFilePath, actualText);
-                resolvedEntity.InDocument.SaveAsAsync($"Resolved_{entityName}.cdm.json", saveReferenced: false).GetAwaiter().GetResult();
+                await resolvedEntity.InDocument.SaveAsAsync($"Resolved_{entityName}.cdm.json", saveReferenced: false);
 
                 // Test if Actual is Equal to Expected
                 Assert.AreEqual(expectedText.Replace("\r\n", "\n"), actualText.Replace("\r\n", "\n"));

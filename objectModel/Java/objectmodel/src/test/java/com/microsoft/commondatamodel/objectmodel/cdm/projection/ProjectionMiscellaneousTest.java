@@ -6,14 +6,17 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Various projections scenarios, partner scenarios, bug fixes
@@ -125,8 +128,6 @@ public class ProjectionMiscellaneousTest {
     /**
      * Tests if it resolves correct when there are two entity attributes in circular
      * denpendency using projection
-     * 
-     * @throws InterruptedException
      */
     @Test
     public void testCircularEntityAttributes() throws InterruptedException
@@ -142,5 +143,127 @@ public class ProjectionMiscellaneousTest {
 
         Assert.assertNotNull(resEntity);
         Assert.assertEquals(resEntity.getAttributes().getCount(), 2);
+    }
+
+    /**
+     * Tests if not setting the projection "source" on an entity attribute triggers an error log
+     */
+    @Test
+    public void testEntityAttributeSource() {
+        CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+        final AtomicInteger errorCount = new AtomicInteger(0);
+        corpus.setEventCallback((CdmStatusLevel level, String message) -> {
+            errorCount.getAndIncrement();
+        }, CdmStatusLevel.Error);
+        CdmProjection projection = new CdmProjection(corpus.getCtx());
+        CdmEntityAttributeDefinition entityAttribute = new CdmEntityAttributeDefinition(corpus.getCtx(), "attribute");
+        entityAttribute.setEntity(new CdmEntityReference(corpus.getCtx(), projection, false));
+
+        // First case, a projection without source.
+        projection.validate();
+        Assert.assertEquals(errorCount.get(), 1);
+        errorCount.set(0);
+
+        // Second case, a projection with a nested projection.
+        CdmProjection innerProjection = new CdmProjection(corpus.getCtx());
+        projection.setSource(new CdmEntityReference(corpus.getCtx(), innerProjection, false));
+        projection.validate();
+        innerProjection.validate();
+        Assert.assertEquals(errorCount.get(), 1);
+        errorCount.set(0);
+
+        // Third case, a projection with an explicit entity definition.
+        innerProjection.setSource(new CdmEntityReference(corpus.getCtx(), new CdmEntityDefinition(corpus.getCtx(), "Entity"), false));
+        projection.validate();
+        innerProjection.validate();
+        Assert.assertEquals(errorCount.get(), 0);
+
+        // Third case, a projection with a named reference.
+        innerProjection.setSource(new CdmEntityReference(corpus.getCtx(), "Entity", false));
+        projection.validate();
+        innerProjection.validate();
+        Assert.assertEquals(errorCount.get(), 0);
+    }
+
+    /**
+     * Tests if setting the projection "source" on a type attribute triggers an error log
+     */
+    @Test
+    public void testTypeAttributeSource() {
+        CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+        final AtomicInteger errorCount = new AtomicInteger(0);
+        corpus.setEventCallback((CdmStatusLevel level, String message) -> {
+            errorCount.getAndIncrement();
+        }, CdmStatusLevel.Error);
+        CdmProjection projection = new CdmProjection(corpus.getCtx());
+        CdmTypeAttributeDefinition typeAttribute = new CdmTypeAttributeDefinition(corpus.getCtx(), "attribute");
+        typeAttribute.setProjection(projection);
+
+        // First case, a projection without source.
+        projection.validate();
+        Assert.assertEquals(errorCount.get(), 0);
+
+        // Second case, a projection with a nested projection.
+        CdmProjection innerProjection = new CdmProjection(corpus.getCtx());
+        projection.setSource(new CdmEntityReference(corpus.getCtx(), innerProjection, false));
+        projection.validate();
+        innerProjection.validate();
+        Assert.assertEquals(errorCount.get(), 0);
+
+        // Third case, a projection with an explicit entity definition.
+        innerProjection.setSource(new CdmEntityReference(corpus.getCtx(), new CdmEntityDefinition(corpus.getCtx(), "Entity"), false));
+        projection.validate();
+        innerProjection.validate();
+        Assert.assertEquals(errorCount.get(), 1);
+        errorCount.set(0);
+
+        // Third case, a projection with a named reference.
+        innerProjection.setSource(new CdmEntityReference(corpus.getCtx(), "Entity", false));
+        projection.validate();
+        innerProjection.validate();
+        Assert.assertEquals(errorCount.get(), 1);
+    }
+
+    /**
+     * Tests setting the "runSequentially" flag to true
+     */
+    @Test
+    public void testRunSequentially() throws InterruptedException {
+        String testName = "testRunSequentially";
+        String entityName = "NewPerson";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+
+        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        // Rename attributes "age" to "yearsOld" then "phoneNumber" to "contactNumber" followed by a add count attribute.
+        Assert.assertEquals(resolvedEntity.getAttributes().getCount(), 6);
+        Assert.assertEquals("name", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName());
+        Assert.assertEquals("yearsOld", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName());
+        Assert.assertEquals("address", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName());
+        Assert.assertEquals("contactNumber", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName());
+        Assert.assertEquals("email", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName());
+        Assert.assertEquals("countAttribute", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName());
+    }
+
+    /**
+     * Tests setting the "runSequentially" flag to true mixed with "sourceInput" set to true
+     */
+    @Test
+    public void testRunSequentiallyAndSourceInput() throws InterruptedException {
+        String testName = "testRunSequentiallyAndSourceInput";
+        String entityName = "NewPerson";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+
+        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        // Replace "age" with "ageFK" and "address" with "addressFK" as foreign keys, followed by a add count attribute.
+        Assert.assertEquals(resolvedEntity.getAttributes().getCount(), 3);
+        Assert.assertEquals("ageFK", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName());
+        Assert.assertEquals("addressFK", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName());
+        Assert.assertEquals("countAttribute", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName());
     }
 }

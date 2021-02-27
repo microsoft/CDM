@@ -36,7 +36,7 @@ class CopyResourcesCommand(distutils.cmd.Command):
         root_path = os.getcwd()
 
         paths_to_ignore = ['*.manifest.cdm.json', '*.0.6.cdm.json', '*.0.7.cdm.json', '*.0.8.cdm.json', '*.0.8.1.cdm.json',
-                           '*.0.9.cdm.json', '*.1.0.cdm.json', '*core*', '*office*', '*.git*', '*.jpg', '*.md']
+                           '*.0.9.cdm.json', '*.1.0.cdm.json', '*core*', '*.git*', '*.jpg', '*.md']
 
         self.copy_and_overwrite('{}/../../schemaDocuments/'.format(root_path), '{}/resources/'.format(root_path), paths_to_ignore)
 
@@ -54,7 +54,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="commondatamodel-objectmodel",
-    version="1.1.0",
+    version="1.1.1",
     author="Microsoft",
     description="Common Data Model Object Model library for Python",
     url="https://github.com/pypa/commondatamodel-objectmodel",

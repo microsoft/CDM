@@ -1,16 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
-    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -154,7 +151,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     await util.GetAndValidateResolvedEntity(entity_Color, resOpts);
                 }
 
-                util.DefaultManifest.SaveAsAsync(util.ManifestDocName, saveReferenced: true).GetAwaiter().GetResult();
+                await util.DefaultManifest.SaveAsAsync(util.ManifestDocName, saveReferenced: true);
             }
         }
 
@@ -402,7 +399,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             await ValidateResolvedAttributes(corpus, resolvedEntity, entityName, fileNameSuffix);
 
-            AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, $"{entityName}{fileNameSuffix}", resolvedEntity);
+            await AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, $"{entityName}{fileNameSuffix}", resolvedEntity);
         }
 
         /// <summary>

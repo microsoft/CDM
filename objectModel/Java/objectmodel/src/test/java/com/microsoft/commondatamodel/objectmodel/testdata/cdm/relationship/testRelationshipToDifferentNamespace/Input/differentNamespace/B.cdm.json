@@ -3,6 +3,9 @@
     "imports": [
         {
             "corpusPath": "cdm:/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "C.cdm.json"
         }
     ],
     "definitions": [
@@ -13,6 +16,31 @@
                     "purpose": "identifiedBy",
                     "dataType": "entityId",
                     "name": "bId"
+                },
+                {
+                    "name": "refToC",
+                    "entity": {
+                        "entityReference": "C",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "C/(resolvedAttributes)/cId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "name": "defaultCId"
+                            }
+                        }
+                    }
                 }
             ]
         }

@@ -31,7 +31,7 @@ if TYPE_CHECKING:
 
 
 class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
-    def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_entity: Optional['CdmEntityReference']) -> None:
+    def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_entity: Optional['CdmEntityReference'] = None) -> None:
         super().__init__(ctx)
 
         # the entity attribute Context.
@@ -388,6 +388,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             # add a import of the source document
             orig_doc = self.ctx.corpus.storage.create_relative_corpus_path(orig_doc, doc_res)  # just in case we missed the prefix
             doc_res.imports.append(orig_doc, "resolvedFrom")
+            doc_res.document_version = self.in_document.document_version
 
             # make the empty entity
             ent_resolved = doc_res.definitions.append(ent_name)  # type: CdmEntityDefinition

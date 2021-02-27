@@ -178,6 +178,7 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
 
                     // Create a new resolved attribute for the expanded attribute
                     const newResAttr: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.currentResolvedAttribute.target as CdmAttribute, currentPAS.currentResolvedAttribute.resolvedName);
+                    newResAttr.attCtx.addLineage(currentPAS.currentResolvedAttribute.attCtx);
 
                     // Create a projection attribute state for the expanded attribute
                     const newPAS: ProjectionAttributeState = new ProjectionAttributeState(projOutputSet.ctx);

@@ -142,15 +142,16 @@ export class AttributeContextUtil {
 
             // Actual
             const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', 'ActualOutput')}/AttrCtx_${entityName}.txt`;
+
+            // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
             const actualText: string = attrCtxUtil.getAttributeContextStrings(resolvedEntity, resolvedEntity.attributeContext);
+            fs.writeFileSync(actualStringFilePath, actualText);
+            await resolvedEntity.inDocument.saveAsAsync(`Resolved_${entityName}.cdm.json`, false);
 
             // Test if Actual is Equal to Expected
             expect(actualText)
                 .toEqual(expectedText);
 
-            // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
-            fs.writeFileSync(actualStringFilePath, actualText);
-            await resolvedEntity.inDocument.saveAsAsync(`Resolved_${entityName}.cdm.json`, false);
         }
     }
 }

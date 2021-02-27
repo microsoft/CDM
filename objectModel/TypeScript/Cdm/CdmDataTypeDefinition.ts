@@ -119,6 +119,7 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
                 return false;
             }
             if (this.extendsDataType) {
+                this.extendsDataType.owner = this;
                 if (this.extendsDataType.visit(`${path}/extendsDataType/`, preChildren, postChildren)) {
                     return true;
                 }

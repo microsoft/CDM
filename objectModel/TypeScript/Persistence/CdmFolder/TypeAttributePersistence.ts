@@ -15,6 +15,7 @@ import {
     traitToPropertyMap
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
+import { ProjectionPersistence } from './Projections/ProjectionPersistence';
 import {
     AttributeResolutionGuidance,
     DataTypeReference,

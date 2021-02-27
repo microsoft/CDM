@@ -492,11 +492,6 @@ public class ResolvedAttributeSet extends RefCounted {
     final ResolvedAttributeSet copy = new ResolvedAttributeSet();
     copy.setAttributeContext(attributeContext);
 
-    // save the mappings to overwrite
-    // maps from merge may not be correct
-    final Map<ResolvedAttribute, Set<CdmAttributeContext>> newRa2attCtxSet = new LinkedHashMap<>();
-    final Map<CdmAttributeContext, ResolvedAttribute> newAttCtx2ra = new LinkedHashMap<>();
-
     for (final ResolvedAttribute sourceRa : set) {
       final ResolvedAttribute copyRa = sourceRa.copy();
       copy.merge(copyRa);
