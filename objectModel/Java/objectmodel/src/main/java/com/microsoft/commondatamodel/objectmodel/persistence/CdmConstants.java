@@ -13,6 +13,5 @@ public class CdmConstants {
   public static final String FOLIO_EXTENSION = ".folio.cdm.json";
   public static final String MANIFEST_EXTENSION = ".manifest.cdm.json";
   public static final String MODEL_JSON_EXTENSION = "model.json";
-  public static final String ODI_EXTENSION = "odi.json";
   public static final String FAKE = "FAKE";
 }

@@ -3,6 +3,7 @@
 
 import {
     AttributeResolutionDirectiveSet,
+    CdmAttributeContext,
     CdmDocumentDefinition,
     CdmEntityDefinition,
     CdmObject,
@@ -57,6 +58,11 @@ export class resolveOptions {
      * @internal
      */
     public fromMoniker?: string; // moniker that was found on the ref
+
+    /**
+     * @internal
+     */
+    public mapOldCtxToNewCtx?: Map<CdmAttributeContext, CdmAttributeContext>; // moniker that was found on the ref
 
     /**
      * @internal
@@ -145,17 +151,22 @@ export class resolveOptions {
     public copy(): resolveOptions {
         const resOptCopy: resolveOptions = new resolveOptions();
         resOptCopy.wrtDoc = this.wrtDoc;
+        if (this.depthInfo) {
+            resOptCopy.depthInfo = this.depthInfo.copy();
+        }
+        if (this.directives) {
+            resOptCopy.directives = this.directives.copy();
+        }
         resOptCopy.depthInfo = this.depthInfo.copy();
         resOptCopy.inCircularReference = this.inCircularReference;
         resOptCopy.localizeReferencesFor = this.localizeReferencesFor;
         resOptCopy.indexingDoc = this.indexingDoc;
         resOptCopy.shallowValidation = this.shallowValidation;
         resOptCopy.resolvedAttributeLimit = this.resolvedAttributeLimit;
+        resOptCopy.mapOldCtxToNewCtx = this.mapOldCtxToNewCtx; // ok to share this map
+        resOptCopy.importsLoadStrategy = this.importsLoadStrategy;
+        resOptCopy.saveResolutionsOnCopy = this.saveResolutionsOnCopy;
         resOptCopy.currentlyResolvingEntities = new Set(this.currentlyResolvingEntities);
-
-        if (this.directives) {
-            resOptCopy.directives = this.directives.copy();
-        }
 
         return resOptCopy;
     }

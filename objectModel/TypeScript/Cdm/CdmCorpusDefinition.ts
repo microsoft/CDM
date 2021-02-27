@@ -154,6 +154,7 @@ export class CdmCorpusDefinition {
     private readonly symbolDefinitions: Map<string, CdmDocumentDefinition[]>;
     private readonly emptyRTS: Map<string, ResolvedTraitSet>;
     private readonly namespaceFolders: Map<string, CdmFolderDefinition>;
+    private knownArtifactAttributes: Map<string, CdmTypeAttributeDefinition>;
 
     private readonly outgoingRelationships: Map<CdmObjectDefinition, CdmE2ERelationship[]>;
     private readonly incomingRelationships: Map<CdmObjectDefinition, CdmE2ERelationship[]>;
@@ -371,7 +372,6 @@ export class CdmCorpusDefinition {
                                 return currDocsResult;
                             }
                         }
-                        resOpt.fromMoniker = prefix;
                         result.docBest = tempMonikerDoc;
                     } else {
                         // moniker not recognized in either doc, fail with grace
@@ -1130,6 +1130,9 @@ export class CdmCorpusDefinition {
             currentDoc.visit(
                 relativePath,
                 (iObject: CdmObject, path: string) => {
+                    // I can't think of a better time than now to make sure any recently changed or added things have an in doc
+                    iObject.inDocument = currentDoc;
+
                     if (path.indexOf('(unspecified)') > 0) {
                         return true;
                     }
@@ -1581,7 +1584,7 @@ export class CdmCorpusDefinition {
 
                 return undefined;
             }
-            
+
             try {
                 return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
             } catch (e) {
@@ -1693,7 +1696,6 @@ export class CdmCorpusDefinition {
         isResolvedEntity: boolean = false,
         generatedAttSetContext?: CdmAttributeContext,
         wasProjectionPolymorphic: boolean = false,
-        wasEntityRef: boolean = false,
         fromAtts: CdmAttributeReference[] = null
     ): CdmE2ERelationship[] {
         let outRels: CdmE2ERelationship[] = [];
@@ -1719,9 +1721,19 @@ export class CdmCorpusDefinition {
                         if (toEntity?.objectType === cdmObjectType.projectionDef) {
                             // Projections
 
-                            isEntityRef = false;
-                            isPolymorphicSource = (toEntity?.owner?.objectType === cdmObjectType.entityAttributeDef &&
-                                ((toEntity.owner as CdmEntityAttributeDefinition).isPolymorphicSource === true));
+                            const owner: CdmObject = toEntity.owner && toEntity.owner.owner;
+
+                            if (owner) {
+                                isPolymorphicSource = (owner.objectType === cdmObjectType.entityAttributeDef &&
+                                    (owner as CdmEntityAttributeDefinition).isPolymorphicSource);
+                            }
+                            else {
+                                Logger.error(
+                                    CdmCorpusDefinition.name,
+                                    this.ctx,
+                                    'Found object without owner when calculating relationships.'
+                                );
+                            }
 
                             // From the top of the projection (or the top most which contains a generatedSet / operations)
                             // get the attribute names for the foreign key
@@ -1754,7 +1766,7 @@ export class CdmCorpusDefinition {
                     // repeat the process on the child node
                     const skipAdd: boolean = wasProjectionPolymorphic && isEntityRef;
 
-                    const subOutRels: CdmE2ERelationship[] = this.findOutgoingRelationships(resOpt, resEntity, child, isResolvedEntity, newGenSet, wasProjectionPolymorphic, isEntityRef, fromAtts);
+                    const subOutRels: CdmE2ERelationship[] = this.findOutgoingRelationships(resOpt, resEntity, child, isResolvedEntity, newGenSet, wasProjectionPolymorphic, fromAtts);
                     outRels = outRels.concat(subOutRels);
 
                     // if it was a projection-based polymorphic source up through this branch of the tree and currently it has reached the end of the projection tree to come to a non-projection source,
@@ -1864,7 +1876,7 @@ export class CdmCorpusDefinition {
                     const fkArgValues: [string, string, string][] = this.getToAttributes(attFromFk, resolvedResOpt);
 
                     for (const constEnt of fkArgValues) {
-                        const absolutePath: string = this.storage.createAbsoluteCorpusPath(constEnt[0], toEntity);
+                        const absolutePath: string = this.storage.createAbsoluteCorpusPath(constEnt[0], attFromFk);
                         toAttList.push([absolutePath, constEnt[1]]);
                     }
                 }
@@ -2011,6 +2023,61 @@ export class CdmCorpusDefinition {
                 }
             );
         }
+    }
+
+    /**
+     * @internal
+     * fetches from primitives or creates the default attributes that get added by resolution 
+     */
+    public async prepareArtifactAttributesAsync(): Promise<boolean> {
+        if (!this.knownArtifactAttributes) {
+            this.knownArtifactAttributes = new Map<string, CdmTypeAttributeDefinition>();
+            // see if we can get the value from primitives doc
+            // this might fail, and we do not want the user to know about it.
+            const oldStatus = this.ctx.statusEvent; // todo, we should make an easy way for our code to do this and set it back
+            const oldLevel = this.ctx.reportAtLevel;
+            this.setEventCallback(() => { }, cdmStatusLevel.error);
+
+            let entArt: CdmEntityDefinition;
+            try {
+                entArt = await this.fetchObjectAsync<CdmEntityDefinition>('cdm:/primitives.cdm.json/defaultArtifacts');
+            }
+            finally {
+                this.setEventCallback(oldStatus, oldLevel);
+            }
+
+            if (!entArt) {
+                // fallback to the old ways, just make some
+                let artAtt: CdmTypeAttributeDefinition = this.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'count');
+                artAtt.dataType = this.MakeObject<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'integer', true);
+                this.knownArtifactAttributes.set('count', artAtt);
+                artAtt = this.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'id');
+                artAtt.dataType = this.MakeObject<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'entityId', true);
+                this.knownArtifactAttributes.set('id', artAtt);
+                artAtt = this.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'type');
+                artAtt.dataType = this.MakeObject<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'entityName', true);
+                this.knownArtifactAttributes.set('type', artAtt);
+            } else {
+                // point to the ones from the file
+                for (const att of entArt.attributes) {
+                    this.knownArtifactAttributes.set((att as CdmAttribute).name, att as CdmTypeAttributeDefinition);
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @internal
+     * returns the (previously prepared) artifact attribute of the known name
+     */
+    public fetchArtifactAttribute(name: string): CdmTypeAttributeDefinition {
+        if (!this.knownArtifactAttributes) {
+            // this is a usage mistake. never call this before success from the PrepareArtifactAttributesAsync
+            return undefined;
+        }
+
+        return this.knownArtifactAttributes.get(name).copy() as CdmTypeAttributeDefinition;
     }
 
     private removeObjectDefinitions(doc: CdmDocumentDefinition): void {

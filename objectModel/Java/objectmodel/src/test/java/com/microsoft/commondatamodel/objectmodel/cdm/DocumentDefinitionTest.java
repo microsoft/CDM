@@ -201,6 +201,28 @@ public class DocumentDefinitionTest {
     }
 
     /**
+     * Tests if the DocumentVersion is set on the resolved document
+     */
+    @Test
+    public void testDocumentVersionSetOnResolution() throws InterruptedException {
+        String testName = "testDocumentVersionSetOnResolution";
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+
+        CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
+        CdmDocumentDefinition document = corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/Person.cdm.json").join();
+
+        Assert.assertEquals(manifest.getDocumentVersion(), "2.1.3");
+        Assert.assertEquals(document.getDocumentVersion(), "1.5");
+
+        CdmManifestDefinition resManifest = manifest.createResolvedManifestAsync("res-" + manifest.getName(), null).join();
+        CdmEntityDefinition resEntity = corpus.<CdmEntityDefinition>fetchObjectAsync(resManifest.getEntities().get(0).getEntityPath(), resManifest).join();
+        CdmDocumentDefinition resDocument = resEntity.getInDocument();
+
+        Assert.assertEquals(resManifest.getDocumentVersion(), "2.1.3");
+        Assert.assertEquals(resDocument.getDocumentVersion(), "1.5");
+    }
+
+    /**
      * Sets the document's isDirty flag to true and reset the importPriority.
      */
     private static void markDocumentsToIndex(CdmDocumentCollection documents)

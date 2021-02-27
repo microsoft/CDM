@@ -95,13 +95,15 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
         overrideDefaultName: string = null,
         addedSimpleRefTraits: string[] = null
     ): ResolvedAttribute {
-        targetAttr = targetAttr.copy(undefined) as CdmAttribute;
+        targetAttr = targetAttr.copy() as CdmAttribute;
+
         const newResAttr: ResolvedAttribute = new ResolvedAttribute(
             projCtx.projectionDirective.resOpt,
             targetAttr,
             overrideDefaultName ? overrideDefaultName : targetAttr.getName(),
             attrCtxUnder
         );
+        targetAttr.inDocument = projCtx.projectionDirective.owner.inDocument;
 
         targetAttr.inDocument = projCtx.projectionDirective.owner.inDocument;
 

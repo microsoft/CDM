@@ -118,7 +118,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
      */
     public appendProjectionAttributeState(projCtx: ProjectionContext, projOutputSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
         // Create a new attribute context for the operation
-        const attrCtxOpRenameAttrsParam: AttributeContextParameters =  {
+        const attrCtxOpRenameAttrsParam: AttributeContextParameters = {
             under: attrCtx,
             type: cdmAttributeContextType.operationRenameAttributes,
             name: `operation/index${this.index}/operationRenameAttributes`
@@ -165,7 +165,14 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
 
                     // Create the attribute context parameters and just store it in the builder for now
                     // We will create the attribute contexts at the end
-                    attrCtxTreeBuilder.createAndStoreAttributeContextParameters(applyToName, currentPAS, resAttrNew, cdmAttributeContextType.attributeDefinition);
+                    attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                        applyToName,
+                        currentPAS,
+                        resAttrNew,
+                        cdmAttributeContextType.attributeDefinition,
+                        currentPAS.currentResolvedAttribute.attCtx, // lineage is the original attribute
+                        undefined // don't know who will point here yet
+                    );
 
                     // Create a projection attribute state for the renamed attribute by creating a copy of the current state
                     // Copy() sets the current state as the previous state for the new one
@@ -191,7 +198,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
         }
 
         // Create all the attribute contexts and construct the tree
-        attrCtxTreeBuilder.constructAttributeContextTree(projCtx, true);
+        attrCtxTreeBuilder.constructAttributeContextTree(projCtx);
 
         return projOutputSet;
     }

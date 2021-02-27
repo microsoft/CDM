@@ -14,6 +14,7 @@ import {
     cdmObjectType,
     Errors,
     Logger,
+    ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
     ResolvedEntityReferenceSet,
     ResolvedTraitSet,
@@ -152,6 +153,7 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
                 return false;
             }
             if (this.attributeContext) {
+                this.attributeContext.owner = this;
                 if (this.attributeContext.visit(`${path}/attributeContext/`, preChildren, postChildren)) {
                     return true;
                 }
@@ -181,6 +183,7 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             const rasb: ResolvedAttributeSetBuilder = new ResolvedAttributeSetBuilder();
+            const allUnder: CdmAttributeContext = under;
 
             if (under) {
                 const acpAttGrp: AttributeContextParameters = {
@@ -205,10 +208,18 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
                             includeTraits: false
                         };
                     }
-                    rasb.mergeAttributes(att.fetchResolvedAttributes(resOpt, acpAtt));
+                    const rasFromAtt: ResolvedAttributeSet = att.fetchResolvedAttributes(resOpt, acpAtt);
+                    // before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
+                    // from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before
+                    // that didn't just pop out of that same named attribute now need to go away.
+                    // mark any attributes formerly from this named attribute that don't show again as orphans
+                    rasb.ras.markOrphansForRemoval((att as CdmAttributeItem).fetchObjectDefinitionName(), rasFromAtt);
+                    // now merge
+                    rasb.mergeAttributes(rasFromAtt);
                 }
             }
-            rasb.ras.setAttributeContext(under);
+            // context must be the one expected from the caller's pov.
+            rasb.ras.setAttributeContext(allUnder);
 
             // things that need to go away
             rasb.removeRequestedAtts();

@@ -29,6 +29,13 @@ class ProjectionAttributeStateSet:
         else:
             self._states.append(pas)
 
+    def _copy(self):
+        """Creates a copy of this projection attribute state set"""
+        copy = ProjectionAttributeStateSet(self._ctx)
+        copy._states.extend(self._states)
+
+        return copy
+
     def _remove(self, pas: 'ProjectionAttributeState') -> bool:
         """Remove from collection"""
         if pas is not None and self._contains(pas):

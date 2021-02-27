@@ -11,4 +11,5 @@ export abstract class AttributeContext {
     public definition: string;
     public appliedTraits?: (string | TraitReference)[];
     public contents?: (string | AttributeContext)[];
+    public lineage?: AttributeContext[];
 }

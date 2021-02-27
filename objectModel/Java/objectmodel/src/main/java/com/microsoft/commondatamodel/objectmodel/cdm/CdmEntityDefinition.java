@@ -491,6 +491,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         // Add a import of the source document.
         origDoc = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
         docRes.getImports().add(origDoc, "resolvedFrom");
+        docRes.setDocumentVersion(this.getInDocument().getDocumentVersion());
 
         // Make the empty entity.
         CdmEntityDefinition entResolved = docRes.getDefinitions().add(entName);

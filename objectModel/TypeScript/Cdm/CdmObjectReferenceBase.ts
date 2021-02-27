@@ -40,7 +40,16 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     public static resAttToken: string = '/(resolvedAttributes)/';
     public readonly appliedTraits: CdmTraitCollection;
     public namedReference?: string;
-    public explicitReference?: CdmObjectDefinition;
+    private _explicitReference: CdmObjectDefinition;
+    get explicitReference(): CdmObjectDefinition {
+        return this._explicitReference;
+    }
+    set explicitReference(value: CdmObjectDefinition) {
+        if (value) {
+            value.owner = this;
+        }
+        this._explicitReference = value;
+    }
     public simpleNamedReference?: boolean;
     /**
      * @internal
@@ -180,6 +189,38 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         return this.copyRefObject(resOpt, newDeclaredPath, true);
     }
 
+    /**
+     * @internal
+     * Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
+     * into some final document. 
+     */
+    public createPortableReference(resOpt: resolveOptions): CdmObjectReference {
+        const cdmObjectRef: CdmObjectReferenceBase = this.ctx.corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.mapReferenceType(this.objectType), 'portable', true) as CdmObjectReferenceBase;
+        const cdmObjectDef: CdmObjectDefinitionBase = this.fetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
+        if (!cdmObjectDef || !this.inDocument) {
+            return undefined; // not allowed
+        }
+
+        cdmObjectRef.explicitReference = cdmObjectDef.copy() as CdmObjectDefinition;
+        cdmObjectRef.inDocument = this.inDocument;
+        cdmObjectRef.owner = this.owner;
+
+        return cdmObjectRef;
+    }
+
+    /**
+     * @internal
+     * Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
+     * into some final document. 
+     */
+    public localizePortableReference(resOpt: resolveOptions, importPath: string): void {
+        if (this.explicitReference && this.explicitReference instanceof CdmObjectBase) {
+            let newDeclaredPath: string = (this.explicitReference as CdmObjectBase).declaredPath;
+            newDeclaredPath = newDeclaredPath && newDeclaredPath.endsWith('/(ref)') ? newDeclaredPath.substring(0, newDeclaredPath.length - 6) : newDeclaredPath;
+            this.namedReference = `${importPath}${newDeclaredPath}`;
+        }
+    }
+
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         if (!resOpt) {
             resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
@@ -192,7 +233,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             this.simpleNamedReference,
             host as CdmObjectReferenceBase);
         if (resOpt.saveResolutionsOnCopy) {
-            copy.explicitReference = this.explicitReference;
+            copy.explicitReference = this.explicitReference ? this.explicitReference.copy(resOpt) as CdmObjectDefinition : undefined;
         }
         copy.appliedTraits.clear();
         for (const trait of this.appliedTraits) {
@@ -347,11 +388,8 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             if (preChildren && preChildren(this, refPath)) {
                 return false;
             }
-            if (this.explicitReference && !this.namedReference) {
-                this.explicitReference.owner = this.owner;
-                if (this.explicitReference.visit(path, preChildren, postChildren)) {
-                    return true;
-                }
+            if (this.explicitReference && !this.namedReference && this.explicitReference.visit(path, preChildren, postChildren)) {
+                return true;
             }
             if (this.visitRef(path, preChildren, postChildren)) {
                 return true;
@@ -398,7 +436,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 }
                 let resAtts: ResolvedAttributeSet = def.fetchResolvedAttributes(resOpt, acpRef);
                 if (resAtts && resAtts.set.length > 0) {
-                    resAtts = resAtts.copy();
+                    // resAtts = resAtts.copy(); should not need this copy now that we copy from the cache. lets try!
                     rasb.mergeAttributes(resAtts);
                     rasb.removeRequestedAtts();
                 }

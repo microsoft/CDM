@@ -40,6 +40,18 @@ export class ProjectionAttributeStateSet {
     }
 
     /**
+     * Creates a copy of this projection attribute state set
+     */
+    public copy(): ProjectionAttributeStateSet {
+        const copy: ProjectionAttributeStateSet = new ProjectionAttributeStateSet(this.ctx);
+        for (const state of this.states) {
+            copy.states.push(state);
+        }
+
+        return copy;
+    }
+
+    /**
      * Remove from collection
      * @internal
      */

@@ -1506,7 +1506,7 @@ class CdmCorpusDefinition:
                 from .cdm_attribute_def import CdmAttribute
                 from .cdm_type_attribute_def import CdmTypeAttributeDefinition
                 for att in ent_art.attributes:
-                    self._known_artifact_attributes[cast(CdmAttribute, att.name)] = cast(CdmTypeAttributeDefinition, att)
+                    self._known_artifact_attributes[cast(CdmAttribute, att).name] = cast(CdmTypeAttributeDefinition, att)
 
         return True
 

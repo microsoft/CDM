@@ -15,12 +15,6 @@ export class ProjectionContext {
     public projectionDirective: ProjectionDirective;
 
     /**
-     * The collection of original source entities's resolved attributes
-     * @internal
-     */
-    public originalSourceResolvedAttributeSet: ResolvedAttributeSet;
-
-    /**
      * The attribute context of the current resolve attribute
      * @internal
      */

@@ -229,11 +229,8 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                             if required_trait and ent_def:
                                 att_ref = required_trait.parameter_values.fetch_parameter_value('attribute').value
                                 att_name = att_ref.named_reference.split('/')[-1]
-                                # path should be absolute and without a namespace
-                                relative_ent_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)
-                                if relative_ent_path.startswith(namespace+':'):
-                                    relative_ent_path = relative_ent_path[len(namespace) + 1:]
-                                ent_references.append(relative_ent_path)
+                                absolute_ent_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)
+                                ent_references.append(absolute_ent_path)
                                 att_references.append(att_name)
 
                         if rel_info.selects_one:

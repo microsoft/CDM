@@ -25,7 +25,6 @@ import java.util.Map;
 public class CdmProjection extends CdmObjectDefinitionBase {
     private String TAG = CdmProjection.class.getSimpleName();
     private String condition;
-    private Node conditionExpressionTreeRoot;
     private CdmOperationCollection operations;
     private CdmEntityReference source;
     private Boolean runSequentially;
@@ -62,28 +61,6 @@ public class CdmProjection extends CdmObjectDefinitionBase {
 
     public void setRunSequentially(Boolean runSequentially) {
         this.runSequentially = runSequentially;
-    }
-
-    /**
-     * Condition expression tree that is built out of a condition expression string
-     *
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     * @return Node
-     */
-    @Deprecated
-    public Node getConditionExpressionTreeRoot() {
-        return conditionExpressionTreeRoot;
-    }
-
-    /**
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     * @param conditionExpressionTreeRoot Node
-     */
-    @Deprecated
-    public void setConditionExpressionTreeRoot(final Node conditionExpressionTreeRoot) {
-        this.conditionExpressionTreeRoot = conditionExpressionTreeRoot;
     }
 
     /**
@@ -288,17 +265,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
             return null;
         }
 
-        if (this.getRunSequentially() != null) {
-            Logger.error(TAG, this.getCtx(), "RunSequentially is not supported by this Object Model version.");
-        }
-
         ProjectionContext projContext = null;
-
-        final String condition = StringUtils.isNullOrTrimEmpty(this.condition) ? "(true)" : this.condition;
-
-        // create an expression tree based on the condition
-        ExpressionTree tree = new ExpressionTree();
-        this.conditionExpressionTreeRoot = tree.constructExpressionTree(condition);
 
         // Add projection to context tree
         AttributeContextParameters acpProj = new AttributeContextParameters();
@@ -362,22 +329,8 @@ public class CdmProjection extends CdmObjectDefinitionBase {
             projContext.setCurrentAttributeStateSet(pasSet);
         }
 
-        boolean isConditionValid = false;
-        if (this.conditionExpressionTreeRoot != null) {
-            InputValues input = new InputValues();
-            input.setNoMaxDepth(projDirective.getHasNoMaximumDepth());
-            input.setIsArray(projDirective.getIsArray());
-            input.setReferenceOnly(projDirective.getIsReferenceOnly());
-            input.setNormalized(projDirective.getIsNormalized());
-            input.setStructured(projDirective.getIsStructured());
-            input.setIsVirtual(projDirective.getIsVirtual());
-            input.setNextDepth(projDirective.getResOpt().depthInfo.getCurrentDepth());
-            input.setMaxDepth(projDirective.getMaximumDepth());
-            input.setMinCardinality(projDirective.getCardinality() != null ? projDirective.getCardinality().getMinimumNumber() : null);
-            input.setMaxCardinality(projDirective.getCardinality() != null ? projDirective.getCardinality().getMaximumNumber() : null);
-
-            isConditionValid = (boolean) ExpressionTree.evaluateExpressionTree(this.conditionExpressionTreeRoot, input);
-        }
+        InputValues inputValues = new InputValues(projDirective);
+        boolean isConditionValid = ExpressionTree.evaluateCondition(this.condition, inputValues);
 
         if (isConditionValid && this.operations != null && this.operations.size() > 0) {
             // Just in case new operations were added programmatically, reindex operations
@@ -395,21 +348,46 @@ public class CdmProjection extends CdmObjectDefinitionBase {
 
             // Start with an empty list for each projection
             ProjectionAttributeStateSet pasOperations = new ProjectionAttributeStateSet(projContext.getCurrentAttributeStateSet().getCtx());
+
+            // The attribute set that the operation will execute on
+            ProjectionAttributeStateSet operationWorkingAttributeSet;
+
+            // The attribute set containing the attributes from the source
+            ProjectionAttributeStateSet sourceAttributeSet = projContext.getCurrentAttributeStateSet();
+
+            // Specifies if the operation is the first on the list to run
+            boolean firstOperationToRun = true;
             for (CdmOperationBase operation : this.operations) {
-                if (operation.getCondition() != null) {
-                    Logger.error(TAG, this.getCtx(), "Condition on the operation level is not supported by this Object Model version.");
+                boolean operationCondition = ExpressionTree.evaluateCondition(operation.getCondition(), inputValues);
+
+                if (!operationCondition) {
+                    // Skip this operation if the condition does not evaluate to true
+                    continue;
                 }
 
-                if (operation.getSourceInput() != null) {
-                    Logger.error(TAG, this.getCtx(), "SourceInput on the operation level is not supported by this Object Model version.");
+                // If RunSequentially is not true then all the operations will receive the source input
+                // Unless the operation overwrites this behavior using the SourceInput property
+                boolean sourceInput = operation.getSourceInput() != null ?
+                        (boolean) operation.getSourceInput() :
+                        this.getRunSequentially() == null || !this.getRunSequentially();
+
+                // If this is the first operation to run it will get the source attribute set since the operations attribute set starts empty
+                if (sourceInput || firstOperationToRun) {
+                    projContext.setCurrentAttributeStateSet(sourceAttributeSet);
+                    operationWorkingAttributeSet = pasOperations;
+                } else {
+                    // Needs to create a copy since this set can be modified by the operation
+                    projContext.setCurrentAttributeStateSet(pasOperations.copy());
+                    operationWorkingAttributeSet = new ProjectionAttributeStateSet(projContext.getCurrentAttributeStateSet().getCtx());
                 }
 
                 // Evaluate projections and apply to empty state
-                ProjectionAttributeStateSet newPasOperations = operation.appendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
+                ProjectionAttributeStateSet newPasOperations = operation.appendProjectionAttributeState(projContext, operationWorkingAttributeSet, acGenAttrSet);
 
                 // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
                 if (newPasOperations != null)
                 {
+                    firstOperationToRun = false;
                     pasOperations = newPasOperations;
                 }
             }

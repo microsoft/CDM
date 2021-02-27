@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -496,9 +496,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                         {
                                             var attRef = identifyingTrait.ParameterValues.FetchParameterValueByName("attribute").Value;
                                             string attNamePath = ((CdmObjectReferenceBase)attRef).NamedReference;
-                                            string attName = attNamePath.Split('/').Last();                                // path should be absolute and without a namespace
-                                        string relativeEntPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.AtCorpusPath, entDef.InDocument);
-                                            entReferences.Add(relativeEntPath);
+                                            string attName = attNamePath.Split('/').Last();
+                                            string absoluteEntPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.AtCorpusPath, entDef.InDocument);
+                                            entReferences.Add(absoluteEntPath);
                                             attReferences.Add(attName);
                                         }
                                     }

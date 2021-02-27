@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
@@ -480,11 +480,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             ResolvedAttributeSet copy = new ResolvedAttributeSet();
             copy.AttributeContext = this.AttributeContext;
             int l = this.Set.Count;
-
-            // save the mappings to overwrite
-            // maps from merge may not be correct
-            IDictionary<ResolvedAttribute, HashSet<CdmAttributeContext>> newRa2attCtxSet = new Dictionary<ResolvedAttribute, HashSet<CdmAttributeContext>>();
-            IDictionary<CdmAttributeContext, ResolvedAttribute> newAttCtx2ra = new Dictionary<CdmAttributeContext, ResolvedAttribute>();
 
             for (int i = 0; i < l; i++)
             {

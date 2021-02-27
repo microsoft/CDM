@@ -10,6 +10,7 @@ import {
     CdmAttributeItem,
     CdmAttributeReference,
     CdmCorpusDefinition,
+    CdmDocumentDefinition,
     CdmEntityDeclarationDefinition,
     CdmEntityDefinition,
     CdmManifestDefinition,
@@ -35,6 +36,25 @@ describe('Cdm/Resolution/EntityResolution', () => {
     const testsSubpath: string = 'Cdm/Resolution/EntityResolution';
     const schemaDocsRoot: string = testHelper.schemaDocumentsPath;
     const doesWriteDebuggingFiles: boolean = false;
+
+    /**
+     * Tests if the owner of the entity is not changed when calling CreatedResolvedEntityAsync
+     */
+    it('TestOwnerNotChanged', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestOwnerNotChanged');
+
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Entity.cdm.json/Entity');
+        const document: CdmDocumentDefinition = await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/Entity.cdm.json');
+
+        expect(document)
+            .toBe(entity.owner);
+
+        await entity.createResolvedEntityAsync('res-Entity');
+
+        expect(document)
+            .toBe(entity.owner);
+        done();
+    });
 
     /**
      * Test whether or not the test corpus can be resolved
@@ -324,6 +344,8 @@ describe('Cdm/Resolution/EntityResolution', () => {
         manifest: CdmManifestDefinition,
         spew: stringSpewCatcher): Promise<string> {
         const seen: Set<string> = new Set<string>();
+        // make sure the corpus has a set of default artifact attributes
+        await cdmCorpus.prepareArtifactAttributesAsync()
 
         async function seekEntities(f: CdmManifestDefinition): Promise<void> {
             if (f && f.entities) {

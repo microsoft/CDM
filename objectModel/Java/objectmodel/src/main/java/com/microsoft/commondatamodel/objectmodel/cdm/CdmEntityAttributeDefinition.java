@@ -676,12 +676,11 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
         final String[] bits = attRef instanceof String ? ((String) attRef).split("/")
             : ((CdmObjectReference) attRef).getNamedReference().split("/");
         final String attName = bits[bits.length - 1];
-        // path should be absolute and without a namespace
-        String relativeEntPath = this.getCtx()
+        String absoluteEntPath = this.getCtx()
             .getCorpus()
             .getStorage()
             .createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument());
-        entReferences.add(relativeEntPath);
+        entReferences.add(absoluteEntPath);
         attReferences.add(attName);
       }
     }

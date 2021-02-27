@@ -60,11 +60,8 @@ export class EntityAttributePersistence {
         entityAttribute.isPolymorphicSource = object.isPolymorphicSource;
 
         if (object.entity && typeof(object.entity) !== 'string' && 'source' in object.entity) {
-            const projection: CdmProjection = ProjectionPersistence.fromData(ctx, object.entity);
-            projection.owner = entityAttribute;
-
             const inlineEntityRef: CdmEntityReference = ctx.corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
-            inlineEntityRef.explicitReference = projection;
+            inlineEntityRef.explicitReference = ProjectionPersistence.fromData(ctx, object.entity);
             entityAttribute.entity = inlineEntityRef;
         } else {
             entityAttribute.entity = CdmFolder.EntityReferencePersistence.fromData(ctx, object.entity);

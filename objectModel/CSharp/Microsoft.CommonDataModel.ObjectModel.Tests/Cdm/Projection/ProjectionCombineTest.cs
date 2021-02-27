@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
@@ -29,11 +29,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             new List<string> { "normalized", "structured" },
             new List<string> { "referenceOnly", "normalized", "structured" },
         };
-
-        /// <summary>
-        /// Path to foundations
-        /// </summary>
-        private const string foundationJsonPath = "cdm:/foundations.cdm.json";
 
         /// <summary>
         /// The path between TestDataPath and TestName
@@ -109,15 +104,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// </summary>
         /// <returns></returns>
         [TestMethod]
-        public async Task TestFalseProj()
+        public async Task TestNonPolymorphicProj()
         {
-            string testName = "TestFalseProj";
-            string entityName = "Customer";
+            string testName = "TestNonPolymorphicProj";
+            string entityName = "NewPerson";
 
-            foreach (List<string> resOpt in resOptsCombinations)
-            {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
-            }
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+
+            // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+            // Combined attributes ["phoneNumber", "email"] into "contactAt"
+            Assert.AreEqual(4, resolvedEntity.Attributes.Count);
+            Assert.AreEqual("name", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("age", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("address", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("contactAt", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
         }
 
         /// <summary>
@@ -337,7 +340,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     await util.GetAndValidateResolvedEntity(entity_Customer, resOpts);
                 }
 
-                util.DefaultManifest.SaveAsAsync(util.ManifestDocName, saveReferenced: true).GetAwaiter().GetResult();
+                await util.DefaultManifest.SaveAsAsync(util.ManifestDocName, saveReferenced: true);
             }
         }
 
@@ -351,7 +354,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
             corpus.Storage.Mount("expected", new LocalAdapter(expectedOutputPath));
-            CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"local:/default.manifest.cdm.json");
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
             Assert.IsNotNull(entity);
@@ -360,7 +362,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             await ValidateResolvedAttributes(corpus, resolvedEntity, entityName, fileNameSuffix);
 
-            AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, $"{entityName}{fileNameSuffix}", resolvedEntity);
+            await AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, $"{entityName}{fileNameSuffix}", resolvedEntity);
         }
 
         /// <summary>

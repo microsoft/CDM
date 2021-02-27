@@ -209,7 +209,7 @@ export class ResolvedAttributeSetBuilder {
             // save the current context
             const attCtx: CdmAttributeContext = this.ras.attributeContext;
             this.takeReference(new ResolvedAttributeSet());
-            this.ras.merge(ra, ra.attCtx);
+            this.ras.merge(ra);
             // reapply the old attribute context
             this.ras.setAttributeContext(attCtx);
         }
@@ -243,49 +243,49 @@ export class ResolvedAttributeSetBuilder {
                 const l: number = set.length;
                 for (let i: number = 0; i < l; i++) {
                     set[i].arc = arc;
+                }
 
-                    // the resolution guidance may be asking for a one time 'take' or avoid of attributes from the source
-                    // this also can re-order the attributes
-                    if (arc.resGuide && arc.resGuide.selectsSubAttribute &&
-                        arc.resGuide.selectsSubAttribute.selects === 'some' &&
-                        (arc.resGuide.selectsSubAttribute.selectsSomeTakeNames || arc.resGuide.selectsSubAttribute.selectsSomeAvoidNames)) {
-                        // we will make a new resolved attribute set from the 'take' list
-                        const takeSet: ResolvedAttribute[] = [];
-                        const selectsSomeTakeNames: string[] = arc.resGuide.selectsSubAttribute.selectsSomeTakeNames;
-                        const selectsSomeAvoidNames: string[] = arc.resGuide.selectsSubAttribute.selectsSomeAvoidNames;
+                // the resolution guidance may be asking for a one time 'take' or avoid of attributes from the source
+                // this also can re-order the attributes
+                if (arc.resGuide && arc.resGuide.selectsSubAttribute &&
+                    arc.resGuide.selectsSubAttribute.selects === 'some' &&
+                    (arc.resGuide.selectsSubAttribute.selectsSomeTakeNames || arc.resGuide.selectsSubAttribute.selectsSomeAvoidNames)) {
+                    // we will make a new resolved attribute set from the 'take' list
+                    const takeSet: ResolvedAttribute[] = [];
+                    const selectsSomeTakeNames: string[] = arc.resGuide.selectsSubAttribute.selectsSomeTakeNames;
+                    const selectsSomeAvoidNames: string[] = arc.resGuide.selectsSubAttribute.selectsSomeAvoidNames;
 
-                        if (selectsSomeTakeNames && !selectsSomeAvoidNames) {
-                            // make an index that goes from name to insertion order
-                            const inverted: Map<string, number> = new Map<string, number>();
-                            for (let iOrder: number = 0; iOrder < l; iOrder++) {
-                                inverted.set(set[iOrder].resolvedName, iOrder);
-                            }
-
-                            for (const take of selectsSomeTakeNames) {
-                                // if in the original set of attributes, take it in the new order
-                                if (inverted.has(take)) {
-                                    takeSet.push(set[inverted.get(take)]);
-                                }
-                            }
-                        }
-                        if (selectsSomeAvoidNames) {
-                            // make a quick look up of avoid names
-                            const avoid: Set<string> = new Set<string>();
-                            for (const avoidName of selectsSomeAvoidNames) {
-                                avoid.add(avoidName);
-                            }
-
-                            for (let iAtt: number = 0; iAtt < l; iAtt++) {
-                                // only take the ones not in avoid the list given
-                                if (!avoid.has(set[iAtt].resolvedName)) {
-                                    takeSet.push(set[iAtt]);
-                                }
-                            }
+                    if (selectsSomeTakeNames && !selectsSomeAvoidNames) {
+                        // make an index that goes from name to insertion order
+                        const inverted: Map<string, number> = new Map<string, number>();
+                        for (let iOrder: number = 0; iOrder < l; iOrder++) {
+                            inverted.set(set[iOrder].resolvedName, iOrder);
                         }
 
-                        // replace the guts of the resolvedAttributeSet with this
-                        this.ras.alterSetOrderAndScope(takeSet);
+                        for (const take of selectsSomeTakeNames) {
+                            // if in the original set of attributes, take it in the new order
+                            if (inverted.has(take)) {
+                                takeSet.push(set[inverted.get(take)]);
+                            }
+                        }
                     }
+                    if (selectsSomeAvoidNames) {
+                        // make a quick look up of avoid names
+                        const avoid: Set<string> = new Set<string>();
+                        for (const avoidName of selectsSomeAvoidNames) {
+                            avoid.add(avoidName);
+                        }
+
+                        for (let iAtt: number = 0; iAtt < l; iAtt++) {
+                            // only take the ones not in avoid the list given
+                            if (!avoid.has(set[iAtt].resolvedName)) {
+                                takeSet.push(set[iAtt]);
+                            }
+                        }
+                    }
+
+                    // replace the guts of the resolvedAttributeSet with this
+                    this.ras.alterSetOrderAndScope(takeSet);
                 }
             }
 
@@ -296,7 +296,7 @@ export class ResolvedAttributeSetBuilder {
                 let ras: ResolvedAttributeSet = this.ras;
                 for (let i: number = 0; i < l; i++) {
                     // here we want the context that was created in the appliers
-                    ras = ras.merge(newAtts[i], newAtts[i].attCtx);
+                    ras = ras.merge(newAtts[i]);
                 }
                 this.takeReference(ras);
             }
@@ -499,6 +499,16 @@ export class ResolvedAttributeSetBuilder {
                             }
                         }
                         appCtx.resAttNew.completeContext(appCtx.resOpt);
+                        // tie this new resolved att to the source via lineage
+                        if (appCtx.resAttNew.attCtx && resAttSource && resAttSource.attCtx && (!resAttSource.applierState || !resAttSource.applierState.flex_remove)) {
+                            if (resAttSource.attCtx.lineage && resAttSource.attCtx.lineage.length > 0) {
+                                for (const lineage of resAttSource.attCtx.lineage) {
+                                    appCtx.resAttNew.attCtx.addLineage(lineage);
+                                }
+                            } else {
+                                appCtx.resAttNew.attCtx.addLineage(resAttSource.attCtx);
+                            }
+                        }
                     }
 
                     return appCtx;

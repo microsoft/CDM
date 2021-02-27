@@ -15,7 +15,6 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute
 @Deprecated
 public final class ProjectionContext {
     private ProjectionDirective projectionDirective;
-    private ResolvedAttributeSet originalSourceResolvedAttributeSet;
     private CdmAttributeContext currentAttributeContext;
     private ProjectionAttributeStateSet CurrentAttributeStateSet;
 
@@ -45,28 +44,6 @@ public final class ProjectionContext {
     @Deprecated
     public void setProjectionDirective(final ProjectionDirective projectionDirective) {
         this.projectionDirective = projectionDirective;
-    }
-
-    /**
-     * The collection of original source entities's resolved attributes
-     *
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     * @return ResolvedAttributeSet
-     */
-    @Deprecated
-    public ResolvedAttributeSet getOriginalSourceResolvedAttributeSet() {
-        return originalSourceResolvedAttributeSet;
-    }
-
-    /**
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     * @param originalSourceResolvedAttributeSet ResolvedAttributeSet
-     */
-    @Deprecated
-    public void setOriginalSourceResolvedAttributeSet(final ResolvedAttributeSet originalSourceResolvedAttributeSet) {
-        this.originalSourceResolvedAttributeSet = originalSourceResolvedAttributeSet;
     }
 
     /**

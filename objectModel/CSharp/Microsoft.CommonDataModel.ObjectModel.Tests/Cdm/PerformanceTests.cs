@@ -44,7 +44,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             cdmCorpus.RootPath = testInputPath;
             cdmCorpus.Storage.Mount("local", new LocalAdapter(testInputPath));
             cdmCorpus.Storage.DefaultNamespace = "local";
-            var entities = this.GetAllEntities(cdmCorpus);
+            var entities = await this.GetAllEntities(cdmCorpus);
             var entityResolutionTimes = new List<Tuple<string, long>>();
             foreach (var data in entities)
             {
@@ -70,7 +70,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             Assert.Performance(1000, entityResolutionTimes[0].Item2);
             var total = entityResolutionTimes.Sum(data => data.Item2);
-            Assert.Performance(2000, total);
+            Assert.Performance(5000, total);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             ((CdmCorpusDefinition)cdmCorpus).RootPath = testInputPath;
             cdmCorpus.Storage.Mount("local", new LocalAdapter(testInputPath));
             cdmCorpus.Storage.DefaultNamespace = "local";
-            var entities = this.GetAllEntities(cdmCorpus);
+            var entities = await this.GetAllEntities(cdmCorpus);
             var incomingReferences = new Dictionary<CdmEntityDefinition, List<CdmEntityDefinition>>();
             foreach (var data in entities)
             {
@@ -142,9 +142,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 Trace.WriteLine($"{data.Item1}:{data.Item2}");
             }
 
-            Assert.Performance(1000, entityResolutionTimes[0].Item2);
+            Assert.Performance(4000, entityResolutionTimes[0].Item2);
             var total = entityResolutionTimes.Sum(data => data.Item2);
-            Assert.Performance(4200, total);
+            Assert.Performance(5000, total);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// </summary>
         /// <param name="cdmCorpus"> The instance of the CDM corpus to use. </param>
         /// <returns> The list of entities present. </returns>
-        private List<Tuple<CdmEntityDefinition, CdmDocumentDefinition>> GetAllEntities(CdmCorpusDefinition cdmCorpus)
+        private async Task<List<Tuple<CdmEntityDefinition, CdmDocumentDefinition>>> GetAllEntities(CdmCorpusDefinition cdmCorpus)
         {
             cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
             Console.WriteLine("reading source files");
@@ -190,10 +190,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var folders = Directory.GetDirectories(cdmCorpus.RootPath).ToList().ConvertAll(Path.GetFileName);
             foreach (var folder in folders)
             {
-                CommonDataModelLoader.LoadCorpusFolder(cdmCorpus, rootFolder.ChildFolders.Add(folder), new List<string> { "analyticalCommon" }, string.Empty).GetAwaiter().GetResult();
+                await CommonDataModelLoader.LoadCorpusFolder(cdmCorpus, rootFolder.ChildFolders.Add(folder), new List<string> { "analyticalCommon" }, string.Empty);
             }
 
-            CommonDataModelLoader.ResolveLocalCorpus(cdmCorpus, CdmValidationStep.MinimumForResolving).GetAwaiter().GetResult();
+            await CommonDataModelLoader.ResolveLocalCorpus(cdmCorpus, CdmValidationStep.MinimumForResolving);
 
             var entities = new List<Tuple<CdmEntityDefinition, CdmDocumentDefinition>>();
             Action<CdmFolderDefinition> seekEntities = null;

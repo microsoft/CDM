@@ -18,24 +18,14 @@ class PersistenceLayer:
     FOLIO_EXTENSION = '.folio.cdm.json'
     MANIFEST_EXTENSION = '.manifest.cdm.json'
     MODEL_JSON_EXTENSION = 'model.json'
-    ODI_EXTENSION = 'odi.json'
     CDM_FOLDER = 'CdmFolder'
     MODEL_JSON = 'ModelJson'
-    ODI = 'Odi'
 
     def __init__(self, corpus: 'CdmCorpusDefinition'):
         self._corpus = corpus
 
         self._registered_persistence_formats = OrderedDict()  # type: Dictionary[str, object]
         self._is_registered_persistence_async = OrderedDict()  # type: Dictionary[object, bool]
-
-        # Register known persistence classes.
-        self.register_format('cdm.persistence.cdmfolder.ManifestPersistence')
-        self.register_format('cdm.persistence.modeljson.ManifestPersistence')
-        self.register_format('cdm.persistence.cdmfolder.DocumentPersistence')
-
-        # TODO: re-add with ODI
-        # self.register_format('cdm.persistence.odi.ManifestPersistence')
 
         self._TAG = PersistenceLayer.__name__
 
@@ -86,7 +76,7 @@ class PersistenceLayer:
         except Exception as e:
             # log message used by navigator, do not change or remove
             logger.debug(self._TAG, self._ctx, 'fail file: {}'.format(doc_path), self._load_document_from_path_async.__name__)
-            
+
             message = 'Could not read {} from the \'{}\' namespace.\n Reason: {}'.format(doc_path, folder.namespace, e)
             # when shallow validation is enabled, log messages about being unable to find referenced documents as warnings instead of errors.
             if res_opt and res_opt.shallow_validation:
@@ -104,40 +94,42 @@ class PersistenceLayer:
             logger.error(self._TAG, self._ctx, 'Document name cannot be null or empty.', self._load_document_from_path_async.__name__)
             return None
 
-        # If loading an odi.json/model.json file, check that it is named correctly.
-        if doc_name.lower().endswith(self.ODI_EXTENSION) and not doc_name.lower() == self.ODI_EXTENSION:
-            logger.error(self._TAG, self._ctx, 'Failed to load \'{}\', as it\'s not an acceptable file name. It must be {}.'.format(
-                doc_name, self.ODI_EXTENSION), self._load_document_from_path_async.__name__)
-            return None
+        doc_name_lower = doc_name.lower()
 
-        if doc_name.lower().endswith(self.MODEL_JSON_EXTENSION) and not doc_name.lower() == self.MODEL_JSON_EXTENSION:
+        # If loading an model.json file, check that it is named correctly.
+        if doc_name_lower.endswith(self.MODEL_JSON_EXTENSION) and not doc_name.lower() == self.MODEL_JSON_EXTENSION:
             logger.error(self._TAG, self._ctx, 'Failed to load \'{}\', as it\'s not an acceptable file name. It must be {}.'.format(
                 doc_name, self.MODEL_JSON_EXTENSION), self._load_document_from_path_async.__name__)
             return None
 
-        # Fetch the correct persistence class to use.
-        persistence_class = self._fetch_registered_persistence_format(doc_name)
-        if persistence_class:
-            try:
-                method = persistence_class.from_data
-                parameters = [self._ctx, doc_name, json_data, folder]
-
-                # check if from_data() is asynchronous for this persistence class.
-                if persistence_class not in self._is_registered_persistence_async:
-                    # Cache whether this persistence class has async methods.
-                    self._is_registered_persistence_async[persistence_class] = persistence_class.is_persistence_async
-
-                if self._is_registered_persistence_async[persistence_class]:
-                    doc_content = await method(*parameters)
-                else:
-                    doc_content = method(*parameters)
-            except Exception as e:
-                logger.error(self._TAG, self._ctx, 'Could not convert \'{}\'. Reason \'{}\''.format(doc_name, e), self._load_document_from_path_async.__name__)
+        try:
+            if doc_name_lower.endswith(PersistenceLayer.MANIFEST_EXTENSION) or doc_name_lower.endswith(PersistenceLayer.FOLIO_EXTENSION):
+                from cdm.persistence.cdmfolder import ManifestPersistence
+                from cdm.persistence.cdmfolder.types import ManifestContent
+                manifest = ManifestContent()
+                manifest.decode(json_data)
+                doc_content = ManifestPersistence.from_object(self._ctx, doc_name, folder.namespace, folder.folder_path, manifest)
+            elif doc_name_lower.endswith(PersistenceLayer.MODEL_JSON_EXTENSION):
+                if doc_name_lower != PersistenceLayer.MODEL_JSON_EXTENSION:
+                    logger.error(self._TAG, self._ctx, 'Failed to load \'{}\', as it\'s not an acceptable filename. It must be model.json'.format(doc_name), self._load_document_from_path_async.__name__)
+                    return None
+                from cdm.persistence.modeljson import ManifestPersistence
+                from cdm.persistence.modeljson.types import Model
+                model = Model()
+                model.decode(json_data)
+                doc_content = await ManifestPersistence.from_object(self._ctx, model, folder)
+            elif doc_name_lower.endswith(PersistenceLayer.CDM_EXTENSION):
+                from cdm.persistence.cdmfolder import DocumentPersistence
+                from cdm.persistence.cdmfolder.types import DocumentContent
+                document = DocumentContent()
+                document.decode(json_data)
+                doc_content = DocumentPersistence.from_object(self._ctx, doc_name, folder.namespace, folder.folder_path, document)
+            else:
+                # Could not find a registered persistence class to handle this document type.
+                logger.error(self._TAG, self._ctx, 'Could not find a persistence class to handle the file \'{}\''.format(doc_name), self._load_document_from_path_async.__name__)
                 return None
-        else:
-            # could not find a registered persistence class to handle this document type.
-            logger.error(self._TAG, self._ctx, 'Could not find a persistence class to handle the file \'{}\''.format(
-                doc_name), self._load_document_from_path_async.__name__)
+        except Exception as e:
+            logger.error(self._TAG, self._ctx, 'Could not convert \'{}\'. Reason \'{}\''.format(doc_path, e), self._load_document_from_path_async.__name__)
             return None
 
         # add document to the folder, this sets all the folder/path things, caches name to content association and may trigger indexing on content
@@ -218,13 +210,7 @@ class PersistenceLayer:
 
         # what kind of document is requested?
         # check file extensions using a case-insensitive ordinal string comparison.
-        persistence_type = self.MODEL_JSON if new_name.lower().endswith(self.MODEL_JSON_EXTENSION) else \
-            (self.ODI if new_name.lower().endswith(self.ODI_EXTENSION) else self.CDM_FOLDER)
-
-        if persistence_type == self.ODI and new_name.lower() != self.ODI_EXTENSION:
-            logger.error(self._TAG, self._ctx, 'Failed to persist \'{}\', as it\'s not an acceptable filename. It must be {}'.format(
-                new_name, self.ODI_EXTENSION), self._save_document_as_async.__name__)
-            return False
+        persistence_type = self.MODEL_JSON if new_name.lower().endswith(self.MODEL_JSON_EXTENSION) else self.CDM_FOLDER
 
         if persistence_type == self.MODEL_JSON and new_name.lower() != self.MODEL_JSON_EXTENSION:
             logger.error(self._TAG, self._ctx, 'Failed to persist \'{}\', as it\'s not an acceptable filename. It must be {}'.format(
@@ -235,40 +221,32 @@ class PersistenceLayer:
         res_opt = {'wrt_doc': doc, 'directives': AttributeResolutionDirectiveSet()}
         persisted_doc = None
 
-        persistence_class = self._fetch_registered_persistence_format(new_name)
-
-        if persistence_class:
-            try:
-                method = persistence_class.to_data
-                parameters = [doc, res_opt, options]
-
-                # Check if to_data() is asynchronous for this persistence class.
-                if not persistence_class in self._is_registered_persistence_async:
-                    # Cache whether this persistence class has async methods.
-                    self._is_registered_persistence_async[persistence_class] = persistence_class.is_persistence_async
-
-                if self._is_registered_persistence_async[persistence_class]:
-                    # We don't know what the return type of ToData() is going to be and Task<T> is not covariant,
-                    # so we can't use Task<dynamic> here. Instead, we just await on a Task object without a return value
-                    # and fetch the Result property from it, which will have the result of ToData().
-                    persisted_doc = await method(*parameters)
+        try:
+            if new_name.lower().endswith(PersistenceLayer.MODEL_JSON_EXTENSION) or new_name.lower().endswith(PersistenceLayer.MANIFEST_EXTENSION) or new_name.lower().endswith(PersistenceLayer.FOLIO_EXTENSION):
+                if persistence_type == self.CDM_FOLDER:
+                    from cdm.persistence.cdmfolder import ManifestPersistence
+                    persisted_doc = ManifestPersistence.to_data(doc, res_opt, options)
                 else:
-                    persisted_doc = method(*parameters)
-            except Exception as e:
-                logger.error(self._TAG, self._ctx, 'Could not persist file \'{}\'. Reason \'{}\'.'.format(new_name, e), self._save_document_as_async.__name__)
-                return False
-        else:
-            # Could not find a registered persistence class to handle this document type.
-            logger.error(self._TAG, self._ctx, 'Could not find a persistence class to handle the file \'{}\'.'.format(
+                    if new_name != self.MODEL_JSON_EXTENSION:
+                        logger.error(self._TAG, self._ctx, 'Failed to persist \'{}\', as it\'s not an acceptable filename. It must be model.json'.format(new_name), self._save_document_as_async.__name__)
+                        return False
+                    from cdm.persistence.modeljson import ManifestPersistence
+                    persisted_doc = await ManifestPersistence.to_data(doc, res_opt, options)
+            elif new_name.lower().endswith(PersistenceLayer.CDM_EXTENSION):
+                from cdm.persistence.cdmfolder import DocumentPersistence
+                persisted_doc = DocumentPersistence.to_data(doc, res_opt, options)
+            else:
+                # Could not find a registered persistence class to handle this document type.
+                logger.error(self._TAG, self._ctx, 'Could not find a persistence class to handle the file \'{}\'.'.format(
                 new_name), self._save_document_as_async.__name__)
+                return False
+        except Exception as e:
+            logger.error(self._TAG, self._ctx, 'Could not persist file \'{}\'. Reason \'{}\'.'.format(new_name, e), self._save_document_as_async.__name__)
             return False
+
         if not persisted_doc:
             logger.error(self._TAG, self._ctx, 'Failed to persist \'{}\''.format(new_name), self._save_document_as_async.__name__)
             return False
-
-        if persistence_type == self.ODI:
-            await self._save_odi_documents(persisted_doc, adapter, new_name)
-            return True
 
         # turn the name into a path
         new_path = '{}{}'.format(doc.folder_path, new_name)
@@ -303,43 +281,3 @@ class PersistenceLayer:
                 logger.error(self._TAG, self._ctx, 'Failed to save linked documents for file \'{}\''.format(new_name), self._save_document_as_async.__name__)
                 return False
         return True
-
-    def register_format(self, persistence_class_name: str, assembly_name: Optional[str] = None) -> None:
-        try:
-            path_split = persistence_class_name.split('.')
-            class_path = '.'.join(path_split[:-1])
-            class_name = path_split[-1]
-            persistence_module = importlib.import_module(class_path)
-
-            persistence_class = getattr(persistence_module, class_name)
-            formats = persistence_class.formats  # type: List[str]
-
-            for form in formats:
-                self._registered_persistence_formats[form] = persistence_class
-
-        except Exception as e:
-            logger.info(self._TAG, self._ctx, 'Unable to register persistence class {}. Reason: {}.'.format(persistence_class_name, e))
-
-    async def _save_odi_documents(self, doc: Any, adapter: 'StorageAdapter', new_name: str) -> None:
-        if doc is None:
-            raise Exception('Failed to persist document because doc is null.')
-
-        # ask the adapter to make it happen.
-        try:
-            old_document_path = doc.documentPath
-            new_document_path = old_document_path[0: len(old_document_path) - len(self.ODI_EXTENSION)] + new_name
-            # Remove namespace from path
-            path_tuple = StorageUtils.split_namespace_path(new_document_path)
-            if not path_tuple:
-                logger.error(self._TAG, self._ctx, 'The object path cannot be null or empty.', self._save_odi_documents.__name__)
-                return
-            content = doc.encode()
-            await adapter.write_async(path_tuple[1], content)
-        except Exception as e:
-            logger.error(self._TAG, self._ctx, 'Failed to write to the file \'{}\' for reason {}.'.format(
-                doc.documentPath, e), self._save_odi_documents.__name__)
-
-        # Save linked documents.
-        if doc.get('linkedDocuments') is not None:
-            for linked_doc in doc.linkedDocuments:
-                await self._save_odi_documents(linked_doc, adapter, new_name)

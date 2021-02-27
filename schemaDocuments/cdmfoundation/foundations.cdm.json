@@ -82,7 +82,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "1.1"
             }
           ]
         }
@@ -105,7 +105,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "1.1"
             }
           ]
         }
@@ -133,7 +133,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "1.1"
             }
           ]
         }
@@ -149,7 +149,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "1.1"
             }
           ]
         }
@@ -177,7 +177,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "1.1"
             }
           ]
         }
@@ -249,7 +249,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "1.1"
             }
           ]
         }
@@ -272,7 +272,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "1.1"
             }
           ]
         }
@@ -301,7 +301,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "1.1"
             }
           ]
         }
@@ -330,7 +330,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "1.1"
             }
           ]
         }
@@ -670,6 +670,19 @@
       ]
     },
     {
+      "traitName": "is.partition.compressed",
+      "extendsTrait": "is.partition",
+      "explanation": "The value is the compression format represented.",
+      "hasParameters": [
+        {
+          "name": "compressionFormatName",
+          "dataType": "string",
+          "explanation": "the name of the compression format: gzip; Snappy; lto",
+          "required": true
+        }
+      ]
+    },
+    {
       "traitName": "is.partition.culture",
       "extendsTrait": "is.partition",
       "explanation": "The value denotes culture in the partition files.",
@@ -756,7 +769,182 @@
           "required": true
         }
       ]
+    },
+    {
+      "traitName": "has.description",
+      "extendsTrait": "has",
+      "explanation": "Defines a list of localizable text descriptions",
+      "hasParameters": [
+        {
+          "name": "description",
+          "explanation": "The localized display text of the object.",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "traitName": "has.displayName",
+      "extendsTrait": "has",
+      "explanation": "Defines a localized string defining display text for an object.",
+      "hasParameters": [
+        {
+          "name": "displayText",
+          "explanation": "The localized display text of the object.",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "traitName": "has.displayFolder",
+      "extendsTrait": "has",
+      "explanation": "Defines a localized string representing an arbitrary folder structure for display purposes.",
+      "hasParameters": [
+        {
+          "name": "displayFolder",
+          "explanation": "The localized display text of the object.",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "traitName": "has.origin",
+      "extendsTrait": "has",
+      "explanation": "The root trait for the hierarchy related to the origin of schema."
+    },
+    {
+      "traitName": "has.origin.domain",
+      "extendsTrait": "has",
+      "explanation": "A trait defining the domain from which the schema originated.",
+      "hasParameters": [
+        {
+          "name": "domainName",
+          "dataType": "string",
+          "explanation": "the name of the domain",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "has.origin.dataSource",
+      "extendsTrait": "has",
+      "explanation": "A trait defining the origination of the datasource for the schema.",
+      "hasParameters": [
+        {
+          "name": "dataSourceName",
+          "dataType": "string",
+          "explanation": "the name of the data source",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "has.relational",
+      "extendsTrait": "has",
+      "explanation": "The root trait for all traits related specifically to Relational activity."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation",
+      "extendsTrait": "has",
+      "explanation": "Base trait for default relational aggregations associated with an Attributes.",
+      "hasParameters": [
+        {
+          "name": "aggregationName",
+          "dataType": "string",
+          "explanation": "the name of the relational aggregation",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.sum",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "sum"
+        ]
+      },
+      "explanation": "Specifies sum as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.average",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "average"
+        ]
+      },
+      "explanation": "Specifies average as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.minimum",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "minimum"
+        ]
+      },
+      "explanation": "Specifies minimum as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.maximum",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "maximum"
+        ]
+      },
+      "explanation": "Specifies maximum as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.count",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "count"
+        ]
+      },
+      "explanation": "Specifies count as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.countDistinct",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "countDistinct"
+        ]
+      },
+      "explanation": "Specifies count distinct as the default relational aggregation associated with an Attribute."
     }
   ],
-  "documentVersion": "1.0"
+  "documentVersion": "1.1"
 }

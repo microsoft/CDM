@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as fs from 'fs';
+import * as path from 'path';
 import { EOL } from 'os';
 import {
     CdmCollection,
@@ -62,7 +63,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
     /**
      *
      */
-    it('TestDiffRefLocation', async() => {
+    it('TestDiffRefLocation', async () => {
         const testName: string = 'TestDiffRefLocation';
         const entityName: string = 'Sales';
 
@@ -130,7 +131,11 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         await manifest.populateManifestRelationshipsAsync();
         const actualRelationshipsString: string = listRelationships(corpus, entity, actualOutputFolder, entityName);
 
-        const expectedRelationshipsString: string = fs.readFileSync(`${expectedOutputFolder}/REL_${entityName}.txt`).toString();
+        const relationshipsFilename: string = `REL_${entityName}.txt`;
+        fs.writeFileSync(path.join(actualOutputFolder, relationshipsFilename), actualRelationshipsString);
+
+        const expectedRelationshipsStringFilePath: string = path.resolve(path.join(expectedOutputFolder, relationshipsFilename));
+        const expectedRelationshipsString: string = fs.readFileSync(expectedRelationshipsStringFilePath).toString();
 
         expect(actualRelationshipsString)
             .toEqual(expectedRelationshipsString);
@@ -141,12 +146,15 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         const manifestFileName: string = 'saved.manifest.cdm.json';
         await manifest.saveAsAsync(manifestFileName, true);
         const actualManifestPath: string = `${actualOutputFolder}/${manifestFileName}`;
+
         if (!fs.existsSync(actualManifestPath)) {
             fail('Unable to save manifest with relationship');
         } else {
             const savedManifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>(`output:/${manifestFileName}`);
             const actualSavedManifestRel: string = getRelationshipStrings(savedManifest.relationships);
-            const expectedSavedManifestRel: string = fs.readFileSync(`${expectedOutputFolder}/MANIFEST_REL_${entityName}.txt`).toString();
+            const manifestRelationshipsFilename: string = `MANIFEST_REL_${entityName}.txt`;
+            fs.writeFileSync(path.join(actualOutputFolder, manifestRelationshipsFilename), actualSavedManifestRel);
+            const expectedSavedManifestRel: string = fs.readFileSync(path.join(expectedOutputFolder, manifestRelationshipsFilename)).toString();
             expect(actualSavedManifestRel)
                 .toEqual(expectedSavedManifestRel);
         }

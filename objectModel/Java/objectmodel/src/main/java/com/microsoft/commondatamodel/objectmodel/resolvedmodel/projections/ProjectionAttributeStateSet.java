@@ -29,7 +29,7 @@ public final class ProjectionAttributeStateSet {
      * @param ctx CdmCorpusContext
      */
     public ProjectionAttributeStateSet(CdmCorpusContext ctx) {
-        this.ctx = ctx;
+        this.setCtx(ctx);
         this.states = new ArrayList<>();
     }
 
@@ -73,6 +73,20 @@ public final class ProjectionAttributeStateSet {
         } else {
             states.add(pas);
         }
+    }
+
+    /**
+     * Creates a copy of this projection attribute state set
+     *
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     */
+    @Deprecated
+    public ProjectionAttributeStateSet copy() {
+        ProjectionAttributeStateSet copy = new ProjectionAttributeStateSet(this.getCtx());
+        copy.getStates().addAll(this.getStates());
+
+        return copy;
     }
 
     /**

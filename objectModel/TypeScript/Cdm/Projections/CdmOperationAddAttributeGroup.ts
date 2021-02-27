@@ -120,7 +120,7 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
             type: cdmAttributeContextType.operationAddAttributeGroup,
             name: `operation/index${this.index}/${this.getName()}`
         };
-        const attrCtxOpAddAttrGroup: CdmAttributeContext  = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxOpAddAttrGroupParam);
+        const attrCtxOpAddAttrGroup: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxOpAddAttrGroupParam);
 
         // Create a new attribute context for the attribute group we will create
         const attrCtxAttrGroupParam: AttributeContextParameters = {
@@ -128,7 +128,7 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
             type: cdmAttributeContextType.attributeDefinition,
             name: this.attributeGroupName
         };
-        const attrCtxAttrGroup: CdmAttributeContext  = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxAttrGroupParam);
+        const attrCtxAttrGroup: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxAttrGroupParam);
 
         // Create a new resolve attribute set builder that will be used to combine all the attributes into one set
         const rasb = new ResolvedAttributeSetBuilder();
@@ -136,15 +136,20 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
         // Iterate through all the projection attribute states generated from the source's resolved attributes
         // Each projection attribute state contains a resolved attribute that it is corresponding to
         for (const currentPAS of projCtx.currentAttributeStateSet.states) {
-            // Create an attribute set build that owns one resolved attribute
-            const attributeRasb = new ResolvedAttributeSetBuilder();
-            attributeRasb.ownOne(currentPAS.currentResolvedAttribute);
+            // Create a copy of the resolved attribute
+            const resolvedAttribute: ResolvedAttribute = currentPAS.currentResolvedAttribute.copy();
 
-            // Merge the attribute set containing one attribute with the one holding all the attributes
-            rasb.mergeAttributes(attributeRasb.ras);
+            // Add the attribute to the resolved attribute set
+            rasb.ras.merge(resolvedAttribute);
 
             // Add each attribute's attribute context to the resolved attribute set attribute context
-            attrCtxAttrGroup.contents.push(currentPAS.currentResolvedAttribute.attCtx);
+            const attrParam: AttributeContextParameters = {
+                under: attrCtxAttrGroup,
+                type: cdmAttributeContextType.attributeDefinition,
+                name: resolvedAttribute.resolvedName
+            };
+            resolvedAttribute.attCtx = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrParam)
+            resolvedAttribute.attCtx.addLineage(currentPAS.currentResolvedAttribute.attCtx)
         }
 
         // Create a new resolved attribute that will hold the attribute set containing all the attributes

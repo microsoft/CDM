@@ -24,8 +24,8 @@ export class OperationRenameAttributesPersistence {
         const renameAttributesOp: CdmOperationRenameAttributes = OperationBasePersistence.fromData(ctx, cdmObjectType.operationRenameAttributesDef, object);
         renameAttributesOp.renameFormat = object.renameFormat;
 
-        if (typeof(object.applyTo) === 'string') {
-            renameAttributesOp.applyTo = [ object.applyTo ]
+        if (typeof (object.applyTo) === 'string') {
+            renameAttributesOp.applyTo = [object.applyTo]
         } else if (Array.isArray(object.applyTo)) {
             renameAttributesOp.applyTo = object.applyTo;
         } else if (object.applyTo !== undefined) {

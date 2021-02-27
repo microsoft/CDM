@@ -161,6 +161,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             # bring over any imports in this document or other bobbles
             resolved_manifest.schema = self.schema
             resolved_manifest.explanation = self.explanation
+            resolved_manifest.document_version = self.document_version
             for imp in self.imports:
                 resolved_manifest.imports.append(imp.copy())
 

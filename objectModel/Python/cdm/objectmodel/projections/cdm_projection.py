@@ -37,9 +37,6 @@ class CdmProjection(CdmObjectDefinition):
 
         # --- internal ---
 
-        # Condition expression tree that is built out of a condition expression string
-        self._condition_expression_tree_root = None  # type: Node
-
         # Property of a projection that holds the source of the operation
         self._source = None  # type: Optional[CdmEntityReference]
 
@@ -157,16 +154,7 @@ class CdmProjection(CdmObjectDefinition):
         if not attr_ctx:
             return None
 
-        if self.run_sequentially is not None:
-            logger.error(self._TAG, self.ctx, 'RunSequentially is not supported by this Object Model version.')
-
         proj_context = None
-
-        condition = self.condition if self.condition  else "(true)"
-
-        # create an expression tree based on the condition
-        tree = ExpressionTree()
-        self._condition_expression_tree_root = tree._construct_expression_tree(condition)
 
         # Add projection to context tree
         acp_proj = AttributeContextParameters()
@@ -243,20 +231,9 @@ class CdmProjection(CdmObjectDefinition):
             proj_context._current_attribute_state_set = pas_set
 
         is_condition_valid = False
-        if self._condition_expression_tree_root:
-            input = InputValues()
-            input.no_max_depth = proj_directive._has_no_maximum_depth
-            input.is_array = proj_directive._is_array
-            input.reference_only = proj_directive._is_reference_only
-            input.normalized = proj_directive._is_normalized
-            input.structured = proj_directive._is_structured
-            input.is_virtual = proj_directive._is_virtual
-            input.next_depth = proj_directive._res_opt._depth_info.current_depth
-            input.max_depth = proj_directive._maximum_depth
-            input.min_cardinality = proj_directive._cardinality._minimum_number if proj_directive._cardinality else None
-            input.max_cardinality = proj_directive._cardinality._maximum_number if proj_directive._cardinality else None
+        input_values = InputValues(proj_directive)
+        is_condition_valid = ExpressionTree._evaluate_condition(self.condition, input_values)
 
-            is_condition_valid = ExpressionTree._evaluate_expression_tree(self._condition_expression_tree_root, input)
 
         if is_condition_valid and self.operations and len(self.operations) > 0:
             # Just in case operations were added programmatically, reindex operations
@@ -274,18 +251,41 @@ class CdmProjection(CdmObjectDefinition):
 
             # Start with an empty list for each projection
             pas_operations = ProjectionAttributeStateSet(proj_context._current_attribute_state_set._ctx)
+            
+            # The attribute set that the operation will execute on
+            operation_working_attribute_set = None  # type: ProjectionAttributeStateSet
+
+            # The attribute set containing the attributes from the source
+            source_attribute_set = proj_context._current_attribute_state_set  # type: ProjectionAttributeStateSet
+
+            # Specifies if the operation is the first on the list to run
+            first_operation_to_run = True
             for operation in self.operations:
-                if operation.condition is not None:
-                    logger.error(self._TAG, self.ctx, 'Condition on the operation level is not supported by this Object Model version.')
-                
-                if operation.source_input is not None:
-                    logger.error(self._TAG, self.ctx, 'SourceInput on the operation level is not supported by this Object Model version.')
+                operation_condition = ExpressionTree._evaluate_condition(operation.condition, input_values)
+
+                if not operation_condition:
+                    # Skip this operation if the condition does not evaluate to true
+                    continue
+
+                # If run_sequentially is not true then all the operations will receive the source input
+                # Unless the operation overwrites this behavior using the source_input property
+                source_input = operation.source_input if operation.source_input is not None else not self.run_sequentially
+
+                # If this is the first operation to run it will get the source attribute set since the operations attribute set starts empty
+                if source_input or first_operation_to_run:
+                    proj_context._current_attribute_state_set = source_attribute_set
+                    operation_working_attribute_set = pas_operations
+                else:
+                    # Needs to create a copy since this set can be modified by the operation
+                    proj_context._current_attribute_state_set = pas_operations._copy()
+                    operation_working_attribute_set = ProjectionAttributeStateSet(proj_context._current_attribute_state_set._ctx)
 
                 # Evaluate projections and apply to empty state
-                new_pas_operations = operation._append_projection_attribute_state(proj_context, pas_operations, ac_gen_attr_set)
+                new_pas_operations = operation._append_projection_attribute_state(proj_context, operation_working_attribute_set, ac_gen_attr_set)
 
                 # If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
                 if new_pas_operations is not None:
+                    first_operation_to_run = False
                     pas_operations = new_pas_operations
 
             # Finally update the current state to the projection context

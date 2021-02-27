@@ -3,11 +3,6 @@
 
 using System.Runtime.CompilerServices;
 
-#if INTERNAL_VSTS
-[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
-#else
-[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests")]
-#endif
 namespace Microsoft.CommonDataModel.Tools.Processor
 {
     using System;

@@ -30,9 +30,6 @@ class ProjectionCombineTest(unittest.TestCase):
         ['referenceOnly', 'normalized', 'structured']
     ]
 
-    # Path to foundations
-    foundation_json_path = 'cdm:/foundations.cdm.json'
-
     # The path between TestDataPath and test_name.
     tests_sub_path = os.path.join('Cdm', 'Projection', 'TestProjectionCombine')
 
@@ -77,14 +74,24 @@ class ProjectionCombineTest(unittest.TestCase):
             await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
 
     @async_test
-    async def test_false_proj(self) -> None:
+    async def test_non_polymorphic_proj(self) -> None:
         """Test Entity Attribute with a Combine Attributes operation but IsPolymorphicSource flag set to false"""
         self.maxDiff = None
-        test_name = 'test_false_proj'
-        entity_name = 'Customer'
+        test_name = 'test_non_polymorphic_proj'
+        entity_name = 'NewPerson'
 
-        for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, test_name)  # type: CdmCorpusDefinition
+
+        entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])  # type: CdmEntityDefinition
+
+        # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
+        # Combined attributes ['phoneNumber', 'email'] into 'contactAt'
+        self.assertEqual(4, len(resolved_entity.attributes))
+        self.assertEqual('name', resolved_entity.attributes[0].name)
+        self.assertEqual('age', resolved_entity.attributes[1].name)
+        self.assertEqual('address', resolved_entity.attributes[2].name)
+        self.assertEqual('contactAt', resolved_entity.attributes[3].name)
 
     @async_test
     async def test_empty_proj(self) -> None:
@@ -250,8 +257,6 @@ class ProjectionCombineTest(unittest.TestCase):
         corpus = TestHelper.get_local_corpus(self.tests_sub_path, test_name)  # type: CdmCorpusDefinition
         corpus.storage.mount('expected', LocalAdapter(expected_output_path))
 
-        # entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        # resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, res_opts, True)
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, res_opts, True)
 

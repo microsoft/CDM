@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -147,9 +147,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // Run through the top-level PAS objects 
             foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
             {
-                if ((projCtx.ProjectionDirective.OwnerType == CdmObjectType.EntityDef ||
-                    projCtx.ProjectionDirective.IsSourcePolymorphic) &&
-                    leafLevelCombineAttributeNames.ContainsKey(currentPAS.CurrentResolvedAttribute.ResolvedName))
+                if (leafLevelCombineAttributeNames.ContainsKey(currentPAS.CurrentResolvedAttribute.ResolvedName))
                 {
                     // Attribute to Merge
 

@@ -185,6 +185,7 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
                 return false;
             }
             if (this.extendsTrait) {
+                this.extendsTrait.owner = this;
                 if (this.extendsTrait.visit(`${path}/extendsTrait/`, preChildren, postChildren)) {
                     return true;
                 }

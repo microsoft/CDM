@@ -203,6 +203,22 @@ class RelationshipTest(unittest.TestCase):
         # check that each relationship has been created correctly
         self.verify_relationships(manifest, expected_rels)
 
+    @async_test
+    async def test_relationship_to_different_namespace(self):
+        test_name = 'test_relationship_to_different_namespace'
+        expected_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedRels.json')
+
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        # entity B will be in a different namespace
+        corpus.storage.mount("differentNamespace", LocalAdapter(os.path.join(TestHelper.get_input_folder_path(self.tests_subpath, 'TestRelationshipToDifferentNamespace'), 'differentNamespace')))
+        manifest = await corpus.fetch_object_async('local:/main.manifest.cdm.json')  # type: CdmManifestDefinition
+
+        await corpus.calculate_entity_graph_async(manifest)
+        await manifest.populate_manifest_relationships_async()
+
+        # check that each relationship has been created correctly
+        self.verify_relationships(manifest, expected_rels)
+
     def verify_relationships(self, manifest: 'CdmManifestDefinition', expected_relationships):
         self.assertEqual(len(manifest.relationships), len(expected_relationships))
 

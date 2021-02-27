@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -665,7 +665,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // add a import of the source document 
                 origDoc = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
                 docRes.Imports.Add(origDoc, "resolvedFrom");
-
+                docRes.DocumentVersion = this.InDocument.DocumentVersion;
                 // make the empty entity
                 CdmEntityDefinition entResolved = docRes.Definitions.Add(entName);
 

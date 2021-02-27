@@ -485,7 +485,7 @@ class CdmAttributeContext(CdmObjectDefinition):
             ac = cast(CdmAttributeContext, sub_item)
             if not ac:
                 return
-            if not ac.lineage:
+            if ac.lineage:
                 for lin in ac.lineage:
                     if not cast(CdmAttributeContext, lin.explicit_reference) in att_ctx_in_tree:
                         return False

@@ -438,10 +438,6 @@ class ResolvedAttributeSet(RefCounted):
         copy = ResolvedAttributeSet()
         copy.attribute_context = self.attribute_context
 
-        # Save the mappings to overwrite. Maps from merge may not be correct.
-        new_rattr_to_attctxset = OrderedDict()  # type: Dict[ResolvedAttribute, List[CdmAttributeContext]]
-        new_attctx_to_rattr = {}  # type: Dict[CdmAttributeContext, ResolvedAttribute]
-
         for source_ra in self._set:
             copy_ra = source_ra.copy()
             copy.merge(copy_ra)

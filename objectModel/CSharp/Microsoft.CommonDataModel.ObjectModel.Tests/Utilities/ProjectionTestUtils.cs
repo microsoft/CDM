@@ -5,7 +5,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
-    using Microsoft.CommonDataModel.ObjectModel.Tests.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -86,7 +86,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
             CdmEntityDefinition resolvedEntity = await GetResolvedEntity(corpus, entity, resOpts, true);
-            AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, $"{entityName}{fileNameSuffix}", resolvedEntity);
+            await AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, $"{entityName}{fileNameSuffix}", resolvedEntity);
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -215,6 +215,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // bring over any imports in this document or other bobbles
                 resolvedManifest.Schema = this.Schema;
                 resolvedManifest.Explanation = this.Explanation;
+                resolvedManifest.DocumentVersion = this.DocumentVersion;
                 foreach (CdmImport imp in this.Imports)
                 {
                     resolvedManifest.Imports.Add((CdmImport)imp.Copy());
