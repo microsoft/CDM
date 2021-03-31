@@ -8,6 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     /// <summary>
     /// The object model implementation for Data Partition.
@@ -178,14 +179,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Location, this.InDocument);
-            DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromPartitionPath(fullPath);
+            using (Logger.EnterScope(nameof(CdmDataPartitionDefinition), Ctx, nameof(FileStatusCheckAsync)))
+            {
+                string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Location, this.InDocument);
+                DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromPartitionPath(fullPath);
 
-            // update modified times
-            this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
-            this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
+                // update modified times
+                this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
+                this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
 
-            await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
+                await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
+            }
         }
 
         /// <inheritdoc />

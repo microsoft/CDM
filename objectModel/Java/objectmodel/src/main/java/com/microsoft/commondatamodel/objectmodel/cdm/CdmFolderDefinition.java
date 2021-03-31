@@ -4,11 +4,11 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -19,8 +19,11 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmContainerDefinition {
+  private String tag = CdmFolderDefinition.class.getSimpleName();
+
   private final Map<String, CdmDocumentDefinition> documentLookup = new LinkedHashMap<>();
   private final CdmFolderCollection childFolders = new CdmFolderCollection(this.getCtx(), this);
   private final CdmDocumentCollection documents = new CdmDocumentCollection(this.getCtx(), this);
@@ -167,7 +170,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
         return CompletableFuture.completedFuture(doc);
       }
       if (doc.isDirty()) {
-        Logger.warning(CdmFolderDefinition.class.getSimpleName(), this.getCtx(), Logger.format("discarding changes in document: {0}", doc.getName()));
+        Logger.warning(this.getCtx(), tag, "fetchDocumentFromFolderPathAsync", this.getAtCorpusPath(), CdmLogCode.WarnDocChangesDiscarded , doc.getName());
       }
       this.documents.remove(docName);
     }
@@ -218,12 +221,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
         }
 
         if (!name.equalsIgnoreCase(childFolder.getName())) {
-          Logger.error(
-                  CdmFolderDefinition.class.getSimpleName(),
-                  this.getCtx(),
-                  Logger.format("Invalid path '{0}'.", path),
-                  "fetchChildFolderFromPath"
-          );
+          Logger.error(this.getCtx(), tag, "fetchChildFolderFromPath", this.getAtCorpusPath(), CdmLogCode.ErrInvalidPath, path);
           return null;
         }
 
@@ -316,7 +314,8 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.name)) {
-      Logger.error(CdmFolderDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("name"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("name"));
+      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

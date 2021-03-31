@@ -14,6 +14,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmManifestDefinition : CdmDocumentDefinition, CdmObjectDefinition, CdmFileStatus
     {
+        private static readonly string Tag = nameof(CdmManifestDefinition);
         /// <summary>
         /// Gets or sets the manifest name.
         /// </summary>
@@ -167,10 +168,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     return null;
                 }
-
                 if (this.Folder == null)
                 {
-                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Cannot resolve the manifest '{this.ManifestName}' because it has not been added to a folder", nameof(CreateResolvedManifestAsync));
+                    Logger.Error(this.Ctx as ResolveContext,Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveManifestFailed, this.ManifestName);
                     return null;
                 }
 
@@ -193,7 +193,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     resolvedManifestFolder = await this.Ctx.Corpus.FetchObjectAsync<CdmFolderDefinition>(newFolderPath);
                     if (resolvedManifestFolder == null)
                     {
-                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"New folder for manifest not found {newFolderPath}", nameof(CreateResolvedManifestAsync));
+                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveFolderNotFound, newFolderPath);
                         return null;
                     }
                     newManifestName = newManifestName.Substring(resolvedManifestPathSplit);
@@ -203,7 +203,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     resolvedManifestFolder = this.Owner as CdmFolderDefinition;
                 }
 
-                Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"resolving manifest {sourceManifestPath}", nameof(CreateResolvedManifestAsync));
+                Logger.Debug(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, $"resolving manifest {sourceManifestPath}");
 
                 // Using the references present in the resolved entities, get an entity
                 // create an imports doc with all the necessary resolved entity references and then resolve it
@@ -233,13 +233,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     var entDef = await this.GetEntityFromReference(entity, this);
                     if (entDef == null)
                     {
-                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Unable to get entity from reference", nameof(CreateResolvedManifestAsync));
+                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveEntityRefError);
                         return null;
                     }
 
                     if (entDef.InDocument.Folder == null)
                     {
-                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"The document containing the entity '{entDef.EntityName}' is not in a folder", nameof(CreateResolvedManifestAsync));
+                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrDocIsNotFolder, entDef.EntityName);
                         return null;
                     }
                     // get the path from this manifest to the source entity. this will be the {f} replacement value
@@ -263,7 +263,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     var folder = await this.Ctx.Corpus.FetchObjectAsync<CdmFolderDefinition>(newDocumentPath) as CdmFolderDefinition;
                     if (folder == null)
                     {
-                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"New folder not found {newDocumentPath}", nameof(CreateResolvedManifestAsync));
+                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveFolderNotFound, newDocumentPath);
                         return null;
                     }
 
@@ -275,7 +275,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         Directives = withDirectives?.Copy()
                     };
 
-                    Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    resolving entity {sourceEntityFullPath} to document {newDocumentFullPath}", nameof(CreateResolvedManifestAsync));
+                    Logger.Debug(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, $"resolving entity {sourceEntityFullPath} to document {newDocumentFullPath}");
 
                     var resolvedEntity = await entDef.CreateResolvedEntityAsync(entDef.EntityName, resOpt, folder, newDocumentName);
                     if (resolvedEntity == null)
@@ -293,7 +293,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     resolvedManifest.Entities.Add(result);
                 }
 
-                Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    calculating relationships", nameof(CreateResolvedManifestAsync));
+                Logger.Debug(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, "calculating relationships");
 
                 // calculate the entity graph for just this manifest and any submanifests
                 await this.Ctx.Corpus.CalculateEntityGraphAsync(resolvedManifest);
@@ -312,105 +312,108 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public async Task PopulateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle option = CdmRelationshipDiscoveryStyle.All)
         {
-            this.Relationships.Clear();
-            HashSet<string> relCache = new HashSet<string>();
-
-            if (this.Entities != null)
+            using (Logger.EnterScope(nameof(CdmManifestDefinition), Ctx, nameof(PopulateManifestRelationshipsAsync)))
             {
-                foreach (CdmEntityDeclarationDefinition entDec in this.Entities)
+                this.Relationships.Clear();
+                HashSet<string> relCache = new HashSet<string>();
+
+                if (this.Entities != null)
                 {
-                    string entPath = await this.GetEntityPathFromDeclaration(entDec, this);
-                    CdmEntityDefinition currEntity = await this.Ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(entPath);
-
-                    if (currEntity == null)
-                        continue;
-
-                    // handle the outgoing relationships
-                    List<CdmE2ERelationship> outgoingRels = this.Ctx.Corpus.FetchOutgoingRelationships(currEntity);
-                    if (outgoingRels != null)
+                    foreach (CdmEntityDeclarationDefinition entDec in this.Entities)
                     {
-                        foreach (CdmE2ERelationship rel in outgoingRels)
+                        string entPath = await this.GetEntityPathFromDeclaration(entDec, this);
+                        CdmEntityDefinition currEntity = await this.Ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(entPath);
+
+                        if (currEntity == null)
+                            continue;
+
+                        // handle the outgoing relationships
+                        List<CdmE2ERelationship> outgoingRels = this.Ctx.Corpus.FetchOutgoingRelationships(currEntity);
+                        if (outgoingRels != null)
                         {
-                            string cacheKey = rel2CacheKey(rel);
-                            if (!relCache.Contains(cacheKey) && this.IsRelAllowed(rel, option))
+                            foreach (CdmE2ERelationship rel in outgoingRels)
                             {
-                                this.Relationships.Add(this.LocalizeRelToManifest(rel));
-                                relCache.Add(cacheKey);
+                                string cacheKey = rel2CacheKey(rel);
+                                if (!relCache.Contains(cacheKey) && this.IsRelAllowed(rel, option))
+                                {
+                                    this.Relationships.Add(this.LocalizeRelToManifest(rel));
+                                    relCache.Add(cacheKey);
+                                }
                             }
                         }
-                    }
 
-                    List<CdmE2ERelationship> incomingRels = this.Ctx.Corpus.FetchIncomingRelationships(currEntity);
+                        List<CdmE2ERelationship> incomingRels = this.Ctx.Corpus.FetchIncomingRelationships(currEntity);
 
-                    if (incomingRels != null)
-                    {
-                        foreach (CdmE2ERelationship inRel in incomingRels)
+                        if (incomingRels != null)
                         {
-                            // get entity object for current toEntity
-                            CdmEntityDefinition currentInBase = await this.Ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(inRel.ToEntity, this);
-
-                            if (currentInBase == null)
-                                continue;
-
-                            // create graph of inheritance for to currentInBase
-                            // graph represented by an array where entity at i extends entity at i+1
-                            List<CdmEntityDefinition> toInheritanceGraph = new List<CdmEntityDefinition>();
-                            while (currentInBase != null)
+                            foreach (CdmE2ERelationship inRel in incomingRels)
                             {
-                                var resOpt = new ResolveOptions
+                                // get entity object for current toEntity
+                                CdmEntityDefinition currentInBase = await this.Ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(inRel.ToEntity, this);
+
+                                if (currentInBase == null)
+                                    continue;
+
+                                // create graph of inheritance for to currentInBase
+                                // graph represented by an array where entity at i extends entity at i+1
+                                List<CdmEntityDefinition> toInheritanceGraph = new List<CdmEntityDefinition>();
+                                while (currentInBase != null)
                                 {
-                                    WrtDoc = currentInBase.InDocument
-                                };
-                                currentInBase = currentInBase.ExtendsEntity?.FetchObjectDefinition<CdmEntityDefinition>(resOpt);
-                                if (currentInBase != null)
-                                    toInheritanceGraph.Add(currentInBase);
-                            }
-
-                            // add current incoming relationship
-                            string cacheKey = rel2CacheKey(inRel);
-                            if (!relCache.Contains(cacheKey) && this.IsRelAllowed(inRel, option))
-                            {
-                                this.Relationships.Add(this.LocalizeRelToManifest(inRel));
-                                relCache.Add(cacheKey);
-                            }
-
-                            // if A points at B, A's base classes must point at B as well
-                            foreach (CdmEntityDefinition baseEntity in toInheritanceGraph)
-                            {
-                                List<CdmE2ERelationship> incomingRelsForBase = this.Ctx.Corpus.FetchIncomingRelationships(baseEntity);
-
-                                if (incomingRelsForBase != null)
-                                {
-                                    foreach (CdmE2ERelationship inRelBase in incomingRelsForBase)
+                                    var resOpt = new ResolveOptions
                                     {
-                                        CdmE2ERelationship newRel = new CdmE2ERelationship(this.Ctx, "")
-                                        {
-                                            FromEntity = inRelBase.FromEntity,
-                                            FromEntityAttribute = inRelBase.FromEntityAttribute,
-                                            ToEntity = inRel.ToEntity,
-                                            ToEntityAttribute = inRel.ToEntityAttribute
-                                        };
+                                        WrtDoc = currentInBase.InDocument
+                                    };
+                                    currentInBase = currentInBase.ExtendsEntity?.FetchObjectDefinition<CdmEntityDefinition>(resOpt);
+                                    if (currentInBase != null)
+                                        toInheritanceGraph.Add(currentInBase);
+                                }
 
-                                        string baseRelCacheKey = rel2CacheKey(newRel);
-                                        if (!relCache.Contains(baseRelCacheKey) && this.IsRelAllowed(newRel, option))
+                                // add current incoming relationship
+                                string cacheKey = rel2CacheKey(inRel);
+                                if (!relCache.Contains(cacheKey) && this.IsRelAllowed(inRel, option))
+                                {
+                                    this.Relationships.Add(this.LocalizeRelToManifest(inRel));
+                                    relCache.Add(cacheKey);
+                                }
+
+                                // if A points at B, A's base classes must point at B as well
+                                foreach (CdmEntityDefinition baseEntity in toInheritanceGraph)
+                                {
+                                    List<CdmE2ERelationship> incomingRelsForBase = this.Ctx.Corpus.FetchIncomingRelationships(baseEntity);
+
+                                    if (incomingRelsForBase != null)
+                                    {
+                                        foreach (CdmE2ERelationship inRelBase in incomingRelsForBase)
                                         {
-                                            this.Relationships.Add(this.LocalizeRelToManifest(newRel));
-                                            relCache.Add(baseRelCacheKey);
+                                            CdmE2ERelationship newRel = new CdmE2ERelationship(this.Ctx, "")
+                                            {
+                                                FromEntity = inRelBase.FromEntity,
+                                                FromEntityAttribute = inRelBase.FromEntityAttribute,
+                                                ToEntity = inRel.ToEntity,
+                                                ToEntityAttribute = inRel.ToEntityAttribute
+                                            };
+
+                                            string baseRelCacheKey = rel2CacheKey(newRel);
+                                            if (!relCache.Contains(baseRelCacheKey) && this.IsRelAllowed(newRel, option))
+                                            {
+                                                this.Relationships.Add(this.LocalizeRelToManifest(newRel));
+                                                relCache.Add(baseRelCacheKey);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                if (this.SubManifests != null)
-                {
-                    foreach (CdmManifestDeclarationDefinition subManifestDef in this.SubManifests)
+                    if (this.SubManifests != null)
                     {
-                        var corpusPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(subManifestDef.Definition, this);
-                        var subManifest = await this.Ctx.Corpus.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
-                        await subManifest.PopulateManifestRelationshipsAsync(option);
+                        foreach (CdmManifestDeclarationDefinition subManifestDef in this.SubManifests)
+                        {
+                            var corpusPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(subManifestDef.Definition, this);
+                            var subManifest = await this.Ctx.Corpus.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
+                            await subManifest.PopulateManifestRelationshipsAsync(option);
+                        }
                     }
                 }
             }
@@ -423,7 +426,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmEntityDefinition result = await this.Ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(entityPath);
 
             if (result == null)
-                Logger.Error(nameof(CdmManifestDefinition), this.Ctx, $"failed to resolve entity {entityPath}", nameof(GetEntityFromReference));
+                Logger.Error(this.Ctx, Tag, nameof(GetEntityFromReference), this.AtCorpusPath, CdmLogCode.ErrResolveEntityFailure, entityPath);
 
             return result;
         }
@@ -532,17 +535,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string docPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(relative, this);
             if (docPath == null)
             {
-                Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Invalid corpus path {relative}", nameof(SaveDirtyLink));
+                Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveDirtyLink), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidCorpusPath, relative);
                 return false;
             }
             CdmObject objAt = await Ctx.Corpus.FetchObjectAsync<CdmObject>(docPath);
             if (objAt == null)
             {
-                Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Couldn't get object from path {docPath}", nameof(SaveDirtyLink));
+                Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveDirtyLink), this.AtCorpusPath, CdmLogCode.ErrPersistObjectNotFound, docPath);
                 return false;
             }
 
-            CdmDocumentDefinition docImp = objAt.InDocument as CdmDocumentDefinition;
+            CdmDocumentDefinition docImp = objAt.InDocument;
 
             if (docImp != null)
             {
@@ -551,7 +554,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // save it with the same name
                     if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
                     {
-                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving document {docImp.Name}", nameof(SaveDirtyLink));
+                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveDirtyLink), this.AtCorpusPath, CdmLogCode.ErrDocEntityDocSavingFailure, docImp.Name);
                         return false;
                     }
                 }
@@ -573,7 +576,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (await SaveDirtyLink(imp.CorpusPath, options) == false)
                     {
-                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving imported document {imp.AtCorpusPath}", nameof(SaveLinkedDocuments));
+                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocImportSavingFailure, imp.AtCorpusPath);
                         return false;
                     }
                 }
@@ -588,7 +591,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         CdmLocalEntityDeclarationDefinition defImp = def as CdmLocalEntityDeclarationDefinition;
                         if (await SaveDirtyLink(defImp.EntityPath, options) == false)
                         {
-                            Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving local entity schema document {defImp.EntityPath}", nameof(SaveLinkedDocuments));
+                            Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocEntityDocSavingFailure, defImp.EntityPath);
                             return false;
                         }
 
@@ -601,7 +604,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 {
                                     if (await SaveDirtyLink(defImp.EntityPath, options) == false)
                                     {
-                                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving local entity schema document {defImp.EntityPath}", nameof(SaveLinkedDocuments));
+                                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocEntityDocSavingFailure, defImp.EntityPath);
                                         return false;
                                     }
                                 }
@@ -616,7 +619,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 {
                                     if (await SaveDirtyLink(part.SpecializedSchema, options) == false)
                                     {
-                                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving partition schema document {part.SpecializedSchema}", nameof(SaveLinkedDocuments));
+                                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocPartitionSchemaSavingFailure, part.SpecializedSchema);
                                         return false;
                                     }
                                 }
@@ -631,7 +634,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (await SaveDirtyLink(sub.Definition, options) == false)
                     {
-                        Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"failed saving sub-manifest document {sub.DeclaredPath}", nameof(SaveLinkedDocuments));
+                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocSubManifestSavingFailure, sub.DeclaredPath);
                         return false;
                     }
                 }
@@ -659,6 +662,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             relCopy.FromEntity = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(rel.FromEntity, this);
             relCopy.ToEntityAttribute = rel.ToEntityAttribute;
             relCopy.FromEntityAttribute = rel.FromEntityAttribute;
+            relCopy.ExhibitsTraits.AddRange(rel.ExhibitsTraits);
             return relCopy;
         }
     }

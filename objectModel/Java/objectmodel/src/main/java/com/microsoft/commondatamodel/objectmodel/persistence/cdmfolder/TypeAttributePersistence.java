@@ -8,6 +8,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projections.ProjectionPersistence;
@@ -20,6 +21,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class TypeAttributePersistence {
+  private static String tag = TypeAttributePersistence.class.getSimpleName();
+
   public static CdmTypeAttributeDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
     return fromData(ctx, obj, null);
   }
@@ -47,15 +50,15 @@ public class TypeAttributePersistence {
       }
 
       if (StringUtils.isNullOrTrimEmpty(minCardinality) || StringUtils.isNullOrTrimEmpty(maxCardinality)) {
-        Logger.error(TypeAttributePersistence.class.getSimpleName(), ctx, "Both minimum and maximum are required for the Cardinality property.", "fromData");
+        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistCardinalityPropMissing);
       }
 
       if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-        Logger.error(TypeAttributePersistence.class.getSimpleName(), ctx, Logger.format("Invalid minimum cardinality {0}.", minCardinality), "fromData");
+        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrValdnInvalidMinCardinality, minCardinality);
       }
 
       if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-        Logger.error(TypeAttributePersistence.class.getSimpleName(), ctx, Logger.format("Invalid maximum cardinality {0}.", maxCardinality), "fromData");
+        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrValdnInvalidMaxCardinality, maxCardinality);
       }
 
       if (!StringUtils.isNullOrTrimEmpty(minCardinality) &&
@@ -97,12 +100,7 @@ public class TypeAttributePersistence {
       if (cdmDataFormat != CdmDataFormat.Unknown) {
         typeAttribute.updateDataFormat(cdmDataFormat);
       } else {
-        Logger.warning(
-            TypeAttributePersistence.class.getSimpleName(),
-            ctx,
-            Logger.format("Couldn't find an enum value for {0}.", dataFormat),
-            "fromData"
-        );
+        Logger.warning(ctx, tag, "fromData", null, CdmLogCode.WarnPersistEnumNotFound, dataFormat);
       }
     }
 

@@ -51,9 +51,7 @@ export class DataPartitionPatternPersistence {
         if (dataObj.specializedSchema) {
             newPattern.specializedSchema = dataObj.specializedSchema;
         }
-        if (dataObj.exhibitsTraits) {
-            utils.addArrayToCdmCollection<CdmTraitReference>(newPattern.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
-        }
+        utils.addArrayToCdmCollection<CdmTraitReference>(newPattern.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
 
         return newPattern;
     }

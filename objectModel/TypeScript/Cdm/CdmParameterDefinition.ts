@@ -8,13 +8,16 @@ import {
     CdmObject,
     cdmObjectSimple,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../internal';
 
 export class CdmParameterDefinition extends cdmObjectSimple implements CdmParameterDefinition {
+    private TAG: string = CdmParameterDefinition.name;
+
     public explanation: string;
     public name: string;
     public defaultValue: ArgumentValue;
@@ -84,13 +87,8 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
         // let bodyCode = () =>
         {
             if (!this.name) {
-                Logger.error(
-                    CdmParameterDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['name']),
-                    this.validate.name
-                );
-
+                let missingFields: string[] = ['name'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
             }
 

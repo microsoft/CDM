@@ -7,6 +7,8 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmE2ERelationship;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.E2ERelationship;
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 public class E2ERelationshipPersistence {
@@ -19,10 +21,13 @@ public class E2ERelationshipPersistence {
     relationship.setFromEntityAttribute(dataObj.getFromEntityAttribute());
     relationship.setToEntity(dataObj.getToEntity());
     relationship.setToEntityAttribute(dataObj.getToEntityAttribute());
+    Utils.addListToCdmCollection(relationship.getExhibitsTraits(), Utils.createTraitReferenceList(ctx, dataObj.getExhibitsTraits()));
+    
     return relationship;
   }
 
-  public static E2ERelationship toData(final CdmE2ERelationship instance) {
+  public static E2ERelationship toData(final CdmE2ERelationship instance, final ResolveOptions resOpt,
+                                       final CopyOptions options) {
     final E2ERelationship e2ERelationship = new E2ERelationship();
     if (!StringUtils.isNullOrTrimEmpty(instance.getName())) {
       e2ERelationship.setName(instance.getName());
@@ -31,6 +36,7 @@ public class E2ERelationshipPersistence {
     e2ERelationship.setFromEntityAttribute(instance.getFromEntityAttribute());
     e2ERelationship.setToEntity(instance.getToEntity());
     e2ERelationship.setToEntityAttribute(instance.getToEntityAttribute());
+    e2ERelationship.setExhibitsTraits(Utils.listCopyDataAsArrayNode(instance.getExhibitsTraits(), resOpt, options));
     return e2ERelationship;
   }
 }

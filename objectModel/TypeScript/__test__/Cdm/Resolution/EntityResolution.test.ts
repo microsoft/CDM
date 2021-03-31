@@ -53,6 +53,9 @@ describe('Cdm/Resolution/EntityResolution', () => {
 
         expect(document)
             .toBe(entity.owner);
+        // Test that entity's attribute's owner should have remained unchanged (same as the owning entity)
+        expect(entity.attributes.allItems[0].owner)
+            .toBe(entity);
         done();
     });
 

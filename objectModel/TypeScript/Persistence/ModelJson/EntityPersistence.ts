@@ -8,6 +8,7 @@ import {
     cdmObjectType,
     CdmTraitDefinition,
     CdmTypeAttributeDefinition,
+    cdmLogCode,
     copyOptions,
     resolveOptions
 } from '../../internal';
@@ -16,6 +17,8 @@ import * as extensionHelper from './ExtensionHelper';
 import { Attribute, LocalEntity, localEntityBaseProperties } from './types';
 
 export class EntityPersistence {
+    private static TAG: string = EntityPersistence.name;
+
     public static async fromData(
         ctx: CdmCorpusContext,
         object: LocalEntity,
@@ -39,12 +42,7 @@ export class EntityPersistence {
                 if (typeAttribute !== undefined) {
                     entity.attributes.push(typeAttribute);
                 } else {
-                    Logger.error(
-                        EntityPersistence.name,
-                        ctx,
-                        'There was an error while trying to convert model.json attribute to cdm attribute.'
-                    );
-
+                    Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonAttrConversionFailure);
                     return undefined;
                 }
             }
@@ -85,12 +83,7 @@ export class EntityPersistence {
             result.attributes = [];
             for (const element of instance.attributes.allItems) {
                 if (element.objectType !== cdmObjectType.typeAttributeDef) {
-                    Logger.error(
-                        EntityPersistence.name,
-                        ctx,
-                        `Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported.`
-                    );
-
+                    Logger.error(ctx, this.TAG, this.toData.name, null, cdmLogCode.ErrPersistManifestSavingFailure);
                     return undefined;
                 }
 
@@ -99,12 +92,7 @@ export class EntityPersistence {
                 if (attribute !== undefined) {
                     result.attributes.push(attribute);
                 } else {
-                    Logger.error(
-                        EntityPersistence.name,
-                        ctx,
-                        'There was an error while trying to convert model.json attribute to cdm attribute.'
-                    );
-
+                    Logger.error(ctx, this.TAG, this.toData.name, null, cdmLogCode.ErrPersistModelJsonAttrConversionFailure);
                     return undefined;
                 }
             }

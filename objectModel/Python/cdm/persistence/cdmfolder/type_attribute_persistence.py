@@ -7,6 +7,7 @@ from cdm.objectmodel import CdmCorpusContext, CdmTypeAttributeDefinition
 from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
 from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.utilities import logger, ResolveOptions, CopyOptions, TraitToPropertyMap, copy_data_utils
+from cdm.enums import CdmLogCode
 
 from . import utils
 from .attribute_context_reference_persistence import AttributeContextReferencePersistence
@@ -17,7 +18,6 @@ from .purpose_reference_persistence import PurposeReferencePersistence
 from .types import TypeAttribute
 
 _TAG = 'TypeAttributePersistence'
-
 
 class TypeAttributePersistence:
     @staticmethod
@@ -36,13 +36,13 @@ class TypeAttributePersistence:
                 max_cardinality = data.get('cardinality').get('maximum')
 
             if not min_cardinality or not max_cardinality:
-                logger.error(_TAG, ctx, 'Both minimum and maximum are required for the Cardinality property.')
+                logger.error(ctx, _TAG, 'from_data', None, CdmLogCode.ERR_PERSIST_CARDINALITY_PROP_MISSING)
 
             if not CardinalitySettings._is_minimum_valid(min_cardinality):
-                logger.error(_TAG, ctx, 'Invalid minimum cardinality {}.'.format(min_cardinality))
+                logger.error(ctx, _TAG, 'from_data', None, CdmLogCode.ERR_VALDN_INVALID_MIN_CARDINALITY, min_cardinality)
 
             if not CardinalitySettings._is_maximum_valid(max_cardinality):
-                logger.error(_TAG, ctx, 'Invalid maximum cardinality {}.'.format(max_cardinality))
+                logger.error(ctx, _TAG, 'from_data', None, CdmLogCode.ERR_VALDN_INVALID_MAX_CARDINALITY, max_cardinality)
 
             if min_cardinality and max_cardinality and CardinalitySettings._is_minimum_valid(min_cardinality) and CardinalitySettings._is_maximum_valid(max_cardinality):
                 type_attribute.cardinality = CardinalitySettings(type_attribute)
@@ -77,8 +77,8 @@ class TypeAttributePersistence:
             try:
                 type_attribute.data_format = TypeAttributePersistence._data_type_from_data(data.dataFormat)
             except ValueError:
-                logger.warning(TypeAttributePersistence.__name__, ctx, 'Couldn\'t find an enum value for {}.'.format(
-                    data.dataFormat), TypeAttributePersistence.from_data.__name__)
+                logger.warning(ctx, _TAG, TypeAttributePersistence.from_data.__name__, None,
+                               CdmLogCode.WARN_PERSIST_ENUM_NOT_FOUND, data.dataFormat)
 
         return type_attribute
 

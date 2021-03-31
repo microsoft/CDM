@@ -18,6 +18,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
@@ -38,6 +39,8 @@ import java.util.function.BiConsumer;
  */
 @Deprecated
 public class TraitToPropertyMap {
+  private static String tag = TraitToPropertyMap.class.getSimpleName();
+
   private CdmObject host;
   private static Map<CdmTraitName, List<CdmPropertyName>> TRAIT_TO_LIST_OF_PROPERTIES_MAP = new ConcurrentHashMap<>();
   private static String[] dataFormatTraitNames =  {
@@ -781,10 +784,10 @@ public class TraitToPropertyMap {
         newDefault = this.getCtx().getCorpus().makeRef(CdmObjectType.EntityRef, cEnt, false);
         this.updateTraitArgument(trait, "default", newDefault);
       } else {
-        Logger.error(TraitToPropertyMap.class.getSimpleName(), this.host.getCtx(), "Default value missing languageTag or displayText.");
+        Logger.error(this.host.getCtx(), tag, "updateDefaultValue", null, CdmLogCode.ErrValdnMissingLanguageTag);
       }
     } else {
-      Logger.error(TraitToPropertyMap.class.getSimpleName(), this.host.getCtx(), "Default value type not supported. Please use ArrayNode.");
+      Logger.error(this.host.getCtx(), tag, "updateDefaultValue", null, CdmLogCode.ErrUnsupportedType);
     }
   }
 

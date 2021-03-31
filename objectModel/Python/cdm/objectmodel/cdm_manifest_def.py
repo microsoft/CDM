@@ -6,6 +6,7 @@ from typing import cast, Dict, Iterable, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle
 from cdm.utilities import AttributeResolutionDirectiveSet, logger, ResolveOptions, time_utils
+from cdm.enums import CdmLogCode
 
 from .cdm_collection import CdmCollection
 from .cdm_entity_collection import CdmEntityCollection
@@ -33,6 +34,8 @@ def rel2_cache_key(rel: 'CdmE2ERelationship') -> str:
 class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileStatus):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx, '{}.manifest.cdm.json'.format(name))
+
+        self._TAG = CdmManifestDefinition.__name__
         # The name of the manifest
         self.manifest_name = name
 
@@ -46,7 +49,6 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
         # --- internal ---
         self._file_system_modified_time = None  # type: Optional[datetime]
-        self._TAG = CdmManifestDefinition.__name__
 
     @property
     def object_type(self) -> CdmObjectType:
@@ -106,7 +108,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
         return copy
 
-    async def create_resolved_manifest_async(self, new_manifest_name: str, new_entity_document_name_format: str, directives: Optional[AttributeResolutionDirectiveSet] = None) -> Optional['CdmManifestDefinition']:
+    async def create_resolved_manifest_async(self, new_manifest_name: str, new_entity_document_name_format: Optional[str], directives: Optional[AttributeResolutionDirectiveSet] = None) -> Optional['CdmManifestDefinition']:
         """Creates a resolved copy of the manifest.
         new_entity_document_name_format specifies a pattern to use when creating documents for resolved entities.
         The default is "resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as
@@ -119,10 +121,11 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
             if not self.folder:
                 logger.error(
-                    self._TAG,
                     self.ctx,
-                    'Cannot resolve the manifest \'{}\' because it has not been added to a folder'.format(self.manifest_name),
-                    self.create_resolved_manifest_async.__name__
+                    self._TAG,
+                    self.create_resolved_manifest_async.__name__,
+                    self.at_corpus_path,
+                    CdmLogCode.ERR_RESOLVE_MANIFEST_FAILED, self.manifest_name
                 )
                 return None
 
@@ -143,13 +146,14 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 new_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(resolved_manifest_path, self)
                 resolved_manifest_folder = await self.ctx.corpus.fetch_object_async(new_folder_path)  # type: CdmFolderDefinition
                 if resolved_manifest_folder is None:
-                    logger.error(self._TAG, self.ctx, 'New folder for manifest not found {}'.format(new_folder_path), self.create_resolved_manifest_async.__name__)
+                    logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_FOLDER_NOT_FOUND, new_folder_path)
                     return None
                 new_manifest_name = new_manifest_name[resolved_manifest_path_split:]
             else:
                 resolved_manifest_folder = self.owner
 
-            logger.debug(self._TAG, self.ctx, 'resolving manifest {}'.format(source_manifest_path), self.create_resolved_manifest_async.__name__)
+            logger.debug(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path,
+                         'resolving manifest {}'.format(source_manifest_path))
 
             # using the references present in the resolved entities, get an entity
             # create an imports doc with all the necessary resolved entity references and then resolve it
@@ -174,12 +178,11 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 ent_def = await self._get_entity_from_reference(entity, self)
 
                 if not ent_def:
-                    logger.error(self._TAG, self.ctx, 'Unable to get entity from reference', self.create_resolved_manifest_async.__name__)
+                    logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_ENTITY_REF_ERROR)
                     return None
 
                 if not ent_def.in_document.folder:
-                    logger.error(self._TAG, self.ctx, 'The document containing the entity \'{}\' is not in a folder'.format(
-                        ent_def.entity_name), self.create_resolved_manifest_async.__name__)
+                    logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IS_NOT_FOLDERformat, ent_def.entity_name)
                     return None
 
                 # get the path from this manifest to the source entity. this will be the {f} replacement value
@@ -198,15 +201,16 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 # make sure the new folder exists
                 folder = await self.ctx.corpus.fetch_object_async(new_document_path)  # type: CdmFolderDefinition
                 if not folder:
-                    logger.error(self._TAG, self.ctx, 'New folder not found {}'.format(new_document_path), self.create_resolved_manifest_async.__name__)
+                    logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_FOLDER_NOT_FOUND, new_document_path)
                     return None
 
                 # next create the resolved entity.
                 with_directives = directives if directives is not None else self.ctx.corpus.default_resolution_directives
                 res_opt = ResolveOptions(ent_def.in_document, with_directives.copy())
 
-                logger.debug(self._TAG, self.ctx, '    resolving entity {} to document {}'.format(source_entity_full_path, new_document_full_path),
-                            self.create_resolved_manifest_async.__name__)
+                logger.debug(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path,
+                             'resolving entity {} to document {}'.format(source_entity_full_path,
+                                                                         new_document_full_path))
 
                 resolved_entity = await ent_def.create_resolved_entity_async(ent_def.entity_name, res_opt, folder, new_document_name)
                 if not resolved_entity:
@@ -220,7 +224,8 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
                 resolved_manifest.entities.append(result)
 
-            logger.debug(self._TAG, self.ctx, '    calculating relationships', self.create_resolved_manifest_async.__name__)
+            logger.debug(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path,
+                         'calculating relationships')
             # Calculate the entity graph for just this manifest.
             await self.ctx.corpus.calculate_entity_graph_async(resolved_manifest)
             # Stick results into the relationships list for the manifest.
@@ -263,7 +268,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         result = await self.ctx.corpus.fetch_object_async(entity_path)  # type: CdmEntityDefinition
 
         if result is None:
-            logger.error(self._TAG, self.ctx, 'failed to resolve entity {}'.format(entity_path), self._get_entity_from_reference.__name__)
+            logger.error(self.ctx, self._TAG, self._get_entity_from_reference.__name__, None, CdmLogCode.ERR_RESOLVE_ENTITY_FAILURE, entity_path)
 
         return result
 
@@ -302,75 +307,77 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         rel_copy.from_entity = self.ctx.corpus.storage.create_relative_corpus_path(rel.from_entity, self)
         rel_copy.to_entity_attribute = rel.to_entity_attribute
         rel_copy.from_entity_attribute = rel.from_entity_attribute
+        rel_copy.exhibits_traits.extend(rel.exhibits_traits)
         return rel_copy
 
     async def populate_manifest_relationships_async(self, option: CdmRelationshipDiscoveryStyle = CdmRelationshipDiscoveryStyle.ALL) -> None:
         """Populate the relationships that the entities in the current manifest are involved in."""
-        self.relationships.clear()
-        rel_cache = set()  # Set[str]
+        with logger._enter_scope(self._TAG, self.ctx, self.populate_manifest_relationships_async.__name__):
+            self.relationships.clear()
+            rel_cache = set()  # Set[str]
 
-        for ent_dec in self.entities:
-            ent_path = await self._get_entity_path_from_declaration(ent_dec, self)
-            curr_entity = await self.ctx.corpus.fetch_object_async(ent_path)  # type: CdmEntityDefinition
+            for ent_dec in self.entities:
+                ent_path = await self._get_entity_path_from_declaration(ent_dec, self)
+                curr_entity = await self.ctx.corpus.fetch_object_async(ent_path)  # type: Optional[CdmEntityDefinition]
 
-            if curr_entity is None:
-                continue
+                if curr_entity is None:
+                    continue
 
-            # handle the outgoing relationships
-            outgoing_rels = self.ctx.corpus.fetch_outgoing_relationships(curr_entity)  # List[CdmE2ERelationship]
-            if outgoing_rels:
-                for rel in outgoing_rels:
-                    cache_key = rel2_cache_key(rel)
-                    if cache_key not in rel_cache and self._is_rel_allowed(rel, option):
-                        self.relationships.append(self._localize_rel_to_manifest(rel))
-                        rel_cache.add(cache_key)
+                # handle the outgoing relationships
+                outgoing_rels = self.ctx.corpus.fetch_outgoing_relationships(curr_entity)  # List[CdmE2ERelationship]
+                if outgoing_rels:
+                    for rel in outgoing_rels:
+                        cache_key = rel2_cache_key(rel)
+                        if cache_key not in rel_cache and self._is_rel_allowed(rel, option):
+                            self.relationships.append(self._localize_rel_to_manifest(rel))
+                            rel_cache.add(cache_key)
 
-            incoming_rels = self.ctx.corpus.fetch_incoming_relationships(curr_entity)  # type: List[CdmE2ERelationship]
+                incoming_rels = self.ctx.corpus.fetch_incoming_relationships(curr_entity)  # type: List[CdmE2ERelationship]
 
-            if incoming_rels:
-                for in_rel in incoming_rels:
-                    # get entity object for current toEntity
-                    current_in_base = await self.ctx.corpus.fetch_object_async(in_rel.to_entity, self)  # type: CdmEntityDefinition
+                if incoming_rels:
+                    for in_rel in incoming_rels:
+                        # get entity object for current toEntity
+                        current_in_base = await self.ctx.corpus.fetch_object_async(in_rel.to_entity, self)  # type: Optional[CdmEntityDefinition]
 
-                    if not current_in_base:
-                        continue
+                        if not current_in_base:
+                            continue
 
-                    # create graph of inheritance for to current_in_base
-                    # graph represented by an array where entity at i extends entity at i+1
-                    to_inheritance_graph = []  # type: List[CdmEntityDefinition]
-                    while current_in_base:
-                        res_opt = ResolveOptions(wrt_doc=current_in_base.in_document)
-                        current_in_base = current_in_base.extends_entity.fetch_object_definition(res_opt) if current_in_base.extends_entity else None
-                        if current_in_base:
-                            to_inheritance_graph.append(current_in_base)
+                        # create graph of inheritance for to current_in_base
+                        # graph represented by an array where entity at i extends entity at i+1
+                        to_inheritance_graph = []  # type: List[CdmEntityDefinition]
+                        while current_in_base:
+                            res_opt = ResolveOptions(wrt_doc=current_in_base.in_document)
+                            current_in_base = current_in_base.extends_entity.fetch_object_definition(res_opt) if current_in_base.extends_entity else None
+                            if current_in_base:
+                                to_inheritance_graph.append(current_in_base)
 
-                    # add current incoming relationship
-                    cache_key = rel2_cache_key(in_rel)
-                    if cache_key not in rel_cache and self._is_rel_allowed(in_rel, option):
-                        self.relationships.append(self._localize_rel_to_manifest(in_rel))
-                        rel_cache.add(cache_key)
+                        # add current incoming relationship
+                        cache_key = rel2_cache_key(in_rel)
+                        if cache_key not in rel_cache and self._is_rel_allowed(in_rel, option):
+                            self.relationships.append(self._localize_rel_to_manifest(in_rel))
+                            rel_cache.add(cache_key)
 
-                    # if A points at B, A's base classes must point at B as well
-                    for base_entity in to_inheritance_graph:
-                        incoming_rels_for_base = self.ctx.corpus.fetch_incoming_relationships(base_entity)  # type: List[CdmE2ERelationship]
+                        # if A points at B, A's base classes must point at B as well
+                        for base_entity in to_inheritance_graph:
+                            incoming_rels_for_base = self.ctx.corpus.fetch_incoming_relationships(base_entity)  # type: List[CdmE2ERelationship]
 
-                        if incoming_rels_for_base:
-                            for in_rel_base in incoming_rels_for_base:
-                                new_rel = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, '')
-                                new_rel.from_entity = in_rel_base.from_entity
-                                new_rel.from_entity_attribute = in_rel_base.from_entity_attribute
-                                new_rel.to_entity = in_rel.to_entity
-                                new_rel.to_entity_attribute = in_rel.to_entity_attribute
+                            if incoming_rels_for_base:
+                                for in_rel_base in incoming_rels_for_base:
+                                    new_rel = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, '')
+                                    new_rel.from_entity = in_rel_base.from_entity
+                                    new_rel.from_entity_attribute = in_rel_base.from_entity_attribute
+                                    new_rel.to_entity = in_rel.to_entity
+                                    new_rel.to_entity_attribute = in_rel.to_entity_attribute
 
-                                base_rel_cache_key = rel2_cache_key(new_rel)
-                                if base_rel_cache_key not in rel_cache and self._is_rel_allowed(new_rel, option):
-                                    self.relationships.append(self._localize_rel_to_manifest(new_rel))
-                                    rel_cache.add(base_rel_cache_key)
-        if self.sub_manifests:
-            for sub_manifest_def in self.sub_manifests:
-                corpus_path = self.ctx.corpus.storage.create_absolute_corpus_path(sub_manifest_def.definition, self)
-                sub_manifest = await self.ctx.corpus.fetch_object_async(corpus_path)  # type: CdmManifestDefinition
-                await sub_manifest.populate_manifest_relationships_async(option)
+                                    base_rel_cache_key = rel2_cache_key(new_rel)
+                                    if base_rel_cache_key not in rel_cache and self._is_rel_allowed(new_rel, option):
+                                        self.relationships.append(self._localize_rel_to_manifest(new_rel))
+                                        rel_cache.add(base_rel_cache_key)
+            if self.sub_manifests:
+                for sub_manifest_def in self.sub_manifests:
+                    corpus_path = self.ctx.corpus.storage.create_absolute_corpus_path(sub_manifest_def.definition, self)
+                    sub_manifest = await self.ctx.corpus.fetch_object_async(corpus_path)  # type: Optional[CdmManifestDefinition]
+                    await sub_manifest.populate_manifest_relationships_async(option)
 
     async def report_most_recent_time_async(self, child_time: datetime) -> None:
         """Report most recent modified time (of current or children objects) to the parent object."""
@@ -385,7 +392,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         the input query, with entity and attribute names filled in"""
         return None
 
-    async def _save_dirty_link(self, relative: str, options: 'CopyOptions') -> None:
+    async def _save_dirty_link(self, relative: str, options: 'CopyOptions') -> bool:
         """helper that fixes a path from local to absolute, gets the object from that path
         then looks at the document where the object is found.
         if dirty, the document is saved with the original name"""
@@ -393,12 +400,12 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         # get the document object from the import
         doc_path = self.ctx.corpus.storage.create_absolute_corpus_path(relative, self)
         if doc_path is None:
-            logger.error(self._TAG, self.ctx, 'Invalid corpus path {}'.format(relative), self._save_dirty_link.__name__)
+            logger.error(self.ctx, self._TAG, self._save_dirty_link.__name__, self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_CORPUS_PATH, relative)
             return False
 
         obj_at = await self.ctx.corpus.fetch_object_async(doc_path)
         if obj_at is None:
-            logger.error(self._TAG, self.ctx, 'Couldn\'t get object from path {}'.format(doc_path), self._save_dirty_link.__name__)
+            logger.error(self.ctx, self._TAG, self._save_dirty_link.__name__, self.at_corpus_path, CdmLogCode.ERR_PERSIST_OBJECT_NOT_FOUND, doc_path)
             return False
 
         doc_imp = cast('CdmDocumentDefinition', obj_at.in_document)
@@ -406,7 +413,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             if doc_imp._is_dirty:
                 # save it with the same name
                 if not await doc_imp.save_as_async(doc_imp.name, True, options):
-                    logger.error(self._TAG, self.ctx, 'failed saving document {}'.format(doc_imp.name), self._save_dirty_link.__name__)
+                    logger.error(self.ctx, self._TAG, self._save_dirty_link.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ENTITY_DOC_SAVING_FAILURE, doc_imp.name)
                     return False
         return True
 
@@ -414,16 +421,14 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         if self.imports:
             for imp in self.imports:
                 if not await self._save_dirty_link(imp.corpus_path, options):
-                    logger.error(self._TAG, self.ctx, 'failed saving imported document {}'.format(
-                        imp.at_corpus_path), self._save_linked_documents_async.__name__)
+                    logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IMPORT_SAVING_FAILURE, imp.at_corpus_path)
                     return False
 
         # only the local entity declarations please
         for entity_def in self.entities:
             if entity_def.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
                 if not await self._save_dirty_link(entity_def.entity_path, options):
-                    logger.error(self._TAG, self.ctx, 'failed saving local entity schema document {}'.format(entity_def.entity_path),
-                                 self._save_linked_documents_async.__name__)
+                    logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ENTITY_DOC_SAVING_FAILURE, entity_def.entity_path)
                     return False
 
                 # also, partitions can have their own schemas
@@ -431,8 +436,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                     for partition in entity_def.data_partitions:
                         if partition.specialized_schema:
                             if not await self._save_dirty_link(entity_def.entity_path, options):
-                                logger.error(self._TAG, self.ctx, 'failed saving partition schema document {}'.format(
-                                    entity_def.entity_path), self._save_linked_documents_async.__name__)
+                                logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ENTITY_DOC_SAVING_FAILURE, entity_def.entity_path)
                                 return False
 
                 # so can patterns
@@ -440,15 +444,13 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                     for pattern in entity_def.data_partition_patterns:
                         if pattern.specialized_schema:
                             if not await self._save_dirty_link(pattern.specialized_schema, options):
-                                logger.error(self._TAG, self.ctx, 'failed saving partition schema document {}'.format(
-                                    pattern.specialized_schema), self._save_linked_documents_async.__name__)
+                                logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_PARTITION_SCHEMA_SAVING_FAILURE, pattern.specialized_schema)
                                 return False
 
         if self.sub_manifests:
             for sub in self.sub_manifests:
                 if not await self._save_dirty_link(sub.definition, options):
-                    logger.error(self._TAG, self.ctx, 'failed saving sub-manifest document {}'.format(sub.definition),
-                                 self._save_linked_documents_async.__name__)
+                    logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_SUB_MANIFEST_SAVING_FAILURE, sub.definition)
                     return False
 
         return True

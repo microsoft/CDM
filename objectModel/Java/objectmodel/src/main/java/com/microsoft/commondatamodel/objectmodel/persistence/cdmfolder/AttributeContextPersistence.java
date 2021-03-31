@@ -13,6 +13,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.AttributeContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AttributeContextPersistence {
+  private static String tag = AttributeContextPersistence.class.getSimpleName();
+
   public static CdmAttributeContext fromData(final CdmCorpusContext ctx, final AttributeContext obj) {
     if (obj == null)
       return null;
@@ -70,12 +73,7 @@ public class AttributeContextPersistence {
           try {
             attributeContext.getContents().add(fromData(ctx, JMapper.MAP.treeToValue(node, AttributeContext.class)));
           } catch (final IOException ex) {
-            Logger.error(
-                AttributeContextPersistence.class.getSimpleName(),
-                ctx,
-                Logger.format("There was an error while trying to convert from JSON to CdmAttributeContext. Reason: '{0}'", ex.getLocalizedMessage()),
-                "fromData"
-            );
+            Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistJsonAttrContextConversionError, ex.getLocalizedMessage());
           }
       }
     }
@@ -100,7 +98,7 @@ public class AttributeContextPersistence {
     final CdmObjectReference definition = instance.getDefinition();
     if (definition != null) {
       final Object resolvedDefinition = definition.copyData(resOpt, options);
-      if (resolvedDefinition != null) {
+      if (resolvedDefinition instanceof String) {
         result.setDefinition(resolvedDefinition.toString());
       }
     } else {

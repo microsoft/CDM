@@ -9,13 +9,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle ReplaceAsForeignKey operations
     /// </summary>
     public class CdmOperationReplaceAsForeignKey : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationReplaceAsForeignKey);
+        private static readonly string Tag = nameof(CdmOperationReplaceAsForeignKey);
 
         public string Reference { get; set; }
 
@@ -71,7 +72,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -176,7 +177,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 // Log error & return projOutputSet without any change
-                Logger.Error(TAG, projOutputSet.Ctx, $"Unable to locate state for reference attribute \"{refAttrName}\".", nameof(CreateNewProjectionAttributeStateSet));
+                Logger.Error(projOutputSet.Ctx, Tag, nameof(CreateNewProjectionAttributeStateSet), null, CdmLogCode.ErrProjRefAttrStateFailure, refAttrName);
             }
 
             return projOutputSet;

@@ -7,7 +7,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -21,36 +24,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         private const string foundationJsonPath = "cdm:/foundations.cdm.json";
 
         /// <summary>
+        /// If true, will update the expected output txt files for all the tests that are ran.
+        /// </summary>
+        private const bool updateExpectedOutput = false;
+
+        /// <summary>
         /// Resolves an entity
         /// </summary>
         /// <param name="corpus">The corpus</param>
         /// <param name="inputEntity">The entity to resolve</param>
-        /// <param name="resolutionOptions">The resolution options</param>
-        /// <param name="addResOptToName">Whether to add the resolution options as part of the resolved entity name</param>
-        public static async Task<CdmEntityDefinition> GetResolvedEntity(CdmCorpusDefinition corpus, CdmEntityDefinition inputEntity, List<string> resolutionOptions, bool addResOptToName = false)
+        /// <param name="directives">A set of directives to be used during resolution</param>
+        public static async Task<CdmEntityDefinition> GetResolvedEntity(CdmCorpusDefinition corpus, CdmEntityDefinition inputEntity, List<string> directives)
         {
-            HashSet<string> roHashSet = new HashSet<string>(resolutionOptions);
+            string resolvedEntityName = $"Resolved_{inputEntity.EntityName}";
 
-            string resolvedEntityName = "";
-
-            if (addResOptToName)
+            ResolveOptions resOpt = new ResolveOptions(inputEntity.InDocument)
             {
-                string fileNameSuffix = GetResolutionOptionNameSuffix(resolutionOptions);
-                resolvedEntityName = $"Resolved_{inputEntity.EntityName}{fileNameSuffix}";
-            }
-            else
-            {
-                resolvedEntityName = $"Resolved_{inputEntity.EntityName}";
-            }
-
-            ResolveOptions ro = new ResolveOptions(inputEntity.InDocument)
-            {
-                Directives = new AttributeResolutionDirectiveSet(roHashSet)
+                Directives = new AttributeResolutionDirectiveSet(new HashSet<string>(directives))
             };
 
             CdmFolderDefinition resolvedFolder = corpus.Storage.FetchRootFolder("output");
-            CdmEntityDefinition resolvedEntity = await inputEntity.CreateResolvedEntityAsync(resolvedEntityName, ro, resolvedFolder);
-            await resolvedEntity.InDocument.SaveAsAsync($"{resolvedEntityName}.cdm.json", saveReferenced: false);
+            CdmEntityDefinition resolvedEntity = await inputEntity.CreateResolvedEntityAsync(resolvedEntityName, resOpt, resolvedFolder);
 
             return resolvedEntity;
         }
@@ -58,17 +52,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// <summary>
         /// Returns a suffix that contains the file name and resolution option used
         /// </summary>
-        /// <param name="resolutionOptions">The resolution options</param>
-        public static string GetResolutionOptionNameSuffix(List<string> resolutionOptions)
+        /// <param name="directives">The set of directives used for resolution</param>
+        public static string GetResolutionOptionNameSuffix(List<string> directives, string expectedOutputPath = null, string entityName = null)
         {
             string fileNamePrefix = string.Empty;
 
-            for (int i = 0; i < resolutionOptions.Count; i++)
+            for (int i = 0; i < directives.Count; i++)
             {
-                fileNamePrefix = $"{fileNamePrefix}_{resolutionOptions[i]}";
+                fileNamePrefix = $"{fileNamePrefix}_{directives[i]}";
             }
 
-            if (string.IsNullOrWhiteSpace(fileNamePrefix))
+            bool fileExists = expectedOutputPath != null && entityName != null ?
+                File.Exists(Path.Combine(expectedOutputPath, $"AttrCtx_{entityName}{fileNamePrefix}.txt")) :
+                true;
+
+            if (string.IsNullOrWhiteSpace(fileNamePrefix) || !fileExists)
             {
                 fileNamePrefix = "_default";
             }
@@ -79,14 +77,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// <summary>
         /// Loads an entity, resolves it, and then validates the generated attribute contexts.
         /// </summary>
-        public static async Task LoadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, string testName, string testsSubpath, string entityName, List<string> resOpts)
+        public static async Task LoadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, string testName, string testsSubpath, string entityName, List<string> directives)
         {
             string expectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, testName);
-            string fileNameSuffix = GetResolutionOptionNameSuffix(resOpts);
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await GetResolvedEntity(corpus, entity, resOpts, true);
-            await AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, $"{entityName}{fileNameSuffix}", resolvedEntity);
+            Assert.IsNotNull(entity);
+            CdmEntityDefinition resolvedEntity = await GetResolvedEntity(corpus, entity, directives);
+            Assert.IsNotNull(resolvedEntity);
+
+            await ValidateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity);
         }
 
         /// <summary>
@@ -164,6 +164,71 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             projection.Source = projectionSource;
 
             return projection;
+        }
+
+        /// <summary>
+        /// Validates if the attribute context of the resolved entity matches the expected output.
+        /// </summary>
+        /// <param name="directives"></param>
+        /// <param name="expectedOutputPath"></param>
+        /// <param name="entityName"></param>
+        /// <param name="resolvedEntity"></param>
+        private static async Task ValidateAttributeContext(List<string> directives, string expectedOutputPath, string entityName, CdmEntityDefinition resolvedEntity)
+        {
+            if (resolvedEntity.AttributeContext == null)
+            {
+                throw new Exception("ValidateAttributeContext called with not resolved entity.");
+            }
+
+            string fileNamePrefix = $"AttrCtx_{entityName}";
+            string expectedStringFilePath;
+            string fileNameSuffix = GetResolutionOptionNameSuffix(directives);
+
+            // Get actual text
+            AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
+            string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity);
+
+            if (updateExpectedOutput)
+            {
+                expectedStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, $"{fileNamePrefix}{fileNameSuffix}.txt"));
+
+                if (directives.Count > 0)
+                {
+                    string defaultFileNameSuffix = GetResolutionOptionNameSuffix(new List<string>() { });
+                    string defaultStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, $"{fileNamePrefix}{defaultFileNameSuffix}.txt"));
+                    string defaultText = File.ReadAllText(defaultStringFilePath);
+
+                    if (actualText.Equals(defaultText))
+                    {
+                        File.Delete(expectedStringFilePath);
+                    }
+                    else
+                    {
+                        File.WriteAllText(expectedStringFilePath, actualText);
+                    }
+                }
+                else
+                {
+                    File.WriteAllText(expectedStringFilePath, actualText);
+                }
+            }
+            else
+            {
+                // Actual
+                string actualStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, "..", "ActualOutput", $"{fileNamePrefix}{fileNameSuffix}.txt"));
+
+                // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
+                File.WriteAllText(actualStringFilePath, actualText);
+                await resolvedEntity.InDocument.SaveAsAsync($"{resolvedEntity.EntityName}{fileNameSuffix}.cdm.json", saveReferenced: false);
+
+                // Expected
+                string expectedFileNameSuffix = GetResolutionOptionNameSuffix(directives, expectedOutputPath, entityName);
+                expectedStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, $"{fileNamePrefix}{expectedFileNameSuffix}.txt"));
+                string expectedText = File.ReadAllText(expectedStringFilePath);
+
+                // Test if Actual is Equal to Expected
+                Assert.AreEqual(expectedText.Replace("\r\n", "\n"), actualText.Replace("\r\n", "\n"));
+            }
         }
     }
 }

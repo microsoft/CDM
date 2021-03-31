@@ -16,6 +16,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     class EntityPersistence
     {
+        private static readonly string Tag = nameof(EntityPersistence);
+
         public static async Task<CdmEntityDefinition> FromData(CdmCorpusContext ctx, LocalEntity obj, List<CdmTraitDefinition> extensionTraitDefList, List<CdmTraitDefinition> localExtensionTraitDefList)
         {
             var entity = ctx.Corpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, obj.Name);
@@ -36,7 +38,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     else
                     {
-                        Logger.Error(nameof(EntityPersistence), (ResolveContext)ctx, "There was an error while trying to convert model.json attribute to cdm attribute.");
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistModelJsonAttrConversionFailure);
                         return null;
                     }
                 }
@@ -64,8 +66,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 {
                     if (element.ObjectType != CdmObjectType.TypeAttributeDef)
                     {
-                        Logger.Error(nameof(EntityPersistence), (ResolveContext)ctx, "Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported.");
-
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(ToData), element.AtCorpusPath, CdmLogCode.ErrPersistManifestSavingFailure);
                         return null;
                     }
 
@@ -77,8 +78,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     else
                     {
-                        Logger.Error(nameof(EntityPersistence), (ResolveContext)ctx, "There was an error while trying to convert model.json attribute to cdm attribute.");
-
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(ToData), element.AtCorpusPath, CdmLogCode.ErrPersistModelJsonAttrConversionFailure);
                         return null;
                     }
                 }

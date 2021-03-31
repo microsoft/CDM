@@ -5,18 +5,21 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
+  private String tag = CdmPurposeDefinition.class.getSimpleName();
+
   public String purposeName;
   public CdmPurposeReference extendsPurpose;
 
@@ -105,7 +108,8 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.purposeName)) {
-      Logger.error(CdmPurposeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("purposeName"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("purposeName"));
+      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

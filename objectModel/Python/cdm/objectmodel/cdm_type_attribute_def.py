@@ -5,7 +5,9 @@ from typing import Any, cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.resolvedmodel.projections.projection_directive import ProjectionDirective
-from cdm.utilities import ResolveOptions, TraitToPropertyMap, logger, Errors
+from cdm.utilities import ResolveOptions, TraitToPropertyMap, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_attribute_def import CdmAttribute
 
@@ -20,6 +22,8 @@ class CdmTypeAttributeDefinition(CdmAttribute):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx, name)
 
+        self._TAG = CdmTypeAttributeDefinition.__name__
+
         # the type attribute's context.
         self.attribute_context = None  # type: Optional[CdmObjectReference]
 
@@ -32,8 +36,6 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         # --- internal ---
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
         self._attribute_count = 1
-
-        self._TAG = CdmTypeAttributeDefinition.__name__
 
     @property
     def object_type(self) -> CdmObjectType:
@@ -269,15 +271,15 @@ class CdmTypeAttributeDefinition(CdmAttribute):
                 missing_fields.append('cardinality.maximum')
 
         if missing_fields:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
 
         if bool(self.cardinality):
             if not CardinalitySettings._is_minimum_valid(self.cardinality.minimum):
-                logger.error(self._TAG, self.ctx, 'Invalid minimum cardinality {}.'.format(self.cardinality.minimum))
+                logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_MIN_CARDINALITY, self.cardinality.minimum)
                 return False
             if not CardinalitySettings._is_maximum_valid(self.cardinality.maximum):
-                logger.error(self._TAG, self.ctx, 'Invalid maximum cardinality {}.'.format(self.cardinality.maximum))
+                logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_MAX_CARDINALITY, self.cardinality.maximum)
                 return False
         return True
 

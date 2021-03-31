@@ -5,8 +5,11 @@ from datetime import datetime
 from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 import warnings
 
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
+
 from cdm.enums import CdmObjectType, ImportsLoadStrategy
-from cdm.utilities import CopyOptions, ImportInfo, logger, Errors, ResolveOptions
+from cdm.utilities import CopyOptions, ImportInfo, logger, ResolveOptions
 
 from .cdm_container_def import CdmContainerDefinition
 from .cdm_definition_collection import CdmDefinitionCollection
@@ -46,6 +49,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmDocumentDefinition.__name__
+
         # the document name.
         self.name = name  # type: str
 
@@ -80,7 +85,6 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         self._imports = CdmImportCollection(self.ctx, self)
         self._definitions = CdmDefinitionCollection(self.ctx, self)
         self._is_valid = True  # types: bool
-        self._TAG = CdmDocumentDefinition.__name__
 
         self._clear_caches()
 
@@ -152,7 +156,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             return True
 
         if not self.folder:
-            logger.error(self._TAG, self.ctx, 'Document \'{}\' is not in a folder'.format(self.name), self._index_if_needed.__name__)
+            logger.error(self.ctx, self._TAG, self._index_if_needed.__name__, self.at_corpus_path, CdmLogCode.ERR_VALDN_MISSING_DOC, self.name)
             return False
 
         corpus = self.folder._corpus
@@ -224,7 +228,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         was_blocking = self.ctx.corpus._block_declared_path_changes
         self.ctx.corpus._block_declared_path_changes = True
 
-        logger.info(self._TAG, self.ctx, 'Localizing corpus paths in document \'{}\''.format(self.name), self._localize_corpus_paths.__name__)
+        logger.info(self.ctx, self._TAG, self._localize_corpus_paths.__name__, new_folder.at_corpus_path,
+                    'Localizing corpus paths in document \'{}\''.format(self.name))
 
         def import_callback(obj: 'CdmObject', path: str) -> bool:
             nonlocal all_went_well
@@ -382,7 +387,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                     else:
                         moniker_imports.append(imp_doc)
                 else:
-                    logger.warning(self._TAG, self.ctx, 'Import document {} not loaded. This might cause an unexpected output.'.format(imp.corpus_path))
+                    logger.warning(self.ctx, self._TAG, CdmDocumentDefinition._prioritize_imports.__name__, self.at_corpus_path,
+                                   CdmLogCode.WARN_DOC_IMPORT_NOT_LOADED ,imp.corpus_path)
 
             # now add the imports of the imports.
             for imp in reversed_imports:
@@ -390,7 +396,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                 is_moniker = bool(imp.moniker)
 
                 if not imp_doc:
-                    logger.warning(self._TAG, self.ctx, 'Import document {} not loaded. This might cause an unexpected output.'.format(imp.corpus_path))
+                    logger.warning(self.ctx, self._TAG, CdmDocumentDefinition._prioritize_imports.__name__, self.at_corpus_path,
+                                   CdmLogCode.WARN_DOC_IMPORT_NOT_LOADED ,imp.corpus_path)
 
                 # if the document has circular imports its order on the impDoc.ImportPriorities list is not correct
                 # since the document itself will always be the first one on the list.
@@ -456,7 +463,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
             index_if_needed = await self._index_if_needed(ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives))
             if not index_if_needed:
-                logger.error(self._TAG, self.ctx, 'Failed to index document prior to save {}.'.format(self.name), self.save_as_async.__name__)
+                logger.error(self.ctx, self._TAG, self.save_as_async.__name__, self.at_corpus_path, CdmLogCode.ERR_INDEX_FAILED, self.name)
                 return False
 
             if new_name == self.name:
@@ -473,11 +480,11 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                 if doc_imp and doc_imp._is_dirty:
                     # save it with the same name
                     if not await doc_imp.save_as_async(doc_imp.name, True, options):
-                        logger.error(self._TAG, self.ctx, 'Failed to save import {}'.format(doc_imp.name), self._save_linked_documents_async.__name__)
+                        logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IMPORT_SAVING_FAILURE, doc_imp.name)
                         return False
         return True
 
-    def fetch_object_definition(self, res_opt: 'ResolveOptions') -> Optional['CdmObjectDefinition']:
+    def fetch_object_definition(self, res_opt: Optional['ResolveOptions'] = None) -> Optional['CdmObjectDefinition']:
         if res_opt is None:
             res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         return self
@@ -487,7 +494,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
     def validate(self) -> bool:
         if not bool(self.name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            missing_fields = ['name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

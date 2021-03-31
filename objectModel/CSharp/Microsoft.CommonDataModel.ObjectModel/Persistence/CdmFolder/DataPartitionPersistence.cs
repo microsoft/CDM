@@ -15,6 +15,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     class DataPartitionPersistence
     {
+        private static readonly string Tag = nameof(DataPartitionPersistence);
+
         public static CdmDataPartitionDefinition FromData(CdmCorpusContext ctx, JToken obj)
         {
             var newPartition = ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef);
@@ -40,10 +42,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 newPartition.LastFileModifiedTime = DateTimeOffset.Parse(obj["lastFileModifiedTime"].ToString());
             }
 
-            if (obj["exhibitsTraits"] != null)
-            {
-                Utils.AddListToCdmCollection(newPartition.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
-            }
+            Utils.AddListToCdmCollection(newPartition.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
 
             if (obj["arguments"] == null)
             {
@@ -68,7 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
                 if (key == null || value == null)
                 {
-                    Logger.Warning(nameof(DataPartitionPatternPersistence), (ResolveContext)ctx, $"invalid set of arguments provided for data partition corresponding to location: {obj["location"]}");
+                    Logger.Warning((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.WarnPartitionInvalidArguments, obj["location"].ToString());
                     continue;
                 }
 

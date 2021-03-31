@@ -16,7 +16,7 @@ import {
     CdmObjectDefinition,
     cdmObjectType,
     CdmProjection,
-    Errors,
+    cdmLogCode,
     Logger,
     ProjectionContext,
     ProjectionDirective,
@@ -27,11 +27,14 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     traitToPropertyMap,
     VisitCallback
 } from '../internal';
 
 export class CdmTypeAttributeDefinition extends CdmAttribute {
+    private TAG: string = CdmTypeAttributeDefinition.name;
+
     public static get objectType(): cdmObjectType {
         return cdmObjectType.typeAttributeDef;
     }
@@ -193,19 +196,18 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             }
 
             if (missingFields.length > 0) {
-                Logger.error(CdmTypeAttributeDefinition.name, this.ctx, Errors.validateErrorString(this.atCorpusPath, missingFields), this.validate.name);
-
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
                 return false;
             }
 
             if (this.cardinality) {
                 if (!CardinalitySettings.isMinimumValid(this.cardinality.minimum)) {
-                    Logger.error(CdmTypeAttributeDefinition.name, this.ctx, `Invalid minimum cardinality ${this.cardinality.minimum}`, this.validate.name);
+                    Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidMinCardinality, this.cardinality.minimum);
 
                     return false;
                 }
                 if (!CardinalitySettings.isMaximumValid(this.cardinality.maximum)) {
-                    Logger.error(CdmTypeAttributeDefinition.name, this.ctx, `Invalid maximum cardinality ${this.cardinality.maximum}`, this.validate.name);
+                    Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidMaxCardinality, this.cardinality.maximum);
 
                     return false;
                 }

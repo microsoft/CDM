@@ -9,6 +9,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
 
@@ -32,19 +33,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestSimpleWithId";
             string entityName = "Sales";
 
-            await TestRun(testName, entityName);
-        }
-
-        /// <summary>
-        /// Non projection scenario with the referenced entity not having any primary key
-        /// </summary>
-        [TestMethod]
-        public async Task TestSimpleWithoutId()
-        {
-            string testName = "TestSimpleWithoutId";
-            string entityName = "Sales";
-
-            await TestRun(testName, entityName);
+            await TestRun(testName, entityName, false);
         }
 
         /// <summary>
@@ -56,7 +45,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestWithoutIdProj";
             string entityName = "Sales";
 
-            await TestRun(testName, entityName);
+            await TestRun(testName, entityName, true);
         }
 
         /// <summary>
@@ -68,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestDiffRefLocation";
             string entityName = "Sales";
 
-            await TestRun(testName, entityName);
+            await TestRun(testName, entityName, true);
         }
 
         /// <summary>
@@ -80,7 +69,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestCompositeProj";
             string entityName = "Sales";
 
-            await TestRun(testName, entityName);
+            await TestRun(testName, entityName, true);
         }
 
         /// <summary>
@@ -92,7 +81,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestNestedCompositeProj";
             string entityName = "Sales";
 
-            await TestRun(testName, entityName);
+            await TestRun(testName, entityName, true);
+        }
+
+        /// <summary>
+        /// Non projection scenario with selectsSubAttribute set to one
+        /// </summary>
+        [TestMethod]
+        public async Task TestPolymorphicWithoutProj()
+        {
+            string testName = "TestPolymorphicWithoutProj";
+            string entityName = "CustomPerson";
+
+            await TestRun(testName, entityName, false);
         }
 
         /// <summary>
@@ -104,7 +105,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestPolymorphicProj";
             string entityName = "Person";
 
-            await TestRun(testName, entityName);
+            await TestRun(testName, entityName, true);
+        }
+
+        /// <summary>
+        /// Test a composite key relationship with a polymorphic entity.
+        /// </summary>
+        [TestMethod]
+        public async Task TestCompositeKeyPolymorphicRelationship()
+        {
+            string testName = "TestCompositeKeyPolymorphicRelationship";
+            string entityName = "Person";
+
+            await TestRun(testName, entityName, true);
+        }
+
+        /// <summary>
+        /// Test a composite key relationship with multiple entity attribute but not polymorphic.
+        /// </summary>
+        [TestMethod]
+        public async Task TestCompositeKeyNonPolymorphicRelationship()
+        {
+            string testName = "TestCompositeKeyNonPolymorphicRelationship";
+            string entityName = "Person";
+
+            await TestRun(testName, entityName, true);
         }
 
         /// <summary>
@@ -112,7 +137,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// </summary>
         /// <param name="testName"></param>
         /// <param name="entityName"></param>
-        private async Task TestRun(string testName, string entityName)
+        private async Task TestRun(string testName, string entityName, bool isEntitySet)
         {
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
             string inputFolder = TestHelper.GetInputFolderPath(testsSubpath, testName);
@@ -128,6 +153,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entity);
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
+            AssertEntityShapeInResolvedEntity(resolvedEntity, isEntitySet);
 
             await AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputFolder, entityName, resolvedEntity);
 
@@ -166,6 +192,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
+        /// Check if the entity shape is correct in entity reference.
+        /// </summary>
+        /// <param name="resolvedEntity"></param>
+        /// <param name="isEntitySet">Indicate if the entity shape is entitySet or entityGroupSet.</param>
+        internal void AssertEntityShapeInResolvedEntity(CdmEntityDefinition resolvedEntity, bool isEntitySet)
+        {
+            foreach (var att in resolvedEntity.Attributes)
+            {
+                var entRef = att?.AppliedTraits?.Where(x => x.NamedReference == "is.linkedEntity.identifier" && x.Arguments?.Count > 0).FirstOrDefault()?.Arguments[0].Value;
+                if (entRef != null) {
+                    var entityShape = (entRef.FetchObjectDefinition<CdmConstantEntityDefinition>() as CdmConstantEntityDefinition).EntityShape.NamedReference;
+                    if (isEntitySet)
+                    {
+                        Assert.AreEqual("entitySet", entityShape);
+                    } else
+                    {
+                        Assert.AreEqual("entityGroupSet", entityShape);
+                    }
+                    return;
+                }
+            }
+            Assert.Fail("Unable to find entity shape from resolved model.");
+        }
+
+        /// <summary>
         /// Get a string version of the relationship collection
         /// </summary>
         /// <param name="relationships"></param>
@@ -180,6 +231,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             return bldr.ToString();
         }
 
+
+        /// <summary>
+        /// Get a string version of one relationship
+        /// </summary>
+        /// <param name="relationships"></param>
+        /// <returns></returns>
+        internal static string GetRelationshipString(CdmE2ERelationship rel)
+        {
+            string nameAndPipe = string.Empty;
+            if (!string.IsNullOrWhiteSpace(rel.Name))
+            {
+                nameAndPipe = $"{rel.Name}|";
+            }
+            return $"{nameAndPipe}{rel.ToEntity}|{rel.ToEntityAttribute}|{rel.FromEntity}|{rel.FromEntityAttribute}";
+        }
+
         /// <summary>
         /// List the incoming and outgoing relationships
         /// </summary>
@@ -191,19 +258,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         private static string ListRelationships(CdmCorpusDefinition corpus, CdmEntityDefinition entity, string actualOutputFolder, string entityName)
         {
             StringBuilder bldr = new StringBuilder();
+            HashSet<string> relCache = new HashSet<string>();
 
             bldr.AppendLine($"Incoming Relationships For: {entity.EntityName}:");
             // Loop through all the relationships where other entities point to this entity.
             foreach (CdmE2ERelationship relationship in corpus.FetchIncomingRelationships(entity))
             {
-                bldr.AppendLine(PrintRelationship(relationship));
+                string cacheKey = GetRelationshipString(relationship);
+                if (!relCache.Contains(cacheKey))
+                {
+                    bldr.AppendLine(PrintRelationship(relationship));
+                    relCache.Add(cacheKey);
+                }
             }
 
             Console.WriteLine($"Outgoing Relationships For: {entity.EntityName}:");
             // Now loop through all the relationships where this entity points to other entities.
             foreach (CdmE2ERelationship relationship in corpus.FetchOutgoingRelationships(entity))
             {
-                bldr.AppendLine(PrintRelationship(relationship));
+                string cacheKey = GetRelationshipString(relationship);
+                if (!relCache.Contains(cacheKey))
+                {
+                    bldr.AppendLine(PrintRelationship(relationship));
+                    relCache.Add(cacheKey);
+                }
             }
 
             return bldr.ToString();
@@ -226,6 +304,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             bldr.AppendLine($"  FromEntityAttribute: {relationship.FromEntityAttribute}");
             bldr.AppendLine($"  ToEntity: {relationship.ToEntity}");
             bldr.AppendLine($"  ToEntityAttribute: {relationship.ToEntityAttribute}");
+
+            if (relationship.ExhibitsTraits != null && relationship.ExhibitsTraits.Count != 0)
+            {
+                bldr.AppendLine($"  ExhibitsTraits:");
+                var orderedAppliedTraits = relationship.ExhibitsTraits.AllItems.ToList().OrderBy(x => x.NamedReference);
+                foreach (CdmTraitReference trait in orderedAppliedTraits)
+                {
+                    bldr.AppendLine($"      {trait.NamedReference}");
+
+                    foreach (CdmArgumentDefinition args in trait.Arguments)
+                    {
+                        AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
+                        bldr.AppendLine($"          {attrCtxUtil.GetArgumentValuesAsString(args)}");
+                    }
+                }
+            }
+
+
             bldr.AppendLine();
             Console.WriteLine(bldr.ToString());
 

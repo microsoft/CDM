@@ -312,8 +312,8 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     /**
      * ArrayExpansion on an entity attribute
      */
-    it('TestProj', async () => {
-        const testName: string = 'TestProj';
+    it('TestEntityAttribute', async () => {
+        const testName: string = 'TestEntityAttribute';
         const entityName: string = 'ThreeMusketeers';
         const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 

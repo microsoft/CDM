@@ -154,10 +154,15 @@ export class ResolvedAttribute {
             copy.arc = this.arc;
             copy.attCtx = this.attCtx // set here instead of constructor to avoid setting lineage for this copy
 
-            if ((copy.target as CdmAttribute).createSimpleReference === undefined && typeof (copy.target) !== 'string') {
+            if (copy.target instanceof ResolvedAttributeSet) {
                 // deep copy when set contains sets. this copies the resolved att set and the context, etc.
-                copy.target = copy.target.copy(resOpt) as ResolvedAttributeSet;
-            }
+                copy.target = copy.target.copy() as ResolvedAttributeSet;
+            } else if (copy.target instanceof CdmAttribute) {
+                copy.target = copy.target.copy(resOpt) as CdmAttribute;
+                const att: CdmAttribute = this.target as CdmAttribute;
+                copy.target.owner = att.owner;
+                copy.target.inDocument = att.inDocument;
+             }
 
             if (this.applierState) {
                 copy.applierState = {};

@@ -8,9 +8,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class CdmArgumentDefinition : CdmObjectSimple
     {
+        private static readonly string Tag = nameof(CdmArgumentDefinition);
+
         internal CdmParameterDefinition ResolvedParameter { get; set; }
 
         /// <summary>
@@ -94,7 +97,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (this.Value == null)
             {
-                Logger.Error(nameof(CdmArgumentDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Value" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "Value" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) => $"'{s}'")));
                 return false;
             }
             return true;

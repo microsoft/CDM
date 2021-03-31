@@ -4,7 +4,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.persistence.cdmfolder import TraitReferencePersistence
 from cdm.utilities import logger
 from cdm.utilities import namevaluepair
@@ -160,7 +160,8 @@ def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_objec
                 elif isinstance(annotation, dict) and annotation.get('name'):
                     annotations.append(annotation)
                 else:
-                    logger.warning(_TAG, ctx, 'Unsupported annotation type.')
+                    logger.warning(ctx, _TAG, process_traits_and_annotations_to_data.__name__, None,
+                                   CdmLogCode.WARN_ANNOTATION_TYPE_NOT_SUPPORTED)
 
         elif trait.named_reference not in ignored_traits and not trait.named_reference.startswith('is.dataFormat') and not (trait.named_reference in model_json_property_traits and trait.is_from_property):
             extension = TraitReferencePersistence.to_data(trait, None, None)

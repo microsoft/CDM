@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttribute;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeResolutionGuidance;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
@@ -188,6 +189,25 @@ public class ResolvedAttributeSet extends RefCounted {
     }
 
     return rasResult;
+  }
+
+  /**
+   * Recursively sets the target owner's to be the provided entity.
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  public void setTargetOwner(CdmEntityDefinition entity) {
+    for (ResolvedAttribute ra : this.set) {
+      if (ra.getTarget() instanceof CdmAttribute) {
+        CdmAttribute att = (CdmAttribute) ra.getTarget();
+        att.setOwner(entity);
+        att.setInDocument(entity.getInDocument());
+      } else if (ra.getTarget() instanceof ResolvedAttributeSet) {
+        ResolvedAttributeSet ras = (ResolvedAttributeSet) ra.getTarget();
+        ras.setTargetOwner(entity);
+      }
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////

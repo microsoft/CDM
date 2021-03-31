@@ -9,9 +9,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class CdmAttributeContext : CdmObjectDefinitionBase
     {
+        private static readonly string Tag = nameof(CdmAttributeContext);
         /// <summary>
         /// Gets or sets the attribute context type.
         /// </summary>
@@ -204,7 +206,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmAttributeContext), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -415,10 +417,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (acpUsed != null)
             {
                 var acpCache = acpUsed.Copy();
-                CdmAttributeContext parentCtxForCache = new CdmAttributeContext(ctx, "cacheHolder");
-                parentCtxForCache.Type = CdmAttributeContextType.PassThrough;
+                CdmAttributeContext parentCtxForCache = new CdmAttributeContext(ctx, "cacheHolder")
+                {
+                    Type = CdmAttributeContextType.PassThrough
+                };
                 acpCache.under = parentCtxForCache;
-                return CdmAttributeContext.CreateChildUnder(resOpt, acpCache);
+                return CreateChildUnder(resOpt, acpCache);
             }
             return null;
         }
@@ -429,7 +433,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // needs to be build from the acp of the destination tree
             if (acpUsed != null)
             {
-                return CdmAttributeContext.CreateChildUnder(resOpt, acpUsed);
+                return CreateChildUnder(resOpt, acpUsed);
             }
             return null;
         }

@@ -12,9 +12,10 @@ import {
     CdmObjectDefinitionBase,
     cdmObjectType,
     CdmTraitCollection,
-    Errors,
+    cdmLogCode,
     Logger,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../internal';
 import {StorageAdapterBase , StorageAdapterCacheContext } from 'Storage/StorageAdapterBase';
@@ -24,6 +25,8 @@ import * as timeUtils from '../Utilities/timeUtils';
  * The object model implementation for local entity declaration.
  */
 export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase implements CdmFileStatus, CdmEntityDeclarationDefinition {
+    private TAG: string = CdmLocalEntityDeclarationDefinition.name;
+
     /**
      * @inheritdoc
      */
@@ -82,13 +85,8 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      */
     public validate(): boolean {
         if (!this.entityName) {
-            Logger.error(
-                CdmLocalEntityDeclarationDefinition.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, ['entityName']),
-                this.validate.name
-            );
-
+            let missingFields: string[] = ['entityName'];
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
             return false;
         }
 

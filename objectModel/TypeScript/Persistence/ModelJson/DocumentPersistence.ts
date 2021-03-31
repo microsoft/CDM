@@ -8,6 +8,7 @@ import {
     CdmEntityDefinition,
     CdmManifestDefinition,
     cdmObjectType,
+    cdmLogCode,
     CdmTraitDefinition,
     copyOptions,
     resolveOptions
@@ -18,6 +19,8 @@ import { Import } from '../CdmFolder/types';
 import { LocalEntity } from './types';
 
 export class DocumentPersistence {
+    private static TAG: string = DocumentPersistence.name;
+
     public static async fromData(
         ctx: CdmCorpusContext,
         dataObj: LocalEntity,
@@ -39,12 +42,7 @@ export class DocumentPersistence {
         );
 
         if (!entityDec) {
-            Logger.error(
-                DocumentPersistence.name,
-                ctx,
-                'There was an error while trying to convert a model.json entity to the CDM entity.'
-            );
-
+            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonEntityConversionError);
             return undefined;
         }
 
@@ -74,8 +72,7 @@ export class DocumentPersistence {
             // Fetch the document from entity schema.
             const cdmEntity: CdmEntityDefinition = await ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(documentObjectOrPath, manifest);
             if (!cdmEntity) {
-                Logger.error(DocumentPersistence.name, ctx, 'There was an error while trying to fetch cdm entity doc.');
-
+                Logger.error(ctx, this.TAG, this.toData.name, manifest.atCorpusPath, cdmLogCode.ErrPersistCdmEntityFetchError);
                 return undefined;
             }
 
@@ -98,11 +95,7 @@ export class DocumentPersistence {
                     }
                 }
             } else {
-                Logger.warning(
-                    DocumentPersistence.name,
-                    ctx,
-                    `Entity ${cdmEntity.getName()} is not inside a document or its owner is not a document.`
-                );
+                Logger.warning(ctx, this.TAG, this.toData.name, manifest.atCorpusPath, cdmLogCode.WarnPersistEntityMissing, cdmEntity.getName());
             }
 
             return entity;

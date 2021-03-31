@@ -29,7 +29,6 @@ from .visit_callback import VisitCallback
 from .logging import logger
 from .logging.logger import _LoggerScope
 from .logging import event_list
-from .errors import Errors
 from .storage_utils import StorageUtils
 
 
@@ -45,7 +44,6 @@ __all__ = [
     'DepthInfo',
     'DocsResult',
     'EventCallback',
-    'Errors',
     'FriendlyFormatNode',
     'IdentifierRef',
     'ImportInfo',

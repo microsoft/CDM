@@ -1,13 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmCorpusContext, Logger, ProjectionAttributeState } from '../../internal';
+import { CdmCorpusContext, Logger, ProjectionAttributeState, cdmLogCode } from '../../internal';
 
 /**
  * A collection of ProjectionAttributeState objects
  * @internal
  */
 export class ProjectionAttributeStateSet {
+    private TAG: string = ProjectionAttributeStateSet.name;
+
     /**
      * A list containing all the ProjectionAttributeStates
      * @internal
@@ -33,7 +35,7 @@ export class ProjectionAttributeStateSet {
      */
     public add(pas: ProjectionAttributeState): void {
         if (!pas || !pas.currentResolvedAttribute || !pas.currentResolvedAttribute.resolvedName) {
-            Logger.error(ProjectionAttributeStateSet.name, this.ctx, 'Invalid ProjectionAttributeState provided for addition to the Set. Add operation failed.', this.add.name);
+            Logger.error(this.ctx, this.TAG, this.add.name, null, cdmLogCode.ErrProjInvalidAttrState);
         } else {
             this.states.push(pas);
         }
@@ -61,7 +63,7 @@ export class ProjectionAttributeStateSet {
             this.states.splice(index, 1);
             return true;
         } else {
-            Logger.warning(ProjectionAttributeStateSet.name, this.ctx, 'Invalid ProjectionAttributeState provided for removal from the Set. Remove operation failed.', this.remove.name);
+            Logger.warning(this.ctx, this.TAG, this.remove.name, null, cdmLogCode.WarnProjRemoveOpsFailed);
             return false;
         }
     }

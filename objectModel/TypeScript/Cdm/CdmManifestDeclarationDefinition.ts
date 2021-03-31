@@ -8,11 +8,12 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../internal';
 import * as timeUtils from '../Utilities/timeUtils';
@@ -21,6 +22,7 @@ import * as timeUtils from '../Utilities/timeUtils';
  * The object model implementation for Manifest Declaration.
  */
 export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase implements CdmManifestDeclarationDefinition, CdmFileStatus {
+    private TAG: string = CdmManifestDeclarationDefinition.name;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.manifestDeclarationDef;
@@ -102,13 +104,7 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                CdmManifestDeclarationDefinition.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 

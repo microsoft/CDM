@@ -118,7 +118,7 @@ class _data_partition_patternTest(unittest.TestCase):
 
         def callback(level, message):
             nonlocal patterns_with_glob_and_regex
-            if message.endswith('CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | file_status_check_async'):
+            if message.find('CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | file_status_check_async') != -1:
                 patterns_with_glob_and_regex = patterns_with_glob_and_regex + 1
         corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
 

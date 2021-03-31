@@ -3,8 +3,8 @@
 
 from typing import Optional, Dict, List
 
-from cdm.enums import CdmObjectType
-from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmEntityReference, CdmEntityDefinition
+from cdm.enums import CdmAttributeContextType, CdmObjectType
+from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmCorpusDefinition, CdmEntityReference, CdmEntityDefinition
 from cdm.resolvedmodel import ResolvedAttributeSet
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
@@ -48,8 +48,7 @@ class ProjectionResolutionCommonUtil:
         proj_dir: 'ProjectionDirective',
         ctx: 'CdmCorpusContext',
         source: 'CdmEntityReference',
-        ras_source: 'ResolvedAttributeSet',
-        attr_ctx_param: 'AttributeContextParameters'
+        ras_source: 'ResolvedAttributeSet'
     ) -> Dict[str, 'ProjectionAttributeState']:
         """If a source is tagged as polymorphic source, get the list of original source"""
         poly_sources = {}
@@ -59,7 +58,15 @@ class ProjectionResolutionCommonUtil:
         source_def = source.fetch_object_definition(proj_dir._res_opt)  # type: CdmEntityDefinition
         for attr in source_def.attributes:
             if attr.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
-                ra_set = attr._fetch_resolved_attributes(proj_dir._res_opt, None)
+                # the attribute context for this entity typed attribute was already created by the `FetchResolvedAttributes` that happens before this function call.
+                # we are only interested in linking the attributes to the entity that they came from and the attribute context nodes should not be taken into account.
+                # create this dummy attribute context so the resolution code works properly and discard it after.
+                attr_ctx_param = AttributeContextParameters  # type: AttributeContextParameters
+                attr_ctx_param._regarding = attr
+                attr_ctx_param._type = CdmAttributeContextType.PASS_THROUGH
+                attr_ctx_param._under = CdmAttributeContext(ctx, 'discard')
+
+                ra_set = attr._fetch_resolved_attributes(proj_dir._res_opt, attr_ctx_param)
                 for res_attr in ra_set._set:
                     # we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
                     # so steal them based on name
@@ -70,15 +77,10 @@ class ProjectionResolutionCommonUtil:
                     proj_attr_state._current_resolved_attribute = res_attr
                     proj_attr_state._previous_state_list = None
 
-                    # the key already exists, just add to the existing list
-                    if res_attr.resolved_name in poly_sources:
-                        existing_set = poly_sources[res_attr.resolved_name]
-                        existing_set.append(proj_attr_state)
-                        poly_sources[res_attr.resolved_name] = existing_set
-                    else:
-                        pas_list = []
-                        pas_list.append(proj_attr_state)
-                        poly_sources[res_attr.resolved_name] = pas_list
+                    # the key doesn't exist, initialize with an empty list first
+                    if res_attr.resolved_name not in poly_sources:
+                        poly_sources[res_attr.resolved_name] = []
+                    poly_sources[res_attr.resolved_name].append(proj_attr_state)
 
         return poly_sources
 
@@ -168,7 +170,7 @@ class ProjectionResolutionCommonUtil:
 
         if len(ent_ref_and_attr_name_list) > 0:
             constant_entity = corpus.make_object(CdmObjectType.CONSTANT_ENTITY_DEF)
-            constant_entity.entity_shape = corpus.make_ref(CdmObjectType.ENTITY_REF, 'entityGroupSet', True)
+            constant_entity.entity_shape = corpus.make_ref(CdmObjectType.ENTITY_REF, 'entitySet', True)
 
             constant_values = []
             for ent_and_attr_name in ent_ref_and_attr_name_list:

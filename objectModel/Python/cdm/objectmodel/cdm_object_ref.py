@@ -6,7 +6,9 @@ from abc import abstractmethod
 from typing import cast, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import logger, ResolveOptions, Errors
+from cdm.utilities import logger, ResolveOptions
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_object import CdmObject
 from .cdm_trait_collection import CdmTraitCollection
@@ -24,6 +26,7 @@ class CdmObjectReference(CdmObject):
     def __init__(self, ctx: 'CdmCorpusContext', reference_to: Union[str, 'CdmObjectDefinition'], simple_named_reference: bool) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmObjectReference.__name__
         self.explicit_reference = None  # type: Optional[CdmObjectDefinition]
         self.named_reference = None  # type: Optional[str]
 
@@ -38,7 +41,6 @@ class CdmObjectReference(CdmObject):
         # --- internal ---
         self._applied_traits = CdmTraitCollection(ctx, self)
         self._declared_path = None
-        self._TAG = CdmObjectReference.__name__
 
     @property
     def applied_traits(self) -> 'CdmTraitCollection':
@@ -95,7 +97,8 @@ class CdmObjectReference(CdmObject):
                 rasb.remove_requested_atts()
         else:
             def_name = self.fetch_object_definition_name()
-            logger.warning(self._TAG, self.ctx, 'unable to resolve an object from the reference \'{}\''.format(def_name))
+            logger.warning(self._ctx, self._TAG, CdmObjectReference._construct_resolved_traits.__name__, self.at_corpus_path,
+                           CdmLogCode.WARN_RESOLVE_OBJECT_FAILED, def_name)
 
         return rasb
 
@@ -132,7 +135,8 @@ class CdmObjectReference(CdmObject):
             ent = self.ctx.corpus._resolve_symbol_reference(res_opt, self.in_document, ent_name, CdmObjectType.ENTITY_DEF, True)
 
             if not ent:
-                logger.warning(self._TAG, self.ctx, 'Unable to resolve an entity named \'{}\' from the reference \'{}\''.format(ent_name, self.named_reference))
+                logger.warning(self._ctx, self._TAG, CdmObjectReference._fetch_resolved_reference.__name__, self.at_corpus_path,
+                               CdmLogCode.WARN_RESOLVE_ENTITY_FAILED ,ent_name, self.named_reference)
                 return None
 
             # get the resolved attribute
@@ -143,8 +147,8 @@ class CdmObjectReference(CdmObject):
             if ra:
                 res = ra.target
             else:
-                logger.warning(self._TAG, self.ctx, 'Could not resolve the attribute promise for \'{}\''.format(self.named_reference),
-                               res_opt.wrt_doc.at_corpus_path)
+                logger.warning(self._ctx, self._TAG, CdmObjectReference._fetch_resolved_reference.__name__, self.at_corpus_path,
+                                                            CdmLogCode.WARN_RESOLVE_ATTR_FAILED ,self.named_reference)
         else:
             # normal symbolic reference, look up from the corpus, it knows where everything is
             res = self.ctx.corpus._resolve_symbol_reference(res_opt, self.in_document, self.named_reference, self.object_type, True)
@@ -222,7 +226,7 @@ class CdmObjectReference(CdmObject):
             return self.explicit_reference.get_name()
         return None
 
-    def fetch_object_definition(self, res_opt: 'ResolveOptions') -> 'CdmObjectDefinition':
+    def fetch_object_definition(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObjectDefinition':
         if res_opt is None:
             res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         definition = self._fetch_resolved_reference(res_opt)
@@ -293,7 +297,8 @@ class CdmObjectReference(CdmObject):
 
     def validate(self) -> bool:
         if not bool(self.named_reference or self.explicit_reference):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['named_reference', 'explicit_reference'], True))
+            missing_fields = ['named_reference', 'explicit_reference']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

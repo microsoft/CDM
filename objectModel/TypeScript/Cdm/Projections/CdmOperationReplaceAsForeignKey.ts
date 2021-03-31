@@ -11,7 +11,7 @@ import {
     CdmOperationBase,
     cdmOperationType,
     CdmTypeAttributeDefinition,
-    Errors,
+    cdmLogCode,
     Logger,
     ProjectionAttributeState,
     ProjectionAttributeStateSet,
@@ -20,7 +20,8 @@ import {
     ResolvedAttribute,
     ResolvedTrait,
     resolveOptions,
-    VisitCallback
+    VisitCallback,
+    StringUtils
 } from '../../internal';
 import { AttributeContextParameters } from '../../Utilities/AttributeContextParameters';
 
@@ -78,13 +79,7 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -183,7 +178,7 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
             projOutputSet.add(newProjAttrStateFK);
         } else {
             // Log error & return projOutputSet without any change
-            Logger.error(CdmOperationReplaceAsForeignKey.name, projOutputSet.ctx, `Unable to locate state for reference attribute \"${refAttrName}\".`, this.createNewProjectionAttributeStateSet.name);
+            Logger.error(projOutputSet.ctx, CdmOperationReplaceAsForeignKey.name, this.createNewProjectionAttributeStateSet.name, null, cdmLogCode.ErrProjRefAttrStateFailure, refAttrName);
         }
 
         return projOutputSet;

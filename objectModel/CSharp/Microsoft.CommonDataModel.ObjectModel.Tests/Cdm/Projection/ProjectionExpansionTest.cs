@@ -273,9 +273,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         /// ArrayExpansion on an entity attribute
         /// </summary>
         [TestMethod]
-        public async Task TestProj()
+        public async Task TestEntityAttribute()
         {
-            string testName = "TestProj";
+            string testName = "TestEntityAttribute";
             string entityName = "ThreeMusketeers";
             CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 

@@ -9,11 +9,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmContainerDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -32,6 +29,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 public class StorageManager {
+  private static String tag = StorageManager.class.getSimpleName();
+
   private final CdmCorpusDefinition corpus;
   private final Map<String, CdmFolderDefinition> namespaceFolder = new LinkedHashMap<>();
 
@@ -54,25 +53,27 @@ public class StorageManager {
   }
 
   public void mount(final String nameSpace, final StorageAdapter adapter) {
-    if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The namespace cannot be null or empty.", "mount");
-      return;
-    }
-
-    if (adapter != null) {
-      if (adapter instanceof StorageAdapterBase) {
-        ((StorageAdapterBase) adapter).setCtx(this.corpus.getCtx());
+    try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "mount")) {
+      if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
+        Logger.error(this.corpus.getCtx(), tag, "mount", null, CdmLogCode.ErrStorageNullNamespace);
+        return;
       }
 
-      this.namespaceAdapters.put(nameSpace, adapter);
-      final CdmFolderDefinition fd = new CdmFolderDefinition(this.corpus.getCtx(), "");
-      fd.setCorpus(this.corpus);
-      fd.setNamespace(nameSpace);
-      fd.setFolderPath("/");
-      this.namespaceFolder.put(nameSpace, fd);
-      this.systemDefinedNamespaces.remove(nameSpace);
-    } else {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The adapter cannot be null.", "mount");
+      if (adapter != null) {
+        if (adapter instanceof StorageAdapterBase) {
+          ((StorageAdapterBase) adapter).setCtx(this.corpus.getCtx());
+        }
+
+        this.namespaceAdapters.put(nameSpace, adapter);
+        final CdmFolderDefinition fd = new CdmFolderDefinition(this.corpus.getCtx(), "");
+        fd.setCorpus(this.corpus);
+        fd.setNamespace(nameSpace);
+        fd.setFolderPath("/");
+        this.namespaceFolder.put(nameSpace, fd);
+        this.systemDefinedNamespaces.remove(nameSpace);
+      } else {
+        Logger.error(this.corpus.getCtx(), tag, "mount", null, CdmLogCode.ErrStorageNullAdapter);
+      }
     }
   }
 
@@ -82,7 +83,7 @@ public class StorageManager {
 
   public List<String> mountFromConfig(final String adapterConfig, final boolean doesReturnErrorList) {
     if (Strings.isNullOrEmpty(adapterConfig)) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "Adapter config cannot be null or empty.", "mountFromConfig");
+      Logger.error(this.corpus.getCtx(), tag, "mountFromConfig", null, CdmLogCode.ErrStorageNullAdapterConfig);
       return null;
     }
     JsonNode adapterConfigJson;
@@ -104,12 +105,7 @@ public class StorageManager {
       if (item.has("namespace")) {
         nameSpace = item.get("namespace").asText();
       } else {
-        Logger.error(
-            StorageManager.class.getSimpleName(),
-            this.corpus.getCtx(),
-            "The namespace is missing for one of the adapters in the JSON config.",
-            "mountFromConfig"
-        );
+        Logger.error(this.corpus.getCtx(), tag, "mountFromConfig", null, CdmLogCode.ErrStorageMissingNamespace);
         continue;
       }
       final JsonNode configs;
@@ -117,21 +113,11 @@ public class StorageManager {
       if (item.has("config")) {
         configs = item.get("config");
       } else {
-        Logger.error(
-            StorageManager.class.getSimpleName(),
-            this.corpus.getCtx(),
-            Logger.format("Missing JSON config for the namespace {0}.", nameSpace),
-            "mountFromConfig"
-        );
+        Logger.error(this.corpus.getCtx(), tag, "mountFromConfig", null, CdmLogCode.ErrStorageMissingJsonConfig, nameSpace);
         continue;
       }
       if (!item.has("type")) {
-        Logger.error(
-            StorageManager.class.getSimpleName(),
-            this.corpus.getCtx(),
-            Logger.format("Missing type in the JSON config for the namespace {0}.", nameSpace),
-            "mountFromConfig"
-        );
+        Logger.error(this.corpus.getCtx(), tag, "mountFromConfig", null, CdmLogCode.ErrStorageNullNamespace, nameSpace);
         continue;
       }
       try {
@@ -174,28 +160,29 @@ public class StorageManager {
   }
 
   public boolean unmount(final String nameSpace) {
-    if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The namespace cannot be null or empty.", "unmount");
-      return false;
-    }
-
-    if (this.namespaceAdapters.containsKey(nameSpace)) {
-      this.namespaceAdapters.remove(nameSpace);
-      this.namespaceFolder.remove(nameSpace);
-      this.systemDefinedNamespaces.remove(nameSpace);
-
-      // The special case, use resource adapter.
-      if (nameSpace.equals("cdm")) {
-        this.mount(nameSpace, new ResourceAdapter());
+    try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "unmount")) {
+      if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
+        Logger.error(this.corpus.getCtx(), tag, "unmount", null, CdmLogCode.ErrStorageNullNamespace);
+        return false;
       }
 
-      return true;
-    } else {
-      Logger.warning(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "Cannot remove the adapter from non-existing namespace.", "unmount");
-      return false;
+      if (this.namespaceAdapters.containsKey(nameSpace)) {
+        this.namespaceAdapters.remove(nameSpace);
+        this.namespaceFolder.remove(nameSpace);
+        this.systemDefinedNamespaces.remove(nameSpace);
+
+        // The special case, use resource adapter.
+        if (nameSpace.equals("cdm")) {
+          this.mount(nameSpace, new ResourceAdapter());
+        }
+
+        return true;
+      } else {
+        Logger.warning(this.corpus.getCtx(), tag, "unmount", null, CdmLogCode.WarnStorageRemoveAdapterFailed);
+        return false;
+      }
     }
   }
-
 
   /**
    * Allow replacing a storage adapter with another one for testing, leaving folders intact.
@@ -208,100 +195,81 @@ public class StorageManager {
   @Deprecated
   public void setAdapter(String nameSpace, StorageAdapter adapter) {
     if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The namespace cannot be null or empty.", "setAdapter");
+      Logger.error(this.corpus.getCtx(), tag, "setAdapter", null, CdmLogCode.ErrStorageNullNamespace);
       return;
     }
 
     if (adapter != null) {
       this.namespaceAdapters.put(nameSpace, adapter);
     } else {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The adapter cannot be null.", "setAdapter");
+      Logger.error(this.corpus.getCtx(), tag, "setAdapter", null, CdmLogCode.ErrStorageNullAdapter);
     }
   }
 
   public StorageAdapter fetchAdapter(final String nameSpace) {
     if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The namespace cannot be null or empty.", "fetchAdapter");
+      Logger.error(this.corpus.getCtx(), tag, "fetchAdapter", null, CdmLogCode.ErrStorageNullNamespace);
       return null;
     }
 
     if (this.namespaceFolder.containsKey(nameSpace)) {
       return this.namespaceAdapters.get(nameSpace);
     }
-    Logger.error(
-        StorageManager.class.getSimpleName(),
-        this.corpus.getCtx(),
-        Logger.format("Adapter not found for the namespace '{0}'", nameSpace),
-        "fetchAdapter"
-    );
+    Logger.error(this.corpus.getCtx(), tag, "fetchAdapter", null, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
     return null;
   }
 
   public CdmFolderDefinition fetchRootFolder(final String nameSpace) {
-    if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
-      Logger.error(
-          StorageManager.class.getSimpleName(),
-          this.corpus.getCtx(),
-          "The namespace cannot be null or empty.",
-          "fetchRootFolder"
-      );
+    try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "fetchRootFolder")) {
+      if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
+        Logger.error(this.corpus.getCtx(), tag, "fetchRootFolder", null, CdmLogCode.ErrStorageNullNamespace);
+        return null;
+      }
+      if (this.namespaceFolder.containsKey(nameSpace)) {
+        return this.namespaceFolder.get(nameSpace);
+      } else if (this.namespaceFolder.containsKey(this.defaultNamespace)) {
+        return this.namespaceFolder.get(this.defaultNamespace);
+      }
+      Logger.error(this.corpus.getCtx(), tag, "fetchRootFolder", null, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
       return null;
     }
-    if (this.namespaceFolder.containsKey(nameSpace)) {
-      return this.namespaceFolder.get(nameSpace);
-    } else if (this.namespaceFolder.containsKey(this.defaultNamespace)) {
-      return this.namespaceFolder.get(this.defaultNamespace);
-    }
-    Logger.error(
-        StorageManager.class.getSimpleName(),
-        this.corpus.getCtx(),
-        Logger.format("Adapter not found for the namespace '{0}'", nameSpace),
-        "fetchRootFolder"
-    );
-    return null;
   }
 
   public String adapterPathToCorpusPath(final String adapterPath) {
-    for (final Map.Entry<String, StorageAdapter> kv : this.namespaceAdapters.entrySet()) {
-      final String corpusPath = kv.getValue().createCorpusPath(adapterPath);
-      if (corpusPath != null) {
-        // got one, add the prefix
-        return kv.getKey() + ":" + corpusPath;
+    try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "adapterPathToCorpusPath")) {
+      for (final Map.Entry<String, StorageAdapter> kv : this.namespaceAdapters.entrySet()) {
+        final String corpusPath = kv.getValue().createCorpusPath(adapterPath);
+        if (corpusPath != null) {
+          // got one, add the prefix
+          return kv.getKey() + ":" + corpusPath;
+        }
       }
+      Logger.error(this.corpus.getCtx(), tag, "adapterPathToCorpusPath", null, CdmLogCode.ErrStorageInvalidAdapterPath);
+      return null;
     }
-    Logger.error(
-        StorageManager.class.getSimpleName(),
-        this.corpus.getCtx(),
-        Logger.format("No registered storage adapter understood the path '{0}'", adapterPath),
-        "adapterPathToCorpusPath"
-    );
-    return null;
   }
 
   public String corpusPathToAdapterPath(final String corpusPath) {
-    if (StringUtils.isNullOrTrimEmpty(corpusPath)) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The corpus path is null or empty.", "corpusPathToAdapterPath");
-      return null;
-    }
+    try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "corpusPathToAdapterPath")) {
+      if (StringUtils.isNullOrTrimEmpty(corpusPath)) {
+        Logger.error(this.corpus.getCtx(), tag, "corpusPathToAdapterPath", null, CdmLogCode.ErrStorageNullCorpusPath);
+        return null;
+      }
 
-    final ImmutablePair<String, String> pathTuple = StorageUtils.splitNamespacePath(corpusPath);
-    if (pathTuple == null) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The corpus path cannot be null or empty.", "corpusPathToAdapterPath");
-      return null;
+      final ImmutablePair<String, String> pathTuple = StorageUtils.splitNamespacePath(corpusPath);
+      if (pathTuple == null) {
+        Logger.error(this.corpus.getCtx(), tag, "corpusPathToAdapterPath", null, CdmLogCode.ErrStorageNullCorpusPath);
+        return null;
+      }
+      final String nameSpace = !StringUtils.isNullOrTrimEmpty(pathTuple.getLeft())
+              ? pathTuple.getLeft()
+              : this.defaultNamespace;
+      if (this.fetchAdapter(nameSpace) == null) {
+        Logger.error(this.corpus.getCtx(), tag, "corpusPathToAdapterPath", null, CdmLogCode.ErrStorageNamespaceNotRegistered);
+        return "";
+      }
+      return this.fetchAdapter(nameSpace).createAdapterPath(pathTuple.getRight());
     }
-    final String nameSpace = !StringUtils.isNullOrTrimEmpty(pathTuple.getLeft())
-        ? pathTuple.getLeft()
-        : this.defaultNamespace;
-    if (this.fetchAdapter(nameSpace) == null) {
-      Logger.error(
-          StorageManager.class.getSimpleName(),
-          this.corpus.getCtx(),
-          Logger.format("The namespace '{0}' has not been registered", nameSpace),
-          "corpusPathToAdapterPath"
-      );
-      return "";
-    }
-    return this.fetchAdapter(nameSpace).createAdapterPath(pathTuple.getRight());
   }
 
   public String createAbsoluteCorpusPath(final String objectPath) {
@@ -309,70 +277,62 @@ public class StorageManager {
   }
 
   public String createAbsoluteCorpusPath(final String objectPath, final CdmObject obj) {
-    if (StringUtils.isNullOrTrimEmpty(objectPath)) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The object path cannot be null or empty.", "createAbsoluteCorpusPath");
-      return null;
-    }
-
-    if (this.containsUnsupportedPathFormat(objectPath)) {
-      // already called statusRpt when checking for unsupported path format.
-      return null;
-    }
-    final ImmutablePair<String, String> pathTuple = StorageUtils.splitNamespacePath(objectPath);
-    if (pathTuple == null) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The object path cannot be null or empty.", "createAbsoluteCorpusPath");
-      return null;
-    }
-    final String nameSpace = pathTuple.getLeft();
-    String newObjectPath = pathTuple.getRight();
-    String finalNamespace;
-    String prefix = "";
-    String namespaceFromObj = "";
-    if (obj instanceof CdmContainerDefinition) {
-      prefix = ((CdmContainerDefinition) obj).getFolderPath();
-      namespaceFromObj = ((CdmContainerDefinition) obj).getNamespace();
-    } else if (obj != null) {
-      prefix = obj.getInDocument().getFolderPath();
-      namespaceFromObj = obj.getInDocument().getNamespace();
-    }
-    if (prefix != null && this.containsUnsupportedPathFormat(prefix)) {
-      // already called statusRpt when checking for unsupported path format.
-      return null;
-    }
-    if (!Strings.isNullOrEmpty(prefix) && prefix.charAt(prefix.length() - 1) != '/') {
-      Logger.warning(
-          StorageManager.class.getSimpleName(),
-          this.corpus.getCtx(),
-          Logger.format("Expected path prefix to end in /, but it didn't. Appended the /, prefix: '{0}'", prefix),
-          "createAbsoluteCorpusPath"
-      );
-      prefix += "/";
-    }
-    // check if this is a relative path
-    if (!Strings.isNullOrEmpty(newObjectPath) && !newObjectPath.startsWith("/")) {
-      if (obj == null) {
-        // relative path and no other info given, assume default and root
-        prefix = "/";
-      }
-      if (!Strings.isNullOrEmpty(nameSpace) && !Objects.equals(nameSpace, namespaceFromObj)) {
-        Logger.error(
-            StorageManager.class.getSimpleName(),
-            this.corpus.getCtx(),
-            Logger.format("The namespace '{0}' found on the path does not match the namespace found on the object", nameSpace),
-            "createAbsoluteCorpusPath"
-        );
+    try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "createAbsoluteCorpusPath")) {
+      if (StringUtils.isNullOrTrimEmpty(objectPath)) {
+        Logger.error(this.corpus.getCtx(), tag, "createAbsoluteCorpusPath", null, CdmLogCode.ErrPathNullObjectPath);
         return null;
       }
-      newObjectPath = prefix + newObjectPath;
-      finalNamespace = Strings.isNullOrEmpty(namespaceFromObj)
-          ? (StringUtils.isNullOrTrimEmpty(nameSpace) ? this.defaultNamespace : nameSpace)
-          : namespaceFromObj;
-    } else {
-      finalNamespace = Strings.isNullOrEmpty(nameSpace)
-          ? (StringUtils.isNullOrTrimEmpty(namespaceFromObj) ? this.defaultNamespace : namespaceFromObj)
-          : nameSpace;
+
+      if (this.containsUnsupportedPathFormat(objectPath)) {
+        // already called statusRpt when checking for unsupported path format.
+        return null;
+      }
+      final ImmutablePair<String, String> pathTuple = StorageUtils.splitNamespacePath(objectPath);
+      if (pathTuple == null) {
+        Logger.error(this.corpus.getCtx(), tag, "createAbsoluteCorpusPath", null, CdmLogCode.ErrPathNullObjectPath);
+        return null;
+      }
+      final String nameSpace = pathTuple.getLeft();
+      String newObjectPath = pathTuple.getRight();
+      String finalNamespace;
+      String prefix = "";
+      String namespaceFromObj = "";
+      if (obj instanceof CdmContainerDefinition) {
+        prefix = ((CdmContainerDefinition) obj).getFolderPath();
+        namespaceFromObj = ((CdmContainerDefinition) obj).getNamespace();
+      } else if (obj != null) {
+        prefix = obj.getInDocument().getFolderPath();
+        namespaceFromObj = obj.getInDocument().getNamespace();
+      }
+      if (prefix != null && this.containsUnsupportedPathFormat(prefix)) {
+        // already called statusRpt when checking for unsupported path format.
+        return null;
+      }
+      if (!Strings.isNullOrEmpty(prefix) && prefix.charAt(prefix.length() - 1) != '/') {
+        Logger.warning(this.corpus.getCtx(), tag, "createAbsoluteCorpusPath", null, CdmLogCode.WarnStorageExpectedPathPrefix, prefix);
+        prefix += "/";
+      }
+      // check if this is a relative path
+      if (!Strings.isNullOrEmpty(newObjectPath) && !newObjectPath.startsWith("/")) {
+        if (obj == null) {
+          // relative path and no other info given, assume default and root
+          prefix = "/";
+        }
+        if (!Strings.isNullOrEmpty(nameSpace) && !Objects.equals(nameSpace, namespaceFromObj)) {
+          Logger.error(this.corpus.getCtx(), tag, "createAbsoluteCorpusPath", null, CdmLogCode.ErrStorageNamespaceMismatch);
+          return null;
+        }
+        newObjectPath = prefix + newObjectPath;
+        finalNamespace = Strings.isNullOrEmpty(namespaceFromObj)
+                ? (StringUtils.isNullOrTrimEmpty(nameSpace) ? this.defaultNamespace : nameSpace)
+                : namespaceFromObj;
+      } else {
+        finalNamespace = Strings.isNullOrEmpty(nameSpace)
+                ? (StringUtils.isNullOrTrimEmpty(namespaceFromObj) ? this.defaultNamespace : namespaceFromObj)
+                : nameSpace;
+      }
+      return (!StringUtils.isNullOrTrimEmpty(finalNamespace) ? finalNamespace + ":" : "") + newObjectPath;
     }
-    return (!StringUtils.isNullOrTrimEmpty(finalNamespace) ? finalNamespace + ":" : "") + newObjectPath;
   }
 
   /**
@@ -393,7 +353,7 @@ public class StorageManager {
 
       final String config = namespaceAdapterTuple.getValue().fetchConfig();
       if (Strings.isNullOrEmpty(config)) {
-        Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "JSON config constructed by adapter is null or empty.", "fetchConfig");
+        Logger.error(this.corpus.getCtx(), tag, "fetchConfig", null, CdmLogCode.ErrStorageNullAdapter);
         continue;
       }
 
@@ -404,12 +364,7 @@ public class StorageManager {
 
         adaptersArray.add(jsonConfig);
       } catch (final IOException e) {
-        Logger.error(
-            StorageManager.class.getSimpleName(),
-            this.corpus.getCtx(),
-            Logger.format("Config cannot be cast to objectNode. Config: {0}, Error: {1}", config, e.getMessage()),
-            "fetchConfig"
-        );
+        Logger.error(this.corpus.getCtx(), tag, "fetchConfig", null, CdmLogCode.ErrStorageObjectNodeCastFailed, config, e.getMessage());
       }
     }
 
@@ -444,16 +399,18 @@ public class StorageManager {
   }
 
   public String createRelativeCorpusPath(final String objectPath, final CdmContainerDefinition relativeTo) {
-    String newPath = this.createAbsoluteCorpusPath(objectPath, relativeTo);
-    final String namespaceString = relativeTo != null ? relativeTo.getNamespace() + ":" : "";
-    if (!StringUtils.isNullOrTrimEmpty(namespaceString) && !StringUtils.isNullOrTrimEmpty(newPath) && newPath.startsWith(namespaceString)) {
-      newPath = newPath.substring(namespaceString.length());
+    try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "createRelativeCorpusPath")) {
+      String newPath = this.createAbsoluteCorpusPath(objectPath, relativeTo);
+      final String namespaceString = relativeTo != null ? relativeTo.getNamespace() + ":" : "";
+      if (!StringUtils.isNullOrTrimEmpty(namespaceString) && !StringUtils.isNullOrTrimEmpty(newPath) && newPath.startsWith(namespaceString)) {
+        newPath = newPath.substring(namespaceString.length());
 
-      if (relativeTo != null && newPath.startsWith(relativeTo.getFolderPath())) {
-        newPath = newPath.substring(relativeTo.getFolderPath().length());
+        if (relativeTo != null && newPath.startsWith(relativeTo.getFolderPath())) {
+          newPath = newPath.substring(relativeTo.getFolderPath().length());
+        }
       }
+      return newPath;
     }
-    return newPath;
   }
 
   /**
@@ -473,19 +430,17 @@ public class StorageManager {
   }
 
   private boolean containsUnsupportedPathFormat(final String path) {
-    if (path.startsWith("./") || path.startsWith(".\\")) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), Logger.format("The path should not start with ./, path: '{0}'", path), path);
-      return true;
+    if (path.startsWith("./") || path.startsWith(".\\") ||
+    path.contains("../") || path.contains("..\\") ||
+    path.contains("/./") || path.contains("\\.\\") ) {
+      // Invalid path.
     }
-    if (path.contains("../") || path.contains("..\\")) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), Logger.format("The path should not contain ../, path: '{0}'", path), path);
-      return true;
+    else {
+      return false;
     }
-    if (path.contains("/./") || path.contains("\\.\\")) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), Logger.format("The path should not contain /./, path: '{0}'", path), path);
-      return true;
-    }
-    return false;
+   
+    Logger.error(this.corpus.getCtx(), tag, "containsUnsupportedPathFormat", null, CdmLogCode.ErrStorageInvalidPathFormat);
+    return true;
   }
 
   public Map<String, StorageAdapter> getNamespaceAdapters() {
@@ -502,5 +457,9 @@ public class StorageManager {
 
   public void setDefaultNamespace(final String defaultNamespace) {
     this.defaultNamespace = defaultNamespace;
+  }
+
+  private CdmCorpusContext getCtx() {
+    return corpus.getCtx();
   }
 }

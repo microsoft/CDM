@@ -34,7 +34,7 @@ import {
     CdmTraitCollection,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
-    Errors,
+    cdmLogCode,
     Logger,
     ProjectionContext,
     ProjectionDirective,
@@ -59,6 +59,8 @@ import { using } from 'using-statement';
 import { enterScope } from '../Utilities/Logging/Logger';
 
 export class CdmEntityDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmEntityDefinition.name;
+
     public static get objectType(): cdmObjectType {
         return cdmObjectType.entityDef;
     }
@@ -97,8 +99,8 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
     }
 
     public entityName: string;
-    private _extendsEntity: CdmEntityReference;
-    get extendsEntity(): CdmEntityReference {
+    private _extendsEntity?: CdmEntityReference;
+    get extendsEntity(): CdmEntityReference | undefined {
         return this._extendsEntity;
     }
     set extendsEntity(value: CdmEntityReference) {
@@ -113,7 +115,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
     /**
      * The resolution guidance for attributes taken from the entity extended by this entity.
      */
-    public extendsEntityResolutionGuidance: CdmAttributeResolutionGuidance;
+    public extendsEntityResolutionGuidance?: CdmAttributeResolutionGuidance;
     private rasb: ResolvedAttributeSetBuilder;
     private readonly traitToPropertyMap: traitToPropertyMap;
     private resolvingEntityReferences: boolean = false;
@@ -173,7 +175,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                     : undefined;
             copy.attributeContext = copy.attributeContext ? <CdmAttributeContext>this.attributeContext.copy(resOpt) : undefined;
             for (const att of this.attributes) {
-                copy.attributes.push(att);
+                copy.attributes.push(att.copy(resOpt) as CdmAttributeItem);
             }
             this.copyDef(resOpt, copy);
 
@@ -186,13 +188,8 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!this.entityName) {
-                Logger.error(
-                    CdmEntityDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['entityName']),
-                    this.validate.name
-                );
-
+                let missingFields: string[] = ['entityName'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
             }
 
@@ -389,7 +386,6 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                     const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this, extRef);
                     const projDef: CdmProjection = extRefObjDef as CdmProjection;
                     const projCtx: ProjectionContext = projDef.constructProjectionContext(projDirective, extendsRefUnder);
-
                     rasb.ras = projDef.extractResolvedAttributes(projCtx, under);
                 } else {
                     // An Entity Reference
@@ -408,8 +404,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                         .fetchResolvedAttributes(resOpt, acpExtEnt));
 
                     if (!resOpt.checkAttributeCount(rasb.ras.resolvedAttributeCount)) {
-                        Logger.error(CdmEntityDefinition.name, this.ctx, `Maximum number of resolved attributes reached for the entity:${this.entityName}`);
-
+                        Logger.error(this.ctx, this.TAG, this.constructResolvedAttributes.name, null, cdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
                         return undefined;
                     }
 
@@ -467,8 +462,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                     rasb.mergeAttributes(attRas);
 
                     if (!resOpt.checkAttributeCount(rasb.ras.resolvedAttributeCount)) {
-                        Logger.error(CdmEntityDefinition.name, this.ctx, `Maximum number of resolved attributes reached for the entity:${this.entityName}`);
-
+                        Logger.error(this.ctx, this.TAG, this.constructResolvedAttributes.name, null, cdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
                         return undefined;
                     }
                 }
@@ -481,6 +475,10 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
 
             // things that need to go away
             rasb.removeRequestedAtts();
+
+            // recursively sets the target owner's to be this entity.
+            // required because the replaceAsForeignKey operation uses the owner to generate the `is.linkedEntity.identifier` trait.
+            rasb.ras.setTargetOwner(this);
 
             return rasb;
         }
@@ -604,34 +602,18 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
 
                 // if the wrtDoc needs to be indexed (like it was just modified) then do that first
                 if (!resOpt.wrtDoc) {
-                    Logger.error(
-                        CdmEntityDefinition.name,
-                        this.ctx,
-                        'No WRT document was supplied',
-                        this.createResolvedEntityAsync.name
-                    );
-
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrDocWrtDocNotfound);
                     return undefined;
                 }
 
                 if (!newEntName || newEntName === '') {
-                    Logger.error(
-                        CdmEntityDefinition.name,
-                        this.ctx,
-                        'No Entity Name provided',
-                        this.createResolvedEntityAsync.name
-                    );
-
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrResolveEntityNotFound);
                     return undefined;
                 }
 
                 // if the wrtDoc needs to be indexed (like it was just modified) then do that first
                 if (!await resOpt.wrtDoc.indexIfNeeded(resOpt, true)) {
-                    Logger.error(
-                        CdmEntityDefinition.name,
-                        this.ctx,
-                        'Couldn\'t index source document.',
-                        this.createResolvedEntityAsync.name);
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrIndexFailed);
                     return undefined;
                 }
 
@@ -646,13 +628,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 const targetAtCorpusPath: string =
                     `${this.ctx.corpus.storage.createAbsoluteCorpusPath(folder.atCorpusPath, folder)}${fileName}`;
                 if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
-                    Logger.error(
-                        CdmEntityDefinition.name,
-                        this.ctx as resolveContext,
-                        `attempting to replace source entity's document '${targetAtCorpusPath}'`,
-                        this.createResolvedEntityAsync.name
-                    );
-
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrDocEntityReplacementFailure, targetAtCorpusPath);
                     return undefined;
                 }
 
@@ -1179,13 +1155,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 resOptNew.localizeReferencesFor = docRes;
                 resOptNew.wrtDoc = docRes;
                 if (!await docRes.refreshAsync(resOptNew)) {
-                    Logger.error(
-                        CdmEntityDefinition.name,
-                        this.ctx,
-                        'Failed to index the resolved document.',
-                        this.createResolvedEntityAsync.name
-                    );
-
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrIndexFailed);
                     return undefined;
                 }
                 // get a fresh ref

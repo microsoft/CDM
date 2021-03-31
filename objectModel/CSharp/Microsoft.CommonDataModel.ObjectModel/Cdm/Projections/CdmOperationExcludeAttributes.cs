@@ -10,13 +10,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle ExcludeAttributes operations
     /// </summary>
     public class CdmOperationExcludeAttributes : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationExcludeAttributes);
+        private static readonly string Tag = nameof(CdmOperationExcludeAttributes);
 
         public List<string> ExcludeAttributes { get; set; }
 
@@ -69,7 +70,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 

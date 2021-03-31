@@ -6,7 +6,7 @@ from collections import OrderedDict
 import uuid
 import dateutil.parser
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.persistence import PersistenceLayer
 from cdm.persistence.cdmfolder import ImportPersistence
 from cdm.utilities import logger, TraitToPropertyMap
@@ -115,18 +115,18 @@ class ManifestPersistence:
                 location = reference_models.get(reference_entity.modelId)
 
                 if not location:
-                    logger.error(_TAG, ctx, 'Model Id {} from {} not found in reference_models.'.format(reference_entity.modelId, reference_entity.name))
+                    logger.error(ctx, _TAG, "from_object", None, CdmLogCode.ERR_PERSIST_MODEL_ID_NOT_FOUND, reference_entity.modelId, reference_entity.name)
                     return None
 
                 entity = await ReferencedEntityDeclarationPersistence.from_data(ctx, reference_entity, location)
             else:
-                logger.error(_TAG, ctx, 'There was an error while trying to parse entity type.')
+                logger.error(ctx, _TAG, 'from_object', None, CdmLogCode.ERR_PERSIST_ENTITY_PARSING_ERROR)
 
             if entity:
                 manifest.entities.append(entity)
                 entity_schema_by_name[entity.entity_name] = entity.entity_path
             else:
-                logger.error(_TAG, ctx, 'There was an error while trying to parse entity type.')
+                logger.error(ctx, _TAG, 'from_object', None, CdmLogCode.ERR_PERSIST_ENTITY_PARSING_ERROR)
 
         if obj.get('relationships'):
             for relationship in obj.get('relationships'):
@@ -135,7 +135,7 @@ class ManifestPersistence:
                 if relationship:
                     manifest.relationships.append(relationship)
                 else:
-                    logger.warning(_TAG, ctx, 'There was an error while trying to convert model.json local entity to cdm local entity declaration.')
+                    logger.warning(ctx, _TAG, ManifestPersistence.from_object.__name__, None, CdmLogCode.WARN_PERSIST_MODELJSON_REL_READ_FAILED)
 
         await utils.process_annotations_from_data(ctx, obj, manifest.exhibits_traits)
 
@@ -206,7 +206,7 @@ class ManifestPersistence:
                     location = instance.ctx.corpus.storage.corpus_path_to_adapter_path(entity.entity_path)
 
                     if not location:
-                        logger.error(_TAG, instance.ctx, 'Invalid entity path set in entity {}'.format(entity.entity_name))
+                        logger.error(instance.ctx, _TAG,'to_data', instance.at_corpus_path, CdmLogCode.ERR_PERSIST_INVALID_ENTITY_PATH, entity.entity_name)
                         element = None
 
                     reference_entity = element  # type: ReferenceEntity
@@ -216,7 +216,7 @@ class ManifestPersistence:
                         if reference_entity.modelId:
                             saved_location = reference_models.get(reference_entity.modelId)
                             if saved_location is not None and saved_location != location:
-                                logger.error(_TAG, instance.ctx, 'Same ModelId pointing to different locations')
+                                logger.error(instance.ctx, 'to_data', instance.at_corpus_path, _TAG, CdmLogCode.ERR_PERSIST_MODEL_ID_DUPLICATION)
                                 element = None
                             elif saved_location is None:
                                 reference_models[reference_entity.modelId] = location
@@ -231,8 +231,7 @@ class ManifestPersistence:
                 if element:
                     result.entities.append(element)
                 else:
-                    logger.error(_TAG, instance.ctx,
-                                 'There was an error while trying to convert {}\'s entity declaration to model json format.'.format(entity.entity_name))
+                    logger.error(instance.ctx, _TAG, 'to_data', instance.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_ENTITY_DECLARATION_CONVERSION_ERROR, entity.entity_name)
 
         if reference_models:
             result.referenceModels = []
@@ -249,7 +248,7 @@ class ManifestPersistence:
                 if relationship is not None:
                     result.relationships.append(relationship)
                 else:
-                    logger.error(_TAG, instance.ctx, 'There was an error while trying to convert cdm relationship to model.json relationship.')
+                    logger.error(instance.ctx, 'to_data', instance.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_REL_CONVERSION_ERROR)
                     return None
 
         if instance.imports:

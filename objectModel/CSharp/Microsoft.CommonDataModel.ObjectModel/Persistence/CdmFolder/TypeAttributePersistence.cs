@@ -15,6 +15,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     class TypeAttributePersistence
     {
+        private static readonly string Tag = nameof(TypeAttributePersistence);
+
         public static CdmTypeAttributeDefinition FromData(CdmCorpusContext ctx, JToken obj, string entityName = null)
         {
             if (obj == null)
@@ -37,13 +39,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     maxCardinality = (string)obj["cardinality"]["maximum"];
 
                 if (string.IsNullOrWhiteSpace(minCardinality) || string.IsNullOrWhiteSpace(maxCardinality))
-                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Both minimum and maximum are required for the Cardinality property.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistCardinalityPropMissing);
 
                 if (!CardinalitySettings.IsMinimumValid(minCardinality))
-                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Invalid minimum cardinality {minCardinality}.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrValdnInvalidMinCardinality, minCardinality);
 
                 if (!CardinalitySettings.IsMaximumValid(maxCardinality))
-                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Invalid maximum cardinality {maxCardinality}.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrValdnInvalidMaxCardinality, maxCardinality);
 
                 if (!string.IsNullOrWhiteSpace(minCardinality) &&
                     !string.IsNullOrWhiteSpace(maxCardinality) &&
@@ -91,7 +93,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 }
                 else
                 {
-                    Logger.Warning(nameof(TypeAttributePersistence), ctx, $"Couldn't find an enum value for {dataFormat}.", nameof(FromData));
+                    Logger.Warning(ctx, Tag, nameof(FromData), null, CdmLogCode.WarnPersistEnumNotFound, dataFormat);
                 }
             }
 

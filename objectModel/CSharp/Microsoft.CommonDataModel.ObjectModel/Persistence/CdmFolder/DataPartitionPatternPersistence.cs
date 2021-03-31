@@ -54,10 +54,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 newPattern.SpecializedSchema = (string)obj["specializedSchema"];
             }
 
-            if (obj["exhibitsTraits"] != null)
-            {
-                Utils.AddListToCdmCollection(newPattern.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
-            }
+            Utils.AddListToCdmCollection(newPattern.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
 
             return newPattern;
         }

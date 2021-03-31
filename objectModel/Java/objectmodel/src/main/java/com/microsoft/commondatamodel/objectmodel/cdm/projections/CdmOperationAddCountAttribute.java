@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
@@ -17,12 +18,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle AddCountAttribute operations
  */
 public class CdmOperationAddCountAttribute extends CdmOperationBase {
-    private String TAG = CdmOperationAddCountAttribute.class.getSimpleName();
+    private String tag = CdmOperationAddCountAttribute.class.getSimpleName();
     private CdmTypeAttributeDefinition countAttribute;
 
     public CdmOperationAddCountAttribute(final CdmCorpusContext ctx) {
@@ -79,7 +81,7 @@ public class CdmOperationAddCountAttribute extends CdmOperationBase {
             missingFields.add("countAttribute");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;

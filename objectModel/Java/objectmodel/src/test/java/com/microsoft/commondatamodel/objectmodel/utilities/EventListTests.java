@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.utilities;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import org.testng.annotations.Test;
@@ -36,57 +37,64 @@ public class EventListTests {
         // Test fetching an object from invalid namespace results in at least one error message in the recorder
         corpus.fetchObjectAsync("foo:/bar").join();
         assertNotNull(corpus.getCtx().getEvents(), "Ctx.events should not be null");
-        assertFalse(corpus.getCtx().getEvents().isRecording(), "Recording should be disabled at the end of API call");
-        assertTrue(corpus.getCtx().getEvents().size() > 0, "There should have been at least one event recorded when fetching object with incorrect path");
-        assertTrue(corpus.getCtx().getEvents().get(0).containsKey("timestamp"), "The recorded event should have had a timestamp key");
-        assertEquals(corpus.getCtx().getEvents().get(0).get("correlationId"), DUMMY_CORRELATION_ID,
-                "The recorded event should have had a correlationId key with the dummy value");
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNamespaceNotRegistered);
 
         // Test fetching a good object, this should leave event recorder empty
         corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
-        assertFalse(corpus.getCtx().getEvents().isRecording(), "Recording should be disabled at the end of API call");
-        assertEquals(corpus.getCtx().getEvents().size(), 0,
-                "There should have been no events recorded when fetching object with correct path");
+        testNoLogsState(corpus);
 
         // Test saving a manifest to invalid namespace results in at least one error message in the recorder
         CdmManifestDefinition manifest = corpus.makeObject(CdmObjectType.ManifestDef, "dummy");
         manifest.saveAsAsync("foo:/bar", true).join();
-        assertFalse(corpus.getCtx().getEvents().isRecording(), "Recording should be disabled at the end of API call");
-        assertTrue(corpus.getCtx().getEvents().size() > 0, "There should have been at least one event recorded");
-        assertTrue(corpus.getCtx().getEvents().get(0).containsKey("timestamp"), "The recorded event should have had a timestamp key");
-        assertEquals(corpus.getCtx().getEvents().get(0).get("correlationId"), DUMMY_CORRELATION_ID,
-                "The recorded event should have had a correlationId key with the dummy value");
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrValdnMissingDoc);
 
         // Test resolving a manifest not added to a folder, this should yield at least one error message in the recorder
         manifest.createResolvedManifestAsync("new dummy", null).join();
-        assertFalse(corpus.getCtx().getEvents().isRecording(), "Recording should be disabled at the end of API call");
-        assertTrue(corpus.getCtx().getEvents().size() > 0, "There should have been at least one event recorded");
-        assertTrue(corpus.getCtx().getEvents().get(0).containsKey("timestamp"), "The recorded event should have had a timestamp key");
-        assertEquals(corpus.getCtx().getEvents().get(0).get("correlationId"), DUMMY_CORRELATION_ID,
-                "The recorded event should have had a correlationId key with the dummy value");
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveManifestFailed);
 
         // Test resolving an entity without WRT doc, this should yield at least one error message in the recorder
         CdmEntityDefinition entity2 = corpus.makeObject(CdmObjectType.EntityDef, "MyEntity2");
         entity2.createResolvedEntityAsync("MyEntity2-Resolved").join();
-        assertFalse(corpus.getCtx().getEvents().isRecording(), "Recording should be disabled at the end of API call");
-        assertTrue(corpus.getCtx().getEvents().size() > 0, "There should have been at least one event recorded");
-        assertTrue(corpus.getCtx().getEvents().get(0).containsKey("timestamp"), "The recorded event should have had a timestamp key");
-        assertEquals(corpus.getCtx().getEvents().get(0).get("correlationId"), DUMMY_CORRELATION_ID,
-                "The recorded event should have had a correlationId key with the dummy value");
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrDocWrtDocNotfound);
 
         // Test invoking FileStatusCheckAsync on the manifest, this should yield at least one error message in the recorder
         manifest.fileStatusCheckAsync().join();
-        assertFalse(corpus.getCtx().getEvents().isRecording(), "Recording should be disabled at the end of API call");
-        assertTrue(corpus.getCtx().getEvents().size() > 0, "There should have been at least one event recorded");
-        assertTrue(corpus.getCtx().getEvents().get(0).containsKey("timestamp"), "The recorded event should have had a timestamp key");
-        assertEquals(corpus.getCtx().getEvents().get(0).get("correlationId"), DUMMY_CORRELATION_ID,
-                "The recorded event should have had a correlationId key with the dummy value");
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace);
 
         // Repeat the same test but with status level 'None', no events should be recorded
         corpus.getCtx().setReportAtLevel(CdmStatusLevel.None);
         entity2.createResolvedEntityAsync("MyEntity2-Resolved").join();
-        assertFalse(corpus.getCtx().getEvents().isRecording(), "Recording should be disabled at the end of API call");
-        assertEquals(corpus.getCtx().getEvents().size(), 0, "There should have been no events recorded when fetching object with correct path");
+        testNoLogsState(corpus);
+
+        // Test checking file status on a data partition
+        // We're at log level 'Progress', so we get the EnterScope/LeaveScope messages too
+        corpus.getCtx().setReportAtLevel(CdmStatusLevel.Progress);
+        CdmDataPartitionDefinition part = corpus.makeObject(CdmObjectType.DataPartitionDef, "part");
+        part.fileStatusCheckAsync().join();
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath);
+
+        // Test checking file status on a data partition pattern
+        CdmDocumentDefinition refDoc = corpus.makeObject(CdmObjectType.DocumentDef, "RefEntDoc");
+        CdmDataPartitionPatternDefinition partPattern = corpus.makeObject(CdmObjectType.DataPartitionPatternDef, "partPattern");
+        partPattern.setInDocument(refDoc);
+        partPattern.fileStatusCheckAsync().join();
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrDocAdapterNotFound);
+
+        // Test calculating relationships - no errors/warnings
+        corpus.calculateEntityGraphAsync(manifest).join();
+        testBasicLogsState(corpus);
+
+        // Test populating relationships in manifest - no errors/warnings
+        manifest.populateManifestRelationshipsAsync().join();
+        testBasicLogsState(corpus);
     }
 
     /**
@@ -117,20 +125,54 @@ public class EventListTests {
         manifest.getEntities().add(entity1);
         manifest.createResolvedManifestAsync("new dummy 2", null).join();
 
-        assertFalse(corpus.getCtx().getEvents().isRecording(), "Recording should be disabled at the end of API call");
-        assertTrue(corpus.getCtx().getEvents().size() > 0, "There should have been at least one event recorded");
-        // We check that there first event recorded was an error from the nested function
-        assertEquals(corpus.getCtx().getEvents().get(0).get("level"), "Error", "The first recorded event level should have been 'Error'");
-        assertEquals(corpus.getCtx().getEvents().get(0).get("message"), "Unable to resolve the reference 'entityId' to a known object",
-                "The first recorded event message should have specified that 'entityId' was not resolved");
-        assertEquals(corpus.getCtx().getEvents().get(0).get("correlationId"), DUMMY_CORRELATION_ID,
-                "The recorded event should have had a correlationId key with the dummy value");
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveReferenceFailure);
 
         // Keep for debugging
 //        corpus.getCtx().getEvents().forEach(logEntry -> {
 //            logEntry.forEach((key, value) -> System.out.println(key + "=" + value));
 //            System.out.println();
 //        });
+    }
+
+    /**
+     * Tests events generated in StorageManager APIs
+     */
+    @Test
+    public void testStorageManagerEvents() throws InterruptedException {
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestEventList");
+        corpus.setEventCallback(eventCallback, CdmStatusLevel.Info, DUMMY_CORRELATION_ID);
+
+        corpus.getStorage().mount("dummy", null);
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullAdapter);
+
+        corpus.getStorage().unmount("nothing");
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnStorageRemoveAdapterFailed);
+
+        // No errors/warnings expected here
+        corpus.getStorage().fetchRootFolder(null);
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace);
+
+        corpus.getStorage().adapterPathToCorpusPath("Test");
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidAdapterPath);
+
+        corpus.getStorage().corpusPathToAdapterPath("unknown:/Test");
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageAdapterNotFound);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNamespaceNotRegistered);
+
+        corpus.getStorage().createAbsoluteCorpusPath(null);
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath);
+
+        corpus.getStorage().createRelativeCorpusPath(null);
+        testBasicLogsState(corpus);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath);
+
     }
 
     /**
@@ -150,22 +192,62 @@ public class EventListTests {
         assertTrue(corpus.getCtx().getEvents().size() > 2,
                 "There should have been at least 2 (debug) events recorded when fetching object with correct path");
 
-        // Verify scope entry event
-        assertEquals(corpus.getCtx().getEvents().get(0).get("message"), "Entering scope",
-                "The first recorded event message should have specified that new scope was entered");
-        assertEquals(corpus.getCtx().getEvents().get(0).get("path"), "fetchObjectAsync",
-                "The first recorded event message should have specified scope path of 'fetchObjectAsync'");
+        testBasicLogsState(corpus);
 
-        // Verify scope exit event
-        assertEquals(corpus.getCtx().getEvents().get(corpus.getCtx().getEvents().size() - 1).get("message"), "Leaving scope",
-                "The last recorded event message should have specified that new scope was exited");
-        assertEquals(corpus.getCtx().getEvents().get(corpus.getCtx().getEvents().size() - 1).get("path"), "fetchObjectAsync",
-                "The last recorded event message should have specified scope path of 'fetchObjectAsync'");
+        // Verify method on entry/exit events
+        assertEquals(corpus.getCtx().getEvents().get(0).get("method"), "fetchObjectAsync",
+                "The first recorded event message should have specified scope callingfunc of 'fetchObjectAsync'");
+        assertEquals(corpus.getCtx().getEvents().get(corpus.getCtx().getEvents().size() - 1).get("method"), "fetchObjectAsync",
+                "The last recorded event message should have specified scope callingfunc of 'fetchObjectAsync'");
 
-        // Keep for debugging
+//         // Keep for debugging
 //        corpus.getCtx().getEvents().forEach(logEntry -> {
 //            logEntry.forEach((key, value) -> System.out.println(key + "=" + value));
 //            System.out.println();
 //         });
+    }
+
+    /**
+     * Helper function to test that recording is stopped and no logs are recorded.
+     * @param corpus CdmCorpusDefinition
+     */
+    private void testNoLogsState(CdmCorpusDefinition corpus) {
+        testBasicLogsState(corpus, true);
+    }
+
+    /**
+     * Helper function to check for event list state and tests that there are multiple entries and log enter/exit events were logged.
+     * @param corpus CdmCorpusDefinition
+     */
+    private void testBasicLogsState(CdmCorpusDefinition corpus) {
+        testBasicLogsState(corpus, false);
+    }
+
+    /**
+     * Helper function to check for event list state and presence of scope enter/leave logs.
+     * @param corpus CdmCorpusDefinition
+     * @param expectNoLogs If true, tests that recording is stopped and there are no logs in EventList. If false,
+     *                     tests that there are multiple entries and log enter/exit events were logged.
+     */
+    private void testBasicLogsState(CdmCorpusDefinition corpus, boolean expectNoLogs) {
+        assertNotNull(corpus.getCtx().getEvents(), "Events list should not be null");
+        assertFalse(corpus.getCtx().getEvents().isRecording(), "Recording should be disabled at the end of API call");
+
+        if (expectNoLogs) {
+            assertEquals(corpus.getCtx().getEvents().size(), 0,
+                    "There should have been no events recorded when fetching object with correct path");
+        } else {
+            assertTrue(corpus.getCtx().getEvents().size() > 0, "There should have been at least one event recorded");
+            assertTrue(corpus.getCtx().getEvents().get(0).containsKey("timestamp"), "The recorded event should have had a timestamp key");
+            assertEquals(corpus.getCtx().getEvents().get(0).get("correlationId"), DUMMY_CORRELATION_ID,
+                    "The recorded event should have had a correlationId key with the dummy value");
+
+            if (corpus.getCtx().getReportAtLevel() == CdmStatusLevel.Progress) {
+                assertEquals(corpus.getCtx().getEvents().get(0).get("message"), "Entering scope",
+                        "The first recorded event message should have specified that new scope was entered");
+                assertTrue(corpus.getCtx().getEvents().get(corpus.getCtx().getEvents().size() - 1).get("message").startsWith("Leaving scope"),
+                        "The last recorded event message should have specified that new scope was exited");
+            }
+        }
     }
 }

@@ -6,7 +6,8 @@ import unittest
 from typing import Optional
 
 from cdm.enums import CdmStatusLevel, ImportsLoadStrategy
-from cdm.objectmodel import CdmCorpusDefinition, CdmReferencedEntityDeclarationDefinition, CdmManifestDefinition
+from cdm.objectmodel import CdmCorpusDefinition, CdmReferencedEntityDeclarationDefinition, CdmManifestDefinition, \
+    CdmEntityDefinition
 from cdm.resolvedmodel import ResolvedEntity
 from cdm.storage import LocalAdapter
 from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
@@ -34,7 +35,7 @@ class EntityResolution(unittest.TestCase):
 
         corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestOwnerNotChanged')
 
-        entity = await corpus.fetch_object_async('local:/Entity.cdm.json/Entity')
+        entity = await corpus.fetch_object_async('local:/Entity.cdm.json/Entity') # type: CdmEntityDefinition
         document = await corpus.fetch_object_async('local:/Entity.cdm.json')
 
         self.assertEqual(document, entity.owner)
@@ -42,6 +43,8 @@ class EntityResolution(unittest.TestCase):
         await entity.create_resolved_entity_async('res-Entity')
 
         self.assertEqual(document, entity.owner)
+        self.assertEqual(entity, entity.attributes[0].owner,
+                         'Entity\'s attribute\'s owner should have remained unchanged (same as the owning entity)')
 
     @async_test
     async def test_resolve_test_corpus(self):

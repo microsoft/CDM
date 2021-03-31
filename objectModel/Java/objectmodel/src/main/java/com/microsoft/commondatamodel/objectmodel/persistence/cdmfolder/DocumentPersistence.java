@@ -13,18 +13,18 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DataType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DocumentContent;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.DynamicObjectExtensions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class DocumentPersistence {
-  private static final String TAG = DocumentPersistence.class.getSimpleName();
+  private static String tag = DocumentPersistence.class.getSimpleName();
 
   /**
    * Whether this persistence class has async methods.
@@ -97,13 +97,13 @@ public class DocumentPersistence {
           String message = "This ObjectModel version supports json semantic version " + jsonSemanticVersion + " at maximum.";
           message += " Trying to load a document with version " + doc.getJsonSchemaSemanticVersion() + ".";
           if (isResolvedDoc) {
-            Logger.warning(TAG, ctx, message, "fromData");
+            Logger.warning(ctx, tag, "fromObject", doc.getAtCorpusPath(), CdmLogCode.WarnPersistUnsupportedJsonSemVer);
           } else {
-            Logger.error(TAG, ctx, message, "fromData");
+            Logger.error(ctx, tag, "fromObject", doc.getAtCorpusPath(), CdmLogCode.ErrPersistUnsupportedJsonSemVer, jsonSemanticVersion, doc.getJsonSchemaSemanticVersion());
           }
       }
     } else {
-        Logger.warning(TAG, ctx, "jsonSemanticVersion is a required property of a document.", "fromData");
+        Logger.warning(ctx, tag, "fromObject", doc.getAtCorpusPath(), CdmLogCode.WarnPersistJsonSemVerMandatory);
     }
 
     return doc;
@@ -114,12 +114,7 @@ public class DocumentPersistence {
       DocumentContent obj = JMapper.MAP.readValue(jsonData, DocumentContent.class);
       return fromObject(ctx, docName, folder.getNamespace(), folder.getFolderPath(), obj);
     } catch (final Exception e) {
-      Logger.error(
-          DocumentPersistence.class.getSimpleName(),
-          ctx,
-          Logger.format("Could not convert '{0}'. Reason '{1}'.", docName, e.getLocalizedMessage()),
-          "fromData"
-      );
+      Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistDocConversionFailure, docName, e.getLocalizedMessage());
       return null;
     }
   }
@@ -147,10 +142,8 @@ public class DocumentPersistence {
       String[] docSemanticVersionSplit = documentSemanticVersion.split("\\.");
       String[] currSemanticVersionSplit = jsonSemanticVersion.split("\\.");
 
-      String errorMessage = "jsonSemanticVersion must be set using the format <major>.<minor>.<patch>.";
-
       if (docSemanticVersionSplit.length != 3) {
-        Logger.warning(TAG, ctx, errorMessage, "compareJsonSemanticVersion");
+        Logger.warning(ctx, tag, "compareJsonSemanticVersion", null, CdmLogCode.WarnPersistJsonSemVerInvalidFormat);
         return 0;
       }
 
@@ -160,7 +153,7 @@ public class DocumentPersistence {
                 int version = Integer.parseInt(docSemanticVersionSplit[i]);
                 return  version < Integer.parseInt(currSemanticVersionSplit[i]) ? -1 : 1;
               } catch (NumberFormatException e) {
-                Logger.warning(TAG, ctx, errorMessage, "compareJsonSemanticVersion");
+                Logger.warning(ctx, tag, "compareJsonSemanticVersion", null, CdmLogCode.WarnPersistJsonSemVerInvalidFormat);
                 return 0;
               }
           }

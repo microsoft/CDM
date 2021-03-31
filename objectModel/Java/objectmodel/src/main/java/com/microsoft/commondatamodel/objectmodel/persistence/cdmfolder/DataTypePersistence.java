@@ -7,15 +7,18 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataTypeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DataType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class DataTypePersistence {
+  private static String tag = DataTypePersistence.class.getSimpleName();
+
   public static CdmDataTypeDefinition fromData(final CdmCorpusContext ctx, final DataType obj) {
       if (obj == null) {
-          Logger.error(DataTypePersistence.class.getSimpleName(), ctx, "There was an error while trying to convert from JSON to CdmDataTypeDefinition. Reason: JSON object is null", "fromData");
-          return null;
+        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistJsonDatatypeConversionError);
+        return null;
       }
 
       final CdmDataTypeDefinition dataType = ctx.getCorpus().makeObject(CdmObjectType.DataTypeDef, obj.getDataTypeName());

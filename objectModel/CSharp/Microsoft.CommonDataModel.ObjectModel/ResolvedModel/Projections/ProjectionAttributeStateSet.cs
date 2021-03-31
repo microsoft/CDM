@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System.Collections.Generic;
 
@@ -12,6 +13,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     /// </summary>
     internal sealed class ProjectionAttributeStateSet
     {
+        private static readonly string Tag = nameof(ProjectionAttributeStateSet);
+
         /// <summary>
         /// A list containing all the ProjectionAttributeStates
         /// </summary>
@@ -37,7 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 pas.CurrentResolvedAttribute == null ||
                 string.IsNullOrWhiteSpace(pas.CurrentResolvedAttribute.ResolvedName))
             {
-                Logger.Error(nameof(ProjectionAttributeStateSet), this.Ctx, $"Invalid ProjectionAttributeState provided for addition to the Set. Add operation failed.", nameof(Add));
+                Logger.Error(this.Ctx, Tag, nameof(Add), null, CdmLogCode.ErrProjInvalidAttrState);
             }
             else
             {
@@ -69,7 +72,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             }
             else
             {
-                Logger.Warning(nameof(ProjectionAttributeStateSet), this.Ctx, $"Invalid ProjectionAttributeState provided for removal from the Set. Remove operation failed.", nameof(Remove));
+                Logger.Warning(this.Ctx, Tag, nameof(Remove), null, CdmLogCode.WarnProjRemoveOpsFailed);
                 return false;
             }
         }

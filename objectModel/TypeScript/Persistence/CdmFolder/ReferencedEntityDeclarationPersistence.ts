@@ -6,6 +6,7 @@ import {
     cdmObjectType,
     CdmReferencedEntityDeclarationDefinition,
     CdmTraitReference,
+    cdmLogCode,
     copyOptions,
     resolveOptions
 } from '../../internal';
@@ -18,6 +19,8 @@ import {
 import * as utils from './utils';
 
 export class ReferencedEntityDeclarationPersistence {
+    private static TAG: string = ReferencedEntityDeclarationPersistence.name;
+
     /**
      * Creates an instance of referenced entity declartion from data object.
      * @param ctx The context.
@@ -36,7 +39,7 @@ export class ReferencedEntityDeclarationPersistence {
         let entityPath: string = dataObj.entityPath !== undefined ? dataObj.entityPath : dataObj.entityDeclaration;
 
         if (entityPath === undefined) {
-            Logger.error(ReferencedEntityDeclarationPersistence.name, ctx, 'Couldn\'t find entity path or similar.', 'FromData');
+            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistEntityPathNotFound);
         }
 
         // The entity path has to be absolute.
@@ -58,9 +61,7 @@ export class ReferencedEntityDeclarationPersistence {
         if (dataObj.explanation) {
             newRef.explanation = dataObj.explanation;
         }
-        if (dataObj.exhibitsTraits) {
-            utils.addArrayToCdmCollection<CdmTraitReference>(newRef.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
-        }
+        utils.addArrayToCdmCollection<CdmTraitReference>(newRef.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
 
         return newRef;
     }

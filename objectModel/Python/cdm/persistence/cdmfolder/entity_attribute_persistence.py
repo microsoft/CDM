@@ -5,6 +5,7 @@ from cdm.objectmodel import CdmCorpusContext, CdmEntityAttributeDefinition
 from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
 from cdm.enums import CdmObjectType
 from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils, logger
+from cdm.enums import CdmLogCode
 
 from . import utils
 from .attribute_resolution_guidance_persistence import AttributeResolutionGuidancePersistence
@@ -35,13 +36,15 @@ class EntityAttributePersistence:
                 max_cardinality = data.get('cardinality').get('maximum')
 
             if not min_cardinality or not max_cardinality:
-                logger.error(_TAG, ctx, 'Both minimum and maximum are required for the Cardinality property.')
+                logger.error(ctx, _TAG, EntityAttributePersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_CARDINALITY_PROP_MISSING)
 
             if not CardinalitySettings._is_minimum_valid(min_cardinality):
-                logger.error(_TAG, ctx, 'Invalid minimum cardinality {}.'.format(min_cardinality))
+                logger.error(ctx, _TAG, EntityAttributePersistence.from_data.__name__, None,
+                             CdmLogCode.ERR_PERSIST_INVALID_MIN_CARDINALITY, min_cardinality)
 
             if not CardinalitySettings._is_maximum_valid(max_cardinality):
-                logger.error(_TAG, ctx, 'Invalid maximum cardinality {}.'.format(max_cardinality))
+                logger.error(ctx, _TAG, EntityAttributePersistence.from_data.__name__, None,
+                             CdmLogCode.ERR_PERSIST_INVALID_MAX_CARDINALITY, max_cardinality)
 
             if min_cardinality and max_cardinality and CardinalitySettings._is_minimum_valid(min_cardinality) and CardinalitySettings._is_maximum_valid(max_cardinality):
                 entity_attribute.cardinality = CardinalitySettings(entity_attribute)
@@ -69,7 +72,7 @@ class EntityAttributePersistence:
 
         # Ignore resolution guidance if the entity is a projection
         if data.get('resolutionGuidance') and is_projection:
-            logger.error(_TAG, ctx, 'The EntityAttribute {} is projection based. Resolution guidance is not supported with a projection.'.format(entity_attribute.name))
+            logger.error(ctx, _TAG, 'from_data', None, CdmLogCode.ERR_PERSIST_ENTITY_ATTR_UNSUPPORTED, entity_attribute.name)
         else:
             entity_attribute.resolution_guidance = AttributeResolutionGuidancePersistence.from_data(ctx, data.get('resolutionGuidance'))
 

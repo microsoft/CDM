@@ -56,6 +56,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmDocumentDefinition : CdmObjectSimple, CdmContainerDefinition
     {
+        private static readonly string Tag = nameof(CdmDocumentDefinition);
+
         internal ConcurrentDictionary<string, CdmObjectBase> InternalDeclarations;
         internal ImportPriorities ImportPriorities;
         internal bool NeedsIndexing;
@@ -159,7 +161,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.Ctx.Corpus.blockDeclaredPathChanges = true;
 
             // shout into the void
-            Logger.Info(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Localizing corpus paths in document '{this.Name}'", nameof(LocalizeCorpusPaths));
+            Logger.Info((ResolveContext)this.Ctx, Tag, nameof(LocalizeCorpusPaths), newFolder.AtCorpusPath, $"Localizing corpus paths in document '{this.Name}'");
 
             // find anything in the document that is a corpus path
             this.Visit("", new VisitCallback
@@ -388,7 +390,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.Name))
             {
-                Logger.Error(nameof(CdmDocumentDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Name" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "Name" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -443,7 +446,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 ResolveOptions resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
                 if (!await this.IndexIfNeeded(resOpt))
                 {
-                    Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to index document prior to save '{this.Name}'", nameof(SaveAsAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveAsAsync), this.AtCorpusPath, CdmLogCode.ErrIndexFailed);
                     return false;
                 }
 
@@ -482,7 +485,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 if (this.Folder == null)
                 {
-                    Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Document '{this.Name}' is not in a folder", nameof(IndexIfNeeded));
+                    Logger.Error(this.Ctx, Tag, nameof(IndexIfNeeded), this.AtCorpusPath, CdmLogCode.ErrValdnMissingDoc, this.Name);
                     return false;
                 }
 
@@ -595,7 +598,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     } 
                     else
                     {
-                        Logger.Warning(nameof(CdmDocumentDefinition), this.Ctx, $"Import document {imp.CorpusPath} not loaded. This might cause an unexpected output.");
+                        Logger.Warning(this.Ctx, Tag, nameof(PrioritizeImports), this.AtCorpusPath, CdmLogCode.WarnDocImportNotLoaded ,imp.CorpusPath);
                     }
                 }
 
@@ -607,7 +610,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     if (impDoc == null)
                     {
-                        Logger.Warning(nameof(CdmDocumentDefinition), this.Ctx, $"Import document {imp.CorpusPath} not loaded. This might cause an unexpected output.");
+                        Logger.Warning(this.Ctx, Tag, nameof(PrioritizeImports), this.AtCorpusPath, CdmLogCode.WarnDocImportNotLoaded, imp.CorpusPath);
                     }
 
                     // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
@@ -775,7 +778,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         // save it with the same name
                         if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
                         {
-                            Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to save import '{docImp.Name}'", nameof(SaveLinkedDocuments));
+                            Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocImportSavingFailure, docImp.Name);
                             return false;
                         }
                     }

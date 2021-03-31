@@ -50,7 +50,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
 
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
-            if (!StringUtils.equalsWithIgnoreCase('ProjectionPersistence | Invalid operation type \'replaceAsForeignKey11111\'. | FromData', message)) {
+            if (message.indexOf('ProjectionPersistence | Invalid operation type \'replaceAsForeignKey11111\'. | fromData') == -1) {
                 fail(message);
             }
         }, cdmStatusLevel.warning);

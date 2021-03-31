@@ -10,18 +10,19 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
-import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projections.ProjectionPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.EntityAttribute;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class EntityAttributePersistence {
+
+  private static String tag = EntityAttributePersistence.class.getSimpleName();
 
   public static CdmEntityAttributeDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
     final CdmEntityAttributeDefinition entityAttribute =
@@ -45,15 +46,15 @@ public class EntityAttributePersistence {
       }
 
       if (StringUtils.isNullOrTrimEmpty(minCardinality) || StringUtils.isNullOrTrimEmpty(maxCardinality)) {
-        Logger.error(EntityAttributePersistence.class.getSimpleName(), ctx, "Both minimum and maximum are required for the Cardinality property.", "fromData");
+        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistCardinalityPropMissing);
       }
 
       if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-        Logger.error(EntityAttributePersistence.class.getSimpleName(), ctx, Logger.format("Invalid minimum cardinality {0}.", minCardinality), "fromData");
+        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistInvalidMinCardinality, minCardinality);
       }
 
       if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-        Logger.error(EntityAttributePersistence.class.getSimpleName(), ctx, Logger.format("Invalid maximum cardinality {0}.", maxCardinality), "fromData");
+        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistInvalidMaxCardinality, maxCardinality);
       }
 
       if (!StringUtils.isNullOrTrimEmpty(minCardinality) &&
@@ -85,11 +86,7 @@ public class EntityAttributePersistence {
         Utils.createTraitReferenceList(ctx, obj.get("appliedTraits")));
     // Ignore resolution guidance if the entity is a projection
     if (obj.get("resolutionGuidance") != null && isProjection) {
-      Logger.error(
-          EntityAttributePersistence.class.getSimpleName(),
-          ctx,
-          Logger.format("The EntityAttribute {0} is projection based. Resolution guidance is not supported with a projection.", entityAttribute.getName())
-      );
+      Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistEntityAttrUnsupported,  entityAttribute.getName());
     } else {
       entityAttribute.setResolutionGuidance(AttributeResolutionGuidancePersistence.fromData(ctx, obj.get("resolutionGuidance")));
     }

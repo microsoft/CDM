@@ -38,10 +38,8 @@ public class LocalEntityDeclarationPersistence {
       localDec.setExplanation(obj.getExplanation());
     }
 
-    if (obj.getExhibitsTraits() != null) {
-      Utils.addListToCdmCollection(
+    Utils.addListToCdmCollection(
               localDec.getExhibitsTraits(), Utils.createTraitReferenceList(ctx, obj.getExhibitsTraits()));
-    }
 
     if (obj.getDataPartitions() != null) {
       obj.getDataPartitions().forEach(dataPartition ->

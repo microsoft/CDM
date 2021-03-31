@@ -75,9 +75,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 corpus.Storage.DefaultNamespace = "local";
 
                 string outFolderPath = corpus.Storage.AdapterPathToCorpusPath(testActualPath) + "/"; // interesting 'bug'
-                CdmFolderDefinition outFolder = await corpus.FetchObjectAsync<CdmFolderDefinition>(outFolderPath) as CdmFolderDefinition;
+                CdmFolderDefinition outFolder = await corpus.FetchObjectAsync<CdmFolderDefinition>(outFolderPath);
                 
-                CdmEntityDefinition srcEntityDef = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/Input/{sourceEntityName}.cdm.json/{sourceEntityName}") as CdmEntityDefinition;
+                CdmEntityDefinition srcEntityDef = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/Input/{sourceEntityName}.cdm.json/{sourceEntityName}");
                 Assert.IsTrue(srcEntityDef != null);
 
                 var resOpt = new ResolveOptions

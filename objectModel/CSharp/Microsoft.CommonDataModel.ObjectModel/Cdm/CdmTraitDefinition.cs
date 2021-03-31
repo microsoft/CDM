@@ -9,9 +9,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class CdmTraitDefinition : CdmObjectDefinitionBase
     {
+        private static readonly string Tag = nameof(CdmTraitDefinition);
+
         /// <summary>
         /// Gets or sets the trait name.
         /// </summary>
@@ -161,7 +164,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.TraitName))
             {
-                Logger.Error(nameof(CdmTraitDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "TraitName" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "TraitName" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;

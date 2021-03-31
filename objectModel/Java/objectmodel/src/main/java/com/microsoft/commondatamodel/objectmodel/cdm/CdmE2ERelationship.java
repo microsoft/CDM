@@ -4,11 +4,12 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -16,6 +17,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
+  private String tag = CdmE2ERelationship.class.getSimpleName();
+  
   private String name;
   private String fromEntity;
   private String fromEntityAttribute;
@@ -126,7 +129,7 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(CdmE2ERelationship.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

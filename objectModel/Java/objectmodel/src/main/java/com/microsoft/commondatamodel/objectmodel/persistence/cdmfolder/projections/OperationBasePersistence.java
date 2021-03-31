@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.OperationTypeConvertor;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.OperationAddAttributeGroup;
@@ -26,6 +27,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class OperationBasePersistence {
+  private static String tag = OperationBasePersistence.class.getSimpleName();
+
   public static <T extends CdmOperationBase> T fromData(final CdmCorpusContext ctx, final CdmObjectType objectType, final JsonNode obj) {
     if (obj == null) {
       return null;
@@ -36,7 +39,7 @@ public class OperationBasePersistence {
     String operationName = OperationTypeConvertor.operationTypeToString(operationType);
 
     if (obj.get("$type") != null && !StringUtils.equalsWithIgnoreCase(obj.get("$type").asText(), operationName)) {
-        Logger.error(operationName, ctx, Logger.format("$type {0} is invalid for this operation.", obj.get("$type").asText()));
+      Logger.error(ctx, tag, "fromData", operation.getAtCorpusPath(), CdmLogCode.ErrPersistProjInvalidType, obj.get("$type").toString());
     } else {
         operation.setType(operationType);
     }

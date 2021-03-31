@@ -55,7 +55,7 @@ public class ProjectionMiscellaneousTest {
 
         CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
-            if (!StringUtils.equalsWithIgnoreCase("ProjectionPersistence | Invalid operation type 'replaceAsForeignKey11111'. | FromData", message)) {
+            if (!message.contains("ProjectionPersistence | Invalid operation type 'replaceAsForeignKey11111'. | fromData")) {
                 Assert.fail(message);
             }
         }, CdmStatusLevel.Warning);

@@ -5,7 +5,9 @@ from typing import Optional, List, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.resolvedmodel import ParameterCollection
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_collection import CdmCollection
@@ -20,6 +22,8 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
     def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_trait: Optional['CdmTraitReference'] = None) -> None:
         super().__init__(ctx)
+
+        self._TAG = CdmTraitDefinition.__name__
 
         # the trait associated properties.
         self.associated_properties = []  # type: List[str]
@@ -43,8 +47,6 @@ class CdmTraitDefinition(CdmObjectDefinition):
         self._has_set_flags = False
         self._all_parameters = None
         self._parameters = None
-
-        self._TAG = CdmTraitDefinition.__name__
 
     @property
     def parameters(self) -> 'CdmCollection[CdmParameterDefinition]':
@@ -199,7 +201,8 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
     def validate(self) -> bool:
         if not bool(self.trait_name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['trait_name']))
+            missing_fields = ['trait_name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

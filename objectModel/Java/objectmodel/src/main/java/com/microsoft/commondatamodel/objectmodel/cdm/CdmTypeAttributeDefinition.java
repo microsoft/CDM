@@ -4,18 +4,19 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.*;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionDirective;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
@@ -23,6 +24,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmTypeAttributeDefinition extends CdmAttribute {
+  private String tag = CdmTypeAttributeDefinition.class.getSimpleName();
+
   private CdmDataTypeReference dataType;
   private CdmAttributeContextReference attributeContext;
 
@@ -271,17 +274,17 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
 
     if (this.getCardinality() != null) {
       if (!CardinalitySettings.isMinimumValid(this.getCardinality().getMinimum())) {
-        Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Logger.format("Invalid minimum cardinality {0}", this.getCardinality().getMinimum()), "validate");
+        Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality,  this.getCardinality().getMinimum());
         return false;
       }
       if (!CardinalitySettings.isMaximumValid(this.getCardinality().getMaximum())) {
-        Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Logger.format("Invalid maximum cardinality {0}", this.getCardinality().getMaximum()), "validate");
+        Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, this.getCardinality().getMaximum());
         return false;
       }
     }

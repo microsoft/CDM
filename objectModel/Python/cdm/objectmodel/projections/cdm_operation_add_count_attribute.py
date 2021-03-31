@@ -6,7 +6,9 @@ from typing import Optional, TYPE_CHECKING
 from cdm.enums import CdmObjectType, CdmOperationType, CdmAttributeContextType
 from cdm.objectmodel import CdmAttributeContext
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
-from cdm.utilities import Errors, logger, AttributeContextParameters
+from cdm.utilities import logger, AttributeContextParameters
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_operation_base import CdmOperationBase
 
@@ -23,11 +25,9 @@ class CdmOperationAddCountAttribute(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmOperationAddCountAttribute.__name__
         self.count_attribute = None  # type: CdmTypeAttributeDefinition
         self.type = CdmOperationType.ADD_COUNT_ATTRIBUTE  # type: CdmOperationType
-
-        # --- internal ---
-        self._TAG = CdmOperationAddCountAttribute.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationAddCountAttribute'] = None) -> 'CdmOperationAddCountAttribute':
         copy = CdmOperationAddCountAttribute(self.ctx)
@@ -48,9 +48,8 @@ class CdmOperationAddCountAttribute(CdmOperationBase):
             missing_fields.append('count_attribute')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
-
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:

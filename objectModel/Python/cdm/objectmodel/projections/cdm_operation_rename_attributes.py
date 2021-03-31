@@ -8,7 +8,8 @@ from cdm.resolvedmodel.projections.projection_resolution_common_util import Proj
 
 from cdm.objectmodel import CdmAttribute, CdmAttributeContext
 from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmOperationType
-from cdm.utilities import AttributeContextParameters, Errors, logger
+from cdm.utilities import AttributeContextParameters, logger
+from cdm.enums import CdmLogCode
 from cdm.utilities.string_utils import StringUtils
 
 from .cdm_operation_base import CdmOperationBase
@@ -27,12 +28,10 @@ class CdmOperationRenameAttributes(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmOperationRenameAttributes.__name__
         self.rename_format = None  # type: str
         self.apply_to = None  # type: List[str]
         self.type = CdmOperationType.RENAME_ATTRIBUTES  # type: CdmOperationType
-
-        # --- internal ---
-        self._TAG = CdmOperationRenameAttributes.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationrename_attributes'] = None) -> 'CdmOperationrename_attributes':
         copy = CdmOperationRenameAttributes(self.ctx)
@@ -55,9 +54,9 @@ class CdmOperationRenameAttributes(CdmOperationBase):
             missing_fields.append('rename_format')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
-
+        
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
@@ -139,7 +138,9 @@ class CdmOperationRenameAttributes(CdmOperationBase):
 
                     proj_output_set._add(new_PAS)
                 else:
-                    logger.warning(self._TAG, self.ctx, 'RenameAttributes is not supported on an attribute group yet.')
+                    logger.warning(self.ctx, self._TAG,
+                                   CdmOperationRenameAttributes._append_projection_attribute_state.__name__, self.at_corpus_path,
+                                   CdmLogCode.WARN_PROJ_RENAME_ATTR_NOT_SUPPORTED)
                     # Add the attribute without changes
                     proj_output_set._add(current_PAS)
             else:
@@ -156,7 +157,7 @@ class CdmOperationRenameAttributes(CdmOperationBase):
         ordinal = str(attribute_state._ordinal) if attribute_state._ordinal is not None else ''
 
         if not self.rename_format:
-            logger.error(self._TAG, self.ctx, 'RenameFormat should be set for this operation to work.')
+            logger.error(self.ctx, self._TAG, self.getNewAttributeName.__name__, self.at_corpus_path, CdmLogCode.ERR_PROJ_RENAME_FORMAT_IS_NOT_SET)
             return ''
 
         attribute_name = StringUtils._replace(self.rename_format, 'a', source_attribute_name)

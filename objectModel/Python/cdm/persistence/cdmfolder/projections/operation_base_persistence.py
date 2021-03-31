@@ -3,7 +3,7 @@
 
 from typing import TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.enums.cdm_operation_type import OperationTypeConvertor, CdmOperationType
 from cdm.utilities.logging import logger
 from cdm.utilities.string_utils import StringUtils
@@ -44,7 +44,7 @@ class OperationBasePersistence:
         operation_type = OperationTypeConvertor._from_object_type(object_type)  # type: CdmOperationType
         operation_name = OperationTypeConvertor._operation_type_to_string(CdmOperationType.COMBINE_ATTRIBUTES)
         if data.type and not StringUtils.equals_with_ignore_case(data.type, operation_name):
-            logger.error(operation_name, ctx, '$type {} is invalid for this operation.'.format(data.type))
+            logger.error(ctx, operation_name, OperationBasePersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_PROJ_INVALID_TYPE, data.type)
         else:
             operation.type = operation_type
 

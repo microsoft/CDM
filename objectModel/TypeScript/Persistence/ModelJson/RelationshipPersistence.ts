@@ -2,11 +2,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { ModelJson } from '..';
-import { CdmCorpusContext, CdmE2ERelationship, cdmObjectType, copyOptions, resolveOptions } from '../../internal';
+import { CdmCorpusContext, CdmE2ERelationship, cdmLogCode, cdmObjectType, copyOptions, resolveOptions } from '../../internal';
 import { Logger } from '../../Utilities/Logging/Logger';
 import { SingleKeyRelationship } from './types';
 
 export class RelationshipPersistence {
+    private static TAG: string = RelationshipPersistence.name;
     public static async fromData(ctx: CdmCorpusContext, obj: SingleKeyRelationship, entitySchemaByName: Map<string, string>)
         : Promise<CdmE2ERelationship> {
         if (obj.$type !== 'SingleKeyRelationship') {
@@ -15,21 +16,13 @@ export class RelationshipPersistence {
         }
 
         if (!entitySchemaByName.has(obj.fromAttribute.entityName)) {
-            Logger.warning(
-                RelationshipPersistence.name,
-                ctx,
-                `Relationship's source entity '${obj.fromAttribute.entityName}' is not defined.`
-            );
+            Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersistRelUndefinedSourceEntity, obj.fromAttribute.entityName);
 
             return;
         }
 
         if (!entitySchemaByName.has(obj.toAttribute.entityName)) {
-            Logger.warning(
-                RelationshipPersistence.name,
-                ctx,
-                `Relationship's target entity '${obj.toAttribute.entityName}' is not defined.`
-            );
+            Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersistRelUndefinedTargetEntity);
 
             return;
         }

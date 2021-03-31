@@ -26,9 +26,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
 
     public class PersistenceLayer
     {
+        private static readonly string Tag = nameof(PersistenceLayer);
+
         internal const string FolioExtension = ".folio.cdm.json";
         internal const string ManifestExtension = ".manifest.cdm.json";
         internal const string CdmExtension = ".cdm.json";
@@ -146,10 +149,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 if (adapter.CanRead())
                 {
                     // log message used by navigator, do not change or remove
-                    Logger.Debug(nameof(PersistenceLayer), this.Ctx, $"request file: {docPath}", nameof(LoadDocumentFromPathAsync));
+                    Logger.Debug(this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, $"request file: {docPath}");
                     jsonData = await adapter.ReadAsync(docPath);
                     // log message used by navigator, do not change or remove
-                    Logger.Debug(nameof(PersistenceLayer), this.Ctx, $"received file: {docPath}", nameof(LoadDocumentFromPathAsync));
+                    Logger.Debug(this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, $"received file: {docPath}");
                 }
                 else
                 {
@@ -159,17 +162,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             catch (Exception e)
             {
                 // log message used by navigator, do not change or remove
-                Logger.Debug(nameof(PersistenceLayer), this.Ctx, $"fail file: {docPath}", nameof(LoadDocumentFromPathAsync));
+                Logger.Debug(this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, $"fail file: {docPath}");
 
                 string message = $"Could not read '{docPath}' from the '{folder.Namespace}' namespace. Reason '{e.Message}'";
                 // When shallow validation is enabled, log messages about being unable to find referenced documents as warnings instead of errors.
                 if (resOpt != null && resOpt.ShallowValidation)
                 {
-                    Logger.Warning(nameof(PersistenceLayer), (ResolveContext)this.Ctx, message, nameof(LoadDocumentFromPathAsync));
+                    Logger.Warning((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.WarnPersistFileReadFailure, docPath, folder.Namespace, e.Message);
                 }
                 else
                 {
-                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, message, nameof(LoadDocumentFromPathAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistFileReadFailure, docPath, folder.Namespace, e.Message);
                 }
                 return null;
             }
@@ -180,19 +183,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             }
             catch (Exception e)
             {
-                Logger.Warning(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to compute file last modified time. Reason '{e.Message}'", nameof(LoadDocumentFromPathAsync));
+                Logger.Warning((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.WarnPersistFileModTimeFailure, e.Message);
             }
 
             if (string.IsNullOrWhiteSpace(docName))
             {
-                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Document name cannot be null or empty.", nameof(LoadDocumentFromPathAsync));
+                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistNullDocName);
                 return null;
             }
 
             // If loading an model.json file, check that it is named correctly.
             if (docName.EndWithOrdinalIgnoreCase(ModelJsonExtension) && !docName.EqualsWithOrdinalIgnoreCase(ModelJsonExtension))
             {
-                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to load '{docName}', as it's not an acceptable file name. It must be {ModelJsonExtension}.", nameof(LoadDocumentFromPathAsync));
+                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistDocNameLoadFailure, docName, ModelJsonExtension);
                 return null;
             }
 
@@ -207,7 +210,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 {
                     if (!docName.EqualsWithOrdinalIgnoreCase(ModelJsonExtension))
                     {
-                        Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to load '{docName}', as it's not an acceptable file name. It must be model.json.", "LoadDocumentFromPathAsync");
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistDocNameLoadFailure, docName, ModelJsonExtension);
                         return null;
                     }
 
@@ -220,13 +223,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 else
                 {
                     // Could not find a registered persistence class to handle this document type.
-                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Could not find a persistence class to handle the file '{docName}'", nameof(LoadDocumentFromPathAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistClassMissing, docName);
                     return null;
                 }
             }
             catch (Exception e)
             {
-                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Could not convert '{docName}'. Reason '{e.Message}'", nameof(LoadDocumentFromPathAsync));
+                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistDocConversionFailure, docName, e.Message);
                 return null;
             }
 
@@ -268,19 +271,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
 
             if (adapter == null)
             {
-                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Couldn't find a storage adapter registered for the namespace '{ns}'.", nameof(SaveDocumentAsAsync));
+                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistAdapterNotFoundForNamespace, ns);
                 return false;
             }
             else if (adapter.CanWrite() == false)
             {
-                Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"The storage adapter '{ns}' claims it is unable to write files.", nameof(SaveDocumentAsAsync));
+                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistAdapterWriteFailure, ns);
                 return false;
             }
             else
             {
                 if (string.IsNullOrWhiteSpace(newName))
                 {
-                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Document name cannot be null or empty.", nameof(SaveDocumentAsAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistNullDocName);
                     return false;
                 }
 
@@ -291,7 +294,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
 
                 if (persistenceType == ModelJson && !newName.EqualsWithOrdinalIgnoreCase(ModelJsonExtension))
                 {
-                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to persist '{newName}', as it's not an acceptable file name. It must be {ModelJsonExtension}.", nameof(SaveDocumentAsAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistFailure, newName, ModelJsonExtension);
                     return false;
                 }
 
@@ -312,7 +315,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                         {
                             if (!newName.EqualsWithOrdinalIgnoreCase(ModelJsonExtension))
                             {
-                                Logger.Error(nameof(CdmCorpusDefinition), (ResolveContext)this.Ctx, $"Failed to persist '{newName}', as it's not an acceptable filename. It must be model.json", "saveDocumentAs");
+                                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistFailure, newName, ModelJsonExtension);
                                 return false;
                             }
                             persistedDoc = await Persistence.ModelJson.ManifestPersistence.ToData(doc as CdmManifestDefinition, resOpt, options);
@@ -325,19 +328,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                     else
                     {
                         // Could not find a registered persistence class to handle this document type.
-                        Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Could not find a persistence class to handle the file '{newName}'.", nameof(SaveDocumentAsAsync));
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistClassMissing, newName);
                         return false;
                     }
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Could not persist file '{newName}'. Reason '{e.Message}'.", nameof(SaveDocumentAsAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistFilePersistError, newName + $". Reason '{e.Message}'.");
                     return false;
                 }
 
                 if (persistedDoc == null)
                 {
-                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to persist '{newName}'.", nameof(SaveDocumentAsAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistFilePersistFailed, newName);
                     return false;
                 }
 
@@ -365,7 +368,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to write to the file '{newName}' for reason {e.Message}.", nameof(SaveDocumentAsAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistFileWriteFailure, newName, e.Message);
                     return false;
                 }
 
@@ -376,7 +379,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 {
                     if (await doc.SaveLinkedDocuments(options) == false)
                     {
-                        Logger.Error(nameof(PersistenceLayer), (ResolveContext)this.Ctx, $"Failed to save linked documents for file '{newName}'.", nameof(SaveDocumentAsAsync));
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistSaveLinkedDocs, newName);
                         return false;
                     }
                 }

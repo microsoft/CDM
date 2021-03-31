@@ -7,6 +7,7 @@ import {
     CdmLocalEntityDeclarationDefinition,
     cdmObjectType,
     CdmTraitReference,
+    cdmLogCode,
     copyOptions,
     resolveOptions
 } from '../../internal';
@@ -23,6 +24,8 @@ import {
 import * as utils from './utils';
 
 export class LocalEntityDeclarationPersistence {
+    private static TAG: string = LocalEntityDeclarationPersistence.name;
+
     /**
      * Creates an instance of the local entity declaration from data.
      * @param ctx The context.
@@ -37,12 +40,7 @@ export class LocalEntityDeclarationPersistence {
         if (!entityPath) {
             entityPath = dataObj.entitySchema;
             if (!entityPath) {
-                Logger.error(
-                    LocalEntityDeclarationPersistence.name,
-                    ctx,
-                    'Couldn\'t find entity path or similar.',
-                    this.fromData.name
-                );
+                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistEntityPathNotFound);
             }
         }
 
@@ -63,9 +61,9 @@ export class LocalEntityDeclarationPersistence {
         if (dataObj.explanation) {
             localDec.explanation = dataObj.explanation;
         }
-        if (dataObj.exhibitsTraits) {
-            utils.addArrayToCdmCollection<CdmTraitReference>(localDec.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
-        }
+        
+        utils.addArrayToCdmCollection<CdmTraitReference>(localDec.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
+        
         if (dataObj.dataPartitions) {
             for (const dataPartition of dataObj.dataPartitions) {
                 localDec.dataPartitions.push(CdmFolder.DataPartitionPersistence.fromData(ctx, dataPartition));

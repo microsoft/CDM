@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
@@ -18,12 +19,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Class for Projection
  */
 public class CdmProjection extends CdmObjectDefinitionBase {
-    private String TAG = CdmProjection.class.getSimpleName();
+    private String tag = CdmProjection.class.getSimpleName();
     private String condition;
     private CdmOperationCollection operations;
     private CdmEntityReference source;
@@ -159,12 +161,12 @@ public class CdmProjection extends CdmObjectDefinitionBase {
             CdmObject rootOwner = getRootOwner();
             if (rootOwner.getObjectType() == CdmObjectType.TypeAttributeDef) {
                 // If the projection is used in a type attribute
-                Logger.error(TAG, this.getCtx(), "Source can only be another projection in a type attribute.", "validate");
+                Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrProjSourceError);
             }
         }
 
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -310,7 +312,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
                 // If polymorphic keep original source as previous state
                 Map<String, List<ProjectionAttributeState>> polySourceSet = null;
                 if (projDirective.getIsSourcePolymorphic()) {
-                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, ras, acpSourceProjection);
+                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, ras);
                 }
 
                 // Now initialize projection attribute state
@@ -392,8 +394,11 @@ public class CdmProjection extends CdmObjectDefinitionBase {
                 }
             }
 
-            // Finally update the current state to the projection context
-            projContext.setCurrentAttributeStateSet(pasOperations);
+            // If no operation ran successfully pasOperations will be empty
+            if (!firstOperationToRun) {
+                // Finally update the current state to the projection context
+                projContext.setCurrentAttributeStateSet(pasOperations);
+            }
         } else {
             // Pass Through - no operations to process
         }
@@ -414,6 +419,11 @@ public class CdmProjection extends CdmObjectDefinitionBase {
     public ResolvedAttributeSet extractResolvedAttributes(ProjectionContext projCtx, CdmAttributeContext attCtxUnder) {
         ResolvedAttributeSet resolvedAttributeSet = new ResolvedAttributeSet();
         resolvedAttributeSet.setAttributeContext(attCtxUnder);
+
+        if (projCtx == null) {
+            Logger.error(this.getCtx(), tag, "extractResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrProjFailedToResolve, this.getAtCorpusPath());
+            return resolvedAttributeSet;
+        }
 
         for (ProjectionAttributeState pas : projCtx.getCurrentAttributeStateSet().getStates()) {
             resolvedAttributeSet.merge(pas.getCurrentResolvedAttribute());

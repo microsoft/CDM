@@ -3,16 +3,12 @@
 
 namespace create_manifest
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Newtonsoft.Json.Linq;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
 
     /*
      * ---------------------------------------------------------------------------------------------------------------------------------------

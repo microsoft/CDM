@@ -4,6 +4,9 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     internal static class StringUtils
     {
         public static string Slice(this string str, int startIdx, int endIdx)

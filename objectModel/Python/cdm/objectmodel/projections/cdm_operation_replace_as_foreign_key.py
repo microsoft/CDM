@@ -7,7 +7,9 @@ from cdm.enums import CdmObjectType, CdmOperationType, CdmAttributeContextType
 from cdm.objectmodel import CdmAttributeContext
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
-from cdm.utilities import logger, Errors, AttributeContextParameters
+from cdm.utilities import logger, AttributeContextParameters
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_operation_base import CdmOperationBase
 
@@ -26,12 +28,10 @@ class CdmOperationReplaceAsForeignKey(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmOperationReplaceAsForeignKey.__name__
         self.reference = None  # type: str
         self.replace_with = None  # type: CdmTypeAttributeDefinition
         self.type = CdmOperationType.REPLACE_AS_FOREIGN_KEY  # type: CdmOperationType
-
-        # --- internal ---
-        self._TAG = CdmOperationReplaceAsForeignKey.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationReplaceAsForeignKey'] = None) -> 'CdmOperationReplaceAsForeignKey':
         copy = CdmOperationReplaceAsForeignKey(self.ctx)
@@ -57,7 +57,7 @@ class CdmOperationReplaceAsForeignKey(CdmOperationBase):
             missing_fields.append('replace_with')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
 
         return True
@@ -133,11 +133,5 @@ class CdmOperationReplaceAsForeignKey(CdmOperationBase):
             proj_output_set._add(new_proj_attr_state_FK)
         else:
             # Log error & return proj_output_set without any change
-            logger.error(
-                CdmOperationReplaceAsForeignKey.__name__,
-                proj_output_set._ctx,
-                'Unable to locate state for reference attribute \"{}\".'.format(ref_attr_name),
-                CdmOperationReplaceAsForeignKey._create_new_projection_attribute_state_set.__name__
-            )
-
+            logger.error(proj_output_set._ctx, CdmOperationReplaceAsForeignKey.__name__, CdmOperationReplaceAsForeignKey._create_new_projection_attribute_state_set.__name__, None, CdmLogCode.ERR_PROJ_REF_ATTR_STATE_FAILURE, ref_attr_name)
         return proj_output_set

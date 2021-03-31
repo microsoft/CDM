@@ -12,6 +12,8 @@ import {
     VisitCallback
 } from '../internal';
 import * as timeUtils from '../Utilities/timeUtils';
+import { using } from "using-statement";
+import { enterScope } from '../Utilities/Logging/Logger';
 
 /**
  *  The object model implementation for Data Partition.
@@ -187,22 +189,24 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
      * @inheritdoc
      */
     public async fileStatusCheckAsync(): Promise<void> {
-        const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.location, this.inDocument);
+        return await using(enterScope(CdmDataPartitionDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
+            const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.location, this.inDocument);
 
-        const modifiedTime: Date = await this.ctx.corpus.getLastModifiedTimeFromPartitionPath(fullPath);
+            const modifiedTime: Date = await this.ctx.corpus.getLastModifiedTimeFromPartitionPath(fullPath);
 
-        // update modified times
-        this.lastFileStatusCheckTime = new Date();
-        this.lastFileModifiedTime = (modifiedTime !== undefined) ? timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime)
-            : this.lastFileModifiedTime;
-        await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
+            // update modified times
+            this.lastFileStatusCheckTime = new Date();
+            this.lastFileModifiedTime = (modifiedTime !== undefined) ? timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime)
+                : this.lastFileModifiedTime;
+            await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
+        });
     }
 
     /**
      * @inheritdoc
      */
     public async reportMostRecentTimeAsync(childTime: Date): Promise<void> {
-        if ((this.owner as CdmFileStatus).reportMostRecentTimeAsync && childTime) {
+        if (this.owner && (this.owner as CdmFileStatus).reportMostRecentTimeAsync && childTime) {
             await (this.owner as CdmFileStatus).reportMostRecentTimeAsync(childTime);
         }
     }

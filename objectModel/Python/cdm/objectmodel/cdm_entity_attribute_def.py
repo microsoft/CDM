@@ -6,7 +6,9 @@ from typing import cast, Optional, TYPE_CHECKING
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
 from cdm.resolvedmodel.projections.projection_directive import ProjectionDirective
-from cdm.utilities import DepthInfo, Errors, ResolveOptions, TraitToPropertyMap, logger
+from cdm.utilities import DepthInfo, ResolveOptions, TraitToPropertyMap, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_attribute_def import CdmAttribute
 from .relationship_info import RelationshipInfo
@@ -20,6 +22,8 @@ class CdmEntityAttributeDefinition(CdmAttribute):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx, name)
 
+        self._TAG = CdmEntityAttributeDefinition.__name__
+
         # The entity attribute's entity reference.
         self.entity = None  # type: Optional[CdmEntityReference]
 
@@ -28,7 +32,6 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         self.is_polymorphic_source = None  # type: Optional[bool]
 
         # --- internal ---
-        self._TAG = CdmEntityAttributeDefinition.__name__
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
 
     @property
@@ -134,9 +137,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                     proj_directive = ProjectionDirective(res_opt, self, ctx_ent)
                     proj_def = ctx_ent_obj_def
                     proj_ctx = proj_def._construct_projection_context(proj_directive, under)
-
-                    ras = proj_def._extract_resolved_attributes(proj_ctx, under_att)
-                    rasb._resolved_attribute_set = ras
+                    rasb._resolved_attribute_set = proj_def._extract_resolved_attributes(proj_ctx, under_att)
             else:
                 # An Entity Reference
 
@@ -217,7 +218,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                             continue
 
                         if not reqd_trait.parameter_values:
-                            logger.warning(self._TAG, self.ctx, 'is.linkedEntity.identifier does not support arguments')
+                            logger.warning(self._ctx, self._TAG,  CdmEntityAttributeDefinition._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.WARN_IDENTIFIER_ARGUMENTS_NOT_SUPPORTED)
                             continue
 
                         ent_references = []
@@ -432,15 +433,15 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                 missing_fields.append('cardinality.maximum')
 
         if missing_fields:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
 
         if bool(self.cardinality):
             if not CardinalitySettings._is_minimum_valid(self.cardinality.minimum):
-                logger.error(self._TAG, self.ctx, 'Invalid minimum cardinality {}.'.format(self.cardinality.minimum))
+                logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_MIN_CARDINALITY, self.cardinality.minimum)
                 return False
             if not CardinalitySettings._is_maximum_valid(self.cardinality.maximum):
-                logger.error(self._TAG, self.ctx, 'Invalid maximum cardinality {}.'.format(self.cardinality.maximum))
+                logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_MAX_CARDINALITY, self.cardinality.maximum)
                 return False
         return True
 

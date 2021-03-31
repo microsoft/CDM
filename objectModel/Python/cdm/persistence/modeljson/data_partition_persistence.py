@@ -4,7 +4,7 @@
 from typing import Optional, List, TYPE_CHECKING
 import dateutil.parser
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import logger, TraitToPropertyMap
 
 from . import extension_helper, utils
@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
     from .types import CsvFormatSettings
 
+_TAG = 'DataPartitionPersistence'
 
 class DataPartitionPersistence:
     @staticmethod
@@ -28,8 +29,8 @@ class DataPartitionPersistence:
         data_partition.location = ctx.corpus.storage.create_relative_corpus_path(ctx.corpus.storage.adapter_path_to_corpus_path(data.location), document_folder)
 
         if not data_partition.location:
-            logger.warning(DataPartitionPersistence.__name__, ctx,
-                           'Couldn\'t find data partition\'s location for partition {}.'.format(data_partition.name), DataPartitionPersistence.from_data.__name__)
+            logger.warning(ctx, _TAG,  DataPartitionPersistence.from_data.__name__, None,
+                           CdmLogCode.WARN_PERSIST_PARTITION_LOC_MISSING , data_partition.name)
 
         if data.get('refreshTime'):
             data_partition.refresh_time = data.refreshTime
@@ -55,7 +56,7 @@ class DataPartitionPersistence:
             if csv_format_trait:
                 data_partition.exhibits_traits.append(csv_format_trait)
             else:
-                logger.error(DataPartitionPersistence.__name__, ctx, 'There was a problem while processing csv format settings inside data partition.')
+                logger.error(ctx, _TAG, DataPartitionPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_CSV_PROCESSING_ERROR)
                 return
 
         extension_helper.process_extension_from_json(ctx, data, data_partition.exhibits_traits, extension_trait_def_list, local_extension_trait_def_list)
@@ -73,9 +74,14 @@ class DataPartitionPersistence:
         result.lastFileModifiedTime = utils.get_formatted_date_string(instance.last_file_modified_time)
         result.lastFileStatusCheckTime = utils.get_formatted_date_string(instance.last_file_status_check_time)
 
+        if result.name is None:
+            logger.warning(instance.ctx, _TAG, DataPartitionPersistence.to_data.__name__, instance.at_corpus_path,
+                           CdmLogCode.WARN_PERSIST_PARTITION_NAME_NULL)
+            result.name = ''
+
         if not result.location:
-            logger.warning(DataPartitionPersistence.__name__, instance.ctx,
-                           'Couldn\'t find data partition\'s location for partition {}.'.format(result.name), DataPartitionPersistence.to_data.__name__)
+            logger.warning(instance.ctx, _TAG, DataPartitionPersistence.to_data.__name__, instance.at_corpus_path,
+                           CdmLogCode.WARN_PERSIST_PARTITION_LOC_MISSING, result.Name)
 
         # filter description since it is mapped to a property
         exhibits_traits = filter(lambda t: t.named_reference != 'is.localized.describedAs', instance.exhibits_traits)
@@ -94,7 +100,8 @@ class DataPartitionPersistence:
                 result.fileFormatSettings = csv_format_settings
                 result.fileFormatSettings.type = 'CsvFormatSettings'
             else:
-                logger.error(DataPartitionPersistence.__name__, instance.ctx, 'There was a problem while processing csv format trait inside data partition.')
+                logger.error(instance.ctx, _TAG, DataPartitionPersistence.to_data.__name__, instance.at_corpus_path,
+                             CdmLogCode.ERR_PERSIST_CSV_PROCESSING_ERROR)
                 return
 
         return result

@@ -151,6 +151,17 @@ class ResolvedAttributeSet(RefCounted):
 
         return ras_result
 
+    def set_target_owner(self, entity: 'CdmEntityDefinition'):
+        """Recursively sets the target owner's to be the provided entity."""
+        from cdm.objectmodel import CdmAttribute
+
+        for ra in self._set:
+            if isinstance(ra.target, CdmAttribute):
+                ra.target.owner = entity
+                ra.target.in_document = entity.in_document
+            elif isinstance(ra.target, ResolvedAttributeSet):
+                ra.target.set_target_owner(entity)
+
     def apply_traits(self, traits: 'ResolvedTraitSet', res_opt: 'ResolveOptions', res_guide: 'CdmAttributeResolutionGuidanceDefinition',
                      actions: List['AttributeResolutionApplier']) -> 'ResolvedAttributeSet':
         ras_result = self

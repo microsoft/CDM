@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
     /// </summary>
     public class CdmHttpClient : IDisposable
     {
+        private static readonly string Tag = nameof(CdmHttpClient);
         /// <summary>
         /// The callback function that gets called after the request is finished in CDM Http client.
         /// </summary>
@@ -137,7 +139,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 
                     if (ctx != null)
                     {
-                        Logger.Info(nameof(CdmHttpClient), ctx, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, request url: {cdmRequest.StripSasSig()}, retry number: {retryNumber}.", nameof(SendAsyncHelper));
+                        Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, request url: {cdmRequest.StripSasSig()}, retry number: {retryNumber}.");
                     }
 
                     // The check is added to fix a known issue in .net http client when reading HEAD request > 2GB.
@@ -155,7 +157,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                     {
                         if (ctx != null && cdmRequest.Timeout != null)
                         {
-                            Logger.Info(nameof(CdmHttpClient), ctx, $"Request {cdmRequest.RequestId} timeout after {cdmRequest.Timeout?.Seconds} s.", nameof(SendAsyncHelper));
+                            Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Request {cdmRequest.RequestId} timeout after {cdmRequest.Timeout?.Seconds} s.");
                         }
 
                         throw new CdmTimedOutException("Request timeout.");
@@ -166,7 +168,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                     if (ctx != null)
                     {
                         DateTimeOffset endTime = DateTimeOffset.UtcNow;
-                        Logger.Info(nameof(CdmHttpClient), ctx, $"Response for request {cdmRequest.RequestId} received, elapsed time: {endTime.Subtract(startTime).TotalMilliseconds} ms.", nameof(SendAsyncHelper));
+                        Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Response for request {cdmRequest.RequestId} received, elapsed time: {endTime.Subtract(startTime).TotalMilliseconds} ms.");
                     }
 
                     if (response != null)

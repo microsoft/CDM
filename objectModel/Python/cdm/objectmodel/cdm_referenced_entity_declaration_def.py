@@ -5,7 +5,9 @@ from datetime import datetime, timezone
 from typing import cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, time_utils, logger, Errors
+from cdm.utilities import ResolveOptions, time_utils, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
 from .cdm_file_status import CdmFileStatus
@@ -20,13 +22,12 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx, name)
 
+        self._TAG = CdmReferencedEntityDeclarationDefinition.__name__
         self.last_child_file_modified_time = None  # type: Optional[datetime]
 
         self.last_file_modified_time = None  # type: Optional[datetime]
 
         self.last_file_status_check_time = None  # type: Optional[datetime]
-
-        self._TAG = CdmReferencedEntityDeclarationDefinition.__name__
 
     @property
     def data_partitions(self) -> Optional['CdmCollection[CdmDataPartitionDefinition]']:
@@ -71,7 +72,7 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             missing_fields.append('entity_path')
 
         if missing_fields:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

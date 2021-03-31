@@ -12,7 +12,7 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
@@ -20,10 +20,13 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    VisitCallback
+    VisitCallback,
+    StringUtils
 } from '../internal';
 
 export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmAttributeGroupDefinition.name;
+
     public attributeGroupName: string;
     public readonly members: CdmCollection<CdmAttributeItem>;
     public attributeContext?: CdmAttributeContextReference;
@@ -90,12 +93,8 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!this.attributeGroupName) {
-                Logger.error(
-                    CdmAttributeGroupDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['attributeGroupName']),
-                    this.validate.name
-                );
+                let missingFields: string[] = ['attributeGroupName'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
 
                 return false;
             }

@@ -35,7 +35,7 @@ export class AttributeContextUtil {
     /**
      * Function to get the attribute context string tree from a resolved entity
      */
-    public getAttributeContextStrings(resolvedEntity: CdmEntityDefinition, attribContext: CdmAttributeContext): string {
+    public getAttributeContextStrings(resolvedEntity: CdmEntityDefinition): string {
         // clear the string builder
         this.bldr = '';
 
@@ -44,6 +44,15 @@ export class AttributeContextUtil {
 
         // get the traits for all the attributes of a resolved entity
         this.getTraits(resolvedEntity);
+
+        return this.bldr;
+    }
+
+    public getArgumentValuesAsString(args: CdmArgumentDefinition): string {
+        // clear the string builder
+        this.bldr = '';
+
+        this.getArgumentValues(args);
 
         return this.bldr;
     }
@@ -87,13 +96,13 @@ export class AttributeContextUtil {
                 this.bldr += this.endOfLine;
 
                 for (const args of trait.arguments) {
-                    this.getArgumentValuesAsString(args);
+                    this.getArgumentValues(args);
                 }
             }
         }
     }
 
-    private getArgumentValuesAsString(args: CdmArgumentDefinition): void {
+    private getArgumentValues(args: CdmArgumentDefinition): void {
         const paramName: string = args.resolvedParameter?.name;
         const paramDefaultValue: string = args.resolvedParameter?.defaultValue as string;
 
@@ -134,19 +143,18 @@ export class AttributeContextUtil {
      */
     public static async validateAttributeContext(corpus: CdmCorpusDefinition, expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition): Promise<void> {
         if (resolvedEntity.attributeContext) {
+            // Actual
+            const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', 'ActualOutput')}/AttrCtx_${entityName}.txt`;
+            
+            // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
             const attrCtxUtil: AttributeContextUtil = new AttributeContextUtil();
+            const actualText: string = attrCtxUtil.getAttributeContextStrings(resolvedEntity);
+            fs.writeFileSync(actualStringFilePath, actualText);
+            await resolvedEntity.inDocument.saveAsAsync(`Resolved_${entityName}.cdm.json`, false);
 
             // Expected
             const expectedStringFilePath: string = `${expectedOutputPath}/AttrCtx_${entityName}.txt`;
             const expectedText: string = fs.readFileSync(expectedStringFilePath).toString();
-
-            // Actual
-            const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', 'ActualOutput')}/AttrCtx_${entityName}.txt`;
-
-            // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
-            const actualText: string = attrCtxUtil.getAttributeContextStrings(resolvedEntity, resolvedEntity.attributeContext);
-            fs.writeFileSync(actualStringFilePath, actualText);
-            await resolvedEntity.inDocument.saveAsAsync(`Resolved_${entityName}.cdm.json`, false);
 
             // Test if Actual is Equal to Expected
             expect(actualText)

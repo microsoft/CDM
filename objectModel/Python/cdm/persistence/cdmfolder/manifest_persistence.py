@@ -112,7 +112,7 @@ class ManifestPersistence:
                 elif entity_obj.get('type') == 'ReferencedEntity' or 'entityDeclaration' in entity_obj:
                     manifest.entities.append(ReferencedEntityDeclarationPersistence.from_data(ctx, full_path, entity_obj))
                 else:
-                    logger.error(_TAG, ctx, 'Couldn\'t find the type for entity declaration',  ManifestPersistence.from_object.__name__)
+                    logger.error(ctx, _TAG, ManifestPersistence.from_object.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_DECLARATION_MISSING)
                     return None
 
         if data.get('relationships'):

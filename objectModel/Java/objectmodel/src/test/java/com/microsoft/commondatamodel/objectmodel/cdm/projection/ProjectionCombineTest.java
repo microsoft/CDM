@@ -56,9 +56,10 @@ public class ProjectionCombineTest {
     public void TestExtends() throws InterruptedException {
         String testName = "TestExtends";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -69,9 +70,10 @@ public class ProjectionCombineTest {
     public void TestExtendsProj() throws InterruptedException {
         String testName = "TestExtendsProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -82,9 +84,10 @@ public class ProjectionCombineTest {
     public void TestEA() throws InterruptedException {
         String testName = "TestEA";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -95,9 +98,10 @@ public class ProjectionCombineTest {
     public void TestEAProj() throws InterruptedException {
         String testName = "TestEAProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -108,7 +112,6 @@ public class ProjectionCombineTest {
     public void TestNonPolymorphicProj() throws InterruptedException {
         String testName = "TestNonPolymorphicProj";
         String entityName = "NewPerson";
-
         CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
@@ -130,9 +133,10 @@ public class ProjectionCombineTest {
     public void TestEmptyProj() throws InterruptedException {
         String testName = "TestEmptyProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -143,9 +147,10 @@ public class ProjectionCombineTest {
     public void TestCollProj() throws InterruptedException {
         String testName = "TestCollProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -156,9 +161,10 @@ public class ProjectionCombineTest {
     public void TestNestedProj() throws InterruptedException {
         String testName = "TestNestedProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -169,9 +175,10 @@ public class ProjectionCombineTest {
     public void TestMultiProj() throws InterruptedException {
         String testName = "TestMultiProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -182,9 +189,10 @@ public class ProjectionCombineTest {
     public void TestCondProj() throws InterruptedException {
         String testName = "TestCondProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -195,9 +203,10 @@ public class ProjectionCombineTest {
     public void TestRenProj() throws InterruptedException {
         String testName = "TestRenProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -208,9 +217,10 @@ public class ProjectionCombineTest {
     public void TestCommProj() throws InterruptedException {
         String testName = "TestCommProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -221,9 +231,10 @@ public class ProjectionCombineTest {
     public void TestMissProj() throws InterruptedException {
         String testName = "TestMissProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -234,9 +245,10 @@ public class ProjectionCombineTest {
     public void TestSeqProj() throws InterruptedException {
         String testName = "TestSeqProj";
         String entityName = "Customer";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
 
@@ -309,38 +321,5 @@ public class ProjectionCombineTest {
         }
 
         util.getDefaultManifest().saveAsAsync(util.getManifestDocName(), true);
-    }
-
-    /**
-     * Loads an entity, resolves it, and then validates the generated attribute contexts
-     */
-    private void loadEntityForResolutionOptionAndSave(String testName, String entityName, List<String> resOpts) throws InterruptedException {
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-        String fileNameSuffix = ProjectionTestUtils.getResolutionOptionNameSuffix(resOpts);
-
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        corpus.getStorage().mount("expected", new LocalAdapter(expectedOutputPath));
-
-        CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        Assert.assertNotNull(entity);
-        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, resOpts, true).join();
-        Assert.assertNotNull(resolvedEntity);
-
-        ValidateResolvedAttributes(corpus, resolvedEntity, entityName, fileNameSuffix);
-
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, "" + entityName + fileNameSuffix, resolvedEntity);
-    }
-
-    /**
-     * Validate the list of resolved attributes against an expected list
-     */
-    private void ValidateResolvedAttributes(CdmCorpusDefinition corpus, CdmEntityDefinition actualResolvedEntity, String entityName, String fileNameSuffix) {
-        CdmEntityDefinition expectedResolvedEntity = (CdmEntityDefinition) corpus.fetchObjectAsync(
-                "expected:/Resolved_" + entityName + fileNameSuffix + ".cdm.json/Resolved_" + entityName + fileNameSuffix).join();
-
-        Assert.assertEquals(expectedResolvedEntity.getAttributes().size(), actualResolvedEntity.getAttributes().size());
-        for (int i = 0; i < expectedResolvedEntity.getAttributes().size(); i++) {
-            Assert.assertEquals(expectedResolvedEntity.getAttributes().get(i).fetchObjectDefinitionName(), actualResolvedEntity.getAttributes().get(i).fetchObjectDefinitionName());
-        }
     }
 }

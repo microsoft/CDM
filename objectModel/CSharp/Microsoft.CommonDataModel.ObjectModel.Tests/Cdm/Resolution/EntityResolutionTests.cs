@@ -48,6 +48,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             await entity.CreateResolvedEntityAsync("res-Entity");
 
             Assert.AreEqual(document, entity.Owner);
+            Assert.AreEqual(entity, entity.Attributes[0].Owner, "Entity's attribute's owner should have remained unchanged (same as the owning entity)");
         }
 
         /// <summary>

@@ -3,6 +3,8 @@
 
 import {
     AttributeContextParameters,
+    CdmAttributeContext,
+    cdmAttributeContextType,
     CdmConstantEntityDefinition,
     CdmCorpusContext,
     CdmCorpusDefinition,
@@ -64,8 +66,7 @@ export class ProjectionResolutionCommonUtil {
         projDir: ProjectionDirective,
         ctx: CdmCorpusContext,
         source: CdmEntityReference,
-        rasSource: ResolvedAttributeSet,
-        attrCtxParam: AttributeContextParameters
+        rasSource: ResolvedAttributeSet
     ): Map<string, ProjectionAttributeState[]> {
         const polySources: Map<string, ProjectionAttributeState[]> = new Map<string, ProjectionAttributeState[]>();
 
@@ -74,7 +75,15 @@ export class ProjectionResolutionCommonUtil {
         const sourceDef: CdmEntityDefinition = source.fetchObjectDefinition(projDir.resOpt);
         for (const attr of sourceDef.attributes) {
             if (attr.objectType === cdmObjectType.entityAttributeDef) {
-                const raSet: ResolvedAttributeSet = (attr as CdmEntityAttributeDefinition).fetchResolvedAttributes(projDir.resOpt);
+                // the attribute context for this entity typed attribute was already created by the `FetchResolvedAttributes` that happens before this function call.
+                // we are only interested in linking the attributes to the entity that they came from and the attribute context nodes should not be taken into account.
+                // create this dummy attribute context so the resolution code works properly and discard it after.
+                const attrCtxParam: AttributeContextParameters = {
+                    regarding: attr,
+                    type: cdmAttributeContextType.passThrough,
+                    under: new CdmAttributeContext(ctx, 'discard')
+                };
+                const raSet: ResolvedAttributeSet = (attr as CdmEntityAttributeDefinition).fetchResolvedAttributes(projDir.resOpt, attrCtxParam);
                 for (const resAttr of raSet.set) {
                     // we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
                     // so steal them based on name
@@ -87,16 +96,11 @@ export class ProjectionResolutionCommonUtil {
                     projAttrState.currentResolvedAttribute = resAttr;
                     projAttrState.previousStateList = undefined;
 
-                    // the key already exists, just add to the existing list
-                    if (polySources.has(resAttr.resolvedName)) {
-                        const existingSet: ProjectionAttributeState[] = polySources.get(resAttr.resolvedName);
-                        existingSet.push(projAttrState);
-                        polySources.set(resAttr.resolvedName, existingSet);
-                    } else {
-                        const pasList: ProjectionAttributeState[] = [];
-                        pasList.push(projAttrState);
-                        polySources.set(resAttr.resolvedName, pasList);
+                    // the key doesn't exist, initialize with an empty list first
+                    if (!polySources.has(resAttr.resolvedName)) {
+                        polySources.set(resAttr.resolvedName, []);
                     }
+                    polySources.get(resAttr.resolvedName).push(projAttrState);
                 }
             }
         }
@@ -208,7 +212,7 @@ export class ProjectionResolutionCommonUtil {
 
         if (entRefAndAttrNameList.length > 0) {
             const constantEntity: CdmConstantEntityDefinition = corpus.MakeObject(cdmObjectType.constantEntityDef);
-            constantEntity.entityShape = corpus.MakeRef(cdmObjectType.entityRef, 'entityGroupSet', true);
+            constantEntity.entityShape = corpus.MakeRef(cdmObjectType.entityRef, 'entitySet', true);
 
             const constantValues: string[][] = [];
             for (const entRefAndAttrName of entRefAndAttrNameList) {

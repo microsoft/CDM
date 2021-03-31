@@ -127,7 +127,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             JSON.parse(content));
         let errorLogged: number = 0;
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
-            if (message.indexOf('Failed to fetch all files in the folder location \'local:/testLocation\' described by a partition pattern. Exception:') !== -1) {
+            if (message.indexOf('Failed to fetch all files in the folder location \'local:/testLocation\' described by a partition pattern. Exception') !== -1) {
                 errorLogged++;
             }
         }, cdmStatusLevel.warning);
@@ -186,7 +186,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         let patternsWithGlobAndRegex: number = 0;
         corpus.setEventCallback(
             (level, msg) => {
-                if (msg === 'CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | fileStatusCheckAsync') {
+                if (msg.indexOf('CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | fileStatusCheckAsync') != -1){
                     patternsWithGlobAndRegex++;
                 }
             },

@@ -3,8 +3,10 @@
 
 from typing import Optional, TYPE_CHECKING
 
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
 
 from .cdm_object_def import CdmObjectDefinition
 
@@ -18,6 +20,8 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
     def __init__(self, ctx: 'CdmCorpusContext', data_type_name: str, extends_data_type: Optional['CdmDataTypeReference']) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmDataTypeDefinition.__name__
+
         # the data type name.
         self.data_type_name = data_type_name  # type: str
 
@@ -25,8 +29,6 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
         self.extends_data_type = extends_data_type  # type: Optional[CdmDataTypeReference]
 
         self._declared_path = None  # type: Optional[str]
-
-        self._TAG = CdmDataTypeDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -54,7 +56,8 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
 
     def validate(self) -> bool:
         if not bool(self.data_type_name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['data_type_name']))
+            missing_fields = ['data_type_name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

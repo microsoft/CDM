@@ -7,6 +7,7 @@ import dateutil.parser
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmLocalEntityDeclarationDefinition
 from cdm.utilities import logger, time_utils, copy_data_utils
+from cdm.enums import CdmLogCode
 
 from . import utils
 from .data_partition_persistence import DataPartitionPersistence
@@ -27,7 +28,7 @@ class LocalEntityDeclarationPersistence:
         entity_path = data.get('entityPath') or data.get('entitySchema')
 
         if entity_path is None:
-            logger.error(LocalEntityDeclarationPersistence.__name__, ctx, 'Couldn\'t find entity path or similar.', LocalEntityDeclarationPersistence.from_data.__name__)
+            logger.error(ctx, LocalEntityDeclarationPersistence.__name__, LocalEntityDeclarationPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_PATH_NOT_FOUND)
 
         local_entity.entity_path = entity_path
 

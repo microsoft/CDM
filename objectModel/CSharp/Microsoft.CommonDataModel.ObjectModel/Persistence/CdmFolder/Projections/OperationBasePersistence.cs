@@ -13,6 +13,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     class OperationBasePersistence
     {
+        private static readonly string Tag = nameof(CdmOperationAddAttributeGroup);
+
         public static T FromData<T>(CdmCorpusContext ctx, CdmObjectType objectType, JToken obj)
             where T : CdmOperationBase
         {
@@ -26,7 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (obj["$type"] != null && !StringUtils.EqualsWithIgnoreCase(obj["$type"].ToString(), OperationTypeConvertor.OperationTypeToString(operationType)))
             {
-                Logger.Error(nameof(operationType), ctx, $"$type {(string)obj["$type"]} is invalid for this operation.");
+                Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistProjInvalidType, obj["$type"].ToString());
             }
             else
             {

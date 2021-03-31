@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.*;
@@ -18,12 +19,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle ReplaceAsForeignKey operations
  */
 public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
-    private static String TAG = CdmOperationReplaceAsForeignKey.class.getSimpleName();
+    private static String tag = CdmOperationReplaceAsForeignKey.class.getSimpleName();
     private String reference;
     private CdmTypeAttributeDefinition replaceWith;
 
@@ -94,7 +96,7 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
             missingFields.add("replaceWith");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -186,7 +188,7 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
             projOutputSet.add(newProjAttrStateFK);
         } else {
             // Log error & return projOutputSet without any change
-            Logger.error(TAG, projOutputSet.getCtx(), Logger.format("Unable to locate state for reference attribute \"{0}\".", refAttrName), "createNewProjectionAttributeStateSet");
+            Logger.error(projOutputSet.getCtx(), tag, "createNewProjectionAttributeStateSet", null, CdmLogCode.ErrProjRefAttrStateFailure, refAttrName);
         }
 
         return projOutputSet;

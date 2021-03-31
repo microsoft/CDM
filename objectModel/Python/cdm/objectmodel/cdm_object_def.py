@@ -78,7 +78,7 @@ class CdmObjectDefinition(CdmObject):
     def fetch_object_definition_name(self) -> str:
         return self.get_name()
 
-    def fetch_object_definition(self, res_opt: 'ResolveOptions') -> 'CdmObjectDefinition':
+    def fetch_object_definition(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObjectDefinition':
         """Returns the resolved object reference."""
         if res_opt is None:
             res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)

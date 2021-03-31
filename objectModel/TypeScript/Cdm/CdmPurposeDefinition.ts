@@ -8,15 +8,17 @@ import {
     CdmObjectDefinitionBase,
     cdmObjectType,
     CdmPurposeReference,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../internal';
-
 export class CdmPurposeDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmPurposeDefinition.name;
+
     public purposeName: string;
     public extendsPurpose?: CdmPurposeReference;
 
@@ -69,13 +71,8 @@ export class CdmPurposeDefinition extends CdmObjectDefinitionBase {
     }
     public validate(): boolean {
         if (!this.purposeName) {
-            Logger.error(
-                CdmPurposeDefinition.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, ['purposeName']),
-                this.validate.name
-            );
-
+            let missingFields: string[] = ['purposeName'];
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
             return false;
         }
 

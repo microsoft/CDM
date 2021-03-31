@@ -10,6 +10,7 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmAttributeResolutionGuidance,
+    CdmEntityDefinition,
     CdmObject,
     isResolvedAttributeSet,
     ParameterValue,
@@ -216,6 +217,20 @@ export class ResolvedAttributeSet extends refCounted {
             return rasResult;
         }
         // return p.measure(bodyCode);
+    }
+
+    /**
+     * Recursively sets the target owner's to be the provided entity.
+     */
+    public setTargetOwner(entity: CdmEntityDefinition): void {
+        for (const ra of this._set) {
+            if (ra.target instanceof CdmAttribute) {
+                ra.target.owner = entity;
+                ra.target.inDocument = entity.inDocument;
+            } else if (ra.target instanceof ResolvedAttributeSet) {
+                ra.target.setTargetOwner(entity);
+            }
+        }
     }
 
     /**

@@ -9,12 +9,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class for projection
     /// </summary>
     public class CdmProjection : CdmObjectDefinitionBase
     {
+        private static readonly string Tag = nameof(CdmProjection);
         /// <summary>
         /// Property of a projection that holds the condition expression string
         /// </summary>
@@ -134,13 +136,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (rootOwner.ObjectType == CdmObjectType.TypeAttributeDef)
                 {
                     // If the projection is used in a type attribute
-                    Logger.Error(nameof(CdmProjection), this.Ctx, "Source can only be another projection in a type attribute.", nameof(Validate));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrProjSourceError);
                 }
             }
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmProjection), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -276,7 +278,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     Dictionary<string, List<ProjectionAttributeState>> polySourceSet = null;
                     if (projDirective.IsSourcePolymorphic)
                     {
-                        polySourceSet = ProjectionResolutionCommonUtil.GetPolymorphicSourceSet(projDirective, ctx, this.Source, ras, acpSourceProjection);
+                        polySourceSet = ProjectionResolutionCommonUtil.GetPolymorphicSourceSet(projDirective, ctx, this.Source, ras);
                     }
 
                     // Now initialize projection attribute state
@@ -378,8 +380,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
 
-                // Finally update the current state to the projection context
-                projContext.CurrentAttributeStateSet = pasOperations;
+                // If no operation ran successfully pasOperations will be empty
+                if (!firstOperationToRun)
+                {
+                    // Finally update the current state to the projection context
+                    projContext.CurrentAttributeStateSet = pasOperations;
+                }
             }
             else
             {
@@ -400,6 +406,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 AttributeContext = attCtxUnder
             };
+
+            if (projCtx == null)
+            {
+                Logger.Error(this.Ctx, nameof(CdmEntityAttributeDefinition), "ExtractResolvedAttributes", this.AtCorpusPath, CdmLogCode.ErrProjFailedToResolve, this.AtCorpusPath);
+                return resolvedAttributeSet;
+            }
 
             foreach (var pas in projCtx.CurrentAttributeStateSet.States)
             {

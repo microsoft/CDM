@@ -5,7 +5,9 @@ from typing import Optional, TYPE_CHECKING, List
 
 from cdm.enums import CdmObjectType, CdmOperationType, CdmAttributeContextType
 from cdm.objectmodel import CdmAttributeContext
-from cdm.utilities import logger, Errors, AttributeContextParameters
+from cdm.utilities import logger, AttributeContextParameters
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_operation_base import CdmOperationBase
 from ...resolvedmodel import ResolvedAttribute, ResolvedTrait
@@ -26,12 +28,10 @@ class CdmOperationCombineAttributes(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmOperationCombineAttributes.__name__
         self.select = []  # type: List[str]
         self.merge_into = None
         self.type = CdmOperationType.COMBINE_ATTRIBUTES  # type: CdmOperationType
-
-        # --- internal ---
-        self._TAG = CdmOperationCombineAttributes.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationCombineAttributes'] = None) -> 'CdmOperationCombineAttributes':
         copy = CdmOperationCombineAttributes(self.ctx)
@@ -58,9 +58,8 @@ class CdmOperationCombineAttributes(CdmOperationBase):
             missing_fields.append('merge_into')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
-
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:

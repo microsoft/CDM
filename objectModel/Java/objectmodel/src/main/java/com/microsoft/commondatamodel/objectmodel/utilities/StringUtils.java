@@ -6,8 +6,9 @@ package com.microsoft.commondatamodel.objectmodel.utilities;
 /**
  * String utilities.
  * 
- * @deprecated This class is extremely likely to be removed in the public interface, and not meant
- * to be called externally at all. Please refrain from using it.
+ * @deprecated This class is extremely likely to be removed in the public
+ *             interface, and not meant to be called externally at all. Please
+ *             refrain from using it.
  */
 @Deprecated
 public class StringUtils {

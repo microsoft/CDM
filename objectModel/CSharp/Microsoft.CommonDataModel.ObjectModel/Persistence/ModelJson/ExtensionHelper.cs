@@ -14,6 +14,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
     static class ExtensionHelper
     {
+        private static readonly string Tag = nameof(ExtensionHelper);
+
         /// <summary>
         /// Dictionary used to cache documents with trait definitions by file name.
         /// </summary>
@@ -71,8 +73,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 CdmTraitDefinition extensionTraitDef = localExtensionTraitDefList[traitIndex];
                 if (!TraitDefIsExtension(extensionTraitDef))
                 {
-                    Logger.Error(nameof(ExtensionHelper), ctx, $"Invalid extension trait name {extensionTraitDef.TraitName}, expected prefix {ExtensionTraitNamePrefix}.");
-
+                    Logger.Error(ctx, Tag, nameof(StandardImportDetection), extensionTraitDef.AtCorpusPath, CdmLogCode.ErrPersistInvalidExtensionTrait, extensionTraitDef.TraitName, ExtensionTraitNamePrefix);
                     return null;
                 }
 

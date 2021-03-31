@@ -16,6 +16,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     /// </summary>
     public class ProjectionPersistence
     {
+        private static readonly string Tag = nameof(ProjectionPersistence);
+
         public static CdmProjection FromData(CdmCorpusContext ctx, JToken obj)
         {
             if (obj == null)
@@ -84,7 +86,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                             projection.Operations.Add(addAttributeGroupOp);
                             break;
                         default:
-                            Logger.Error(nameof(ProjectionPersistence), ctx, $"Invalid operation type '{type}'.", nameof(FromData));
+                            Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistProjInvalidOpsType, type);
                             break;
                     }
                 }

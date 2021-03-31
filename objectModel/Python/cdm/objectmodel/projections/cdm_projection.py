@@ -12,7 +12,9 @@ from cdm.resolvedmodel.expression_parser.node import Node
 from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
 from cdm.resolvedmodel.projections.projection_context import ProjectionContext
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
-from cdm.utilities import Errors, logger, AttributeContextParameters
+from cdm.utilities import logger, AttributeContextParameters
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmEntityReference
@@ -27,6 +29,8 @@ class CdmProjection(CdmObjectDefinition):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmProjection.__name__
+
         # Property of a projection that holds the condition expression string
         self.condition = None  # type: str
 
@@ -39,8 +43,6 @@ class CdmProjection(CdmObjectDefinition):
 
         # Property of a projection that holds the source of the operation
         self._source = None  # type: Optional[CdmEntityReference]
-
-        self._TAG = CdmProjection.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmProjection'] = None) -> 'CdmProjection':
         copy = None
@@ -97,10 +99,10 @@ class CdmProjection(CdmObjectDefinition):
             root_owner = self._get_root_owner()
             if root_owner.object_type == CdmObjectType.TYPE_ATTRIBUTE_DEF:
                 # If the projection is used in a type attribute
-                logger.error(self._TAG, self.ctx, 'Source can only be another projection in a type attribute.', 'validate')
+               logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_PROJ_SOURCE_ERROR)
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
 
         return True
@@ -198,11 +200,10 @@ class CdmProjection(CdmObjectDefinition):
                 # clean up the context tree, it was left in a bad state on purpose in this call
                 ras.attribute_context._finalize_attribute_context(proj_directive._res_opt, ac_source.at_corpus_path, self.in_document, self.in_document, None, False)
 
-
                 # if polymorphic keep original source as previous state
                 poly_source_set = None
                 if proj_directive._is_source_polymorphic:
-                    poly_source_set = ProjectionResolutionCommonUtil._get_polymorphic_source_set(proj_directive, ctx, self.source, ras, acp_source_projection)
+                    poly_source_set = ProjectionResolutionCommonUtil._get_polymorphic_source_set(proj_directive, ctx, self.source, ras)
 
                 # Now initialize projection attribute state
                 pas_set = ProjectionResolutionCommonUtil._initialize_projection_attribute_state_set(
@@ -288,8 +289,10 @@ class CdmProjection(CdmObjectDefinition):
                     first_operation_to_run = False
                     pas_operations = new_pas_operations
 
-            # Finally update the current state to the projection context
-            proj_context._current_attribute_state_set = pas_operations
+            # If no operation ran successfully pas_operations will be empty
+            if not first_operation_to_run:
+                # Finally update the current state to the projection context
+                proj_context._current_attribute_state_set = pas_operations
 
         return proj_context
 
@@ -297,6 +300,10 @@ class CdmProjection(CdmObjectDefinition):
         """Create resolved attribute set based on the CurrentResolvedAttribute array"""
         resolved_attribute_set = ResolvedAttributeSet()
         resolved_attribute_set.attribute_context = att_ctx_under
+
+        if not proj_ctx:
+            logger.error(self.ctx, self._TAG, '_extract_resolved_attributes', self.at_corpus_path, CdmLogCode.ERR_PROJ_FAILED_TO_RESOLVE)
+            return resolved_attribute_set
 
         for pas in proj_ctx._current_attribute_state_set._states:
             resolved_attribute_set.merge(pas._current_resolved_attribute)

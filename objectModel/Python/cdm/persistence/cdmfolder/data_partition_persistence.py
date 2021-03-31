@@ -4,7 +4,7 @@
 from typing import TYPE_CHECKING
 import dateutil.parser
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.objectmodel import CdmDataPartitionDefinition
 from cdm.utilities import logger, time_utils, copy_data_utils
 
@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext
     from cdm.utilities import CopyOptions, ResolveOptions
 
+_TAG = 'DataPartitionPersistence'
 
 class DataPartitionPersistence:
     @staticmethod
@@ -48,8 +49,7 @@ class DataPartitionPersistence:
                     value = argument.get('value')
 
                 if key is None or value is None:
-                    logger.warning(DataPartitionPersistence.__name__, ctx,
-                                   'invalid set of arguments provided for data partition corresponding to location: {}'.format(data.location))
+                    logger.warning(ctx, _TAG, DataPartitionPersistence.from_data.__name__, None, CdmLogCode.WARN_PARTITION_INVALID_ARGUMENTS, data.location)
                     continue
 
                 if key in data_partition.arguments:

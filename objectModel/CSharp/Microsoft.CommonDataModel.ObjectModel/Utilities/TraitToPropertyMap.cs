@@ -19,6 +19,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 
     internal class TraitToPropertyMap
     {
+        private static readonly string Tag = nameof(TraitToPropertyMap);
+
         private CdmObject Host { get; set; }
         private CdmTraitCollection Traits
         {
@@ -701,12 +703,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 }
                 else
                 {
-                    Logger.Error(nameof(TraitToPropertyMap), this.Host.Ctx, "Default value missing languageTag or displayText.");
+                    Logger.Error(this.Host.Ctx, Tag, null, nameof(UpdateDefaultValue), CdmLogCode.ErrValdnMissingLanguageTag);
                 }
             }
             else
             {
-                Logger.Error(nameof(TraitToPropertyMap), this.Host.Ctx, "Default value type not supported. Please use JArray.");
+                Logger.Error(this.Host.Ctx, Tag, null, nameof(UpdateDefaultValue), CdmLogCode.ErrUnsupportedType);
             }
         }
 

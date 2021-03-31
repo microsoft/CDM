@@ -218,7 +218,7 @@ class ProjectionOMTestUtil:
 
     #  Get & validate resolved entity
     async def get_and_validate_resolved_entity(self, test, entity: 'CdmEntityDefinition', res_opts: [str]) -> 'CdmEntityDefinition':
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(self._corpus, entity, res_opts, True)  # type: CdmEntityDefinition
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(self._corpus, entity, res_opts)  # type: CdmEntityDefinition
         separator = ', '  # type: str
         test.assertIsNotNone(resolved_entity, 'get_and_validate_resolved_entity: entity.entity_name resolution with options {} failed!'.format(separator.join(res_opts)))
 

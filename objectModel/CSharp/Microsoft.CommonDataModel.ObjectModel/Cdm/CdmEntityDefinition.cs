@@ -9,10 +9,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     public class CdmEntityDefinition : CdmObjectDefinitionBase, CdmReferencesEntities
     {
+        private static readonly string Tag = nameof(CdmEntityDefinition);
         /// <summary>
         /// Gets or sets the entity name.
         /// </summary>
@@ -210,7 +212,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.ExtendsEntityResolutionGuidance = this.ExtendsEntityResolutionGuidance != null ? (CdmAttributeResolutionGuidance)this.ExtendsEntityResolutionGuidance.Copy(resOpt) : null;
             copy.AttributeContext = copy.AttributeContext != null ? (CdmAttributeContext)this.AttributeContext.Copy(resOpt) : null;
             foreach (var att in this.Attributes)
-                copy.Attributes.Add(att);
+            {
+                copy.Attributes.Add(att.Copy(resOpt) as CdmAttributeItem);
+            }
             this.CopyDef(resOpt, copy);
             return copy;
         }
@@ -218,7 +222,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         [Obsolete("CopyData is deprecated. Please use the Persistence Layer instead.")]
         public override dynamic CopyData(ResolveOptions resOpt, CopyOptions options)
         {
-            return CdmObjectBase.CopyData<CdmEntityDefinition>(this, resOpt, options);
+            return CdmObjectBase.CopyData(this, resOpt, options);
         }
 
         /// <summary>
@@ -328,7 +332,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.EntityName))
             {
-                Logger.Error(nameof(CdmEntityDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "EntityName" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "EntityName" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -479,7 +484,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     if (!resOpt.CheckAttributeCount(rasb.ResolvedAttributeSet.ResolvedAttributeCount))
                     {
-                        Logger.Error(nameof(CdmEntityDefinition), this.Ctx, $"Maximum number of resolved attributes reached for the entity: {this.EntityName}.");
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(ConstructResolvedAttributes), this.AtCorpusPath, CdmLogCode.ErrRelMaxResolvedAttrReached, this.EntityName);
                         return null;
                     }
 
@@ -541,7 +546,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     if (!resOpt.CheckAttributeCount(rasb.ResolvedAttributeSet.ResolvedAttributeCount))
                     {
-                        Logger.Error(nameof(CdmEntityDefinition), this.Ctx, $"Maximum number of resolved attributes reached for the entity: {this.EntityName}.");
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(ConstructResolvedAttributes), this.AtCorpusPath, CdmLogCode.ErrRelMaxResolvedAttrReached, this.EntityName);
                         return null;
                     }
                 }
@@ -552,6 +557,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             // things that need to go away
             rasb.RemoveRequestedAtts();
+
+            // recursively sets the target owner's to be this entity.
+            // required because the replaceAsForeignKey operation uses the owner to generate the `is.linkedEntity.identifier` trait.
+            rasb.ResolvedAttributeSet.SetTargetOwner(this);
 
             return rasb;
         }
@@ -570,20 +579,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (resOpt.WrtDoc == null)
                 {
-                    Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"No WRT document was supplied.", nameof(CreateResolvedEntityAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(CreateResolvedEntityAsync), this.AtCorpusPath, CdmLogCode.ErrDocWrtDocNotfound);
                     return null;
                 }
 
                 if (string.IsNullOrEmpty(newEntName))
                 {
-                    Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"No Entity Name provided.", nameof(CreateResolvedEntityAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(CreateResolvedEntityAsync), this.AtCorpusPath, CdmLogCode.ErrResolveEntityNotFound);
                     return null;
                 }
 
                 // if the wrtDoc needs to be indexed (like it was just modified) then do that first
                 if (!await resOpt.WrtDoc.IndexIfNeeded(resOpt, true))
                 {
-                    Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Couldn't index source document.", nameof(CreateResolvedEntityAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(CreateResolvedEntityAsync), this.AtCorpusPath, CdmLogCode.ErrIndexFailed);
                     return null;
                 }
 
@@ -599,7 +608,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 string targetAtCorpusPath = $"{this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(folder.AtCorpusPath, folder)}{fileName}";
                 if (StringUtils.EqualsWithIgnoreCase(targetAtCorpusPath, origDoc))
                 {
-                    Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Attempting to replace source entity's document '{targetAtCorpusPath}'", nameof(CreateResolvedEntityAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(CreateResolvedEntityAsync), this.AtCorpusPath, CdmLogCode.ErrDocEntityReplacementFailure, targetAtCorpusPath);
                     return null;
                 }
 
@@ -1200,7 +1209,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOptNew.WrtDoc = docRes;
                 if (!await docRes.RefreshAsync(resOptNew))
                 {
-                    Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Failed to index the resolved document.", nameof(CreateResolvedEntityAsync));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(CreateResolvedEntityAsync), this.AtCorpusPath, CdmLogCode.ErrIndexFailed);
                     return null;
                 }
 

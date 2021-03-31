@@ -10,6 +10,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ImportPersistence;
@@ -25,6 +26,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class DocumentPersistence {
+  private static String tag = DocumentPersistence.class.getSimpleName();
+
   public static CompletableFuture<CdmDocumentDefinition> fromData(
       final CdmCorpusContext ctx,
       final LocalEntity obj,
@@ -48,7 +51,7 @@ public class DocumentPersistence {
               localExtensionTraitDefList)
               .join();
       if (entity == null) {
-        Logger.error(DocumentPersistence.class.getSimpleName(), ctx, "There was an error while trying to convert a model.json entity to the CDM entity.");
+        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistModelJsonEntityConversionError);
         return null;
       }
 
@@ -109,16 +112,12 @@ public class DocumentPersistence {
                   });
                 }
               } else {
-                Logger.warning(
-                    DocumentPersistence.class.getSimpleName(),
-                    ctx,
-                    Logger.format("Entity '{0}' is not inside a document or its owner is not a document.", ((CdmEntityDefinition) cdmEntity).getName())
-                );
+                Logger.warning(ctx, tag, "toData", manifest.getAtCorpusPath(), CdmLogCode.WarnPersistEntityMissing, ((CdmEntityDefinition) cdmEntity).getName());
               }
 
               return entity;
             } else {
-              Logger.error(DocumentPersistence.class.getSimpleName(), ctx, "There was an error while trying to fetch cdm entity doc.");
+              Logger.error(ctx, tag, "toData", manifest.getAtCorpusPath(), CdmLogCode.ErrPersistCdmEntityFetchError);
               return null;
             }
           });

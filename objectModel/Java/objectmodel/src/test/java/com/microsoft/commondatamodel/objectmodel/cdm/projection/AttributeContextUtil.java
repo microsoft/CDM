@@ -33,7 +33,7 @@ public final class AttributeContextUtil {
     /**
      * Function to get the attribute context string tree from a resolved entity
      */
-    public String getAttributeContextStrings(CdmEntityDefinition resolvedEntity, CdmAttributeContext attribContext) {
+    public String getAttributeContextStrings(CdmEntityDefinition resolvedEntity) {
         // clear the string builder
         bldr.setLength(0);
 
@@ -42,6 +42,15 @@ public final class AttributeContextUtil {
 
         // get the traits for all the attributes of a resolved entity
         getTraits(resolvedEntity);
+
+        return bldr.toString();
+    }
+
+    public String getArgumentValuesAsString(CdmArgumentDefinition args) {
+        // clear the string builder
+        bldr.setLength(0);
+
+        getArgumentValues(args);
 
         return bldr.toString();
     }
@@ -85,13 +94,13 @@ public final class AttributeContextUtil {
                 bldr.append(endOfLine);
 
                 for (CdmArgumentDefinition args : trait.getArguments()) {
-                    getArgumentValuesAsString(args);
+                    getArgumentValues(args);
                 }
             }
         }
     }
 
-    private void getArgumentValuesAsString(CdmArgumentDefinition args) {
+    private void getArgumentValues(CdmArgumentDefinition args) {
         String paramName = args.getResolvedParameter() != null ? args.getResolvedParameter().getName() : null;
         String paramDefaultValue = args.getResolvedParameter() != null ? (String) args.getResolvedParameter().getDefaultValue() : null;
 
@@ -135,20 +144,20 @@ public final class AttributeContextUtil {
             AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
 
             try {
-                // Expected
-                Path expectedStringFilePath = new File(expectedOutputPath, "AttrCtx_" + entityName + ".txt").toPath();
-                final String expectedText = new String(Files.readAllBytes(expectedStringFilePath), StandardCharsets.UTF_8);
-
                 // Actual
                 Path actualStringFilePath = new File(expectedOutputPath.replace("ExpectedOutput", "ActualOutput"), "AttrCtx_" + entityName + ".txt").toPath();
 
                 // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
-                String actualText = attrCtxUtil.getAttributeContextStrings(resolvedEntity, resolvedEntity.getAttributeContext());
+                String actualText = attrCtxUtil.getAttributeContextStrings(resolvedEntity);
                 try (final BufferedWriter actualFileWriter = Files.newBufferedWriter(actualStringFilePath, StandardCharsets.UTF_8, StandardOpenOption.CREATE);) {
                     actualFileWriter.write(actualText);
                     actualFileWriter.flush();
                 }
                 resolvedEntity.getInDocument().saveAsAsync("Resolved_" + entityName + ".cdm.json", false).join();
+
+                // Expected
+                Path expectedStringFilePath = new File(expectedOutputPath, "AttrCtx_" + entityName + ".txt").toPath();
+                final String expectedText = new String(Files.readAllBytes(expectedStringFilePath), StandardCharsets.UTF_8);
 
                 // Test if Actual is Equal to Expected
                 Assert.assertEquals(actualText.replace("\r\n", "\n"), expectedText.replace("\r\n","\n"));

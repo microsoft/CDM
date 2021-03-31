@@ -3,11 +3,13 @@
 
 from typing import Optional, TYPE_CHECKING
 
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmOperationType
 from cdm.objectmodel import CdmAttributeContext
 from cdm.resolvedmodel import ResolvedAttribute, ResolvedAttributeSetBuilder
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
-from cdm.utilities import AttributeContextParameters, Errors, logger
+from cdm.utilities import AttributeContextParameters, logger
 
 from .cdm_operation_base import CdmOperationBase
 
@@ -24,12 +26,11 @@ class CdmOperationAddAttributeGroup(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmOperationAddAttributeGroup.__name__
+
         # Name given to the attribute group that will be created
         self.attribute_group_name = None  # type: Optional[str]
         self.type = CdmOperationType.ADD_ATTRIBUTE_GROUP  # type: CdmOperationType
-
-        # --- internal ---
-        self._TAG = CdmOperationAddAttributeGroup.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationAddAttributeGroup'] = None) -> 'CdmOperationAddAttributeGroup':
         copy = CdmOperationAddAttributeGroup(self.ctx)
@@ -50,7 +51,8 @@ class CdmOperationAddAttributeGroup(CdmOperationBase):
             missing_fields.append('attribute_group_name')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE,
+                         self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
 
         return True

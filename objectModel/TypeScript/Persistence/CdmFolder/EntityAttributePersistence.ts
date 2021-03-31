@@ -7,6 +7,7 @@ import {
     CdmCorpusContext,
     CdmEntityAttributeDefinition,
     CdmEntityReference,
+    cdmLogCode,
     cdmObjectType,
     CdmProjection,
     CdmTraitReference,
@@ -20,6 +21,8 @@ import { AttributeResolutionGuidance, EntityAttribute, EntityReferenceDefinition
 import * as utils from './utils';
 
 export class EntityAttributePersistence {
+    private static TAG: string = EntityAttributePersistence.name;
+    
     public static fromData(ctx: CdmCorpusContext, object: EntityAttribute): CdmEntityAttributeDefinition {
         const entityAttribute: CdmEntityAttributeDefinition = ctx.corpus.MakeObject(cdmObjectType.entityAttributeDef, object.name);
 
@@ -39,15 +42,15 @@ export class EntityAttributePersistence {
             }
 
             if (!minCardinality || !maxCardinality) {
-                Logger.error(EntityAttributePersistence.name, ctx, 'Both minimum and maximum are required for the Cardinality property.', this.fromData.name);
+                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistCardinalityPropMissing, minCardinality);
             }
 
             if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-                Logger.error(EntityAttributePersistence.name, ctx, `Invalid minimum cardinality ${minCardinality}.`, this.fromData.name);
+                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistInvalidMinCardinality, minCardinality);
             }
 
             if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-                Logger.error(EntityAttributePersistence.name, ctx, `Invalid maximum cardinality ${maxCardinality}.`, this.fromData.name);
+                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistInvalidMaxCardinality, maxCardinality);
             }
 
             if (minCardinality && maxCardinality && CardinalitySettings.isMinimumValid(minCardinality) && CardinalitySettings.isMaximumValid(maxCardinality)) {
@@ -75,11 +78,7 @@ export class EntityAttributePersistence {
 
         // Ignore resolution guidance if the entity is a projection
         if (object.resolutionGuidance && object.entity && typeof(object.entity) !== 'string' && 'source' in object.entity) {
-            Logger.error(
-                EntityAttributePersistence.name,
-                ctx,
-                `The EntityAttribute ${entityAttribute.name} is projection based. Resolution guidance is not supported with a projection.`
-            );
+            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistEntityAttrUnsupported, entityAttribute.name);
         } else {
             entityAttribute.resolutionGuidance =
                 CdmFolder.AttributeResolutionGuidancePersistence.fromData(ctx, object.resolutionGuidance);

@@ -12,6 +12,7 @@ import {
     CdmDocumentDefinition,
     CdmEntityDefinition,
     CdmImport,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmParameterDefinition,
@@ -76,13 +77,7 @@ export async function standardImportDetection(
     for (let traitIndex: number = localExtensionTraitDefList.length - 1; traitIndex >= 0; traitIndex--) {
         const extensionTraitDef: CdmTraitDefinition = localExtensionTraitDefList[traitIndex];
         if (!traitDefIsExtension(extensionTraitDef)) {
-            Logger.error(
-                'ExtensionHelper',
-                ctx,
-                `Invalid extension trait name ${extensionTraitDef.traitName},
-                         expected prefix ${extensionTraitNamePrefix}.`
-            );
-
+            Logger.error(this.ctx, this.TAG, this.standardImportDetection.name, null, cdmLogCode.ErrPersistInvalidExtensionTrait, extensionTraitDef.traitName, extensionTraitNamePrefix);
             return undefined;
         }
 

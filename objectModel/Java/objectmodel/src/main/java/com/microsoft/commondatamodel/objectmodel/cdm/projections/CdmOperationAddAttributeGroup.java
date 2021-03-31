@@ -8,6 +8,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
@@ -19,12 +20,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle AddAttributeGroup operations
  */
 public class CdmOperationAddAttributeGroup extends CdmOperationBase {
-    private String TAG = CdmOperationAddAttributeGroup.class.getSimpleName();
+    private String tag = CdmOperationAddAttributeGroup.class.getSimpleName();
     private String attributeGroupName;
 
 
@@ -91,7 +93,7 @@ public class CdmOperationAddAttributeGroup extends CdmOperationBase {
             missingFields.add("attributeGroupName");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;

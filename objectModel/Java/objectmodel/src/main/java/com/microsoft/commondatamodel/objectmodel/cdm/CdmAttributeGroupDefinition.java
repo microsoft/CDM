@@ -5,8 +5,10 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
@@ -15,7 +17,6 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -23,6 +24,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase implements CdmReferencesEntities {
 
+  private String tag = CdmAttributeGroupDefinition.class.getSimpleName();
+  
   private CdmAttributeContextReference attributeContext;
   private String attributeGroupName;
   private CdmCollection<CdmAttributeItem> members;
@@ -171,7 +174,8 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.attributeGroupName)) {
-      Logger.error(CdmAttributeGroupDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("attributeGroupName"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("attributeGroupName"));
+      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

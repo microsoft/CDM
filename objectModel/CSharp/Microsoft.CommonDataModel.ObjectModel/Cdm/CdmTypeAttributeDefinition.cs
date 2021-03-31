@@ -9,9 +9,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class CdmTypeAttributeDefinition : CdmAttribute
     {
+        private static readonly string Tag = nameof(CdmTypeAttributeDefinition);
         /// <summary>
         /// Gets or sets the type attribute's data type.
         /// </summary>
@@ -302,19 +304,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             if (Cardinality != null)
             {
                 if (!CardinalitySettings.IsMinimumValid(Cardinality.Minimum))
                 {
-                    Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, $"Invalid minimum cardinality {Cardinality.Minimum}.", nameof(Validate));
+                    Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidMinCardinality, Cardinality.Minimum);
                     return false;
                 }
                 if (!CardinalitySettings.IsMaximumValid(Cardinality.Maximum))
                 {
-                    Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, $"Invalid maximum cardinality {Cardinality.Maximum}.", nameof(Validate));
+                    Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidMaxCardinality, Cardinality.Maximum);
                     return false;
                 }
             }

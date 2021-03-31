@@ -17,6 +17,7 @@ from tests.common import async_test, TestHelper
 
 class ManifestImplTest(unittest.TestCase):
     tests_subpath = os.path.join('Persistence', 'CdmFolder', 'Manifest')
+    invalidFormatMesg = "The path should start with '.\\' and should not contain '..\\' or '\\.\\'";
 
     def get_corpus(self):
         corpus = CdmCorpusDefinition()
@@ -173,7 +174,7 @@ class ManifestImplTest(unittest.TestCase):
             function_parameter1 = status_level
             function_parameter2 = message1
 
-        corpus.set_event_callback(callback)
+        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
         manifest = CdmManifestDefinition(None, None)
         manifest.namespace = 'cdm'
         manifest.folder_path = 'Mnp'
@@ -197,36 +198,36 @@ class ManifestImplTest(unittest.TestCase):
             function_parameter1 = status_level
             function_parameter2 = message1
 
-        corpus.set_event_callback(callback)
+        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
 
         corpus.storage.create_absolute_corpus_path('./Abc')
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not start with ./') != -1)
+        self.assertTrue(function_parameter2.find(self.invalidFormatMesg) != -1)
         function_was_called = False
 
         corpus.storage.create_absolute_corpus_path('/./Abc')
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain /./') != -1)
+        self.assertTrue(function_parameter2.find(self.invalidFormatMesg) != -1)
         function_was_called = False
 
         corpus.storage.create_absolute_corpus_path('../Abc')
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain ../') != -1)
+        self.assertTrue(function_parameter2.find(self.invalidFormatMesg) != -1)
         function_was_called = False
 
         corpus.storage.create_absolute_corpus_path('Abc/./Def')
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain /./') != -1)
+        self.assertTrue(function_parameter2.find(self.invalidFormatMesg) != -1)
         function_was_called = False
 
         corpus.storage.create_absolute_corpus_path('Abc/../Def')
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain ../') != -1)
+        self.assertTrue(function_parameter2.find(self.invalidFormatMesg) != -1)
 
     def test_path_root_invalid_folder_path(self):
         """"Tests absolute paths cannot be created with wrong parameters.
@@ -242,7 +243,7 @@ class ManifestImplTest(unittest.TestCase):
             function_parameter1 = status_level
             function_parameter2 = message1
 
-        corpus.set_event_callback(callback)
+        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
         manifest = CdmManifestDefinition(None, None)
 
         manifest.namespace = 'cdm'
@@ -250,7 +251,7 @@ class ManifestImplTest(unittest.TestCase):
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not start with ./') != -1)
+        self.assertTrue(function_parameter2.find(self.invalidFormatMesg) != -1)
 
         function_was_called = False
         manifest.namespace = 'cdm'
@@ -258,7 +259,7 @@ class ManifestImplTest(unittest.TestCase):
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain /./') != -1)
+        self.assertTrue(function_parameter2.find(self.invalidFormatMesg) != -1)
 
         function_was_called = False
         manifest.namespace = 'cdm'
@@ -267,7 +268,7 @@ class ManifestImplTest(unittest.TestCase):
         function_parameter2 = function_parameter2.split('|')[1].strip()
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain ../') != -1)
+        self.assertTrue(function_parameter2.find(self.invalidFormatMesg) != -1)
 
         function_was_called = False
         manifest.namespace = 'cdm'
@@ -276,7 +277,7 @@ class ManifestImplTest(unittest.TestCase):
         function_parameter2 = function_parameter2.split('|')[1].strip()
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain /./') != -1)
+        self.assertTrue(function_parameter2.find(self.invalidFormatMesg) != -1)
 
         function_was_called = False
         manifest.namespace = 'cdm'
@@ -285,4 +286,4 @@ class ManifestImplTest(unittest.TestCase):
         function_parameter2 = function_parameter2.split('|')[1].strip()
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('The path should not contain ../') != -1)
+        self.assertTrue(function_parameter2.find(self.invalidFormatMesg) != -1)
