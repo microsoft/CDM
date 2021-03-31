@@ -4,7 +4,7 @@
 from collections import OrderedDict
 from typing import List, Optional, TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import JObject, logger
 
 if TYPE_CHECKING:
@@ -61,7 +61,7 @@ async def standard_import_detection(ctx: 'CdmCorpusContext', extension_trait_def
         extension_trait_def = local_extension_trait_def_list[trait_index]
 
         if not extension_trait_def.trait_name or not extension_trait_def.trait_name.startswith(EXTENSION_TRAIT_NAME_PREFIX):
-            logger.error(_TAG, ctx, 'Invalid extension trait name {}, expected prefix {}'.format(extension_trait_def.trait_name, EXTENSION_TRAIT_NAME_PREFIX))
+            logger.error(ctx, _TAG, standard_import_detection.__name__, extension_trait_def.at_corpus_path, CdmLogCode.ERR_PERSIST_INVALID_EXTENSION_TRAIT, extension_trait_def.trait_name, EXTENSION_TRAIT_NAME_PREFIX)
             return None
 
         extension_breakdown = extension_trait_def.trait_name[len(EXTENSION_TRAIT_NAME_PREFIX):].split(':')

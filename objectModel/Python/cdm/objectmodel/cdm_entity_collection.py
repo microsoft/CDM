@@ -6,6 +6,8 @@ from cdm.objectmodel import CdmEntityDeclarationDefinition
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_collection import CdmCollection
 if TYPE_CHECKING:
@@ -16,6 +18,7 @@ if TYPE_CHECKING:
 class CdmEntityCollection(CdmCollection):
     def __init__(self, ctx: 'CdmCorpusContext', owner: 'CdmObject'):
         super().__init__(ctx, owner, CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF)
+        self._TAG = CdmEntityCollection.__name__
 
     def append(self, obj: Union[str, 'CdmEntityDefinition', 'CdmEntityDeclarationDefinition'],
                entity_path: Optional[str] = None, simple_ref: bool = False) -> 'CdmEntityDeclarationDefinition':
@@ -28,8 +31,7 @@ class CdmEntityCollection(CdmCollection):
             return super().append(obj, simple_ref)
 
         if not obj.owner:
-            logger.error(CdmEntityCollection.__name__, self.ctx,
-                         'Expected entity to have an \'Owner\' document set. Cannot create entity declaration to add to manifest.', self.append.__name__)
+            logger.error(self.ctx, self._TAG, self.append.__name__, obj.at_corpus_path, CdmLogCode.ERR_ENTITY_CREATION_FAILED)
             return None
 
         entity_declaration = self.ctx.corpus.make_object(CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF,

@@ -23,13 +23,14 @@ import {
     cdmObjectSimple,
     cdmObjectType,
     copyOptions,
-    Errors,
+    cdmLogCode,
     ImportInfo,
     importsLoadStrategy,
     Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../internal';
 import { using } from "using-statement";
@@ -64,6 +65,7 @@ class ImportPriorities {
 }
 
 export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumentDefinition {
+    private TAG: string = CdmDocumentDefinition.name;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.documentDef;
@@ -181,12 +183,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         this.ctx.corpus.blockDeclaredPathChanges = true;
 
         // shout into the void
-        Logger.info(
-            CdmDocumentDefinition.name,
-            this.ctx,
-            `Localizing corpus paths in document '${this.name}'`,
-            this.localizeCorpusPaths.name
-        );
+        Logger.info(this.ctx, this.TAG, this.localizeCorpusPaths.name, this.atCorpusPath, `Localizing corpus paths in document '${this.name}'`);
 
         // find anything in the document that is a corpus path
         this.visit(
@@ -351,12 +348,8 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         // let bodyCode = () =>
         {
             if (!this.name) {
-                Logger.error(
-                    CdmDocumentDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['name']),
-                    this.validate.name);
-
+                let missingFields: string[] = ['name'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
             }
 
@@ -477,13 +470,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             }
             const resOpt: resolveOptions = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             if (!await this.indexIfNeeded(resOpt)) {
-                Logger.error(
-                    CdmDocumentDefinition.name,
-                    this.ctx,
-                    `Failed to index document prior to save '${this.name}'`,
-                    this.saveAsAsync.name
-                );
-
+                Logger.error(this.ctx, this.TAG, this.saveAsAsync.name, this.atCorpusPath, cdmLogCode.ErrIndexFailed, this.name);
                 return false;
             }
             // if save to the same document name, then we are no longer 'dirty'
@@ -520,7 +507,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         {
             if (this.needsIndexing && !this.currentlyIndexing) {
                 if (!this.folder) {
-                    Logger.error(CdmDocumentDefinition.name, this.ctx, `Document '${this.name}' is not in a folder`, this.indexIfNeeded.name);
+                    Logger.error(this.ctx, this.TAG, this.indexIfNeeded.name, this.atCorpusPath, cdmLogCode.ErrValdnMissingDoc, this.name);
                     return false;
                 }
 
@@ -640,13 +627,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 if (docImp !== undefined && docImp.isDirty) {
                     // save it with the same name
                     if (await docImp.saveAsAsync(docImp.name, true, options) === false) {
-                        Logger.error(
-                            'CdmDocumentDefinition',
-                            this.ctx,
-                            `Foiled to save import ${docImp.name}`,
-                            this.saveLinkedDocuments.name
-                        );
-
+                        Logger.error(this.ctx, this.TAG, this.saveLinkedDocuments.name, docImp.atCorpusPath, cdmLogCode.ErrDocImportSavingFailure, this.name);
                         return false;
                     }
                 }
@@ -735,7 +716,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                         monikerImports.push(impDoc);
                     }
                 } else {
-                    Logger.warning(CdmDocumentDefinition.name, this.ctx, `Import document ${imp.corpusPath} not loaded. This might cause an unexpected output.`);
+                    Logger.warning(this.ctx, this.TAG, this.prioritizeImports.name, imp.atCorpusPath, cdmLogCode.WarnDocImportNotLoaded, imp.corpusPath);
                 }
             }
 
@@ -745,7 +726,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 const isMoniker: boolean = !!imp.moniker;
 
                 if (!impDoc) {
-                    Logger.warning(CdmDocumentDefinition.name, this.ctx, `Import document ${imp.corpusPath} not loaded. This might cause an unexpected output.`);
+                    Logger.warning(this.ctx, this.TAG, this.prioritizeImports.name, imp.atCorpusPath, cdmLogCode.WarnDocImportNotLoaded, imp.corpusPath);
                 }
 
                 // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.

@@ -8,6 +8,7 @@ from cdm.persistence import PersistenceLayer
 from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityDefinition
 from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils, logger
 
+from cdm.enums import CdmLogCode
 from .attribute_group_persistence import AttributeGroupPersistence
 from .constant_entity_persistence import ConstantEntityPersistence
 from .data_type_persistence import DataTypePersistence
@@ -17,6 +18,7 @@ from .purpose_persistence import PurposePersistence
 from .trait_persistence import TraitPersistence
 from .types import DocumentContent
 
+_TAG = 'DocumentPersistence'
 
 class DocumentPersistence:
     is_persistence_async = False
@@ -82,11 +84,13 @@ class DocumentPersistence:
                     message = 'This ObjectModel version supports json semantic version {} at maximum.'.format(DocumentPersistence.json_semantic_version)
                     message += ' Trying to load a document with version {}.'.format(document.json_schema_semantic_version)
                     if is_resolved_doc:
-                        logger.warning('DocumentPersistence', ctx, message, 'from_data')
+                        logger.warning(ctx, _TAG, DocumentPersistence.from_data.__name__, None,
+                                       CdmLogCode.WARN_PERSIST_UNSUPPORTED_JSON_SEM_VER, document.json_schema_semantic_version)
                     else:
-                        logger.error('DocumentPersistence', ctx, message, 'from_data')
+                        logger.error(ctx, _TAG, DocumentPersistence.from_data.__name__, None,
+                                     CdmLogCode.ERR_PERSIST_UNSUPPORTED_JSON_SEM_VER, document.json_schema_semantic_version)
             else:
-                logger.warning('DocumentPersistence', ctx, 'jsonSemanticVersion is a required property of a document.', 'from_data')
+                logger.warning(ctx, _TAG, DocumentPersistence.from_data.__name__, document.at_corpus_path, CdmLogCode.WARN_PERSIST_JSON_SEM_VER_MANDATORY)
 
         return document
 
@@ -113,11 +117,13 @@ class DocumentPersistence:
         try:
             doc_semantic_version_split = [int(x) for x in document_semantic_version.split('.')]
         except ValueError:
-            logger.warning('DocumentPersistence', ctx, error_message, '_compare_json_semantic_version')
+            logger.warning(ctx, _TAG, DocumentPersistence._compare_json_semantic_version.__name__, None,
+                           CdmLogCode.WARN_PERSIST_JSON_SEM_VER_INVALID_FORMAT)
             return 0
 
         if len(doc_semantic_version_split) != 3:
-            logger.warning('DocumentPersistence', ctx, error_message, '_compare_json_semantic_version')
+            logger.warning(ctx, _TAG, DocumentPersistence._compare_json_semantic_version.__name__, None,
+                           CdmLogCode.WARN_PERSIST_JSON_SEM_VER_INVALID_FORMAT)
             return 0
 
         for i in range(3):

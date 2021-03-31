@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 
 import java.util.*;
 
@@ -17,6 +18,8 @@ import java.util.*;
  */
 @Deprecated
 public final class ProjectionAttributeStateSet {
+    private static String tag = ProjectionAttributeStateSet.class.getSimpleName();
+
     /**
      * A list containing all the ProjectionAttributeStates
      */
@@ -69,7 +72,7 @@ public final class ProjectionAttributeStateSet {
         if (pas == null ||
                 pas.getCurrentResolvedAttribute() == null ||
                 StringUtils.isNullOrTrimEmpty(pas.getCurrentResolvedAttribute().getResolvedName())) {
-            Logger.error(ProjectionAttributeStateSet.class.getSimpleName(), this.ctx, "Invalid ProjectionAttributeState provided for addition to the Set. Add operation failed.", "add");
+                    Logger.error(this.ctx, tag, "add", null, CdmLogCode.ErrProjInvalidAttrState);
         } else {
             states.add(pas);
         }
@@ -102,7 +105,7 @@ public final class ProjectionAttributeStateSet {
             states.remove(pas);
             return true;
         } else {
-            Logger.warning(ProjectionAttributeStateSet.class.getSimpleName(), this.ctx, "Invalid ProjectionAttributeState provided for removal from the Set. Remove operation failed.", "remove");
+            Logger.warning(this.ctx, tag, "remove", null, CdmLogCode.WarnProjRemoveOpsFailed);
             return false;
         }
     }

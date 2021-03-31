@@ -3,6 +3,7 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
@@ -11,6 +12,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     public class CardinalitySettings
     {
+        private static readonly string Tag = nameof(CardinalitySettings);
+
         // By default all attributes in CDM are Not Nullable and hence setting the default value to be 1:1
         private const int DefaultMinimum = 1;
         private const int DefaultMaximum = 1;
@@ -59,7 +62,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 if (!CardinalitySettings.IsMinimumValid(value))
                 {
-                    Logger.Error(nameof(CardinalitySettings), this.Ctx, $"Invalid minimum cardinality {value}.");
+                    Logger.Error(this.Ctx, Tag, nameof(Minimum), Owner.AtCorpusPath, CdmLogCode.ErrValdnInvalidMinCardinality,value);
                 }
                 else
                 {
@@ -88,7 +91,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 if (!CardinalitySettings.IsMaximumValid(value))
                 {
-                    Logger.Error(nameof(CardinalitySettings), this.Ctx, $"Invalid maximum cardinality {value}.");
+                    Logger.Error(this.Ctx, Tag, nameof(Maximum), Owner.AtCorpusPath, CdmLogCode.ErrValdnInvalidMaxCardinality, value);
                 }
                 else
                 {
@@ -116,7 +119,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (!success)
             {
-                Logger.Error(nameof(CardinalitySettings), this.Ctx, $"Unable to get number for string '{value}'. Falling to default value ${defaultValue}.");
+                Logger.Error(this.Ctx, Tag, nameof(GetNumber), Owner.AtCorpusPath, CdmLogCode.ErrProjStringError, value, defaultValue.ToString());
             }
 
             // defaults to min:max DefaultMinimum:DefaultMaximum in the invalid values

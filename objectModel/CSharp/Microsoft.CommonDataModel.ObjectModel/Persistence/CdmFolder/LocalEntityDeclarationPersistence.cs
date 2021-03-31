@@ -14,6 +14,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     class LocalEntityDeclarationPersistence
     {
+        private static readonly string Tag = nameof(LocalEntityDeclarationPersistence);
+
         public static CdmLocalEntityDeclarationDefinition FromData(CdmCorpusContext ctx, string prefixPath, JToken obj)
         {
             var localDec = ctx.Corpus.MakeObject<CdmLocalEntityDeclarationDefinition>(
@@ -29,7 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
                 if (entityPath == null)
                 {
-                    Logger.Error(nameof(LocalEntityDeclarationPersistence), ctx, "Couldn't find entity path or similar.", nameof(FromData));
+                    Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistEntityPathNotFound);
                 }
 
             }
@@ -56,8 +58,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 localDec.Explanation = (string)obj["explanation"];
             }
 
-            if (obj["exhibitsTraits"] != null)
-                Utils.AddListToCdmCollection(localDec.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
+            Utils.AddListToCdmCollection(localDec.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
 
             if (obj["dataPartitions"] != null)
             {

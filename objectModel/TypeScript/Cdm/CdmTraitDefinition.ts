@@ -13,7 +13,7 @@ import {
     cdmObjectType,
     CdmParameterDefinition,
     CdmTraitReference,
-    Errors,
+    cdmLogCode,
     Logger,
     ParameterCollection,
     ParameterValueSet,
@@ -23,11 +23,13 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     SymbolSet,
     VisitCallback
 } from '../internal';
 
 export class CdmTraitDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmTraitDefinition.name;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.traitDef;
@@ -108,13 +110,8 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!this.traitName) {
-                Logger.error(
-                    CdmTraitDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['traitName']),
-                    this.validate.name
-                );
-
+                let missingFields: string[] = ['traitName'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
             }
 

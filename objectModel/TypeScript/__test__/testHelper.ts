@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { isArray, isDate, isObject, isString } from 'util';
-import { CdmCorpusDefinition, cdmStatusLevel } from '../internal';
+import { CdmCorpusDefinition, cdmStatusLevel, cdmLogCode } from '../internal';
 import { LocalAdapter, RemoteAdapter } from '../Storage';
 
 enum testFolders {
@@ -228,6 +228,23 @@ export const testHelper = {
         cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
 
         return cdmCorpus;
+    },
+
+     /**
+    *Asserts the logcode, the same as the expected.
+    * @param corpus The corpus object.
+    * @param expectedcode The expectedcode cdmlogcode.
+    */
+    expectCdmLogCodeEquality(corpus: CdmCorpusDefinition, expectedCode: cdmLogCode): void {
+        var toAssert: boolean = false;
+        corpus.ctx.events.allItems.forEach(logEntry => {
+            if ( ((cdmLogCode[expectedCode].startsWith('Warn') && logEntry.get('level') === cdmStatusLevel[cdmStatusLevel.warning])
+            || (cdmLogCode[expectedCode].startsWith('Err') && logEntry.get('level') === cdmStatusLevel[cdmStatusLevel.error]))
+            && logEntry.get('code') === cdmLogCode[expectedCode]) {
+                toAssert = true;
+            }
+        });
+        expect(toAssert).toBe(true);
     }
 };
 

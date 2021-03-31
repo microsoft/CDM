@@ -7,8 +7,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json.Linq;
     using System;
@@ -193,7 +191,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsForSelectsOneAttribute", "expectedRels.json")).ToObject<List<E2ERelationship>>();
             var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestCalculateRelationshipsForSelectsOneAttribute");
-            corpus.Storage.Mount("cdm", new LocalAdapter(TestHelper.SchemaDocumentsPath));
 
             var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/selectsOne.manifest.cdm.json");
 

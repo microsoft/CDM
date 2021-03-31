@@ -290,7 +290,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // 2. deep copy the tree and map the context references. 
                 if (underCtx != null) // null context? means there is no tree, probably 0 attributes came out
                 {
-                    if (underCtx.AssociateTreeCopyWithAttributes(resOpt, rasbResult.ResolvedAttributeSet) == false)
+                    if (!underCtx.AssociateTreeCopyWithAttributes(resOpt, rasbResult.ResolvedAttributeSet))
                     {
                         return null;
                     }

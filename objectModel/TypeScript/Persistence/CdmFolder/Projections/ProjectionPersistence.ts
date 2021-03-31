@@ -18,6 +18,7 @@ import {
     CdmOperationIncludeAttributes,
     cdmOperationType,
     CdmProjection,
+    cdmLogCode,
     copyOptions,
     OperationTypeConvertor,
     resolveOptions,
@@ -55,6 +56,8 @@ import { OperationIncludeAttributesPersistence } from './OperationIncludeAttribu
  * Projection persistence
  */
 export class ProjectionPersistence {
+    private static TAG: string = ProjectionPersistence.name;
+
     public static fromData(ctx: CdmCorpusContext, object: Projection): CdmProjection {
         if (!object) {
             return undefined;
@@ -115,7 +118,7 @@ export class ProjectionPersistence {
                         projection.operations.push(addAttributeGroupOp);
                         break;
                     default:
-                        Logger.error(ProjectionPersistence.name, ctx, `Invalid operation type '${type}'.`, ProjectionPersistence.fromData.name);
+                        Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjInvalidOpsType, type);
                 }
             });
         }

@@ -8,9 +8,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class CdmParameterDefinition : CdmObjectDefinitionBase
     {
+        private static readonly string Tag = nameof(CdmParameterDefinition);
+
         /// <summary>
         /// Gets or sets the parameter name.
         /// </summary>
@@ -112,7 +115,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.Name))
             {
-                Logger.Error(nameof(CdmParameterDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Name" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "Name" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
+
                 return false;
             }
             return true;

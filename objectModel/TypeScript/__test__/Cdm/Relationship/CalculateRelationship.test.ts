@@ -5,16 +5,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { EOL } from 'os';
 import {
+    CdmArgumentDefinition,
     CdmCollection,
+    CdmConstantEntityDefinition,
     CdmCorpusDefinition,
     CdmE2ERelationship,
     CdmEntityDefinition,
+    CdmEntityReference,
     CdmFolderDefinition,
     CdmManifestDefinition
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 import { AttributeContextUtil } from '../Projection/AttributeContextUtil';
+import { CdmTraitReference } from 'Cdm/CdmTraitReference';
 
 /**
  * Test to validate calculateEntityGraphAsync function
@@ -37,19 +41,9 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         const testName: string = 'TestSimpleWithId';
         const entityName: string = 'Sales';
 
-        await testRun(testName, entityName);
+        await testRun(testName, entityName, false);
     });
-
-    /**
-     * Non projection scenario with the referenced entity not having any primary key
-     */
-    it('TestSimpleWithoutId', async () => {
-        const testName: string = 'TestSimpleWithoutId';
-        const entityName: string = 'Sales';
-
-        await testRun(testName, entityName);
-    });
-
+    
     /**
      * Projection scenario with the referenced entity not having any primary key
      */
@@ -57,7 +51,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         const testName: string = 'TestWithoutIdProj';
         const entityName: string = 'Sales';
 
-        await testRun(testName, entityName);
+        await testRun(testName, entityName, true);
     });
 
     /**
@@ -67,7 +61,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         const testName: string = 'TestDiffRefLocation';
         const entityName: string = 'Sales';
 
-        await testRun(testName, entityName);
+        await testRun(testName, entityName, true);
     });
 
     /**
@@ -77,7 +71,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         const testName: string = 'TestCompositeProj';
         const entityName: string = 'Sales';
 
-        await testRun(testName, entityName);
+        await testRun(testName, entityName, true);
     });
 
     /**
@@ -87,7 +81,17 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         const testName: string = 'TestNestedCompositeProj';
         const entityName: string = 'Sales';
 
-        await testRun(testName, entityName);
+        await testRun(testName, entityName, true);
+    });
+
+    /**
+     * Non projection scenario with selectsSubAttribute set to one
+     */
+     it('TestPolymorphicWithoutProj', async () => {
+        const testName: string = 'TestPolymorphicWithoutProj';
+        const entityName: string = 'CustomPerson';
+
+        await testRun(testName, entityName, false);
     });
 
     /**
@@ -97,13 +101,33 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         const testName: string = 'TestPolymorphicProj';
         const entityName: string = 'Person';
 
-        await testRun(testName, entityName);
+        await testRun(testName, entityName, true);
+    });
+
+    /**
+     * Test a composite key relationship with a polymorphic entity
+     */
+    it('TestCompositeKeyPolymorphicRelationship', async () => {
+        const testName: string = 'TestCompositeKeyPolymorphicRelationship';
+        const entityName: string = 'Person';
+
+        await testRun(testName, entityName, true);
+    });
+
+    /**
+     * Test a composite key relationship with multiple entity attribute but not polymorphic
+     */
+    it('TestCompositeKeyNonPolymorphicRelationship', async () => {
+        const testName: string = 'TestCompositeKeyNonPolymorphicRelationship';
+        const entityName: string = 'Person';
+
+        await testRun(testName, entityName, true);
     });
 
     /**
      * Common test code for these test cases
      */
-    async function testRun(testName: string, entityName: string): Promise<void> {
+    async function testRun(testName: string, entityName: string, isEntitySet: boolean): Promise<void> {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         const inputFolder: string = testHelper.getInputFolderPath(testsSubpath, testName);
         const expectedOutputFolder: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
@@ -120,6 +144,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         expect(entity)
             .toBeTruthy();
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
+        assertEntityShapeInReslovedEntity(resolvedEntity, isEntitySet);
         const actualAttrCtx: string = getAttributeContextString(resolvedEntity, entityName, actualOutputFolder);
 
         const expectedAttrCtx: string = fs.readFileSync(`${expectedOutputFolder}/AttrCtx_${entityName}.txt`).toString();
@@ -161,6 +186,32 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
     }
 
     /**
+     * Check if the entity shape is correct in entity reference.
+     */
+    function assertEntityShapeInReslovedEntity(resolvedEntity: CdmEntityDefinition, isEntitySet: boolean): void {
+        for (const att of resolvedEntity.attributes) {
+            if (att && att.appliedTraits) {
+                for (const trait of att.appliedTraits) {
+                    if (trait.namedReference === 'is.linkedEntity.identifier' && trait.arguments.length > 0) {
+                        const constEnt: CdmConstantEntityDefinition = (trait.arguments.allItems[0].value as CdmEntityReference).fetchObjectDefinition<CdmConstantEntityDefinition>();
+                        if (constEnt) {
+                            if (isEntitySet) {
+                                expect('entitySet')
+                                    .toEqual(constEnt.entityShape.namedReference)
+                            } else {
+                                expect('entityGroupSet')
+                                    .toEqual(constEnt.entityShape.namedReference)
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        fail('Unable to find entity shape from resolved model.');
+    }
+
+    /**
      * Get a string version of the relationship collection
      */
     function getRelationshipStrings(relationships: CdmCollection<CdmE2ERelationship>): string {
@@ -173,25 +224,45 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         return bldr;
     }
 
+        /**
+     * Get a string version of one relationship
+     */
+         function getRelationshipString(rel: CdmE2ERelationship): string {
+            let nameAndPipe: string = '';
+            if (rel.name) {
+                nameAndPipe = `${rel.name}|`
+            }
+            
+            return `${nameAndPipe}${rel.toEntity}|${rel.toEntityAttribute}|${rel.fromEntity}|${rel.fromEntityAttribute}`;
+        }
+
     /**
      * List the incoming and outgoing relationships
      */
     function listRelationships(corpus: CdmCorpusDefinition, entity: CdmEntityDefinition, actualOutputFolder: string, entityName: string): string {
         let bldr: string = '';
+        const relCache: Set<string> = new Set<string>();
 
-        bldr += `Incoming Relationships For: ${entity.entityName}:`;
-        bldr += endOfLine;
+        bldr += `Incoming Relationships For: ${entity.entityName}:` + endOfLine;
         // Loop through all the relationships where other entities point to this entity.
         for (const relationship of corpus.fetchIncomingRelationships(entity)) {
-            bldr += printRelationship(relationship);
-            bldr += endOfLine;
+            const cacheKey: string = getRelationshipString(relationship);
+            if (!relCache.has(cacheKey))
+            {
+                bldr += printRelationship(relationship) + endOfLine;
+                relCache.add(cacheKey);
+            }
         }
 
         console.log(`Outgoing Relationships For: ${entity.entityName}:`);
         // Now loop through all the relationships where this entity points to other entities.
         for (const relationship of corpus.fetchOutgoingRelationships(entity)) {
-            bldr += printRelationship(relationship);
-            bldr += endOfLine;
+            const cacheKey: string = getRelationshipString(relationship);
+            if (!relCache.has(cacheKey))
+            {
+                bldr += printRelationship(relationship) + endOfLine;
+                relCache.add(cacheKey);
+            }
         }
 
         return bldr;
@@ -204,18 +275,27 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         let bldr: string = '';
 
         if (relationship.name) {
-            bldr += `  Name: ${relationship.name}`;
-            bldr += endOfLine;
+            bldr += `  Name: ${relationship.name}` + endOfLine;
         }
 
-        bldr += `  FromEntity: ${relationship.fromEntity}`;
-        bldr += endOfLine;
-        bldr += `  FromEntityAttribute: ${relationship.fromEntityAttribute}`;
-        bldr += endOfLine;
-        bldr += `  ToEntity: ${relationship.toEntity}`;
-        bldr += endOfLine;
-        bldr += `  ToEntityAttribute: ${relationship.toEntityAttribute}`;
-        bldr += endOfLine;
+        bldr += `  FromEntity: ${relationship.fromEntity}` + endOfLine;
+        bldr += `  FromEntityAttribute: ${relationship.fromEntityAttribute}` + endOfLine;
+        bldr += `  ToEntity: ${relationship.toEntity}` + endOfLine;
+        bldr += `  ToEntityAttribute: ${relationship.toEntityAttribute}` + endOfLine;
+
+        if (relationship.exhibitsTraits != null && relationship.exhibitsTraits.length != 0) {
+            bldr += '  ExhibitsTraits:' + endOfLine;
+            var orderedAppliedTraits = relationship.exhibitsTraits.allItems.sort((a, b) => a.namedReference?.localeCompare(b.namedReference));
+            orderedAppliedTraits.forEach((trait : CdmTraitReference) => {
+                bldr += `      ${trait.namedReference}` + endOfLine;
+
+                trait.arguments.allItems.forEach((args : CdmArgumentDefinition) => {
+                    var attrCtxUtil = new AttributeContextUtil();
+                    bldr += `          ${attrCtxUtil.getArgumentValuesAsString(args)}` + endOfLine;
+                })
+            })
+        }
+
         bldr += endOfLine;
         console.log(bldr);
 
@@ -226,6 +306,6 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
      * Check the attribute context for these test scenarios
      */
     function getAttributeContextString(resolvedEntity: CdmEntityDefinition, entityName: string, actualOutputFolder: string): string {
-        return (new AttributeContextUtil()).getAttributeContextStrings(resolvedEntity, resolvedEntity.attributeContext);
+        return (new AttributeContextUtil()).getAttributeContextStrings(resolvedEntity);
     }
 });

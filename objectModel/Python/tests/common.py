@@ -10,6 +10,7 @@ import filecmp
 from cdm.enums import CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition
 from cdm.storage import LocalAdapter, RemoteAdapter
+import unittest
 
 def async_test(f):
     def wrapper(*args, **kwargs):
@@ -245,3 +246,15 @@ class TestHelper:
             return 'Objects do not match. Expected = {}, actual = {}.'.format(expected_data, actual_data)
 
         return ''
+
+    @staticmethod
+    def assert_cdm_log_code_equality(corpus: 'CdmCorpusDefinition', expected_code: 'CdmLogCode', self) -> None:
+        to_assert = False
+        for log_entry in corpus.ctx.events:
+            if ((expected_code.name.startswith('WARN') and log_entry['level'] == CdmStatusLevel.WARNING.name)
+                or (expected_code.name.startswith('ERR') and log_entry['level'] == CdmStatusLevel.ERROR.name)) \
+                    and log_entry['code'] == expected_code.name:
+                to_assert = True
+
+        self.assertTrue(to_assert, 'The recorded log events should have contained message with log code ' +
+                        expected_code.name + ' of appropriate level')

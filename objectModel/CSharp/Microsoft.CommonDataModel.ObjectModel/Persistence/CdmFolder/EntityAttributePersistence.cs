@@ -13,6 +13,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     class EntityAttributePersistence
     {
+        private static readonly string Tag = nameof(EntityAttributePersistence);
+
         public static CdmEntityAttributeDefinition FromData(CdmCorpusContext ctx, JToken obj)
         {
             var entityAttribute = ctx.Corpus.MakeObject<CdmEntityAttributeDefinition>(CdmObjectType.EntityAttributeDef, (string)obj["name"]);
@@ -32,13 +34,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     maxCardinality = (string)obj["cardinality"]["maximum"];
 
                 if (string.IsNullOrWhiteSpace(minCardinality) || string.IsNullOrWhiteSpace(maxCardinality))
-                    Logger.Error(nameof(EntityAttributePersistence), ctx, $"Both minimum and maximum are required for the Cardinality property.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistCardinalityPropMissing);
 
                 if (!CardinalitySettings.IsMinimumValid(minCardinality))
-                    Logger.Error(nameof(EntityAttributePersistence), ctx, $"Invalid minimum cardinality {minCardinality}.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistInvalidMinCardinality, minCardinality);
 
                 if (!CardinalitySettings.IsMaximumValid(maxCardinality))
-                    Logger.Error(nameof(EntityAttributePersistence), ctx, $"Invalid maximum cardinality {maxCardinality}.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistInvalidMaxCardinality, maxCardinality);
 
                 if (!string.IsNullOrWhiteSpace(minCardinality) &&
                     !string.IsNullOrWhiteSpace(maxCardinality) &&
@@ -74,7 +76,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             // ignore resolution guidance if the entity is a projection
             if (obj["resolutionGuidance"] != null && isProjection)
             {
-                Logger.Error(nameof(EntityAttributePersistence), ctx, $"The EntityAttribute {entityAttribute.Name} is projection based. Resolution guidance is not supported with a projection.");
+                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistEntityAttrUnsupported, entityAttribute.Name);
             }
             else
             {

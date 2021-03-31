@@ -9,6 +9,7 @@ import {
     cdmObjectType,
     CdmTraitDefinition,
     CdmTraitReference,
+    cdmLogCode,
     copyOptions,
     Logger,
     resolveOptions,
@@ -19,6 +20,8 @@ import { processExtensionFromJson } from './ExtensionHelper';
 import { CsvFormatSettings, Partition, partitionBaseProperties } from './types';
 
 export class DataPartitionPersistence {
+    private static TAG: string = DataPartitionPersistence.name;
+
     public static async fromData(
         ctx: CdmCorpusContext,
         object: Partition,
@@ -47,12 +50,7 @@ export class DataPartitionPersistence {
         }
 
         if (!newPartition.location) {
-            Logger.warning(
-                DataPartitionPersistence.name,
-                ctx,
-                `Couldn't find data partition's location for partition ${newPartition.name}.`,
-                this.fromData.name
-            );
+            Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersistPartitionLocMissing, newPartition.name);
         }
 
         if (object.isHidden === true) {
@@ -68,12 +66,7 @@ export class DataPartitionPersistence {
             if (csvFormatTrait !== undefined) {
                 newPartition.exhibitsTraits.push(csvFormatTrait);
             } else {
-                Logger.error(
-                    DataPartitionPersistence.name,
-                    ctx,
-                    'There was a problem while processing csv format settings inside data partition.'
-                );
-
+                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistCsvProcessingError);
                 return undefined;
             }
         }
@@ -108,8 +101,13 @@ export class DataPartitionPersistence {
             'cdm:lastFileStatusCheckTime': timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime)
         };
 
+        if (result.name === undefined) {
+            Logger.warning(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.WarnPersistPartitionNameNull);
+            result.name = '';
+        }
+
         if (!result.location) {
-            Logger.warning(DataPartitionPersistence.name, instance.ctx, `Couldn't find data partition's location for partition ${result.name}.`, this.toData.name);
+            Logger.warning(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.WarnPersistPartitionLocMissing, result.name);
         }
 
         ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
@@ -127,12 +125,7 @@ export class DataPartitionPersistence {
                 result.fileFormatSettings = csvFormatSettings;
                 result.fileFormatSettings.$type = 'CsvFormatSettings';
             } else {
-                Logger.error(
-                    DataPartitionPersistence.name,
-                    instance.ctx,
-                    'There was a problem while processing csv format trait inside data partition.'
-                );
-
+                Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistCsvProcessingError);
                 return undefined;
             }
         }

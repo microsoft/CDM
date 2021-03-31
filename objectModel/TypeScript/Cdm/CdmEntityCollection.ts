@@ -8,6 +8,7 @@ import {
     CdmEntityDeclarationDefinition,
     CdmEntityDefinition,
     CdmLocalEntityDeclarationDefinition,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     Logger
@@ -15,6 +16,8 @@ import {
 import { isEntityDefinition } from '../Utilities/cdmObjectTypeGuards';
 
 export class CdmEntityCollection extends CdmCollection<CdmEntityDeclarationDefinition> {
+    private TAG: string = CdmEntityCollection.name;
+
     constructor(ctx: CdmCorpusContext, owner: CdmObject) {
         super(ctx, owner, cdmObjectType.localEntityDeclarationDef);
     }
@@ -41,8 +44,7 @@ export class CdmEntityCollection extends CdmCollection<CdmEntityDeclarationDefin
                 const entity: CdmEntityDefinition = obj;
 
                 if (!entity.owner) {
-                    Logger.error(CdmEntityCollection.name, entity.ctx, 'Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest.', this.push.name);
-
+                    Logger.error(entity.ctx, this.TAG, this.push.name, entity.atCorpusPath, cdmLogCode.ErrEntityCreationFailed);
                     return undefined;
                 }
 

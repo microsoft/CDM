@@ -7,7 +7,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.IO;
     using System.Threading.Tasks;

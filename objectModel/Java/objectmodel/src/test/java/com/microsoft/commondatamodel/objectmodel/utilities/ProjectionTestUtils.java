@@ -8,7 +8,16 @@ import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projection.AttributeContextUtil;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import org.testng.Assert;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -23,41 +32,31 @@ public class ProjectionTestUtils {
     private static final String foundationJsonPath = "cdm:/foundations.cdm.json";
 
     /**
-     * Resolves an entity
+     * If true, will update the expected output txt files for all the tests that are ran.
      */
-    public static CompletableFuture<CdmEntityDefinition> getResolvedEntity(CdmCorpusDefinition corpus, CdmEntityDefinition inputEntity, List<String> resolutionOptions) {
-        return getResolvedEntity(corpus, inputEntity, resolutionOptions, false);
-    }
+    private static boolean updateExpectedOutput = false;
 
     /**
      * Resolves an entity
      * @param corpus The corpus
      * @param inputEntity The entity to resolve
-     * @param resolutionOptions The resolution options
-     * @param addResOptToName Whether to add the resolution options as part of the resolved entity name
+     * @param directives The set of directives used for resolution
      */
     public static CompletableFuture<CdmEntityDefinition> getResolvedEntity(
         CdmCorpusDefinition corpus,
         CdmEntityDefinition inputEntity,
-        List<String> resolutionOptions,
-        boolean addResOptToName
+        List<String> directives
     ) {
         return CompletableFuture.supplyAsync(() -> {
-            HashSet<String> roHashSet = new HashSet<>(resolutionOptions);
+            HashSet<String> roHashSet = new HashSet<>(directives);
 
-            String resolvedEntityName = "";
-            if (addResOptToName) {
-                String fileNameSuffix = getResolutionOptionNameSuffix(resolutionOptions);
-                resolvedEntityName = "Resolved_" + inputEntity.getEntityName() + fileNameSuffix;
-            } else {
-                resolvedEntityName = "Resolved_" + inputEntity.getEntityName();
-            }
+            String resolvedEntityName = "Resolved_" + inputEntity.getEntityName();
 
-            ResolveOptions ro = new ResolveOptions(inputEntity.getInDocument());
-            ro.setDirectives(new AttributeResolutionDirectiveSet(roHashSet));
+            ResolveOptions resOpt = new ResolveOptions(inputEntity.getInDocument());
+            resOpt.setDirectives(new AttributeResolutionDirectiveSet(roHashSet));
 
             CdmFolderDefinition resolvedFolder = corpus.getStorage().fetchRootFolder("output");
-            CdmEntityDefinition resolvedEntity = inputEntity.createResolvedEntityAsync(resolvedEntityName, ro, resolvedFolder).join();
+            CdmEntityDefinition resolvedEntity = inputEntity.createResolvedEntityAsync(resolvedEntityName, resOpt, resolvedFolder).join();
 
             return resolvedEntity;
         });
@@ -65,13 +64,13 @@ public class ProjectionTestUtils {
 
     /**
      * Returns a suffix that contains the file name and resolution option used
-     * @param resolutionOptions The resolution options
+     * @param directives The set of directives used for resolution
      */
-    public static String getResolutionOptionNameSuffix(List<String> resolutionOptions) {
+    public static String getResolutionOptionNameSuffix(List<String> directives) {
         String fileNamePrefix = "";
 
-        for (int i = 0; i < resolutionOptions.size(); i++) {
-            fileNamePrefix = fileNamePrefix + "_" + resolutionOptions.get(i);
+        for (int i = 0; i < directives.size(); i++) {
+            fileNamePrefix = fileNamePrefix + "_" + directives.get(i);
         }
 
         if (StringUtils.isNullOrTrimEmpty(fileNamePrefix)) {
@@ -84,7 +83,7 @@ public class ProjectionTestUtils {
     /**
      * Loads an entity, resolves it, and then validates the generated attribute contexts
      */
-    public static CompletableFuture<Void> loadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, String testName, String testsSubpath, String entityName, List<String> resOpts) {
+    public static CompletableFuture<Void> loadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, String testName, String testsSubpath, String entityName, List<String> directives) {
         return CompletableFuture.runAsync(() -> {
             String expectedOutputPath = null;
             try {
@@ -92,12 +91,82 @@ public class ProjectionTestUtils {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            String fileNameSuffix = ProjectionTestUtils.getResolutionOptionNameSuffix(resOpts);
 
             CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-            CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, resOpts, true).join();
-            AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName + fileNameSuffix, resolvedEntity);
+            Assert.assertNotNull(entity);
+            CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, directives).join();
+            Assert.assertNotNull(resolvedEntity);
+
+            validateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity);
         });
+    }
+
+    /**
+     * Validates if the attribute context of the resolved entity matches the expected output.
+     */
+    private static void validateAttributeContext(List<String> directives, String expectedOutputPath, String entityName, CdmEntityDefinition resolvedEntity) {
+        if (resolvedEntity.getAttributeContext() == null) {
+            Assert.fail("ValidateAttributeContext called with not resolved entity.");
+        }
+
+        String fileNamePrefix = "AttrCtx_" + entityName;
+        Path expectedStringFilePath;
+        String fileNameSuffix = getResolutionOptionNameSuffix(directives);
+        String defaultFileNameSuffix = getResolutionOptionNameSuffix(new ArrayList<>());
+
+        // Get actual text
+        AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
+        String actualText = attrCtxUtil.getAttributeContextStrings(resolvedEntity);
+
+        try {
+            if (updateExpectedOutput) {
+                expectedStringFilePath = new File(expectedOutputPath, fileNamePrefix + fileNameSuffix + ".txt").toPath();
+
+                if (directives.size() > 0) {
+                    Path defaultStringFilePath = new File(expectedOutputPath, fileNamePrefix + defaultFileNameSuffix + ".txt").toPath();
+                    String defaultText = new String(Files.readAllBytes(defaultStringFilePath), StandardCharsets.UTF_8);
+
+                    if (actualText.equals(defaultText)) {
+                        final File actualFile = new File(expectedStringFilePath.toString());
+                        actualFile.delete();
+                    } else {
+                        try (final BufferedWriter actualFileWriter = new BufferedWriter(new FileWriter(expectedStringFilePath.toFile()))) {
+                            actualFileWriter.write(actualText);
+                        }
+                    }
+                } else {
+                    try (final BufferedWriter actualFileWriter = new BufferedWriter(new FileWriter(expectedStringFilePath.toFile()))) {
+                        actualFileWriter.write(actualText);
+                    }
+                }
+            } else {
+                // Actual
+                Path actualStringFilePath = new File(expectedOutputPath.replace("ExpectedOutput", "ActualOutput"), fileNamePrefix + fileNameSuffix + ".txt").toPath();
+
+                // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
+                try (final BufferedWriter actualFileWriter = Files.newBufferedWriter(actualStringFilePath, StandardCharsets.UTF_8, StandardOpenOption.CREATE);) {
+                    actualFileWriter.write(actualText);
+                    actualFileWriter.flush();
+                }
+                resolvedEntity.getInDocument().saveAsAsync("Resolved_" + entityName + ".cdm.json", false).join();
+
+                // Expected
+                String expectedFileNameSuffix = getResolutionOptionNameSuffix(directives);
+                File expectedFile = new File(expectedOutputPath, fileNamePrefix + expectedFileNameSuffix + ".txt");
+
+                // If a test file doesn't exist for this set of directives, fall back to the default file.
+                if (!expectedFile.exists()) {
+                    expectedFile = new File(expectedOutputPath, fileNamePrefix + defaultFileNameSuffix + ".txt");
+                }
+
+                final String expectedText = new String(Files.readAllBytes(expectedFile.toPath()), StandardCharsets.UTF_8);
+
+                // Test if Actual is Equal to Expected
+                Assert.assertEquals(actualText.replace("\r\n", "\n"), expectedText.replace("\r\n","\n"));
+            }
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
     }
 
     /**

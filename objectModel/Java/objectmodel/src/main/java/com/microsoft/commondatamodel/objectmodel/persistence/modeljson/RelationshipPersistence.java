@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmE2ERelationship;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.AttributeReference;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.SingleKeyRelationship;
@@ -20,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
  * The relationship persistence.
  */
 public class RelationshipPersistence {
+  private static String tag = RelationshipPersistence.class.getSimpleName();
   public static CompletableFuture<CdmE2ERelationship> fromData(
       final CdmCorpusContext ctx,
       final SingleKeyRelationship obj,
@@ -33,19 +35,11 @@ public class RelationshipPersistence {
     }*/
 
     if (!entityPathByName.containsKey(obj.getFromAttribute().getEntityName())) {
-      Logger.warning(
-          RelationshipPersistence.class.getSimpleName(),
-          ctx,
-          Logger.format("Relationship's source entity '{0}' is not defined.", obj.getFromAttribute().getEntityName())
-      );
+      Logger.warning(ctx, tag, "fromData", null, CdmLogCode.WarnPersistRelUndefinedSourceEntity , obj.getFromAttribute().getEntityName());
       return CompletableFuture.completedFuture(null);
     }
     if (!entityPathByName.containsKey(obj.getToAttribute().getEntityName())) {
-      Logger.warning(
-          RelationshipPersistence.class.getSimpleName(),
-          ctx,
-          Logger.format("Relationship's source entity '{0}' is not defined.", obj.getToAttribute().getEntityName())
-      );
+      Logger.warning(ctx, tag, "fromData", null, CdmLogCode.WarnPersistRelUndefinedSourceEntity , obj.getFromAttribute().getEntityName());
       return CompletableFuture.completedFuture(null);
     }
 

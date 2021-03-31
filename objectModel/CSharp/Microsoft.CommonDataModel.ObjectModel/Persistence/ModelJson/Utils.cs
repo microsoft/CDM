@@ -17,6 +17,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     public static class Utils
     {
+        private static readonly string Tag = nameof(Utils);
+
         private static readonly Dictionary<string, string> annotationToTraitMap = new Dictionary<string, string>
         {
             { "version", "is.CDM.entityVersion" }
@@ -129,7 +131,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                         }
                         else
                         {
-                            Logger.Warning(nameof(Utils), ctx, "Unsupported annotation type.");
+                            Logger.Warning(ctx, Tag, nameof(ProcessTraitsAndAnnotationsToData), null, CdmLogCode.WarnAnnotationTypeNotSupported);
                         }
 
                     }

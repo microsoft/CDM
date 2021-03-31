@@ -22,15 +22,7 @@ class CalculateRelationshipTest(unittest.TestCase):
         test_name = 'test_simple_with_id'
         entity_name = 'Sales'
 
-        await self._test_run(test_name, entity_name)
-
-    @async_test
-    async def test_simple_without_id(self):
-        """Non projection scenario with the referenced entity not having any primary key"""
-        test_name = 'test_simple_without_id'
-        entity_name = 'Sales'
-
-        await self._test_run(test_name, entity_name)
+        await self._test_run(test_name, entity_name, False)
 
     @async_test
     async def test_without_id_proj(self):
@@ -38,7 +30,7 @@ class CalculateRelationshipTest(unittest.TestCase):
         test_name = 'test_without_id_proj'
         entity_name = 'Sales'
 
-        await self._test_run(test_name, entity_name)
+        await self._test_run(test_name, entity_name, True)
 
     @async_test
     async def test_diff_ref_loation(self):
@@ -46,7 +38,7 @@ class CalculateRelationshipTest(unittest.TestCase):
         test_name = 'test_diff_ref_location'
         entity_name = 'Sales'
 
-        await self._test_run(test_name, entity_name)
+        await self._test_run(test_name, entity_name, True)
 
     @async_test
     async def test_composite_proj(self):
@@ -54,7 +46,7 @@ class CalculateRelationshipTest(unittest.TestCase):
         test_name = 'test_composite_proj'
         entity_name = 'Sales'
 
-        await self._test_run(test_name, entity_name)
+        await self._test_run(test_name, entity_name, True)
 
     @async_test
     async def test_nested_composite_proj(self):
@@ -62,7 +54,15 @@ class CalculateRelationshipTest(unittest.TestCase):
         test_name = 'test_nested_composite_proj'
         entity_name = 'Sales'
 
-        await self._test_run(test_name, entity_name)
+        await self._test_run(test_name, entity_name, True)
+
+    @async_test
+    async def test_polymorphic_without_proj(self):
+        """Non projection scenario with selectsSubAttribute set to one"""
+        test_name = 'test_polymorphic_without_proj'
+        entity_name = 'CustomPerson'
+
+        await self._test_run(test_name, entity_name, False)
 
     @async_test
     async def test_polymorphic_proj(self):
@@ -70,9 +70,25 @@ class CalculateRelationshipTest(unittest.TestCase):
         test_name = 'test_polymorphic_proj'
         entity_name = 'Person'
 
-        await self._test_run(test_name, entity_name)
+        await self._test_run(test_name, entity_name, True)
 
-    async def _test_run(self, test_name: str, entity_name: str) -> None:
+    @async_test
+    async def test_composite_key_polymorphic_relationship(self):
+        """Test a composite key relationship with a polymorphic entity."""
+        test_name = 'test_composite_key_polymorphic_relationship'
+        entity_name = 'Person'
+
+        await self._test_run(test_name, entity_name, True)
+
+    @async_test
+    async def test_composite_key_polymorphic_relationship(self):
+        """Test a composite key relationship with multiple entity attribute but not polymorphic."""
+        test_name = 'test_composite_key_non_polymorphic_relationship'
+        entity_name = 'Person'
+
+        await self._test_run(test_name, entity_name, True)
+
+    async def _test_run(self, test_name: str, entity_name: str, is_entity_set: bool) -> None:
         """Common test code for these test cases"""
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         expected_output_folder = TestHelper.get_expected_output_folder_path(self.tests_subpath, test_name)
@@ -86,6 +102,7 @@ class CalculateRelationshipTest(unittest.TestCase):
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(entity)
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])
+        self._assert_entity_shape_in_resolved_entity(resolved_entity, is_entity_set)
         actual_attr_ctx = self._get_attribute_context_string(resolved_entity, entity_name, actual_output_folder)
 
         with open(os.path.join(expected_output_folder, 'AttrCtx_{}.txt'.format(entity_name))) as expected_file:
@@ -122,6 +139,17 @@ class CalculateRelationshipTest(unittest.TestCase):
                 expected_saved_manifest_rel = expected_file.read()
             self.assertEqual(expected_saved_manifest_rel, actual_saved_manifest_rel)
 
+    def _assert_entity_shape_in_resolved_entity(self, resolved_entity: 'CdmEntityDefinition', is_entity_set: bool) -> None:
+        for att in resolved_entity.attributes:
+            for trait in att.applied_traits:
+                if trait.named_reference == 'is.linkedEntity.identifier' and len(trait.arguments) > 0:
+                    const_ent = trait.arguments[0].value.fetch_object_definition()
+                    if const_ent and const_ent.entity_shape:
+                        entity_shape = const_ent.entity_shape.named_reference
+                        self.assertEqual('entitySet', entity_shape) if is_entity_set else self.assertEqual('entityGroupSet', entity_shape)
+                        return               
+        self.fail('Unable to find entity shape from resolved model.')
+
     def _get_relationship_strings(self, relationships: 'CdmCollection[CdmE2ERelationship]') -> str:
         """Get a string version of the relationship collection"""
         bldr = ''
@@ -131,21 +159,35 @@ class CalculateRelationshipTest(unittest.TestCase):
             bldr += '\n'
         return bldr
 
+    def _get_relationship_string(self, rel: 'CdmE2ERelationship') -> str:
+        """Get a string version of the relationship collection"""
+        name_and_pipe = ''
+        if rel.relationship_name:
+            name_and_pipe = rel.relationship_name + '|'
+
+        return '{}{}|{}|{}|{}\n'.format(name_and_pipe, rel.to_entity,
+                                        rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
+
     def _list_relationships(self, corpus: 'CdmCorpusDefinition', entity: 'CdmEntityDefinition', actual_output_folder: str, entity_name: str) -> str:
         """List the incoming and outgoing relationships"""
         bldr = ''
+        rel_cache = set()
 
-        bldr += 'Incoming Relationships For: {}:'.format(entity.entity_name)
-        bldr += '\n'
+        bldr += 'Incoming Relationships For: {}:\n'.format(entity.entity_name)
         # Loop through all the relationships where other entities point to this entity.
         for relationship in corpus.fetch_incoming_relationships(entity):
-            bldr += self._print_relationship(relationship)
+            cache_key = self._get_relationship_string(relationship)
+            if cache_key not in rel_cache:
+                bldr += self._print_relationship(relationship)
+                rel_cache.add(cache_key)
 
         print('Outgoing Relationships For: {}:'.format(entity.entity_name))
         # Now loop through all the relationships where this entity points to other entities.
         for relationship in corpus.fetch_outgoing_relationships(entity):
-            bldr += self._print_relationship(relationship)
-            bldr += '\n'
+            cache_key = self._get_relationship_string(relationship)
+            if cache_key not in rel_cache:
+                bldr += self._print_relationship(relationship) + '\n'
+                rel_cache.add(cache_key)
 
         return bldr
 
@@ -154,17 +196,23 @@ class CalculateRelationshipTest(unittest.TestCase):
         bldr = ''
 
         if relationship.relationship_name:
-            bldr += '  Name: {}'.format(relationship.relationship_name)
-            bldr += '\n'
+            bldr += '  Name: {}\n'.format(relationship.relationship_name)
 
-        bldr += '  FromEntity: {}'.format(relationship.from_entity)
-        bldr += '\n'
-        bldr += '  FromEntityAttribute: {}'.format(relationship.from_entity_attribute)
-        bldr += '\n'
-        bldr += '  ToEntity: {}'.format(relationship.to_entity)
-        bldr += '\n'
-        bldr += '  ToEntityAttribute: {}'.format(relationship.to_entity_attribute)
-        bldr += '\n'
+        bldr += '  FromEntity: {}\n'.format(relationship.from_entity)
+        bldr += '  FromEntityAttribute: {}\n'.format(relationship.from_entity_attribute)
+        bldr += '  ToEntity: {}\n'.format(relationship.to_entity)
+        bldr += '  ToEntityAttribute: {}\n'.format(relationship.to_entity_attribute)
+        
+        if relationship.exhibits_traits:
+            bldr += '  ExhibitsTraits:\n'
+            order_applied_traits = sorted(relationship.exhibits_traits, key=lambda x: x.named_reference)
+            for trait in order_applied_traits:
+                bldr += '      {}\n'.format(trait.named_reference)
+
+                for args in trait.arguments:
+                    attr_ctx_util = AttributeContextUtil()
+                    bldr += '          {}\n'.format(attr_ctx_util.get_argument_values_as_strings(args))
+            
         bldr += '\n'
         print(bldr)
 
@@ -172,4 +220,4 @@ class CalculateRelationshipTest(unittest.TestCase):
 
     def _get_attribute_context_string(self, resolved_entity: 'CdmEntityDefinition', entity_name: str, actual_output_folder: str) -> str:
         """Check the attribute context for these test scenarios"""
-        return (AttributeContextUtil()).get_attribute_context_strings(resolved_entity, resolved_entity.attribute_context)
+        return (AttributeContextUtil()).get_attribute_context_strings(resolved_entity)

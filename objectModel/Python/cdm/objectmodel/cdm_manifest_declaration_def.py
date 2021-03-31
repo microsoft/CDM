@@ -5,7 +5,9 @@ from datetime import datetime, timezone
 from typing import cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, time_utils, logger, Errors
+from cdm.utilities import ResolveOptions, time_utils, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_file_status import CdmFileStatus
 from .cdm_object_def import CdmObjectDefinition
@@ -19,13 +21,12 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmManifestDeclarationDefinition.__name__
         # The name of the manifest declared.
         self.manifest_name = name  # type: str
 
         # The corpus path to the definition of the sub folder.
         self.definition = None  # type: Optional[str]
-
-        self._TAG = CdmManifestDeclarationDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -84,7 +85,7 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
             missing_fields.append('definition')
 
         if missing_fields:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

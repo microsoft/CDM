@@ -11,6 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmImport;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class LocalEntityDeclarationPersistence {
+  private static String tag = LocalEntityDeclarationPersistence.class.getSimpleName();
+
   public static CompletableFuture<CdmEntityDeclarationDefinition> fromData(
       final CdmCorpusContext ctx,
       final CdmFolderDefinition documentFolder,
@@ -38,7 +41,7 @@ public class LocalEntityDeclarationPersistence {
     return DocumentPersistence.fromData(ctx, obj, extensionTraitDefList, localExtensionTraitDefList)
         .thenCompose(entityDoc -> {
           if (entityDoc == null) {
-            Logger.error(LocalEntityDeclarationPersistence.class.getSimpleName(), ctx, "There was an error while trying to fetch the entity doc from local entity declaration persistence.");
+            Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistDocFetchError);
             return CompletableFuture.completedFuture(null);
           }
 
@@ -87,7 +90,7 @@ public class LocalEntityDeclarationPersistence {
               if (cdmPartition != null) {
                 localEntity.getDataPartitions().add(cdmPartition);
               } else {
-                Logger.error(LocalEntityDeclarationPersistence.class.getSimpleName(), ctx, "There was an error while trying to fetch the entity doc from local entity declaration persistence.");
+                Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistDocFetchError);
                 return CompletableFuture.completedFuture(null);
               }
             }
@@ -141,7 +144,7 @@ public class LocalEntityDeclarationPersistence {
                 if (partition != null) {
                   localEntity.getPartitions().add(partition);
                 } else {
-                  Logger.error(LocalEntityDeclarationPersistence.class.getSimpleName(), instance.getCtx(), "There was an error while trying to convert cdm data partition to model.json partition.");
+                  Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
                   return CompletableFuture.completedFuture(null);
                 }
               }

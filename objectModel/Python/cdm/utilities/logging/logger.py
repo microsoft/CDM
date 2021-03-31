@@ -3,17 +3,16 @@
 
 """Contain logic to help format logging messages in a consistent way."""
 from datetime import datetime
-import logging
+import logging, os
 from typing import Callable, Optional, TYPE_CHECKING
 
-from cdm.enums import CdmStatusLevel
+from cdm.enums import CdmStatusLevel, CdmLogCode
 from cdm.utilities import time_utils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext
 
 default_logger = logging.getLogger('cdm-python')
-default_logger.setLevel(logging.INFO)
 
 # Log to console by default if handler is not specified.
 handler = logging.StreamHandler()
@@ -23,28 +22,35 @@ handler.setFormatter(
 
 default_logger.handlers = [handler]  # Overwrite existing handler.
 
+with open(os.path.join(os.path.dirname((os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))),
+                       'resx','logmessages.txt'), "r") as resource_file:
+    logmessages = dict(line.strip().split(': ') for line in resource_file)
 
-def debug(tag: str, ctx: 'CdmCorpusContext', message: str, path: Optional[str] = None) -> None:
-    _log(CdmStatusLevel.PROGRESS, ctx, tag, message, path, default_logger.debug)
+def debug(ctx: 'CdmCorpusContext', class_name: str, method: str, corpus_path: str, message: str) -> None:
+    if CdmStatusLevel.PROGRESS >= ctx.report_at_level:
+        _log(CdmStatusLevel.PROGRESS, ctx, class_name, message, method, default_logger.debug, corpus_path, CdmLogCode.NONE)
 
+def info(ctx: 'CdmCorpusContext', class_name: str, method: str, corpus_path: str, message: str) -> None:
+    if CdmStatusLevel.INFO >= ctx.report_at_level:
+        _log(CdmStatusLevel.INFO, ctx, class_name, message, method, default_logger.info, corpus_path, CdmLogCode.NONE)
 
-def info(tag: str, ctx: 'CdmCorpusContext', message: str, path: Optional[str] = None) -> None:
-    _log(CdmStatusLevel.INFO, ctx, tag, message, path, default_logger.info)
+def warning(ctx: 'CdmCorpusContext', class_name: str, method: str, corpus_path: str, code: 'CdmLogCode', *args) -> None:
+    if CdmStatusLevel.WARNING >= ctx.report_at_level:
+        # Get message from resource for the code enum.
+        message = _get_message_from_resource_file(code, args)
+        _log(CdmStatusLevel.WARNING, ctx, class_name, message, method, default_logger.warning, corpus_path, code)
 
+def error(ctx: 'CdmCorpusContext', class_name: str, method: str, corpus_path: str, code: 'CdmLogCode', *args) -> None:
+    if CdmStatusLevel.ERROR >= ctx.report_at_level:
+        # Get message from resource for the code enum.
+        message = _get_message_from_resource_file(code, args)
+        _log(CdmStatusLevel.ERROR, ctx, class_name, message, method, default_logger.error, corpus_path, code)
 
-def warning(tag: str, ctx: 'CdmCorpusContext', message: str, path: Optional[str] = None) -> None:
-    _log(CdmStatusLevel.WARNING, ctx, tag, message, path, default_logger.warning)
-
-
-def error(tag: str, ctx: 'CdmCorpusContext', message: str, path: Optional[str] = None) -> None:
-    _log(CdmStatusLevel.ERROR, ctx, tag, message, path, default_logger.error)
-
-
-def _log(level: 'CdmStatusLevel', ctx: 'CdmCorpusContext', tag: str, message: str, path: str,
-         default_status_event: Callable) -> None:
+def _log(level: 'CdmStatusLevel', ctx: 'CdmCorpusContext', class_name: str, message: str, method: str,
+         default_status_event: Callable, corpus_path: str, code: 'CdmLogCode') -> None:
     """
     Log to the specified status level by using the status event on the corpus context (if it exists) or to the default logger.
-    The log level, tag, message and path values are also added as part of a new entry to the log recorder.
+    The log level, class_name, message and path values are also added as part of a new entry to the log recorder.
     """
     #  Write message to the configured logger
     if level >= ctx.report_at_level:
@@ -57,27 +63,45 @@ def _log(level: 'CdmStatusLevel', ctx: 'CdmCorpusContext', tag: str, message: st
             event = {
                 'timestamp': timestamp,
                 'level': level.name,
-                'tag': tag,
+                'class': class_name,
                 'message': message,
-                'path': path
+                'method': method
             }
+            if CdmStatusLevel.ERROR == level or CdmStatusLevel.WARNING == level:
+                event['code'] = code.name
+
             if ctx.correlation_id is not None:
                 event['correlationId'] = ctx.correlation_id
+
+            if corpus_path is not None:
+                event['corpuspath'] = corpus_path
             ctx.events.append(event)
 
-        formatted_message = _format_message(tag, message, path, ctx.correlation_id)
+        formatted_message = _format_message(class_name, message, method, ctx.correlation_id, corpus_path)
 
         if ctx and ctx.status_event:
             ctx.status_event(level, formatted_message)
         else:
             default_status_event(formatted_message)
 
+def _get_message_from_resource_file(code: 'CdmLogCode', args) -> str:
+        """
+        Loads the string from resource file for particular enum and inserts arguments in it.
+        """
+        message = logmessages[code.name]
+        i = 0;
+        for x in args:
+            string = '{' + str(i) + '}'
+            message = message.replace(string, str(x))
+            i = i + 1
+        return message
 
-def _format_message(timestamp: str, tag: str, message: str, path: Optional[str] = None,
-                    correlation_id: Optional[str] = None) -> str:
-    path = ' | {}'.format(path) if path is not None else ''
+def _format_message(timestamp: str, class_name: str, message: str, method: Optional[str] = None,
+                    correlation_id: Optional[str] = None, corpus_path: Optional[str] = None) -> str:
+    method = ' | {}'.format(method) if method is not None else ''
     correlation_id = ' | {}'.format(correlation_id) if correlation_id is not None else ''
-    return '{} | {} | {}'.format(timestamp, tag, message) + path + correlation_id
+    corpus_path = ' | {}'.format(corpus_path) if corpus_path is not None else ''
+    return '{} | {} | {}'.format(timestamp, class_name, message) + method + correlation_id + corpus_path
 
 
 class _TState:
@@ -85,8 +109,8 @@ class _TState:
     Helper struct to keep few needed bits of information about the logging scope.
     """
 
-    def __init__(self, tag: str, ctx: 'CdmCorpusContext', path: str):
-        self.tag = tag  # type: str
+    def __init__(self, class_name: str, ctx: 'CdmCorpusContext', path: str):
+        self.class_name = class_name  # type: str
         self.ctx = ctx  # type: CdmCorpusContext
         self.path = path  # type: str
 
@@ -99,19 +123,22 @@ class _LoggerScope:
 
     def __init__(self, state: _TState):
         self.state = state  # type: _TState
+        self.time = datetime.utcnow()  # type: Date
 
     def __enter__(self):
         self.state.ctx.events._enable()
-        debug(self.state.tag, self.state.ctx, 'Entering scope', self.state.path)
+        self.time = datetime.utcnow()
+        debug(self.state.ctx, self.state.class_name, self.state.path, None, 'Entering scope')
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        debug(self.state.tag, self.state.ctx, 'Leaving scope', self.state.path)
+        debug(self.state.ctx, self.state.class_name, self.state.path, None,
+              'Leaving scope. Time elapsed: {} ms'.format((datetime.utcnow() - self.time).seconds * 1000))
         self.state.ctx.events._disable()
 
 
-def _enter_scope(tag: str, ctx: 'CdmCorpusContext', path: str) -> _LoggerScope:
+def _enter_scope(class_name: str, ctx: 'CdmCorpusContext', path: str) -> _LoggerScope:
     """
     Creates a new LoggerScope instance with the provided details of the scope being entered.
     To be used at beginning of functions via resource wrapper 'with ...: # function body.
     """
-    return _LoggerScope(_TState(tag, ctx, path))
+    return _LoggerScope(_TState(class_name, ctx, path))

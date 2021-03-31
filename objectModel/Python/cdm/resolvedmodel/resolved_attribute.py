@@ -140,9 +140,13 @@ class ResolvedAttribute():
         copy.arc = self.arc
         copy.att_ctx = self.att_ctx  # set here instead of constructor to avoid setting lineage for this copy
 
-        if isinstance(copy.target, ResolvedAttributeSet):
-            # deep copy when set contains sets. this copies the resolved att set and the context, etc.
-            copy.target = copy.target.copy()
+        # deep copy when set contains sets. this copies the resolved att set and the context, etc.
+        copy.target = copy.target.copy()
+
+        from cdm.objectmodel import CdmAttribute
+        if isinstance(copy.target, CdmAttribute):
+            copy.target.owner = self.target.owner
+            copy.target.in_document = self.target.in_document
 
         if self.applier_state is not None:
             copy.applier_state = self.applier_state._copy()

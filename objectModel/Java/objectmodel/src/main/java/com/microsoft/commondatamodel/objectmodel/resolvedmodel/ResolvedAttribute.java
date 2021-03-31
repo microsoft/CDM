@@ -65,8 +65,14 @@ public class ResolvedAttribute {
     copy.attCtx = attCtx; // set here instead of constructor to avoid setting lineage for this copy
 
     if (copy.getTarget() instanceof ResolvedAttributeSet) {
-        // deep copy when set contains sets. this copies the resolved att set and the context, etc.
-        copy.setTarget( ((ResolvedAttributeSet)copy.getTarget()).copy() );
+      // deep copy when set contains sets. this copies the resolved att set and the context, etc.
+      copy.setTarget(((ResolvedAttributeSet)copy.getTarget()).copy() );
+    } else {
+      CdmAttribute att = (CdmAttribute) this.getTarget();
+      CdmAttribute copyAtt = (CdmAttribute) ((CdmAttribute) copy.getTarget()).copy();
+      copy.setTarget(copyAtt);
+      copyAtt.setOwner(att.getOwner());
+      copyAtt.setInDocument(att.getInDocument());
     }
 
     if (applierState != null) {

@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from cdm.utilities import JObject
+from typing import Union, List
 
 
 class E2ERelationship(JObject):
@@ -13,3 +14,4 @@ class E2ERelationship(JObject):
         self.fromEntityAttribute = None  # type: str
         self.toEntity = None  # type: str
         self.toEntityAttribute = None  # type: str
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]

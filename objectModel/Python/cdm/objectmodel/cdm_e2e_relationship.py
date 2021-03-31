@@ -4,7 +4,9 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_object_def import CdmObjectDefinition
 
@@ -17,13 +19,12 @@ class CdmE2ERelationship(CdmObjectDefinition):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmE2ERelationship.__name__
         self.relationship_name = name  # type: str
         self.from_entity = None  # type: Optional[str]
         self.from_entity_attribute = None  # type: Optional[str]
         self.to_entity = None  # type: Optional[str]
         self.to_entity_attribute = None  # type: Optional[str]
-
-        self._TAG = CdmE2ERelationship.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -66,7 +67,7 @@ class CdmE2ERelationship(CdmObjectDefinition):
             missing_fields.append('to_entity_attribute')
 
         if missing_fields:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

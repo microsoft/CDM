@@ -135,7 +135,7 @@ public class CdmEntityCollectionTest {
 
     Assert.assertEquals(1, logCapture.get("count"));
     Assert.assertEquals(CdmStatusLevel.Error, logCapture.get("level"));
-    Assert.assertEquals("CdmEntityCollection | Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest. | add", logCapture.get("message"));
+    Assert.assertTrue(logCapture.get("message").toString().contains("CdmEntityCollection | Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest. | add"));
     Assert.assertEquals(0, manifest.getEntities().getCount());
   }
 

@@ -64,7 +64,7 @@ class CdmObject(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def fetch_object_definition(self, res_opt: 'ResolveOptions') -> Optional['CdmObjectDefinition']:
+    def fetch_object_definition(self, res_opt: Optional['ResolveOptions'] = None) -> Optional['CdmObjectDefinition']:
         """Returns the resolved object reference."""
         raise NotImplementedError()
 
@@ -193,7 +193,7 @@ class CdmObject(abc.ABC):
 
             # 2. deep copy the tree and map the context references.
             if under_ctx: # null context? means there is no tree, probably 0 attributes came out
-                if under_ctx.associate_tree_copy_with_attributes(res_opt, rasb_result._resolved_attribute_set) is False:
+                if not under_ctx.associate_tree_copy_with_attributes(res_opt, rasb_result._resolved_attribute_set):
                     return None
 
         if isinstance(self, CdmEntityAttributeDefinition):

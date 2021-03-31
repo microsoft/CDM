@@ -3,8 +3,10 @@
 
 from typing import Optional, TYPE_CHECKING, cast
 
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
 from cdm.resolvedmodel import ResolvedAttributeSet
 
 from .cdm_collection import CdmCollection
@@ -19,6 +21,7 @@ if TYPE_CHECKING:
 class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
+        self._TAG = CdmAttributeGroupDefinition.__name__
 
         # the attribute group name.
         self.attribute_group_name = name  # type: str
@@ -30,7 +33,6 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
         self._members = CdmCollection(self.ctx, self, CdmObjectType.TYPE_ATTRIBUTE_DEF)  # type: CdmCollection[CdmAttributeItem]
 
-        self._TAG = CdmAttributeGroupDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -139,7 +141,8 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
     def validate(self) -> bool:
         if not bool(self.attribute_group_name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['attribute_group_name']))
+            missing_fields = ['attribute_group_name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

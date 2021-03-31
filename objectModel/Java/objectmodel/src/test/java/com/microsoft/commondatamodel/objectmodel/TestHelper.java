@@ -6,11 +6,14 @@ package com.microsoft.commondatamodel.objectmodel;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.RemoteAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -469,5 +472,26 @@ public class TestHelper {
     }
 
     return testFolderPath;
+  }
+
+  /**
+   * Asserts the logcode, the same as the expected.
+   *
+   * @param corpus The corpus object.
+   * @param expectedCode The expectedcode cdmlogcode..
+   * @return
+   */
+  public static void assertCdmLogCodeEquality(CdmCorpusDefinition corpus, CdmLogCode expectedCode) {
+    boolean toAssert = false;
+    for (Map<String,String> logEntry : corpus.getCtx().getEvents()) {
+      if ( ((expectedCode.name().startsWith("Warn") && logEntry.get("level").equals(CdmStatusLevel.Warning.name()))
+              || (expectedCode.name().startsWith("Err") && logEntry.get("level").equals(CdmStatusLevel.Error.name())))
+      && logEntry.get("code").equalsIgnoreCase(expectedCode.toString())) {
+        toAssert = true;
+      }
+    }
+
+    if (!toAssert)
+      Assert.fail("The recorded log events should have contained message with log code " + expectedCode.toString() + " of appropriate level");
   }
 }

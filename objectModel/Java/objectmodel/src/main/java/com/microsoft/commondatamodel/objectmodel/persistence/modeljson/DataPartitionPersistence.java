@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.CsvFormatSettings;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Partition;
@@ -22,6 +23,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class DataPartitionPersistence {
+  private static String tag = DataPartitionPersistence.class.getSimpleName();
+
   public static CompletableFuture<CdmDataPartitionDefinition> fromData(
       final CdmCorpusContext ctx,
       final Partition obj,
@@ -41,12 +44,7 @@ public class DataPartitionPersistence {
     partition.setLastFileStatusCheckTime(obj.getLastFileStatusCheckTime());
 
     if (Strings.isNullOrEmpty(partition.getLocation())) {
-      Logger.warning(
-          DataPartitionPersistence.class.getSimpleName(),
-          ctx,
-          Logger.format("Couldn't find data partition's location for partition {0}.", partition.getName()),
-          "fromData"
-      );
+      Logger.warning(ctx , tag, "fromData", null, CdmLogCode.WarnPersistPartitionLocMissing , partition.getName());
     }
 
     if (obj.isHidden() != null && obj.isHidden()) {
@@ -58,12 +56,7 @@ public class DataPartitionPersistence {
       if (obj.getFileFormatSettings() != null) {
         final CdmTraitReference csvFormatTrait = Utils.createCsvTrait(obj.getFileFormatSettings(), ctx);
         if (csvFormatTrait == null) {
-          Logger.error(
-              DataPartitionPersistence.class.getSimpleName(),
-              ctx,
-              "There was a problem while processing csv format settings inside data partition.",
-              "fromData"
-          );
+          Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistCsvProcessingError);
 
           return CompletableFuture.completedFuture(null);
         }
@@ -97,13 +90,14 @@ public class DataPartitionPersistence {
     result.setLastFileModifiedTime(instance.getLastFileModifiedTime());
     result.setLastFileStatusCheckTime(instance.getLastFileStatusCheckTime());
 
+    if (result.getName() == null)
+    {
+      Logger.warning(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.WarnPersistPartitionNameNull);
+      result.setName("");
+    }
+
     if (Strings.isNullOrEmpty(result.getLocation())) {
-      Logger.warning(
-          DataPartitionPersistence.class.getSimpleName(),
-          instance.getCtx(),
-          Logger.format("Couldn't find data partition's location for partition {0}.", result.getName()),
-          "toData"
-      );
+      Logger.warning(instance.getCtx() , tag, "toData", instance.getAtCorpusPath(), CdmLogCode.WarnPersistPartitionLocMissing, result.getName());
     }
 
     Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits());
@@ -121,7 +115,7 @@ public class DataPartitionPersistence {
         result.setFileFormatSettings(csvFormatSettings);
         result.getFileFormatSettings().setType("CsvFormatSettings");
       } else {
-        Logger.error(DataPartitionPersistence.class.getSimpleName(), instance.getCtx(), "There was a problem while processing csv format trait inside data partition.");
+        Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistCsvProcessingError);
 
         return CompletableFuture.completedFuture(null);
       }

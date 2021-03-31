@@ -46,8 +46,8 @@ export class ADLSAdapter extends NetworkAdapter {
      */
     public set sasToken(val: string) {
         // Remove the leading question mark, so we can append this token to URLs that already have it
-        this._sasToken = val != null ? 
-            (val.startsWith('?') ? val.substr(1) : val) 
+        this._sasToken = val != null ?
+            (val.startsWith('?') ? val.substr(1) : val)
             : null;
     }
 
@@ -58,7 +58,7 @@ export class ADLSAdapter extends NetworkAdapter {
     public httpMaxResults: number = 5000;
 
     // The map from corpus path to adapter path.
-    private readonly adapterPaths: Map<string, string>; 
+    private readonly adapterPaths: Map<string, string>;
     // The authorization header key, used during shared key auth.
     private readonly httpAuthorization: string = 'Authorization';
     // The MS date header key, used during shared key auth.
@@ -103,7 +103,13 @@ export class ADLSAdapter extends NetworkAdapter {
                         this._tenant = tenantOrSharedKeyorTokenProvider;
                         this.clientId = clientId;
                         this.secret = secret;
-                        this.context = new adal.AuthenticationContext(`https://login.windows.net/${this.tenant}`);
+                        // have to pass in api-version as 'None', the default of '1.0' causes issues accessing resources
+                        this.context = new adal.AuthenticationContext(
+                            `https://login.windows.net/${this.tenant}`,
+                            undefined,
+                            undefined,
+                            'None'
+                        );
                     }
                 } else {
                     this.tokenProvider = tenantOrSharedKeyorTokenProvider;
@@ -180,7 +186,7 @@ export class ADLSAdapter extends NetworkAdapter {
 
             if (hostname === this.formattedHostname
                 && adapterPath.substring(endIndex)
-                .startsWith(this.getEscapedRoot())) {
+                    .startsWith(this.getEscapedRoot())) {
                 const escapedCorpusPath: string = adapterPath.substring(endIndex + this.getEscapedRoot().length);
                 const corpusPath: string = decodeURIComponent(escapedCorpusPath);
                 if (!this.adapterPaths.has(corpusPath)) {
@@ -211,11 +217,9 @@ export class ADLSAdapter extends NetworkAdapter {
                 // http nodejs lib returns lowercase headers.
                 // tslint:disable-next-line: no-backbone-get-set-outside-model
                 const lastTimeString: string = cdmResponse.responseHeaders.get('last-modified');
-                if(lastTimeString)
-                {
-                    const lastTime:Date = new Date(lastTimeString);
-                    if(this.isCacheEnabled())
-                    {
+                if (lastTimeString) {
+                    const lastTime: Date = new Date(lastTimeString);
+                    if (this.isCacheEnabled()) {
                         this.fileModifiedTimeCache.set(corpusPath, lastTime);
                     }
                     return lastTime;
@@ -248,28 +252,27 @@ export class ADLSAdapter extends NetworkAdapter {
             }
 
             const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
-    
+
             if (cdmResponse.statusCode === 200) {
 
                 continuationToken = cdmResponse.responseHeaders.has(this.httpXmsContinuation) ? cdmResponse.responseHeaders.get(this.httpXmsContinuation) : null;
 
                 const json: string = cdmResponse.content;
                 const jObject1 = JSON.parse(json);
-    
+
                 const jArray = jObject1.paths;
-    
+
                 for (const jObject of jArray) {
                     const isDirectory: boolean = jObject.isDirectory;
                     if (isDirectory === undefined || !isDirectory) {
                         const name: string = jObject.name;
                         const nameWithoutSubPath: string = this.unescapedRootSubPath.length > 0 && name.startsWith(this.unescapedRootSubPath) ?
                             name.substring(this.unescapedRootSubPath.length + 1) : name;
-    
+
                         const path: string = this.formatCorpusPath(nameWithoutSubPath);
                         result.push(path);
-    
-                        if(jObject.lastModified && this.isCacheEnabled())
-                        {
+
+                        if (jObject.lastModified && this.isCacheEnabled()) {
                             this.fileModifiedTimeCache.set(path, new Date(jObject.lastModified));
                         }
                     }
@@ -433,7 +436,7 @@ export class ADLSAdapter extends NetworkAdapter {
      * @returns URL with the SAS token appended
      */
     private applySasToken(url: string): string {
-        return `${url}${url.includes('?')? '&' : '?'}${this.sasToken}`;
+        return `${url}${url.includes('?') ? '&' : '?'}${this.sasToken}`;
     }
 
     private async buildRequest(url: string, method: string, content?: string, contentType?: string): Promise<CdmHttpRequest> {
@@ -533,8 +536,7 @@ export class ADLSAdapter extends NetworkAdapter {
 
         const port: string = ':443';
 
-        if (hostname.includes(port))
-        {
+        if (hostname.includes(port)) {
             hostname = hostname.substr(0, hostname.length - port.length);
         }
 

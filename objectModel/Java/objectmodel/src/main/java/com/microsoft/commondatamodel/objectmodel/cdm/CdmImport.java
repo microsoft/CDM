@@ -5,16 +5,19 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmImport extends CdmObjectSimple {
+
+  private String tag = CdmImport.class.getSimpleName();
 
   private String moniker;
   private String corpusPath;
@@ -74,7 +77,8 @@ public class CdmImport extends CdmObjectSimple {
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.corpusPath)) {
-      Logger.error(CdmImport.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("corpusPath"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("corpusPath"));
+      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

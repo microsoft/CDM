@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+
 import {
     AttributeResolutionDirectiveSet,
     CdmCorpusDefinition,
@@ -14,6 +16,7 @@ import {
 import { AttributeContextUtil } from '../Cdm/Projection/AttributeContextUtil';
 import { testHelper } from '../testHelper';
 
+
 /**
  * Common utility methods for projection tests
  */
@@ -24,44 +27,41 @@ export class projectionTestUtils {
     public static foundationJsonPath: string = 'cdm:/foundations.cdm.json';
 
     /**
+     * If true, will update the expected output txt files for all the tests that are ran.
+     */
+    private static updateExpectedOutput: boolean = false;
+
+    /**
      * Resolves an entity
      * @param corpus The corpus
      * @param inputEntity The entity to resolve
-     * @param resolutionOptions The resolution options
-     * @param addResOptToName Whether to add the resolution options as part of the resolved entity name
+     * @param directives The set of directives used for resolution
      */
-    public static async getResolvedEntity(corpus: CdmCorpusDefinition, inputEntity: CdmEntityDefinition, resolutionOptions: string[], addResOptToName: boolean = false): Promise<CdmEntityDefinition> {
+    public static async getResolvedEntity(corpus: CdmCorpusDefinition, inputEntity: CdmEntityDefinition, directives: string[]): Promise<CdmEntityDefinition> {
         const roHashSet: Set<string> = new Set<string>();
-        for (let i: number = 0; i < resolutionOptions.length; i++) {
-            roHashSet.add(resolutionOptions[i]);
+        for (let i: number = 0; i < directives.length; i++) {
+            roHashSet.add(directives[i]);
         }
 
-        let resolvedEntityName: string = '';
+        const resolvedEntityName: string = `Resolved_${inputEntity.entityName}`;
 
-        if (addResOptToName) {
-            const fileNameSuffix: string = projectionTestUtils.getResolutionOptionNameSuffix(resolutionOptions);
-            resolvedEntityName = `Resolved_${inputEntity.entityName}${fileNameSuffix}`;
-        } else {
-            resolvedEntityName = `Resolved_${inputEntity.entityName}`;
-        }
-
-        const ro: resolveOptions = new resolveOptions(inputEntity.inDocument, new AttributeResolutionDirectiveSet(roHashSet));
+        const resOpt: resolveOptions = new resolveOptions(inputEntity.inDocument, new AttributeResolutionDirectiveSet(roHashSet));
 
         const resolvedFolder: CdmFolderDefinition = corpus.storage.fetchRootFolder('output');
-        const resolvedEntity: CdmEntityDefinition = await inputEntity.createResolvedEntityAsync(resolvedEntityName, ro, resolvedFolder);
+        const resolvedEntity: CdmEntityDefinition = await inputEntity.createResolvedEntityAsync(resolvedEntityName, resOpt, resolvedFolder);
 
         return resolvedEntity;
     }
 
     /**
      * Returns a suffix that contains the file name and resolution option used
-     * @param resolutionOptions The resolution options
+     * @param directives The set of directives used for resolution
      */
-    public static getResolutionOptionNameSuffix(resolutionOptions: string[]): string {
+    public static getResolutionOptionNameSuffix(directives: string[]): string {
         let fileNamePrefix: string = '';
 
-        for (let i: number = 0; i < resolutionOptions.length; i++) {
-            fileNamePrefix = `${fileNamePrefix}_${resolutionOptions[i]}`;
+        for (let i: number = 0; i < directives.length; i++) {
+            fileNamePrefix = `${fileNamePrefix}_${directives[i]}`;
         }
 
         if (!fileNamePrefix) {
@@ -74,13 +74,19 @@ export class projectionTestUtils {
     /**
      * Loads an entity, resolves it, and then validates the generated attribute contexts
      */
-    public static async loadEntityForResolutionOptionAndSave(corpus: CdmCorpusDefinition, testName: string, testsSubpath: string, entityName: string, resOpts: string[]): Promise<void> {
+    public static async loadEntityForResolutionOptionAndSave(corpus: CdmCorpusDefinition, testName: string, testsSubpath: string, entityName: string, directives: string[]): Promise<void> {
         const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const fileNameSuffix: string = projectionTestUtils.getResolutionOptionNameSuffix(resOpts);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, resOpts, true);
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, `${entityName}${fileNameSuffix}`, resolvedEntity);
+        expect(entity)
+            .not
+            .toBeUndefined();
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, directives);
+        expect(resolvedEntity)
+            .not
+            .toBeUndefined();
+
+        await projectionTestUtils.validateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity);
     }
 
     /**
@@ -155,5 +161,68 @@ export class projectionTestUtils {
         projection.source = projectionSource;
 
         return projection;
+    }
+
+    /**
+     * Validates if the attribute context of the resolved entity matches the expected output.
+     * @param directives 
+     * @param expectedOutputPath 
+     * @param entityName 
+     * @param resolvedEntity 
+     */
+    private static async validateAttributeContext(directives: string[], expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition): Promise<void> {
+        if (!resolvedEntity.attributeContext) {
+            fail('ValidateAttributeContext called with not resolved entity.');
+        }
+
+        const fileNamePrefix: string = `AttrCtx_${entityName}`;
+        let expectedStringFilePath: string;
+        const fileNameSuffix: string = projectionTestUtils.getResolutionOptionNameSuffix(directives);
+        const defaultFileNameSuffix: string = projectionTestUtils.getResolutionOptionNameSuffix([]);
+
+        // Get actual text
+        const attrCtxUtil: AttributeContextUtil = new AttributeContextUtil();
+        const actualText: string = attrCtxUtil.getAttributeContextStrings(resolvedEntity);
+
+        if (projectionTestUtils.updateExpectedOutput) {
+            expectedStringFilePath = `${expectedOutputPath}/${fileNamePrefix}${fileNameSuffix}.txt`;
+
+            if (directives.length > 0) {
+                const defaultStringFilePath: string = `${expectedOutputPath}/${fileNamePrefix}${defaultFileNameSuffix}.txt`;
+                const defaultText: string = fs.readFileSync(defaultStringFilePath).toString();
+
+                if (actualText === defaultText) {
+                    if (fs.existsSync(expectedStringFilePath)) {
+                        fs.unlinkSync(expectedStringFilePath);
+                    }
+                } else {
+                    fs.writeFileSync(expectedStringFilePath, actualText);
+                }
+            } else {
+                fs.writeFileSync(expectedStringFilePath, actualText);
+            }
+        } else {
+            // Actual
+            const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', 'ActualOutput')}/AttrCtx_${entityName}.txt`;
+
+            // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
+            fs.writeFileSync(actualStringFilePath, actualText);
+            await resolvedEntity.inDocument.saveAsAsync(`Resolved_${entityName}.cdm.json`, false);
+
+            // Expected
+            const expectedFileNameSuffix: string = projectionTestUtils.getResolutionOptionNameSuffix(directives);
+            let expectedStringFilePath: string = `${expectedOutputPath}/${fileNamePrefix}${expectedFileNameSuffix}.txt`;
+
+            // If a test file doesn't exist for this set of directives, fall back to the default file.
+            if (!fs.existsSync(expectedStringFilePath)) {
+                expectedStringFilePath = `${expectedOutputPath}/${fileNamePrefix}${defaultFileNameSuffix}.txt`;
+            }
+
+            const expectedText: string = fs.readFileSync(expectedStringFilePath).toString();
+
+            // Test if Actual is Equal to Expected
+            expect(actualText)
+                .toEqual(expectedText);
+        }
     }
 }

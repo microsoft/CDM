@@ -285,8 +285,8 @@ public class ProjectionExpansionTest {
      * ArrayExpansion on an entity attribute
      */
     @Test
-    public void testProj() throws InterruptedException {
-        String testName = "testProj";
+    public void testEntityAttribute() throws InterruptedException {
+        String testName = "testEntityAttribute";
         String entityName = "ThreeMusketeers";
         CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 

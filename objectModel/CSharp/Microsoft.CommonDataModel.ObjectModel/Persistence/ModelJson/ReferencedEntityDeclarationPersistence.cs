@@ -17,6 +17,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     class ReferencedEntityDeclarationPersistence
     {
+        private static readonly string Tag = nameof(ReferencedEntityDeclarationPersistence);
+
         public static async Task<CdmReferencedEntityDeclarationDefinition> FromData(CdmCorpusContext ctx, ReferenceEntity obj, string location)
         {
             var referencedEntity = ctx.Corpus.MakeObject<CdmReferencedEntityDeclarationDefinition>(CdmObjectType.ReferencedEntityDeclarationDef, obj.Name);
@@ -51,7 +53,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (extensionTraitDefList.Count > 0)
             {
-                Logger.Warning(nameof(ReferencedEntityDeclarationPersistence), ctx, "Custom extensions are not supported in referenced entity.");
+                Logger.Warning(ctx, Tag, nameof(FromData), null, CdmLogCode.WarnPersistCustomExtNotSupported);
             }
 
             return referencedEntity;
@@ -63,7 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (sourceIndex == -1)
             {
-                Logger.Error(nameof(ReferencedEntityDeclarationPersistence), instance.Ctx, "There was an error while trying to convert cdm data partition to model.json partition.");
+                Logger.Error(instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
 
                 return null;
             }

@@ -15,6 +15,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     public class ManifestPersistence
     {
+        private static readonly string Tag = nameof(ManifestPersistence);
         /// <summary>
         /// Whether this persistence class has async methods.
         /// </summary>
@@ -62,10 +63,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 manifest.ManifestName = dataObj.FolioName;
             }
 
-            if (dataObj.ExhibitsTraits != null)
-            {
-                Utils.AddListToCdmCollection(manifest.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, JArray.FromObject(dataObj.ExhibitsTraits)));
-            }
+            Utils.AddListToCdmCollection(manifest.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, dataObj.ExhibitsTraits));
 
             if (dataObj.Imports != null)
             {
@@ -130,7 +128,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                        }
                        else
                        {
-                            Logger.Error(nameof(ManifestPersistence), ctx, "Couldn't find the type for entity declaration", nameof(FromObject));
+                            Logger.Error(ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistEntityDeclarationMissing);
                        }
                     } 
                     else
@@ -208,7 +206,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (instance.Relationships != null && instance.Relationships.Count > 0)
             {
-                manifestContent.Relationships = instance.Relationships.Select(relationship => { return E2ERelationshipPersistence.ToData(relationship); }).ToList();
+                manifestContent.Relationships = instance.Relationships.Select(relationship => { return E2ERelationshipPersistence.ToData(relationship, resOpt, options); }).ToList();
             }
 
             return manifestContent;

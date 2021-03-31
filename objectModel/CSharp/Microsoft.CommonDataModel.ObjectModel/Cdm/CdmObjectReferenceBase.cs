@@ -9,11 +9,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public abstract class CdmObjectReferenceBase : CdmObjectBase, CdmObjectReference
     {
-        internal static string resAttToken = "/(resolvedAttributes)/";
+        private static readonly string Tag = nameof(CdmObjectReferenceBase);
 
+        internal static string resAttToken = "/(resolvedAttributes)/";
         /// <inheritdoc />
         public string NamedReference { get; set; }
 
@@ -120,7 +122,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 CdmObject ent = this.Ctx.Corpus.ResolveSymbolReference(resOpt, this.InDocument, entName, CdmObjectType.EntityDef, retry: true);
                 if (ent == null)
                 {
-                    Logger.Warning(nameof(CdmObjectReferenceBase), ctx, $"unable to resolve an entity named '{entName}' from the reference '{this.NamedReference}");
+                    Logger.Warning(ctx, Tag, nameof(FetchResolvedReference), this.AtCorpusPath, CdmLogCode.WarnResolveEntityFailed ,entName, this.NamedReference);
                     return null;
                 }
 
@@ -133,7 +135,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     res = ra.Target as dynamic;
                 else
                 {
-                    Logger.Warning(nameof(CdmObjectReferenceBase), ctx, $"couldn't resolve the attribute promise for '{this.NamedReference}'", $"{resOpt.WrtDoc.AtCorpusPath}");
+                    Logger.Warning(ctx, Tag, nameof(FetchResolvedReference), this.AtCorpusPath, CdmLogCode.WarnResolveAttrFailed ,this.NamedReference);
                 }
             }
             else
@@ -289,7 +291,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             List<string> missingFields = new List<string>() { "NamedReference", "ExplicitReference" };
             if (string.IsNullOrWhiteSpace(this.NamedReference) && this.ExplicitReference == null)
             {
-                Logger.Error(nameof(CdmObjectReferenceBase), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields, true), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -383,7 +385,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 string defName = this.FetchObjectDefinitionName();
-                Logger.Warning(defName, this.Ctx, $"unable to resolve an object from the reference '{defName}'");
+                Logger.Warning(this.Ctx, Tag, nameof(ConstructResolvedAttributes), this.AtCorpusPath, CdmLogCode.WarnResolveObjectFailed ,defName);
             }
             return rasb;
         }
@@ -474,7 +476,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 string defName = this.FetchObjectDefinitionName();
-                Logger.Warning(defName, this.Ctx, $"unable to resolve an object from the reference '{defName}'");
+                Logger.Warning(this.Ctx, Tag, nameof(ConstructResolvedTraits), this.AtCorpusPath, CdmLogCode.WarnResolveObjectFailed, defName);
             }
 
             if (this.AppliedTraits != null)

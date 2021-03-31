@@ -40,9 +40,7 @@ public class DataPartitionPersistence {
             newPartition.setLastFileModifiedTime(obj.getLastFileModifiedTime());
         }
 
-        if (obj.getExhibitsTraits() != null) {
-            Utils.addListToCdmCollection(newPartition.getExhibitsTraits(), Utils.createTraitReferenceList(ctx, obj.getExhibitsTraits()));
-        }
+        Utils.addListToCdmCollection(newPartition.getExhibitsTraits(), Utils.createTraitReferenceList(ctx, obj.getExhibitsTraits()));
 
         if (obj.getArguments() == null) {
             return newPartition;

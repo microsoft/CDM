@@ -11,12 +11,13 @@ import {
     CdmObjectDefinition,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttributeSet,
     ResolvedTraitSet,
     resolveOptions,
     StorageAdapter,
+    StringUtils,
     VisitCallback
 } from '../internal';
 
@@ -24,6 +25,8 @@ import {
  * The object model implementation for Folder object.
  */
 export class CdmFolderDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmFolderDefinition.name;
+
     /**
      * @inheritdoc
      */
@@ -99,13 +102,8 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      */
     public validate(): boolean {
         if (!this.name) {
-            Logger.error(
-                CdmFolderDefinition.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, ['name']),
-                this.validate.name
-            );
-
+            let missingFields: string[] = ['name'];
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
             return false;
         }
 
@@ -143,12 +141,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
             remainingPath = remainingPath.slice(first + 1);
 
             if (name.toLowerCase() !== childFolder.name.toLowerCase()) {
-                Logger.error(
-                    CdmFolderDefinition.name,
-                    this.ctx,
-                    `Invalid path '${path}'`,
-                    this.fetchChildFolderFromPath.name
-                );
+                Logger.error(this.ctx, this.TAG, this.fetchChildFolderFromPath.name, null, cdmLogCode.ErrInvalidPath);
                 return undefined;
             }
 
@@ -221,7 +214,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
             // remove them from the caches since they will be back in a moment
             if (doc.isDirty) {
-                Logger.warning('CdmFolderDefinition', this.ctx, `discarding changes in document: ${doc.name}`);
+                Logger.warning(this.ctx, this.TAG, this.fetchDocumentFromFolderPathAsync.name, null, cdmLogCode.WarnDocChangesDiscarded, doc.name);
             }
             this.documents.remove(docName);
         }

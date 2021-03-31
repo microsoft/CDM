@@ -65,8 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             ProjectionDirective projDir,
             CdmCorpusContext ctx,
             CdmEntityReference source,
-            ResolvedAttributeSet rasSource,
-            AttributeContextParameters attrCtxParam)
+            ResolvedAttributeSet rasSource)
         {
             Dictionary<string, List<ProjectionAttributeState>> polySources = new Dictionary<string, List<ProjectionAttributeState>>();
 
@@ -77,7 +76,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 if (attr.ObjectType == CdmObjectType.EntityAttributeDef)
                 {
-                    ResolvedAttributeSet raSet = ((CdmEntityAttributeDefinition)attr).FetchResolvedAttributes(projDir.ResOpt, null);
+                    // the attribute context for this entity typed attribute was already created by the `FetchResolvedAttributes` that happens before this function call.
+                    // we are only interested in linking the attributes to the entity that they came from and the attribute context nodes should not be taken into account.
+                    // create this dummy attribute context so the resolution code works properly and discard it after.
+                    AttributeContextParameters attrCtxParam = new AttributeContextParameters
+                    {
+                        Regarding = attr,
+                        type = CdmAttributeContextType.PassThrough,
+                        under = new CdmAttributeContext(ctx, "discard")
+                    };
+                    ResolvedAttributeSet raSet = ((CdmEntityAttributeDefinition)attr).FetchResolvedAttributes(projDir.ResOpt, attrCtxParam);
                     foreach (ResolvedAttribute resAttr in raSet.Set)
                     {
                         // we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
@@ -94,19 +102,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                             PreviousStateList = null
                         };
 
-                        // the key already exists, just add to the existing list
-                        if (polySources.ContainsKey(resAttr.ResolvedName))
+                        // the key doesn't exist, initialize with an empty list first
+                        if (!polySources.ContainsKey(resAttr.ResolvedName))
                         {
-                            List<ProjectionAttributeState> exisitingSet = polySources[resAttr.ResolvedName];
-                            exisitingSet.Add(projAttrState);
-                            polySources[resAttr.ResolvedName] = exisitingSet;
+                            polySources[resAttr.ResolvedName] = new List<ProjectionAttributeState>();
                         }
-                        else
-                        {
-                            List<ProjectionAttributeState> pasList = new List<ProjectionAttributeState>();
-                            pasList.Add(projAttrState);
-                            polySources.Add(resAttr.ResolvedName, pasList);
-                        }
+                        polySources[resAttr.ResolvedName].Add(projAttrState);
                     }
                 }
             }
@@ -168,22 +169,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         }
 
         /// <summary>
-        /// Convert a single value to a list
-        /// </summary>
-        /// <param name="top"></param>
-        /// <returns></returns>
-        internal static List<ProjectionAttributeState> ConvertToList(ProjectionAttributeState top)
-        {
-            List<ProjectionAttributeState> topList = null;
-            if (top != null)
-            {
-                topList = new List<ProjectionAttributeState>();
-                topList.Add(top);
-            }
-            return topList;
-        }
-
-        /// <summary>
         /// Create a constant entity that contains the source mapping to a foreign key.
         /// e.g.
         /// an fk created to entity "Customer" based on the "customerName", would add a parameter to the "is.linkedEntity.identifier" trait as follows:
@@ -236,7 +221,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             if (entRefAndAttrNameList.Count > 0)
             {
                 CdmConstantEntityDefinition constantEntity = corpus.MakeObject<CdmConstantEntityDefinition>(CdmObjectType.ConstantEntityDef);
-                constantEntity.EntityShape = corpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, "entityGroupSet", true);
+                constantEntity.EntityShape = corpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, "entitySet", true);
                 string originalSourceEntityAttributeName = projDir.OriginalSourceEntityAttributeName;
                 if (originalSourceEntityAttributeName == null)
                 {

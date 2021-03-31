@@ -174,9 +174,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                         this.AttributeOwnershipMap[newPair.Key] = newPair.Value;
                     }
                 }
-
             }
             return rasResult;
+        }
+
+        /// <summary>
+        /// Recursively sets the target owner's to be the provided entity.
+        /// </summary>
+        /// <param name="entity"></param>
+        public void SetTargetOwner(CdmEntityDefinition entity)
+        {
+            foreach (ResolvedAttribute ra in this.Set)
+            {
+                if (ra.Target is CdmAttribute att)
+                {
+                    att.Owner = entity;
+                    att.InDocument = entity.InDocument;
+                }
+                else if (ra.Target is ResolvedAttributeSet ras)
+                {
+                    ras.SetTargetOwner(entity);
+                }
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////

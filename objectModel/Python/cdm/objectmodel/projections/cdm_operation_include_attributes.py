@@ -10,8 +10,10 @@ from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionA
 from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
 from cdm.resolvedmodel.projections.projection_context import ProjectionContext
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
-from cdm.utilities import logger, Errors, AttributeContextParameters, VisitCallback, ResolveOptions
+from cdm.utilities import logger, AttributeContextParameters, VisitCallback, ResolveOptions
 from .cdm_operation_base import CdmOperationBase
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 
 class CdmOperationIncludeAttributes(CdmOperationBase):
@@ -20,11 +22,9 @@ class CdmOperationIncludeAttributes(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmOperationIncludeAttributes.__name__
         self.include_attributes = []  # type: List[str]
         self.type = CdmOperationType.INCLUDE_ATTRIBUTES  # type: CdmOperationType
-
-        # --- internal ---
-        self._TAG = CdmOperationIncludeAttributes.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None,
              host: Optional['CdmOperationIncludeAttributes'] = None) -> 'CdmOperationIncludeAttributes':
@@ -46,7 +46,7 @@ class CdmOperationIncludeAttributes(CdmOperationBase):
             missing_fields.append('includeAttributes')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
 
         return True

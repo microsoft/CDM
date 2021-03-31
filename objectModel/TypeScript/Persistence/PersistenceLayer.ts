@@ -13,6 +13,7 @@ import {
     CdmDocumentDefinition,
     CdmFolderDefinition,
     CdmManifestDefinition,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     copyOptions,
@@ -29,6 +30,8 @@ const PersistenceTypes = {
 };
 
 export class PersistenceLayer {
+    private TAG: string = PersistenceLayer.name;
+
     public static cdmFolder: string = 'CdmFolder';
     public static modelJson: string = 'ModelJson';
     /**
@@ -128,23 +131,22 @@ export class PersistenceLayer {
         try {
             if (adapter.canRead()) {
                 // log message used by navigator, do not change or remove
-                Logger.debug('PersistenceLayer', this.ctx, `request file: ${docPath}`, this.LoadDocumentFromPathAsync.name);
+                Logger.debug(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, `request file: ${docPath}`);
                 jsonData = await adapter.readAsync(docPath);
                 // log message used by navigator, do not change or remove
-                Logger.debug(PersistenceLayer.name, this.ctx, `received file: ${docPath}`, this.LoadDocumentFromPathAsync.name);
+                Logger.debug(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, `received file: ${docPath}`);
             } else {
                 throw new Error('Storage Adapter is not enabled to read.');
             }
         } catch (e) {
             // log message used by navigator, do not change or remove
-            Logger.debug('PersistenceLayer', this.ctx, `fail file: ${docPath}`, this.LoadDocumentFromPathAsync.name);
+            Logger.debug(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, `fail file: ${docPath}`);
 
-            const message: string = `Could not read ${docPath} from the '${folder.namespace}' namespace. Reason ${e}`;
             // When shallow validation is enabled, log messages about being unable to find referenced documents as warnings instead of errors.
             if (resOpt && resOpt.shallowValidation) {
-                Logger.warning(PersistenceLayer.name, this.ctx, message, this.LoadDocumentFromPathAsync.name);
+                Logger.warning(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.WarnPersistFileReadFailure, docPath, folder.namespace, e);
             } else {
-                Logger.error(PersistenceLayer.name, this.ctx, message, this.LoadDocumentFromPathAsync.name);
+                Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.ErrPersistFileReadFailure, docPath, folder.namespace, e);
             }
 
             return undefined;
@@ -153,25 +155,18 @@ export class PersistenceLayer {
         try {
             fsModifiedTime = await adapter.computeLastModifiedTimeAsync(docPath);
         } catch (e) {
-            Logger.warning(
-                PersistenceLayer.name,
-                this.ctx,
-                `Failed to compute file last modified time. Reason ${e}`,
-                this.LoadDocumentFromPathAsync.name
-            );
+            Logger.warning(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.WarnPersistFileModTimeFailure, e);
         }
 
         if (!docName) {
-            Logger.error(PersistenceLayer.name, this.ctx, 'Document name cannot be null or empty.', this.LoadDocumentFromPathAsync.name);
-
+            Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.ErrPersistNullDocName);
             return undefined;
         }
 
         // If loading an model.json file, check that it is named correctly.
         if (docName.toLowerCase().endsWith(CdmConstants.modelJsonExtension) &&
             docName.toLowerCase() !== CdmConstants.modelJsonExtension) {
-            Logger.error(PersistenceLayer.name, this.ctx, `Failed to load '${docName}', as it's not an acceptable file name. It must be ${CdmConstants.modelJsonExtension}.`, this.LoadDocumentFromPathAsync.name);
-
+            Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.ErrPersistDocNameLoadFailure, docName, CdmConstants.modelJsonExtension);
             return undefined;
         }
 
@@ -190,12 +185,7 @@ export class PersistenceLayer {
                 ) as unknown as CdmDocumentDefinition;
             } else if (docNameInLowCase.endsWith(CdmConstants.modelJsonExtension)) {
                 if (docNameInLowCase !== CdmConstants.modelJsonExtension) {
-                    Logger.error(
-                        CdmCorpusDefinition.name,
-                        this.ctx,
-                        `Failed to load '${docName}', as it's not an acceptable filename. It must be model.json`, 'LoadDocumentFromPathAsync'
-                    );
-
+                    Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.ErrPersistDocNameLoadFailure, docName);
                     return undefined;
                 }
 
@@ -208,24 +198,12 @@ export class PersistenceLayer {
                 docContent = DocumentPersistence.fromObject(this.ctx, docName, folder.namespace, folder.folderPath, JSON.parse(jsonData));
             } else {
                 // Could not find a registered persistence class to handle this document type.
-                Logger.error(
-                    PersistenceLayer.name,
-                    this.ctx,
-                    `Could not find a persistence class to handle the file \'${docName}\'`,
-                    this.LoadDocumentFromPathAsync.name
-                );
-
+                Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.ErrPersistClassMissing, docName);
                 return undefined;
             }
         } catch (e) {
             // Could not find a registered persistence class to handle this document type.
-            Logger.error(
-                PersistenceLayer.name,
-                this.ctx,
-                `Could not convert '${docName}'. Reason '${e.message}'`,
-                this.LoadDocumentFromPathAsync.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, null, cdmLogCode.ErrPersistDocConversionFailure, docName, e.message);
             return undefined;
         }
 
@@ -271,27 +249,14 @@ export class PersistenceLayer {
         }
         const adapter: StorageAdapter = this.corpus.storage.fetchAdapter(ns);
         if (adapter === undefined) {
-            Logger.error(
-                CdmCorpusDefinition.name,
-                this.ctx,
-                `Couldn't find a storage adapter registered for the namespace '${ns}'`,
-                this.saveDocumentAsAsync.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistAdapterNotFoundForNamespace, ns);
             return false;
         } else if (adapter.canWrite() === false) {
-            Logger.error(
-                CdmCorpusDefinition.name,
-                this.ctx,
-                `The storage adapter '${ns}' claims it is unable to write files.`,
-                this.saveDocumentAsAsync.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistAdapterWriteFailure, ns);
             return false;
         } else {
             if (!newName) {
-                Logger.error(PersistenceLayer.name, this.ctx, `Document name cannot be null or empty.`, this.saveDocumentAsAsync.name);
-
+                Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistNullDocName);
                 return false;
             }
 
@@ -302,8 +267,7 @@ export class PersistenceLayer {
                 newNameInLowCase.endsWith(CdmConstants.modelJsonExtension) ? PersistenceLayer.modelJson : PersistenceLayer.cdmFolder;
 
             if (persistenceType === PersistenceLayer.modelJson && newNameInLowCase !== CdmConstants.modelJsonExtension) {
-                Logger.error(CdmConstants.name, this.ctx, `Failed to persist '${newName}', as it's not an acceptable file name. It must be ${CdmConstants.modelJsonExtension}.`, this.saveDocumentAsAsync.name);
-
+                Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistFailure, newName, CdmConstants.modelJsonExtension);
                 return false;
             }
 
@@ -317,12 +281,7 @@ export class PersistenceLayer {
                     persistedDoc = CdmFolder.ManifestPersistence.toData(doc as CdmManifestDefinition, resOpt, options);
                 } else {
                     if (newNameInLowCase !== CdmConstants.modelJsonExtension) {
-                        Logger.error(
-                            CdmCorpusDefinition.name,
-                            this.ctx,
-                            `Failed to persist '${newName}', as it's not an acceptable filename. It must be model.json`, 'saveDocumentAs'
-                        );
-
+                        Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistFailure, newName);
                         return false;
                     }
                     persistedDoc = await ModelJson.ManifestPersistence.toData(doc as CdmManifestDefinition, resOpt, options);
@@ -331,19 +290,12 @@ export class PersistenceLayer {
                 persistedDoc = CdmFolder.DocumentPersistence.toData(doc as CdmManifestDefinition, resOpt, options);
             } else {
                 // Could not find a registered persistence class to handle this document type.
-                Logger.error(
-                    PersistenceLayer.name,
-                    this.ctx,
-                    `Could not find a persistence class to handle the file \'${newName}\'.`,
-                    this.saveDocumentAsAsync.name
-                );
-
+                Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistClassMissing, newName);
                 return false;
             }
 
             if (!persistedDoc) {
-                Logger.error(PersistenceLayer.name, this.ctx, `Failed to persist \'${newName}\'.`, this.saveDocumentAsAsync.name);
-
+                Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistFilePersistFailed, newName);
                 return false;
             }
 
@@ -369,13 +321,7 @@ export class PersistenceLayer {
                     options.isTopLevelDocument = false;
                 }
             } catch (e) {
-                Logger.error(
-                    PersistenceLayer.name,
-                    this.ctx,
-                    `Failed to write to the file '${newName}' for reason ${e}`,
-                    this.saveDocumentAsAsync.name
-                );
-
+                Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistFilePersistError, newName, e);
             }
 
             // if we also want to save referenced docs, then it depends on what kind of thing just got saved
@@ -383,15 +329,9 @@ export class PersistenceLayer {
             // definition will save imports, manifests will save imports, schemas, sub manifests
             if (saveReferenced && persistenceType === PersistenceLayer.cdmFolder) {
                 if (!await doc.saveLinkedDocuments(options)) {
-                    Logger.error(
-                        PersistenceLayer.name,
-                        this.ctx,
-                        `Failed to save linked documents for file '${newName}'`,
-                        this.saveDocumentAsAsync.name
-                    );
-                }
+                    Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistSaveLinkedDocs, newName);
+                    }
             }
-
             return true;
         }
     }

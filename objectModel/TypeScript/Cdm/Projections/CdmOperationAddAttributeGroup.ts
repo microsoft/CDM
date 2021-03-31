@@ -6,11 +6,11 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
-    Errors,
     Logger,
     ProjectionAttributeState,
     ProjectionAttributeStateSet,
@@ -18,6 +18,7 @@ import {
     ResolvedAttribute,
     ResolvedAttributeSetBuilder,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../../internal';
 
@@ -72,13 +73,7 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 

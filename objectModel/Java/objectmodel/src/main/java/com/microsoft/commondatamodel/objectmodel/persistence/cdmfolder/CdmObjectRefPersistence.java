@@ -12,6 +12,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Dat
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.EntityReferenceDefinition;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.PurposeReferenceDefinition;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.TraitReferenceDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -21,6 +22,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class CdmObjectRefPersistence {
+  private static String tag = CdmObjectRefPersistence.class.getSimpleName();
+
   public static Object toData(final CdmObjectReference instance, final ResolveOptions resOpt, final CopyOptions options) {
     Object copy = null;
 
@@ -56,12 +59,7 @@ public class CdmObjectRefPersistence {
       } catch (final NoSuchMethodException ex) {
         // Fine, some objects like AttributeGroupRef do not have applied traits
       } catch (final IllegalAccessException | InvocationTargetException ex) {
-        Logger.error(
-            CdmObjectRefPersistence.class.getSimpleName(),
-            instance.getCtx(),
-            Logger.format("There was an error while trying to convert from JSON to CdmObjectReferenceBase. Reason: '{0}'", ex.getLocalizedMessage()),
-            "toData"
-        );
+        Logger.error(instance.getCtx(), tag, "toData", null, CdmLogCode.ErrPersistJsonObjectRefConversionError, ex.getLocalizedMessage());
       }
     }
 

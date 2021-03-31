@@ -501,7 +501,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
       // 2. deep copy the tree and map the context references.
       if (underCtx != null) { // null context? means there is no tree, probably 0 attributes came out
-        if (underCtx.associateTreeCopyWithAttributes(resOpt, rasbResult.getResolvedAttributeSet()) == false) {
+        if (!underCtx.associateTreeCopyWithAttributes(resOpt, rasbResult.getResolvedAttributeSet())) {
           return null;
         }
       }

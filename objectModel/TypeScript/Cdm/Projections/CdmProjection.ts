@@ -13,7 +13,7 @@ import {
     cdmObjectType,
     CdmOperationBase,
     CdmOperationCollection,
-    Errors,
+    cdmLogCode,
     Logger,
     ProjectionAttributeState,
     ProjectionAttributeStateSet,
@@ -23,11 +23,11 @@ import {
     ResolvedAttributeSet,
     ResolvedTraitSet,
     resolveOptions,
-    VisitCallback
+    VisitCallback,
+    StringUtils
 } from '../../internal';
 import { ExpressionTree } from '../../ResolvedModel/ExpressionParser/ExpressionTree';
 import { InputValues } from '../../ResolvedModel/ExpressionParser/InputValues';
-import { Node } from '../../ResolvedModel/ExpressionParser/Node';
 
 /**
  * Class for projection
@@ -141,22 +141,12 @@ export class CdmProjection extends CdmObjectDefinitionBase {
             const rootOwner: CdmObject = this.getRootOwner();
             if (rootOwner.objectType == cdmObjectType.typeAttributeDef) {
                 // If the projection is used in a type attribute
-                Logger.error(
-                    this.TAG,
-                    this.ctx, 'Source can only be another projection in a type attribute.',
-                    this.validate.name
-                );
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrProjSourceError);
             }
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -280,7 +270,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
                 // If polymorphic keep original source as previous state
                 let polySourceSet: Map<string, ProjectionAttributeState[]> = null;
                 if (projDirective.isSourcePolymorphic) {
-                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, ras, acpSourceProjection);
+                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, ras);
                 }
 
                 // Now initialize projection attribute state
@@ -359,8 +349,11 @@ export class CdmProjection extends CdmObjectDefinitionBase {
                 }
             }
 
-            // Finally update the current state to the projection context
-            projContext.currentAttributeStateSet = pasOperations;
+            // If no operation ran successfully pasOperations will be empty
+            if (!firstOperationToRun) {
+                // Finally update the current state to the projection context
+                projContext.currentAttributeStateSet = pasOperations;
+            }
         } else {
             // Pass Through - no operations to process
         }
@@ -375,6 +368,11 @@ export class CdmProjection extends CdmObjectDefinitionBase {
     public extractResolvedAttributes(projCtx: ProjectionContext, attCtxUnder: CdmAttributeContext): ResolvedAttributeSet {
         const resolvedAttributeSet: ResolvedAttributeSet = new ResolvedAttributeSet();
         resolvedAttributeSet.attributeContext = attCtxUnder;
+
+        if (!projCtx) {
+            Logger.error(this.ctx, CdmProjection.name, this.extractResolvedAttributes.name, this.atCorpusPath, cdmLogCode.ErrProjFailedToResolve, this.atCorpusPath);
+            return resolvedAttributeSet;
+        }
 
         for (const pas of projCtx.currentAttributeStateSet.states) {
             resolvedAttributeSet.merge(pas.currentResolvedAttribute);

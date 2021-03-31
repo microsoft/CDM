@@ -13,6 +13,7 @@ import {
     CdmFolderDefinition,
     CdmImport,
     CdmManifestDefinition,
+    cdmLogCode,
     cdmObjectType,
     CdmTraitDefinition,
     CdmTraitReference,
@@ -33,6 +34,8 @@ import {
 } from './types';
 
 export class ManifestPersistence {
+    private static TAG: string = ManifestPersistence.name;
+
     // Whether this persistence class has async methods.
     public static readonly isPersistenceAsync: boolean = true;
 
@@ -153,18 +156,12 @@ export class ManifestPersistence {
                     const referenceEntity: ReferenceEntity = element as ReferenceEntity;
                     const entityLocation: string = referenceModels.get(referenceEntity.modelId);
                     if (!entityLocation) {
-                        Logger.error(
-                            ManifestPersistence.name,
-                            ctx,
-                            `Model Id ${referenceEntity.modelId} from ${referenceEntity.name} not found in referenceModels.`
-                        );
-
+                         Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistModelIdNotFound);
                         return;
                     }
                     entity = await ModelJson.ReferencedEntityDeclarationPersistence.fromData(ctx, referenceEntity, entityLocation);
                 } else {
-                    Logger.error(ManifestPersistence.name, ctx, 'There was an error while trying to parse entity type.');
-
+                     Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistEntityParsingError);
                     return;
                 }
 
@@ -172,8 +169,7 @@ export class ManifestPersistence {
                     manifest.entities.push(entity);
                     entitySchemaByName.set(entity.entityName, entity.entityPath);
                 } else {
-                    Logger.error(ManifestPersistence.name, ctx, 'There was an error while trying to parse entity type.');
-
+                     Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistEntityParsingError);
                     return;
                 }
             }
@@ -187,12 +183,7 @@ export class ManifestPersistence {
                 if (cdmRelationship !== undefined) {
                     manifest.relationships.push(cdmRelationship);
                 } else {
-                    Logger.warning(
-                        ManifestPersistence.name,
-                        ctx,
-                        'There was an error while trying to convert model.json local entity to cdm local entity declaration.'
-                    );
-
+                    Logger.warning(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.WarnPersistModelJsonRelReadFailed);
                     return undefined;
                 }
             }
@@ -302,7 +293,7 @@ export class ManifestPersistence {
                             entity.entityPath);
 
                         if (!entityLocation) {
-                            Logger.error(ManifestPersistence.name, instance.ctx, `Invalid entity path set in entity ${entity.entityName}`);
+                            Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistInvalidEntityPath, entity.entityName);
                             element = undefined;
                         }
 
@@ -313,7 +304,7 @@ export class ManifestPersistence {
                             if (referenceEntity.modelId !== undefined) {
                                 const savedLocation: string = referenceModels.get(referenceEntity.modelId);
                                 if (savedLocation !== undefined && savedLocation !== entityLocation) {
-                                    Logger.error(ManifestPersistence.name, instance.ctx, 'Same ModelId pointing to different locations');
+                                    Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelIdDuplication);
                                     element = undefined;
                                 } else if (savedLocation === undefined) {
                                     referenceModels.set(referenceEntity.modelId, entityLocation);
@@ -334,10 +325,7 @@ export class ManifestPersistence {
                     if (element) {
                         result.entities.push(element);
                     } else {
-                        Logger.error(
-                            ManifestPersistence.name,
-                            instance.ctx,
-                            `There was an error while trying to convert ${entity.entityName}'s entity declaration to model json format.`);
+                         Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.entityName);
                     }
                 }
             );
@@ -365,12 +353,7 @@ export class ManifestPersistence {
                 if (relationship !== undefined) {
                     result.relationships.push(relationship);
                 } else {
-                    Logger.error(
-                        ManifestPersistence.name,
-                        instance.ctx,
-                        'There was an error while trying to convert cdm relationship to model.json relationship.'
-                    );
-
+                    Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonRelConversionError);
                     return undefined;
                 }
             }

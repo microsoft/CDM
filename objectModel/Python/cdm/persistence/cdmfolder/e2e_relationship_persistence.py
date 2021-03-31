@@ -3,9 +3,10 @@
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmE2ERelationship
-from cdm.utilities import CopyOptions, ResolveOptions
+from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils
 from cdm.utilities.string_utils import StringUtils
 
+from . import utils
 from .types import E2ERelationship
 
 
@@ -20,6 +21,10 @@ class E2ERelationshipPersistence:
         relationship.to_entity = data.toEntity
         relationship.to_entity_attribute = data.toEntityAttribute
 
+        if data.get('exhibitsTraits'):
+            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
+            relationship.exhibits_traits.extend(exhibits_traits)
+
         return relationship
 
     @staticmethod
@@ -31,5 +36,6 @@ class E2ERelationshipPersistence:
         relationship.fromEntityAttribute = instance.from_entity_attribute
         relationship.toEntity = instance.to_entity
         relationship.toEntityAttribute = instance.to_entity_attribute
+        relationship.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, instance.exhibits_traits, options)
 
         return relationship

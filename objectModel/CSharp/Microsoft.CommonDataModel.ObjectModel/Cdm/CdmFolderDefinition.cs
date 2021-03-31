@@ -11,6 +11,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -18,6 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     public class CdmFolderDefinition : CdmObjectDefinitionBase, CdmContainerDefinition
     {
+        private static readonly string Tag = nameof(CdmFolderDefinition);
         /// <summary>
         /// Mapping from document name to document implementation class.
         /// </summary>
@@ -92,7 +94,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.Name))
             {
-                Logger.Error(nameof(CdmFolderDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Name" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "Name" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -169,7 +172,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // remove them from the caches since they will be back in a moment
                 if ((doc as CdmDocumentDefinition).IsDirty)
                 {
-                    Logger.Warning(nameof(CdmFolderDefinition), this.Ctx, $"discarding changes in document: {doc.Name}");
+                    Logger.Warning(this.Ctx, Tag, nameof(FetchDocumentFromFolderPathAsync), this.AtCorpusPath, CdmLogCode.WarnDocChangesDiscarded , doc.Name);
                 }
                 this.Documents.Remove(docName);
             }
@@ -228,7 +231,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (name.ToLowerInvariant() != childFolder.Name.ToLowerInvariant())
                 {
-                    Logger.Error(nameof(CdmFolderDefinition), (ResolveContext)this.Ctx, $"Invalid path '{path}'", nameof(FetchChildFolderFromPath));
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(FetchChildFolderFromPath), this.AtCorpusPath, CdmLogCode.ErrInvalidPath, path);
                     return null;
                 }
 

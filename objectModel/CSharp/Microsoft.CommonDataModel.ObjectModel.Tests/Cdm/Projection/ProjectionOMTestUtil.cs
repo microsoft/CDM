@@ -276,7 +276,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
         public async Task<CdmEntityDefinition> GetAndValidateResolvedEntity(CdmEntityDefinition entity, List<string> resOpts)
         {
-            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(Corpus, entity, resOpts, addResOptToName: true);
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(Corpus, entity, resOpts);
             Assert.IsNotNull(resolvedEntity, $"GetAndValidateResolvedEntity: {entity.EntityName} resolution with options '{string.Join(", ", resOpts)}' failed!");
 
             return resolvedEntity;

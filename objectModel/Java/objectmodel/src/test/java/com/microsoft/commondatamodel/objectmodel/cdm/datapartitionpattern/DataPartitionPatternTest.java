@@ -157,7 +157,7 @@ public class DataPartitionPatternTest {
 
     HashMap<String, String> patternWithGlobAndRegex = new HashMap<>();
     corpus.setEventCallback((CdmStatusLevel level, String message) -> {
-      if (message.equals("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used.")) {
+      if (message.contains("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used.")) {
         patternWithGlobAndRegex.put("Warning Logged", "true");
       }
     }, CdmStatusLevel.Warning);

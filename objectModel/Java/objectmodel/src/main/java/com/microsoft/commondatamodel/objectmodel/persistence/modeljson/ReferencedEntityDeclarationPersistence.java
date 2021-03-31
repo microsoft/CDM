@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinit
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.ReferenceEntity;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -21,6 +22,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ReferencedEntityDeclarationPersistence {
+  private static String tag = ReferencedEntityDeclarationPersistence.class.getSimpleName();
+
   public static CompletableFuture<CdmEntityDeclarationDefinition> fromData(
       final CdmCorpusContext ctx,
       final ReferenceEntity obj,
@@ -54,7 +57,7 @@ public class ReferencedEntityDeclarationPersistence {
       ExtensionHelper.processExtensionFromJson(ctx, obj, extensionTraits, extensionTraitDefList);
 
       if (extensionTraitDefList.size() > 0) {
-        Logger.warning(ReferencedEntityDeclarationPersistence.class.getSimpleName(), ctx, "Custom extensions are not supported in referenced entity.");
+        Logger.warning(ctx, tag, "fromData", null, CdmLogCode.WarnPersistCustomExtNotSupported);
       }
 
       return CompletableFuture.completedFuture(referencedEntity);
@@ -67,7 +70,7 @@ public class ReferencedEntityDeclarationPersistence {
     final int sourceIndex = instance.getEntityPath().lastIndexOf("/");
 
     if (sourceIndex == -1) {
-      Logger.error(ReferencedEntityDeclarationPersistence.class.getSimpleName(), instance.getCtx(), "There was an error while trying to convert cdm data partition to model.json partition.");
+      Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
       return CompletableFuture.completedFuture(null);
     }
 

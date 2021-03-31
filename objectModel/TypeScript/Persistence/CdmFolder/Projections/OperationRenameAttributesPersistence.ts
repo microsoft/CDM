@@ -6,6 +6,7 @@ import {
     cdmObjectType,
     CdmOperationRenameAttributes,
     copyOptions,
+    cdmLogCode,
     Logger,
     resolveOptions,
 } from '../../../internal';
@@ -16,6 +17,8 @@ import { OperationBasePersistence } from './OperationBasePersistence';
  * Operation RenameAttributes persistence
  */
 export class OperationRenameAttributesPersistence {
+    private static TAG: string = OperationRenameAttributesPersistence.name;
+
     public static fromData(ctx: CdmCorpusContext, object: OperationRenameAttributes): CdmOperationRenameAttributes {
         if (!object) {
             return undefined;
@@ -29,7 +32,7 @@ export class OperationRenameAttributesPersistence {
         } else if (Array.isArray(object.applyTo)) {
             renameAttributesOp.applyTo = object.applyTo;
         } else if (object.applyTo !== undefined) {
-            Logger.error(OperationRenameAttributes.name, ctx, 'Unsupported: applyTo property type should be string or List<string>.');
+            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjUnsupportedProp);
         }
 
         return renameAttributesOp;

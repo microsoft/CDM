@@ -39,9 +39,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_extends'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_extends_proj(self) -> None:
@@ -49,9 +51,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_extends_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_ea(self) -> None:
@@ -59,9 +63,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_ea'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_ea_proj(self) -> None:
@@ -69,9 +75,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_ea_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_non_polymorphic_proj(self) -> None:
@@ -79,6 +87,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_non_polymorphic_proj'
         entity_name = 'NewPerson'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         corpus = TestHelper.get_local_corpus(self.tests_sub_path, test_name)  # type: CdmCorpusDefinition
 
@@ -99,9 +108,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_empty_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_coll_proj(self) -> None:
@@ -109,9 +120,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_coll_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_nested_proj(self) -> None:
@@ -119,9 +132,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_nested_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_multi_proj(self) -> None:
@@ -129,9 +144,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_multi_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_cond_proj(self) -> None:
@@ -139,9 +156,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_cond_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_ren_proj(self) -> None:
@@ -149,9 +168,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_ren_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_comm_proj(self) -> None:
@@ -159,9 +180,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_comm_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_miss_proj(self) -> None:
@@ -169,9 +192,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_miss_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_seq_proj(self) -> None:
@@ -179,9 +204,11 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_seq_proj'
         entity_name = 'Customer'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_sub_path, entity_name, res_opt)
 
     @async_test
     async def test_ea_proj_om(self) -> None:
@@ -248,32 +275,3 @@ class ProjectionCombineTest(unittest.TestCase):
         self.assertEqual(len(entity.attributes), len(attributes_params),
                          'ValidateBasicEntity: Attribute count for {} failed!'.format(entity_name))
 
-    async def _load_entity_for_resolution_option_and_save(self, test_name: str, entity_name: str,
-                                                          res_opts: List[str]) -> None:
-        """Loads an entity, resolves it, and then validates the generated attribute contexts"""
-        expected_output_path = TestHelper.get_expected_output_folder_path(self.tests_sub_path, test_name)  # type: str
-        file_name_suffix = ProjectionTestUtils.get_resolution_option_name_suffix(res_opts)  # type: str
-
-        corpus = TestHelper.get_local_corpus(self.tests_sub_path, test_name)  # type: CdmCorpusDefinition
-        corpus.storage.mount('expected', LocalAdapter(expected_output_path))
-
-        entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, res_opts, True)
-
-        await self._validate_resolved_attributes(corpus, resolved_entity, entity_name, file_name_suffix)
-
-        await AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path,
-                                                              '{}{}'.format(entity_name, file_name_suffix),
-                                                              resolved_entity)
-
-    async def _validate_resolved_attributes(self, corpus: 'CdmCorpusDefinition',
-                                            actual_resolved_entity: 'CdmEntityDefinition', entity_name: str,
-                                            file_name_suffix: str) -> None:
-        """Validate the list of resolved attributes against an expected list"""
-        expected_resolved_entity = await corpus.fetch_object_async('expected:/Resolved_{0}{1}.cdm.json/Resolved_{0}{1}'.format(entity_name, file_name_suffix))  # type: CdmEntityDefinition
-        self.assertIsNotNone(expected_resolved_entity)
-
-        self.assertEqual(expected_resolved_entity.attributes.__len__(), actual_resolved_entity.attributes.__len__())
-        for i in range(0, expected_resolved_entity.attributes.__len__()):
-            self.assertEqual(expected_resolved_entity.attributes[i].fetch_object_definition_name(),
-                             actual_resolved_entity.attributes[i].fetch_object_definition_name())

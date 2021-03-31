@@ -3,12 +3,12 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ImportInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -29,6 +29,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContainerDefinition {
+  private String tag = CdmDocumentDefinition.class.getSimpleName();
+
   protected Map<String, CdmObjectBase> internalDeclarations;
   protected boolean isDirty = true;
   protected boolean isValid;
@@ -235,12 +237,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.getCtx().getCorpus().blockDeclaredPathChanges = true;
 
     // shout into the void
-    Logger.info(
-        CdmDocumentDefinition.class.getSimpleName(),
-        this.getCtx(),
-        Logger.format("Localizing corpus paths in document '{0}'.", this.getName()),
-        "localizeCorpusPaths"
-    );
+    Logger.info(this.getCtx(), tag, "localizeCorpusPaths", newFolder.getAtCorpusPath(), Logger.format("Localizing corpus paths in document '{0}'.", this.getName()));
 
     // find anything in the document that is a corpus path
     this.visit("", (iObject, path) -> {
@@ -424,12 +421,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return CompletableFuture.supplyAsync(() -> {
       if (this.getNeedsIndexing() && !this.currentlyIndexing) {
         if (this.getFolder() == null) {
-          Logger.error(
-              CdmDocumentDefinition.class.getSimpleName(),
-              this.getCtx(),
-              Logger.format("Document '{0}' is not in a folder", this.name),
-              "indexIfNeededAsync"
-          );
+          Logger.error(this.getCtx(), tag, "indexIfNeededAsync", this.getAtCorpusPath(), CdmLogCode.ErrValdnMissingDoc, this.name);
           return false;
         }
 
@@ -483,12 +475,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
       final ResolveOptions resOpt = new ResolveOptions(this, getCtx().getCorpus().getDefaultResolutionDirectives());
 
       if (!this.indexIfNeededAsync(resOpt, false).join()) {
-        Logger.error(
-                CdmDocumentDefinition.class.getSimpleName(),
-                getCtx(),
-                Logger.format("Failed to index document prior to save '{0}'", this.getName()),
-                "saveAsAsync"
-        );
+        Logger.error(getCtx(), tag, "saveAsAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
         return CompletableFuture.completedFuture(false);
       }
 
@@ -580,7 +567,8 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.getName())) {
-      Logger.error(CdmDocumentDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("name"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("name"));
+      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -732,10 +720,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
             monikerImports.add(impDoc);
           }
         } else {
-          Logger.warning(
-                  CdmDocumentDefinition.class.getSimpleName(),
-                  this.getCtx(),
-                  Logger.format("Import document {0} not loaded. This might cause an unexpected output.'", imp.getCorpusPath()));
+          Logger.warning(this.getCtx(), tag, "prioritizeImports", this.getAtCorpusPath(), CdmLogCode.WarnDocImportNotLoaded ,imp.getCorpusPath());
         }
       }
 
@@ -747,10 +732,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
         final boolean isMoniker = !StringUtils.isNullOrTrimEmpty(imp.getMoniker());
 
         if (impDoc == null) {
-          Logger.warning(
-            CdmDocumentDefinition.class.getSimpleName(),
-            this.getCtx(),
-            Logger.format("Import document {0} not loaded. This might cause an unexpected output.'", imp.getCorpusPath()));
+          Logger.warning(this.getCtx(), tag, "prioritizeImports", this.getAtCorpusPath(), CdmLogCode.WarnDocImportNotLoaded, imp.getCorpusPath());
         }
 
         // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
@@ -861,12 +843,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
           if (docImp != null && docImp.isDirty) {
             // save it with the same name
             if (!docImp.saveAsAsync(docImp.getName(), true, options).join()) {
-              Logger.error(
-                  CdmDocumentDefinition.class.getSimpleName(),
-                  this.getCtx(),
-                  Logger.format("Failed to save import '{0}'", docImp.getName()),
-                  "saveLinkedDocumentsAsync"
-              );
+              Logger.error(this.getCtx(), tag, "saveLinkedDocumentsAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocImportSavingFailure, docImp.getName());
               return false;
             }
           }

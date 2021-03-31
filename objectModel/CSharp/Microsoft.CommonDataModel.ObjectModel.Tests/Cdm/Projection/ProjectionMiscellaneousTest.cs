@@ -48,7 +48,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             {
                 Invoke = (CdmStatusLevel statusLevel, string message) =>
                 {
-                    if (!StringUtils.EqualsWithIgnoreCase($"ProjectionPersistence | Invalid operation type 'replaceAsForeignKey11111'. | FromData", message))
+                    if (!message.Contains("ProjectionPersistence | Invalid operation type 'replaceAsForeignKey11111'. | FromData"))
                     {
                         Assert.Fail(message);
                     }

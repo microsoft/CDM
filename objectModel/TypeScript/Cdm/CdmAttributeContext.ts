@@ -15,7 +15,7 @@ import {
     CdmObjectReferenceBase,
     cdmObjectType,
     CdmTraitReference,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttribute,
     ResolvedAttributeSet,
@@ -24,10 +24,13 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../internal';
 
 export class CdmAttributeContext extends CdmObjectDefinitionBase {
+    private TAG: string = CdmAttributeContext.name;
+
     public type: cdmAttributeContextType;
     public parent?: CdmObjectReference;
     public definition?: CdmObjectReference;
@@ -576,12 +579,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                CdmAttributeContext.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
 
             return false;
         }

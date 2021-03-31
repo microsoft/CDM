@@ -1,5 +1,5 @@
 {
-  "documentVersion": "3.1",
+  "documentVersion": "4.0",
   "$schema": "./schema.cdm.json",
   "jsonSchemaSemanticVersion": "1.0.0",
   "imports": [
@@ -83,7 +83,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "3.1"
+              "value": "4.0"
             }
           ]
         }
@@ -106,7 +106,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "3.1"
+              "value": "4.0"
             }
           ]
         }
@@ -134,7 +134,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "3.1"
+              "value": "4.0"
             }
           ]
         }
@@ -144,13 +144,20 @@
       "entityName": "entitySet",
       "explanation": "holds a list of entity references",
       "extendsEntity": "entityGroupSet",
+      "hasAttributes": [
+        {
+          "name": "relationshipName",
+          "dataType": "name",
+          "purpose": "hasA"
+        }
+      ],
       "exhibitsTraits": [
         {
           "traitReference": "is.CDM.entityVersion",
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "3.1"
+              "value": "4.0"
             }
           ]
         }
@@ -178,7 +185,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "3.1"
+              "value": "4.0"
             }
           ]
         }
@@ -250,7 +257,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "3.1"
+              "value": "4.0"
             }
           ]
         }
@@ -273,7 +280,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "3.1"
+              "value": "4.0"
             }
           ]
         }
@@ -302,7 +309,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "3.1"
+              "value": "4.0"
             }
           ]
         }
@@ -331,7 +338,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "3.1"
+              "value": "4.0"
             }
           ]
         }
@@ -945,6 +952,87 @@
         ]
       },
       "explanation": "Specifies count distinct as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "means.relationship",
+      "extendsTrait": "means",
+      "explanation": "root trait for semantic traits relevant to relationships"
+    },
+    {
+      "traitName": "means.relationship.verbPhrase",
+      "extendsTrait": "means.relationship",
+      "explanation": "The Verb Phrase used to model the relationship between the FROM entity and the TO entity.",
+      "hasParameters": [
+        {
+          "name": "verbPhrase",
+          "dataType": "entity",
+          "explanation": "the localized Verb Phrase",
+          "appliedTraits": [
+            {
+              "traitReference": "means.entityName.specific",
+              "arguments": [
+                "localizedTable"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "means.relationship.inverseVerbPhrase",
+      "extendsTrait": "means.relationship",
+      "explanation": "The Verb Phrase used to model the relationship between the TO entity and the FROM entity.",
+      "hasParameters": [
+        {
+          "name": "verbPhrase",
+          "dataType": "entity",
+          "explanation": "the localized Verb Phrase",
+          "appliedTraits": [
+            {
+              "traitReference": "means.entityName.specific",
+              "arguments": [
+                "localizedTable"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "purposeName": "meaningOfRelationshipVerbPhrases",
+      "extendsPurpose": "hasA",
+      "explanation": "describes the standard Verb Phrases associated with a relationship",
+      "exhibitsTraits": [
+        "means.relationship.verbPhrase",
+        "means.relationship.inverseVerbPhrase"
+      ]
+    },
+    {
+      "traitName": "is.relationship",
+      "extendsTrait": "is",
+      "explanation": "root trait for structural traits relevant to relationships"
+    },
+    {
+      "traitName": "is.relationship.default",
+      "extendsTrait": "is",
+      "explanation": "The default relationship when there are multiple relationships between two entities."
+    },
+    {
+      "traitName": "has.relationship",
+      "extendsTrait": "has",
+      "explanation": "The root trait for annotative traits relevant to relationships"
+    },
+    {
+      "traitName": "has.relationship.constraint",
+      "extendsTrait": "has.relationship",
+      "explanation": "String value is a clause representing a constraint on the relationship in chosen syntax",
+      "hasParameters": [
+        {
+          "name": "constraintClause",
+          "explanation": "relationship constraint in the chosen syntax",
+          "dataType": "string"
+        }
+      ]
     }
   ]
 }

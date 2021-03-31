@@ -7,6 +7,7 @@ import {
   CdmOperationBase,
   cdmOperationType,
   copyOptions,
+  cdmLogCode,
   Logger,
   OperationTypeConvertor,
   resolveOptions,
@@ -16,6 +17,8 @@ import { OperationBase } from '../types';
 
 
 export class OperationBasePersistence {
+    private static TAG: string = OperationBasePersistence.name;
+
   public static fromData<T extends CdmOperationBase>(ctx: CdmCorpusContext, objectType: cdmObjectType, object: OperationBase): T {
       if (!object) {
           return undefined;
@@ -26,7 +29,7 @@ export class OperationBasePersistence {
       const operationName: string = OperationTypeConvertor.operationTypeToString(operationType);
 
       if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, operationName)) {
-          Logger.error(operationName, ctx, `$type ${object.$type} is invalid for this operation.`);
+        Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjInvalidType, object.$type);
       } else {
           operation.type = operationType;
       }

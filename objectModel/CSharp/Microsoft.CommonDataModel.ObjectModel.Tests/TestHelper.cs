@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.CommonDataModel.ObjectModel.Cdm;
+using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Storage;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.CommonDataModel.Tools.Processor;
@@ -110,6 +111,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
             return File.ReadAllText(pathOfExpectedOutputFile);
         }
+
         /// <summary>
         /// Writes the content of an expected output file for a particular test.
         /// </summary>
@@ -128,6 +130,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
             File.WriteAllText(pathOfExpectedOutputFile, fileContent);
         }
+
         public static CdmCorpusDefinition GetLocalCorpus(string testSubpath, string testName, string testInputDir = null)
         {
             testInputDir = testInputDir ?? GetInputFolderPath(testSubpath, testName);
@@ -209,6 +212,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             }
         }
 
+        /// <summary>
+        /// Asserts in logcode, if expected log code is not in log codes recorded list.
+        /// </summary>
+        /// <param name="corpus">The corpus object.</param>
+        /// <param name="expectedcode">The expectedcode cdmlogcode.</param>
+        public static void AssertCdmLogCodeEquality(CdmCorpusDefinition corpus, CdmLogCode expectedCode)
+        {
+            bool toAssert = false;
+            corpus.Ctx.Events.ForEach(logEntry =>
+            {
+                if ( ((expectedCode.ToString().StartsWith("Warn") && logEntry["level"].Equals(CdmStatusLevel.Warning.ToString()))
+                     || (expectedCode.ToString().StartsWith("Err") && logEntry["level"].Equals(CdmStatusLevel.Error.ToString())))
+                    && logEntry["code"].Equals(expectedCode.ToString()))
+                {
+                    toAssert = true;
+                }
+            });
+            Assert.IsTrue(toAssert, $"The recorded log events should have contained message with log code {expectedCode} of appropriate level");
+        }
         public static bool CompareObjectsContent(object expected, object actual, bool logError = false)
         {
             if (expected == actual)
@@ -460,7 +482,5 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             //Assert.IsTrue(Directory.Exists(testFolderPath), $"Was unable to find directory {testFolderPath}");
             return testFolderPath;
         }
-
-
     }
 }

@@ -24,9 +24,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         /// Function to get the attribute context string tree from a resolved entity
         /// </summary>
         /// <param name="resolvedEntity"></param>
-        /// <param name="attribContext"></param>
         /// <returns></returns>
-        public string GetAttributeContextStrings(CdmEntityDefinition resolvedEntity, CdmAttributeContext attribContext)
+        public string GetAttributeContextStrings(CdmEntityDefinition resolvedEntity)
         {
             // clear the string builder
             bldr.Clear();
@@ -36,6 +35,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
             // get the traits for all the attributes of a resolved entity
             GetTraits(resolvedEntity);
+
+            return bldr.ToString();
+        }
+
+        public string GetArgumentValuesAsString(CdmArgumentDefinition args)
+        {
+            // clear the string builder
+            bldr.Clear();
+
+            // get the corpus path for each attribute context in the tree
+            GetArgumentValues(args);
 
             return bldr.ToString();
         }
@@ -90,13 +100,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
                     foreach (CdmArgumentDefinition args in trait.Arguments)
                     {
-                        GetArgumentValuesAsString(args);
+                        GetArgumentValues(args);
                     }
                 }
             }
         }
 
-        private void GetArgumentValuesAsString(CdmArgumentDefinition args)
+        private void GetArgumentValues(CdmArgumentDefinition args)
         {
             string paramName = args.ResolvedParameter?.Name;
             string paramDefaultValue = args.ResolvedParameter?.DefaultValue;
@@ -151,17 +161,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             {
                 AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
 
-                // Expected
-                string expectedStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, $"AttrCtx_{entityName}.txt"));
-                string expectedText = File.ReadAllText(expectedStringFilePath);
-
                 // Actual
                 string actualStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, "..", "ActualOutput", $"AttrCtx_{entityName}.txt"));
 
                 // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
-                string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity, resolvedEntity.AttributeContext);
+                string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity);
                 File.WriteAllText(actualStringFilePath, actualText);
                 await resolvedEntity.InDocument.SaveAsAsync($"Resolved_{entityName}.cdm.json", saveReferenced: false);
+
+                // Expected
+                string expectedStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, $"AttrCtx_{entityName}.txt"));
+                string expectedText = File.ReadAllText(expectedStringFilePath);
 
                 // Test if Actual is Equal to Expected
                 Assert.AreEqual(expectedText.Replace("\r\n", "\n"), actualText.Replace("\r\n", "\n"));

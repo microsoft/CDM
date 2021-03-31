@@ -10,13 +10,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle RenameAttributes operations
     /// </summary>
     public class CdmOperationRenameAttributes : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationRenameAttributes);
+        private static readonly string Tag = nameof(CdmOperationRenameAttributes);
 
         public string RenameFormat { get; set; }
 
@@ -78,7 +79,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -186,7 +187,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                     else
                     {
-                        Logger.Warning(TAG, this.Ctx, "RenameAttributes is not supported on an attribute group yet.");
+                        Logger.Warning(this.Ctx, Tag, nameof(AppendProjectionAttributeState), this.AtCorpusPath, CdmLogCode.WarnProjRenameAttrNotSupported);
                         // Add the attribute without changes
                         projOutputSet.Add(currentPAS);
                     }
@@ -218,7 +219,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (string.IsNullOrEmpty(format))
             {
-                Logger.Error(TAG, this.Ctx, "RenameFormat should be set for this operation to work.");
+                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(GetNewAttributeName), this.AtCorpusPath, CdmLogCode.ErrProjRenameFormatIsNotSet);
                 return "";
             }
 

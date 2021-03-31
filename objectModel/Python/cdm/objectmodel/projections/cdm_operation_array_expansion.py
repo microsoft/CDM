@@ -7,7 +7,9 @@ from cdm.enums import CdmObjectType, CdmOperationType, CdmAttributeContextType
 from cdm.objectmodel import CdmAttributeContext
 from cdm.resolvedmodel import ResolvedAttributeSet
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
-from cdm.utilities import logger, Errors, AttributeContextParameters
+from cdm.utilities import logger, AttributeContextParameters
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_operation_base import CdmOperationBase
 
@@ -24,12 +26,11 @@ class CdmOperationArrayExpansion(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmOperationArrayExpansion.__name__
         self.start_ordinal = None  # type: Optional[int]
         self.end_ordinal = None  # type: Optional[int]
         self.type = CdmOperationType.ARRAY_EXPANSION  # type: CdmOperationType
 
-        # --- internal ---
-        self._TAG = CdmOperationArrayExpansion.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationArrayExpansion'] = None) -> 'CdmOperationArrayExpansion':
         copy = CdmOperationArrayExpansion(self.ctx)
@@ -54,9 +55,8 @@ class CdmOperationArrayExpansion(CdmOperationBase):
             missing_fields.append('end_ordinal')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
-
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
@@ -89,14 +89,17 @@ class CdmOperationArrayExpansion(CdmOperationBase):
 
         # Ordinal validation
         if self.start_ordinal > self.end_ordinal:
-            logger.warning(self._TAG, self.ctx, 'startOrdinal {} should not be greater than endOrdinal {}'.format(self.start_ordinal, self.end_ordinal))
+            logger.warning(self.ctx, self._TAG, CdmOperationArrayExpansion._append_projection_attribute_state.__name__, self.at_corpus_path,
+                           CdmLogCode.WARN_VALDN_ORDINAL_START_END_ORDER, self.start_ordinal, self.end_ordinal)
         else:
             # Ordinals should start at startOrdinal or 0, whichever is larger.
             starting_ordinal = max(0, self.start_ordinal)
 
             # Ordinals should end at endOrdinal or the maximum ordinal allowed (set in resolve options), whichever is smaller.
             if self.end_ordinal > proj_ctx._projection_directive._res_opt.max_ordinal_for_array_expansion:
-                logger.warning(self._TAG, self.ctx, 'endOrdinal {} is greater than the maximum allowed ordinal of {}. Using the maximum allowed ordinal instead.'.format(self.end_ordinal, proj_ctx._projection_directive._res_opt.max_ordinal_for_array_expansion))
+                logger.warning(self.ctx, self._TAG, CdmOperationArrayExpansion._append_projection_attribute_state.__name__, self.at_corpus_path,
+                               CdmLogCode.WARN_VALDN_MAX_ORDINAL, self.end_ordinal,
+                               proj_ctx._projection_directive._res_opt.max_ordinal_for_array_expansion)
 
             ending_ordinal = min(proj_ctx._projection_directive._res_opt.max_ordinal_for_array_expansion, self.end_ordinal)
 
@@ -120,7 +123,7 @@ class CdmOperationArrayExpansion(CdmOperationBase):
                     attr_ctx_expanded_attr = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_ctx_expanded_attr_param)
 
                     if isinstance(current_PAS._current_resolved_attribute.target, ResolvedAttributeSet):
-                        logger.error(self._TAG, self.ctx, 'Array expansion operation does not support attribute groups.')
+                        logger.error(self.ctx, self._TAG, '_append_projection_attribute_state', self.at_corpus_path, CdmLogCode.ERR_PROJ_UNSUPPORTED_ATTR_GROUPS)
                         proj_attr_states_from_rounds.clear()
                         break
 

@@ -17,6 +17,7 @@ import {
     CdmCorpusContext,
     CdmEntityDefinition,
     CdmEntityReference,
+    cdmLogCode,
     CdmObject,
     CdmObjectBase,
     CdmObjectDefinition,
@@ -27,7 +28,6 @@ import {
     CdmTraitDefinition,
     CdmTraitReference,
     DepthInfo,
-    Errors,
     Logger,
     ProjectionContext,
     ProjectionDirective,
@@ -43,11 +43,13 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     traitToPropertyMap,
     VisitCallback
 } from '../internal';
 
 export class CdmEntityAttributeDefinition extends CdmAttribute {
+    private TAG: string = CdmEntityAttributeDefinition.name;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.entityAttributeDef;
@@ -154,19 +156,17 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
             }
 
             if (missingFields.length > 0) {
-                Logger.error(CdmEntityAttributeDefinition.name, this.ctx, Errors.validateErrorString(this.atCorpusPath, missingFields), this.validate.name);
-
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
                 return false;
             }
 
             if (this.cardinality) {
                 if (!CardinalitySettings.isMinimumValid(this.cardinality.minimum)) {
-                    Logger.error(CdmEntityAttributeDefinition.name, this.ctx, `Invalid minimum cardinality ${this.cardinality.minimum}`, this.validate.name);
-
+                    Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidMinCardinality, this.cardinality.minimum);
                     return false;
                 }
                 if (!CardinalitySettings.isMaximumValid(this.cardinality.maximum)) {
-                    Logger.error(CdmEntityAttributeDefinition.name, this.ctx, `Invalid maximum cardinality ${this.cardinality.maximum}`, this.validate.name);
+                    Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidMaxCardinality, this.cardinality.maximum);
 
                     return false;
                 }
@@ -289,9 +289,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                         const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this, ctxEnt);
                         const projDef: CdmProjection = ctxEntObjDef as CdmProjection;
                         const projCtx: ProjectionContext = projDef.constructProjectionContext(projDirective, under);
-
-                        const ras: ResolvedAttributeSet = projDef.extractResolvedAttributes(projCtx, under);
-                        rasb.ras = ras;
+                        rasb.ras = projDef.extractResolvedAttributes(projCtx, under);
                     }
                 } else {
                     // An Entity Reference
@@ -388,12 +386,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                                 }
 
                                 if (reqdTrait.parameterValues === undefined || reqdTrait.parameterValues.length === 0) {
-                                    Logger.warning(
-                                        CdmEntityAttributeDefinition.name,
-                                        this.ctx as resolveContext,
-                                        `is.linkedEntity.identifier does not support arguments`
-                                    );
-
+                                    Logger.warning(this.ctx, this.TAG, this.constructResolvedAttributes.name, this.atCorpusPath, cdmLogCode.WarnIdentifierArgumentsNotSupported);
                                     return;
                                 }
                                 const entReferences: (string)[] = [];

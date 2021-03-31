@@ -18,7 +18,7 @@ import {
     CdmObjectReference,
     cdmObjectType,
     CdmTraitCollection,
-    Errors,
+    cdmLogCode,
     isCdmObjectReference,
     isEntityDefinition,
     Logger,
@@ -29,11 +29,14 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     SymbolSet,
     VisitCallback
 } from '../internal';
 
 export abstract class CdmObjectReferenceBase extends CdmObjectBase implements CdmObjectReference {
+    private TAG: string = CdmObjectReferenceBase.name;
+
     /**
      * @internal
      */
@@ -140,11 +143,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                     = (this.ctx.corpus).resolveSymbolReference(resOpt, this.inDocument, entName, cdmObjectType.entityDef, true);
 
                 if (!ent) {
-                    Logger.warning(
-                        CdmObjectReferenceBase.name,
-                        ctx,
-                        `unable to resolve an entity named '${entName}' from the reference '${this.namedReference}'`
-                    );
+                    Logger.warning(ctx, this.TAG, this.fetchResolvedReference.name, this.atCorpusPath, cdmLogCode.WarnResolveEntityFailed, entName, this.namedReference);
 
                     return undefined;
                 }
@@ -158,12 +157,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 if (ra) {
                     res = ra.target as CdmAttribute;
                 } else {
-                    Logger.warning(
-                        CdmObjectReferenceBase.name,
-                        ctx,
-                        `couldn't resolve the attribute promise for '${this.namedReference}'`,
-                        `${resOpt.wrtDoc.atCorpusPath}`
-                    );
+                    Logger.warning(this.ctx, this.TAG, this.constructResolvedAttributes.name, this.atCorpusPath, cdmLogCode.WarnResolveObjectFailed, this.namedReference);
                 }
             } else {
                 // normal symbolic reference, look up from the Corpus, it knows where everything is
@@ -313,7 +307,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
 
             const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
             if (!await wrtDoc.indexIfNeeded(resOpt, true)) {
-                Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Could not index document ${wrtDoc.atCorpusPath}.`, this.fetchObjectDefinitionAsync.name);
+                Logger.error(this.ctx, this.TAG, this.fetchObjectDefinitionAsync.name, wrtDoc.atCorpusPath, cdmLogCode.ErrIndexFailed);
                 return null;
             }
 
@@ -334,13 +328,8 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         // let bodyCode = () =>
         {
             if (!this.namedReference && !this.explicitReference) {
-                Logger.error(
-                    CdmObjectReferenceBase.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['namedReference', 'explicitReference'], true),
-                    this.validate.name
-                );
-
+                let missingFields: string[] = ['namedReference', 'explicitReference'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
             }
 
@@ -442,7 +431,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 }
             } else {
                 const defName: string = this.fetchObjectDefinitionName();
-                Logger.warning(defName, this.ctx, `unable to resolve an object from the reference '${defName}'`);
+                Logger.warning(this.ctx, this.TAG, this.constructResolvedTraits.name, def.atCorpusPath, cdmLogCode.WarnResolveObjectFailed, defName);
             }
 
             return rasb;
@@ -542,7 +531,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 rtsb.takeReference(rtsInh);
             } else {
                 const defName: string = this.fetchObjectDefinitionName();
-                Logger.warning(defName, this.ctx, `unable to resolve an object from the reference '${defName}'`);
+                Logger.warning(this.ctx, this.TAG, this.constructResolvedTraits.name, this.atCorpusPath, cdmLogCode.WarnResolveObjectFailed, defName);
             }
 
             if (this.appliedTraits) {

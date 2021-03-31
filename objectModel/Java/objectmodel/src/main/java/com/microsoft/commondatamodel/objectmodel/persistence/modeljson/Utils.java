@@ -11,6 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Ann
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.CsvFormatSettings;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.MetadataObject;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
@@ -28,6 +29,8 @@ import java.util.concurrent.CompletableFuture;
  * Utility methods for model.json persistence.
  */
 public class Utils {
+  private static String tag = Utils.class.getSimpleName();
+
   private static final Map<String, String> annotationToTraitMap = new LinkedHashMap<String, String>() {
     private static final long serialVersionUID = 1863481726936L;
 
@@ -135,7 +138,7 @@ public class Utils {
             } else if (traitArgument instanceof JsonNode && ((JsonNode) traitArgument).isArray()) {
               traitArguments =  (JsonNode) traitArgument;
             } else {
-              Logger.error(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
+              Logger.warning(ctx, tag, "processTraitsAndAnnotationsToData", null, CdmLogCode.WarnAnnotationTypeNotSupported);
             }
             for (final Object annotation : traitArguments) {
               if (annotation instanceof JsonNode) {
@@ -147,7 +150,7 @@ public class Utils {
                 element.setValue(((NameValuePair)annotation).getValue());
                 annotations.add(element);
               } else {
-                Logger.warning(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
+                Logger.warning(ctx, tag, "processTraitsAndAnnotationsToData", null, CdmLogCode.WarnAnnotationTypeNotSupported);
               }
             }
           } else if (!ignoredTraits.contains(trait.getNamedReference())

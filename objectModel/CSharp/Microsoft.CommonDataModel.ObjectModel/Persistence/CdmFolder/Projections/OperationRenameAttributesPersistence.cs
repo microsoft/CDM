@@ -16,6 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     /// </summary>
     public class OperationRenameAttributesPersistence
     {
+        private static readonly string Tag = nameof(OperationRenameAttributesPersistence);
         public static CdmOperationRenameAttributes FromData(CdmCorpusContext ctx, JToken obj)
         {
             if (obj == null)
@@ -39,7 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
             else if (obj["applyTo"] != null)
             {
-                Logger.Error(nameof(OperationRenameAttributesPersistence), ctx, "Unsupported: applyTo property type should be string or List<string>.");
+                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistProjUnsupportedProp);
                 return null;
             }
 

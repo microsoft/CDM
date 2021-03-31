@@ -6,6 +6,7 @@ import { CdmFolder, ModelJson } from '..';
 import {
     CdmArgumentDefinition,
     CdmCorpusContext,
+    cdmLogCode,
     cdmObjectType,
     CdmTraitCollection,
     CdmTraitReference,
@@ -175,7 +176,7 @@ export function processTraitsAndAnnotationsToData(
                 else if (typeof annotation === 'object') {
                     annotations.push(annotation);
                 } else {
-                    Logger.warning('Utils', ctx, 'Unsupported annotation type.');
+                    Logger.warning(ctx, this.TAG, this.processTraitsAndAnnotationsToData.name, trait.atCorpusPath, cdmLogCode.WarnAnnotationTypeNotSupported);
                 }
             }
         } else if (!ignoredTraits.has(trait.namedReference)

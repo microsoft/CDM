@@ -12,6 +12,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     public class CdmEntityCollection : CdmCollection<CdmEntityDeclarationDefinition>
     {
+        private static readonly string Tag = nameof(CdmEntityCollection);
         /// <summary>
         /// Constructs a CdmEntityCollection by using the parent constructor and LocalEntityDeclarationDef as the default type.
         /// </summary>
@@ -34,7 +35,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (entity.Owner == null)
             {
-                Logger.Error(nameof(CdmEntityCollection), entity.Ctx, "Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest.", nameof(Add));
+                Logger.Error(this.Ctx, Tag, nameof(Add), entity.AtCorpusPath, CdmLogCode.ErrEntityCreationFailed);
                 return null;
             }
 

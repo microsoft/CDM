@@ -7,7 +7,9 @@ from typing import Any, cast, Dict, Iterable, List, Optional, Set, Union, TYPE_C
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 from cdm.persistence import PersistenceLayer
 from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttributeSet
-from cdm.utilities import AttributeContextParameters, logger, ResolveOptions, Errors
+from cdm.utilities import AttributeContextParameters, logger, ResolveOptions
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_argument_def import CdmArgumentDefinition
 from .cdm_attribute_context import CdmAttributeContext
@@ -34,6 +36,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
     def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_entity: Optional['CdmEntityReference'] = None) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmEntityDefinition.__name__
         # the entity attribute Context.
         self.attribute_context = None  # type: Optional[CdmAttributeContext]
 
@@ -51,8 +54,6 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         self._resolving_entity_references = False  # type: bool
         self._attributes = CdmCollection(self.ctx, self, CdmObjectType.TYPE_ATTRIBUTE_DEF)  # type: CdmCollection
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
-
-        self._TAG = CdmEntityDefinition.__name__
 
     @property
     def attributes(self) -> 'CdmCollection[CdmAttributeItem]':
@@ -199,7 +200,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 rasb.merge_attributes(self.extends_entity._fetch_resolved_attributes(res_opt, acp_ext_ent))
 
                 if not res_opt._check_attribute_count(rasb._resolved_attribute_set._resolved_attribute_count):
-                    logger.error(self._TAG, self.ctx, 'Maximum number of resolved attributes reached for the entity: {}.'.format(self.entity_name))
+                    logger.error(self.ctx, self._TAG, self._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.ERR_REL_MAX_RESOLVED_ATTR_REACHED, self.entity_name)
                     return None
 
                 if self.extends_entity_resolution_guidance:
@@ -245,7 +246,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 rasb.merge_attributes(ras_from_att)
 
                 if not res_opt._check_attribute_count(rasb._resolved_attribute_set._resolved_attribute_count):
-                    logger.error(self._TAG, self.ctx, 'Maximum number of resolved attributes reached for the entity: {}.'.format(self.entity_name))
+                    logger.error(self.ctx, self._TAG, self._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.ERR_REL_MAX_RESOLVED_ATTR_REACHED, self.entity_name)
                     return None
             rasb._resolved_attribute_set._depth_traveled = furthest_child_depth
 
@@ -254,6 +255,10 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
         # things that need to go away
         rasb.remove_requested_atts()
+
+        # recursively sets the target owner's to be this entity.
+        # required because the replaceAsForeignKey operation uses the owner to generate the `is.linkedEntity.identifier` trait.
+        rasb._resolved_attribute_set.set_target_owner(self)
 
         return rasb
 
@@ -291,8 +296,9 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         copy.extends_entity_resolution_guidance = self.extends_entity_resolution_guidance.copy(res_opt) if self.extends_entity_resolution_guidance else None
         copy.attribute_context = cast('CdmAttributeContext', self.attribute_context.copy(res_opt)) if self.attribute_context else None
 
+        att: CdmAttributeItem
         for att in self.attributes:
-            copy.attributes.append(att)
+            copy.attributes.append(att.copy(res_opt))
 
         self._copy_def(res_opt, copy)
 
@@ -307,16 +313,16 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
             if not res_opt.wrt_doc:
-                logger.error(self._TAG, self.ctx, 'No WRT document was supplied.', self.create_resolved_entity_async.__name__)
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_WRT_DOC_NOT_FOUND)
                 return None
 
             if not new_ent_name:
-                logger.error(self._TAG, self.ctx, 'No Entity Name provided.', self.create_resolved_entity_async.__name__)
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_ENTITY_NOTFOUND)
                 return None
 
             # if the wrtDoc needs to be indexed (like it was just modified) then do that first
             if not await res_opt.wrt_doc._index_if_needed(res_opt, True):
-                logger.error(self._TAG, self.ctx, 'Couldn\'t index source document.', self.create_resolved_entity_async.__name__)
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_INDEX_FAILED)
                 return None
 
             folder = folder or self.in_document.folder
@@ -326,8 +332,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             # Don't overwite the source document.
             target_at_corpus_path = self.ctx.corpus.storage.create_absolute_corpus_path(folder.at_corpus_path, folder) + file_name
             if StringUtils.equals_with_ignore_case(target_at_corpus_path, orig_doc):
-                logger.error(self._TAG, self.ctx, 'Attempting to replace source entity\'s document \'{}\''.format(
-                    target_at_corpus_path), self.create_resolved_entity_async.__name__)
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ENTITY_REPLACEMENT_FAILURE, target_at_corpus_path)
                 return None
 
             # make sure the corpus has a set of default artifact attributes
@@ -769,7 +774,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             res_opt_new._localize_references_for = doc_res
             res_opt_new.wrt_doc = doc_res
             if not await doc_res.refresh_async(res_opt_new):
-                logger.error(self._TAG, self.ctx, 'Failed to index the resolved document.', self.create_resolved_entity_async.__name__)
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_INDEX_FAILED)
                 return None
 
             # Get a fresh ref.
@@ -863,7 +868,8 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
     def validate(self) -> bool:
         if not bool(self.entity_name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['entity_name']))
+            missing_fields = ['entity_name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

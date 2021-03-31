@@ -6,6 +6,7 @@ import {
     CardinalitySettings,
     CdmCorpusContext,
     cdmDataFormat,
+    cdmLogCode,
     cdmObjectType,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
@@ -27,6 +28,8 @@ import {
 import * as utils from './utils';
 
 export class TypeAttributePersistence {
+    private static TAG: string = TypeAttributePersistence.name;
+
     public static fromData(ctx: CdmCorpusContext, object: TypeAttribute, entityName?: string): CdmTypeAttributeDefinition {
         const typeAttribute: CdmTypeAttributeDefinition = ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, object.name);
 
@@ -49,15 +52,15 @@ export class TypeAttributePersistence {
             }
 
             if (!minCardinality || !maxCardinality) {
-                Logger.error(TypeAttributePersistence.name, ctx, 'Both minimum and maximum are required for the Cardinality property.', this.fromData.name);
+                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistCardinalityPropMissing);
             }
 
             if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-                Logger.error(TypeAttributePersistence.name, ctx, `Invalid minimum cardinality ${minCardinality}.`, this.fromData.name);
+                Logger.error(ctx, TypeAttributePersistence.TAG, this.fromData.name, null, cdmLogCode.ErrValdnInvalidMinCardinality, minCardinality);
             }
 
             if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-                Logger.error(TypeAttributePersistence.name, ctx, `Invalid maximum cardinality ${maxCardinality}.`, this.fromData.name);
+                Logger.error(ctx, TypeAttributePersistence.TAG, this.fromData.name, null, cdmLogCode.ErrValdnInvalidMaxCardinality, maxCardinality);
             }
 
             if (minCardinality && maxCardinality && CardinalitySettings.isMinimumValid(minCardinality) && CardinalitySettings.isMaximumValid(maxCardinality)) {
@@ -96,12 +99,7 @@ export class TypeAttributePersistence {
         if (object.dataFormat !== undefined) {
             typeAttribute.dataFormat = TypeAttributePersistence.dataTypeFromData(object.dataFormat);
             if (typeAttribute.dataFormat === undefined) {
-                Logger.warning(
-                    TypeAttributePersistence.name,
-                    ctx,
-                    `Couldn't find an enum value for ${object.dataFormat}.`,
-                    this.fromData.name
-                );
+                Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPersitEnumNotFound, object.dataFormat);
             }
         }
         if (object.defaultValue !== undefined) {

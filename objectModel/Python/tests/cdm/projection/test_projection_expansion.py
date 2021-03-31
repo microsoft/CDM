@@ -247,9 +247,9 @@ class ProjectionExpansionTest(unittest.TestCase):
         self.assertEqual('address3', resolved_entity.attributes[9].name)
 
     @async_test
-    async def test_proj(self):
+    async def test_entity_attribute(self):
         """ArrayExpansion on an entity attribute"""
-        test_name = 'test_proj'
+        test_name = 'test_entity_attribute'
         entity_name = 'ThreeMusketeers'
         corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 

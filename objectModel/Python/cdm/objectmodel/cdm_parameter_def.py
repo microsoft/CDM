@@ -4,7 +4,9 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_object import CdmObject
 from .cdm_object_simple import CdmObjectSimple
@@ -17,6 +19,8 @@ if TYPE_CHECKING:
 class CdmParameterDefinition(CdmObjectSimple):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
+
+        self._TAG = CdmParameterDefinition.__name__
 
         # the parameter name.
         self.name = name
@@ -36,8 +40,6 @@ class CdmParameterDefinition(CdmObjectSimple):
         # Internal
 
         self._declared_path = None  # type: Optional[str]
-
-        self._TAG = CdmParameterDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -72,7 +74,8 @@ class CdmParameterDefinition(CdmObjectSimple):
 
     def validate(self) -> bool:
         if not bool(self.name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            missing_fields = ['named']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

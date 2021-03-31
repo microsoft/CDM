@@ -16,6 +16,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.MetadataObject;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
@@ -34,6 +35,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 final class ExtensionHelper {
+  private static String tag = ExtensionHelper.class.getSimpleName();
+
   public static final String EXTENSION_DOC_NAME = "custom.extension.cdm.json";
   /**
    * Dictionary used to cache documents with trait definitions by file name.
@@ -97,12 +100,7 @@ final class ExtensionHelper {
       for (int traitIndex = localExtensionTraitDefList.size() - 1; traitIndex >= 0; traitIndex--) {
         final CdmTraitDefinition extensionTraitDef = localExtensionTraitDefList.get(traitIndex);
         if (!traitDefIsExtension(extensionTraitDef)) {
-          Logger.error(
-              ExtensionHelper.class.getSimpleName(),
-              ctx,
-              Logger.format("Invalid extension trait name '{0}', expected prefix '{1}'", extensionTraitDef.getTraitName(), extensionTraitNamePrefix)
-          );
-
+          Logger.error(ctx, tag, "standardImportDetection", extensionTraitDef.getAtCorpusPath(), CdmLogCode.ErrPersistInvalidExtensionTrait, extensionTraitDef.getTraitName(), extensionTraitNamePrefix);
           return null;
         }
 

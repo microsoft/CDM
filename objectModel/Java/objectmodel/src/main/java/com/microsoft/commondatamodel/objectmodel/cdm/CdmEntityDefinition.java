@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.AttributeResolutionContext;
@@ -24,12 +25,13 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.Proje
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
+import org.mockito.internal.util.StringUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,8 +44,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmReferencesEntities {
+  private String tag = CdmEntityCollection.class.getSimpleName();
+  
   private String entityName;
   private CdmEntityReference extendsEntity;
   private CdmAttributeResolutionGuidance extendsEntityResolutionGuidance;
@@ -281,11 +286,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         rasb.mergeAttributes((this.getExtendsEntityRef()).fetchResolvedAttributes(resOpt, acpExtEnt));
 
         if (!resOpt.checkAttributeCount(rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
-          Logger.error(
-                  CdmEntityDefinition.class.getSimpleName(),
-                  this.getCtx(),
-                  Logger.format("Maximum number of resolved attributes reached for the entity: {0}.", this.entityName)
-          );
+          Logger.error(this.getCtx(), tag, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
           return null;
         }
 
@@ -340,11 +341,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         rasb.mergeAttributes(rasFromAtt);
 
         if (!resOpt.checkAttributeCount(rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
-          Logger.error(
-              CdmEntityDefinition.class.getSimpleName(),
-              this.getCtx(),
-              Logger.format("Maximum number of resolved attributes reached for the entity: {0}.", this.entityName)
-          );
+          Logger.error(this.getCtx(), tag, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
           return null;
         }
       }
@@ -355,6 +352,10 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
 
     // things that need to go away
     rasb.removeRequestedAtts();
+
+    // recursively sets the target owner's to be this entity.
+    // required because the replaceAsForeignKey operation uses the owner to generate the `is.linkedEntity.identifier` trait.
+    rasb.getResolvedAttributeSet().setTargetOwner(this);
 
     return rasb;
   }
@@ -395,12 +396,12 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       }
 
       if (resOpt.getWrtDoc() == null) {
-        Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), "No WRT document was supplied.", "createResolvedEntityAsync");
+        Logger.error(this.getCtx(), tag, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocWrtDocNotfound);
         return CompletableFuture.completedFuture(null);
       }
 
       if (StringUtils.isNullOrEmpty(newEntName)) {
-        Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), "No Entity Name provided.", "createResolvedEntityAsync");
+        Logger.error(this.getCtx(), tag, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveEntityNotFound);
         return CompletableFuture.completedFuture(null);
       }
 
@@ -410,7 +411,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       return CompletableFuture.supplyAsync(() -> {
         // if the wrtDoc needs to be indexed (like it was just modified) then do that first
         if (!finalResOpt.getWrtDoc().indexIfNeededAsync(finalResOpt, true).join()) {
-          Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), "Couldn't index source document.", "createResolvedEntityAsync");
+          Logger.error(this.getCtx(), tag,"createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
           return null;
         }
 
@@ -424,12 +425,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
                         .createAbsoluteCorpusPath(folder.getAtCorpusPath(), folder),
                 fileName);
         if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
-          Logger.error(
-                  CdmEntityDefinition.class.getSimpleName(),
-                  this.getCtx(),
-                  Logger.format("Attempting to replace source entity's document '{0}'", targetAtCorpusPath),
-                  "createResolvedEntityAsync"
-          );
+          Logger.error(this.getCtx(), tag, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocEntityReplacementFailure, targetAtCorpusPath);
           return null;
         }
 
@@ -986,11 +982,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       }
     } catch (final IOException ex) {
       // TODO-BQ: What to do here, report it?
-      Logger.error(
-          CdmEntityDefinition.class.getSimpleName(),
-          this.getCtx(),
-          Logger.format("Error occurred while trying to get attributes with traits. Reason: {0}", ex.getLocalizedMessage())
-      );
+      Logger.error(this.getCtx(), tag, "getAttributesWithTraits", this.getAtCorpusPath(), CdmLogCode.ErrTraitAttrFetchError, ex.getLocalizedMessage());
     }
     return null;
   }
@@ -1071,7 +1063,8 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.entityName)) {
-      Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("entityName"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("entityName"));
+      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -1111,7 +1104,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     copy.setExtendsEntity(copy.getExtendsEntity() != null ? (CdmEntityReference) this.getExtendsEntity().copy(resOpt) : null);
     copy.setAttributeContext(copy.getAttributeContext() != null ? (CdmAttributeContext) this.getAttributeContext().copy(resOpt) : null);
     for (final CdmAttributeItem hasAttribute : this.getAttributes()) {
-      copy.getAttributes().add(hasAttribute);
+      copy.getAttributes().add((CdmAttributeItem)hasAttribute.copy(resOpt));
     }
     this.copyDef(resOpt, copy);
     return copy;

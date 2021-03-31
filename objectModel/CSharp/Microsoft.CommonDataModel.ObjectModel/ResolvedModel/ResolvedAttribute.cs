@@ -89,10 +89,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 AttCtx = this.AttCtx // set here instead of constructor to avoid setting lineage for this copy
             };
 
-            if (copy.Target is ResolvedAttributeSet)
+            // deep copy when set contains sets. this copies the resolved att set and the context, etc.
+            copy.Target = copy.Target.Copy();
+
+            if (copy.Target is CdmAttribute attribute)
             {
-                // deep copy when set contains sets. this copies the resolved att set and the context, etc.
-                copy.Target = copy.Target.Copy();
+                attribute.Owner = this.Target.Owner;
+                attribute.InDocument = this.Target.InDocument;
             }
 
             if (ApplierState != null)

@@ -7,11 +7,11 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
-    Errors,
     Logger,
     ProjectionAttributeContextTreeBuilder,
     ProjectionAttributeState,
@@ -75,13 +75,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -184,10 +178,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
 
                     projOutputSet.add(newPAS);
                 } else {
-                    Logger.warning(
-                        this.TAG,
-                        this.ctx,
-                        'RenameAttributes is not supported on an attribute group yet.');
+                    Logger.warning(this.ctx, this.TAG, this.appendProjectionAttributeState.name, null, cdmLogCode.WarnProjRenameAttrNotSupported);
                     // Add the attribute without changes
                     projOutputSet.add(currentPAS);
                 }
@@ -214,11 +205,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
         const format: string = this.renameFormat;
 
         if (!format) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                'RenameFormat should be set for this operation to work.');
-            return '';
+            Logger.error(this.ctx, this.TAG, this.getNewAttributeName.name, null, cdmLogCode.ErrProjRenameFormatIsNotSet);
         }
 
         let attributeName: string = StringUtils.replace(format, 'a', sourceAttributeName);

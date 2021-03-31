@@ -4,6 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
@@ -99,7 +100,6 @@ public final class ProjectionResolutionCommonUtil {
      * @param ctx CdmCorpusContext 
      * @param source CdmEntityReference
      * @param rasSource ResolvedAttributeSet
-     * @param attrCtxParam AttributeContextParameters  
      * @return Map of String and List of ProjectionAttributeState
      */
     @Deprecated
@@ -107,8 +107,7 @@ public final class ProjectionResolutionCommonUtil {
         ProjectionDirective projDir,
         CdmCorpusContext ctx,
         CdmEntityReference source,
-        ResolvedAttributeSet rasSource,
-        AttributeContextParameters attrCtxParam) {
+        ResolvedAttributeSet rasSource) {
         Map<String, List<ProjectionAttributeState>> polySources = new HashMap<>();
 
         // TODO (sukanyas): when projection based polymorphic source is made available - the following line will have to be changed
@@ -116,7 +115,15 @@ public final class ProjectionResolutionCommonUtil {
         CdmEntityDefinition sourceDef = source.fetchObjectDefinition(projDir.getResOpt());
         for (CdmAttributeItem attr : sourceDef.getAttributes()) {
             if (attr.getObjectType() == CdmObjectType.EntityAttributeDef) {
-                ResolvedAttributeSet raSet = ((CdmEntityAttributeDefinition) attr).fetchResolvedAttributes(projDir.getResOpt(), null);
+                // the attribute context for this entity typed attribute was already created by the `FetchResolvedAttributes` that happens before this function call.
+                // we are only interested in linking the attributes to the entity that they came from and the attribute context nodes should not be taken into account.
+                // create this dummy attribute context so the resolution code works properly and discard it after.
+                AttributeContextParameters attrCtxParam = new AttributeContextParameters();
+                attrCtxParam.setRegarding(attr);
+                attrCtxParam.setType(CdmAttributeContextType.PassThrough);
+                attrCtxParam.setUnder(new CdmAttributeContext(ctx, "discard"));
+
+                ResolvedAttributeSet raSet = ((CdmEntityAttributeDefinition) attr).fetchResolvedAttributes(projDir.getResOpt(), attrCtxParam);
                 for (ResolvedAttribute resAttr : raSet.getSet()) {
                     // we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
                     // so steal them based on name
@@ -129,16 +136,11 @@ public final class ProjectionResolutionCommonUtil {
                     projAttrState.setCurrentResolvedAttribute(resAttr);
                     projAttrState.setPreviousStateList(null);
 
-                    // the key already exists, just add to the existing list
-                    if (polySources.containsKey(resAttr.getResolvedName())) {
-                        List<ProjectionAttributeState> existingSet = polySources.get(resAttr.getResolvedName());
-                        existingSet.add(projAttrState);
-                        polySources.put(resAttr.getResolvedName(), existingSet);
-                    } else {
-                        List<ProjectionAttributeState> pasList = new ArrayList<>();
-                        pasList.add(projAttrState);
-                        polySources.put(resAttr.getResolvedName(), pasList);
+                    // the key doesn't exist, initialize with an empty list first
+                    if (!polySources.containsKey(resAttr.getResolvedName())) {
+                        polySources.put(resAttr.getResolvedName(), new ArrayList<>());
                     }
+                    polySources.get(resAttr.getResolvedName()).add(projAttrState);
                 }
             }
         }
@@ -270,7 +272,7 @@ public final class ProjectionResolutionCommonUtil {
 
         if (entRefAndAttrNameList.size() > 0) {
             CdmConstantEntityDefinition constantEntity = corpus.makeObject(CdmObjectType.ConstantEntityDef);
-            constantEntity.setEntityShape(corpus.makeRef(CdmObjectType.EntityRef, "entityGroupSet", true));
+            constantEntity.setEntityShape(corpus.makeRef(CdmObjectType.EntityRef, "entitySet", true));
 
             List<List<String>> constantValues = new ArrayList<>();
             for (List<String> entAndAttrName : entRefAndAttrNameList) {

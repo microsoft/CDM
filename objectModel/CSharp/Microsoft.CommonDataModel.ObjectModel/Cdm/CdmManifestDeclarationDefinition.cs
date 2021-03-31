@@ -10,6 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -17,6 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     public class CdmManifestDeclarationDefinition : CdmObjectDefinitionBase, CdmFileStatus
     {
+        private static readonly string Tag = nameof(CdmManifestDeclarationDefinition);
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmManifestDeclarationDefinition"/> class.
         /// </summary>
@@ -118,7 +120,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 missingFields.Add("Definition");
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmManifestDeclarationDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;

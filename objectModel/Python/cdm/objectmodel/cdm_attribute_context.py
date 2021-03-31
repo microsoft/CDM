@@ -4,9 +4,12 @@
 from typing import cast, List, Optional, Union, TYPE_CHECKING
 from collections import OrderedDict
 
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
+
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 from cdm.resolvedmodel import ResolvedAttributeSet
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
 
 from .cdm_collection import CdmCollection
 from .cdm_object import CdmObject
@@ -23,6 +26,8 @@ if TYPE_CHECKING:
 class CdmAttributeContext(CdmObjectDefinition):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
+
+        self._TAG = CdmAttributeContext.__name__
 
         # the attribute context content list.
         self.contents = CdmCollection(
@@ -49,8 +54,6 @@ class CdmAttributeContext(CdmObjectDefinition):
         self._at_corpus_path = name  # type: str
 
         self._lowest_order = None  # type: Optional[int]
-
-        self._TAG = CdmAttributeContext.__name__
 
     @property
     def at_corpus_path(self) -> Optional[str]:
@@ -427,7 +430,7 @@ class CdmAttributeContext(CdmObjectDefinition):
             missing_fields.append('type')
 
         if missing_fields:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

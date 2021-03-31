@@ -13,6 +13,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmEntityAttributeDefinition : CdmAttribute
     {
+        private static readonly string Tag = nameof(CdmEntityAttributeDefinition);
         /// <summary>
         /// Gets or sets the entity attribute's entity reference.
         /// </summary>
@@ -150,19 +151,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmEntityAttributeDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             if (Cardinality != null)
             {
                 if (!CardinalitySettings.IsMinimumValid(Cardinality.Minimum))
                 {
-                    Logger.Error(nameof(CdmEntityAttributeDefinition), this.Ctx, $"Invalid minimum cardinality {Cardinality.Minimum}.", nameof(Validate));
+                    Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidMinCardinality, Cardinality.Minimum);
                     return false;
                 }
                 if (!CardinalitySettings.IsMaximumValid(Cardinality.Maximum))
                 {
-                    Logger.Error(nameof(CdmEntityAttributeDefinition), this.Ctx, $"Invalid maximum cardinality {Cardinality.Maximum}.", nameof(Validate));
+                    Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidMaxCardinality, Cardinality.Maximum);
                     return false;
                 }
             }
@@ -306,7 +307,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 resOpt.DepthInfo = new DepthInfo
                 {
-                    CurrentDepth = (int)relInfo.NextDepth,
+                    CurrentDepth = relInfo.NextDepth,
                     MaxDepth = relInfo.MaxDepth,
                     MaxDepthExceeded = relInfo.MaxDepthExceeded
                 };
@@ -363,9 +364,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         ProjectionDirective projDirective = new ProjectionDirective(resOpt, this, ownerRef: ctxEnt);
 
                         ProjectionContext projCtx = projDef.ConstructProjectionContext(projDirective, under);
-
-                        ResolvedAttributeSet ras = projDef.ExtractResolvedAttributes(projCtx, underAtt);
-                        rasb.ResolvedAttributeSet = ras;
+                        rasb.ResolvedAttributeSet = projDef.ExtractResolvedAttributes(projCtx, underAtt);
                     }
                 }
                 else
@@ -479,7 +478,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                                 if (reqdTrait.ParameterValues == null || reqdTrait.ParameterValues.Length == 0)
                                 {
-                                    Logger.Warning(nameof(CdmEntityAttributeDefinition), this.Ctx as ResolveContext, "is.linkedEntity.identifier does not support arguments");
+                                    Logger.Warning(this.Ctx as ResolveContext, Tag, nameof(ConstructResolvedAttributes), this.AtCorpusPath, CdmLogCode.WarnIdentifierArgumentsNotSupported);
                                     continue;
                                 }
 

@@ -155,6 +155,7 @@ public class CdmEntityDefinitionResolutionTest {
     entity.createResolvedEntityAsync("res-Entity").join();
 
     Assert.assertEquals(document, entity.getOwner());
+    Assert.assertEquals(entity, entity.getAttributes().get(0).getOwner(), "Entity's attribute's owner should have remained unchanged (same as the owning entity)");
   }
 
   /**

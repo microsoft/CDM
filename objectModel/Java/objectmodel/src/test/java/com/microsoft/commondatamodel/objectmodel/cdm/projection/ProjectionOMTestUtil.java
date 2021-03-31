@@ -322,7 +322,7 @@ public class ProjectionOMTestUtil {
     }
 
     public CdmEntityDefinition getAndValidateResolvedEntity(CdmEntityDefinition entity, List<String> resOpts) {
-        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(getCorpus(), entity, resOpts, true).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(getCorpus(), entity, resOpts).join();
         Assert.assertNotNull(resolvedEntity, "GetAndValidateResolvedEntity: " + entity.getEntityName() + " resolution with options '" + String.join(",", resOpts) + "' failed!");
 
         return resolvedEntity;

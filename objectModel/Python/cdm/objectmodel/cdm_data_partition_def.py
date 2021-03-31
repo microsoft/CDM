@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import cast, Dict, List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, time_utils, TraitToPropertyMap
+from cdm.utilities import ResolveOptions, time_utils, TraitToPropertyMap, logger
 
 from .cdm_file_status import CdmFileStatus
 from .cdm_object_def import CdmObjectDefinition
@@ -18,6 +18,8 @@ if TYPE_CHECKING:
 class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
+
+        self._TAG = CdmDataPartitionDefinition.__name__
 
         # The name of a data partition.
         self.name = name  # type: str
@@ -89,14 +91,15 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
 
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
-        full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.location, self.in_document)
-        modified_time = await self.ctx.corpus._fetch_last_modified_time_from_partition_path_async(full_path)
+        with logger._enter_scope(self._TAG, self.ctx, self.file_status_check_async.__name__):
+            full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.location, self.in_document)
+            modified_time = await self.ctx.corpus._fetch_last_modified_time_from_partition_path_async(full_path)
 
-        # Update modified times.
-        self.last_file_status_check_time = datetime.now(timezone.utc)
-        self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
+            # Update modified times.
+            self.last_file_status_check_time = datetime.now(timezone.utc)
+            self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
 
-        await self.report_most_recent_time_async(self.last_file_modified_time)
+            await self.report_most_recent_time_async(self.last_file_modified_time)
 
     def get_name(self) -> str:
         return self.name

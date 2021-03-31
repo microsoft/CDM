@@ -13,6 +13,7 @@ import {
     CdmObjectDefinition,
     CdmObjectReference,
     cdmObjectType,
+    cdmLogCode,
     CdmTraitCollection,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
@@ -58,6 +59,8 @@ const dataFormatTraitNames: string[] = [
  * however, it does make it easier to work with the consumption object model so ... i will hold my nose.
  */
 export class traitToPropertyMap {
+    private TAG: string = traitToPropertyMap.name;
+    
     private host: CdmObject;
 
     private get ctx(): CdmCorpusContext {
@@ -671,10 +674,10 @@ export class traitToPropertyMap {
                 newDefault = this.ctx.corpus.MakeRef(cdmObjectType.entityRef, cEnt, false);
                 this.updateTraitArgument('does.haveDefault', 'default', newDefault);
             } else {
-                Logger.error(traitToPropertyMap.name, this.host.ctx, 'Default value missing languageTag or displayText.');
+                Logger.error(this.host.ctx, this.TAG, this.updateDefaultValue.name, null, cdmLogCode.ErrValdnMissingLanguageTag);
             }
         } else {
-            Logger.error(traitToPropertyMap.name, this.host.ctx, 'Default value type not supported. Please use Array.');
+            Logger.error(this.host.ctx, this.TAG, this.updateDefaultValue.name, null, cdmLogCode.ErrUnsupportedType);
         }
     }
 

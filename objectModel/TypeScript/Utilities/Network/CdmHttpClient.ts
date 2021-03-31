@@ -9,6 +9,7 @@ import { Logger } from '../Logging/Logger';
 import { CdmHttpRequest } from './CdmHttpRequest';
 import { CdmHttpResponse } from './CdmHttpResponse';
 import { HttpRequestCallback } from './HttpRequestCallback';
+import { cdmLogCode } from '../../internal';
 
 /**
  * CDM Http Client is an HTTP client which implements retry logic to execute retries in the case of failed requests.
@@ -19,6 +20,7 @@ import { HttpRequestCallback } from './HttpRequestCallback';
  */
 export class CdmHttpClient {
 
+    private TAG: string = CdmHttpClient.name;
     /**
      * @internal
      */
@@ -27,6 +29,8 @@ export class CdmHttpClient {
     private apiEndpoint: string;
 
     private httpHandler: HttpRequestCallback;
+
+    private maximumTimeoutReached: boolean = false;
 
     /**
      * Initializes a new instance of the CdmHttpClient.
@@ -86,7 +90,15 @@ export class CdmHttpClient {
             cdmRequest.headers.set(key, value);
         });
 
-        return this.raceAsyncTaskAgainstTimeout(cdmRequest.maximumTimeout, this.SendAsyncHelper(cdmRequest, callback, ctx), 'Maximum timeout exceeded.');
+        try {
+            const res: CdmHttpResponse = await this.raceAsyncTaskAgainstTimeout(cdmRequest.maximumTimeout, this.SendAsyncHelper(cdmRequest, callback, ctx), 'Maximum timeout exceeded.');
+            return res;
+        } catch (e) {
+            if (typeof e === 'string' && e === 'Maximum timeout exceeded.') {
+                this.maximumTimeoutReached = true;
+            }
+            throw e;
+        }
     }
 
     /**
@@ -126,35 +138,30 @@ export class CdmHttpClient {
             // If the number of retries is 0, we only try once, otherwise we retry the specified number of times.
             for (let retryNumber: number = 0; retryNumber <= cdmRequest.numberOfRetries; retryNumber++) {
 
+                if (this.maximumTimeoutReached) {
+                    return;
+                }
+
                 let hasFailed: boolean = false;
                 let response: CdmHttpResponse;
 
                 try {
                     const startTime = new Date();
                     if (ctx != null) {
-                        Logger.info(
-                            CdmHttpClient.name,
-                            ctx,
-                            `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, request url: ${cdmRequest.stripSasSig()}, retry number: ${retryNumber}.`,
-                            'SendAsyncHelper'
-                        );
+                        Logger.info(ctx, this.TAG, this.SendAsyncHelper.name, null, `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, request url: ${cdmRequest.stripSasSig()}, retry number: ${retryNumber}.`);
+                       
                     }
 
                     response = await this.raceAsyncTaskAgainstTimeout(
                         cdmRequest.timeout,
                         this.httpHandler(fullUrl, cdmRequest.method, cdmRequest.content, outgoingHeaders),
-                            'Request timeout.',
-                            ctx,
-                            `Request ${cdmRequest.requestId} timeout after ${cdmRequest.timeout/1000} s.`,);
+                        'Request timeout.',
+                        ctx,
+                        `Request ${cdmRequest.requestId} timeout after ${cdmRequest.timeout / 1000} s.`);
 
                     if (ctx != null) {
                         const endTime = new Date();
-                        Logger.info(
-                            CdmHttpClient.name,
-                            ctx,
-                            `Response for request ${cdmRequest.requestId} received, elapsed time: ${endTime.valueOf() - startTime.valueOf()} ms.`,
-                            'SendAsyncHelper'
-                        );
+                        Logger.info(ctx, this.TAG, this.SendAsyncHelper.name, null, `Response for request ${cdmRequest.requestId} received, elapsed time: ${endTime.valueOf() - startTime.valueOf()} ms.`);
                     }
                 } catch (err) {
                     hasFailed = true;
@@ -218,12 +225,8 @@ export class CdmHttpClient {
         const timeoutPromise = new Promise<CdmHttpResponse>((resolve, reject) => {
             timeout = setTimeout(() => {
                 if (ctx != null && infoMessage != null) {
-                    Logger.info(
-                        CdmHttpClient.name,
-                        ctx,
-                        infoMessage,
-                        'raceAsyncTaskAgainstTimeout'
-                    );
+                     Logger.info(ctx, this.TAG, this.raceAsyncTaskAgainstTimeout.name, null, infoMessage);
+
                 }
                 clearTimeout(timeout);
                 reject(errorMessage);

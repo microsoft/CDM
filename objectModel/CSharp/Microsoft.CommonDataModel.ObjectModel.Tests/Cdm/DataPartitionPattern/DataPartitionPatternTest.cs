@@ -176,7 +176,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             {
                 Invoke = (CdmStatusLevel statusLevel, string message) =>
                 {
-                    if (message.Equals("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | FileStatusCheckAsync"))
+                    if (message.Contains("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | FileStatusCheckAsync"))
                         patternWithGlobAndRegex++;
                 }
             }, CdmStatusLevel.Warning);

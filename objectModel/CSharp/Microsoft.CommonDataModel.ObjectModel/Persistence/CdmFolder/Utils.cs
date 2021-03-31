@@ -132,7 +132,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             List<CdmTraitReference> result = new List<CdmTraitReference>();
             JArray traitRefObj = null;
-            if (obj.GetType() != typeof(JArray) && obj["value"] != null && obj["value"].GetType() == typeof(JArray))
+            if (obj.GetType() == typeof(List<JToken>))
+            {
+                traitRefObj = JArray.FromObject(obj);
+            } 
+            else if (obj.GetType() != typeof(JArray) && obj["value"] != null && obj["value"].GetType() == typeof(JArray))
             {
                 traitRefObj = obj["value"];
             }
