@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 public class CdmEntityCollection extends CdmCollection<CdmEntityDeclarationDefinition> {
 
-  private String tag = CdmEntityCollection.class.getSimpleName();
+  private static final String TAG = CdmEntityCollection.class.getSimpleName();
   /**
    * Constructs a CdmEntityCollection by using parent constructor
    * and {@link CdmLocalEntityDeclarationDefinition}.
@@ -49,7 +49,7 @@ public class CdmEntityCollection extends CdmCollection<CdmEntityDeclarationDefin
     final CdmCorpusDefinition cdmCorpus = this.getCtx().getCorpus();
 
     if (entity.getOwner() == null) {
-      Logger.error(entity.getCtx(), tag, "add", entity.getAtCorpusPath(), CdmLogCode.ErrEntityCreationFailed);
+      Logger.error(entity.getCtx(), TAG, "add", entity.getAtCorpusPath(), CdmLogCode.ErrEntityCreationFailed);
       return null;
     }
 

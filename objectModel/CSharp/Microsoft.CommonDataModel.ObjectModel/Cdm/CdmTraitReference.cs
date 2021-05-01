@@ -9,7 +9,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System;
     using System.Collections.Generic;
 
-    public class CdmTraitReference : CdmObjectReferenceBase
+    public class CdmTraitReference : CdmTraitReferenceBase
     {
         /// <summary>
         /// Gets the trait reference's arguments.

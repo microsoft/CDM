@@ -59,6 +59,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
             }
         }
 
+        private async Task<HttpResponseMessage> method3(HttpRequestMessage request, CancellationToken token)
+        {
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("REPLY2")
+            };
+
+            if (method2ExecutedCount == 0)
+            {
+                await Task.Delay(4000);
+                method2ExecutedCount++;
+
+                return await Task.FromResult(responseMessage);
+            }
+            else
+            {
+                // Wait some time.
+                await Task.Delay(2000);
+
+                method2ExecutedCount++;
+                return await Task.FromResult(responseMessage);
+            }
+        }
+
         /// <summary>
         /// Testing for a result returned immediatelly.
         /// </summary>
@@ -107,7 +131,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
         [TestMethod]
         public void TestTimeout()
         {
-            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method2)))
+            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method3)))
             {
                 var cdmHttpRequest = new CdmHttpRequest("/folder2")
                 {
@@ -128,7 +152,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
         [TestMethod]
         public void TestTimeoutMultipleTimes()
         {
-            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method2)))
+            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method3)))
             {
                 var cdmHttpRequest = new CdmHttpRequest("/folder2")
                 {
@@ -149,7 +173,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
         [TestMethod]
         public void TestMaximumTimeout()
         {
-            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method2)))
+            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method3)))
             {
                 var cdmHttpRequest = new CdmHttpRequest("/folder2")
                 {

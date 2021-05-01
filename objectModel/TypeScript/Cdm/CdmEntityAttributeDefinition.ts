@@ -19,7 +19,6 @@ import {
     CdmEntityReference,
     cdmLogCode,
     CdmObject,
-    CdmObjectBase,
     CdmObjectDefinition,
     CdmObjectReference,
     cdmObjectType,
@@ -27,7 +26,6 @@ import {
     CdmPurposeReference,
     CdmTraitDefinition,
     CdmTraitReference,
-    DepthInfo,
     Logger,
     ProjectionContext,
     ProjectionDirective,
@@ -43,7 +41,6 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    StringUtils,
     traitToPropertyMap,
     VisitCallback
 } from '../internal';
@@ -233,24 +230,15 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
      */
     public fetchObjectFromCache(resOpt: resolveOptions, acpInContext?: AttributeContextParameters): ResolvedAttributeSetBuilder {
         const kind: string = 'rasb';
-        const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
+        const ctx: resolveContext = this.ctx as resolveContext;
 
-        // check cache at the correct depth for entity attributes
-        const relInfo: relationshipInfo = this.getRelationshipInfo(resOpt, this.fetchAttResContext(resOpt));
-        if (relInfo.maxDepthExceeded) {
-            resOpt.depthInfo = new DepthInfo();
-            resOpt.depthInfo.currentDepth = relInfo.nextDepth;
-            resOpt.depthInfo.maxDepth = relInfo.maxDepth;
-            resOpt.depthInfo.maxDepthExceeded = relInfo.maxDepthExceeded;
-        }
+        // once resolution guidance is fully deprecated, this line can be removed
+        const arc: AttributeResolutionContext = !this.entity.isProjection ? this.fetchAttResContext(resOpt) : undefined;
+
+        // update the depth info and check cache at the correct depth for entity attributes
+        resOpt.depthInfo.updateToNextLevel(resOpt, this.isPolymorphicSource, arc);
 
         const cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
-
-        if (relInfo.maxDepthExceeded) {
-            // temporaty fix to avoid the depth from being increased while calculating the cache tag
-            resOpt.depthInfo.currentDepth--;
-        }
-
         return cacheTag ? ctx.cache.get(cacheTag) : undefined;
     }
 
@@ -265,41 +253,33 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
             // the entity used as an attribute, traits applied to that entity,
             // the purpose of the attribute, any traits applied to the attribute.
             let rasb: ResolvedAttributeSetBuilder = new ResolvedAttributeSetBuilder();
-            const ctxEnt: CdmEntityReference = this.entity;
             const underAtt: CdmAttributeContext = under;
             let acpEnt: AttributeContextParameters;
 
             if (!resOpt.inCircularReference) {
-                const arc: AttributeResolutionContext = this.fetchAttResContext(resOpt);
-
-                // complete cheating but is faster.
-                // this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
-                const relInfo: relationshipInfo = this.getRelationshipInfo(arc.resOpt, arc);
-                resOpt.depthInfo = new DepthInfo();
-                resOpt.depthInfo.currentDepth = relInfo.nextDepth;
-                resOpt.depthInfo.maxDepthExceeded = relInfo.maxDepthExceeded;
-                resOpt.depthInfo.maxDepth = relInfo.maxDepth;
-
-                const ctxEntObjDef: CdmObjectDefinition = ctxEnt.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
-                if (ctxEntObjDef && ctxEntObjDef.objectType === cdmObjectType.projectionDef) {
+                if (this.entity?.isProjection) {
                     // A Projection
 
                     // if the max depth is exceeded it should not try to execute the projection
                     if (!resOpt.depthInfo.maxDepthExceeded) {
-                        const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this, ctxEnt);
-                        const projDef: CdmProjection = ctxEntObjDef as CdmProjection;
+                        const projDef: CdmProjection = this.entity.fetchObjectDefinition<CdmProjection>(resOpt);;
+                        const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this, this.entity);
                         const projCtx: ProjectionContext = projDef.constructProjectionContext(projDirective, under);
                         rasb.ras = projDef.extractResolvedAttributes(projCtx, under);
                     }
                 } else {
                     // An Entity Reference
+
+                    const arc: AttributeResolutionContext = this.fetchAttResContext(resOpt);
+                    const relInfo: relationshipInfo = arc.getRelationshipInfo();
+
                     if (underAtt) {
                         // make a context for this attribute that holds the attributes that come up from the entity
                         acpEnt = {
                             under: underAtt,
                             type: cdmAttributeContextType.entity,
-                            name: ctxEnt.fetchObjectDefinitionName(),
-                            regarding: ctxEnt,
+                            name: this.entity.fetchObjectDefinitionName(),
+                            regarding: this.entity,
                             includeTraits: true
                         };
                     }
@@ -352,7 +332,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                             }
                         }
                         // if we got here because of the max depth, need to impose the directives to make the trait work as expected
-                        if (relInfo.maxDepthExceeded) {
+                        if (resOpt.depthInfo.maxDepthExceeded) {
                             if (!arc.resOpt.directives) {
                                 arc.resOpt.directives = new AttributeResolutionDirectiveSet();
                             }
@@ -483,7 +463,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
             // this context object holds all of the info about what needs to happen to resolve these attributes
             const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuide, rtsThisAtt);
 
-            const relInfo: relationshipInfo = this.getRelationshipInfo(resOpt, arc);
+            const relInfo: relationshipInfo = arc.getRelationshipInfo();
             if (relInfo.isByRef && !relInfo.isArray) {
                 // only place this is used, so logic here instead of encapsulated.
                 // make a set and the one ref it will hold
@@ -574,70 +554,4 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
 
         return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
     }
-
-    private getRelationshipInfo(resOpt: resolveOptions, arc: AttributeResolutionContext): relationshipInfo {
-        // let bodyCode = () =>
-        {
-            const rts: ResolvedTraitSet = undefined;
-            let noMaxDepth: boolean = false;
-            let hasRef: boolean = false;
-            let isByRef: boolean = false;
-            let isArray: boolean = false;
-            let selectsOne: boolean = false;
-            let nextDepth: number = resOpt.depthInfo.currentDepth;
-            let maxDepth: number;
-            let maxDepthExceeded: boolean = false;
-
-            if (arc && arc.resGuide) {
-                if (arc.resGuide.entityByReference !== undefined && arc.resGuide.entityByReference.allowReference === true) {
-                    hasRef = true;
-                }
-                if (arc.resOpt.directives) {
-                    noMaxDepth = arc.resOpt.directives.has('noMaxDepth');
-                    // based on directives
-                    if (hasRef) {
-                        isByRef = arc.resOpt.directives.has('referenceOnly');
-                    }
-                    selectsOne = arc.resOpt.directives.has('selectOne');
-                    isArray = arc.resOpt.directives.has('isArray');
-                }
-
-                // if this is a 'selectone', then skip counting this entity in the depth, else count it
-                if (!selectsOne) {
-                    // if already a ref, who cares?
-                    if (!isByRef) {
-                        nextDepth++;
-                        // max comes from settings but may not be set
-                        maxDepth = resOpt.maxDepth;
-                        if (hasRef && arc.resGuide.entityByReference.referenceOnlyAfterDepth !== undefined) {
-                            maxDepth = arc.resGuide.entityByReference.referenceOnlyAfterDepth;
-                        }
-                        if (noMaxDepth) {
-                            // no max? really? what if we loop forever? if you need more than 32 nested entities,
-                            // then you should buy a different metadata description system.
-                            maxDepth = DepthInfo.maxDepthLimit;
-                        }
-
-                        if (nextDepth > maxDepth) {
-                            // don't do it
-                            isByRef = true;
-                            maxDepthExceeded = true;
-                        }
-                    }
-                }
-            }
-
-            return {
-                rts: rts,
-                isByRef: isByRef,
-                isArray: isArray,
-                selectsOne: selectsOne,
-                nextDepth: nextDepth,
-                maxDepth: maxDepth,
-                maxDepthExceeded: maxDepthExceeded
-            };
-        }
-        // return p.measure(bodyCode);
-    }
-
 }

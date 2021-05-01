@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { readFileSync } from 'fs';
 import { CdmFolder, ModelJson } from '..';
 import {
     CdmArgumentDefinition,
@@ -9,12 +8,13 @@ import {
     cdmLogCode,
     cdmObjectType,
     CdmTraitCollection,
+    CdmTraitGroupReference,
     CdmTraitReference,
     Logger
 } from '../../internal';
-import { CdmJsonType, TraitReference } from '../CdmFolder/types';
+import { CdmJsonType, TraitGroupReference, TraitReference } from '../CdmFolder/types';
 import { processExtensionTraitToObject, traitRefIsExtension } from './ExtensionHelper';
-import { Annotation, AnnotationTraitMapping, CsvFormatSettings, MetadataObject } from './types';
+import { Annotation, CsvFormatSettings, MetadataObject } from './types';
 import { NameValuePair } from '../../Utilities/NameValuePair';
 
 const annotationToTraitMap: Map<string, string> = new Map([['version', 'is.CDM.entityVersion']]);
@@ -140,8 +140,12 @@ export async function processAnnotationsFromData(ctx: CdmCorpusContext, object: 
     }
 
     if (object['cdm:traits'] !== undefined) {
-        object['cdm:traits'].forEach((trait: string | TraitReference) => {
-            traits.push(CdmFolder.TraitReferencePersistence.fromData(ctx, trait));
+        object['cdm:traits'].forEach((trait: string | TraitReference | TraitGroupReference) => {
+            if (typeof trait !== 'string' && 'traitGroupReference' in trait) {
+                traits.push(CdmFolder.TraitGroupReferencePersistence.fromData(ctx, trait as TraitGroupReference));
+            } else {
+                traits.push(CdmFolder.TraitReferencePersistence.fromData(ctx, trait));
+            }
         });
     }
 }
@@ -160,13 +164,15 @@ export function processTraitsAndAnnotationsToData(
 
     for (const trait of traits) {
         if (traitRefIsExtension(trait)) {
-            processExtensionTraitToObject(trait, entityObject);
+            // Safe to cast since extensions can only be trait refs, not trait group refs
+            processExtensionTraitToObject(trait as CdmTraitReference, entityObject);
 
             continue;
         }
 
         if (trait.namedReference === 'is.modelConversion.otherAnnotations') {
-            for (const annotation of (trait.arguments.allItems[0].value as any)) {
+            // Safe to cast since extensions can only be trait refs, not trait group refs
+            for (const annotation of ((trait as CdmTraitReference).arguments.allItems[0].value as any)) {
                 if (annotation instanceof NameValuePair) {
                     const element: Annotation = new Annotation();
                     element.name = annotation.name;
@@ -181,9 +187,12 @@ export function processTraitsAndAnnotationsToData(
             }
         } else if (!ignoredTraits.has(trait.namedReference)
                     && !trait.namedReference.startsWith('is.dataFormat')
-                    && !(modelJsonPropertyTraits.has(trait.namedReference) && trait.isFromProperty)) {
-            const extension: CdmJsonType = CdmFolder.TraitReferencePersistence.toData(trait, undefined, undefined);
-            extensions.push(extension);
+                    && !(modelJsonPropertyTraits.has(trait.namedReference) && trait instanceof CdmTraitReference && (trait as CdmTraitReference).isFromProperty)) {
+            if (trait instanceof CdmTraitGroupReference) {
+                extensions.push(CdmFolder.TraitGroupReferencePersistence.toData(trait, undefined, undefined));
+            } else {
+                extensions.push(CdmFolder.TraitReferencePersistence.toData(trait, undefined, undefined));
+            }
         }
 
         if (annotations.length > 0) {

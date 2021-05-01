@@ -35,7 +35,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRefreshDataPartitionPatterns");
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/patternManifest.manifest.cdm.json");
 
-            var partitionEntity = cdmManifest.Entities.AllItems[0];
+            var partitionEntity = cdmManifest.Entities.AllItems[1];
             Assert.AreEqual(partitionEntity.DataPartitions.Count, 1);
 
             var timeBeforeLoad = DateTime.Now;

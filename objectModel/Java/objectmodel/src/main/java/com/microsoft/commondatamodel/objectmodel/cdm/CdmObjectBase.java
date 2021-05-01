@@ -249,8 +249,6 @@ public abstract class CdmObjectBase implements CdmObject {
   }
 
   void constructResolvedTraits(final ResolvedTraitSetBuilder rtsb, final ResolveOptions resOpt) {
-    // intentionally NOP
-    return;
   }
 
   /**
@@ -355,10 +353,6 @@ public abstract class CdmObjectBase implements CdmObject {
     return rtsbAll.getResolvedTraitSet();
   }
 
-  @Deprecated
-  public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt) {
-    return this.fetchObjectFromCache(resOpt, null);
-  }
   /**
    * @param resOpt Resolve Options
    * @param acpInContext Attribute Context Parameters
@@ -425,13 +419,13 @@ public abstract class CdmObjectBase implements CdmObject {
         //}
     }
 
+    int currentDepth = resOpt.depthInfo.getCurrentDepth();
+
     final String kind = "rasb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
     ResolvedAttributeSetBuilder rasbResult = null;
     ResolvedAttributeSetBuilder rasbCache = this.fetchObjectFromCache(resOpt, acpInContext);
     CdmAttributeContext underCtx = null;
-
-    int currentDepth = resOpt.depthInfo.getCurrentDepth();
 
     // store the previous document set, we will need to add it with
     // children found from the constructResolvedTraits call

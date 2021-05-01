@@ -6,9 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityAttributeDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -22,7 +20,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class EntityAttributePersistence {
 
-  private static String tag = EntityAttributePersistence.class.getSimpleName();
+  private static final String TAG = EntityAttributePersistence.class.getSimpleName();
 
   public static CdmEntityAttributeDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
     final CdmEntityAttributeDefinition entityAttribute =
@@ -46,15 +44,15 @@ public class EntityAttributePersistence {
       }
 
       if (StringUtils.isNullOrTrimEmpty(minCardinality) || StringUtils.isNullOrTrimEmpty(maxCardinality)) {
-        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistCardinalityPropMissing);
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistCardinalityPropMissing);
       }
 
       if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistInvalidMinCardinality, minCardinality);
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistInvalidMinCardinality, minCardinality);
       }
 
       if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistInvalidMaxCardinality, maxCardinality);
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistInvalidMaxCardinality, maxCardinality);
       }
 
       if (!StringUtils.isNullOrTrimEmpty(minCardinality) &&
@@ -86,7 +84,7 @@ public class EntityAttributePersistence {
         Utils.createTraitReferenceList(ctx, obj.get("appliedTraits")));
     // Ignore resolution guidance if the entity is a projection
     if (obj.get("resolutionGuidance") != null && isProjection) {
-      Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistEntityAttrUnsupported,  entityAttribute.getName());
+      Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistEntityAttrUnsupported,  entityAttribute.getName());
     } else {
       entityAttribute.setResolutionGuidance(AttributeResolutionGuidancePersistence.fromData(ctx, obj.get("resolutionGuidance")));
     }
@@ -107,7 +105,7 @@ public class EntityAttributePersistence {
     result.setAppliedTraits(Utils.listCopyDataAsArrayNode(
       instance.getAppliedTraits().getAllItems()
           .stream()
-          .filter(trait -> !trait.isFromProperty())
+          .filter(trait -> trait instanceof CdmTraitGroupReference || !((CdmTraitReference)trait).isFromProperty())
           .collect(Collectors.toList()),
       resOpt,
       options));

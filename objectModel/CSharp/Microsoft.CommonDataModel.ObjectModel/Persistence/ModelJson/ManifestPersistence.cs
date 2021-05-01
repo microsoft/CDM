@@ -34,7 +34,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         /// <summary>
         /// The file format/extension types this persistence class supports.
         /// </summary>
-        public static readonly string[] Formats = { PersistenceLayer.ModelJsonExtension};
+        public static readonly string[] Formats = { PersistenceLayer.ModelJsonExtension };
 
         public static async Task<CdmManifestDefinition> FromObject(CdmCorpusContext ctx, Model obj, CdmFolderDefinition folder)
         {
@@ -336,7 +336,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
                             if (element is ReferenceEntity referenceEntity)
                             {
-                                location = location.Slice(0, location.LastIndexOf("/"));
+                                // path separator can differ depending on the adapter, cover the case where path uses '/' or '\'
+                                int lastSlashLocation = location.LastIndexOf("/") > location.LastIndexOf("\\") ? location.LastIndexOf("/") : location.LastIndexOf("\\");
+                                if (lastSlashLocation > 0)
+                                    location = location.Slice(0, lastSlashLocation);
 
                                 if (referenceEntity.ModelId != null)
                                 {
@@ -382,7 +385,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.EntityName);
+                        Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionFailure, entity.EntityName, ex.Message);
                     }
                 }
                 await Task.WhenAll(promises);

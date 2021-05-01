@@ -4,80 +4,17 @@
     {
       "type": "LocalEntity",
       "entityName": "CustomPerson",
-      "entityPath": "resolved/CustomPerson.cdm.json/CustomPerson",
-      "dataPartitions": [
-        {
-          "name": "CustomPerson-data-description",
-          "location": "local:/CustomPerson/partition-data.csv",
-          "exhibitsTraits": [
-            {
-              "traitReference": "is.partition.format.CSV",
-              "arguments": [
-                {
-                  "name": "columnHeaders",
-                  "value": "true"
-                },
-                {
-                  "name": "delimiter",
-                  "value": ","
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "entityPath": "resolved/CustomPerson.cdm.json/CustomPerson"
     },
     {
       "type": "LocalEntity",
       "entityName": "CustomAccount",
-      "entityPath": "resolved/CustomAccount.cdm.json/CustomAccount",
-      "dataPartitions": [
-        {
-          "name": "CustomAccount-data-description",
-          "location": "local:/CustomAccount/partition-data.csv",
-          "exhibitsTraits": [
-            {
-              "traitReference": "is.partition.format.CSV",
-              "arguments": [
-                {
-                  "name": "columnHeaders",
-                  "value": "true"
-                },
-                {
-                  "name": "delimiter",
-                  "value": ","
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "entityPath": "resolved/CustomAccount.cdm.json/CustomAccount"
     },
     {
       "type": "LocalEntity",
       "entityName": "ExtendedStandardAccount",
-      "entityPath": "resolved/ExtendedStandardAccount.cdm.json/ExtendedStandardAccount",
-      "dataPartitions": [
-        {
-          "name": "ExtendedStandardAccount-data-description",
-          "location": "local:/ExtendedStandardAccount/partition-data.csv",
-          "exhibitsTraits": [
-            {
-              "traitReference": "is.partition.format.CSV",
-              "arguments": [
-                {
-                  "name": "columnHeaders",
-                  "value": "true"
-                },
-                {
-                  "name": "delimiter",
-                  "value": ","
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "entityPath": "resolved/ExtendedStandardAccount.cdm.json/ExtendedStandardAccount"
     }
   ],
   "relationships": [
@@ -85,16 +22,66 @@
       "fromEntity": "resolved/CustomAccount.cdm.json/CustomAccount",
       "fromEntityAttribute": "accountOwnerId",
       "toEntity": "resolved/CustomPerson.cdm.json/CustomPerson",
-      "toEntityAttribute": "CustomPersonId"
+      "toEntityAttribute": "CustomPersonId",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.relationship.verbPhrase",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Non-simple resolution guidance sample - Forwards"
+                  ],
+                  [
+                    "cn",
+                    "正向"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "means.relationship.inverseVerbPhrase"
+        }
+      ]
     },
     {
       "fromEntity": "resolved/ExtendedStandardAccount.cdm.json/ExtendedStandardAccount",
       "fromEntityAttribute": "SimpleCustomAccountId",
       "toEntity": "resolved/CustomAccount.cdm.json/CustomAccount",
-      "toEntityAttribute": "CustomAccountId"
+      "toEntityAttribute": "CustomAccountId",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.relationship.verbPhrase",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Simple resolution guidance sample - Forwards"
+                  ],
+                  [
+                    "cn",
+                    "正向"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "means.relationship.inverseVerbPhrase"
+        }
+      ]
     }
   ],
-  "jsonSchemaSemanticVersion": "1.1.0",
+  "jsonSchemaSemanticVersion": "1.2.0",
   "imports": [
     {
       "corpusPath": "cdm:/foundations.cdm.json"

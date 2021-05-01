@@ -1,10 +1,11 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
+import asyncio, sys, os
 from datetime import datetime, timezone
 from typing import cast, Dict, Iterable, Optional, Union, TYPE_CHECKING
 
-from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle
+from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle, ImportsLoadStrategy
 from cdm.utilities import AttributeResolutionDirectiveSet, logger, ResolveOptions, time_utils
 from cdm.enums import CdmLogCode
 
@@ -393,7 +394,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         return None
 
     async def _save_dirty_link(self, relative: str, options: 'CopyOptions') -> bool:
-        """helper that fixes a path from local to absolute, gets the object from that path
+        """Helper that fixes a path from local to absolute, gets the object from that path
         then looks at the document where the object is found.
         if dirty, the document is saved with the original name"""
 
@@ -417,41 +418,75 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                     return False
         return True
 
+
+    async def _fetch_document_definition(self, relative_path: str) -> (CdmDocumentDefinition, bool):
+        """Helper that fixes a path from local to absolute.Gets the object from that path.
+        Created from SaveDirtyLink in order to be able to save docs in parallel.
+        Represents the part of SaveDirtyLink that could not be parallelized."""
+        ans = (None, False)
+        # get the document object from the import
+        doc_path = self.ctx.corpus.storage.create_absolute_corpus_path(relative_path, self)
+        if doc_path is None:
+            logger.error(self.ctx, self._TAG, self._fetch_document_definition.__name__, self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_CORPUS_PATH, relative_path)
+            return ans
+
+        res_opt = ResolveOptions()
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
+        obj_at = await self.ctx.corpus.fetch_object_async(doc_path, None, res_opt)
+        if obj_at is None:
+            logger.error(self.ctx, self._TAG, self._fetch_document_definition.__name__, self.at_corpus_path, CdmLogCode.ERR_PERSIST_OBJECT_NOT_FOUND, doc_path)
+            return ans
+        doc_imp = cast('CdmDocumentDefinition', obj_at.in_document)
+        return (doc_imp, True) 
+
+    async def _save_document_if_dirty(self, doc_imp, options: 'CopyOptions') -> None:
+        """Saves CdmDocumentDefinition if dirty.
+        Was created from SaveDirtyLink in order to be able to save docs in parallel.
+        Represents the part of SaveDirtyLink that could be parallelized."""
+        loop = asyncio.get_event_loop()
+        if doc_imp and doc_imp._is_dirty:
+                # save it with the same name
+                t = loop.create_task(doc_imp.save_as_async(doc_imp.name, True, options))
+                if not await t:
+                    logger.error(self.ctx, self._TAG, self._save_document_if_dirty.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ENTITY_DOC_SAVING_FAILURE, doc_imp.name)
+                    return False
+        return True
+
     async def _save_linked_documents_async(self, options: 'CopyOptions') -> bool:
+        links = set()
         if self.imports:
             for imp in self.imports:
-                if not await self._save_dirty_link(imp.corpus_path, options):
-                    logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IMPORT_SAVING_FAILURE, imp.at_corpus_path)
-                    return False
-
-        # only the local entity declarations please
+                links.add(imp.corpus_path)
         for entity_def in self.entities:
             if entity_def.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
-                if not await self._save_dirty_link(entity_def.entity_path, options):
-                    logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ENTITY_DOC_SAVING_FAILURE, entity_def.entity_path)
-                    return False
-
-                # also, partitions can have their own schemas
-                if entity_def.data_partitions:
-                    for partition in entity_def.data_partitions:
-                        if partition.specialized_schema:
-                            if not await self._save_dirty_link(entity_def.entity_path, options):
-                                logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ENTITY_DOC_SAVING_FAILURE, entity_def.entity_path)
-                                return False
-
-                # so can patterns
-                if entity_def.data_partition_patterns:
-                    for pattern in entity_def.data_partition_patterns:
-                        if pattern.specialized_schema:
-                            if not await self._save_dirty_link(pattern.specialized_schema, options):
-                                logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_PARTITION_SCHEMA_SAVING_FAILURE, pattern.specialized_schema)
-                                return False
-
+                links.add(entity_def.entity_path)
+            if entity_def.data_partitions:
+               for partition in entity_def.data_partitions:
+                    if partition.specialized_schema:
+                       links.add(entity_def.entity_path)
+            if entity_def.data_partition_patterns:
+                for pattern in entity_def.data_partition_patterns:
+                    if pattern.specialized_schema:
+                       links.add(pattern.specialized_schema)
+        
         if self.sub_manifests:
             for sub in self.sub_manifests:
-                if not await self._save_dirty_link(sub.definition, options):
-                    logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_SUB_MANIFEST_SAVING_FAILURE, sub.definition)
-                    return False
+                links.add(sub.definition)
+
+        docs = list() # type: List[CdmDocumentDefinition]
+        for link in links:
+            doc = await self._fetch_document_definition(link)
+            if not doc[1]:
+               logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_PERSIST_OBJECT_NOT_FOUND, link)
+            else:
+               docs.append(doc[0])
+
+        tasks = list()
+        loop = asyncio.get_event_loop()
+        for d in docs:
+            tasks.append(loop.create_task(self._save_document_if_dirty(d,options)))
+
+        await asyncio.gather(*tasks)
 
         return True
 

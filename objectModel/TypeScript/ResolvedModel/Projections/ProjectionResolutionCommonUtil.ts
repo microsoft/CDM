@@ -12,8 +12,11 @@ import {
     CdmEntityAttributeDefinition,
     CdmEntityDefinition,
     CdmEntityReference,
+    cdmLogCode,
     CdmObject,
+    CdmObjectBase,
     cdmObjectType,
+    Logger,
     ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
@@ -29,6 +32,8 @@ import {
  * @internal
  */
 export class ProjectionResolutionCommonUtil {
+    private static TAG: string = ProjectionResolutionCommonUtil.name;
+
     /**
      * Function to initialize the input projection attribute state Set for a projection
      * @internal
@@ -186,14 +191,12 @@ export class ProjectionResolutionCommonUtil {
         for (const refFound of refFoundList) {
             const resAttr: ResolvedAttribute = refFound.currentResolvedAttribute;
 
-            if ((resAttr?.target as CdmObject)?.owner &&
-                ((resAttr.target as CdmObject).objectType === cdmObjectType.typeAttributeDef || (resAttr.target as CdmObject).objectType === cdmObjectType.entityAttributeDef)) {
+            if (!resAttr.owner) {
+                const atCorpusPath: string = resAttr.target instanceof CdmObjectBase ?  resAttr.target.atCorpusPath: resAttr.resolvedName;
+                Logger.warning(corpus.ctx, this.TAG, this.createForeignKeyLinkedEntityIdentifierTraitParameter.name, atCorpusPath, cdmLogCode.WarnProjCreateForeignKeyTraits, resAttr.resolvedName);
+            } else if ((resAttr.target as CdmObject).objectType === cdmObjectType.typeAttributeDef || (resAttr.target as CdmObject).objectType === cdmObjectType.entityAttributeDef) {
                 // find the linked entity
-                let owner: CdmObject = (resAttr.target as CdmObject).owner;
-
-                while (owner && owner.objectType !== cdmObjectType.entityDef) {
-                    owner = owner.owner;
-                }
+                const owner: CdmObject = resAttr.owner;
 
                 // find where the projection is defined
                 const projectionDoc: CdmDocumentDefinition = projDir.owner !== undefined ? projDir.owner.inDocument : undefined;

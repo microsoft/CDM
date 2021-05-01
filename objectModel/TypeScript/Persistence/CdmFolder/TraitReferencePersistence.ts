@@ -16,15 +16,22 @@ import {
 
 export class TraitReferencePersistence extends cdmObjectRefPersistence {
     public static fromData(ctx: CdmCorpusContext, object: string | TraitReference): CdmTraitReference {
-        if (!object) { return; }
+        if (!object) {
+            return;
+        }
+
         let simpleReference: boolean = true;
+        let optional: boolean | undefined;
         let trait: string | CdmTraitDefinition;
         let args: (string | Argument)[];
+        
         if (typeof (object) === 'string') {
             trait = object;
         } else {
             simpleReference = false;
+            optional = object.optional;
             args = object.arguments;
+
             if (typeof (object.traitReference) === 'string') {
                 trait = object.traitReference;
             } else {
@@ -33,6 +40,11 @@ export class TraitReferencePersistence extends cdmObjectRefPersistence {
         }
 
         const traitReference: CdmTraitReference = ctx.corpus.MakeRef(cdmObjectType.traitRef, trait, simpleReference);
+
+        if (optional !== undefined) {
+            traitReference.optional = optional;
+        }
+
         if (args) {
             args.forEach((a: (string | Argument)) => {
                 traitReference.arguments.push(CdmFolder.ArgumentPersistence.fromData(ctx, a));

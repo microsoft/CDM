@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class EntityPersistence {
-  private static String tag = EntityPersistence.class.getSimpleName();
+  private static final String TAG = EntityPersistence.class.getSimpleName();
 
   public static CompletableFuture<CdmEntityDefinition> fromData(
       final CdmCorpusContext ctx,
@@ -49,7 +49,7 @@ public class EntityPersistence {
           if (typeAttribute != null) {
             entity.getAttributes().add(typeAttribute);
           } else {
-            Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistModelJsonAttrConversionFailure);
+            Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistModelJsonAttrConversionFailure);
             return null;
           }
         }
@@ -80,7 +80,7 @@ public class EntityPersistence {
       result.setAttributes(new ArrayList<>());
       for (final CdmAttributeItem element : instance.getAttributes()) {
         if (element.getObjectType() != CdmObjectType.TypeAttributeDef) {
-          Logger.error(ctx, tag, "toData", element.getAtCorpusPath(), CdmLogCode.ErrPersistManifestSavingFailure);
+          Logger.error(ctx, TAG, "toData", element.getAtCorpusPath(), CdmLogCode.ErrPersistManifestSavingFailure);
           return null;
         }
         // TODO-BQ: verify if the order of attribute being added is important.
@@ -91,7 +91,7 @@ public class EntityPersistence {
           if (attribute != null) {
             result.getAttributes().add(attribute);
           } else {
-            Logger.error(ctx, tag, "toData", element.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonAttrConversionFailure);
+            Logger.error(ctx, TAG, "toData", element.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonAttrConversionFailure);
             return null;
           }
         }

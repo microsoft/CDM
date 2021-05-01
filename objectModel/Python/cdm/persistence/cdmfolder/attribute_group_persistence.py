@@ -15,12 +15,13 @@ from .types import AttributeGroup
 
 class AttributeGroupPersistence:
     @staticmethod
-    def from_data(ctx: CdmCorpusContext, obj: AttributeGroup, entity_name: Optional[str] = None) -> CdmAttributeGroupDefinition:
+    def from_data(ctx: CdmCorpusContext, obj: AttributeGroup, entity_name: Optional[str] = None) \
+            -> CdmAttributeGroupDefinition:
         attribute_group = ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_GROUP_DEF, obj.attributeGroupName)
         attribute_group.explanation = obj.get('explanation')
         attribute_group.attribute_context = AttributeContextReferencePersistence.from_data(ctx, obj.get('attributeContext'))
-        exhibits_traits = utils.create_trait_reference_array(ctx, obj.get('exhibitsTraits'))
-        attribute_group.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(attribute_group.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, obj.get('exhibitsTraits')))
 
         for att in obj.members:
             attribute_group.members.append(utils.create_attribute(ctx, att, entity_name))
@@ -28,7 +29,8 @@ class AttributeGroupPersistence:
         return attribute_group
 
     @staticmethod
-    def to_data(instance: CdmAttributeGroupDefinition, res_opt: ResolveOptions, options: CopyOptions) -> Optional[AttributeGroup]:
+    def to_data(instance: CdmAttributeGroupDefinition, res_opt: ResolveOptions, options: CopyOptions) \
+            -> Optional[AttributeGroup]:
         result = AttributeGroup()
         result.explanation = instance.explanation
         result.attributeGroupName = instance.attribute_group_name

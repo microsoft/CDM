@@ -67,7 +67,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             new_partition.arguments = args.copy()
             self.data_partitions.append(new_partition)
 
-    async def file_status_check_async(self) -> None:        
+    async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
 
         context = self.ctx.corpus.storage.fetch_adapter(self.in_document.namespace).create_file_query_cache_context()
@@ -87,7 +87,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             await self.report_most_recent_time_async(self.last_file_modified_time)
         finally:
             context.dispose()
-        
+
     def get_name(self) -> str:
         return self.entity_name
 
@@ -157,6 +157,6 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             return True
 
         if post_children and post_children(self, path):
-            return False
+            return True
 
         return False

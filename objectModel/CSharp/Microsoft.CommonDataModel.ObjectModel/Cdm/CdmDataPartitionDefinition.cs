@@ -156,17 +156,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             if (preChildren != null && preChildren.Invoke(this, path))
-            {
                 return false;
-            }
 
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
 
             if (postChildren != null && postChildren.Invoke(this, path))
-            {
-                return false;
-            }
+                return true;
             return false;
         }
 

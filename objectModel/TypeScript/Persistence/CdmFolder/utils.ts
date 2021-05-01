@@ -10,7 +10,7 @@ import {
     CdmObject,
     CdmObjectDefinition,
     CdmObjectReference,
-    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     identifierRef,
     resolveOptions
@@ -22,6 +22,7 @@ import {
     EntityAttribute,
     EntityReferenceDefinition,
     PurposeReference,
+    TraitGroupReference,
     TraitReference,
     TypeAttribute
 } from './types';
@@ -39,16 +40,20 @@ function isAttributeGroupReference(object: object): object is AttributeGroupRefe
 }
 
 /**
- * Converts a JSON object to a CdmCollection of TraitReferences
+ * Converts a JSON object to a CdmCollection of TraitReferences and TraitGroupReferences
  */
 export function createTraitReferenceArray(
     ctx: CdmCorpusContext,
-    object: (string | TraitReference)[]): CdmTraitReference[] {
+    object: (string | TraitReference | TraitGroupReference)[]): CdmTraitReferenceBase[] {
     if (!object || !object.map) { return; }
 
-    const result: CdmTraitReference[] = [];
-    object.forEach((traitReference: string | TraitReference) => {
-        result.push(CdmFolder.TraitReferencePersistence.fromData(ctx, traitReference));
+    const result: CdmTraitReferenceBase[] = [];
+    object.forEach((traitReference: string | TraitReference | TraitGroupReference) => {
+        if (typeof traitReference !== 'string' && 'traitGroupReference' in traitReference) {
+            result.push(CdmFolder.TraitGroupReferencePersistence.fromData(ctx, traitReference as TraitGroupReference));
+        } else {
+            result.push(CdmFolder.TraitReferencePersistence.fromData(ctx, traitReference));
+        }
     });
 
     return result;
@@ -95,6 +100,8 @@ export function createConstant(ctx: CdmCorpusContext, object: CdmJsonType): Argu
             return CdmFolder.PurposeReferencePersistence.fromData(ctx, object as PurposeReference);
         } else if (checkExistingProperty('traitReference')) {
             return CdmFolder.TraitReferencePersistence.fromData(ctx, object as TraitReference);
+        } else if (checkExistingProperty('traitGroupReference')) {
+            return CdmFolder.TraitGroupReferencePersistence.fromData(ctx, object as TraitGroupReference);
         } else if (checkExistingProperty('dataTypeReference')) {
             return CdmFolder.DataTypeReferencePersistence.fromData(ctx, object as DataTypeReference);
         } else if (checkExistingProperty('entityReference')) {

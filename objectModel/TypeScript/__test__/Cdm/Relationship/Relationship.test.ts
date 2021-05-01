@@ -5,11 +5,11 @@ import {
     CdmCorpusDefinition,
     CdmE2ERelationship,
     CdmEntityDefinition,
+    cdmLogCode,
     CdmManifestDeclarationDefinition,
     CdmManifestDefinition,
     cdmObjectType,
-    cdmRelationshipDiscoveryStyle,
-    cdmStatusLevel
+    cdmRelationshipDiscoveryStyle
 } from '../../../internal';
 import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
@@ -258,6 +258,25 @@ describe('Cdm/Relationship/Relationship', () => {
 
         // check that each relationship has been created correctly
         verifyRelationships(manifest, expectedRels);
+        done();
+    });
+
+    /**
+     * Test the relationship calculation when using a replace as foreign key operation while extending an entity.
+     */
+    it('testExtendsEntityAndReplaceAsForeignKey', async (done) => {
+        const testName = 'TestExtendsEntityAndReplaceAsForeignKey';
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+
+        const manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
+
+        await corpus.calculateEntityGraphAsync(manifest);
+        // Check if the warning was logged.
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnProjFKWithoutSourceEntity);
+
+        await manifest.populateManifestRelationshipsAsync();
+        expect(manifest.relationships.length)
+            .toEqual(0);
         done();
     });
 

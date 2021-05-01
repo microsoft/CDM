@@ -6,13 +6,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     using Assert = AssertExtension;

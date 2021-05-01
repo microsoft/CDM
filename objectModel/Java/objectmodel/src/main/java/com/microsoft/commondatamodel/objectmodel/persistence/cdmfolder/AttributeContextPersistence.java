@@ -5,13 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContextReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -26,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AttributeContextPersistence {
-  private static String tag = AttributeContextPersistence.class.getSimpleName();
+  private static final String TAG = AttributeContextPersistence.class.getSimpleName();
 
   public static CdmAttributeContext fromData(final CdmCorpusContext ctx, final AttributeContext obj) {
     if (obj == null)
@@ -73,7 +67,7 @@ public class AttributeContextPersistence {
           try {
             attributeContext.getContents().add(fromData(ctx, JMapper.MAP.treeToValue(node, AttributeContext.class)));
           } catch (final IOException ex) {
-            Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistJsonAttrContextConversionError, ex.getLocalizedMessage());
+            Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistJsonAttrContextConversionError, ex.getLocalizedMessage());
           }
       }
     }
@@ -108,8 +102,8 @@ public class AttributeContextPersistence {
     // i know the trait collection names look wrong. but I wanted to use the def baseclass
     if (instance.getExhibitsTraits() != null) {
       final List<CdmObject> traits = new ArrayList<>();
-      instance.getExhibitsTraits().forEach((CdmTraitReference trait) -> {
-        if (!trait.isFromProperty())
+      instance.getExhibitsTraits().forEach((CdmTraitReferenceBase trait) -> {
+        if (trait instanceof CdmTraitGroupReference || !((CdmTraitReference)trait).isFromProperty())
           traits.add(trait);
       });
       result.setAppliedTraits(Utils.listCopyDataAsArrayNode(traits, resOpt, options));

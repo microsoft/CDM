@@ -369,6 +369,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             found = null;
                         }
                         break;
+                    case CdmObjectType.TraitGroupRef:
+                        if (found.ObjectType != CdmObjectType.TraitGroupDef)
+                        {
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "traitGroup", symbolDef);
+                            found = null;
+                        }
+                        break;
                     case CdmObjectType.AttributeGroupRef:
                         if (found.ObjectType != CdmObjectType.AttributeGroupDef)
                         {
@@ -703,6 +710,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 case CdmObjectType.TraitRef:
                     newObj = new CdmTraitReference(this.Ctx, nameOrRef, simpleNameRef, false);
                     break;
+                case CdmObjectType.TraitGroupDef:
+                    newObj = new CdmTraitGroupDefinition(this.Ctx, nameOrRef);
+                    break;
+                case CdmObjectType.TraitGroupRef:
+                    newObj = new CdmTraitGroupReference(this.Ctx, nameOrRef, simpleNameRef);
+                    break;
                 case CdmObjectType.TypeAttributeDef:
                     newObj = new CdmTypeAttributeDefinition(this.Ctx, nameOrRef);
                     break;
@@ -778,6 +791,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 case CdmObjectType.TraitDef:
                 case CdmObjectType.TraitRef:
                     return CdmObjectType.TraitRef;
+
+                case CdmObjectType.TraitGroupDef:
+                case CdmObjectType.TraitGroupRef:
+                    return CdmObjectType.TraitGroupRef;
 
                 case CdmObjectType.EntityAttributeDef:
                 case CdmObjectType.TypeAttributeDef:
@@ -1247,6 +1264,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         case CdmObjectType.ParameterDef:
                         case CdmObjectType.TraitDef:
                         case CdmObjectType.PurposeDef:
+                        case CdmObjectType.TraitGroupDef:
+                        case CdmObjectType.TraitGroupRef:
                         case CdmObjectType.AttributeContextDef:
                         case CdmObjectType.DataTypeDef:
                         case CdmObjectType.TypeAttributeDef:
@@ -1268,7 +1287,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             if (iObject.ObjectType == CdmObjectType.AttributeGroupRef || iObject.ObjectType == CdmObjectType.AttributeContextRef
                             || iObject.ObjectType == CdmObjectType.DataTypeRef || iObject.ObjectType == CdmObjectType.EntityRef
                             || iObject.ObjectType == CdmObjectType.PurposeRef || iObject.ObjectType == CdmObjectType.TraitRef
-                            || iObject.ObjectType == CdmObjectType.ConstantEntityDef)
+                            || iObject.ObjectType == CdmObjectType.TraitGroupRef || iObject.ObjectType == CdmObjectType.ConstantEntityDef)
                             {
                                 // these are all references
                                 // we will now allow looking up a reference object based on path, so they get indexed too
@@ -1311,6 +1330,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         case CdmObjectType.EntityDef:
                         case CdmObjectType.ParameterDef:
                         case CdmObjectType.TraitDef:
+                        case CdmObjectType.TraitGroupDef:
                         case CdmObjectType.PurposeDef:
                         case CdmObjectType.DataTypeDef:
                         case CdmObjectType.TypeAttributeDef:
@@ -1394,6 +1414,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             expectedTypes.Add(CdmObjectType.PurposeRef);
                             expectedTypes.Add(CdmObjectType.PurposeDef);
                             expected = "purpose";
+                        }
+                        else if (dt.IsDerivedFrom("traitGroup", resOpt))
+                        {
+                            expectedTypes.Add(CdmObjectType.TraitGroupRef);
+                            expectedTypes.Add(CdmObjectType.TraitGroupDef);
+                            expected = "traitGroup";
                         }
                         else if (dt.IsDerivedFrom("trait", resOpt))
                         {
@@ -1854,10 +1880,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 isEntityRef = true;
 
                                 List<string> toAtt = child.ExhibitsTraits
-                                    .Where(x => x.FetchObjectDefinitionName() == "is.identifiedBy" && x.Arguments?.Count > 0)
+                                    .Where(x => x.FetchObjectDefinitionName() == "is.identifiedBy" && (x as CdmTraitReference).Arguments?.Count > 0)
                                     .Select(y =>
                                     {
-                                        string namedRef = (y.Arguments[0].Value as CdmAttributeReference).NamedReference;
+                                        string namedRef = ((y as CdmTraitReference).Arguments[0].Value as CdmAttributeReference).NamedReference;
                                         return namedRef.Slice(namedRef.LastIndexOf("/") + 1);
                                     }
                                     )
@@ -2509,6 +2535,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         case CdmObjectType.TraitDef:
                         case CdmObjectType.PurposeDef:
+                        case CdmObjectType.TraitGroupDef:
                         case CdmObjectType.DataTypeDef:
                         case CdmObjectType.EntityDef:
                         case CdmObjectType.AttributeGroupDef:
@@ -2624,12 +2651,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         private List<Tuple<string, string, string>> GetToAttributes(CdmTypeAttributeDefinition fromAttrDef, ResolveOptions resOpt)
         {
             var tupleList = fromAttrDef?.AppliedTraits?
-                .Where(x => x.NamedReference == "is.linkedEntity.identifier" && x.Arguments?.Count > 0)?
-                .Select(y => ((y.Arguments[0].Value as CdmEntityReference).FetchObjectDefinition<CdmConstantEntityDefinition>(resOpt) as CdmConstantEntityDefinition))?
+                .Where(x => x.NamedReference == "is.linkedEntity.identifier" && (x as CdmTraitReference).Arguments?.Count > 0)?
+                .Select(y => ((y as CdmTraitReference).Arguments[0].Value as CdmEntityReference).FetchObjectDefinition<CdmConstantEntityDefinition>(resOpt))?
                 .Where(e => e.ConstantValues.Count > 0)?
                 .SelectMany(f => f.ConstantValues)?
                 .Select(z => new Tuple<string, string, string>(z[0], z[1], z.Count > 2 ? z[2] : ""))?
-                .ToList() as List<Tuple<string, string, string>>;
+                .ToList();
 
             return tupleList;
         }

@@ -97,11 +97,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal ResolvedTraitSet AddResolvedTraitsApplied(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)
         {
-            int l = this.AppliedTraits.Count;
-            for (int i = 0; i < l; i++)
-            {
-                rtsb.MergeTraits(this.AppliedTraits[i].FetchResolvedTraits(resOpt));
-            }
+            AppliedTraits.AllItems.ForEach(item => rtsb.MergeTraits(item.FetchResolvedTraits(resOpt)));
 
             // dynamic applied on use
             return rtsb.ResolvedTraitSet;

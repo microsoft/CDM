@@ -52,7 +52,8 @@ import {
     StringUtils,
     TraitSpec,
     traitToPropertyMap,
-    VisitCallback
+    VisitCallback,
+    CdmTraitReferenceBase
 } from '../internal';
 import { isAttributeReference, isEntityAttributeDefinition } from '../Utilities/cdmObjectTypeGuards';
 import { using } from 'using-statement';
@@ -1105,8 +1106,10 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                     // fix entity traits
                     if (entResolved.exhibitsTraits) {
                         entResolved.exhibitsTraits.allItems
-                            .forEach((et: CdmTraitReference) => {
-                                replaceTraitAttRef(et, newEntName, false);
+                            .forEach((et: CdmTraitReferenceBase) => {
+                                if (et instanceof CdmTraitReference) {
+                                    replaceTraitAttRef(et, newEntName, false);
+                                }
                             });
                     }
 
@@ -1115,7 +1118,11 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                         = (subAttCtx: CdmAttributeContext, entityHint: string): void => {
                             const traitsHere: CdmTraitCollection = subAttCtx.exhibitsTraits;
                             if (traitsHere) {
-                                traitsHere.allItems.forEach((tr: CdmTraitReference) => { replaceTraitAttRef(tr, entityHint, true); });
+                                traitsHere.allItems.forEach((tr: CdmTraitReferenceBase) => { 
+                                    if (tr instanceof CdmTraitReference) {
+                                        replaceTraitAttRef(tr, entityHint, true); 
+                                    }
+                                });
                             }
                             for (const cr of subAttCtx.contents.allItems) {
                                 if (cr.getObjectType() === cdmObjectType.attributeContextDef) {
@@ -1137,7 +1144,11 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                         for (const attribute of entAtts.allItems) {
                             const attTraits: CdmTraitCollection = attribute.appliedTraits;
                             if (attTraits) {
-                                attTraits.allItems.forEach((tr: CdmTraitReference) => { replaceTraitAttRef(tr, newEntName, false); });
+                                attTraits.allItems.forEach((tr: CdmTraitReference) => { 
+                                    if (tr instanceof CdmTraitReference) {
+                                        replaceTraitAttRef(tr, newEntName, false); 
+                                    }
+                                });
                             }
                         }
                     }
@@ -1180,7 +1191,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
         }
 
         // get or add the trait
-        let traitRef: CdmTraitReference = this.exhibitsTraits.item('has.entitySchemaAbstractionLevel');
+        let traitRef: CdmTraitReference = this.exhibitsTraits.item('has.entitySchemaAbstractionLevel') as CdmTraitReference;
         if (!traitRef) {
             traitRef = new CdmTraitReference(this.ctx, 'has.entitySchemaAbstractionLevel', false, true);
             this.exhibitsTraits.push(traitRef);

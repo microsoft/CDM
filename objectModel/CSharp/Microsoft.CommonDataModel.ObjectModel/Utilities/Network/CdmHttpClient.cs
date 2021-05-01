@@ -77,10 +77,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 
             try
             {
-                var task = Task.Run(async () => await SendAsyncHelper(cdmRequest, callback, ctx));
+                TimeSpan timeout = (TimeSpan)cdmRequest.MaximumTimeout;
+                int timeoutMilliseconds = (int)(timeout.TotalMilliseconds);
+                var task = SendAsyncHelper(cdmRequest, callback, ctx);
 
                 // Wait for all the requests to finish, if the time exceedes maximum timeout throw the CDM timed out exception.
-                if (task.Wait((TimeSpan)cdmRequest.MaximumTimeout))
+                if (await Task.WhenAny(task, Task.Delay(timeoutMilliseconds)) == task)
                 {
                     return task.Result;
                 }
@@ -146,14 +148,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                     // .net http client tries to write content even when the request is HEAD request.
                     if (cdmRequest.Method.Equals(HttpMethod.Head))
                     {
-                        request = Task.Run(async () => await this.client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead));
+                        request = this.client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
                     }
                     else
                     {
-                        request = Task.Run(async () => await this.client.SendAsync(requestMessage));
+                        request = this.client.SendAsync(requestMessage);
                     }
-
-                    if (!request.Wait((TimeSpan)cdmRequest.Timeout))
+                    TimeSpan timeout = (TimeSpan)cdmRequest.Timeout;
+                    int timeoutMilliseconds = (int)(timeout.TotalMilliseconds);
+                    if (await Task.WhenAny(request, Task.Delay(timeoutMilliseconds)) != request)
                     {
                         if (ctx != null && cdmRequest.Timeout != null)
                         {
@@ -162,7 +165,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 
                         throw new CdmTimedOutException("Request timeout.");
                     }
-
                     HttpResponseMessage response = request.Result;
 
                     if (ctx != null)

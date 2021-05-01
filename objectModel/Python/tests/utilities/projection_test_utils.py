@@ -4,20 +4,21 @@
 import os
 from typing import List, Optional
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmStatusLevel, CdmObjectType
 from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
 from tests.cdm.projection.attribute_context_util import AttributeContextUtil
 from tests.common import TestHelper
 
 
 class ProjectionTestUtils:
-    """Common utility methods for projection tests"""
+    """
+    Common utility methods for projection tests
+    If you want to update the expected output txt files for all the tests that are ran,
+    please set the parameter update_expected_output true in the method validate_attribute_context()
+    """
 
     # Path to foundations
     foundation_json_path = 'cdm:/foundations.cdm.json'
-
-    # If true, will update the expected output txt files for all the tests that are ran.
-    update_expected_output = False
 
     @staticmethod
     async def get_resolved_entity(corpus: 'CdmCorpusDefinition', input_entity: 'CdmEntityDefinition', directives: List[str]) -> 'CdmEntityDefinition':
@@ -50,7 +51,7 @@ class ProjectionTestUtils:
         return file_name_prefix
 
     @staticmethod
-    async def load_entity_for_resolution_option_and_save(test: 'TestCase', corpus: 'CdmCorpusDefinition', test_name: str, tests_subpath: str, entity_name: str, directives: List[str]) -> None:
+    async def load_entity_for_resolution_option_and_save(test: 'TestCase', corpus: 'CdmCorpusDefinition', test_name: str, tests_subpath: str, entity_name: str, directives: List[str]) -> 'CdmEntityDefinition':
         """Loads an entity, resolves it, and then validates the generated attribute contexts"""
         expected_output_path = TestHelper.get_expected_output_folder_path(tests_subpath, test_name)
 
@@ -61,10 +62,17 @@ class ProjectionTestUtils:
 
         await ProjectionTestUtils.validate_attribute_context(test, directives, expected_output_path, entity_name, resolved_entity)
 
+        return resolved_entity
+
     @staticmethod
-    def get_corpus(test_name: str, tests_subpath: str) -> 'CdmCorpusDefinition':
+    def get_local_corpus(tests_subpath: str, test_name: str) -> 'CdmCorpusDefinition':
         """Creates a corpus"""
         corpus = TestHelper.get_local_corpus(tests_subpath, test_name)
+
+        def callback(level: CdmStatusLevel, message: str):
+            raise Exception(message)
+        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
+
         return corpus
 
     @staticmethod
@@ -127,8 +135,11 @@ class ProjectionTestUtils:
         return projection
 
     @staticmethod
-    async def validate_attribute_context(test: 'TestCase', directives: List[str], expected_output_path: str, entity_name: str, resolved_entity: 'CdmEntityDefinition'):
-        """Validates if the attribute context of the resolved entity matches the expected output."""
+    async def validate_attribute_context(test: 'TestCase', directives: List[str], expected_output_path: str, entity_name: str, resolved_entity: 'CdmEntityDefinition', update_expected_output: Optional[bool] = False):
+        """
+        Validates if the attribute context of the resolved entity matches the expected output.
+        If update_expected_output is true, will update the expected output txt files for all the tests that are ran.
+        """
         if not resolved_entity.attribute_context:
             raise Exception('ValidateAttributeContext called with not resolved entity.')
 
@@ -139,7 +150,7 @@ class ProjectionTestUtils:
         attr_ctx_util = AttributeContextUtil()
         actual_text = attr_ctx_util.get_attribute_context_strings(resolved_entity)
 
-        if ProjectionTestUtils.update_expected_output:
+        if update_expected_output:
             expected_string_file_path = os.path.join(expected_output_path, file_name_prefix + file_name_suffix + '.txt')
 
             if len(directives) > 0:
@@ -149,7 +160,8 @@ class ProjectionTestUtils:
                     default_text = default_file.read().replace('\r\n', '\n')
 
                 if actual_text == default_text:
-                    os.remove(expected_string_file_path)
+                    if os.path.exists(expected_string_file_path):
+                        os.remove(expected_string_file_path)
                 else:
                     with open(expected_string_file_path, 'w') as expected_file:
                         expected_file.write(actual_text)

@@ -7,12 +7,11 @@ from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmOperationType, 
 from cdm.objectmodel import CdmAttributeContext
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.utilities import logger, AttributeContextParameters
-from cdm.utilities.string_utils import StringUtils
 
 from .cdm_operation_base import CdmOperationBase
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmTypeAttributeDefinition
+    from cdm.objectmodel import CdmCorpusContext, CdmTypeAttributeDefinition, CdmTraitReferenceBase
     from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
     from cdm.resolvedmodel.projections.projection_context import ProjectionContext
     from cdm.utilities import VisitCallback, ResolveOptions
@@ -92,7 +91,7 @@ class CdmOperationAddSupportingAttribute(CdmOperationBase):
         # There has to be some design decisions about how this will work and will be done in the next release.
         if len(proj_ctx._current_attribute_state_set._states) > 0:
             last_state = proj_ctx._current_attribute_state_set._states[-1]  # type: ProjectionAttributeState
-            in_support_of_trait = self.supporting_attribute.applied_traits.append('is.addedInSupportOf')  # type: CdmTraitReference
+            in_support_of_trait = self.supporting_attribute.applied_traits.append('is.addedInSupportOf')  # type: CdmTraitReferenceBase
             in_support_of_trait.arguments.append('inSupportOf', last_state._current_resolved_attribute.resolved_name)
 
         # Create the supporting attribute with the specified 'SupportingAttribute' property as its target and apply the trait 'is.virtual.attribute' to it

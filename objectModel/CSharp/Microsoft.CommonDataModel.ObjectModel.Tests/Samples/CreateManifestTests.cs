@@ -95,7 +95,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
                 part.Location = cdmCorpus.Storage.CreateRelativeCorpusPath(location, manifestResolved);
 
                 // Add trait to partition for csv params
-                var csvTrait = part.ExhibitsTraits.Add("is.partition.format.CSV", false);
+                var csvTrait = part.ExhibitsTraits.Add("is.partition.format.CSV", false) as CdmTraitReference;
                 csvTrait.Arguments.Add("columnHeaders", "true");
                 csvTrait.Arguments.Add("delimiter", ",");
 

@@ -142,7 +142,6 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         const attrCtxFK: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxFKParam);
 
         // get the added attribute and applied trait
-        // the name here will be {m} and not {A}{o}{M} - should this map to the not projections approach and default to {A}{o}{M} - ???
         const subFK: CdmTypeAttributeDefinition = this.replaceWith;
         const addTrait: string[] = ['is.linkedEntity.identifier'];
 
@@ -161,11 +160,16 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         refAttrName: string
     ): ProjectionAttributeStateSet {
         const pasList: ProjectionAttributeState[] = ProjectionResolutionCommonUtil.getLeafList(projCtx, refAttrName);
+        const sourceEntity = projCtx.projectionDirective.originalSourceEntityAttributeName;
+
+        if (!sourceEntity) {
+            Logger.warning(projOutputSet.ctx, CdmOperationReplaceAsForeignKey.name, this.createNewProjectionAttributeStateSet.name, null, cdmLogCode.WarnProjFKWithoutSourceEntity, refAttrName);
+        }
 
         if (pasList) {
             // update the new foreign key resolved attribute with trait param with reference details
             const reqdTrait: ResolvedTrait = newResAttrFK.resolvedTraits.find(projCtx.projectionDirective.resOpt, 'is.linkedEntity.identifier');
-            if (reqdTrait) {
+            if (reqdTrait && sourceEntity) {
                 const traitParamEntRef: CdmEntityReference = ProjectionResolutionCommonUtil.createForeignKeyLinkedEntityIdentifierTraitParameter(projCtx.projectionDirective, projOutputSet.ctx.corpus, pasList);
                 reqdTrait.parameterValues.setParameterValue(projCtx.projectionDirective.resOpt, 'entityReferences', traitParamEntRef);
             }

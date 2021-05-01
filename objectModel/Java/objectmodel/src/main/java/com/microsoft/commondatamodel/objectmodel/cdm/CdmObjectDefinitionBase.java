@@ -86,7 +86,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
     copy.setExplanation(this.getExplanation());
     copy.getExhibitsTraits().clear();
 
-    for (final CdmTraitReference trait : this.getExhibitsTraits()) {
+    for (final CdmTraitReferenceBase trait : this.getExhibitsTraits()) {
       copy.getExhibitsTraits().add(trait);
     }
     copy.setInDocument(this.getInDocument()); // if gets put into a new document, this will change. until, use the source
@@ -121,7 +121,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
 
     // Merge in dynamic that are exhibited by this class.
     if (null != this.getExhibitsTraits()) {
-      for (final CdmTraitReference exhibitsTrait : this.getExhibitsTraits()) {
+      for (final CdmTraitReferenceBase exhibitsTrait : this.getExhibitsTraits()) {
         rtsb.mergeTraits(exhibitsTrait.fetchResolvedTraits(resOpt));
       }
     }
@@ -137,7 +137,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
   @Deprecated
   public CdmObjectReference createPortableReference(ResolveOptions resOpt) {
     CdmObjectReferenceBase cdmObjectRef = ((CdmObjectReferenceBase)this.getCtx().getCorpus().makeObject(CdmCorpusDefinition.mapReferenceType(this.getObjectType()), "portable", true));
-    cdmObjectRef.setExplicitReference((CdmObjectDefinition) this.copy());
+    cdmObjectRef.portableReference = this;
     cdmObjectRef.setInDocument(this.getInDocument()); // where it started life
     cdmObjectRef.setOwner(this.getOwner());
 

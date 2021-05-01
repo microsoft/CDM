@@ -13,7 +13,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using System.Threading.Tasks;
 
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
-    using Microsoft.IdentityModel.Clients.ActiveDirectory;
+    using Microsoft.Identity.Client;
 
     using Newtonsoft.Json;
     using System.Security.Cryptography;
@@ -24,7 +24,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     {
         private const double ADLSDefaultTimeout = 6000;
 
-        private AuthenticationContext Context;
+        private IConfidentialClientApplication Context;
 
         /// <summary>
         /// The root.
@@ -147,9 +147,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         private Dictionary<string, DateTimeOffset> fileModifiedTimeCache = new Dictionary<string, DateTimeOffset>();
 
         /// <summary>
-        /// The predefined ADLS resource.
+        /// The Scopes.
         /// </summary>
-        private const string Resource = "https://storage.azure.com";
+        private string[] scopes = { $"https://storage.azure.com/.default" };
 
         /// <summary>
         /// The authorization header key, used during shared key auth.
@@ -192,7 +192,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             this.Tenant = tenant;
             this.ClientId = clientId;
             this.Secret = secret;
-            this.Context = new AuthenticationContext("https://login.windows.net/" + this.Tenant);
         }
 
         /// <summary>
@@ -499,39 +498,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
             this.UpdateNetworkConfig(config);
 
-            // Check first for clientId/secret auth.
             if (configJson["tenant"] != null && configJson["clientId"] != null)
             {
                 this.Tenant = configJson["tenant"].ToString();
                 this.ClientId = configJson["clientId"].ToString();
-
-                // Check for a secret, we don't really care is it there, but it is nice if it is.
-                if (configJson["secret"] != null)
-                {
-                    this.Secret = configJson["secret"].ToString();
-                }
-            }
-
-            // Check for shared key auth
-            if (configJson["sharedKey"] != null)
-            {
-                this.SharedKey = configJson["sharedKey"].ToString();
-            }
-
-            // Check for SAS token auth
-            if (configJson["sasToken"] != null)
-            {
-                this.SasToken = configJson["sasToken"].ToString();
             }
 
             if (configJson["locationHint"] != null)
             {
                 this.LocationHint = configJson["locationHint"].ToString();
-            }
-
-            if (this.Tenant != null)
-            {
-                this.Context = new AuthenticationContext("https://login.windows.net/" + this.Tenant);
             }
         }
 
@@ -645,15 +620,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 request = this.SetUpCdmRequest(ApplySasToken(url), method);
             }
-            else if (this.Context != null)
-            {
-                var token = await this.GenerateBearerToken();
-
-                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{token.AccessTokenType} {token.AccessToken}" } }, method);
-            }
             else if (this.TokenProvider != null)
             {
                 request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{this.TokenProvider.GetToken()}" } }, method);
+            }
+            else if (this.ClientId != null && this.Tenant != null && this.Secret != null)
+            {
+                var token = await this.GenerateBearerToken();
+                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{token.CreateAuthorizationHeader()}" } }, method);
             }
             else
             {
@@ -773,13 +747,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 : "/" + this.rootBlobContainer + "/" + this.escapedRootSubPath;
         }
 
-        private Task<AuthenticationResult> GenerateBearerToken()
+        private async Task<AuthenticationResult> GenerateBearerToken()
         {
-            // In-memory token caching is handled by AuthenticationContext by default.
-            var clientCredentials = new ClientCredential(this.ClientId, this.Secret);
-            return this.Context.AcquireTokenAsync(Resource, clientCredentials);
+            BuildContext();
+            AuthenticationResult result;
+            try
+            {
+                result = await Context.AcquireTokenForClient(scopes).ExecuteAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"There was an error while acquiring ADLS Adapter's Token with client ID/secret authentication. Exception: {ex.Message}");
+            }
+
+            if (result == null || result.CreateAuthorizationHeader() == null)
+            {
+                throw new Exception("Received invalid ADLS Adapter's authentication result. The result might be null, or missing HTTP authorization header from the authentication result.");
+            }
+            return result;
         }
-      
+
         /// <summary>
         /// Encodes from base 64 string to the byte array.
         /// </summary>
@@ -804,6 +791,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             this.unescapedRootSubPath = value;
             this.escapedRootSubPath = this.EscapePath(this.unescapedRootSubPath);
+        }
+
+        /// <summary>
+        /// Build context when users make the first call. Also need to ensure client Id, tenant and secret are not null.
+        /// </summary>
+        private void BuildContext()
+        {
+            if (this.Context == null)
+            {
+                this.Context = ConfidentialClientApplicationBuilder.Create(this.ClientId)
+                    .WithAuthority(AzureCloudInstance.AzurePublic, this.Tenant)
+                    .WithClientSecret(this.Secret)
+                    .Build();
+            }
         }
     }
 }

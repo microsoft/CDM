@@ -165,24 +165,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     return false;
                 }
 
-                if (this.NamespaceAdapters.ContainsKey(nameSpace))
-                {
-                    this.NamespaceAdapters.Remove(nameSpace);
-                    this.NamespaceFolders.Remove(nameSpace);
-                    this.systemDefinedNamespaces.Remove(nameSpace);
-
-                    // The special case, use Resource adapter.
-                    if (nameSpace == "cdm")
-                    {
-                        this.Mount(nameSpace, new ResourceAdapter());
-                    }
-
-                    return true;
-                }
-                else
+                if (!this.NamespaceAdapters.ContainsKey(nameSpace))
                 {
                     Logger.Warning(this.Ctx, Tag, nameof(Unmount), null, CdmLogCode.WarnStorageRemoveAdapterFailed);
                     return false;
+                }
+
+                this.NamespaceAdapters.Remove(nameSpace);
+                this.NamespaceFolders.Remove(nameSpace);
+                this.systemDefinedNamespaces.Remove(nameSpace);
+
+                // The special case, use Resource adapter.
+                if (nameSpace == "cdm")
+                {
+                    this.Mount(nameSpace, new ResourceAdapter());
                 }
 
                 return true;
@@ -364,18 +360,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 string newObjectPath = pathTuple.Item2;
                 string finalNamespace;
 
-                string prefix = "";
-                string namespaceFromObj = "";
-                if (obj != null && obj is CdmContainerDefinition container)
-                {
-                    prefix = container.FolderPath;
-                    namespaceFromObj = container.Namespace;
-                }
-                else if (obj != null)
-                {
-                    prefix = obj.InDocument.FolderPath;
-                    namespaceFromObj = obj.InDocument.Namespace;
-                }
+            string prefix = "";
+            string namespaceFromObj = "";
+            if (obj != null && obj is CdmContainerDefinition container)
+            {
+                prefix = container.FolderPath;
+                namespaceFromObj = container.Namespace;
+            }
+            else if (obj != null && obj.InDocument != null)
+            {
+                prefix = obj.InDocument.FolderPath;
+                namespaceFromObj = obj.InDocument.Namespace;
+            }
 
                 if (prefix != null && this.ContainsUnsupportedPathFormat(prefix))
                 {

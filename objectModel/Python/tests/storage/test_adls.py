@@ -6,9 +6,7 @@ from datetime import timezone
 import time
 import json
 import unittest
-import unittest.mock as mock
 import os
-import dateutil.tz
 
 from tests.common import async_test, TestHelper
 from tests.adls_test_helper import AdlsTestHelper
@@ -123,7 +121,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
     def test_create_corpus_and_adapter_path(self):
         host_1 = 'storageaccount.dfs.core.windows.net'
         root = '/fs'
-        adls_adapter = ADLSAdapter(root=root, hostname=host_1, tenant='dummyTenant', resource='dummyResource',
+        adls_adapter = ADLSAdapter(root=root, hostname=host_1, tenant='dummyTenant',
                                    client_id='dummyClientId', secret='dummySecret')
 
         adapter_path_1 = 'https://storageaccount.dfs.core.windows.net/fs/a/1.csv'
@@ -169,7 +167,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertIsNone(adls_adapter.create_adapter_path(None))
 
         host_2 = 'storageaccount.blob.core.windows.net:8888'
-        adls_adapter = ADLSAdapter(root=root, hostname=host_2, tenant='dummyTenant', resource='dummyResource',
+        adls_adapter = ADLSAdapter(root=root, hostname=host_2, tenant='11111111-1111-1111-1111-111111111111',
                                    client_id='dummyClientId', secret='dummySecret')
         adapter_path_5 = 'https://storageaccount.blob.core.windows.net:8888/fs/a/5.csv'
         adapter_path_6 = 'https://storageaccount.dfs.core.windows.net:8888/fs/a/6.csv'
@@ -178,119 +176,6 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(adls_adapter.create_corpus_path(adapter_path_5), '/a/5.csv')
         self.assertEqual(adls_adapter.create_corpus_path(adapter_path_6), '/a/6.csv')
         self.assertEqual(adls_adapter.create_corpus_path(adapter_path_7), None)
-
-    @mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', new_callable=mock.mock_open, read_data=json.dumps({'Ḽơᶉëᶆ': 'ȋṕšᶙṁ'}).encode())
-    @mock.patch('cdm.storage.adls.adal.AuthenticationContext.acquire_token_with_client_credentials')
-    @async_test
-    async def test_read(self, mock_credentials, mock_urlopen):
-
-        adapter = self.create_dummy_adapter()
-
-        mock_credentials.return_value = {'tokenType': 'Bearer', 'accessToken': 'dummyBearerToken'}
-
-        raw_data = await adapter.read_async('/dir1/dir2/file.json')
-        data = json.loads(raw_data)
-
-        mock_credentials.assert_called_once_with('https://storage.azure.com', 'dummyClientId', 'dummySecret')
-
-        self.assertEqual(mock_urlopen.call_args[0][0].method, 'GET')
-        self.assertEqual(mock_urlopen.call_args[0][0].full_url, 'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json')
-        #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-        self.assertEqual(mock_urlopen.call_args[0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
-        self.assertEqual(data, {'Ḽơᶉëᶆ': 'ȋṕšᶙṁ'})  # Verify data.
-
-    @mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', new_callable=mock.mock_open)
-    @mock.patch('cdm.storage.adls.adal.AuthenticationContext.acquire_token_with_client_credentials')
-    @async_test
-    async def test_write(self, mock_credentials, mock_urlopen):
-
-        adapter = self.create_dummy_adapter()
-
-        mock_credentials.return_value = {'tokenType': 'Bearer', 'accessToken': 'dummyBearerToken'}
-
-        raw_data = json.dumps({'Ḽơᶉëᶆ': 'ȋṕšᶙṁ'})
-        await adapter.write_async('/dir1/dir2/file.json', raw_data)
-
-        self.assertEqual(len(mock_urlopen.call_args_list), 3)
-
-        # Request 1.
-        self.assertEqual(mock_urlopen.call_args_list[0][0][0].method, 'PUT')
-        self.assertEqual(mock_urlopen.call_args_list[0][0][0].full_url, 'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json?resource=file')
-        #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-        self.assertEqual(mock_urlopen.call_args_list[0][0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
-
-        # Request 2.
-        self.assertEqual(mock_urlopen.call_args_list[1][0][0].method, 'PATCH')
-        self.assertEqual(mock_urlopen.call_args_list[1][0][0].full_url,
-                         'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json?action=append&position=0')
-        self.assertEqual(mock_urlopen.call_args_list[1][0][0].data, raw_data.encode('utf-8'))
-        #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-        self.assertEqual(mock_urlopen.call_args_list[1][0][0].headers, {'Authorization': 'Bearer dummyBearerToken', 'Content-type': 'application/json; charset=utf-8'})
-
-        # Request 3.
-        self.assertEqual(mock_urlopen.call_args_list[2][0][0].method, 'PATCH')
-        self.assertEqual(mock_urlopen.call_args_list[2][0][0].full_url,
-                         'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json?action=flush&position=68')
-        self.assertIsNone(mock_urlopen.call_args_list[2][0][0].data)
-        #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-        self.assertEqual(mock_urlopen.call_args_list[2][0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
-
-    @mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', new_callable=mock.mock_open)
-    @mock.patch('cdm.storage.adls.adal.AuthenticationContext.acquire_token_with_client_credentials')
-    @async_test
-    async def test_fetch_last_modified_time(self, mock_credentials, mock_urlopen):
-
-        adapter = self.create_dummy_adapter()
-
-        mock_credentials.return_value = {'tokenType': 'Bearer', 'accessToken': 'dummyBearerToken'}
-
-        mock_urlopen.return_value.status = 200
-        mock_urlopen.return_value.reason = 'OK'
-        mock_urlopen.return_value.getheaders = mock.MagicMock(side_effect=lambda: {'Last-Modified': 'Mon, 31 Dec 2018 23:59:59 GMT'})
-
-        time = await adapter.compute_last_modified_time_async('dir1/dir2/file.json')
-
-        self.assertEqual(mock_urlopen.call_args[0][0].method, 'HEAD')
-        self.assertEqual(mock_urlopen.call_args[0][0].full_url, 'https://dummy.dfs.core.windows.net/fs/dir1/dir2/file.json')
-        #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-        self.assertEqual(mock_urlopen.call_args[0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
-        self.assertEqual(time, datetime.datetime(2018, 12, 31, 23, 59, 59, tzinfo=dateutil.tz.tzutc()))  # Verify modified time.
-
-    @async_test
-    async def test_fetch_all_files(self):
-
-        adapter = self.create_dummy_adapter()
-
-        with mock.patch('cdm.storage.adls.adal.AuthenticationContext.acquire_token_with_client_credentials') as mock_credentials:
-
-            mock_credentials.return_value = {'tokenType': 'Bearer', 'accessToken': 'dummyBearerToken'}
-
-            list_response = json.dumps({
-                'paths': [
-                    {'name': 'dir1/dir2', 'isDirectory': 'true'},
-                    {'name': 'dir1/dir2/file1.json', 'isDirectory': 'false'},
-                    {'name': 'dir1/dir2/file2.json'}
-                ]}).encode()
-
-            # Folder path.
-            with mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', mock.mock_open(read_data=list_response)) as mock_urlopen:
-                mock_urlopen.return_value.status = 200
-                mock_urlopen.return_value.reason = 'OK'
-                all_files = await adapter.fetch_all_files_async('/dir1/dir2')
-
-                self.assertEqual(mock_urlopen.call_args[0][0].method, 'GET')
-                self.assertEqual(mock_urlopen.call_args[0][0].full_url,
-                                 'https://dummy.dfs.core.windows.net/fs?directory=dir1/dir2&maxResults=5000&recursive=True&resource=filesystem')
-                #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
-                self.assertEqual(mock_urlopen.call_args[0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
-                self.assertEqual(all_files, ['/dir1/dir2/file1.json', '/dir1/dir2/file2.json'])  # Verify data.
-
-            # Root path.
-            with mock.patch('cdm.utilities.network.cdm_http_client.urllib.request.urlopen', mock.mock_open(read_data=list_response)) as mock_urlopen:
-                all_files = await adapter.fetch_all_files_async('/')
-
-                self.assertEqual(mock_urlopen.call_args[0][0].full_url,
-                                 'https://dummy.dfs.core.windows.net/fs?directory=&maxResults=5000&recursive=True&resource=filesystem')
 
     def test_config_and_update_config_without_secret(self):
         """

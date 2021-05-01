@@ -123,10 +123,7 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
     public addResolvedTraitsApplied(rtsb: ResolvedTraitSetBuilder, resOpt: resolveOptions): ResolvedTraitSet {
         // let bodyCode = () =>
         {
-            const l: number = this.appliedTraits.length;
-            for (let i: number = 0; i < l; i++) {
-                rtsb.mergeTraits(this.appliedTraits.allItems[i].fetchResolvedTraits(resOpt));
-            }
+            this.appliedTraits.allItems.forEach(trait => rtsb.mergeTraits(trait.fetchResolvedTraits(resOpt)));
 
             // any applied on use
             return rtsb.rts;

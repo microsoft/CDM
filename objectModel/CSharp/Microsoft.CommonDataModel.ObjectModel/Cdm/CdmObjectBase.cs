@@ -163,7 +163,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // cache was found
                 // get the SymbolSet for this cached object
                 string key = CdmCorpusDefinition.CreateCacheKeyFromObject(this, kind);
-                ((CdmCorpusDefinition)ctx.Corpus).DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
+                ctx.Corpus.DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
                 resOpt.SymbolRefSet = tempDocRefSet;
             }
 
@@ -174,7 +174,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
             return rtsbAll.ResolvedTraitSet;
         }
-        virtual internal ResolvedAttributeSetBuilder FetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext = null)
+
+        virtual internal ResolvedAttributeSetBuilder FetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext)
         {
             const string kind = "rasb";
             ResolveContext ctx = this.Ctx as ResolveContext;
@@ -212,13 +213,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 //}
             }
 
+            int currentDepth = resOpt.DepthInfo.CurrentDepth;
+
             const string kind = "rasb";
             ResolveContext ctx = this.Ctx as ResolveContext;
             ResolvedAttributeSetBuilder rasbResult = null;
             ResolvedAttributeSetBuilder rasbCache = this.FetchObjectFromCache(resOpt, acpInContext);
             CdmAttributeContext underCtx;
-
-            int currentDepth = resOpt.DepthInfo.CurrentDepth;
 
             // store the previous document set, we will need to add it with
             // children found from the constructResolvedTraits call
@@ -262,7 +263,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                     // get the 'underCtx' of the attribute set from the acp that is wired into
                     // the target tree
-                    underCtx = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
+                    underCtx = rasbCache.ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
                 }
             }
             else
@@ -270,7 +271,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // get the 'underCtx' of the attribute set from the cache. The one stored there was build with a different
                 // acp and is wired into the fake placeholder. so now build a new underCtx wired into the output tree but with
                 // copies of all cached children
-                underCtx = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
+                underCtx = rasbCache.ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
                 //underCtx.ValidateLineage(resOpt); // debugging
             }
 
@@ -284,7 +285,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
                 rasbResult = new ResolvedAttributeSetBuilder
                 {
-                    ResolvedAttributeSet = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.Copy()
+                    ResolvedAttributeSet = rasbCache.ResolvedAttributeSet.Copy()
                 };
 
                 // 2. deep copy the tree and map the context references. 
@@ -448,8 +449,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (resOpt.SaveResolutionsOnCopy)
             {
                 // used to localize references between documents
-                traitRef.ExplicitReference = rt.Trait as CdmTraitDefinition;
-                traitRef.InDocument = (rt.Trait as CdmTraitDefinition).InDocument;
+                traitRef.ExplicitReference = rt.Trait;
+                traitRef.InDocument = rt.Trait.InDocument;
             }
             // always make it a property when you can, however the dataFormat traits should be left alone
             // also the wellKnown is the first constrained list that uses the datatype to hold the table instead of the default value property.

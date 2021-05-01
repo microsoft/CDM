@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContainerDefinition {
-  private String tag = CdmDocumentDefinition.class.getSimpleName();
+  private static final String TAG = CdmDocumentDefinition.class.getSimpleName();
 
   protected Map<String, CdmObjectBase> internalDeclarations;
   protected boolean isDirty = true;
@@ -140,7 +140,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    * The maximum json semantic version supported by this ObjectModel version.
    */
   public static String getCurrentJsonSchemaSemanticVersion() {
-    return "1.1.0";
+    return "1.2.0";
   }
 
   @Deprecated
@@ -237,7 +237,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.getCtx().getCorpus().blockDeclaredPathChanges = true;
 
     // shout into the void
-    Logger.info(this.getCtx(), tag, "localizeCorpusPaths", newFolder.getAtCorpusPath(), Logger.format("Localizing corpus paths in document '{0}'.", this.getName()));
+    Logger.info(this.getCtx(), TAG, "localizeCorpusPaths", newFolder.getAtCorpusPath(), Logger.format("Localizing corpus paths in document '{0}'.", this.getName()));
 
     // find anything in the document that is a corpus path
     this.visit("", (iObject, path) -> {
@@ -421,7 +421,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return CompletableFuture.supplyAsync(() -> {
       if (this.getNeedsIndexing() && !this.currentlyIndexing) {
         if (this.getFolder() == null) {
-          Logger.error(this.getCtx(), tag, "indexIfNeededAsync", this.getAtCorpusPath(), CdmLogCode.ErrValdnMissingDoc, this.name);
+          Logger.error(this.getCtx(), TAG, "indexIfNeededAsync", this.getAtCorpusPath(), CdmLogCode.ErrValdnMissingDoc, this.name);
           return false;
         }
 
@@ -475,7 +475,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
       final ResolveOptions resOpt = new ResolveOptions(this, getCtx().getCorpus().getDefaultResolutionDirectives());
 
       if (!this.indexIfNeededAsync(resOpt, false).join()) {
-        Logger.error(getCtx(), tag, "saveAsAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
+        Logger.error(getCtx(), TAG, "saveAsAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
         return CompletableFuture.completedFuture(false);
       }
 
@@ -568,7 +568,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.getName())) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("name"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -720,7 +720,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
             monikerImports.add(impDoc);
           }
         } else {
-          Logger.warning(this.getCtx(), tag, "prioritizeImports", this.getAtCorpusPath(), CdmLogCode.WarnDocImportNotLoaded ,imp.getCorpusPath());
+          Logger.warning(this.getCtx(), TAG, "prioritizeImports", this.getAtCorpusPath(), CdmLogCode.WarnDocImportNotLoaded ,imp.getCorpusPath());
         }
       }
 
@@ -732,7 +732,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
         final boolean isMoniker = !StringUtils.isNullOrTrimEmpty(imp.getMoniker());
 
         if (impDoc == null) {
-          Logger.warning(this.getCtx(), tag, "prioritizeImports", this.getAtCorpusPath(), CdmLogCode.WarnDocImportNotLoaded, imp.getCorpusPath());
+          Logger.warning(this.getCtx(), TAG, "prioritizeImports", this.getAtCorpusPath(), CdmLogCode.WarnDocImportNotLoaded, imp.getCorpusPath());
         }
 
         // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
@@ -843,7 +843,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
           if (docImp != null && docImp.isDirty) {
             // save it with the same name
             if (!docImp.saveAsAsync(docImp.getName(), true, options).join()) {
-              Logger.error(this.getCtx(), tag, "saveLinkedDocumentsAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocImportSavingFailure, docImp.getName());
+              Logger.error(this.getCtx(), TAG, "saveLinkedDocumentsAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocImportSavingFailure, docImp.getName());
               return false;
             }
           }

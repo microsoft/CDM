@@ -19,6 +19,7 @@ class PurposeReferencePersistence(CdmObjectRefPersistence):
             return None
 
         simple_reference = True
+        optional = None  # type: Optional[bool]
         applied_traits = None
         purpose = None
 
@@ -26,6 +27,8 @@ class PurposeReferencePersistence(CdmObjectRefPersistence):
             purpose = data
         else:
             simple_reference = False
+            optional = data.optional
+
             if isinstance(data.purposeReference, str):
                 purpose = data.purposeReference
             else:
@@ -33,8 +36,11 @@ class PurposeReferencePersistence(CdmObjectRefPersistence):
 
         purpose_reference = ctx.corpus.make_ref(CdmObjectType.PURPOSE_REF, purpose, simple_reference)
 
+        if optional is not None:
+            purpose_reference.optional = optional
+
         if not isinstance(data, str):
-            applied_traits = utils.create_trait_reference_array(ctx, data.get('appliedTraits'))
-            purpose_reference.applied_traits.extend(applied_traits)
+            utils.add_list_to_cdm_collection(purpose_reference.applied_traits,
+                                             utils.create_trait_reference_array(ctx, data.get('appliedTraits')))
 
         return purpose_reference

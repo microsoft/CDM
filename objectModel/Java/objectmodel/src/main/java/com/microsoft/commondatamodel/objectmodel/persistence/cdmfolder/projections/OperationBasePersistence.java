@@ -27,7 +27,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class OperationBasePersistence {
-  private static String tag = OperationBasePersistence.class.getSimpleName();
+  private static final String TAG = OperationBasePersistence.class.getSimpleName();
 
   public static <T extends CdmOperationBase> T fromData(final CdmCorpusContext ctx, final CdmObjectType objectType, final JsonNode obj) {
     if (obj == null) {
@@ -39,7 +39,7 @@ public class OperationBasePersistence {
     String operationName = OperationTypeConvertor.operationTypeToString(operationType);
 
     if (obj.get("$type") != null && !StringUtils.equalsWithIgnoreCase(obj.get("$type").asText(), operationName)) {
-      Logger.error(ctx, tag, "fromData", operation.getAtCorpusPath(), CdmLogCode.ErrPersistProjInvalidType, obj.get("$type").toString());
+      Logger.error(ctx, TAG, "fromData", operation.getAtCorpusPath(), CdmLogCode.ErrPersistProjInvalidType, obj.get("$type").toString());
     } else {
         operation.setType(operationType);
     }

@@ -160,7 +160,7 @@ const PrimitiveAppliers: ResolutionAppliers = {
             // use the default name.
             appCtx.resAttNew.resolvedName = sub.getName();
             // add a supporting trait to this attribute
-            const supTraitRef: CdmTraitReference = sub.appliedTraits.push('is.addedInSupportOf', false);
+            const supTraitRef: CdmTraitReference = sub.appliedTraits.push('is.addedInSupportOf', false) as CdmTraitReference;
             const supTraitDef: CdmTraitDefinition = supTraitRef.fetchObjectDefinition(appCtx.resOpt);
 
             // get the resolved traits from attribute

@@ -8,13 +8,14 @@ from cdm.enums import CdmObjectType
 from .cdm_argument_collection import CdmArgumentCollection
 from .cdm_argument_def import CdmArgumentDefinition
 from .cdm_object_ref import CdmObjectReference
+from cdm.objectmodel import CdmTraitReferenceBase
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmObject, CdmTraitDefinition
-    from cdm.utilities import FriendlyFormatNode, ResolveOptions, VisitCallback
+    from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmTraitDefinition
+    from cdm.utilities import ResolveOptions, VisitCallback
 
 
-class CdmTraitReference(CdmObjectReference):
+class CdmTraitReference(CdmTraitReferenceBase):
     def __init__(self, ctx: 'CdmCorpusContext', trait: Union[str, 'CdmTraitDefinition'], simple_reference: bool) -> None:
         super().__init__(ctx, trait, simple_reference)
 

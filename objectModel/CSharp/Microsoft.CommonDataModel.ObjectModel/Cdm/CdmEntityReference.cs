@@ -10,6 +10,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     public class CdmEntityReference : CdmObjectReferenceBase
     {
         /// <summary>
+        /// Returns true if this entity reference points to a projection.
+        /// </summary>
+        internal bool IsProjection { get => this.ExplicitReference?.ObjectType == CdmObjectType.ProjectionDef; }
+
+        /// <summary>
         /// Constructs a CdmEntityReference.
         /// </summary>
         /// <param name="ctx">The context.</param>

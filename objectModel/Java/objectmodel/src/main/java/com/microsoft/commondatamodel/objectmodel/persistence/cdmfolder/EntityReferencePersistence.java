@@ -6,7 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projections.ProjectionPersistence;
@@ -24,7 +24,6 @@ public class EntityReferencePersistence {
 
         final Object entity;
         boolean simpleReference = true;
-        List<CdmTraitReference> appliedTraits = null;
 
         if (obj.isValueNode()) {
             entity = obj.asText();
@@ -36,13 +35,10 @@ public class EntityReferencePersistence {
         final CdmEntityReference entityReference = ctx.getCorpus().makeRef(CdmObjectType.EntityRef, entity, simpleReference);
 
         if (!(obj.isValueNode())) {
-            appliedTraits = Utils.createTraitReferenceList(ctx, obj.get("appliedTraits"));
-            if (appliedTraits != null) {
-                Utils.addListToCdmCollection(entityReference.getAppliedTraits(), appliedTraits);
-            }
+            Utils.addListToCdmCollection(entityReference.getAppliedTraits(),
+                                         Utils.createTraitReferenceList(ctx, obj.get("appliedTraits")));
         }
 
-        Utils.addListToCdmCollection(entityReference.getAppliedTraits(), appliedTraits);
         return entityReference;
     }
 

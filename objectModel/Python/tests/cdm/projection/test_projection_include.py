@@ -11,7 +11,7 @@ from cdm.storage import LocalAdapter
 from tests.cdm.projection.attribute_context_util import AttributeContextUtil
 from tests.cdm.projection.projection_om_test_util import ProjectionOMTestUtil
 from tests.cdm.projection.type_attribute_param import TypeAttributeParam
-from tests.common import async_test, TestHelper
+from tests.common import async_test
 from tests.utilities.projection_test_utils import ProjectionTestUtils
 
 
@@ -34,51 +34,51 @@ class ProjectionIncludeTest(unittest.TestCase):
     foundation_json_path = 'cdm:/foundations.cdm.json'
 
     # The path between TestDataPath and test_name.
-    tests_sub_path = os.path.join('Cdm', 'Projection', 'TestProjectionInclude')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionInclude')
 
     @async_test
     async def test_extends(self) -> None:
         """Test for entity extends with resolution guidance with a SelectsSomeTakeNames"""
         test_name = 'test_extends'
         entity_name = 'Color'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_extends_proj(self) -> None:
         """Test for entity extends with projection with an includeAttributes operation"""
         test_name = 'test_extends_proj'
         entity_name = 'Color'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_ea(self) -> None:
         """Test for entity attribute with resolution guidance with a SelectsSomeTakeNames"""
         test_name = 'test_ea'
         entity_name = 'Color'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_ea_proj(self) -> None:
         """Test for entity attribute with projection with an includeAttributes operation"""
         test_name = 'test_ea_proj'
         entity_name = 'Color'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_ea_proj_om(self) -> None:
@@ -133,140 +133,140 @@ class ProjectionIncludeTest(unittest.TestCase):
         """Test for leaf level projection"""
         test_name = 'test_nested_1_of_3_proj'
         entity_name = 'Color'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_nested_2_of_3_proj(self) -> None:
         """Test for mid level projection"""
         test_name = 'test_nested_2_of_3_proj'
         entity_name = 'Color'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_nested_3_of_3_proj(self) -> None:
         """Test for top level projection"""
         test_name = 'test_nested_3_of_3_proj'
         entity_name = 'Color'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_condition_proj(self) -> None:
         """Test for Condition = false"""
         test_name = 'test_condition_proj'
         entity_name = 'Color'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_group_name(self) -> None:
         """Test for SelectsSomeTakeNames by Group Name"""
         test_name = 'test_group_name'
         entity_name = 'Product'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_group_name_proj(self) -> None:
         """Test for include attributes operation by Group Name"""
         test_name = 'test_group_name_proj'
         entity_name = 'Product'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_array(self) -> None:
         """Test for  SelectsSomeTakeNames from an Array"""
         test_name = 'test_array'
         entity_name = 'Sales'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_array_rename(self) -> None:
         """Test for  SelectsSomeTakeNames from a renamed Array"""
         test_name = 'test_array_rename'
         entity_name = 'Sales'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_array_proj(self) -> None:
         """Test for  Include Attributes from an Array"""
         test_name = 'test_array_proj'
         entity_name = 'Sales'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_polymorphic(self) -> None:
         """Test for  SelectsSomeTakeNames from a Polymorphic Source"""
         test_name = 'test_polymorphic'
         entity_name = 'Person'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_polymorphic_proj(self) -> None:
         """Test for  Include Attributes from a Polymorphic Source"""
         test_name = 'test_polymorphic_proj'
         entity_name = 'Person'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_nested_include_exclude_proj(self) -> None:
         """Test for  Nested Projections that include then exclude some attributes"""
         test_name = 'test_nested_include_exclude_proj'
         entity_name = 'Color'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)
 
     @async_test
     async def test_include_exclude_proj(self) -> None:
         """Test for  Projections with include and exclude"""
         test_name = 'test_include_exclude_proj'
         entity_name = 'Color'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
-                self.tests_sub_path, entity_name, res_opt)
+                self.tests_subpath, entity_name, res_opt)

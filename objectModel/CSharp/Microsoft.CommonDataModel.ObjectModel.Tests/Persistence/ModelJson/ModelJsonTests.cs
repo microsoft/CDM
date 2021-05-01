@@ -226,7 +226,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             {
                 EntityPath = "remote:/contoso/entity1.model.json/Entity1"
             };
-            var modelIdTrait1 = referenceEntity1.ExhibitsTraits.Add("is.propertyContent.multiTrait");
+            var modelIdTrait1 = referenceEntity1.ExhibitsTraits.Add("is.propertyContent.multiTrait") as CdmTraitReference;
             modelIdTrait1.IsFromProperty = true;
             modelIdTrait1.Arguments.Add("modelId", "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612");
             manifest.Entities.Add(referenceEntity1);
@@ -243,7 +243,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             {
                 EntityPath = "remote:/contoso/entity3.model.json/Entity3"
             };
-            var modelIdTrait3 = referenceEntity3.ExhibitsTraits.Add("is.propertyContent.multiTrait");
+            var modelIdTrait3 = referenceEntity3.ExhibitsTraits.Add("is.propertyContent.multiTrait") as CdmTraitReference;
             modelIdTrait3.IsFromProperty = true;
             modelIdTrait3.Arguments.Add("modelId", "3b2e040a-c8c5-4508-bb42-09952eb04a50");
             manifest.Entities.Add(referenceEntity3);
@@ -253,7 +253,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             {
                 EntityPath = "remote:/contoso/entity.model.json/Entity4"
             };
-            var modelIdTrait4 = referenceEntity4.ExhibitsTraits.Add("is.propertyContent.multiTrait");
+            var modelIdTrait4 = referenceEntity4.ExhibitsTraits.Add("is.propertyContent.multiTrait") as CdmTraitReference;
             modelIdTrait4.IsFromProperty = true;
             modelIdTrait4.Arguments.Add("modelId", "f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612");
             manifest.Entities.Add(referenceEntity4);

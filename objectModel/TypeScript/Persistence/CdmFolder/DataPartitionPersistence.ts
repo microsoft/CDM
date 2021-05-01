@@ -6,16 +6,17 @@ import {
     CdmDataPartitionDefinition,
     cdmLogCode,
     cdmObjectType,
-    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    Logger
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
-import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
 import {
     DataPartition,
     KeyValPair,
+    TraitGroupReference,
     TraitReference
 } from './types';
 import * as utils from './utils';
@@ -44,7 +45,7 @@ export class DataPartitionPersistence {
         if (dataObj.lastFileModifiedTime) {
             newPartition.lastFileModifiedTime = new Date(dataObj.lastFileModifiedTime);
         }
-        utils.addArrayToCdmCollection<CdmTraitReference>(
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(
                 newPartition.exhibitsTraits, 
                 utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits)
         );
@@ -89,7 +90,7 @@ export class DataPartitionPersistence {
             location: instance.location,
             lastFileStatusCheckTime: timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime),
             lastFileModifiedTime: timeUtils.getFormattedDateString(instance.lastFileModifiedTime),
-            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options),
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.exhibitsTraits, options),
             arguments: undefined,
             specializedSchema: instance.specializedSchema
         };

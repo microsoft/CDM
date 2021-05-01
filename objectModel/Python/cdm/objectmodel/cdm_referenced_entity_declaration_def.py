@@ -80,6 +80,13 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         return self.entity_name
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
+        path = ''
+
+        if pre_children and pre_children(self, path):
+            return False
+
+        if post_children and post_children(self, path):
+            return True
         return False
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:

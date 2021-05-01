@@ -224,11 +224,23 @@ export class ResolvedAttributeSet extends refCounted {
      */
     public setTargetOwner(entity: CdmEntityDefinition): void {
         for (const ra of this._set) {
-            if (ra.target instanceof CdmAttribute) {
-                ra.target.owner = entity;
-                ra.target.inDocument = entity.inDocument;
-            } else if (ra.target instanceof ResolvedAttributeSet) {
+            ra.owner = entity;
+            if (ra.target instanceof ResolvedAttributeSet) {
                 ra.target.setTargetOwner(entity);
+            }
+        }
+    }
+
+    /**
+     * Apply a set of resolved traits to this resolved attribute set.
+     * @internal
+     */
+    public applyTraits(traits: ResolvedTraitSet): void {
+        for (const resAtt of this.set) {
+            if (resAtt.target instanceof ResolvedAttributeSet) {
+                resAtt.target.applyTraits(traits);
+            } else {
+                resAtt.resolvedTraits = resAtt.resolvedTraits.mergeSet(traits);
             }
         }
     }
@@ -236,7 +248,7 @@ export class ResolvedAttributeSet extends refCounted {
     /**
      * @internal
      */
-    public applyTraits(
+    public applyTraitsResolutionGuidance(
         traits: ResolvedTraitSet,
         resOpt: resolveOptions,
         resGuide: CdmAttributeResolutionGuidance,
@@ -301,7 +313,7 @@ export class ResolvedAttributeSet extends refCounted {
                 let acp: AttributeContextParameters = {
                     under: appliedAttSet.attributeContext,
                     type: cdmAttributeContextType.generatedSet,
-                    name: '_generatedAttributeSet'
+                    name: '_generatedAttributeSet_template'
 
                 };
                 appliedAttSet.attributeContext = CdmAttributeContext.createChildUnder(traits.resOpt, acp);

@@ -17,7 +17,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
-  private String tag = CdmE2ERelationship.class.getSimpleName();
+  private static final String TAG = CdmE2ERelationship.class.getSimpleName();
   
   private String name;
   private String fromEntity;
@@ -129,7 +129,7 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

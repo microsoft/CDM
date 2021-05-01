@@ -98,7 +98,6 @@ class CdmOperationReplaceAsForeignKey(CdmOperationBase):
         attr_ctx_FK = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_ctx_fk_param)
 
         # get the added attribute and applied trait
-        # the name here will be {m} and not {A}{o}{M} - should this map to the not projections approach and default to {A}{o}{M} - ???
         sub_FK = self.replace_with
         add_trait = ['is.linkedEntity.identifier']
 
@@ -117,11 +116,16 @@ class CdmOperationReplaceAsForeignKey(CdmOperationBase):
             ref_attr_name: str
     ) -> 'ProjectionAttributeStateSet':
         pas_list = ProjectionResolutionCommonUtil._get_leaf_list(proj_ctx, ref_attr_name)
+        source_entity = proj_ctx._projection_directive._original_source_entity_attribute_name
+
+        if not source_entity:
+            logger.warning(proj_output_set._ctx, CdmOperationReplaceAsForeignKey.__name__, \
+                CdmOperationReplaceAsForeignKey._create_new_projection_attribute_state_set.__name__, None, CdmLogCode.WARN_PROJ_FK_WITHOUT_SOURCE_ENTITY, ref_attr_name)
 
         if pas_list is not None:
             # update the new foreign key resolved attribute with trait param with reference details
             reqd_trait = new_res_attr_FK.resolved_traits.find(proj_ctx._projection_directive._res_opt, 'is.linkedEntity.identifier')
-            if reqd_trait:
+            if reqd_trait and source_entity:
                 trait_param_ent_ref = ProjectionResolutionCommonUtil._create_foreign_key_linked_entity_identifier_trait_parameter(proj_ctx._projection_directive, proj_output_set._ctx.corpus, pas_list)
                 reqd_trait.parameter_values.update_parameter_value(proj_ctx._projection_directive._res_opt, 'entityReferences', trait_param_ent_ref)
 

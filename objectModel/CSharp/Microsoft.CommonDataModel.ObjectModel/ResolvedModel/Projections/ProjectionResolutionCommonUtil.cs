@@ -16,6 +16,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     /// </summary>
     internal sealed class ProjectionResolutionCommonUtil
     {
+        const string TAG = nameof(ProjectionResolutionCommonUtil);
+
         /// <summary>
         /// Function to initialize the input projection attribute state Set for a projection
         /// </summary>
@@ -178,8 +180,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         ///   ]
         /// In the case of polymorphic source, there will be a collection of such entries.
         /// </summary>
+        /// <param name="projDir"></param>
         /// <param name="corpus"></param>
-        /// <param name="foundResAttrList"></param>
+        /// <param name="refFoundList"></param>
         /// <returns></returns>
         internal static CdmEntityReference CreateForeignKeyLinkedEntityIdentifierTraitParameter(ProjectionDirective projDir, CdmCorpusDefinition corpus, List<ProjectionAttributeState> refFoundList)
         {
@@ -191,16 +194,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 ResolvedAttribute resAttr = refFound.CurrentResolvedAttribute;
 
-                if (resAttr?.Target?.Owner != null &&
-                    (resAttr.Target.ObjectType == CdmObjectType.TypeAttributeDef || resAttr.Target.ObjectType == CdmObjectType.EntityAttributeDef))
+                if (resAttr.Owner == null)
+                {
+                    var atCorpusPath = resAttr.Target is CdmObjectBase target ? target.AtCorpusPath : resAttr.ResolvedName;
+                    Logger.Warning(corpus.Ctx, TAG, nameof(CreateForeignKeyLinkedEntityIdentifierTraitParameter), atCorpusPath, CdmLogCode.WarnProjCreateForeignKeyTraits, resAttr.ResolvedName);
+                }
+                else if (resAttr.Target.ObjectType == CdmObjectType.TypeAttributeDef || resAttr.Target.ObjectType == CdmObjectType.EntityAttributeDef)
                 {
                     // find the linked entity
-                    var owner = resAttr.Target.Owner;
-
-                    while (owner != null && owner.ObjectType != CdmObjectType.EntityDef)
-                    {
-                        owner = owner.Owner;
-                    }
+                    var owner = resAttr.Owner;
 
                     // find where the projection is defined
                     var projectionDoc = projDir.Owner?.InDocument;

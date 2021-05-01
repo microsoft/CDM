@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    TraitGroupReference,
     TraitReference
 } from '.';
 
@@ -11,5 +12,5 @@ export abstract class E2ERelationship {
     public fromEntityAttribute: string;
     public toEntity: string;
     public toEntityAttribute: string;
-    public exhibitsTraits?: (string | TraitReference)[];
+    public exhibitsTraits?: (string | TraitReference | TraitGroupReference)[];
 }

@@ -4,6 +4,9 @@
 from cdm.utilities import JObject
 from typing import Union, List
 
+from .trait_reference import TraitReference
+from .trait_group_reference import TraitGroupReference
+
 
 class E2ERelationship(JObject):
     def __init__(self):
@@ -14,4 +17,4 @@ class E2ERelationship(JObject):
         self.fromEntityAttribute = None  # type: str
         self.toEntity = None  # type: str
         self.toEntityAttribute = None  # type: str
-        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference, TraitGroupReference]]

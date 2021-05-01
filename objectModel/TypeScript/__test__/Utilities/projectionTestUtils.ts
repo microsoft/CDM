@@ -11,6 +11,7 @@ import {
     cdmObjectType,
     CdmProjection,
     CdmTypeAttributeDefinition,
+    cdmStatusLevel,
     resolveOptions
 } from '../../internal';
 import { AttributeContextUtil } from '../Cdm/Projection/AttributeContextUtil';
@@ -19,17 +20,14 @@ import { testHelper } from '../testHelper';
 
 /**
  * Common utility methods for projection tests
+ * If you want to update the expected output txt files for all the tests that are ran,
+ * please set the parameter updateExpectedOutput true in the method validateAttributeContext()
  */
 export class projectionTestUtils {
     /**
      * Path to foundations
      */
     public static foundationJsonPath: string = 'cdm:/foundations.cdm.json';
-
-    /**
-     * If true, will update the expected output txt files for all the tests that are ran.
-     */
-    private static updateExpectedOutput: boolean = false;
 
     /**
      * Resolves an entity
@@ -74,7 +72,7 @@ export class projectionTestUtils {
     /**
      * Loads an entity, resolves it, and then validates the generated attribute contexts
      */
-    public static async loadEntityForResolutionOptionAndSave(corpus: CdmCorpusDefinition, testName: string, testsSubpath: string, entityName: string, directives: string[]): Promise<void> {
+    public static async loadEntityForResolutionOptionAndSave(corpus: CdmCorpusDefinition, testName: string, testsSubpath: string, entityName: string, directives: string[]): Promise<CdmEntityDefinition> {
         const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
@@ -87,13 +85,19 @@ export class projectionTestUtils {
             .toBeUndefined();
 
         await projectionTestUtils.validateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity);
+
+        return resolvedEntity;
     }
 
     /**
      * Creates a corpus
      */
-    public static getCorpus(testName: string, testsSubpath: string): CdmCorpusDefinition {
+    public static getLocalCorpus(testsSubpath: string, testName: string): CdmCorpusDefinition {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+
+        corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
+            throw new Error(message);
+        }, cdmStatusLevel.warning);
 
         return corpus;
     }
@@ -169,8 +173,9 @@ export class projectionTestUtils {
      * @param expectedOutputPath 
      * @param entityName 
      * @param resolvedEntity 
+     * @param updateExpectedOutput If true, will update the expected output txt files for all the tests that are ran.
      */
-    private static async validateAttributeContext(directives: string[], expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition): Promise<void> {
+    private static async validateAttributeContext(directives: string[], expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition, updateExpectedOutput: boolean = false): Promise<void> {
         if (!resolvedEntity.attributeContext) {
             fail('ValidateAttributeContext called with not resolved entity.');
         }
@@ -184,7 +189,7 @@ export class projectionTestUtils {
         const attrCtxUtil: AttributeContextUtil = new AttributeContextUtil();
         const actualText: string = attrCtxUtil.getAttributeContextStrings(resolvedEntity);
 
-        if (projectionTestUtils.updateExpectedOutput) {
+        if (updateExpectedOutput) {
             expectedStringFilePath = `${expectedOutputPath}/${fileNamePrefix}${fileNameSuffix}.txt`;
 
             if (directives.length > 0) {
@@ -207,7 +212,7 @@ export class projectionTestUtils {
 
             // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
             fs.writeFileSync(actualStringFilePath, actualText);
-            await resolvedEntity.inDocument.saveAsAsync(`Resolved_${entityName}.cdm.json`, false);
+            await resolvedEntity.inDocument.saveAsAsync(`Resolved_${resolvedEntity.entityName}${fileNameSuffix}.cdm.json`, false);
 
             // Expected
             const expectedFileNameSuffix: string = projectionTestUtils.getResolutionOptionNameSuffix(directives);

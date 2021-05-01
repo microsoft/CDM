@@ -225,7 +225,7 @@ export const testHelper = {
         // Set empty callback to avoid breaking tests due too many errors in logs,
         // change the event callback to console or file status report if wanted.
         // tslint:disable-next-line: no-empty
-        cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
+        cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.warning);
 
         return cdmCorpus;
     },

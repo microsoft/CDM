@@ -72,9 +72,8 @@ class ManifestPersistence:
         if data.get('documentVersion'):
             manifest.document_version = data.documentVersion
 
-        if data.get('exhibitsTraits'):
-            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
-            manifest.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(manifest.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.exhibitsTraits))
 
         if data.get('imports'):
             for import_obj in data.imports:

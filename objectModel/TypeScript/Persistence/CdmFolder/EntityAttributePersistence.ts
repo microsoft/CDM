@@ -9,15 +9,16 @@ import {
     CdmEntityReference,
     cdmLogCode,
     cdmObjectType,
-    CdmProjection,
+    CdmTraitGroupReference,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     Logger,
     resolveOptions
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import { ProjectionPersistence } from './Projections/ProjectionPersistence';
-import { AttributeResolutionGuidance, EntityAttribute, EntityReferenceDefinition, PurposeReference, TraitReference } from './types';
+import { AttributeResolutionGuidance, EntityAttribute, EntityReferenceDefinition, PurposeReference, TraitGroupReference, TraitReference } from './types';
 import * as utils from './utils';
 
 export class EntityAttributePersistence {
@@ -71,7 +72,7 @@ export class EntityAttributePersistence {
         }
 
         entityAttribute.purpose = CdmFolder.PurposeReferencePersistence.fromData(ctx, object.purpose);
-        utils.addArrayToCdmCollection<CdmTraitReference>(
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(
             entityAttribute.appliedTraits,
             utils.createTraitReferenceArray(ctx, object.appliedTraits)
         );
@@ -89,8 +90,9 @@ export class EntityAttributePersistence {
     public static toData(instance: CdmEntityAttributeDefinition, resOpt: resolveOptions, options: copyOptions): EntityAttribute {
         let entity: (string | EntityReferenceDefinition);
         entity = instance.entity ? instance.entity.copyData(resOpt, options) as (string | EntityReferenceDefinition) : undefined;
-        const exhibitsTraits: CdmTraitReference[] = instance.exhibitsTraits ?
-            instance.exhibitsTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty) : undefined;
+        const appliedTraits: CdmTraitReferenceBase[] = instance.appliedTraits ?
+            instance.appliedTraits.allItems.filter(
+                (trait: CdmTraitReferenceBase) => trait instanceof CdmTraitGroupReference || !(trait as CdmTraitReference).isFromProperty) : undefined;
 
         return {
             name: instance.name,
@@ -102,7 +104,7 @@ export class EntityAttributePersistence {
             ? instance.purpose.copyData(resOpt, options) as (string | PurposeReference)
                 : undefined,
             entity: entity,
-            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, exhibitsTraits, options),
+            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, appliedTraits, options),
             resolutionGuidance: instance.resolutionGuidance
                 ? instance.resolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined
         };

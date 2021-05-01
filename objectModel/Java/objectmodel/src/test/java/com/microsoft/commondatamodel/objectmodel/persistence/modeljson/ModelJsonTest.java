@@ -212,7 +212,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
         new CdmReferencedEntityDeclarationDefinition(corpus.getCtx(), "ReferenceEntity1");
     referenceEntity1.setEntityPath("remote:/contoso/entity1.model.json/Entity1");
 
-    final CdmTraitReference modelIdTrait1 =
+    final CdmTraitReference modelIdTrait1 = (CdmTraitReference)
         referenceEntity1.getExhibitsTraits().add("is.propertyContent.multiTrait");
     modelIdTrait1.setFromProperty(true);
     modelIdTrait1
@@ -233,7 +233,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
         new CdmReferencedEntityDeclarationDefinition(corpus.getCtx(), "ReferenceEntity3");
     referenceEntity3.setEntityPath("remote:/contoso/entity3.model.json/Entity3");
 
-    final CdmTraitReference modelIdTrait3 =
+    final CdmTraitReference modelIdTrait3 = (CdmTraitReference)
         referenceEntity3.getExhibitsTraits().add("is.propertyContent.multiTrait");
     modelIdTrait3.setFromProperty(true);
     modelIdTrait3.getArguments().add("modelId", "3b2e040a-c8c5-4508-bb42-09952eb04a50");
@@ -244,7 +244,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
         new CdmReferencedEntityDeclarationDefinition(corpus.getCtx(), "ReferenceEntity4");
     referenceEntity4.setEntityPath("remote:/contoso/entity.model.json/Entity4");
 
-    final CdmTraitReference modelIdTrait4 =
+    final CdmTraitReference modelIdTrait4 = (CdmTraitReference)
         referenceEntity4.getExhibitsTraits().add("is.propertyContent.multiTrait");
     modelIdTrait4.setFromProperty(true);
     modelIdTrait4

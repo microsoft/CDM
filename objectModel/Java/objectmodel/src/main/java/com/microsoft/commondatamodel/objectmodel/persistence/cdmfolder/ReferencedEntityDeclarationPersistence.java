@@ -19,7 +19,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.time.OffsetDateTime;
 
 public class ReferencedEntityDeclarationPersistence {
-  private static String tag = ReferencedEntityDeclarationPersistence.class.getSimpleName();
+  private static final String TAG = ReferencedEntityDeclarationPersistence.class.getSimpleName();
 
   public static CdmEntityDeclarationDefinition fromData(
       final CdmCorpusContext ctx,
@@ -32,7 +32,7 @@ public class ReferencedEntityDeclarationPersistence {
         ? obj.get("entityPath").asText()
         : obj.get("entityDeclaration").asText();
     if (entityPath == null) {
-      Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistEntityPathNotFound);
+      Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistEntityPathNotFound);
     }
 
     // The entity path has to be absolute.

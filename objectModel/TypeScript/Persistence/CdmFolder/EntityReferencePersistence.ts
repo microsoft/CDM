@@ -7,10 +7,9 @@ import {
     CdmCorpusContext,
     CdmEntityDefinition,
     CdmEntityReference,
-    CdmObject,
     cdmObjectType,
     CdmProjection,
-    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     resolveOptions
 } from '../../internal';
@@ -30,10 +29,14 @@ function isConstantEntity(object: Entity | ConstantEntity): object is ConstantEn
 
 export class EntityReferencePersistence extends cdmObjectRefPersistence {
     public static fromData(ctx: CdmCorpusContext, object: string | EntityReferenceDefinition | Projection): CdmEntityReference {
-        if (!object) { return; }
+        if (!object) {
+            return;
+        }
+
         let simpleReference: boolean = true;
         let entity: string | CdmEntityDefinition | CdmConstantEntityDefinition | CdmProjection;
-        let appliedTraits: CdmTraitReference[];
+        let appliedTraits: CdmTraitReferenceBase[];
+        
         if (typeof (object) === 'string') {
             entity = object;
         } else {
@@ -47,7 +50,7 @@ export class EntityReferencePersistence extends cdmObjectRefPersistence {
             appliedTraits = utils.createTraitReferenceArray(ctx, object.appliedTraits);
         }
         if (appliedTraits) {
-            utils.addArrayToCdmCollection<CdmTraitReference>(entityReference.appliedTraits, appliedTraits);
+            utils.addArrayToCdmCollection<CdmTraitReferenceBase>(entityReference.appliedTraits, appliedTraits);
         }
 
         return entityReference;

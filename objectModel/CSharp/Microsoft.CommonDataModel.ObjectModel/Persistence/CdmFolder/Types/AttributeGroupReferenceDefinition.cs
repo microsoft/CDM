@@ -7,5 +7,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
     public class AttributeGroupReferenceDefinition
     {
         public JToken AttributeGroupReference;
+        public bool? Optional { get; set; }
     }
 }

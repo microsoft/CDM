@@ -16,6 +16,7 @@ from .entity_persistence import EntityPersistence
 from .import_persistence import ImportPersistence
 from .purpose_persistence import PurposePersistence
 from .trait_persistence import TraitPersistence
+from .trait_group_persistence import TraitGroupPersistence
 from .types import DocumentContent
 
 _TAG = 'DocumentPersistence'
@@ -64,6 +65,8 @@ class DocumentPersistence:
                         document.definitions.append(AttributeGroupPersistence.from_data(ctx, definition))
                     elif definition.get('traitName'):
                         document.definitions.append(TraitPersistence.from_data(ctx, definition))
+                    elif definition.get('traitGroupName'):
+                        document.definitions.append(TraitGroupPersistence.from_data(ctx, definition))
                     elif definition.get('entityShape'):
                         document.definitions.append(ConstantEntityPersistence.from_data(ctx, definition))
                     elif definition.get('entityName'):

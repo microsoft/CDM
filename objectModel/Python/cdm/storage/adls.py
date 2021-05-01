@@ -16,7 +16,7 @@ import json
 import urllib
 import urllib.parse
 
-import adal
+import msal
 import dateutil.parser
 
 from cdm.utilities import StorageUtils
@@ -47,15 +47,15 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         self._http_xms_date = 'x-ms-date'
         self._http_xms_version = 'x-ms-version'
         self._http_xms_version = 'x-ms-version'
-        self._resource = "https://storage.azure.com"  # type: Optional[str]
+        self._scope = ['https://storage.azure.com/.default']  # type: Optional[List[str]]
         self._type = 'adls'
         self._root = None
         self._sas_token = None
-        self._unescaped_root_sub_path = None # type: Optional[str]
-        self._escaped_root_sub_path = None # type: Optional[str]
+        self._unescaped_root_sub_path = None  # type: Optional[str]
+        self._escaped_root_sub_path = None  # type: Optional[str]
         self._file_modified_time_cache = {}  # type: Dict[str, datetime]
-        self.http_max_results = self.HTTP_DEFAULT_MAX_RESULTS # type: int
-        self.timeout = self.ADLS_DEFAULT_TIMEOUT # type: int
+        self.http_max_results = self.HTTP_DEFAULT_MAX_RESULTS  # type: int
+        self.timeout = self.ADLS_DEFAULT_TIMEOUT  # type: int
 
         if root and hostname:
             self.root = root  # type: Optional[str]
@@ -64,11 +64,11 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             self.secret = kwargs.get('secret', None)  # type: Optional[str]
             self.shared_key = kwargs.get('shared_key', None)  # type: Optional[str]
             self.sas_token = kwargs.get('sas_token', None)  # type: Optional[str]
-            self.token_provider = kwargs.get('token_provider', None) # type: Optional[TokenProvider]
+            self.token_provider = kwargs.get('token_provider', None)  # type: Optional[TokenProvider]
 
             # --- internal ---
             self._tenant = kwargs.get('tenant', None)  # type: Optional[str]
-            self._auth_context = adal.AuthenticationContext('https://login.windows.net/' + self.tenant) if self.tenant else None
+            self._auth_context = None
 
     @property
     def hostname(self) -> str:
@@ -119,10 +119,10 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime]:
         cachedValue = None
         if self._is_cache_enabled:
-             cachedValue = self._file_modified_time_cache.get(corpus_path)
+            cachedValue = self._file_modified_time_cache.get(corpus_path)
 
         if cachedValue is not None:
-            return cachedValue        
+            return cachedValue
         else:
             adapter_path = self.create_adapter_path(corpus_path)
             request = self._build_request(adapter_path, 'HEAD')
@@ -186,20 +186,31 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         while True:
             if continuation_token is None:
-                request = self._build_request('{}?directory={}&maxResults={}&recursive=True&resource=filesystem'.format(url, directory, self.http_max_results), 'GET')
+                request = self._build_request(
+                    '{}?directory={}&maxResults={}&recursive=True&resource=filesystem'.format(url, directory,
+                                                                                              self.http_max_results),
+                    'GET')
             else:
-                request = self._build_request('{}?continuation={}&directory={}&maxResults={}&recursive=True&resource=filesystem'.format(url, urllib.parse.quote(continuation_token), directory, self.http_max_results), 'GET')
+                request = self._build_request(
+                    '{}?continuation={}&directory={}&maxResults={}&recursive=True&resource=filesystem'.format(url,
+                                                                                                              urllib.parse.quote(
+                                                                                                                  continuation_token),
+                                                                                                              directory,
+                                                                                                              self.http_max_results),
+                    'GET')
 
             cdm_response = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
             if cdm_response.status_code == HTTPStatus.OK:
-                continuation_token =  cdm_response.response_headers.get(self._http_xms_continuation)
+                continuation_token = cdm_response.response_headers.get(self._http_xms_continuation)
                 data = json.loads(cdm_response.content)
 
                 for path in data['paths']:
                     if 'isDirectory' not in path or path['isDirectory'] != 'true':
                         name = path['name']  # type: str
-                        name_without_root_sub_path = name[len(self._unescaped_root_sub_path) + 1:] if self._unescaped_root_sub_path and name.startswith(self._unescaped_root_sub_path) else name
+                        name_without_root_sub_path = name[len(
+                            self._unescaped_root_sub_path) + 1:] if self._unescaped_root_sub_path and name.startswith(
+                            self._unescaped_root_sub_path) else name
 
                         filepath = self._format_corpus_path(name_without_root_sub_path)
                         results.append(filepath)
@@ -208,11 +219,10 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
                         if lastTimeString is not None and self._is_cache_enabled:
                             self._file_modified_time_cache[filepath] = dateutil.parser.parse(lastTimeString)
 
-            if(continuation_token is None):
+            if continuation_token is None:
                 break
 
         return results
-
 
     def fetch_config(self) -> str:
         result_config = {'type': self._type}
@@ -258,27 +268,12 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         self.update_network_config(config)
 
-        # Check first for clientId/secret auth.
         if configs_json.get('tenant') and configs_json.get('clientId'):
             self._tenant = configs_json['tenant']
             self.client_id = configs_json['clientId']
 
-            # Check for a secret, we don't really care is it there, but it is nice if it is.
-            if configs_json.get('secret'):
-                self.secret = configs_json['secret']
-
-        # Check for shared key auth
-        if configs_json.get('sharedKey'):
-            self.shared_key = configs_json['sharedKey']
-
-        # Check for SAS token auth
-        if configs_json.get('sasToken'):
-            self.sas_token = configs_json['sasToken']
-
         if configs_json.get('locationHint'):
             self.location_hint = configs_json['locationHint']
-
-        self._auth_context = adal.AuthenticationContext('https://login.windows.net/' + self.tenant) if self.tenant else None
 
     async def write_async(self, corpus_path: str, data: str) -> None:
         url = self.create_adapter_path(corpus_path)
@@ -287,7 +282,8 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
-        request = self._build_request(url + '?action=append&position=0', 'PATCH', data, 'application/json; charset=utf-8')
+        request = self._build_request(url + '?action=append&position=0', 'PATCH', data,
+                                      'application/json; charset=utf-8')
 
         await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
@@ -295,7 +291,8 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
-    def _apply_shared_key(self, shared_key: str, url: str, method: str, content: Optional[str] = None, content_type: Optional[str] = None):
+    def _apply_shared_key(self, shared_key: str, url: str, method: str, content: Optional[str] = None,
+                          content_type: Optional[str] = None):
         headers = OrderedDict()
         headers[self._http_xms_date] = format_date_time(mktime(datetime.now().timetuple()))
         headers[self._http_xms_version] = '2018-06-17'
@@ -344,7 +341,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if not shared_key_bytes:
             raise Exception('Couldn\'t encode the shared key.')
 
-        message = base64.b64encode(hmac.new(shared_key_bytes, msg=data_to_hash.encode('utf-8'), digestmod=hashlib.sha256).digest()).decode('utf-8')
+        message = base64.b64encode(
+            hmac.new(shared_key_bytes, msg=data_to_hash.encode('utf-8'), digestmod=hashlib.sha256).digest()).decode(
+            'utf-8')
         signed_string = 'SharedKey {}:{}'.format(account_name, message)
 
         headers[self._http_authorization] = signed_string
@@ -359,20 +358,22 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         """
         return '{}{}{}'.format(url, '?' if '?' not in url else '&', self.sas_token)
 
-    def _build_request(self, url: str, method: str = 'GET', content: Optional[str] = None, content_type: Optional[str] = None):
+    def _build_request(self, url: str, method: str = 'GET', content: Optional[str] = None,
+                       content_type: Optional[str] = None):
         if self.shared_key is not None:
-            request = self._set_up_cdm_request(url, self._apply_shared_key(self.shared_key, url, method, content, content_type), method)
+            request = self._set_up_cdm_request(url, self._apply_shared_key(self.shared_key, url, method, content,
+                                                                           content_type), method)
         elif self.sas_token is not None:
             request = self._set_up_cdm_request(self._apply_sas_token(url), None, method)
         elif self.tenant is not None and self.client_id is not None and self.secret is not None:
             token = self._generate_bearer_token()
-            headers = {'Authorization': token['tokenType'] + ' ' + token['accessToken']}
+            headers = {'Authorization': token['token_type'] + ' ' + token['access_token']}
             request = self._set_up_cdm_request(url, headers, method)
         elif self.token_provider is not None:
             headers = {'Authorization': self.token_provider.get_token()}
             request = self._set_up_cdm_request(url, headers, method)
         else:
-            raise Exception('Adls adapter is not configured with any auth method')
+            raise Exception('ADLS adapter is not configured with any auth method')
 
         if content is not None:
             request.content = content
@@ -403,7 +404,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         # Root contains file-system name and folder, e.g. "fs-name/folder/folder..."
         prep_root_array = prep_root.split('/')
         self._root_blob_contrainer = prep_root_array[0]
-        self._update_root_sub_path('/'.join(prep_root_array[1:])) 
+        self._update_root_sub_path('/'.join(prep_root_array[1:]))
         return '/{}/{}'.format(self._root_blob_contrainer, self._unescaped_root_sub_path)
 
     def _format_corpus_path(self, corpus_path: str) -> Optional[str]:
@@ -424,9 +425,20 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             hostname = hostname[0:-len(port)]
         return hostname
 
-    def _generate_bearer_token(self):
-        # In-memory token cache is handled by adal by default.
-        return self._auth_context.acquire_token_with_client_credentials(self._resource, self.client_id, self.secret)
+    def _generate_bearer_token(self) -> Optional[dict]:
+        self._build_context()
+        result = self._auth_context.acquire_token_for_client(scopes=self._scope)
+        if result and 'error' in result:
+            error_description = result['error'] + ' error_description: ' + result['error_description'] \
+                if 'error_description' in result else result['error']
+            raise Exception('There was an error while acquiring ADLS Adapter\'s Token with '
+                            'client ID/secret authentication. Exception: ' + error_description)
+
+        if result is None or 'access_token' not in result or 'token_type' not in result:
+            raise Exception('Received invalid ADLS Adapter\'s authentication result. The result may be None, or missing'
+                            ' access_toke and/or token_type authorization header from the authentication result.')
+
+        return result
 
     def _get_escaped_root(self):
         return '/' + self._root_blob_contrainer + '/' + self._escaped_root_sub_path if self._escaped_root_sub_path else '/' + self._root_blob_contrainer
@@ -436,7 +448,13 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             return base64.b64decode(content)
         except Exception:
             return None
-    
+
     def _update_root_sub_path(self, value: str):
         self._unescaped_root_sub_path = value
         self._escaped_root_sub_path = self._escape_path(value)
+
+    def _build_context(self):
+        """Build context when users make the first call. Also need to ensure client Id, tenant and secret are not null."""
+        if self._auth_context is None:
+            self._auth_context = msal.ConfidentialClientApplication(
+                self.client_id, authority='https://login.microsoftonline.com/' + self.tenant, client_credential=self.secret)

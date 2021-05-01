@@ -131,6 +131,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
+            string path = string.Empty;
+
+            if (preChildren != null && preChildren.Invoke(this, path))
+                return false;
+
+            if (postChildren != null && postChildren.Invoke(this, path))
+                return true;
             return false;
         }
 

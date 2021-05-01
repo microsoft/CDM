@@ -38,7 +38,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             RegisteredClasses.Register<CdmPurposeReference, PurposeReferencePersistence>();
             RegisteredClasses.Register<CdmReferencedEntityDeclarationDefinition, ReferencedEntityDeclarationPersistence>();
             RegisteredClasses.Register<CdmTraitDefinition, TraitPersistence>();
+            RegisteredClasses.Register<CdmTraitGroupDefinition, TraitGroupPersistence>();
             RegisteredClasses.Register<CdmTraitReference, TraitReferencePersistence>();
+            RegisteredClasses.Register<CdmTraitGroupReference, TraitGroupReferencePersistence>();
             RegisteredClasses.Register<CdmTypeAttributeDefinition, TypeAttributePersistence>();
             RegisteredClasses.Register<CdmProjection, ProjectionPersistence>();
             RegisteredClasses.Register<CdmOperationAddCountAttribute, OperationAddCountAttributePersistence>();

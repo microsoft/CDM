@@ -90,7 +90,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // merge in dynamic that are exhibited by this class
             if (this.ExhibitsTraits != null)
             {
-                foreach (CdmTraitReference exhibitsTrait in this.ExhibitsTraits)
+                foreach (CdmTraitReferenceBase exhibitsTrait in this.ExhibitsTraits)
                 {
                     rtsb.MergeTraits(exhibitsTrait.FetchResolvedTraits(resOpt));
                 }
@@ -126,7 +126,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal override CdmObjectReference CreatePortableReference(ResolveOptions resOpt)
         {
             CdmObjectReferenceBase cdmObjectRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.MapReferenceType(this.ObjectType), "portable", true) as CdmObjectReferenceBase;
-            cdmObjectRef.ExplicitReference = this.Copy() as CdmObjectDefinition;
+            cdmObjectRef.PortableReference = this;
             cdmObjectRef.InDocument = this.InDocument; // where it started life
             cdmObjectRef.Owner = this.Owner;
 

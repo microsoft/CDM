@@ -139,11 +139,12 @@ class CalculateRelationshipTest(unittest.TestCase):
                 expected_saved_manifest_rel = expected_file.read()
             self.assertEqual(expected_saved_manifest_rel, actual_saved_manifest_rel)
 
-    def _assert_entity_shape_in_resolved_entity(self, resolved_entity: 'CdmEntityDefinition', is_entity_set: bool) -> None:
+    def _assert_entity_shape_in_resolved_entity(self, resolved_entity: 'CdmEntityDefinition', is_entity_set: bool) \
+            -> None:
         for att in resolved_entity.attributes:
-            for trait in att.applied_traits:
-                if trait.named_reference == 'is.linkedEntity.identifier' and len(trait.arguments) > 0:
-                    const_ent = trait.arguments[0].value.fetch_object_definition()
+            for trait_ref in att.applied_traits:
+                if trait_ref.named_reference == 'is.linkedEntity.identifier' and len(trait_ref.arguments) > 0:
+                    const_ent = trait_ref.arguments[0].value.fetch_object_definition()
                     if const_ent and const_ent.entity_shape:
                         entity_shape = const_ent.entity_shape.named_reference
                         self.assertEqual('entitySet', entity_shape) if is_entity_set else self.assertEqual('entityGroupSet', entity_shape)

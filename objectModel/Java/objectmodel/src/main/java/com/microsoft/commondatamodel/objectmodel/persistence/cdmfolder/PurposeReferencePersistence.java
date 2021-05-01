@@ -19,6 +19,7 @@ public class PurposeReferencePersistence {
     }
 
     boolean simpleReference = true;
+    Boolean optional = null;
     final Object purpose;
     List<CdmTraitReference> appliedTraits = null;
 
@@ -26,6 +27,9 @@ public class PurposeReferencePersistence {
       purpose = obj;
     } else {
       simpleReference = false;
+
+      optional = Utils.propertyFromDataToBoolean(obj.get("optional"));
+
       if (obj.get("purposeReference").isValueNode()) {
         purpose = obj.get("purposeReference").asText();
       } else {
@@ -34,11 +38,15 @@ public class PurposeReferencePersistence {
     }
 
     final CdmPurposeReference purposeReference = ctx.getCorpus().makeRef(CdmObjectType.PurposeRef, purpose, simpleReference);
-    if (!(obj.isValueNode())) {
-      appliedTraits = Utils.createTraitReferenceList(ctx, obj.get("appliedTraits"));
+
+    if (optional != null) {
+      purposeReference.setOptional(optional);
     }
 
-    Utils.addListToCdmCollection(purposeReference.getAppliedTraits(), appliedTraits);
+    if (!(obj.isValueNode())) {
+      Utils.addListToCdmCollection(purposeReference.getAppliedTraits(), Utils.createTraitReferenceList(ctx, obj.get("appliedTraits")));
+    }
+
 
     return purposeReference;
   }

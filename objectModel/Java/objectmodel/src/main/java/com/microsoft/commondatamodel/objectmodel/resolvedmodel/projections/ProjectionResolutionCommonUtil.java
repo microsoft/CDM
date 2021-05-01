@@ -5,10 +5,12 @@ package com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.*;
 
@@ -20,6 +22,8 @@ import java.util.*;
  */
 @Deprecated
 public final class ProjectionResolutionCommonUtil {
+    private static final String TAG = ProjectionResolutionCommonUtil.class.getSimpleName();
+
     /**
      * Function to initialize the input projection attribute state Set for a projection
      *
@@ -247,14 +251,15 @@ public final class ProjectionResolutionCommonUtil {
         for (ProjectionAttributeState refFound : refFoundList) {
             ResolvedAttribute resAttr = refFound.getCurrentResolvedAttribute();
 
-            if (resAttr != null && resAttr.getTarget() != null && ((CdmObject) resAttr.getTarget()).getOwner() != null &&
-                (((CdmObject) resAttr.getTarget()).getObjectType() == CdmObjectType.TypeAttributeDef || ((CdmObject) resAttr.getTarget()).getObjectType() == CdmObjectType.EntityAttributeDef)) {
+            if (resAttr.getOwner() == null) {
+                final String atCorpusPath = resAttr.getTarget() instanceof CdmObjectBase ?
+                        ((CdmObjectBase) resAttr.getTarget()).getAtCorpusPath() :
+                        resAttr.getResolvedName();
+                Logger.warning(corpus.getCtx(), TAG, "createForeignKeyLinkedEntityIdentifierTraitParameter", atCorpusPath,
+                        CdmLogCode.WarnProjCreateForeignKeyTraits, resAttr.getResolvedName());
+            } else if (((CdmObject) resAttr.getTarget()).getObjectType() == CdmObjectType.TypeAttributeDef || ((CdmObject) resAttr.getTarget()).getObjectType() == CdmObjectType.EntityAttributeDef) {
                 // find the linked entity
-                CdmObject owner = ((CdmObject) resAttr.getTarget()).getOwner();
-
-                while (owner != null && owner.getObjectType() != CdmObjectType.EntityDef) {
-                    owner = owner.getOwner();
-                }
+                CdmObject owner = resAttr.getOwner();
 
                 // find where the projection is defined
                 CdmDocumentDefinition projectionDoc = projDir.getOwner() != null ? projDir.getOwner().getInDocument() : null;

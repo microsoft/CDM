@@ -47,7 +47,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmReferencesEntities {
-  private String tag = CdmEntityCollection.class.getSimpleName();
+  private static final String TAG = CdmEntityDefinition.class.getSimpleName();
   
   private String entityName;
   private CdmEntityReference extendsEntity;
@@ -286,7 +286,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         rasb.mergeAttributes((this.getExtendsEntityRef()).fetchResolvedAttributes(resOpt, acpExtEnt));
 
         if (!resOpt.checkAttributeCount(rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
-          Logger.error(this.getCtx(), tag, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
+          Logger.error(this.getCtx(), TAG, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
           return null;
         }
 
@@ -341,7 +341,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         rasb.mergeAttributes(rasFromAtt);
 
         if (!resOpt.checkAttributeCount(rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
-          Logger.error(this.getCtx(), tag, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
+          Logger.error(this.getCtx(), TAG, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
           return null;
         }
       }
@@ -396,12 +396,12 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       }
 
       if (resOpt.getWrtDoc() == null) {
-        Logger.error(this.getCtx(), tag, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocWrtDocNotfound);
+        Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocWrtDocNotfound);
         return CompletableFuture.completedFuture(null);
       }
 
       if (StringUtils.isNullOrEmpty(newEntName)) {
-        Logger.error(this.getCtx(), tag, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveEntityNotFound);
+        Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveEntityNotFound);
         return CompletableFuture.completedFuture(null);
       }
 
@@ -411,7 +411,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       return CompletableFuture.supplyAsync(() -> {
         // if the wrtDoc needs to be indexed (like it was just modified) then do that first
         if (!finalResOpt.getWrtDoc().indexIfNeededAsync(finalResOpt, true).join()) {
-          Logger.error(this.getCtx(), tag,"createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
+          Logger.error(this.getCtx(), TAG,"createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
           return null;
         }
 
@@ -425,7 +425,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
                         .createAbsoluteCorpusPath(folder.getAtCorpusPath(), folder),
                 fileName);
         if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
-          Logger.error(this.getCtx(), tag, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocEntityReplacementFailure, targetAtCorpusPath);
+          Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocEntityReplacementFailure, targetAtCorpusPath);
           return null;
         }
 
@@ -597,8 +597,10 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
 
           // fix entity traits
           if (entResolved.getExhibitsTraits() != null) {
-            for (final CdmTraitReference et : entResolved.getExhibitsTraits()) {
-              replaceTraitAttRef(et, newEntName, false);
+            for (final CdmTraitReferenceBase et : entResolved.getExhibitsTraits()) {
+              if (et instanceof CdmTraitReference) {
+                replaceTraitAttRef((CdmTraitReference) et, newEntName, false);
+              }
             }
           }
 
@@ -609,7 +611,11 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
             entAttributes.forEach(entAtt -> {
               final CdmTraitCollection attTraits = entAtt.getAppliedTraits();
               if (attTraits != null) {
-                attTraits.forEach(tr -> replaceTraitAttRef(tr, newEntName, false));
+                attTraits.forEach(tr -> {
+                  if (tr instanceof CdmTraitReference) {
+                    replaceTraitAttRef((CdmTraitReference) tr, newEntName, false);
+                  }
+                });
               }
             });
           }
@@ -780,7 +786,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
 
   private Integer getOrderNum(final CdmObject item, final Map<String, Integer> attPath2Order) {
     if (item.getObjectType() == CdmObjectType.AttributeContextDef) {
-      return orderContents(((CdmAttributeContext) item), attPath2Order);
+      return orderContents((CdmAttributeContext) item, attPath2Order);
     } else if (item.getObjectType() == CdmObjectType.AttributeRef) {
       final String attName = ((CdmAttributeReference) item).getNamedReference();
       final int o = attPath2Order.get(attName);
@@ -958,7 +964,11 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     // fix context traits
     final CdmTraitCollection traitsHere = subAttCtx.getExhibitsTraits();
     if (traitsHere != null) {
-      traitsHere.forEach(tr -> replaceTraitAttRef(tr, entityHint, true));
+      traitsHere.forEach(tr -> {
+        if (tr instanceof CdmTraitReference) {
+          replaceTraitAttRef((CdmTraitReference) tr, entityHint, true);
+        }
+      });
     }
     subAttCtx.getContents().getAllItems().forEach(cr -> {
       if (cr.getObjectType() == CdmObjectType.AttributeContextDef) {
@@ -982,7 +992,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       }
     } catch (final IOException ex) {
       // TODO-BQ: What to do here, report it?
-      Logger.error(this.getCtx(), tag, "getAttributesWithTraits", this.getAtCorpusPath(), CdmLogCode.ErrTraitAttrFetchError, ex.getLocalizedMessage());
+      Logger.error(this.getCtx(), TAG, "getAttributesWithTraits", this.getAtCorpusPath(), CdmLogCode.ErrTraitAttrFetchError, ex.getLocalizedMessage());
     }
     return null;
   }
@@ -1064,7 +1074,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.entityName)) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("entityName"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -1200,7 +1210,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     }
 
     // get or add the trait
-    CdmTraitReference traitRef = this.getExhibitsTraits().item("has.entitySchemaAbstractionLevel");
+    CdmTraitReference traitRef = (CdmTraitReference) this.getExhibitsTraits().item("has.entitySchemaAbstractionLevel");
     if (traitRef == null) {
       traitRef = new CdmTraitReference(this.getCtx(), "has.entitySchemaAbstractionLevel", false, true);
       this.getExhibitsTraits().add(traitRef);

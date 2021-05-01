@@ -191,7 +191,7 @@ class StorageManager:
             if obj and hasattr(obj, 'namespace') and hasattr(obj, 'folder_path'):
                 prefix = obj.folder_path
                 namespace_from_obj = obj.namespace
-            elif obj:
+            elif obj and obj.in_document:
                 prefix = obj.in_document.folder_path
                 namespace_from_obj = obj.in_document.namespace
 

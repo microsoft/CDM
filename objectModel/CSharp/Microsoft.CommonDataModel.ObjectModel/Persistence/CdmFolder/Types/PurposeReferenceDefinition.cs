@@ -10,5 +10,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
     {
         public dynamic PurposeReference { get; set; }
         public List<JToken> AppliedTraits { get; set; }
+        public bool? Optional { get; set; }
     }
 }

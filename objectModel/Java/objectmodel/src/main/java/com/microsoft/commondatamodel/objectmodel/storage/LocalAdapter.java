@@ -12,8 +12,10 @@ import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -80,7 +82,7 @@ public class LocalAdapter extends StorageAdapterBase {
     return CompletableFuture.supplyAsync(() -> {
       final String path = createAdapterPath(corpusPath);
 
-      try (final BufferedReader br = new BufferedReader(new FileReader(path))) {
+      try (final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))) {
         final StringBuilder result = new StringBuilder();
         String line;
         while ((line = br.readLine()) != null) {
@@ -111,7 +113,7 @@ public class LocalAdapter extends StorageAdapterBase {
       final File file = new File(path);
 
       try {
-        FileUtils.writeStringToFile(file, data);
+        FileUtils.writeStringToFile(file, data, StandardCharsets.UTF_8);
       } catch (final IOException e) {
         throw new StorageAdapterException("Failed to write file at corpus path " + corpusPath, e);
       }

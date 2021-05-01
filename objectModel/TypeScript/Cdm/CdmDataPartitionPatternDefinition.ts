@@ -175,7 +175,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         }
 
         if (postChildren && postChildren(this, path)) {
-            return false;
+            return true;
         }
 
         return false;

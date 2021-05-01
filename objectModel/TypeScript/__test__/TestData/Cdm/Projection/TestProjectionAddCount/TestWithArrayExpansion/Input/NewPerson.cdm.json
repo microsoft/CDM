@@ -16,28 +16,25 @@
           "entity": {
             "operations": [
               {
+                "$type": "arrayExpansion",
+                "startOrdinal": 1,
+                "endOrdinal": 2
+              },
+              {
+                "$type": "addCountAttribute",
+                "countAttribute": {
+                  "name": "personCount",
+                  "dataType": "integer",
+                  "appliedTraits": []
+                }
+              },
+              {
                 "$type": "renameAttributes",
                 "renameFormat": "{m}{o}"
               }
             ],
-            "source": {
-              "operations": [
-                {
-                  "$type": "arrayExpansion",
-                  "startOrdinal": 1,
-                  "endOrdinal": 2
-                },
-                {
-                  "$type": "addCountAttribute",
-                  "countAttribute": {
-                    "name": "personCount",
-                    "dataType": "integer",
-                    "appliedTraits": []
-                  }
-                }
-              ],
-              "source": "Person"
-            }
+            "runSequentially": true,
+            "source": "Person"
           }
         }
       ]

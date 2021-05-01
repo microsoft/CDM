@@ -3,7 +3,7 @@
 
 from typing import Optional
 
-from cdm.objectmodel import CdmCorpusContext, CdmTypeAttributeDefinition
+from cdm.objectmodel import CdmCorpusContext, CdmTypeAttributeDefinition, CdmTraitGroupReference
 from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
 from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.utilities import logger, ResolveOptions, CopyOptions, TraitToPropertyMap, copy_data_utils
@@ -50,10 +50,9 @@ class TypeAttributePersistence:
                 type_attribute.cardinality.maximum = max_cardinality
 
         type_attribute.attribute_context = AttributeContextReferencePersistence.from_data(ctx, data.get('attributeContext'))
+        utils.add_list_to_cdm_collection(type_attribute.applied_traits,
+                                         utils.create_trait_reference_array(ctx, data.get('appliedTraits')))
         type_attribute.resolution_guidance = AttributeResolutionGuidancePersistence.from_data(ctx, data.get('resolutionGuidance'))
-
-        applied_traits = utils.create_trait_reference_array(ctx, data.get('appliedTraits'))
-        type_attribute.applied_traits.extend(applied_traits)
 
         if data.get('isPrimaryKey') and entity_name:
             t2p_map = TraitToPropertyMap(type_attribute)
@@ -88,7 +87,8 @@ class TypeAttributePersistence:
             return None
 
         applied_traits = \
-            [trait for trait in instance.applied_traits if not trait.is_from_property] \
+            [trait for trait in instance.applied_traits
+             if isinstance(trait, CdmTraitGroupReference) or not trait.is_from_property] \
             if instance.applied_traits else None
 
         data = TypeAttribute()

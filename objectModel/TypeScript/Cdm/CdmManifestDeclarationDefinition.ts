@@ -140,7 +140,7 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
         }
 
         if (postChildren && postChildren(this, path)) {
-            return false;
+            return true;
         }
 
         return false;

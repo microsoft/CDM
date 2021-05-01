@@ -43,6 +43,8 @@ import {
     CdmPurposeReference,
     CdmReferencedEntityDeclarationDefinition,
     CdmTraitDefinition,
+    CdmTraitGroupDefinition,
+    CdmTraitGroupReference,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
     refCounted,
@@ -65,8 +67,16 @@ export function isCdmTraitDefinition(obj: CdmObject): obj is CdmTraitDefinition 
     return obj && obj.objectType === cdmObjectType.traitDef;
 }
 
+export function isCdmTraitGroupDefinition(obj: CdmObject): obj is CdmTraitGroupDefinition {
+    return obj && obj.objectType === cdmObjectType.traitGroupDef;
+}
+
 export function isCdmTraitReference(obj: CdmObject): obj is CdmTraitReference {
     return obj && obj.objectType === cdmObjectType.traitRef;
+}
+
+export function isCdmTraitGroupReference(obj: CdmObject): obj is CdmTraitGroupReference {
+    return obj && obj.objectType === cdmObjectType.traitGroupRef;
 }
 
 export function isPurposeDefinition(obj: CdmObject): obj is CdmPurposeDefinition {

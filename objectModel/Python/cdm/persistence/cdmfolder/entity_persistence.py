@@ -1,7 +1,7 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from cdm.objectmodel import CdmCorpusContext, CdmEntityDefinition
+from cdm.objectmodel import CdmCorpusContext, CdmEntityDefinition, CdmTraitGroupReference
 from cdm.enums import CdmObjectType
 from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils
 
@@ -28,9 +28,9 @@ class EntityPersistence:
 
         entity.explanation = utils._property_from_data_to_string(data.explanation)
 
-        exhibits_traits = utils.create_trait_reference_array(ctx, data.get('exhibitsTraits'))
-        entity.exhibits_traits.extend(exhibits_traits)
-        
+        utils.add_list_to_cdm_collection(entity.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.get('exhibitsTraits')))
+
         entity.source_name = utils._property_from_data_to_string(data.sourceName)
         entity.display_name = utils._property_from_data_to_string(data.displayName)
         entity.description = utils._property_from_data_to_string(data.description)
@@ -39,14 +39,17 @@ class EntityPersistence:
 
         entity.attribute_context = AttributeContextPersistence.from_data(ctx, data.attributeContext)
 
-        attributes = utils.create_attribute_array(ctx, data.get('hasAttributes'), entity.entity_name)
-        entity.attributes.extend(attributes)
+        utils.add_list_to_cdm_collection(entity.attributes,
+                                         utils.create_attribute_array(ctx,
+                                                                      data.get('hasAttributes'),
+                                                                      entity.entity_name))
 
         return entity
 
     @staticmethod
     def to_data(instance: CdmEntityDefinition, res_opt: ResolveOptions, options: CopyOptions) -> Entity:
-        exhibits_traits = [trait for trait in instance.exhibits_traits if not trait.is_from_property]
+        exhibits_traits = [trait for trait in instance.exhibits_traits
+                           if isinstance(trait, CdmTraitGroupReference) or not trait.is_from_property]
 
         data = Entity()
         data.explanation = instance.explanation

@@ -154,12 +154,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
 
+        /// <summary>
         /// Creates a resolved copy of the manifest.
         /// newEntityDocumentNameFormat specifies a pattern to use when creating documents for resolved entites.
         /// The default is "{f}resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as the manifest. 
         /// Every instance of the string {n} is replaced with the entity name from the source manifest.
         /// Every instance of the string {f} is replaced with the folder path from the source manifest to the source entity
         /// (if there is one that is possible as a relative location, else nothing).
+        /// </summary>
+        /// <param name="newManifestName"></param>
+        /// <param name="newEntityDocumentNameFormat"></param>
+        /// <param name="Directives"></param>
+        /// <returns></returns>
         public async Task<CdmManifestDefinition> CreateResolvedManifestAsync(string newManifestName, string newEntityDocumentNameFormat, AttributeResolutionDirectiveSet Directives = null)
         {
             using (Logger.EnterScope(nameof(CdmManifestDefinition), Ctx, nameof(CreateResolvedManifestAsync)))
@@ -419,7 +425,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
-        // finds and returns an entity object from an EntityDeclaration object that probably comes from a manifest
+        /// <summary>
+        /// finds and returns an entity object from an EntityDeclaration object that probably comes from a manifest
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="manifest"></param>
+        /// <returns></returns>
         internal async Task<CdmEntityDefinition> GetEntityFromReference(CdmEntityDeclarationDefinition entity, CdmManifestDefinition manifest)
         {
             string entityPath = await this.GetEntityPathFromDeclaration(entity, manifest);
@@ -517,18 +528,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 #endif
         }
 
+        /// <summary>
         /// Query the manifest for a set of entities that match an input query.
         /// A JSON object (or a string that can be parsed into one) of the form {"entityName":"", "attributes":[{see QueryOnTraitsAsync for CdmEntityDef for details}]}. 
         /// Returns null for 0 results or an array of json objects, each matching the shape of the input query, with entity and attribute names filled in.
+        /// </summary>
+        /// <param name="querySpec"></param>
+        /// <returns></returns>
         private Task<List<object>> QueryOnTraitsAsync(dynamic querySpec)
         {
             // TODO: This is part of a planned work and currently not used (marked 3 Oct 2019)
             throw new NotImplementedException("Part of an ongoing work");
         }
 
-        // Helper that fixes a path from local to absolute.
-        // Gets the object from that path then looks at the document where the object is found.
-        // If dirty, the document is saved with the original name.
+
+        /// <summary>
+        /// Helper that fixes a path from local to absolute.
+        /// Gets the object from that path then looks at the document where the object is found.
+        /// If dirty, the document is saved with the original name.
+        /// </summary>
+        /// <param name="relative"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         private async Task<bool> SaveDirtyLink(string relative, CopyOptions options)
         {
             // get the document object from the import
@@ -547,24 +568,75 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             CdmDocumentDefinition docImp = objAt.InDocument;
 
-            if (docImp != null)
+            if (docImp != null && docImp.IsDirty)
             {
-                if (docImp.IsDirty)
+                // save it with the same name
+                if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
                 {
-                    // save it with the same name
-                    if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
-                    {
-                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveDirtyLink), this.AtCorpusPath, CdmLogCode.ErrDocEntityDocSavingFailure, docImp.Name);
-                        return false;
-                    }
+                    Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveDirtyLink), this.AtCorpusPath, CdmLogCode.ErrDocEntityDocSavingFailure, docImp.Name);
+                    return false;
                 }
             }
+            return true;
+        }
 
+        /// <summary>
+        /// Helper that fixes a path from local to absolute.Gets the object from that path. 
+        /// Created from SaveDirtyLink in order to be able to save docs in parallel.
+        /// Represents the part of SaveDirtyLink that could not be parallelized.
+        /// </summary>
+        /// <param name="relativePath"></param>
+        /// <returns></returns>
+        private async Task<Tuple<CdmDocumentDefinition, bool>> FetchDocumentDefinition(string relativePath)
+        {
+            // get the document object from the import
+            string docPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(relativePath, this);
+            if (docPath == null)
+            {
+                Logger.Error(this.Ctx as ResolveContext, Tag, nameof(FetchDocumentDefinition), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidCorpusPath, relativePath);
+                return Tuple.Create((CdmDocumentDefinition)null, false);
+            }
+
+            ResolveOptions resOpt = new ResolveOptions
+            {
+                ImportsLoadStrategy = ImportsLoadStrategy.Load
+            };
+            CdmObject objAt = await Ctx.Corpus.FetchObjectAsync<CdmObject>(docPath, null, resOpt);
+            if (objAt == null)
+            {
+                Logger.Error(this.Ctx as ResolveContext, Tag, nameof(FetchDocumentDefinition), this.AtCorpusPath, CdmLogCode.ErrPersistObjectNotFound, docPath);
+                return Tuple.Create((CdmDocumentDefinition)null, false);
+            }
+
+            CdmDocumentDefinition docImp = objAt.InDocument;
+            return Tuple.Create(docImp, true);
+        }
+
+        /// <summary>
+        /// Saves CdmDocumentDefinition if dirty.
+        /// Was created from SaveDirtyLink in order to be able to save docs in parallel.
+        /// Represents the part of SaveDirtyLink that could be parallelized.
+        /// </summary>
+        /// <param name="docImp"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        private async Task<bool> SaveDocumentIfDirty(CdmDocumentDefinition docImp, CopyOptions options)
+        {
+            if (docImp != null && docImp.IsDirty)
+            {
+                // save it with the same name
+                if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
+                {
+                    Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveDocumentIfDirty), this.AtCorpusPath, CdmLogCode.ErrDocEntityDocSavingFailure, docImp.Name);
+                    return false;
+                }
+            }
             return true;
         }
 
         override internal async Task<bool> SaveLinkedDocuments(CopyOptions options = null)
         {
+            HashSet<string> links = new HashSet<string>();
             if (options == null)
             {
                 options = new CopyOptions();
@@ -572,14 +644,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (this.Imports != null)
             {
-                foreach (CdmImport imp in this.Imports)
-                {
-                    if (await SaveDirtyLink(imp.CorpusPath, options) == false)
-                    {
-                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocImportSavingFailure, imp.AtCorpusPath);
-                        return false;
-                    }
-                }
+                this.Imports.ToList().ForEach(x => links.Add(x.CorpusPath));
             }
             if (this.Entities != null)
             {
@@ -589,11 +654,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     if (def.ObjectType == CdmObjectType.LocalEntityDeclarationDef)
                     {
                         CdmLocalEntityDeclarationDefinition defImp = def as CdmLocalEntityDeclarationDefinition;
-                        if (await SaveDirtyLink(defImp.EntityPath, options) == false)
-                        {
-                            Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocEntityDocSavingFailure, defImp.EntityPath);
-                            return false;
-                        }
+                        links.Add(defImp.EntityPath);
 
                         // also, partitions can have their own schemas
                         if (defImp.DataPartitions != null)
@@ -602,11 +663,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             {
                                 if (part.SpecializedSchema != null)
                                 {
-                                    if (await SaveDirtyLink(defImp.EntityPath, options) == false)
-                                    {
-                                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocEntityDocSavingFailure, defImp.EntityPath);
-                                        return false;
-                                    }
+                                    links.Add(part.SpecializedSchema);
                                 }
                             }
                         }
@@ -617,11 +674,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             {
                                 if (part.SpecializedSchema != null)
                                 {
-                                    if (await SaveDirtyLink(part.SpecializedSchema, options) == false)
-                                    {
-                                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocPartitionSchemaSavingFailure, part.SpecializedSchema);
-                                        return false;
-                                    }
+                                    links.Add(part.SpecializedSchema);
                                 }
                             }
                         }
@@ -630,21 +683,47 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             if (this.SubManifests != null)
             {
-                foreach (CdmManifestDeclarationDefinition sub in this.SubManifests)
+                this.SubManifests.ToList().ForEach(x => links.Add(x.Definition));
+            }
+
+            // Get all Cdm documents sequentially
+            List<CdmDocumentDefinition> docs = new List<CdmDocumentDefinition>();
+            foreach (var link in links)
+            {
+                Tuple<CdmDocumentDefinition, bool> doc = await FetchDocumentDefinition(link);
+                if (doc.Item2 == false)
                 {
-                    if (await SaveDirtyLink(sub.Definition, options) == false)
-                    {
-                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocSubManifestSavingFailure, sub.DeclaredPath);
-                        return false;
-                    }
+                    Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrPersistObjectNotFound, link);
+                    return false;
+                }
+                else
+                {
+                    docs.Add(doc.Item1);
+                }
+            }
+
+            // Save all dirty Cdm documents in parallel
+            List<Task<bool>> tasks = new List<Task<bool>>(); 
+            docs.ForEach(x => tasks.Add(SaveDocumentIfDirty(x, options)));
+            var results = await Task.WhenAll(tasks);
+            for (int i = 0; i < results.Length; ++i)
+            {
+                if (results[i] == false)
+                {
+                    Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocEntityDocSavingFailure, docs[i].Name);
+                    return false;
                 }
             }
 
             return true;
         }
 
-        // Standardized way of turning a relationship object into a key for caching
-        // without using the object itself as a key (could be duplicate relationship objects).
+        /// <summary>
+        ///Standardized way of turning a relationship object into a key for caching
+        /// without using the object itself as a key (could be duplicate relationship objects).
+        /// </summary>
+        /// <param name="rel"></param>
+        /// <returns></returns>
         internal string rel2CacheKey(CdmE2ERelationship rel)
         {
             string nameAndPipe = string.Empty;

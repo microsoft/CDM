@@ -5,16 +5,16 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmReferencedEntityDeclarationDefinition,
-    CdmTraitReference,
     cdmLogCode,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    CdmTraitReferenceBase,
+    Logger
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
-import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
 import {
-    EntityDeclarationDefinition, entityDeclarationDefinitionType, TraitReference
+    EntityDeclarationDefinition, entityDeclarationDefinitionType, TraitGroupReference, TraitReference
 } from './types';
 import * as utils from './utils';
 
@@ -61,7 +61,7 @@ export class ReferencedEntityDeclarationPersistence {
         if (dataObj.explanation) {
             newRef.explanation = dataObj.explanation;
         }
-        utils.addArrayToCdmCollection<CdmTraitReference>(newRef.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(newRef.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
 
         return newRef;
     }
@@ -75,7 +75,7 @@ export class ReferencedEntityDeclarationPersistence {
             explanation: instance.explanation,
             entityName: instance.entityName,
             entityPath: instance.entityPath,
-            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.exhibitsTraits, options)
         };
     }
 }

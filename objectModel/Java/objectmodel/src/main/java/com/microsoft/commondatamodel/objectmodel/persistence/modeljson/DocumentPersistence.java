@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class DocumentPersistence {
-  private static String tag = DocumentPersistence.class.getSimpleName();
+  private static final String TAG = DocumentPersistence.class.getSimpleName();
 
   public static CompletableFuture<CdmDocumentDefinition> fromData(
       final CdmCorpusContext ctx,
@@ -51,7 +51,7 @@ public class DocumentPersistence {
               localExtensionTraitDefList)
               .join();
       if (entity == null) {
-        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistModelJsonEntityConversionError);
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistModelJsonEntityConversionError);
         return null;
       }
 
@@ -112,12 +112,12 @@ public class DocumentPersistence {
                   });
                 }
               } else {
-                Logger.warning(ctx, tag, "toData", manifest.getAtCorpusPath(), CdmLogCode.WarnPersistEntityMissing, ((CdmEntityDefinition) cdmEntity).getName());
+                Logger.warning(ctx, TAG, "toData", manifest.getAtCorpusPath(), CdmLogCode.WarnPersistEntityMissing, ((CdmEntityDefinition) cdmEntity).getName());
               }
 
               return entity;
             } else {
-              Logger.error(ctx, tag, "toData", manifest.getAtCorpusPath(), CdmLogCode.ErrPersistCdmEntityFetchError);
+              Logger.error(ctx, TAG, "toData", manifest.getAtCorpusPath(), CdmLogCode.ErrPersistCdmEntityFetchError);
               return null;
             }
           });

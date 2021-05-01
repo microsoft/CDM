@@ -15,7 +15,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     {
         private static readonly string Tag = nameof(CdmObjectReferenceBase);
 
-        internal static string resAttToken = "/(resolvedAttributes)/";
+        /// <inheritdoc />
+        public bool? Optional { get; set; }
+
+        internal static readonly string ResAttToken = "/(resolvedAttributes)/";
         /// <inheritdoc />
         public string NamedReference { get; set; }
 
@@ -35,6 +38,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public bool SimpleNamedReference { get; set; }
 
         internal CdmDocumentDefinition MonikeredDocument { get; set; }
+
+        /// <summary>
+        /// A portable explicit reference used to manipulate nodes in the attribute context.
+        /// For more information, refer to the `CreatePortableReference` method in CdmObjectDef and CdmObjectRef.
+        /// </summary>
+        internal CdmObjectDefinitionBase PortableReference { get; set; }
 
         /// <inheritdoc />
         public CdmTraitCollection AppliedTraits { get; }
@@ -92,7 +101,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (string.IsNullOrEmpty(reff))
                 return -1;
 
-            return reff.IndexOf(resAttToken);
+            return reff.IndexOf(ResAttToken);
         }
 
         [Obsolete("Only for internal use.")]
@@ -117,7 +126,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (seekResAtt >= 0)
             {
                 string entName = this.NamedReference.Substring(0, seekResAtt);
-                string attName = this.NamedReference.Slice(seekResAtt + resAttToken.Length);
+                string attName = this.NamedReference.Slice(seekResAtt + ResAttToken.Length);
                 // get the entity
                 CdmObject ent = this.Ctx.Corpus.ResolveSymbolReference(resOpt, this.InDocument, entName, CdmObjectType.EntityDef, retry: true);
                 if (ent == null)
@@ -165,23 +174,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// into some final document. 
         internal override CdmObjectReference CreatePortableReference(ResolveOptions resOpt)
         {
-            CdmObjectReferenceBase cdmObjectRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.MapReferenceType(this.ObjectType), "portable", true) as CdmObjectReferenceBase;
             CdmObjectDefinitionBase cdmObjectDef = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
+
             if (cdmObjectDef == null || this.InDocument == null)
                 return null; // not allowed
 
-            cdmObjectRef.ExplicitReference = cdmObjectDef.Copy() as CdmObjectDefinition;
-            cdmObjectRef.InDocument = this.InDocument;
+            CdmObjectReferenceBase cdmObjectRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.MapReferenceType(this.ObjectType), "portable", true);
+            cdmObjectRef.PortableReference = cdmObjectDef;
+            cdmObjectRef.Optional = this.Optional;
             cdmObjectRef.Owner = this.Owner;
+            cdmObjectRef.InDocument = this.InDocument;
 
             return cdmObjectRef;
         }
 
         /// Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
         /// into some final document. 
-        internal void LocalizePortableReference(ResolveOptions resOpt, string importPath)
+        internal void LocalizePortableReference(string importPath)
         {
-            string newDeclaredPath = (this.ExplicitReference as CdmObjectBase).DeclaredPath;
+            string newDeclaredPath = this.PortableReference.DeclaredPath;
             newDeclaredPath =  newDeclaredPath?.EndsWith("/(ref)") == true ? newDeclaredPath.Substring(0, newDeclaredPath.Length - 6) : newDeclaredPath;
             this.NamedReference = $"{importPath}{newDeclaredPath}";
         }
@@ -194,7 +205,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            dynamic copy;
+            CdmObjectReferenceBase copy;
             if (!string.IsNullOrEmpty(this.NamedReference))
             {
                 copy = this.CopyRefObject(resOpt, this.NamedReference, this.SimpleNamedReference, host as CdmObjectReferenceBase);
@@ -203,6 +214,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 copy = this.CopyRefObject(resOpt, this.ExplicitReference, this.SimpleNamedReference, host as CdmObjectReferenceBase);
             }
+
+            copy.Optional = this.Optional;
+            copy.PortableReference = this.PortableReference;
 
             if (resOpt.SaveResolutionsOnCopy)
             {
@@ -473,10 +487,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
                 rtsb.TakeReference(rtsInh);
             }
-            else
+            else if (this.Optional != true)
             {
-                string defName = this.FetchObjectDefinitionName();
-                Logger.Warning(this.Ctx, Tag, nameof(ConstructResolvedTraits), this.AtCorpusPath, CdmLogCode.WarnResolveObjectFailed, defName);
+                Logger.Warning(this.Ctx, Tag, nameof(ConstructResolvedTraits), this.AtCorpusPath, CdmLogCode.WarnResolveObjectFailed, this.FetchObjectDefinitionName());
             }
 
             if (this.AppliedTraits != null)

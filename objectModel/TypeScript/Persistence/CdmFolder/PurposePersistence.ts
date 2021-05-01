@@ -6,7 +6,7 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmPurposeDefinition,
-    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     resolveOptions
 } from '../../internal';
@@ -14,6 +14,7 @@ import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     Purpose,
     PurposeReference,
+    TraitGroupReference,
     TraitReference
 } from './types';
 import * as utils from './utils';
@@ -25,7 +26,7 @@ export class PurposePersistence {
         if (object.explanation) {
             purpose.explanation = object.explanation;
         }
-        utils.addArrayToCdmCollection<CdmTraitReference>(
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(
             purpose.exhibitsTraits,
             utils.createTraitReferenceArray(ctx, object.exhibitsTraits)
         );
@@ -38,7 +39,7 @@ export class PurposePersistence {
             purposeName: instance.purposeName,
             extendsPurpose: instance.extendsPurpose
                 ? instance.extendsPurpose.copyData(resOpt, options) as object as PurposeReference : undefined,
-            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits.allItems, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.exhibitsTraits.allItems, options)
         };
     }
 }

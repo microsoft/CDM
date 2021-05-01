@@ -131,7 +131,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (projCtx.CurrentAttributeStateSet.States.Count > 0)
             {
                 ProjectionAttributeState lastState = projCtx.CurrentAttributeStateSet.States[projCtx.CurrentAttributeStateSet.States.Count - 1];
-                CdmTraitReference inSupportOfTrait = this.SupportingAttribute.AppliedTraits.Add("is.addedInSupportOf");
+                CdmTraitReference inSupportOfTrait = this.SupportingAttribute.AppliedTraits.Add("is.addedInSupportOf") as CdmTraitReference;
                 inSupportOfTrait.Arguments.Add("inSupportOf", lastState.CurrentResolvedAttribute.ResolvedName);
             }
 

@@ -5,12 +5,13 @@ import {
     CdmCorpusContext,
     CdmE2ERelationship,
     cdmObjectType,
-    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     resolveOptions,
     StringUtils
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
+import { TraitGroupReference } from './types';
 import { E2ERelationship } from './types/E2ERelationship';
 import { TraitReference } from './types/TraitReference';
 import * as utils from './utils';
@@ -25,7 +26,7 @@ export class E2ERelationshipPersistence {
         relationship.fromEntityAttribute = dataObj.fromEntityAttribute;
         relationship.toEntity = dataObj.toEntity;
         relationship.toEntityAttribute = dataObj.toEntityAttribute;
-        utils.addArrayToCdmCollection<CdmTraitReference>(relationship.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(relationship.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
 
         return relationship;
     }
@@ -37,7 +38,7 @@ export class E2ERelationshipPersistence {
             fromEntityAttribute: instance.fromEntityAttribute,
             toEntity: instance.toEntity,
             toEntityAttribute: instance.toEntityAttribute,
-            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.exhibitsTraits, options)
         };
     }
 }

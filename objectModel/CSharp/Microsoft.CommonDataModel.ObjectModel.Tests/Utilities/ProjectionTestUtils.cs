@@ -14,7 +14,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Common utility methods for projection tests
+    /// Common utility methods for projection tests.
+    /// If you want to update the expected output txt files for all the tests that are ran,
+    /// please set the parameter <c updateExpectedOutput/> <c true/> in the method <see cref="ProjectionTestUtils.ValidateAttributeContext(List{string}, string, string, CdmEntityDefinition, bool)"</see>
     /// </summary>
     class ProjectionTestUtils
     {
@@ -22,11 +24,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// Path to foundations
         /// </summary>
         private const string foundationJsonPath = "cdm:/foundations.cdm.json";
-
-        /// <summary>
-        /// If true, will update the expected output txt files for all the tests that are ran.
-        /// </summary>
-        private const bool updateExpectedOutput = false;
 
         /// <summary>
         /// Resolves an entity
@@ -77,7 +74,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// <summary>
         /// Loads an entity, resolves it, and then validates the generated attribute contexts.
         /// </summary>
-        public static async Task LoadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, string testName, string testsSubpath, string entityName, List<string> directives)
+        public static async Task<CdmEntityDefinition> LoadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, string testName, string testsSubpath, string entityName, List<string> directives)
         {
             string expectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, testName);
 
@@ -87,14 +84,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             Assert.IsNotNull(resolvedEntity);
 
             await ValidateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity);
+
+            return resolvedEntity;
         }
 
         /// <summary>
         /// Creates a corpus
         /// </summary>
-        public static CdmCorpusDefinition GetCorpus(string testName, string testsSubpath)
+        public static CdmCorpusDefinition GetLocalCorpus(string testsSubpath, string testName)
         {
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (status, message) =>
+                {
+                    Assert.Fail(message);
+                }
+            }, CdmStatusLevel.Warning);
+
             return corpus;
         }
 
@@ -173,7 +181,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// <param name="expectedOutputPath"></param>
         /// <param name="entityName"></param>
         /// <param name="resolvedEntity"></param>
-        private static async Task ValidateAttributeContext(List<string> directives, string expectedOutputPath, string entityName, CdmEntityDefinition resolvedEntity)
+        /// <param name="updateExpectedOutput">If true, will update the expected output txt files for all the tests that are ran.</param>
+        private static async Task ValidateAttributeContext(List<string> directives, string expectedOutputPath, string entityName, CdmEntityDefinition resolvedEntity, bool updateExpectedOutput = false)
         {
             if (resolvedEntity.AttributeContext == null)
             {
@@ -181,12 +190,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             }
 
             string fileNamePrefix = $"AttrCtx_{entityName}";
-            string expectedStringFilePath;
             string fileNameSuffix = GetResolutionOptionNameSuffix(directives);
 
             // Get actual text
             AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
             string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity);
+            string expectedStringFilePath;
 
             if (updateExpectedOutput)
             {

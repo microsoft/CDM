@@ -3,6 +3,7 @@
 
 import {
     Import,
+    TraitGroupReference,
     TraitReference
 } from '.';
 
@@ -23,5 +24,5 @@ export abstract class Folder {
     /**
      * The exhibited traits.
      */
-    public exhibitsTraits?: (string | TraitReference)[];
+    public exhibitsTraits?: (string | TraitReference | TraitGroupReference)[];
 }

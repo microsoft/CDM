@@ -171,8 +171,7 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
         }
 
         if (pasMergeList.length > 0) {
-            const mergeIntoAttribute: CdmTypeAttributeDefinition = this.mergeInto as CdmTypeAttributeDefinition;
-            const addTrait: string[] = [`is.linkedEntity.identifier`];
+            const mergeIntoAttribute: CdmTypeAttributeDefinition = this.mergeInto;
 
             // the merged attribute needs one new place to live, so here it is
             const mergedAttrCtxParam: AttributeContextParameters = {
@@ -191,6 +190,8 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
             newMergeIntoPAS.currentResolvedAttribute = raNewMergeInto;
             newMergeIntoPAS.previousStateList = pasMergeList;
 
+            const attributesAddedToContext: Set<string> = new Set<string>();
+
             // Create the attribute context parameters and just store it in the builder for now
             // We will create the attribute contexts at the end
             for (const select of leafLevelCombineAttributeNames.keys()) {
@@ -198,14 +199,19 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
                     leafLevelCombineAttributeNames.get(select) !== undefined &&
                     leafLevelCombineAttributeNames.get(select).length > 0) {
                     for (const leafLevelForSelect of leafLevelCombineAttributeNames.get(select)) {
-                        attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
-                            select,
-                            leafLevelForSelect,
-                            newMergeIntoPAS.currentResolvedAttribute,
-                            cdmAttributeContextType.attributeDefinition,
-                            leafLevelForSelect.currentResolvedAttribute.attCtx, // lineage is the source att
-                            newMergeIntoPAS.currentResolvedAttribute.attCtx // merge into points back here
-                        );
+                        // When dealing with a polymorphic entity, it is possible that multiple entities have an attribute with the same name
+                        // Only one attribute with each name should be added otherwise the attribute context will end up with duplicated nodes
+                        if (!attributesAddedToContext.has(leafLevelForSelect.currentResolvedAttribute.resolvedName)) {
+                            attributesAddedToContext.add(leafLevelForSelect.currentResolvedAttribute.resolvedName);
+                            attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                                select,
+                                leafLevelForSelect,
+                                newMergeIntoPAS.currentResolvedAttribute,
+                                cdmAttributeContextType.attributeDefinition,
+                                leafLevelForSelect.currentResolvedAttribute.attCtx, // lineage is the source att
+                                newMergeIntoPAS.currentResolvedAttribute.attCtx // merge into points back here
+                            );
+                        }
                     }
                 }
             }

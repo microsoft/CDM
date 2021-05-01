@@ -101,7 +101,7 @@ public class Program {
       part.setLocation(cdmCorpus.getStorage().createRelativeCorpusPath(location, manifestResolved));
 
       // Add trait to partition for csv params.
-      CdmTraitReference csvTrait = part.getExhibitsTraits().add("is.partition.format.CSV");
+      CdmTraitReference csvTrait = (CdmTraitReference) part.getExhibitsTraits().add("is.partition.format.CSV");
       csvTrait.getArguments().add("columnHeaders", "true");
       csvTrait.getArguments().add("delimiter", ",");
 

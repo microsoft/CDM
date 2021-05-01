@@ -33,9 +33,8 @@ class DataPartitionPersistence:
         if data.get('lastFileModifiedTime'):
             data_partition.last_file_modified_time = dateutil.parser.parse(data.lastFileModifiedTime)
 
-        if data.get('exhibitsTraits'):
-            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
-            data_partition.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(data_partition.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.exhibitsTraits))
 
         if data.get('arguments'):
             for argument in data.arguments:

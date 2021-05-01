@@ -114,7 +114,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Name = instance.Name,
                 Purpose = Utils.JsonForm(instance.Purpose, resOpt, options),
                 DataType = Utils.JsonForm(instance.DataType, resOpt, options),
-                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?.Where(trait => !trait.IsFromProperty), options),
+                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?
+                    .Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty), options),
                 AttributeContext = Utils.JsonForm(instance.AttributeContext, resOpt, options),
                 ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options)
             };

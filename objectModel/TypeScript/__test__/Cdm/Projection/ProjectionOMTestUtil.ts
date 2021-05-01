@@ -174,7 +174,7 @@ export class ProjectionOMTestUtil {
         this.expectedOutputPath = testHelper.getExpectedOutputFolderPath(this.testsSubpath, this.testName);
         this.actualOutputPath = testHelper.getActualOutputFolderPath(this.testsSubpath, this.testName);
 
-        this.corpus = testHelper.getLocalCorpus(this.testsSubpath, this.testName);
+        this.corpus = projectionTestUtils.getLocalCorpus(this.testsSubpath, this.testName);
         this.corpus.storage.mount(this.localOutputStorageNS, new LocalAdapter(this.actualOutputPath));
         this.corpus.storage.defaultNamespace = this.localOutputStorageNS;
 

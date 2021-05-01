@@ -74,12 +74,16 @@ import {
     resolveOptions,
     StorageAdapter,
     StorageManager,
-    SymbolSet
+    SymbolSet,
+    CdmTraitGroupDefinition,
+    CdmTraitGroupReference,
+    CdmTraitReferenceBase
 } from '../internal';
 import { PersistenceLayer } from '../Persistence';
 import {
     isAttributeGroupDefinition,
     isCdmTraitDefinition,
+    isCdmTraitGroupDefinition,
     isConstantEntityDefinition,
     isDataTypeDefinition,
     isEntityDefinition,
@@ -233,7 +237,11 @@ export class CdmCorpusDefinition {
                 case cdmObjectType.traitRef:
                     return cdmObjectType.traitRef;
 
-                case cdmObjectType.entityAttributeDef:
+                case cdmObjectType.traitGroupDef:
+                case cdmObjectType.traitGroupRef:
+                    return cdmObjectType.traitGroupRef;
+    
+                        case cdmObjectType.entityAttributeDef:
                 case cdmObjectType.typeAttributeDef:
                 case cdmObjectType.attributeRef:
                     return cdmObjectType.attributeRef;
@@ -667,6 +675,12 @@ export class CdmCorpusDefinition {
                     break;
                 case cdmObjectType.traitRef:
                     newObj = new CdmTraitReference(this.ctx, nameOrRef, simmpleNameRef, false);
+                    break;
+                case cdmObjectType.traitGroupDef:
+                    newObj = new CdmTraitGroupDefinition(this.ctx, nameOrRef);
+                    break;
+                case cdmObjectType.traitGroupRef:
+                    newObj = new CdmTraitGroupReference(this.ctx, nameOrRef, simmpleNameRef);
                     break;
                 case cdmObjectType.typeAttributeDef:
                     newObj = new CdmTypeAttributeDefinition(this.ctx, nameOrRef);
@@ -1129,6 +1143,7 @@ export class CdmCorpusDefinition {
                         case cdmObjectType.entityRef:
                         case cdmObjectType.purposeRef:
                         case cdmObjectType.traitRef:
+                        case cdmObjectType.traitGroupRef:
                         case cdmObjectType.constantEntityDef:
                             // these are all references
                             // we will now allow looking up a reference object based on path, so they get indexed too
@@ -1138,6 +1153,7 @@ export class CdmCorpusDefinition {
                         case cdmObjectType.entityDef:
                         case cdmObjectType.parameterDef:
                         case cdmObjectType.traitDef:
+                        case cdmObjectType.traitGroupDef:
                         case cdmObjectType.purposeDef:
                         case cdmObjectType.dataTypeDef:
                         case cdmObjectType.typeAttributeDef:
@@ -1229,6 +1245,10 @@ export class CdmCorpusDefinition {
                             expectedTypes.push(cdmObjectType.traitRef);
                             expectedTypes.push(cdmObjectType.traitDef);
                             expected = 'trait';
+                        } else if (dt.isDerivedFrom('traitGroup', resOpt)) {
+                            expectedTypes.push(cdmObjectType.traitGroupRef);
+                            expectedTypes.push(cdmObjectType.traitGroupDef);
+                            expected = 'traitGroup';
                         } else if (dt.isDerivedFrom('attributeGroup', resOpt)) {
                             expectedTypes.push(cdmObjectType.attributeGroupRef);
                             expectedTypes.push(cdmObjectType.attributeGroupDef);
@@ -1704,11 +1724,11 @@ export class CdmCorpusDefinition {
                             isEntityRef = true;
 
                             const toAtt: string[] = child.exhibitsTraits.allItems.filter(
-                                (x: CdmTraitReference) => {
-                                    return x.namedReference === 'is.identifiedBy' && x.arguments.length > 0;
+                                (x: CdmTraitReferenceBase) => {
+                                    return x.namedReference === 'is.identifiedBy' && (x as CdmTraitReference).arguments.length > 0;
                                 })
-                                .map((y: CdmTraitReference) => {
-                                    const namedRef: string = (y.arguments.allItems[0].value as CdmAttributeReference).namedReference;
+                                .map((y: CdmTraitReferenceBase) => {
+                                    const namedRef: string = ((y as CdmTraitReference).arguments.allItems[0].value as CdmAttributeReference).namedReference;
 
                                     return namedRef.slice(namedRef.lastIndexOf('/') + 1);
                                 });
@@ -2084,6 +2104,7 @@ export class CdmCorpusDefinition {
                         case cdmObjectType.entityDef:
                         case cdmObjectType.parameterDef:
                         case cdmObjectType.traitDef:
+                        case cdmObjectType.traitGroupDef:
                         case cdmObjectType.purposeDef:
                         case cdmObjectType.dataTypeDef:
                         case cdmObjectType.typeAttributeDef:
@@ -2161,6 +2182,7 @@ export class CdmCorpusDefinition {
                             break;
                         }
                     case cdmObjectType.traitDef:
+                    case cdmObjectType.traitGroupDef:
                     case cdmObjectType.purposeDef:
                     case cdmObjectType.dataTypeDef:
                         (this.ctx as resolveContext).relativePath = path;
@@ -2417,6 +2439,13 @@ export class CdmCorpusDefinition {
                     return undefined;
                 }
                 break;
+            case cdmObjectType.traitGroupRef:
+                if (!isCdmTraitGroupDefinition(found)) {
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'traitGroup', symbolDef);
+
+                    return undefined;
+                }
+                break;
             case cdmObjectType.attributeGroupRef:
                 if (!isAttributeGroupDefinition(found)) {
                     Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'attributeGroup', symbolDef);
@@ -2579,8 +2608,9 @@ export class CdmCorpusDefinition {
         if (fromAttrDef?.appliedTraits) {
             const tupleList: [string, string, string][] = [];
             for (const trait of fromAttrDef.appliedTraits) {
-                if (trait.namedReference === 'is.linkedEntity.identifier' && trait.arguments.length > 0) {
-                    const constEnt: CdmConstantEntityDefinition = (trait.arguments.allItems[0].value as CdmEntityReference).fetchObjectDefinition<CdmConstantEntityDefinition>(resOpt);
+                if (trait.namedReference === 'is.linkedEntity.identifier' && (trait as CdmTraitReference).arguments.length > 0) {
+                    const constEnt: CdmConstantEntityDefinition = ((trait as CdmTraitReference).arguments.allItems[0].value as CdmEntityReference)
+                        .fetchObjectDefinition<CdmConstantEntityDefinition>(resOpt);
                     if (constEnt && constEnt.constantValues.length > 0) {
                         for (const constantValues of constEnt.constantValues) {
                             tupleList.push([constantValues[0], constantValues[1], constantValues.length > 2 ? constantValues[2] : '']);

@@ -14,7 +14,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
  * Class for attribute cardinality
  */
 public class CardinalitySettings {
-    private String tag = CardinalitySettings.class.getSimpleName();
+    private static final String TAG = CardinalitySettings.class.getSimpleName();
 
     // By default all attributes in CDM are Not Nullable and hence setting the default value to be 1:1
     private static final int defaultMinimum = 1;
@@ -88,7 +88,7 @@ public class CardinalitySettings {
 
     public void setMinimum(final String minimum) {
         if (!CardinalitySettings.isMinimumValid(minimum)) {
-            Logger.error(this.ctx, tag, "setMinimum", owner.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, minimum);
+            Logger.error(this.ctx, TAG, "setMinimum", owner.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, minimum);
         } else {
             _minimum = minimum;
             _minimumNumber = getNumber(_minimum, defaultMinimum);
@@ -106,7 +106,7 @@ public class CardinalitySettings {
 
     public void setMaximum(final String maximum) {
         if (!CardinalitySettings.isMaximumValid(maximum)) {
-            Logger.error(this.ctx, tag, "setMaximum", owner.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMaxCardinality, maximum);
+            Logger.error(this.ctx, TAG, "setMaximum", owner.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMaxCardinality, maximum);
         } else {
             _maximum = maximum;
             _maximumNumber = getNumber(_maximum, defaultMaximum);
@@ -130,7 +130,7 @@ public class CardinalitySettings {
             int number = Integer.parseInt(value);
             return number;
         } catch (NumberFormatException e) {
-            Logger.error(this.ctx, tag, "getNumber", owner.getAtCorpusPath(), CdmLogCode.ErrProjStringError, value, Integer.toString(defaultValue));
+            Logger.error(this.ctx, TAG, "getNumber", owner.getAtCorpusPath(), CdmLogCode.ErrProjStringError, value, Integer.toString(defaultValue));
             // defaults to min:max DefaultMinimum:DefaultMaximum in the invalid values
             return defaultValue;
         }

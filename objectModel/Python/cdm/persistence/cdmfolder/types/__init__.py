@@ -39,7 +39,9 @@ from .purpose import Purpose
 from .purpose_reference import PurposeReference
 from .referenced_entity_declaration import ReferencedEntityDeclaration
 from .trait import Trait
+from .trait_group import TraitGroup
 from .trait_reference import TraitReference
+from .trait_group_reference import TraitGroupReference
 from .type_attribute import TypeAttribute
 
 __all__ = [
@@ -82,5 +84,7 @@ __all__ = [
     'ReferencedEntityDeclaration',
     'Trait',
     'TraitReference',
+    'TraitGroup',
+    'TraitGroupReference',
     'TypeAttribute'
 ]

@@ -3,13 +3,10 @@
 
 import {
     CdmCorpusDefinition,
-    CdmEntityDefinition,
-    CdmManifestDefinition,
+    CdmTraitReference,
     CdmTypeAttributeDefinition,
 } from '../../../internal';
-import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
-import { AttributeContextUtil } from './AttributeContextUtil';
 
 /**
  * A test class to verify the attribute context tree and traits generated for various resolution scenarios given a default resolution option/directive.
@@ -25,19 +22,10 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
      */
     it('TestEntityStringReference', async () => {
         const testName: string = 'TestEntityStringReference';
-        const entityName: string = testName;
+        const entityName: string = 'TestEntStrRef';
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestEntityStringReference: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestEntityStringReference)
-            .toBeTruthy();
-        const resolvedTestEntityStringReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityStringReference, []);
-        expect(resolvedTestEntityStringReference)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
+        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
 
     /**
@@ -45,19 +33,10 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
      */
     it('TestEntityEntityReference', async () => {
         const testName: string = 'TestEntityEntityReference';
-        const entityName: string = testName;
+        const entityName: string = 'TestEntEntRef';
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestEntityEntityReference: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestEntityEntityReference)
-            .toBeTruthy();
-        const resolvedTestEntityEntityReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityEntityReference, []);
-        expect(resolvedTestEntityEntityReference)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityEntityReference);
+        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
 
     /**
@@ -66,18 +45,9 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityProjection', async () => {
         const testName: string = 'TestEntityProjection';
         const entityName: string = testName;
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestEntityProjection: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestEntityProjection)
-            .toBeTruthy();
-        const resolvedTestEntityProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityProjection, []);
-        expect(resolvedTestEntityProjection)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityProjection);
+        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
 
     /**
@@ -86,18 +56,9 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityNestedProjection', async () => {
         const testName: string = 'TestEntityNestedProjection';
         const entityName: string = testName;
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestEntityNestedProjection: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestEntityNestedProjection)
-            .toBeTruthy();
-        const resolvedTestEntityNestedProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityNestedProjection, []);
-        expect(resolvedTestEntityNestedProjection)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityNestedProjection);
+        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
 
     /**
@@ -105,19 +66,10 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
      */
     it('TestEntityAttributeStringReference', async () => {
         const testName: string = 'TestEntityAttributeStringReference';
-        const entityName: string = testName;
+        const entityName: string = 'TestEntAttrStrRef';
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestEntityAttributeStringReference: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestEntityAttributeStringReference)
-            .toBeTruthy();
-        const resolvedTestEntityAttributeStringReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeStringReference, []);
-        expect(resolvedTestEntityAttributeStringReference)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeStringReference);
+        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
 
     /**
@@ -125,19 +77,10 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
      */
     it('TestEntityAttributeEntityReference', async () => {
         const testName: string = 'TestEntityAttributeEntityReference';
-        const entityName: string = testName;
+        const entityName: string = 'TestEntAttrEntRef';
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestEntityAttributeEntityReference: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestEntityAttributeEntityReference)
-            .toBeTruthy();
-        const resolvedTestEntityAttributeEntityReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeEntityReference, []);
-        expect(resolvedTestEntityAttributeEntityReference)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeEntityReference);
+        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
 
     /**
@@ -145,19 +88,10 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
      */
     it('TestEntityAttributeProjection', async () => {
         const testName: string = 'TestEntityAttributeProjection';
-        const entityName: string = testName;
+        const entityName: string = 'TestEntAttrProj';
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestEntityAttributeProjection: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestEntityAttributeProjection)
-            .toBeTruthy();
-        const resolvedTestEntityAttributeProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeProjection, []);
-        expect(resolvedTestEntityAttributeProjection)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeProjection);
+        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
 
     /**
@@ -165,19 +99,10 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
      */
     it('TestEntityAttributeNestedProjection', async () => {
         const testName: string = 'TestEntityAttributeNestedProjection';
-        const entityName: string = testName;
+        const entityName: string = 'NestedProjection';
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestEntityAttributeNestedProjection: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestEntityAttributeNestedProjection)
-            .toBeTruthy();
-        const resolvedTestEntityAttributeNestedProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeNestedProjection, []);
-        expect(resolvedTestEntityAttributeNestedProjection)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeNestedProjection);
+        await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
     });
 
     /**
@@ -186,33 +111,24 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityTrait', async () => {
         const testName: string = 'TestEntityTrait';
         const entityName: string = testName;
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestEntityTrait: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestEntityTrait)
-            .toBeTruthy();
-        const resolvedTestEntityTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityTrait, []);
-        expect(resolvedTestEntityTrait)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityTrait);
+        const resolvedEntity = await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
 
         // Attribute Name
-        expect((resolvedTestEntityTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('TestAttribute');
         // Trait Name
-        expect((resolvedTestEntityTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[3].namedReference)
+        expect(((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[3] as CdmTraitReference).namedReference)
             .toEqual('does.haveDefault');
         // Trait Name
-        expect((resolvedTestEntityTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+        expect(((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).namedReference)
             .toEqual('testTrait');
         // Trait Param Name
-        expect((resolvedTestEntityTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].arguments.allItems[0].resolvedParameter.name)
+        expect(((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).arguments.allItems[0].resolvedParameter.name)
             .toEqual('testTraitParam1');
         // Trait Param Default Value
-        expect(((resolvedTestEntityTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].arguments.allItems[0]).value)
+        expect((((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).arguments.allItems[0]).value)
             .toEqual('TestTrait Param 1 DefaultValue');
     });
 
@@ -222,33 +138,24 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestEntityExtendsTrait', async () => {
         const testName: string = 'TestEntityExtendsTrait';
         const entityName: string = testName;
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestEntityExtendsTrait: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestEntityExtendsTrait)
-            .toBeTruthy();
-        const resolvedTestEntityExtendsTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityExtendsTrait, []);
-        expect(resolvedTestEntityExtendsTrait)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityExtendsTrait);
+        const resolvedEntity = await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
 
         // Attribute Name
-        expect((resolvedTestEntityExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('TestExtendsTraitAttribute');
         // Trait Name
-        expect((resolvedTestEntityExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[3].namedReference)
+        expect(((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[3] as CdmTraitReference).namedReference)
             .toEqual('does.haveDefault');
         // Trait Name
-        expect((resolvedTestEntityExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+        expect(((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).namedReference)
             .toEqual('testTraitDerived');
         // Trait Param Name
-        expect(((resolvedTestEntityExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].arguments.allItems[0]).resolvedParameter.name)
+        expect((((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).arguments.allItems[0]).resolvedParameter.name)
             .toEqual('testTraitParam1');
         // Trait Param Default Value
-        expect(((resolvedTestEntityExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].arguments.allItems[0]).value)
+        expect((((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).arguments.allItems[0]).value)
             .toEqual('TestTrait Param 1 DefaultValue');
     });
 
@@ -258,33 +165,24 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestProjectionTrait', async () => {
         const testName: string = 'TestProjectionTrait';
         const entityName: string = testName;
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestProjectionTrait: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestProjectionTrait)
-            .toBeTruthy();
-        const resolvedTestProjectionTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestProjectionTrait, []);
-        expect(resolvedTestProjectionTrait)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionTrait);
+        const resolvedEntity = await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
 
         // Attribute Name
-        expect((resolvedTestProjectionTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('TestProjectionAttribute');
         // Trait Name
-        expect((resolvedTestProjectionTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[3].namedReference)
+        expect(((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[3] as CdmTraitReference).namedReference)
             .toEqual('does.haveDefault');
         // Trait Name
-        expect((resolvedTestProjectionTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+        expect(((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).namedReference)
             .toEqual('testTrait');
         // Trait Param Name
-        expect(((resolvedTestProjectionTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].arguments.allItems[0]).resolvedParameter.name)
+        expect((((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).arguments.allItems[0]).resolvedParameter.name)
             .toEqual('testTraitParam1');
         // Trait Param Default Value
-        expect(((resolvedTestProjectionTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].arguments.allItems[0]).value)
+        expect((((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).arguments.allItems[0]).value)
             .toEqual('TestTrait Param 1 DefaultValue');
     });
 
@@ -294,65 +192,56 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     it('TestProjectionExtendsTrait', async () => {
         const testName: string = 'TestProjectionExtendsTrait';
         const entityName: string = testName;
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
-
-        const entTestProjectionExtendsTrait: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entTestProjectionExtendsTrait)
-            .toBeTruthy();
-        const resolvedTestProjectionExtendsTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestProjectionExtendsTrait, []);
-        expect(resolvedTestProjectionExtendsTrait)
-            .toBeTruthy();
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionExtendsTrait);
+        const resolvedEntity = await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, []);
 
         // Attribute Name
-        expect((resolvedTestProjectionExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('TestProjectionAttribute');
         // Trait Name
-        expect((resolvedTestProjectionExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[3].namedReference)
+        expect(((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[3] as CdmTraitReference).namedReference)
             .toEqual('does.haveDefault');
         // Trait Name
-        expect((resolvedTestProjectionExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+        expect(((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).namedReference)
             .toEqual('testTrait');
         // Trait Param Name
-        expect(((resolvedTestProjectionExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].arguments.allItems[0]).resolvedParameter.name)
+        expect((((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).arguments.allItems[0]).resolvedParameter.name)
             .toEqual('testTraitParam1');
         // Trait Param Default Value
-        expect(((resolvedTestProjectionExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].arguments.allItems[0]).value)
+        expect((((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).arguments.allItems[0]).value)
             .toEqual('TestTrait Param 1 DefaultValue');
 
         // Attribute Name
-        expect((resolvedTestProjectionExtendsTrait.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
+        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
             .toEqual('TestProjectionAttributeB');
         // Trait Name
-        expect((resolvedTestProjectionExtendsTrait.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[3].namedReference)
+        expect(((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[3] as CdmTraitReference).namedReference)
             .toEqual('does.haveDefault');
         // Trait Name
-        expect((resolvedTestProjectionExtendsTrait.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)
+        expect(((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).namedReference)
             .toEqual('testTrait');
         // Trait Param Name
-        expect(((resolvedTestProjectionExtendsTrait.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].arguments.allItems[0]).resolvedParameter.name)
+        expect((((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).arguments.allItems[0]).resolvedParameter.name)
             .toEqual('testTraitParam1');
         // Trait Param Default Value
-        expect(((resolvedTestProjectionExtendsTrait.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].arguments.allItems[0]).value)
+        expect((((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[4] as CdmTraitReference).arguments.allItems[0]).value)
             .toEqual('TestTrait Param 1 DefaultValue');
 
         // Trait Name
-        expect((resolvedTestProjectionExtendsTrait.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[5].namedReference)
+        expect(((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[5] as CdmTraitReference).namedReference)
             .toEqual('testExtendsTraitB');
         // Trait Param Name
-        expect(((resolvedTestProjectionExtendsTrait.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[5].arguments.allItems[0]).resolvedParameter.name)
+        expect((((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[5] as CdmTraitReference).arguments.allItems[0]).resolvedParameter.name)
             .toEqual('testTraitParam1');
         // Trait Param Default Value
-        expect(((resolvedTestProjectionExtendsTrait.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[5].arguments.allItems[0]).value)
+        expect((((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[5] as CdmTraitReference).arguments.allItems[0]).value)
             .toEqual('TestTrait Param 1 DefaultValue');
         // Trait Param Name
-        expect(((resolvedTestProjectionExtendsTrait.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[5].arguments.allItems[1]).resolvedParameter.name)
+        expect((((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[5] as CdmTraitReference).arguments.allItems[1]).resolvedParameter.name)
             .toEqual('testExtendsTraitBParam1');
         // Trait Param Default Value
-        expect(((resolvedTestProjectionExtendsTrait.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[5].arguments.allItems[1]).value)
+        expect((((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).appliedTraits.allItems[5] as CdmTraitReference).arguments.allItems[1]).value)
             .toEqual('TestExtendsTraitB Param 1 DefaultValue');
     });
 });

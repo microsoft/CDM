@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * Class to handle RenameAttributes operations
  */
 public class CdmOperationRenameAttributes extends CdmOperationBase {
-    private String tag = CdmOperationRenameAttributes.class.getSimpleName();
+    private static final String TAG = CdmOperationRenameAttributes.class.getSimpleName();
     private String renameFormat;
     private List<String> applyTo;
 
@@ -98,7 +98,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
             missingFields.add(this.renameFormat.toString());
         }
         if (missingFields.size() > 0) {
-            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -195,7 +195,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
 
                     projOutputSet.add(newPAS);
                 } else {
-                    Logger.warning(this.getCtx(), tag, "appendProjectionAttributeState", this.getAtCorpusPath(), CdmLogCode.WarnProjRenameAttrNotSupported);
+                    Logger.warning(this.getCtx(), TAG, "appendProjectionAttributeState", this.getAtCorpusPath(), CdmLogCode.WarnProjRenameAttrNotSupported);
                     // Add the attribute without changes
                     projOutputSet.add(currentPAS);
                 }
@@ -223,7 +223,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
 
         if (StringUtils.isNullOrTrimEmpty(format))
         {
-            Logger.error(this.getCtx(), tag, "getNewAttributeName", this.getAtCorpusPath(), CdmLogCode.ErrProjRenameFormatIsNotSet);
+            Logger.error(this.getCtx(), TAG, "getNewAttributeName", this.getAtCorpusPath(), CdmLogCode.ErrProjRenameFormatIsNotSet);
             return "";
         }
 

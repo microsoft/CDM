@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -37,7 +38,7 @@ public class ResourceAdapter extends StorageAdapterBase {
             }
 
             // Read the file from the resource path line by line.
-            try (final BufferedReader br = new BufferedReader(new InputStreamReader(resourcePath))) {
+            try (final BufferedReader br = new BufferedReader(new InputStreamReader(resourcePath, StandardCharsets.UTF_8))) {
                 final StringBuilder result = new StringBuilder();
                 String line;
                 while ((line = br.readLine()) != null) {

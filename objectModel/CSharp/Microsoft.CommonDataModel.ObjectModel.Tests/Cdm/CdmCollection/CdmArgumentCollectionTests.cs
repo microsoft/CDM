@@ -138,7 +138,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
 
             var trait = entityReference.ExhibitsTraits.Add("theTrait");
 
-            var argument = trait.Arguments.Add("GreatArgumentName", "GreatValue");
+            var argument = (trait as CdmTraitReference).Arguments.Add("GreatArgumentName", "GreatValue");
 
             manifest.Entities.Add(entityReference);
 

@@ -45,7 +45,7 @@ public class ProjectionAddAttributeGroupTest {
     public void testCombineOpsNestedProj() throws InterruptedException {
         String testName = "testCombineOpsNestedProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -70,7 +70,7 @@ public class ProjectionAddAttributeGroupTest {
     public void testCombineOpsProj() throws InterruptedException {
         String testName = "testCombineOpsProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -101,7 +101,7 @@ public class ProjectionAddAttributeGroupTest {
     public void testConditionalProj() throws InterruptedException {
         String testName = "testConditionalProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -138,7 +138,7 @@ public class ProjectionAddAttributeGroupTest {
     @Test
     public void testConditionalProjUsingObjectModel() throws InterruptedException {
         String testName =  "testConditionalProjUsingObjectModel";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
         // Create an entity.
@@ -200,7 +200,7 @@ public class ProjectionAddAttributeGroupTest {
     public void testEntityAttribute() throws InterruptedException {
         String testName = "testEntityAttribute";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -225,7 +225,7 @@ public class ProjectionAddAttributeGroupTest {
     @Test
     public void testEntityAttributeProjUsingObjectModel() throws InterruptedException {
         String testName = "testEntityAttributeProjUsingObjectModel";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
         // Create an entity
@@ -267,7 +267,7 @@ public class ProjectionAddAttributeGroupTest {
     @Test
     public void testEntityProjUsingObjectModel() throws InterruptedException {
         String testName = "testEntityProjUsingObjectModel";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
         // Create an entity
@@ -308,7 +308,7 @@ public class ProjectionAddAttributeGroupTest {
     public void testExtendsEntityProj() throws InterruptedException {
         String testName = "testExtendsEntityProj";
         String entityName = "Child";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -334,7 +334,7 @@ public class ProjectionAddAttributeGroupTest {
     public void testMultipleOpProj() throws InterruptedException {
         String testName = "testMultipleOpProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -369,7 +369,7 @@ public class ProjectionAddAttributeGroupTest {
     public void testNestedProj() throws InterruptedException {
         String testName = "testNestedProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -397,7 +397,7 @@ public class ProjectionAddAttributeGroupTest {
     public void testTypeAttributeProj() throws InterruptedException {
         String testName = "testTypeAttributeProj";
         String entityName = "Person";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();

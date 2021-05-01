@@ -5,6 +5,7 @@ from typing import Union, List
 
 from .cdm_import import Import
 from .trait import Trait
+from .trait_group import TraitGroup
 from .data_type import DataType
 from .purpose import Purpose
 from .attribute_group import AttributeGroup
@@ -22,7 +23,7 @@ class DocumentContent(JObject):
         self.schema = None  # type: str
         self.jsonSchemaSemanticVersion = None  # type: str
         self.imports = None  # type: List[Import]
-        self.definitions = None  # type: Union[Trait, DataType, Purpose, AttributeGroup, Entity, ConstantEntity]
+        self.definitions = None  # type: Union[Trait, TraitGroup, DataType, Purpose, AttributeGroup, Entity, ConstantEntity]
         self.documentVersion = None  # type: str
 
         self.schemaVersion = None  # type: str

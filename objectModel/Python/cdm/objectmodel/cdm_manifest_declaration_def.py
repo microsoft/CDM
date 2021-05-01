@@ -104,6 +104,6 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
             return True
 
         if post_children and post_children(self, path):
-            return False
+            return True
 
         return False

@@ -132,7 +132,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     /**
      * The maximum json semantic version supported by this ObjectModel version.
      */
-    public static currentJsonSchemaSemanticVersion = '1.1.0';
+    public static currentJsonSchemaSemanticVersion = '1.2.0';
 
     constructor(ctx: CdmCorpusContext, name: string, hasImports: boolean = false) {
         super(ctx);

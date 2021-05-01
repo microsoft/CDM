@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitionBase implements
     CdmEntityDeclarationDefinition {
 
-  private String tag = CdmReferencedEntityDeclarationDefinition.class.getSimpleName();
+  private static final String TAG = CdmReferencedEntityDeclarationDefinition.class.getSimpleName();
 
   private String entityName;
   private String entitySchema;
@@ -99,6 +99,15 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
 
   @Override
   public boolean visit(final String pathRoot, final VisitCallback preChildren, final VisitCallback postChildren) {
+    String path = "";
+
+    if (preChildren != null && preChildren.invoke(this, path)) {
+      return false;
+    }
+
+    if (postChildren!= null && postChildren.invoke(this, path)) {
+      return true;
+    }
     return false;
   }
 
@@ -142,7 +151,7 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

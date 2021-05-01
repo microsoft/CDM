@@ -38,9 +38,8 @@ class ReferencedEntityDeclarationPersistence:
         if data.get('lastFileModifiedTime'):
             referenced_entity.last_file_modified_time = dateutil.parser.parse(data.lastFileModifiedTime)
 
-        if data.get('exhibitsTraits'):
-            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
-            referenced_entity.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(referenced_entity.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.exhibitsTraits))
 
         return referenced_entity
 

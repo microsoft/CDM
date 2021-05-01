@@ -2,13 +2,13 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from collections import OrderedDict
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Dict, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import JObject, logger
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCollection, CdmCorpusContext, CdmDocumentDefinition, CdmImport, CdmParameterDefinition, CdmTraitCollection, CdmTraitDefinition
+    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmImport, CdmTraitCollection, CdmTraitDefinition
 
 cached_def_docs = {}  # type: Dict[str, CdmDocumentDefinition]
 

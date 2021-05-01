@@ -4,7 +4,7 @@
 import unittest
 import os
 
-from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle
+from cdm.enums import CdmLogCode, CdmObjectType, CdmRelationshipDiscoveryStyle
 from cdm.storage import LocalAdapter
 
 from tests.common import async_test, TestHelper
@@ -172,6 +172,24 @@ class RelationshipTest(unittest.TestCase):
 
         # check that each relationship has been created correctly
         self.verify_relationships(manifest, expected_rels)
+
+    @async_test
+    async def test_extends_entity_and_replace_as_foreign_key(self):
+        """Test the relationship calculation when using a replace as foreign key operation while extending an entity."""
+
+        test_name = 'test_extends_entity_and_replace_as_foreign_key'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+
+
+        manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')  # type: CdmManifestDefinition
+
+        await corpus.calculate_entity_graph_async(manifest)
+        # Check if the warning was logged.
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_PROJ_FK_WITHOUT_SOURCE_ENTITY, self)
+
+        await manifest.populate_manifest_relationships_async()
+
+        self.assertEqual(0, len(manifest.relationships))
 
     @async_test
     async def test_relationships_entity_and_document_name_different(self):

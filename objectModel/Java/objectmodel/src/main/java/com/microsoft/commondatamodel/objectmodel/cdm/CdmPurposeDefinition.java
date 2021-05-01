@@ -18,7 +18,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
-  private String tag = CdmPurposeDefinition.class.getSimpleName();
+  private static final String TAG = CdmPurposeDefinition.class.getSimpleName();
 
   public String purposeName;
   public CdmPurposeReference extendsPurpose;
@@ -109,7 +109,8 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.purposeName)) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("purposeName"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), 
+              String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

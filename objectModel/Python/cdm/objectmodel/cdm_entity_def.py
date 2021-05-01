@@ -9,7 +9,6 @@ from cdm.persistence import PersistenceLayer
 from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttributeSet
 from cdm.utilities import AttributeContextParameters, logger, ResolveOptions
 from cdm.enums import CdmLogCode
-from cdm.utilities.string_utils import StringUtils
 
 from .cdm_argument_def import CdmArgumentDefinition
 from .cdm_attribute_context import CdmAttributeContext
@@ -23,13 +22,12 @@ from ..utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttributeContext, CdmAttributeGroupDefinition, CdmAttributeGroupReference, \
-        CdmAttributeItem, CdmAttributeReference, CdmAttributeResolutionGuidanceDefinition, CdmCollection, \
-        CdmCorpusContext, CdmDocumentDefinition, \
+        CdmAttributeItem, CdmAttributeResolutionGuidanceDefinition, CdmCollection, CdmCorpusContext, \
         CdmEntityAttributeDefinition, CdmEntityReference, CdmFolderDefinition, CdmTraitReference, \
         CdmTypeAttributeDefinition, CdmObjectReference, CdmArgumentCollection
     from cdm.resolvedmodel import ResolvedAttribute, ResolvedAttributeSetBuilder, ResolvedEntityReferenceSet, \
         ResolvedTraitSetBuilder, TraitSpec
-    from cdm.utilities import FriendlyFormatNode, TraitToPropertyMap, VisitCallback
+    from cdm.utilities import TraitToPropertyMap, VisitCallback
 
 
 class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
@@ -733,14 +731,16 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 # Fix entity traits.
                 if ent_resolved.exhibits_traits:
                     for et in ent_resolved.exhibits_traits:
-                        replace_trait_att_ref(et, new_ent_name)
+                        if et.object_type == CdmObjectType.TRAIT_REF:
+                            replace_trait_att_ref(et, new_ent_name)
 
                 # Fix context traits.
                 def fix_context_traits(sub_att_ctx: 'CdmAttributeContext', entity_hint: str) -> None:
                     traits_here = sub_att_ctx.exhibits_traits
                     if traits_here:
                         for tr in traits_here:
-                            replace_trait_att_ref(tr, entity_hint)
+                            if tr.object_type == CdmObjectType.TRAIT_REF:
+                                replace_trait_att_ref(tr, entity_hint)
 
                     for cr in sub_att_ctx.contents:
                         if cr.object_type == CdmObjectType.ATTRIBUTE_CONTEXT_DEF:
@@ -761,7 +761,8 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                         att_traits = attribute.applied_traits
                         if att_traits:
                             for tr in att_traits:
-                                replace_trait_att_ref(tr, new_ent_name)
+                                if tr.object_type == CdmObjectType.TRAIT_REF:
+                                    replace_trait_att_ref(tr, new_ent_name)
 
             # We are about to put this content created in the context of various documents (like references to attributes
             # from base entities, etc.) into one specific document. All of the borrowed refs need to work. so, re-write all

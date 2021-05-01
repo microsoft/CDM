@@ -7,19 +7,7 @@ package com.microsoft.commondatamodel.objectmodel.samples;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.FileReadWriteUtil;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeItem;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmConstantEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmE2ERelationship;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDeclarationDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
@@ -348,26 +336,26 @@ public class ReadManifestTest extends SampleTestBase {
         }
     }
 
-    static void printTrait(CdmTraitReference trait) {
+    static void printTrait(CdmTraitReferenceBase trait) {
         if (!Strings.isNullOrEmpty(trait.fetchObjectDefinitionName())) {
             System.out.println("      " + trait.fetchObjectDefinitionName());
 
-            for (CdmArgumentDefinition argDef : trait.getArguments()) {
-                if (argDef.getValue() instanceof CdmEntityReference) {
-                    System.out.println("         Constant: [");
+            if (trait instanceof CdmTraitReference) {
+                for (CdmArgumentDefinition argDef : ((CdmTraitReference) trait).getArguments()) {
+                    if (argDef.getValue() instanceof CdmEntityReference) {
+                        System.out.println("         Constant: [");
 
-                    CdmConstantEntityDefinition contEntDef =
-                            ((CdmEntityReference)argDef.getValue()).fetchObjectDefinition();
+                        CdmConstantEntityDefinition contEntDef =
+                                ((CdmEntityReference) argDef.getValue()).fetchObjectDefinition();
 
-                    for (List<String> constantValueList : contEntDef.getConstantValues()) {
-                        System.out.println("             " + constantValueList);
+                        for (List<String> constantValueList : contEntDef.getConstantValues()) {
+                            System.out.println("             " + constantValueList);
+                        }
+                        System.out.println("         ]");
+                    } else {
+                        // Default output, nothing fancy for now
+                        System.out.println("         " + argDef.getValue());
                     }
-                    System.out.println("         ]");
-                }
-                else
-                {
-                    // Default output, nothing fancy for now
-                    System.out.println("         " + argDef.getValue());
                 }
             }
         }

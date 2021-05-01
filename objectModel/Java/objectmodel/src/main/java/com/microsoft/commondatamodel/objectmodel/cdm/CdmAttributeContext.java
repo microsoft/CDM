@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 public class CdmAttributeContext extends CdmObjectDefinitionBase {
 
-  private String tag = CdmAttributeContext.class.getSimpleName();
+  private static final String TAG = CdmAttributeContext.class.getSimpleName();
 
   private CdmAttributeContextType type;
   private CdmCollection<CdmObject> contents;
@@ -294,7 +294,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -649,8 +649,8 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
         // need the real path to this thing from the explicitRef held in the portable reference
         // the real path is {monikerFrom/}{path from 'from' document to document holding the explicit ref/{declaredPath of explicitRef}}
         // if we have never looked up the path between docs, do that now
-        CdmDocumentDefinition docFromDef = ac.getDefinition().getExplicitReference().getInDocument(); // if all parts not set, this is a broken portal ref!
-        String pathBetweenDocs = pathBetweenDocs = foundDocPaths.get(docFromDef);
+        CdmDocumentDefinition docFromDef = ((CdmObjectReferenceBase) ac.getDefinition()).portableReference.getInDocument(); // if all parts not set, this is a broken portal ref!
+        String pathBetweenDocs = foundDocPaths.get(docFromDef);
         if (pathBetweenDocs == null) {
           pathBetweenDocs = docFrom.importPathToDoc(docFromDef);
           if (pathBetweenDocs == null)
@@ -661,7 +661,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
           foundDocPaths.put(docFrom, pathBetweenDocs);
         }
 
-        ((CdmObjectReferenceBase)ac.getDefinition()).localizePortableReference(resOpt, String.format("%s%s",  monikerForDocFrom, pathBetweenDocs));
+        ((CdmObjectReferenceBase)ac.getDefinition()).localizePortableReference(String.format("%s%s",  monikerForDocFrom, pathBetweenDocs));
       }
     }
     // doc of parent ref

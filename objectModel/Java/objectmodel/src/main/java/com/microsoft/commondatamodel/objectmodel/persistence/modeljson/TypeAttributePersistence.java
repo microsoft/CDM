@@ -60,7 +60,7 @@ public class TypeAttributePersistence {
 
     Utils.processTraitsAndAnnotationsToData(instance.getCtx(), attribute, instance.getAppliedTraits());
     final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
-    final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReferenceName("is.hidden");
+    final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReference("is.hidden");
 
     if (isHiddenTrait != null) {
       attribute.setHidden(true);

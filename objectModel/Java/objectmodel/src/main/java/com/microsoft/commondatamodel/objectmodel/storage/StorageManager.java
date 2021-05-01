@@ -29,7 +29,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 public class StorageManager {
-  private static String tag = StorageManager.class.getSimpleName();
+  private static final String TAG = StorageManager.class.getSimpleName();
 
   private final CdmCorpusDefinition corpus;
   private final Map<String, CdmFolderDefinition> namespaceFolder = new LinkedHashMap<>();
@@ -55,7 +55,7 @@ public class StorageManager {
   public void mount(final String nameSpace, final StorageAdapter adapter) {
     try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "mount")) {
       if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
-        Logger.error(this.corpus.getCtx(), tag, "mount", null, CdmLogCode.ErrStorageNullNamespace);
+        Logger.error(this.corpus.getCtx(), TAG, "mount", null, CdmLogCode.ErrStorageNullNamespace);
         return;
       }
 
@@ -72,7 +72,7 @@ public class StorageManager {
         this.namespaceFolder.put(nameSpace, fd);
         this.systemDefinedNamespaces.remove(nameSpace);
       } else {
-        Logger.error(this.corpus.getCtx(), tag, "mount", null, CdmLogCode.ErrStorageNullAdapter);
+        Logger.error(this.corpus.getCtx(), TAG, "mount", null, CdmLogCode.ErrStorageNullAdapter);
       }
     }
   }
@@ -83,7 +83,7 @@ public class StorageManager {
 
   public List<String> mountFromConfig(final String adapterConfig, final boolean doesReturnErrorList) {
     if (Strings.isNullOrEmpty(adapterConfig)) {
-      Logger.error(this.corpus.getCtx(), tag, "mountFromConfig", null, CdmLogCode.ErrStorageNullAdapterConfig);
+      Logger.error(this.corpus.getCtx(), TAG, "mountFromConfig", null, CdmLogCode.ErrStorageNullAdapterConfig);
       return null;
     }
     JsonNode adapterConfigJson;
@@ -105,7 +105,7 @@ public class StorageManager {
       if (item.has("namespace")) {
         nameSpace = item.get("namespace").asText();
       } else {
-        Logger.error(this.corpus.getCtx(), tag, "mountFromConfig", null, CdmLogCode.ErrStorageMissingNamespace);
+        Logger.error(this.corpus.getCtx(), TAG, "mountFromConfig", null, CdmLogCode.ErrStorageMissingNamespace);
         continue;
       }
       final JsonNode configs;
@@ -113,11 +113,11 @@ public class StorageManager {
       if (item.has("config")) {
         configs = item.get("config");
       } else {
-        Logger.error(this.corpus.getCtx(), tag, "mountFromConfig", null, CdmLogCode.ErrStorageMissingJsonConfig, nameSpace);
+        Logger.error(this.corpus.getCtx(), TAG, "mountFromConfig", null, CdmLogCode.ErrStorageMissingJsonConfig, nameSpace);
         continue;
       }
       if (!item.has("type")) {
-        Logger.error(this.corpus.getCtx(), tag, "mountFromConfig", null, CdmLogCode.ErrStorageNullNamespace, nameSpace);
+        Logger.error(this.corpus.getCtx(), TAG, "mountFromConfig", null, CdmLogCode.ErrStorageNullNamespace, nameSpace);
         continue;
       }
       try {
@@ -162,7 +162,7 @@ public class StorageManager {
   public boolean unmount(final String nameSpace) {
     try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "unmount")) {
       if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
-        Logger.error(this.corpus.getCtx(), tag, "unmount", null, CdmLogCode.ErrStorageNullNamespace);
+        Logger.error(this.corpus.getCtx(), TAG, "unmount", null, CdmLogCode.ErrStorageNullNamespace);
         return false;
       }
 
@@ -178,7 +178,7 @@ public class StorageManager {
 
         return true;
       } else {
-        Logger.warning(this.corpus.getCtx(), tag, "unmount", null, CdmLogCode.WarnStorageRemoveAdapterFailed);
+        Logger.warning(this.corpus.getCtx(), TAG, "unmount", null, CdmLogCode.WarnStorageRemoveAdapterFailed);
         return false;
       }
     }
@@ -195,34 +195,34 @@ public class StorageManager {
   @Deprecated
   public void setAdapter(String nameSpace, StorageAdapter adapter) {
     if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
-      Logger.error(this.corpus.getCtx(), tag, "setAdapter", null, CdmLogCode.ErrStorageNullNamespace);
+      Logger.error(this.corpus.getCtx(), TAG, "setAdapter", null, CdmLogCode.ErrStorageNullNamespace);
       return;
     }
 
     if (adapter != null) {
       this.namespaceAdapters.put(nameSpace, adapter);
     } else {
-      Logger.error(this.corpus.getCtx(), tag, "setAdapter", null, CdmLogCode.ErrStorageNullAdapter);
+      Logger.error(this.corpus.getCtx(), TAG, "setAdapter", null, CdmLogCode.ErrStorageNullAdapter);
     }
   }
 
   public StorageAdapter fetchAdapter(final String nameSpace) {
     if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
-      Logger.error(this.corpus.getCtx(), tag, "fetchAdapter", null, CdmLogCode.ErrStorageNullNamespace);
+      Logger.error(this.corpus.getCtx(), TAG, "fetchAdapter", null, CdmLogCode.ErrStorageNullNamespace);
       return null;
     }
 
     if (this.namespaceFolder.containsKey(nameSpace)) {
       return this.namespaceAdapters.get(nameSpace);
     }
-    Logger.error(this.corpus.getCtx(), tag, "fetchAdapter", null, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
+    Logger.error(this.corpus.getCtx(), TAG, "fetchAdapter", null, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
     return null;
   }
 
   public CdmFolderDefinition fetchRootFolder(final String nameSpace) {
     try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "fetchRootFolder")) {
       if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
-        Logger.error(this.corpus.getCtx(), tag, "fetchRootFolder", null, CdmLogCode.ErrStorageNullNamespace);
+        Logger.error(this.corpus.getCtx(), TAG, "fetchRootFolder", null, CdmLogCode.ErrStorageNullNamespace);
         return null;
       }
       if (this.namespaceFolder.containsKey(nameSpace)) {
@@ -230,7 +230,7 @@ public class StorageManager {
       } else if (this.namespaceFolder.containsKey(this.defaultNamespace)) {
         return this.namespaceFolder.get(this.defaultNamespace);
       }
-      Logger.error(this.corpus.getCtx(), tag, "fetchRootFolder", null, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
+      Logger.error(this.corpus.getCtx(), TAG, "fetchRootFolder", null, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
       return null;
     }
   }
@@ -244,7 +244,7 @@ public class StorageManager {
           return kv.getKey() + ":" + corpusPath;
         }
       }
-      Logger.error(this.corpus.getCtx(), tag, "adapterPathToCorpusPath", null, CdmLogCode.ErrStorageInvalidAdapterPath);
+      Logger.error(this.corpus.getCtx(), TAG, "adapterPathToCorpusPath", null, CdmLogCode.ErrStorageInvalidAdapterPath);
       return null;
     }
   }
@@ -252,20 +252,20 @@ public class StorageManager {
   public String corpusPathToAdapterPath(final String corpusPath) {
     try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "corpusPathToAdapterPath")) {
       if (StringUtils.isNullOrTrimEmpty(corpusPath)) {
-        Logger.error(this.corpus.getCtx(), tag, "corpusPathToAdapterPath", null, CdmLogCode.ErrStorageNullCorpusPath);
+        Logger.error(this.corpus.getCtx(), TAG, "corpusPathToAdapterPath", null, CdmLogCode.ErrStorageNullCorpusPath);
         return null;
       }
 
       final ImmutablePair<String, String> pathTuple = StorageUtils.splitNamespacePath(corpusPath);
       if (pathTuple == null) {
-        Logger.error(this.corpus.getCtx(), tag, "corpusPathToAdapterPath", null, CdmLogCode.ErrStorageNullCorpusPath);
+        Logger.error(this.corpus.getCtx(), TAG, "corpusPathToAdapterPath", null, CdmLogCode.ErrStorageNullCorpusPath);
         return null;
       }
       final String nameSpace = !StringUtils.isNullOrTrimEmpty(pathTuple.getLeft())
               ? pathTuple.getLeft()
               : this.defaultNamespace;
       if (this.fetchAdapter(nameSpace) == null) {
-        Logger.error(this.corpus.getCtx(), tag, "corpusPathToAdapterPath", null, CdmLogCode.ErrStorageNamespaceNotRegistered);
+        Logger.error(this.corpus.getCtx(), TAG, "corpusPathToAdapterPath", null, CdmLogCode.ErrStorageNamespaceNotRegistered);
         return "";
       }
       return this.fetchAdapter(nameSpace).createAdapterPath(pathTuple.getRight());
@@ -279,7 +279,7 @@ public class StorageManager {
   public String createAbsoluteCorpusPath(final String objectPath, final CdmObject obj) {
     try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "createAbsoluteCorpusPath")) {
       if (StringUtils.isNullOrTrimEmpty(objectPath)) {
-        Logger.error(this.corpus.getCtx(), tag, "createAbsoluteCorpusPath", null, CdmLogCode.ErrPathNullObjectPath);
+        Logger.error(this.corpus.getCtx(), TAG, "createAbsoluteCorpusPath", null, CdmLogCode.ErrPathNullObjectPath);
         return null;
       }
 
@@ -289,7 +289,7 @@ public class StorageManager {
       }
       final ImmutablePair<String, String> pathTuple = StorageUtils.splitNamespacePath(objectPath);
       if (pathTuple == null) {
-        Logger.error(this.corpus.getCtx(), tag, "createAbsoluteCorpusPath", null, CdmLogCode.ErrPathNullObjectPath);
+        Logger.error(this.corpus.getCtx(), TAG, "createAbsoluteCorpusPath", null, CdmLogCode.ErrPathNullObjectPath);
         return null;
       }
       final String nameSpace = pathTuple.getLeft();
@@ -309,7 +309,7 @@ public class StorageManager {
         return null;
       }
       if (!Strings.isNullOrEmpty(prefix) && prefix.charAt(prefix.length() - 1) != '/') {
-        Logger.warning(this.corpus.getCtx(), tag, "createAbsoluteCorpusPath", null, CdmLogCode.WarnStorageExpectedPathPrefix, prefix);
+        Logger.warning(this.corpus.getCtx(), TAG, "createAbsoluteCorpusPath", null, CdmLogCode.WarnStorageExpectedPathPrefix, prefix);
         prefix += "/";
       }
       // check if this is a relative path
@@ -319,7 +319,7 @@ public class StorageManager {
           prefix = "/";
         }
         if (!Strings.isNullOrEmpty(nameSpace) && !Objects.equals(nameSpace, namespaceFromObj)) {
-          Logger.error(this.corpus.getCtx(), tag, "createAbsoluteCorpusPath", null, CdmLogCode.ErrStorageNamespaceMismatch);
+          Logger.error(this.corpus.getCtx(), TAG, "createAbsoluteCorpusPath", null, CdmLogCode.ErrStorageNamespaceMismatch);
           return null;
         }
         newObjectPath = prefix + newObjectPath;
@@ -353,7 +353,7 @@ public class StorageManager {
 
       final String config = namespaceAdapterTuple.getValue().fetchConfig();
       if (Strings.isNullOrEmpty(config)) {
-        Logger.error(this.corpus.getCtx(), tag, "fetchConfig", null, CdmLogCode.ErrStorageNullAdapter);
+        Logger.error(this.corpus.getCtx(), TAG, "fetchConfig", null, CdmLogCode.ErrStorageNullAdapter);
         continue;
       }
 
@@ -364,7 +364,7 @@ public class StorageManager {
 
         adaptersArray.add(jsonConfig);
       } catch (final IOException e) {
-        Logger.error(this.corpus.getCtx(), tag, "fetchConfig", null, CdmLogCode.ErrStorageObjectNodeCastFailed, config, e.getMessage());
+        Logger.error(this.corpus.getCtx(), TAG, "fetchConfig", null, CdmLogCode.ErrStorageObjectNodeCastFailed, config, e.getMessage());
       }
     }
 
@@ -439,7 +439,7 @@ public class StorageManager {
       return false;
     }
    
-    Logger.error(this.corpus.getCtx(), tag, "containsUnsupportedPathFormat", null, CdmLogCode.ErrStorageInvalidPathFormat);
+    Logger.error(this.corpus.getCtx(), TAG, "containsUnsupportedPathFormat", null, CdmLogCode.ErrStorageInvalidPathFormat);
     return true;
   }
 

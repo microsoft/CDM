@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * Class to handle ArrayExpansion operations
  */
 public class CdmOperationArrayExpansion extends CdmOperationBase {
-    private String tag = CdmOperationArrayExpansion.class.getSimpleName();
+    private static final String TAG = CdmOperationArrayExpansion.class.getSimpleName();
     private Integer startOrdinal;
     private Integer endOrdinal;
 
@@ -95,7 +95,7 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
             missingFields.add("endOrdinal");
         }
         if (missingFields.size() > 0) {
-            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -143,7 +143,7 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
 
         // Ordinal validation
         if (this.startOrdinal > this.endOrdinal) {
-            Logger.warning(this.getCtx(), tag,
+            Logger.warning(this.getCtx(), TAG,
                     "appendProjectionAttributeState",
                     this.getAtCorpusPath(),
                     CdmLogCode.WarnValdnOrdinalStartEndOrder,
@@ -157,7 +157,7 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
             if (this.endOrdinal > projCtx.getProjectionDirective().getResOpt().getMaxOrdinalForArrayExpansion()) {
                 Logger.warning(
                         this.getCtx(),
-                        tag,
+                        TAG,
                         "appendProjectionAttributeState",
                         this.getAtCorpusPath(),
                         CdmLogCode.WarnValdnMaxOrdinalTooHigh,
@@ -187,7 +187,7 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
                     CdmAttributeContext attrCtxExpandedAttr = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxExpandedAttrParam);
 
                     if (currentPAS.getCurrentResolvedAttribute().getTarget() instanceof ResolvedAttributeSet) {
-                        Logger.error(this.getCtx(), tag, "appendProjectionAttributeState", this.getAtCorpusPath(), CdmLogCode.ErrProjUnsupportedAttrGroups);
+                        Logger.error(this.getCtx(), TAG, "appendProjectionAttributeState", this.getAtCorpusPath(), CdmLogCode.ErrProjUnsupportedAttrGroups);
                         projAttrStatesFromRounds.clear();
                         break;
                     }

@@ -148,29 +148,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             if (preChildren != null && preChildren.Invoke(this, path))
-            {
                 return false;
-            }
 
             if (this.DataPartitions != null)
-            {
                 if (this.DataPartitions.VisitList(path + "/dataPartitions/", preChildren, postChildren))
                     return true;
-            }
 
             if (this.DataPartitionPatterns != null)
-            {
                 if (this.DataPartitionPatterns.VisitList(path + "/dataPartitionPatterns/", preChildren, postChildren))
                     return true;
-            }
 
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
 
             if (postChildren != null && postChildren.Invoke(this, path))
-            {
-                return false;
-            }
+                return true;
             return false;
         }
 

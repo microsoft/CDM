@@ -1,11 +1,12 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Union, List
+from typing import Union, List, Optional
 
 from .purpose_reference import PurposeReference
 from .data_type_reference import DataTypeReference
 from .trait_reference import TraitReference
+from .trait_group_reference import TraitGroupReference
 from .attribute_resolution_guidance import AttributeResolutionGuidance
 from cdm.utilities import JObject
 
@@ -18,7 +19,7 @@ class TypeAttribute(JObject):
         self.name = None  # type: str
         self.purpose = None  # type: Union[str, PurposeReference]
         self.dataType = None  # type: Union[str, DataTypeReference]
-        self.appliedTraits = None  # type: List[Union[str, TraitReference]]
+        self.appliedTraits = None  # type: List[Union[str, TraitReference, TraitGroupReference]]
         self.attributeContext = None  # type: str
         self.isPrimaryKey = None  # type: bool
         self.isReadOnly = None  # type: bool

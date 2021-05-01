@@ -15,6 +15,8 @@ import {
     Purpose,
     PurposeReference,
     Trait,
+    TraitGroup,
+    TraitGroupReference,
     TraitReference
 } from './types';
 import * as utils from './utils';
@@ -41,6 +43,11 @@ export class cdmObjectRefPersistence {
                 copy = replace;
             }
         }
+
+        if (instance.optional !== undefined) {
+            copy.optional = instance.optional;
+        }
+
         if (instance.appliedTraits.length > 0) {
             // We don't know if the object we are copying has applied traits or not and hence use any
             // tslint:disable-next-line:no-any
@@ -74,6 +81,11 @@ export class cdmObjectRefPersistence {
                 traitRef.arguments = copyDataUtils.arrayCopyData<Argument>(resOpt, (instance as CdmTraitReference).arguments, options);
 
                 return traitRef;
+            case cdmObjectType.traitGroupRef:
+                const traitGroupRef: TraitGroupReference = copy as TraitGroupReference;
+                traitGroupRef.traitGroupReference = refTo as string | TraitGroup;
+
+                return traitGroupRef;
             default:
                 return undefined;
         }

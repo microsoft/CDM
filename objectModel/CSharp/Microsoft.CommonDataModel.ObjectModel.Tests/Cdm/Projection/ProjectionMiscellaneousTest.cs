@@ -43,7 +43,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestInvalidOperationType";
 
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
             corpus.SetEventCallback(new EventCallback
             {
                 Invoke = (CdmStatusLevel statusLevel, string message) =>
@@ -73,7 +73,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestZeroMinimumCardinality";
 
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
             corpus.SetEventCallback(new EventCallback
             {
                 Invoke = (CdmStatusLevel statusLevel, string message) =>
@@ -134,7 +134,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             string testName = "TestCircularEntityAttributes";
             string entityName = "A";
 
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"{entityName}.cdm.json/{entityName}");
 
@@ -192,6 +192,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         }
 
         /// <summary>
+        /// Tests resolution of an entity when maximum depth is reached while resolving a polymorphic entity
+        /// </summary>
+        [TestMethod]
+        public async Task TestMaxDepthOnPolymorphicEntity()
+        {
+            string testName = "TestMaxDepthOnPolymorphicEntity";
+            string entityName = "A";
+
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"{entityName}.cdm.json/{entityName}");
+
+            ResolveOptions resOpt = new ResolveOptions(entity)
+            {
+                MaxDepth = 1
+            };
+            CdmEntityDefinition resEntity = await entity.CreateResolvedEntityAsync($"resolved-{entityName}", resOpt);
+
+            Assert.IsNotNull(resEntity);
+            Assert.AreEqual(4, resEntity.Attributes.Count);
+        }
+
+        /// <summary>
         /// Tests if setting the projection "source" on a type attribute triggers an error log
         /// </summary>
         [TestMethod]
@@ -246,7 +269,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestRunSequentially";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
@@ -271,7 +294,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestRunSequentiallyAndSourceInput";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });

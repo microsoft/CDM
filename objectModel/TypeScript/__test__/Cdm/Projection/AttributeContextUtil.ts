@@ -12,7 +12,8 @@ import {
     CdmEntityDefinition,
     CdmObjectReference,
     CdmObjectReferenceBase,
-    cdmObjectType
+    cdmObjectType,
+    CdmTraitReference
 } from '../../../internal';
 
 /**
@@ -95,8 +96,10 @@ export class AttributeContextUtil {
                 this.bldr += attribTraits;
                 this.bldr += this.endOfLine;
 
-                for (const args of trait.arguments) {
-                    this.getArgumentValues(args);
+                if (trait instanceof CdmTraitReference) {
+                    for (const args of trait.arguments) {
+                        this.getArgumentValues(args);
+                    }
                 }
             }
         }

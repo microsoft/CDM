@@ -17,7 +17,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmImport extends CdmObjectSimple {
 
-  private String tag = CdmImport.class.getSimpleName();
+  private static final String TAG = CdmImport.class.getSimpleName();
 
   private String moniker;
   private String corpusPath;
@@ -78,7 +78,7 @@ public class CdmImport extends CdmObjectSimple {
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.corpusPath)) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("corpusPath"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

@@ -26,7 +26,7 @@ import java.util.List;
  * Projection persistence
  */
 public class ProjectionPersistence {
-    private static String tag = ProjectionPersistence.class.getSimpleName();
+    private static final String TAG = ProjectionPersistence.class.getSimpleName();
 
     public static CdmProjection fromData(final CdmCorpusContext ctx, final JsonNode obj) {
         if (obj == null) {
@@ -97,7 +97,7 @@ public class ProjectionPersistence {
                         projection.getOperations().add(addAttributeGroupOp);
                         break;
                     default:
-                        Logger.error(ctx, tag, "fromData", source.getAtCorpusPath(), CdmLogCode.ErrPersistProjInvalidOpsType, type);
+                        Logger.error(ctx, TAG, "fromData", source.getAtCorpusPath(), CdmLogCode.ErrPersistProjInvalidOpsType, type);
                         break;
                 }
             }

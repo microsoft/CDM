@@ -55,10 +55,14 @@ from .cdm_purpose_def import CdmPurposeDefinition
 from .cdm_purpose_ref import CdmPurposeReference
 from .cdm_referenced_entity_declaration_def import CdmReferencedEntityDeclarationDefinition
 from .cdm_references_entities import CdmReferencesEntities
+from .cdm_trait_ref_base import CdmTraitReferenceBase
 from .cdm_trait_collection import CdmTraitCollection
 from .cdm_trait_def import CdmTraitDefinition
 from .cdm_trait_ref import CdmTraitReference
+from .cdm_trait_group_def import CdmTraitGroupDefinition
+from .cdm_trait_group_ref import CdmTraitGroupReference
 from .cdm_type_attribute_def import CdmTypeAttributeDefinition
+from .cdm_argument_collection import CdmArgumentCollection
 
 __all__ = [
     'CdmArgumentValue',
@@ -117,8 +121,12 @@ __all__ = [
     'CdmPurposeReference',
     'CdmReferencedEntityDeclarationDefinition',
     'CdmReferencesEntities',
+    'CdmTraitReferenceBase',
     'CdmTraitCollection',
     'CdmTraitDefinition',
     'CdmTraitReference',
-    'CdmTypeAttributeDefinition'
+    'CdmTraitGroupDefinition',
+    'CdmTraitGroupReference',
+    'CdmTypeAttributeDefinition',
+    'CdmArgumentCollection'
 ]

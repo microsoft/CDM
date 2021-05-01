@@ -87,8 +87,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             {
                 foreach (var trait in obj.Traits)
                 {
-                    var traitInstance = CdmFolder.TraitReferencePersistence.FromData(ctx, JToken.FromObject(trait));
-                    traits.Add(traitInstance);
+                    var trToken = JToken.FromObject(trait);
+
+                    if (!(trToken is JValue) && trToken["traitGroupReference"] != null)
+                    {
+                        traits.Add(CdmFolder.TraitGroupReferencePersistence.FromData(ctx, trToken));
+                    }
+                    else
+                    {
+                        traits.Add(CdmFolder.TraitReferencePersistence.FromData(ctx, trToken));
+                    }
                 }
             }
         }
@@ -107,13 +115,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             {
                 if (ExtensionHelper.TraitRefIsExtension(trait))
                 {
-                    ExtensionHelper.ProcessExtensionTraitToObject(trait, obj);
-
+                    // Safe to cast since extensions can only be trait refs, not trait group refs
+                    ExtensionHelper.ProcessExtensionTraitToObject(trait as CdmTraitReference, obj);
                     continue;
                 }
+
                 if (trait.NamedReference == "is.modelConversion.otherAnnotations")
                 {
-                    foreach (var annotation in trait.Arguments[0].Value)
+                    // Safe to cast since "is.modelConversion.otherAnnotations" is a trait, not trait group
+                    foreach (var annotation in (trait as CdmTraitReference).Arguments[0].Value)
                     {
 
                         if (annotation is JObject jAnnotation)
@@ -139,9 +149,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 else if (
                     !ignoredTraits.Contains(trait.NamedReference)
                     && !trait.NamedReference.StartsWith("is.dataFormat")
-                    && !(modelJsonPropertyTraits.Contains(trait.NamedReference) && trait.IsFromProperty))
+                    && !(modelJsonPropertyTraits.Contains(trait.NamedReference) && trait is CdmTraitReference && (trait as CdmTraitReference).IsFromProperty))
                 {
-                    var extension = CdmFolder.TraitReferencePersistence.ToData(trait, null, null);
+                    var extension = trait is CdmTraitGroupReference ?
+                        CdmFolder.TraitGroupReferencePersistence.ToData(trait as CdmTraitGroupReference, null, null) :
+                        CdmFolder.TraitReferencePersistence.ToData(trait as CdmTraitReference, null, null);
                     extensions.Add(JToken.FromObject(extension, JsonSerializationUtil.JsonSerializer));
                 }
             }

@@ -6,7 +6,7 @@ from unittest import TestCase
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmEntityDefinition, CdmAttributeContext, CdmAttributeReference, CdmCorpusDefinition, \
-    CdmArgumentDefinition
+    CdmArgumentDefinition, CdmTraitReference
 
 
 class AttributeContextUtil:
@@ -67,8 +67,9 @@ class AttributeContextUtil:
                 self._bldr += attrib_traits
                 self._bldr += '\n'
 
-                for args in trait.arguments:
-                    self._get_argument_values(args)
+                if isinstance(trait, CdmTraitReference):
+                    for args in trait.arguments:
+                        self._get_argument_values(args)
 
     def _get_argument_values(self, args: 'CdmArgumentDefinition') -> None:
         param_name = args._resolved_parameter.name if args._resolved_parameter else None

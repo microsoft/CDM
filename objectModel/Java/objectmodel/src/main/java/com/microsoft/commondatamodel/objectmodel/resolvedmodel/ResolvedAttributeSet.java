@@ -199,13 +199,25 @@ public class ResolvedAttributeSet extends RefCounted {
    */
   public void setTargetOwner(CdmEntityDefinition entity) {
     for (ResolvedAttribute ra : this.set) {
-      if (ra.getTarget() instanceof CdmAttribute) {
-        CdmAttribute att = (CdmAttribute) ra.getTarget();
-        att.setOwner(entity);
-        att.setInDocument(entity.getInDocument());
-      } else if (ra.getTarget() instanceof ResolvedAttributeSet) {
+      ra.setOwner(entity);
+      if (ra.getTarget() instanceof ResolvedAttributeSet) {
         ResolvedAttributeSet ras = (ResolvedAttributeSet) ra.getTarget();
         ras.setTargetOwner(entity);
+      }
+    }
+  }
+
+  /**
+   * Apply a set of resolved traits to this resolved attribute set.
+   * @param traits
+   * @deprecated
+   */
+  public void applyTraits(final ResolvedTraitSet traits) {
+    for (ResolvedAttribute resAtt : this.set) {
+      if (resAtt.getTarget() instanceof ResolvedAttributeSet) {
+        ((ResolvedAttributeSet) resAtt.getTarget()).applyTraits(traits);
+      } else {
+        resAtt.setResolvedTraits(resAtt.getResolvedTraits().mergeSet(traits));
       }
     }
   }
@@ -213,7 +225,7 @@ public class ResolvedAttributeSet extends RefCounted {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   //  traits that change attributes
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-  ResolvedAttributeSet applyTraits(
+  ResolvedAttributeSet applyTraitsResolutionGuidance(
       final ResolvedTraitSet traits,
       final ResolveOptions resOpt,
       final CdmAttributeResolutionGuidance resGuide,
@@ -298,7 +310,7 @@ public class ResolvedAttributeSet extends RefCounted {
       AttributeContextParameters acp = new AttributeContextParameters();
       acp.setUnder(appliedAttSet.getAttributeContext());
       acp.setType(CdmAttributeContextType.GeneratedSet);
-      acp.setName("_generatedAttributeSet");
+      acp.setName("_generatedAttributeSet_template");
 
       appliedAttSet.setAttributeContext(CdmAttributeContext.createChildUnder(traits.getResOpt(), acp));
 

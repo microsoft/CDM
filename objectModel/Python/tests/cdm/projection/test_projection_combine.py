@@ -39,7 +39,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_extends'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -51,7 +51,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_extends_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -63,7 +63,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_ea'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -75,7 +75,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_ea_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -87,9 +87,9 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_non_polymorphic_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
-        corpus = TestHelper.get_local_corpus(self.tests_sub_path, test_name)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)  # type: CdmCorpusDefinition
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])  # type: CdmEntityDefinition
@@ -108,7 +108,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_empty_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -120,7 +120,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_coll_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -132,7 +132,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_nested_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -144,9 +144,13 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_multi_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
+            if 'structured' in res_opt:
+                # Array expansion is not supported on an attribute group yet.
+                continue
+
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
                 self.tests_sub_path, entity_name, res_opt)
 
@@ -156,7 +160,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_cond_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -168,9 +172,13 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_ren_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
+            if 'structured' in res_opt:
+                # Rename attributes is not supported on an attribute group yet.
+                continue
+
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
                 self.tests_sub_path, entity_name, res_opt)
 
@@ -180,7 +188,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_comm_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -192,7 +200,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_miss_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -204,7 +212,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self.maxDiff = None
         test_name = 'test_seq_proj'
         entity_name = 'Customer'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_sub_path)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_sub_path, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
@@ -217,23 +225,23 @@ class ProjectionCombineTest(unittest.TestCase):
         test_name = 'test_ea_proj_om'
 
         entity_name_email = 'Email'
-        attribute_params_email = [TypeAttributeParam('EmailID', 'str', 'identifiedBy'),
-                                  TypeAttributeParam('Address', 'str', 'hasA'),
+        attribute_params_email = [TypeAttributeParam('EmailID', 'string', 'identifiedBy'),
+                                  TypeAttributeParam('Address', 'string', 'hasA'),
                                   TypeAttributeParam('IsPrimary', 'boolean', 'hasA')]  # type: List[TypeAttributeParam]
 
         entity_name_phone = 'Phone'
-        attribute_params_phone = [TypeAttributeParam('PhoneID', 'str', 'identifiedBy'),
-                                  TypeAttributeParam('Number', 'str', 'hasA'),
+        attribute_params_phone = [TypeAttributeParam('PhoneID', 'string', 'identifiedBy'),
+                                  TypeAttributeParam('Number', 'string', 'hasA'),
                                   TypeAttributeParam('IsPrimary', 'boolean', 'hasA')]  # type: List[TypeAttributeParam]
 
         entity_name_social = 'Social'
-        attribute_params_social = [TypeAttributeParam('SocialID', 'str', 'identifiedBy'),
-                                   TypeAttributeParam('Account', 'str', 'hasA'),
+        attribute_params_social = [TypeAttributeParam('SocialID', 'string', 'identifiedBy'),
+                                   TypeAttributeParam('Account', 'string', 'hasA'),
                                    TypeAttributeParam('IsPrimary', 'boolean', 'hasA')]  # type: List[TypeAttributeParam]
 
         entity_name_customer = 'Customer'
         attribute_params_customer = [
-            TypeAttributeParam('CustomerName', 'str', 'hasA')]  # type: List[TypeAttributeParam]
+            TypeAttributeParam('CustomerName', 'string', 'hasA')]  # type: List[TypeAttributeParam]
 
         selectedAttributes = ['EmailID', 'PhoneID', 'SocialID']  # type: List[str]
 
@@ -255,7 +263,7 @@ class ProjectionCombineTest(unittest.TestCase):
         self._validate_basic_entity(entity_customer, entity_name_customer, attribute_params_customer)
 
         projection_customer = util.create_projection(entity_customer.entity_name)  # type: 'CdmProjection'
-        type_attribute_merge_into = util.create_type_attribute('MergeInto', 'str', 'hasA')  # type: 'CdmTypeAttributeDefinition'
+        type_attribute_merge_into = util.create_type_attribute('MergeInto', 'string', 'hasA')  # type: 'CdmTypeAttributeDefinition'
         operation_combine_attributes = util.create_operation_combine_attributes(projection_customer, selectedAttributes, type_attribute_merge_into)  # type: 'CdmOperationCombineAttributes'
         projectionEntityRef_customer = util.create_projection_inline_entity_reference(
             projection_customer)  # type: 'CdmEntityReference'

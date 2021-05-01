@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * Class for Projection
  */
 public class CdmProjection extends CdmObjectDefinitionBase {
-    private String tag = CdmProjection.class.getSimpleName();
+    private static final String TAG = CdmProjection.class.getSimpleName();
     private String condition;
     private CdmOperationCollection operations;
     private CdmEntityReference source;
@@ -161,12 +161,12 @@ public class CdmProjection extends CdmObjectDefinitionBase {
             CdmObject rootOwner = getRootOwner();
             if (rootOwner.getObjectType() == CdmObjectType.TypeAttributeDef) {
                 // If the projection is used in a type attribute
-                Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrProjSourceError);
+                Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrProjSourceError);
             }
         }
 
         if (missingFields.size() > 0) {
-            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -421,7 +421,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
         resolvedAttributeSet.setAttributeContext(attCtxUnder);
 
         if (projCtx == null) {
-            Logger.error(this.getCtx(), tag, "extractResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrProjFailedToResolve, this.getAtCorpusPath());
+            Logger.error(this.getCtx(), TAG, "extractResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrProjFailedToResolve, this.getAtCorpusPath());
             return resolvedAttributeSet;
         }
 

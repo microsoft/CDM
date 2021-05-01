@@ -85,7 +85,7 @@ public class ResolvedAttributeSetBuilder {
   public void applyTraits(final AttributeResolutionContext arc) {
     if (resolvedAttributeSet != null && arc != null && arc.getTraitsToApply() != null) {
       takeReference(resolvedAttributeSet
-              .applyTraits(arc.getTraitsToApply(), arc.getResOpt(), arc.getResGuide(), arc.getActionsModify()));
+              .applyTraitsResolutionGuidance(arc.getTraitsToApply(), arc.getResOpt(), arc.getResGuide(), arc.getActionsModify()));
     }
   }
 

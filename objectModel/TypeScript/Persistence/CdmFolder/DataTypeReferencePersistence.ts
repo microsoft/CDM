@@ -6,7 +6,7 @@ import {
     CdmDataTypeDefinition,
     CdmDataTypeReference,
     cdmObjectType,
-    CdmTraitReference
+    CdmTraitReferenceBase
 } from '../../internal';
 import { CdmFolder } from '..';
 import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
@@ -17,14 +17,21 @@ import * as utils from './utils';
 
 export class DataTypeReferencePersistence extends cdmObjectRefPersistence {
     public static fromData(ctx: CdmCorpusContext, object: string | DataTypeReference): CdmDataTypeReference {
-        if (!object) { return; }
+        if (!object) {
+            return;
+        }
+
         let simpleReference: boolean = true;
+        let optional: boolean | undefined;
         let dataType: string | CdmDataTypeDefinition;
-        let appliedTraits: CdmTraitReference[];
+        let appliedTraits: CdmTraitReferenceBase[];
+
         if (typeof (object) === 'string') {
             dataType = object;
         } else {
             simpleReference = false;
+            optional = object.optional;
+
             if (typeof (object.dataTypeReference) === 'string') {
                 dataType = object.dataTypeReference;
             } else {
@@ -34,10 +41,14 @@ export class DataTypeReferencePersistence extends cdmObjectRefPersistence {
 
         const dataTypeReference: CdmDataTypeReference = ctx.corpus.MakeRef(cdmObjectType.dataTypeRef, dataType, simpleReference);
 
+        if (optional !== undefined) {
+            dataTypeReference.optional = optional; 
+        }
+
         if (typeof (object) !== 'string') {
             appliedTraits = utils.createTraitReferenceArray(ctx, object.appliedTraits);
         }
-        utils.addArrayToCdmCollection<CdmTraitReference>(dataTypeReference.appliedTraits, appliedTraits);
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(dataTypeReference.appliedTraits, appliedTraits);
 
         return dataTypeReference;
     }

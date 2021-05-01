@@ -966,7 +966,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         return under.LowestOrder;
                     };
 
-                    orderContents((CdmAttributeContext)attCtx);
+                    orderContents(attCtx);
 
                     // resolved attributes can gain traits that are applied to an entity when referenced
                     // since these traits are described in the context, it is redundant and messy to list them in the attribute
@@ -1148,7 +1148,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     if (entResolved.ExhibitsTraits != null)
                         foreach (var et in entResolved.ExhibitsTraits)
                         {
-                            replaceTraitAttRef(et, newEntName, false);
+                            if (et is CdmTraitReference)
+                            {
+                                replaceTraitAttRef(et as CdmTraitReference, newEntName, false); 
+                            }
                         }
 
                     // fix context traits
@@ -1160,7 +1163,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         {
                             foreach (var tr in traitsHere)
                             {
-                                replaceTraitAttRef(tr, entityHint, true);
+                                if (tr is CdmTraitReference)
+                                {
+                                    replaceTraitAttRef(tr as CdmTraitReference, entityHint, true);
+                                }
                             }
                         }
                         subAttCtx.Contents.AllItems.ForEach((cr) =>
@@ -1191,7 +1197,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             if (attTraits != null)
                             {
                                 foreach (var tr in attTraits)
-                                    replaceTraitAttRef(tr, newEntName, false);
+                                {
+                                    if (tr is CdmTraitReference)
+                                    {
+                                        replaceTraitAttRef(tr as CdmTraitReference, newEntName, false);
+                                    }
+                                }
                             }
                         }
                     }
@@ -1236,7 +1247,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             // get or add the trait
-            CdmTraitReference traitRef = this.ExhibitsTraits.Item("has.entitySchemaAbstractionLevel");
+            CdmTraitReference traitRef = this.ExhibitsTraits.Item("has.entitySchemaAbstractionLevel") as CdmTraitReference;
             if (traitRef == null)
             {
                 traitRef = new CdmTraitReference(this.Ctx, "has.entitySchemaAbstractionLevel", false, true);

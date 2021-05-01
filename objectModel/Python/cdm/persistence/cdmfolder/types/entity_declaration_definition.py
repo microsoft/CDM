@@ -5,6 +5,7 @@ from typing import List, Union
 
 from .file_status import FileStatus
 from .trait_reference import TraitReference
+from .trait_group_reference import TraitGroupReference
 
 
 class EntityDeclarationDefinition(FileStatus):
@@ -25,5 +26,5 @@ class EntityDeclarationDefinition(FileStatus):
         self.explanation = None  # type: str
         """The explanation."""
 
-        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference, TraitGroupReference]]
         """The exhibited traits."""

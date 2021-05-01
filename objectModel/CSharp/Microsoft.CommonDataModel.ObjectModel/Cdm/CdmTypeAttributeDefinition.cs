@@ -400,34 +400,45 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             rasb.OwnOne(newAtt);
 
             ResolvedTraitSet rts = this.FetchResolvedTraits(resOpt);
-            // this context object holds all of the info about what needs to happen to resolve these attribute
-            // make a copy and add defaults if missing
-            CdmAttributeResolutionGuidance resGuideWithDefault;
-            if (this.ResolutionGuidance != null)
-                resGuideWithDefault = (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt);
-            else
-                resGuideWithDefault = new CdmAttributeResolutionGuidance(this.Ctx);
 
-            // renameFormat is not currently supported for type attributes
-            resGuideWithDefault.renameFormat = null;
-
-            resGuideWithDefault.UpdateAttributeDefaults(null, this);
-            AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
-
-            // TODO: remove the resolution guidance if projection is being used
-            // from the traits of the datatype, purpose and applied here, see if new attributes get generated
-            rasb.ApplyTraits(arc);
-            rasb.GenerateApplierAttributes(arc, false); // false = don't apply these traits to added things
-            // this may have added symbols to the dependencies, so merge them
-            resOpt.SymbolRefSet.Merge(arc.ResOpt.SymbolRefSet);
+            if (this.Owner?.ObjectType == CdmObjectType.EntityDef)
+            {
+                rasb.ResolvedAttributeSet.SetTargetOwner(this.Owner as CdmEntityDefinition);
+            }
 
             if (this.Projection != null)
             {
+                rasb.ResolvedAttributeSet.ApplyTraits(rts);
+
                 ProjectionDirective projDirective = new ProjectionDirective(resOpt, this);
                 ProjectionContext projCtx = this.Projection.ConstructProjectionContext(projDirective, under, rasb.ResolvedAttributeSet);
 
                 ResolvedAttributeSet ras = this.Projection.ExtractResolvedAttributes(projCtx, under);
                 rasb.ResolvedAttributeSet = ras;
+            }
+            else
+            {
+                // using resolution guidance
+
+                // this context object holds all of the info about what needs to happen to resolve these attribute
+                // make a copy and add defaults if missing
+                CdmAttributeResolutionGuidance resGuideWithDefault;
+                if (this.ResolutionGuidance != null)
+                    resGuideWithDefault = (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt);
+                else
+                    resGuideWithDefault = new CdmAttributeResolutionGuidance(this.Ctx);
+
+                // renameFormat is not currently supported for type attributes
+                resGuideWithDefault.renameFormat = null;
+
+                resGuideWithDefault.UpdateAttributeDefaults(null, this);
+                AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
+
+                // from the traits of the datatype, purpose and applied here, see if new attributes get generated
+                rasb.ApplyTraits(arc);
+                rasb.GenerateApplierAttributes(arc, false); // false = don't apply these traits to added things
+                                                            // this may have added symbols to the dependencies, so merge them
+                resOpt.SymbolRefSet.Merge(arc.ResOpt.SymbolRefSet);
             }
 
             return rasb;

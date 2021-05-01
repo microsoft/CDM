@@ -125,7 +125,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     }
 
     if (postChildren != null && postChildren.invoke(this, path)) {
-      return false;
+      return true;
     }
 
     return false;

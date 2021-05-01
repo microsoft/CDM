@@ -20,10 +20,10 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class CdmTraitReference extends CdmObjectReferenceBase {
+public class CdmTraitReference extends CdmTraitReferenceBase {
 
   protected boolean resolvedArguments;
-  private CdmArgumentCollection arguments;
+  private final CdmArgumentCollection arguments;
   private boolean fromProperty;
 
   public CdmTraitReference(final CdmCorpusContext ctx, final Object trait, final boolean simpleReference,
@@ -93,7 +93,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
     for (int iArgSet = 0; iArgSet < lArgSet; iArgSet++) {
       final CdmArgumentDefinition arg = this.getArguments().get(iArgSet);
       final String argName = arg.getName();
-      if (argName == name) {
+      if (argName != null && argName.equals(name)) {
         return arg.getValue();
       }
       // Special case with only one argument and no name give, make a big assumption that this

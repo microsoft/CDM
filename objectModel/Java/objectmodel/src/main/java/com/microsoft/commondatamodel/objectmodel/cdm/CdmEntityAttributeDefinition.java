@@ -30,7 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 public class CdmEntityAttributeDefinition extends CdmAttribute {
-  private String tag = CdmEntityAttributeDefinition.class.getSimpleName();
+  private static final String TAG = CdmEntityAttributeDefinition.class.getSimpleName();
 
   private CdmEntityReference entity;
   private TraitToPropertyMap t2pm;
@@ -164,7 +164,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     // this context object holds all of the info about what needs to happen to resolve these attributes
     final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuide, rtsThisAtt);
 
-    final RelationshipInfo relInfo = this.getRelationshipInfo(resOpt, arc);
+    final RelationshipInfo relInfo = arc.getRelationshipInfo();
     if (relInfo.isByRef() && !relInfo.isArray()) {
       {
         // only place this is used, so logic here instead of encapsulated.
@@ -223,17 +223,17 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
 
     if (this.getCardinality() != null) {
       if (!CardinalitySettings.isMinimumValid(this.getCardinality().getMinimum())) {
-        Logger.error(this.getCtx(), tag,"validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, this.getCardinality().getMinimum());
+        Logger.error(this.getCtx(), TAG,"validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, this.getCardinality().getMinimum());
         return false;
       }
       if (!CardinalitySettings.isMaximumValid(this.getCardinality().getMaximum())) {
-        Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMaxCardinality, this.getCardinality().getMaximum());
+        Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMaxCardinality, this.getCardinality().getMaximum());
         return false;
       }
     }
@@ -309,98 +309,20 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
   }
 
-  private RelationshipInfo getRelationshipInfo(final ResolveOptions resOpt,
-                                               final AttributeResolutionContext arc) {
-    final ResolvedTraitSet rts = null;
-    boolean noMaxDepth = false;
-    boolean hasRef = false;
-    boolean isByRef = false;
-    boolean isArray = false;
-    boolean selectsOne = false;
-    int nextDepth = resOpt.depthInfo.getCurrentDepth();
-    Integer maxDepth = null;
-    boolean maxDepthExceeded = false;
-
-    if (arc != null && arc.getResGuide() != null) {
-      final EntityByReference resGuide = arc.getResGuide()
-          .getEntityByReference();
-      if (resGuide != null && resGuide.doesAllowReference()) {
-        hasRef = true;
-      }
-
-      final AttributeResolutionDirectiveSet resDirectives = arc.getResOpt().getDirectives();
-      if (resDirectives != null) {
-        noMaxDepth = resDirectives.has("noMaxDepth");
-        // based on directives
-        if (hasRef) {
-          isByRef = resDirectives.has("referenceOnly");
-        }
-        selectsOne = resDirectives.has("selectOne");
-        isArray = resDirectives.has("isArray");
-      }
-      // if this is a 'selectone', then skip counting this entity in the depth, else count it
-      if (!selectsOne) {
-        // if already a ref, who cares?
-        if (!isByRef) {
-          nextDepth++;
-
-          // max comes from settings but may not be set
-          maxDepth = resOpt.getMaxDepth();
-          if (hasRef
-              && arc.getResGuide().getEntityByReference().getReferenceOnlyAfterDepth() != null) {
-            maxDepth = arc.getResGuide().getEntityByReference().getReferenceOnlyAfterDepth();
-          }
-          if (noMaxDepth) {
-            maxDepth = DepthInfo.maxDepthLimit; // no max? really? what if we loop forever? if you need more than 32 nested entities, then you should buy a different metadata description system.
-          }
-
-          if (nextDepth > maxDepth) {
-            // don't do it
-            isByRef = true;
-            maxDepthExceeded = true;
-          }
-        }
-      }
-    }
-
-    final RelationshipInfo relationshipInfo = new RelationshipInfo();
-    relationshipInfo.setRts(rts);
-    relationshipInfo.setByRef(isByRef);
-    relationshipInfo.setArray(isArray);
-    relationshipInfo.setSelectsOne(selectsOne);
-    relationshipInfo.setNextDepth(nextDepth);
-    relationshipInfo.setMaxDepth(maxDepth);
-    relationshipInfo.setMaxDepthExceeded(maxDepthExceeded);
-    return relationshipInfo;
-  }
-
-  @Override
-  @Deprecated
-  public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt) {
-    return this.fetchObjectFromCache(resOpt, null);
-  }
-
   @Override
   @Deprecated
   public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext) {
     final String kind = "rasb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
 
-    // check cache at the correct depth for entity attributes
-    RelationshipInfo relInfo = this.getRelationshipInfo(resOpt, this.fetchAttResContext(resOpt));
-    if (relInfo.isMaxDepthExceeded()) {
-      resOpt.depthInfo = new DepthInfo();
-      resOpt.depthInfo.setMaxDepth(relInfo.getMaxDepth());
-      resOpt.depthInfo.setCurrentDepth((int)relInfo.getNextDepth());
-      resOpt.depthInfo.setMaxDepthExceeded(relInfo.isMaxDepthExceeded());
-    }
+    // once resolution guidance is fully deprecated, this line can be removed
+    AttributeResolutionContext arc = !this.entity.getIsProjection() ? this.fetchAttResContext(resOpt): null;
+
+    // update the depth info and check cache at the correct depth for entity attributes
+    resOpt.depthInfo.updateToNextLevel(resOpt, this.isPolymorphicSource, arc);
 
     String cacheTag = ctx.getCorpus()
             .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
-    if (relInfo.isMaxDepthExceeded()) {
-      // temporaty fix to avoid the depth from being increased while calculating the cache tag
-      resOpt.depthInfo.setCurrentDepth(resOpt.depthInfo.getCurrentDepth() - 1);
-    }
 
     Object rasbCache = null;
     if (cacheTag != null) {
@@ -438,43 +360,33 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     // the entity used as an attribute, traits applied to that entity,
     // the purpose of the attribute, any traits applied to the attribute.
     ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
-    final CdmEntityReference ctxEnt = this.getEntity();
     final CdmAttributeContext underAtt = under;
     AttributeContextParameters acpEnt = null;
 
     if (!resOpt.inCircularReference) {
-      AttributeResolutionContext arc = this.fetchAttResContext(resOpt);
-
-      // complete cheating but is faster.
-      // this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
-      final RelationshipInfo relInfo = this.getRelationshipInfo(arc.getResOpt(), arc);
-      resOpt.depthInfo = new DepthInfo();
-      resOpt.depthInfo.setMaxDepth(relInfo.getMaxDepth());
-      resOpt.depthInfo.setCurrentDepth(relInfo.getNextDepth());
-      resOpt.depthInfo.setMaxDepthExceeded(relInfo.isMaxDepthExceeded());
-
-      CdmObjectDefinition ctxEntObjDef = ctxEnt.fetchObjectDefinition(resOpt);
-
-      if (ctxEntObjDef != null && ctxEntObjDef.getObjectType() == CdmObjectType.ProjectionDef) {
+      if (this.entity != null && this.entity.getIsProjection()) {
         // A Projection
 
         // if the max depth is exceeded it should not try to execute the projection
         if (!resOpt.depthInfo.getMaxDepthExceeded()) {
-          ProjectionDirective projDirective = new ProjectionDirective(resOpt, this, ctxEnt);
-          CdmProjection projDef = (CdmProjection)ctxEntObjDef;
+          CdmProjection projDef = this.getEntity().fetchObjectDefinition(resOpt);
+          ProjectionDirective projDirective = new ProjectionDirective(resOpt, this, this.getEntity());
           ProjectionContext projCtx = projDef.constructProjectionContext(projDirective, under);
-          rasb.setResolvedAttributeSet(projDef.extractResolvedAttributes(projCtx, underAtt));
+          rasb.setResolvedAttributeSet(projDef.extractResolvedAttributes(projCtx, under));
         }
       } else {
         // An Entity Reference
+
+        AttributeResolutionContext arc = this.fetchAttResContext(resOpt);
+        final RelationshipInfo relInfo = arc.getRelationshipInfo();
 
         if (underAtt != null) {
           // make a context for this attribute that holds the attributes that come up from the entity
           acpEnt = new AttributeContextParameters();
           acpEnt.setUnder(underAtt);
           acpEnt.setType(CdmAttributeContextType.Entity);
-          acpEnt.setName(ctxEnt.fetchObjectDefinitionName());
-          acpEnt.setRegarding(ctxEnt);
+          acpEnt.setName(this.getEntity().fetchObjectDefinitionName());
+          acpEnt.setRegarding(this.getEntity());
           acpEnt.setIncludeTraits(true);
         }
 
@@ -529,7 +441,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
           }
 
           // if we got here because of the max depth, need to impose the directives to make the trait work as expected
-          if (relInfo.isMaxDepthExceeded()) {
+          if (resOpt.depthInfo.getMaxDepthExceeded()) {
             if (arc.getResOpt().getDirectives() == null) {
               arc.getResOpt().setDirectives(new AttributeResolutionDirectiveSet());
             }
@@ -566,7 +478,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
               if (reqdTrait.getParameterValues() == null
                       || reqdTrait.getParameterValues().length() == 0) {
-                Logger.warning(this.getCtx(), tag, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.WarnIdentifierArgumentsNotSupported);
+                Logger.warning(this.getCtx(), TAG, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.WarnIdentifierArgumentsNotSupported);
                 continue;
               }
 
