@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
-    addTraitRef,
     ArgumentValue,
     CdmAttributeContext,
     CdmCollection,
@@ -23,7 +22,6 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    StringUtils,
     SymbolSet,
     VisitCallback
 } from '../internal';

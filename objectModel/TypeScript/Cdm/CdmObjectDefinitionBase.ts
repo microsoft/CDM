@@ -50,7 +50,7 @@ export abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
      */
     public createPortableReference(resOpt: resolveOptions): CdmObjectReference {
         const cdmObjectRef: CdmObjectReferenceBase = this.ctx.corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.mapReferenceType(this.objectType), 'portable', true) as CdmObjectReferenceBase;
-        cdmObjectRef.explicitReference = this.copy() as CdmObjectDefinition;
+        cdmObjectRef.portableReference = this;
         cdmObjectRef.inDocument = this.inDocument; // where it started life
         cdmObjectRef.owner = this.owner;
 

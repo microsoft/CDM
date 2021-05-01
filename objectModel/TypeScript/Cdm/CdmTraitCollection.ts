@@ -9,39 +9,52 @@ import {
     CdmObjectBase,
     cdmObjectType,
     CdmTraitDefinition,
+    CdmTraitGroupDefinition,
+    CdmTraitGroupReference,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     isCdmTraitDefinition,
+    isCdmTraitGroupDefinition,
+    isCdmTraitGroupReference,
     isCdmTraitReference
 } from '../internal';
 
-export class CdmTraitCollection extends CdmCollection<CdmTraitReference> {
+/**
+ * CdmCollection customized for CdmTraitReferenceBase.
+ */
+export class CdmTraitCollection extends CdmCollection<CdmTraitReferenceBase> {
+    /**
+     * Constructs a CdmTraitCollection by using the parent constructor and TraitRef as the default type.
+     * @param ctx The context.
+     * @param owner The object this collection is a member of.
+     */
     constructor(ctx: CdmCorpusContext, owner: CdmObject) {
         super(ctx, owner, cdmObjectType.traitRef);
     }
 
-    public push(trait: string | CdmTraitDefinition | CdmTraitReference,
-                simpleRef: boolean = false)
-                : CdmTraitReference {
+    public insert(index: number, traitReference: CdmTraitReferenceBase): void {
+        this.clearCache();
+        super.insert(index, traitReference);
+    }
+
+    public push(trait: string | CdmTraitDefinition | CdmTraitGroupDefinition | CdmTraitReferenceBase, simpleRef: boolean = false)
+                : CdmTraitReferenceBase {
         this.clearCache();
 
         if (typeof trait === 'string') {
             return super.push(trait, simpleRef);
         } else if (isCdmTraitDefinition(trait)) {
-            const traitReference: CdmTraitReference = new CdmTraitReference(this.ctx, trait, simpleRef, false);
-
-            return super.push(traitReference);
+            return super.push(new CdmTraitReference(this.ctx, trait, simpleRef, false));
+        } else if (isCdmTraitGroupDefinition(trait)) {
+            return super.push(new CdmTraitGroupReference(this.ctx, trait, simpleRef));
         } else {
             return super.push(trait);
         }
     }
 
-    public insert(index: number, traitReference: CdmTraitReference): void {
-        this.clearCache();
-        super.insert(index, traitReference);
-    }
-
-    public remove(trait: string | CdmTraitDefinition | CdmTraitReference, onlyFromProperty?: boolean): boolean {
+    public remove(trait: string | CdmTraitDefinition | CdmTraitReference | CdmTraitGroupDefinition | CdmTraitGroupReference, onlyFromProperty?: boolean): boolean {
         const index: number = this.indexOf(trait, onlyFromProperty);
+
         if (index !== -1) {
             this.clearCache();
             this.propagateInDocument(this.allItems[index], undefined);
@@ -53,7 +66,7 @@ export class CdmTraitCollection extends CdmCollection<CdmTraitReference> {
         return false;
     }
 
-    public concat(traitList: CdmTraitDefinition[] | CdmTraitReference[]): void {
+    public concat(traitList: CdmTraitDefinition[] | CdmTraitReference[] | CdmTraitGroupDefinition[] | CdmTraitGroupReference[]): void {
         for (const trait of traitList) {
             this.push(trait);
         }
@@ -64,19 +77,40 @@ export class CdmTraitCollection extends CdmCollection<CdmTraitReference> {
         super.removeAt(index);
     }
 
-    public indexOf(trait: string | CdmTraitDefinition | CdmTraitReference, onlyFromProperty: boolean = false): number {
-        let traitName: string;
-        let indexOfTraitNotFromProperty: number = -1;
-        if (isString(trait)) {
-            traitName = trait;
-        } else if (isCdmTraitDefinition(trait)) {
-            traitName = trait.traitName;
-        } else if (isCdmTraitReference(trait)) {
-            traitName = trait.fetchObjectDefinitionName();
+    /**
+     * Returns a new collection consisting of only the trait reference objects present in this collection.
+     * @returns New collection of found trait reference objects
+     */
+    public toTraitRefs(): CdmCollection<CdmTraitReference> {
+        let traitCollection: CdmCollection<CdmTraitReference> = new CdmCollection<CdmTraitReference>(this.ctx, this.owner, cdmObjectType.traitRef);
+
+        traitCollection.concat(this.allItems.filter(x => x instanceof CdmTraitReference) as CdmTraitReference[]);
+
+        return traitCollection;
+    }
+
+    /**
+     * Returns a new collection consisting of only the trait group reference objects present in this collection.
+     * @returns New collection of found trait group reference objects
+     */
+    public toTraitGroupRefs(): CdmCollection<CdmTraitGroupReference> {
+        let traitGroupCollection: CdmCollection<CdmTraitGroupReference> = new CdmCollection<CdmTraitGroupReference>(this.ctx, this.owner, cdmObjectType.traitGroupRef);
+
+        traitGroupCollection.concat(this.allItems.filter(x => x instanceof CdmTraitGroupReference) as CdmTraitGroupReference[]);
+
+        return traitGroupCollection;
+    }
+
+    public indexOf(obj: string | CdmTraitDefinition | CdmTraitReference | CdmTraitGroupDefinition | CdmTraitGroupReference, onlyFromProperty: boolean = false): number {
+        if (!isString(obj)) {
+            return this.indexOf(obj.fetchObjectDefinitionName(), onlyFromProperty);
         }
-        for (let index: number = 0; index < this.allItems.length; index++) {
-            if (this.corresponds(this.allItems[index], traitName)) {
-                if (this.allItems[index].isFromProperty) {
+
+        let indexOfTraitNotFromProperty: number = -1;
+
+        for (let index: number = 0; index < this.length; index++) {
+            if (this.corresponds(this.allItems[index], obj)) {
+                if (this.allItems[index] instanceof CdmTraitGroupReference || (this.allItems[index] as CdmTraitReference).isFromProperty) {
                     return index;
                 }
                 indexOfTraitNotFromProperty = index;
@@ -95,14 +129,14 @@ export class CdmTraitCollection extends CdmCollection<CdmTraitReference> {
         super.clear();
     }
 
-    private corresponds(traitReference: CdmTraitReference, name: string) : boolean {
-        return traitReference.fetchObjectDefinitionName() === name;
-    }
-
     private clearCache(): void {
         const ownerAsCdmObjectBase: CdmObjectBase = this.owner as CdmObjectBase;
         if (ownerAsCdmObjectBase) {
             ownerAsCdmObjectBase.clearTraitCache();
         }
+    }
+
+    private corresponds(obj: CdmTraitReferenceBase, traitName: string): boolean {
+        return obj.fetchObjectDefinitionName() === traitName;
     }
 }

@@ -46,6 +46,8 @@ public enum CdmObjectType {
   PurposeRef,
   ReferencedEntityDeclarationDef,
   TraitDef,
+  TraitGroupDef,
   TraitRef,
+  TraitGroupRef,
   TypeAttributeDef,
 }

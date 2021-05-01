@@ -7,6 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json.Linq;
     using System;
@@ -199,6 +200,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             // check that each relationship has been created correctly
             VerifyRelationships(manifest, expectedRels);
+        }
+
+        /// <summary>
+        /// Test the relationship calculation when using a replace as foreign key operation while extending an entity.
+        /// </summary>
+        [TestMethod]
+        public async Task TestExtendsEntityAndReplaceAsForeignKey()
+        {
+            var testName = "TestExtendsEntityAndReplaceAsForeignKey";
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
+
+            await corpus.CalculateEntityGraphAsync(manifest);
+            // Check if the warning was logged.
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnProjFKWithoutSourceEntity);
+
+            await manifest.PopulateManifestRelationshipsAsync();
+            Assert.AreEqual(0, manifest.Relationships.Count);
         }
 
         /// <summary>

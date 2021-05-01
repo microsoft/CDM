@@ -291,7 +291,7 @@ class CdmAttributeContext(CdmObjectDefinition):
                     # need the real path to this thing from the explicitRef held in the portable reference
                     # the real path is {monikerFrom/}{path from 'from' document to document holding the explicit ref/{declaredPath of explicitRef}}
                     # if we have never looked up the path between docs, do that now
-                    doc_from_def = ac.definition.explicit_reference.in_document  # if all parts not set, this is a broken portal ref!
+                    doc_from_def = ac.definition._portable_reference.in_document  # if all parts not set, this is a broken portal ref!
                     path_between_docs = found_doc_paths[doc_from_def] if doc_from_def in found_doc_paths else None
                     if path_between_docs is None:
                         path_between_docs = doc_from._import_path_to_doc(doc_from_def)
@@ -300,7 +300,7 @@ class CdmAttributeContext(CdmObjectDefinition):
                             path_between_docs = ''
                         found_doc_paths[doc_from] = path_between_docs
 
-                    cast('CdmObjectReference', ac.definition)._localize_portable_reference(res_opt, '{}{}'.format(moniker_for_doc_from, path_between_docs))
+                    cast('CdmObjectReference', ac.definition)._localize_portable_reference('{}{}'.format(moniker_for_doc_from, path_between_docs))
 
             # doc of parent ref
             if ac.parent:

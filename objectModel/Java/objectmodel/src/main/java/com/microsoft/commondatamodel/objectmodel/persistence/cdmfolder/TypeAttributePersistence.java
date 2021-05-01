@@ -5,6 +5,8 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitGroupReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
@@ -21,7 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class TypeAttributePersistence {
-  private static String tag = TypeAttributePersistence.class.getSimpleName();
+  private static final String TAG = TypeAttributePersistence.class.getSimpleName();
 
   public static CdmTypeAttributeDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
     return fromData(ctx, obj, null);
@@ -50,15 +52,15 @@ public class TypeAttributePersistence {
       }
 
       if (StringUtils.isNullOrTrimEmpty(minCardinality) || StringUtils.isNullOrTrimEmpty(maxCardinality)) {
-        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistCardinalityPropMissing);
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistCardinalityPropMissing);
       }
 
       if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrValdnInvalidMinCardinality, minCardinality);
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrValdnInvalidMinCardinality, minCardinality);
       }
 
       if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrValdnInvalidMaxCardinality, maxCardinality);
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrValdnInvalidMaxCardinality, maxCardinality);
       }
 
       if (!StringUtils.isNullOrTrimEmpty(minCardinality) &&
@@ -100,7 +102,7 @@ public class TypeAttributePersistence {
       if (cdmDataFormat != CdmDataFormat.Unknown) {
         typeAttribute.updateDataFormat(cdmDataFormat);
       } else {
-        Logger.warning(ctx, tag, "fromData", null, CdmLogCode.WarnPersistEnumNotFound, dataFormat);
+        Logger.warning(ctx, TAG, "fromData", null, CdmLogCode.WarnPersistEnumNotFound, dataFormat);
       }
     }
 
@@ -121,7 +123,7 @@ public class TypeAttributePersistence {
     obj.setAppliedTraits(Utils.listCopyDataAsArrayNode(
         instance.getAppliedTraits().getAllItems()
             .stream()
-            .filter(trait -> !trait.isFromProperty())
+            .filter(trait -> trait instanceof CdmTraitGroupReference || !((CdmTraitReference)trait).isFromProperty())
             .collect(Collectors.toList()),
         resOpt,
         options));

@@ -8,7 +8,9 @@ import {
     cdmDataFormat,
     cdmLogCode,
     cdmObjectType,
+    CdmTraitGroupReference,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     CdmTypeAttributeDefinition,
     copyOptions,
     Logger,
@@ -16,12 +18,12 @@ import {
     traitToPropertyMap
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
-import { ProjectionPersistence } from './Projections/ProjectionPersistence';
 import {
     AttributeResolutionGuidance,
     DataTypeReference,
     Projection,
     PurposeReference,
+    TraitGroupReference,
     TraitReference,
     TypeAttribute
 } from './types';
@@ -72,7 +74,7 @@ export class TypeAttributePersistence {
 
         typeAttribute.attributeContext =
             CdmFolder.AttributeContextReferencePersistence.fromData(ctx, object.attributeContext);
-        utils.addArrayToCdmCollection<CdmTraitReference>(
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(
             typeAttribute.appliedTraits,
             utils.createTraitReferenceArray(ctx, object.appliedTraits)
         );
@@ -114,8 +116,9 @@ export class TypeAttributePersistence {
             return undefined;
         }
 
-        const appliedTraits: CdmTraitReference[] = instance.appliedTraits ?
-            instance.appliedTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty) : undefined;
+        const appliedTraits: CdmTraitReferenceBase[] = instance.appliedTraits ?
+            instance.appliedTraits.allItems.filter(
+                (trait: CdmTraitReferenceBase) => trait instanceof CdmTraitGroupReference || !(trait as CdmTraitReference).isFromProperty) : undefined;
         const object: TypeAttribute = {
             explanation: instance.explanation,
             purpose: instance.purpose
@@ -123,7 +126,7 @@ export class TypeAttributePersistence {
                 : undefined,
             dataType: instance.dataType ? instance.dataType.copyData(resOpt, options) as (string | DataTypeReference) : undefined,
             name: instance.name,
-            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, appliedTraits, options),
+            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, appliedTraits, options),
             resolutionGuidance: instance.resolutionGuidance
                 ? instance.resolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
             attributeContext: instance.attributeContext ? instance.attributeContext.copyData(resOpt, options) as string : undefined

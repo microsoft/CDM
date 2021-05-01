@@ -50,6 +50,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         public CdmAttributeContext AttCtx { get; set; }
         public AttributeResolutionContext Arc { get; set; }
         public ApplierState ApplierState { get; set; }
+        public CdmEntityDefinition Owner { get; set; }
 
         public ResolvedAttribute(ResolveOptions resOpt, dynamic target, string defaultName, CdmAttributeContext attCtx)
         {
@@ -86,16 +87,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 ResolvedTraits = this.ResolvedTraits.ShallowCopy(),
                 InsertOrder = this.InsertOrder,
                 Arc = this.Arc,
-                AttCtx = this.AttCtx // set here instead of constructor to avoid setting lineage for this copy
+                AttCtx = this.AttCtx, // set here instead of constructor to avoid setting lineage for this copy
+                Owner = this.Owner
             };
 
-            // deep copy when set contains sets. this copies the resolved att set and the context, etc.
-            copy.Target = copy.Target.Copy();
-
-            if (copy.Target is CdmAttribute attribute)
+            if (copy.Target is ResolvedAttributeSet)
             {
-                attribute.Owner = this.Target.Owner;
-                attribute.InDocument = this.Target.InDocument;
+                // deep copy when set contains sets. this copies the resolved att set and the context, etc.
+                copy.Target = copy.Target.Copy();
             }
 
             if (ApplierState != null)

@@ -180,7 +180,7 @@ public class Logger {
       theEvent.put("message", message);
       theEvent.put("method", method);
 
-      if (ctx.getCorrelationId() != null) {
+      if (level == CdmStatusLevel.Error || level == CdmStatusLevel.Warning) {
         theEvent.put("code", code.name());
       }
 

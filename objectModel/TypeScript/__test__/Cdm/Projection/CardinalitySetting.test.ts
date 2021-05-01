@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { CardinalitySettings, CdmCorpusDefinition, cdmStatusLevel, CdmTypeAttributeDefinition, cdmObjectType } from '../../../internal';
-import { testHelper } from '../../testHelper';
+import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 
 /**
  * Unit test for CardinalitySetting functions
@@ -18,7 +18,7 @@ describe('Cdm/Projection/CardinalitySettingUnitTest', () => {
      */
     it('TestMinimum', () => {
         const testName: string = 'TestMinimum';
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('CardinalitySettings | Invalid minimum cardinality -1.') === -1) {
@@ -38,7 +38,7 @@ describe('Cdm/Projection/CardinalitySettingUnitTest', () => {
     it('TestMaximum', () => {
         const testName: string = 'TestMaximum';
 
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('CardinalitySettings | Invalid maximum cardinality Abc.') === -1) {

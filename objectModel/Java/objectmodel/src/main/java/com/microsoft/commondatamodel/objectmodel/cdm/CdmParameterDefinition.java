@@ -18,7 +18,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmParameterDefinition extends CdmObjectDefinitionBase {
 
-  private String tag = CdmParameterDefinition.class.getSimpleName();
+  private static final String TAG = CdmParameterDefinition.class.getSimpleName();
 
   private String name;
   private Boolean isRequired;
@@ -122,7 +122,7 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.name)) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("Name"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

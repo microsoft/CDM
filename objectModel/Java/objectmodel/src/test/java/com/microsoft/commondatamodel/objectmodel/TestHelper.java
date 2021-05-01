@@ -410,8 +410,6 @@ public class TestHelper {
 
     final String testOutputDir = getActualOutputFolderPath(testSubpath, testName);
 
-    Assert.assertTrue((Files.isDirectory(Paths.get(TestHelper.SCHEMA_DOCS_ROOT))), "SchemaDocsRoot not found!!!");
-
     final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
     cdmCorpus.getStorage().setDefaultNamespace(LOCAL);
 

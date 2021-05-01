@@ -127,6 +127,15 @@ export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
+        const path: string = '';
+
+        if (preChildren && preChildren(this, path)) {
+            return false;
+        }
+
+        if (postChildren && postChildren(this, path)) {
+            return true;
+        }
         return false;
     }
 

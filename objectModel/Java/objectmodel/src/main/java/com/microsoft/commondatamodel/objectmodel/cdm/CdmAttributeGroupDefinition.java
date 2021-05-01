@@ -24,7 +24,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase implements CdmReferencesEntities {
 
-  private String tag = CdmAttributeGroupDefinition.class.getSimpleName();
+  private static final String TAG = CdmAttributeGroupDefinition.class.getSimpleName();
   
   private CdmAttributeContextReference attributeContext;
   private String attributeGroupName;
@@ -175,7 +175,7 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.attributeGroupName)) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("attributeGroupName"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

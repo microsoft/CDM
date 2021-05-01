@@ -44,7 +44,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class ManifestPersistence {
-  private static String tag = ManifestPersistence.class.getSimpleName();
+  private static final String TAG = ManifestPersistence.class.getSimpleName();
 
   private static final String FOUNDATIONS = "cdm:/foundations.cdm.json";
 
@@ -165,7 +165,7 @@ public class ManifestPersistence {
         } else if ("ReferenceEntity".equals(type)) {
           final ReferenceEntity referenceEntity = (ReferenceEntity) element;
           if (!referenceModels.containsKey(referenceEntity.getModelId())) {
-            Logger.error(ctx, tag, "fromObject", null, CdmLogCode.ErrPersistModelIdNotFound, referenceEntity.getModelId(), referenceEntity.getName());
+            Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistModelIdNotFound, referenceEntity.getModelId(), referenceEntity.getName());
             return CompletableFuture.completedFuture(null);
           }
           entity = ReferencedEntityDeclarationPersistence
@@ -174,7 +174,7 @@ public class ManifestPersistence {
                   referenceEntity,
                   referenceModels.get(referenceEntity.getModelId())).join();
         } else {
-          Logger.error(ctx, tag, "fromObject", null, CdmLogCode.ErrPersistEntityParsingError);
+          Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistEntityParsingError);
         }
 
         if (entity != null) {
@@ -182,7 +182,7 @@ public class ManifestPersistence {
           manifest.getEntities().add(entity);
           entityPathByName.put(entity.getEntityName(), entity.getEntityPath());
         } else {
-          Logger.error(ctx, tag, "fromObject", null, CdmLogCode.ErrPersistEntityParsingError);
+          Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistEntityParsingError);
         }
       }
     }
@@ -194,7 +194,7 @@ public class ManifestPersistence {
         if (null != relationship) {
           manifest.getRelationships().add(relationship);
         } else {
-          Logger.warning(ctx, tag, "fromObject", null, CdmLogCode.WarnPersistModelJsonRelReadFailed);
+          Logger.warning(ctx, TAG, "fromObject", null, CdmLogCode.WarnPersistModelJsonRelReadFailed);
         }
       });
     }
@@ -235,7 +235,7 @@ public class ManifestPersistence {
         Model obj = JMapper.MAP.readValue(jsonData, Model.class);
         return fromObject(ctx, obj, folder).join();
       } catch (final Exception e) {
-        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistConversionError, docName, e.getLocalizedMessage());
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistConversionError, docName, e.getLocalizedMessage());
         return null;
       }
     });
@@ -286,18 +286,18 @@ public class ManifestPersistence {
 
       final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
 
-      final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReferenceName("is.hidden");
+      final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReference("is.hidden");
       if (isHiddenTrait != null) {
         result.setHidden(true);
       }
 
-      final CdmTraitReference applicationTrait = t2pm.fetchTraitReferenceName("is.managedBy");
+      final CdmTraitReference applicationTrait = t2pm.fetchTraitReference("is.managedBy");
       if (applicationTrait != null) {
         result.setApplication(
             applicationTrait.getArguments().get(0).getValue().toString());
       }
 
-      final CdmTraitReference versionTrait = t2pm.fetchTraitReferenceName("is.modelConversion.modelVersion");
+      final CdmTraitReference versionTrait = t2pm.fetchTraitReference("is.modelConversion.modelVersion");
       if (versionTrait != null) {
         result.setVersion(versionTrait.getArguments().get(0).getValue().toString());
       } else {
@@ -305,7 +305,7 @@ public class ManifestPersistence {
         result.setVersion("1.0");
       }
 
-      final CdmTraitReference cultureTrait = t2pm.fetchTraitReferenceName("is.partition.culture");
+      final CdmTraitReference cultureTrait = t2pm.fetchTraitReference("is.partition.culture");
       if (cultureTrait != null) {
         result.setCulture(cultureTrait.getArguments().get(0).getValue().toString());
       }
@@ -313,7 +313,7 @@ public class ManifestPersistence {
       final Map<String, String> referenceEntityLocations = new LinkedHashMap<>();
       final Map<String, String> referenceModels = new LinkedHashMap<>();
 
-      final CdmTraitReference referenceModelsTrait = t2pm.fetchTraitReferenceName("is.modelConversion.referenceModelMap");
+      final CdmTraitReference referenceModelsTrait = t2pm.fetchTraitReference("is.modelConversion.referenceModelMap");
       if (referenceModelsTrait != null) {
         final JsonNode refModels = JMapper.MAP
             .valueToTree(referenceModelsTrait.getArguments().getAllItems().get(0).getValue());
@@ -357,18 +357,22 @@ public class ManifestPersistence {
                   );
 
               if (Strings.isNullOrEmpty(location)) {
-                Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistInvalidEntityPath);
+                Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistInvalidEntityPath);
                 element = null;
               }
 
               if (element instanceof ReferenceEntity) {
+                // path separator can differ depending on the adapter, cover the case where path uses '/' or '\'
                 final ReferenceEntity referenceEntity = (ReferenceEntity) element;
-                location = location.substring(0, location.lastIndexOf("/"));
+                int lastSlashLocation = location.lastIndexOf("/") > location.lastIndexOf("\\") ? location.lastIndexOf("/") : location.lastIndexOf("\\");
+                if (lastSlashLocation > 0) {
+                  location = location.substring(0, lastSlashLocation);
+                }
 
                 if (referenceEntity.getModelId() != null) {
                   final String savedLocation = referenceModels.get(referenceEntity.getModelId());
                   if (savedLocation != null && !Objects.equals(savedLocation, location)) {
-                    Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelIdDuplication);
+                    Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelIdDuplication);
                     element = null;
                   } else if (savedLocation == null) {
                     referenceModels.put(referenceEntity.getModelId(), location);
@@ -387,7 +391,7 @@ public class ManifestPersistence {
             if (element != null) {
               obtainedEntities.add(element);
             } else {
-              Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.getEntityName());
+              Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.getEntityName());
             }
           });
 
@@ -397,7 +401,7 @@ public class ManifestPersistence {
             createdPromise.get();
             promises.add(createdPromise);
           } catch (InterruptedException | ExecutionException e) {
-            Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.getEntityName());
+            Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityDeclarationConversionFailure, entity.getEntityName(), e.getMessage());
           }
         }
         for (final CompletableFuture<Void> promise : promises) {
@@ -426,7 +430,7 @@ public class ManifestPersistence {
           if (null != relationship) {
             result.getRelationships().add(relationship);
           } else {
-            Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonRelConversionError);
+            Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonRelConversionError);
           }
         });
       }

@@ -191,7 +191,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             corpus.Storage.Mount("localActualOutput", new LocalAdapter(testActualOutputPath));
             CdmFolderDefinition actualOutputFolder = await corpus.FetchObjectAsync<CdmFolderDefinition>("localActualOutput:/");
 
-            // Test "structured" imposed directive 
+            // Test "structured" imposed directive
             var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/Person_Structured.cdm.json/Person");
             var resolvedEntity = await entity.CreateResolvedEntityAsync("Person_Resolved", null, actualOutputFolder);
             await resolvedEntity.InDocument.SaveAsAsync("Person_Structured_Resolved.cdm.json", true, new CopyOptions());
@@ -242,7 +242,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { })
                 };
 
-                CdmFolderDefinition actualOutputFolder = await corpus.FetchObjectAsync<CdmFolderDefinition>("localActualOutput:/") as CdmFolderDefinition;
+                CdmFolderDefinition actualOutputFolder = await corpus.FetchObjectAsync<CdmFolderDefinition>("localActualOutput:/");
                 CdmEntityDefinition resolvedEntityDef = null;
                 string outputEntityFileName = string.Empty;
                 string entityFileName = string.Empty;

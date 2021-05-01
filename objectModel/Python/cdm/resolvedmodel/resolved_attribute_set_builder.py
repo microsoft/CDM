@@ -4,6 +4,7 @@
 from typing import Callable, cast, List, Optional, Tuple, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType
+from cdm.objectmodel.relationship_info import RelationshipInfo
 from cdm.resolvedmodel.attribute_resolution_applier_capabilities import AttributeResolutionApplierCapabilities
 from cdm.resolvedmodel.resolved_attribute import ResolvedAttribute
 from cdm.resolvedmodel.resolved_attribute_set import ResolvedAttributeSet
@@ -99,6 +100,33 @@ class AttributeResolutionContext:
         self.actions_round_add.sort(key=lambda ara: ara._priority)
         self.actions_attribute_add.sort(key=lambda ara: ara._priority)
 
+    def _get_relationship_info(self) -> 'RelationshipInfo':
+        """Returns a RelationshipInfo instance containing information about how the entity attribute relationship should be resolved"""
+        has_ref = False
+        is_by_ref = False
+        is_array = False
+        selects_one = False
+        max_depth_exceeded = self.res_opt._depth_info.max_depth_exceeded
+
+        if self.res_guide:
+            if self.res_guide.entity_by_reference and self.res_guide.entity_by_reference.allow_reference:
+                has_ref = True
+            if self.res_opt.directives:
+                # based on directives
+                if has_ref:
+                    is_by_ref = self.res_opt.directives.has('referenceOnly')
+                selects_one = self.res_opt.directives.has('selectOne')
+                is_array = self.res_opt.directives.has('isArray')
+
+            if not selects_one and max_depth_exceeded:
+                # if max depth exceeded, stop and resolve by rererence
+                is_by_ref = True
+
+        return RelationshipInfo(
+            is_by_ref=is_by_ref,
+            is_array=is_array,
+            selects_one=selects_one)
+
 
 class ResolvedAttributeSetBuilder:
     def __init__(self):
@@ -138,7 +166,7 @@ class ResolvedAttributeSetBuilder:
 
     def apply_traits(self, arc: 'AttributeResolutionContext') -> None:
         if self._resolved_attribute_set and arc and arc.traits_to_apply:
-            self.take_reference(self._resolved_attribute_set.apply_traits(arc.traits_to_apply, arc.res_opt, arc.res_guide, arc.actions_modify))
+            self.take_reference(self._resolved_attribute_set.apply_traits_resolution_guidance(arc.traits_to_apply, arc.res_opt, arc.res_guide, arc.actions_modify))
 
     def generate_applier_attributes(self, arc: 'AttributeResolutionContext', apply_traits_to_new: bool) -> None:
         if not arc or not arc.applier_caps:

@@ -1,5 +1,5 @@
 {
-  "jsonSchemaSemanticVersion" : "1.1.0",
+  "jsonSchemaSemanticVersion" : "1.2.0",
   "imports" : [
     {
       "corpusPath" : "cdm:/foundations.cdm.json"
@@ -18,30 +18,36 @@
       "hasAttributes" : [
         {
           "explanation" : "This is a simple custom account for this sample.",
-          "entity" : {
-            "entityReference" : "CustomAccount",
+          "purpose" : {
+            "purposeReference" : "meaningOfRelationshipVerbPhrases",
             "appliedTraits" : [
               {
-                "traitReference" : "is.identifiedBy",
+                "traitReference" : "means.relationship.verbPhrase",
                 "arguments" : [
-                  "CustomAccount/(resolvedAttributes)/CustomAccountId"
+                  {
+                    "entityReference" : {
+                      "entityShape" : "localizedTable",
+                      "constantValues" : [
+                        [
+                          "en",
+                          "Non-simple resolution guidance sample - Forwards"
+                        ],
+                        [
+                          "cn",
+                          "正向"
+                        ]
+                      ]
+                    }
+                  }
                 ]
               }
             ]
           },
+          "entity" : "CustomAccount",
           "name" : "SimpleCustomAccount",
           "resolutionGuidance" : {
-            "renameFormat" : "{m}",
             "entityByReference" : {
-              "allowReference" : true,
-              "foreignKeyAttribute" : {
-                "name" : "SimpleCustomAccountId",
-                "purpose" : "identifiedBy",
-                "dataType" : "entityId",
-                "appliedTraits" : [
-                  "is.linkedEntity.identifier"
-                ]
-              }
+              "allowReference" : true
             }
           }
         }

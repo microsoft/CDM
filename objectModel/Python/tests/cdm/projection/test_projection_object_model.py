@@ -11,6 +11,7 @@ from cdm.objectmodel import CdmCorpusDefinition, CdmFolderDefinition, CdmProject
     CdmOperationCombineAttributes, CdmOperationRenameAttributes, CdmOperationReplaceAsForeignKey, CdmOperationIncludeAttributes, CdmObject
 from cdm.storage import LocalAdapter
 from tests.common import async_test, TestHelper
+from tests.utilities.projection_test_utils import ProjectionTestUtils
 
 
 class ProjectionObjectModelTest(unittest.TestCase):
@@ -22,7 +23,7 @@ class ProjectionObjectModelTest(unittest.TestCase):
     @async_test
     async def test_projection_using_object_model(self):
         """Basic test to save projection based entities and then try to reload them and validate that the projections were persisted correctly"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_projection_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_projection_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_projection_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
         manifest_default = self._create_default_manifest(corpus, local_root)

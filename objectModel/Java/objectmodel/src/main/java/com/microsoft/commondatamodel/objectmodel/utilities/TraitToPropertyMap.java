@@ -5,18 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.utilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttribute;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmConstantEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -39,7 +28,7 @@ import java.util.function.BiConsumer;
  */
 @Deprecated
 public class TraitToPropertyMap {
-  private static String tag = TraitToPropertyMap.class.getSimpleName();
+  private static final String TAG = TraitToPropertyMap.class.getSimpleName();
 
   private CdmObject host;
   private static Map<CdmTraitName, List<CdmPropertyName>> TRAIT_TO_LIST_OF_PROPERTIES_MAP = new ConcurrentHashMap<>();
@@ -125,22 +114,21 @@ public class TraitToPropertyMap {
     switch (propertyName) {
       case VERSION:
         return fetchTraitReferenceArgumentValue(
-            this.fetchTraitReferenceName(CdmTraitName.VERSION, onlyFromProperty),
+            this.fetchTraitReference(CdmTraitName.VERSION.toString(), onlyFromProperty),
                 "versionNumber");
       case SOURCE_NAME:
         return fetchTraitReferenceArgumentValue(
-            this.fetchTraitReferenceName(CdmTraitName.SOURCE_NAME, onlyFromProperty),
+            this.fetchTraitReference(CdmTraitName.SOURCE_NAME.toString(), onlyFromProperty),
                 "name");
       case DISPLAY_NAME:
-        return this.fetchLocalizedTraitTable(CdmTraitName.DISPLAY_NAME, onlyFromProperty);
+        return this.fetchLocalizedTraitTable(CdmTraitName.DISPLAY_NAME.toString(), onlyFromProperty);
       case DESCRIPTION:
-        return this.fetchLocalizedTraitTable(CdmTraitName.DESCRIPTION, onlyFromProperty);
+        return this.fetchLocalizedTraitTable(CdmTraitName.DESCRIPTION.toString(), onlyFromProperty);
       case CDM_SCHEMAS:
-        return this.getSingleAttTraitTable(CdmTraitName.ATTRIBUTE_GROUP, "groupList",
-            onlyFromProperty);
+        return this.fetchSingleAttTraitTable(CdmTraitName.ATTRIBUTE_GROUP.toString(), "groupList", onlyFromProperty);
       case SOURCE_ORDERING:
         return fetchTraitReferenceArgumentValue(
-            this.fetchTraitReferenceName(CdmTraitName.SOURCE_ORDERING),
+            this.fetchTraitReference(CdmTraitName.SOURCE_ORDERING.toString()),
             "ordinal");
       case IS_PRIMARY_KEY:
         if (this.host instanceof CdmTypeAttributeDefinition) {
@@ -149,24 +137,24 @@ public class TraitToPropertyMap {
             return true;
           }
         }
-        return this.fetchTraitReferenceName(CdmTraitName.IS_IDENTIFIED_BY, onlyFromProperty) != null;
+        return this.fetchTraitReference(CdmTraitName.IS_IDENTIFIED_BY.toString(), onlyFromProperty) != null;
       case IS_NULLABLE:
-        return this.fetchTraitReferenceName(CdmTraitName.IS_NULLABLE, onlyFromProperty) != null;
+        return this.fetchTraitReference(CdmTraitName.IS_NULLABLE.toString(), onlyFromProperty) != null;
       case IS_READ_ONLY:
-        return this.fetchTraitReferenceName(CdmTraitName.IS_READ_ONLY, onlyFromProperty) != null;
+        return this.fetchTraitReference(CdmTraitName.IS_READ_ONLY.toString(), onlyFromProperty) != null;
       case VALUE_CONSTRAINED_TO_LIST:
-        return this.fetchTraitReferenceName(CdmTraitName.VALUE_CONSTRAINED_TO_LIST, onlyFromProperty) != null;
+        return this.fetchTraitReference(CdmTraitName.VALUE_CONSTRAINED_TO_LIST.toString(), onlyFromProperty) != null;
       case MAXIMUM_VALUE:
         return fetchTraitReferenceArgumentValue
-            (this.fetchTraitReferenceName(CdmTraitName.IS_CONSTRAINED, onlyFromProperty),
+            (this.fetchTraitReference(CdmTraitName.IS_CONSTRAINED.toString(), onlyFromProperty),
                 CdmPropertyName.MAXIMUM_VALUE.toString());
       case MINIMUM_VALUE:
         return fetchTraitReferenceArgumentValue(
-            this.fetchTraitReferenceName(CdmTraitName.IS_CONSTRAINED, onlyFromProperty),
+            this.fetchTraitReference(CdmTraitName.IS_CONSTRAINED.toString(), onlyFromProperty),
                 CdmPropertyName.MINIMUM_VALUE.toString());
       case MAXIMUM_LENGTH:
         final Object temp = fetchTraitReferenceArgumentValue(
-            this.fetchTraitReferenceName(CdmTraitName.IS_CONSTRAINED, onlyFromProperty),
+            this.fetchTraitReference(CdmTraitName.IS_CONSTRAINED.toString(), onlyFromProperty),
                 CdmPropertyName.MAXIMUM_LENGTH.toString());
         if (temp != null) {
           return temp;
@@ -177,7 +165,7 @@ public class TraitToPropertyMap {
       case PRIMARY_KEY:
         final CdmTypeAttributeDefinition attRef = (CdmTypeAttributeDefinition)
             fetchTraitReferenceArgumentValue(
-                this.fetchTraitReferenceName(CdmTraitName.IS_IDENTIFIED_BY, onlyFromProperty),
+                this.fetchTraitReference(CdmTraitName.IS_IDENTIFIED_BY.toString(), onlyFromProperty),
                 "attribute"); // TODO-BQ: This may break since unchecked casting
         if (attRef != null) {
           return attRef.fetchObjectDefinitionName();
@@ -192,25 +180,25 @@ public class TraitToPropertyMap {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
-   * @param  traitName Object
+   * @param  traitName String
    * @return CdmTraitReference
    */
   @Deprecated
-  public CdmTraitReference fetchTraitReferenceName(final Object traitName) {
-    return this.fetchTraitReferenceName(traitName, false);
+  public CdmTraitReference fetchTraitReference(final String traitName) {
+    return this.fetchTraitReference(traitName, false);
   }
 
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
-   * @param  traitName Object
+   * @param  traitName String
    * @param onlyFromProperty boolean 
    * @return CdmTraitReference
    */
   @Deprecated
-  private CdmTraitReference fetchTraitReferenceName(final Object traitName, final boolean onlyFromProperty) {
-    final int traitIndex = this.getTraits() != null ? this.getTraits().indexOf(traitName.toString(), onlyFromProperty) : -1;
-    return (traitIndex == -1) ? null : this.getTraits().get(traitIndex);
+  private CdmTraitReference fetchTraitReference(final String traitName, final boolean onlyFromProperty) {
+    final int traitIndex = this.getTraits() != null ? this.getTraits().indexOf(traitName, onlyFromProperty) : -1;
+    return (traitIndex == -1) ? null : (CdmTraitReference) this.getTraits().get(traitIndex);
   }
 
   /**
@@ -222,52 +210,52 @@ public class TraitToPropertyMap {
   @Deprecated
   public void updatePropertyValue(final CdmPropertyName propertyName, final Object newValue) {
     final Enum traitName = this.mapTraitName(propertyName);
-    final List<CdmPropertyName> listOfProps = this.TRAIT_TO_LIST_OF_PROPERTIES_MAP.get(traitName);
+    final List<CdmPropertyName> listOfProps = TRAIT_TO_LIST_OF_PROPERTIES_MAP.get(traitName);
     final boolean multipleProperties = listOfProps != null && listOfProps.size() > 1;
     if (newValue == null && !multipleProperties) {
       this.removeTrait(traitName.toString());
     } else {
       switch (propertyName) {
         case VERSION:
-          this.updateTraitArgument(CdmTraitName.VERSION, "versionNumber", newValue);
+          this.updateTraitArgument(CdmTraitName.VERSION.toString(), "versionNumber", newValue);
           break;
         case CDM_SCHEMAS:
-          this.updateSingleAttributeTraitTable(CdmTraitName.ATTRIBUTE_GROUP, "groupList", "attributeGroupSet",
-              (List<String>) newValue);
+          this.updateSingleAttributeTraitTable(CdmTraitName.ATTRIBUTE_GROUP.toString(), "groupList",
+                  "attributeGroupSet", (List<String>) newValue);
           break;
         case SOURCE_NAME:
-          this.updateTraitArgument(CdmTraitName.SOURCE_NAME, "name", newValue);
+          this.updateTraitArgument(CdmTraitName.SOURCE_NAME.toString(), "name", newValue);
           break;
         case DISPLAY_NAME:
-          this.setLocalizedTraitTable(CdmTraitName.DISPLAY_NAME, (String) newValue);
+          this.ConstructLocalizedTraitTable(CdmTraitName.DISPLAY_NAME.toString(), (String) newValue);
           break;
         case DESCRIPTION:
-          this.setLocalizedTraitTable(CdmTraitName.DESCRIPTION, (String) newValue);
+          this.ConstructLocalizedTraitTable(CdmTraitName.DESCRIPTION.toString(), (String) newValue);
           break;
         case SOURCE_ORDERING:
-          this.updateTraitArgument(CdmTraitName.SOURCE_ORDERING, "ordinal",
+          this.updateTraitArgument(CdmTraitName.SOURCE_ORDERING.toString(), "ordinal",
               newValue.toString()); // TODO-BQ: Check if should use toString or (String)
           break;
         case IS_PRIMARY_KEY:
-          this.updateTraitArgument(CdmTraitName.IS_IDENTIFIED_BY, "", newValue);
+          this.updateTraitArgument(CdmTraitName.IS_IDENTIFIED_BY.toString(), "", newValue);
           break;
         case IS_READ_ONLY:
-          this.setBooleanTrait(CdmTraitName.IS_READ_ONLY, (boolean) newValue);
+          this.mapBooleanTrait(CdmTraitName.IS_READ_ONLY.toString(), (boolean) newValue);
           break;
         case IS_NULLABLE:
-          this.setBooleanTrait(CdmTraitName.IS_NULLABLE, (boolean) newValue);
+          this.mapBooleanTrait(CdmTraitName.IS_NULLABLE.toString(), (boolean) newValue);
           break;
         case VALUE_CONSTRAINED_TO_LIST:
-          this.setBooleanTrait(CdmTraitName.VALUE_CONSTRAINED_TO_LIST, (boolean) newValue);
+          this.mapBooleanTrait(CdmTraitName.VALUE_CONSTRAINED_TO_LIST.toString(), (boolean) newValue);
           break;
         case MAXIMUM_VALUE:
-          this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MAXIMUM_VALUE.toString(), newValue);
+          this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED.toString(), CdmPropertyName.MAXIMUM_VALUE.toString(), newValue);
           break;
         case MINIMUM_VALUE:
-          this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MINIMUM_VALUE.toString(), newValue);
+          this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED.toString(), CdmPropertyName.MINIMUM_VALUE.toString(), newValue);
           break;
         case MAXIMUM_LENGTH:
-          this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED, CdmPropertyName.MAXIMUM_LENGTH.toString(), newValue);
+          this.updateTraitArgument(CdmTraitName.IS_CONSTRAINED.toString(), CdmPropertyName.MAXIMUM_LENGTH.toString(), newValue);
           break;
         case DATA_FORMAT:
           this.dataFormatToTraits(newValue.toString());
@@ -286,72 +274,72 @@ public class TraitToPropertyMap {
     }
     switch (CdmDataFormat.fromString(dataFormat)) {
       case Int16:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.SMALL, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.SMALL.toString(), true);
         break;
       case Int32:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER.toString(), true);
         break;
       case Int64:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.BIG, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.BIG.toString(), true);
         break;
       case Float:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.FLOATING_POINT, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.FLOATING_POINT.toString(), true);
         break;
       case Double:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.FLOATING_POINT, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.BIG, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.FLOATING_POINT.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.BIG.toString(), true);
         break;
       case Guid:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.GUID, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.CHARACTER, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.GUID.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.CHARACTER.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY.toString(), true);
         break;
       case String:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.CHARACTER, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.CHARACTER.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY.toString(), true);
         break;
       case Char:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.CHARACTER, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.BIG, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.CHARACTER.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.BIG.toString(), true);
         break;
       case Byte:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.BYTE, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.BYTE.toString(), true);
         break;
       case Binary:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.BYTE, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.BYTE.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY.toString(), true);
         break;
       case Time:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.TIME, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.TIME.toString(), true);
         break;
       case Date:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.DATE, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.DATE.toString(), true);
         break;
       case DateTime:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.TIME, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.DATE, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.TIME.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.DATE.toString(), true);
         break;
       case DateTimeOffset:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.TIME, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.DATE, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.DATETIME_OFFSET, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.TIME.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.DATE.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.DATETIME_OFFSET.toString(), true);
         break;
       case Boolean:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.BOOLEAN, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.BOOLEAN.toString(), true);
         break;
       case Decimal:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.NUMERIC_SHAPED, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.NUMERIC_SHAPED.toString(), true);
         break;
       case Json:
-        this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY, true);
-        this.fetchOrCreateTrait(CdmDataFormatTrait.JSON, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY.toString(), true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.JSON.toString(), true);
         break;
     }
   }
 
-  private void setLocalizedTraitTable(final Enum traitName, final String sourceText) {
+  private void ConstructLocalizedTraitTable(String traitName, final String sourceText) {
     this.updateTraitTable(traitName, "localizedDisplayText", "localizedTable", (cEnt, created) -> {
       if (created) {
         final List<List<String>> list = new ArrayList<>();
@@ -370,9 +358,9 @@ public class TraitToPropertyMap {
     });
   }
 
-  private Object fetchLocalizedTraitTable(final Object trait, final boolean onlyFromProperty) {
+  private Object fetchLocalizedTraitTable(final String traitName, final boolean onlyFromProperty) {
     final CdmConstantEntityDefinition cEnt = this
-        .fetchTraitTable(trait, "localizedDisplayText", onlyFromProperty);
+        .fetchTraitTable(traitName, "localizedDisplayText", onlyFromProperty);
     if (cEnt != null) {
       // search for a match
       // -1 on order gets us the last row that matches. needed because inheritence
@@ -383,27 +371,22 @@ public class TraitToPropertyMap {
     return null;
   }
 
-  private CdmTraitReference fetchOrCreateTrait(Object traitName, final boolean simpleRef) {
+  private CdmTraitReference fetchOrCreateTrait(String traitName, final boolean simpleRef) {
     CdmTraitReference trait;
-    if (traitName instanceof String) {
-      traitName = traitName.toString();
-    } else if (traitName instanceof Enum) {
-      traitName = traitName.toString();
-    }
 
-    trait = fetchTraitReferenceName(traitName, true);
+    trait = fetchTraitReference(traitName, true);
     if (trait == null) {
-      trait = this.getCtx().getCorpus().makeObject(CdmObjectType.TraitRef, (String) traitName, simpleRef);
+      trait = this.getCtx().getCorpus().makeObject(CdmObjectType.TraitRef, traitName, simpleRef);
       trait.setFromProperty(true);
       this.getTraits().add(trait);
     }
     return trait;
   }
 
-  private List<String> getSingleAttTraitTable(final Object trait, final String argName,
-                                              final boolean onlyFromProperty) {
-    final CdmConstantEntityDefinition cEnt = this.fetchTraitTable(trait, argName, onlyFromProperty);
+  private List<String> fetchSingleAttTraitTable(final String traitName, final String argName, final boolean onlyFromProperty) {
+    final CdmConstantEntityDefinition cEnt = this.fetchTraitTable(traitName, argName, onlyFromProperty);
     if (cEnt != null) {
+      // turn array of arrays into single array of strings
       final List<String> result = new ArrayList<>();
       for (final List<String> v : cEnt.getConstantValues()) {
         result.add(v.get(0)); // TODO-BQ: revisit this, fail if size is equal 0
@@ -414,7 +397,7 @@ public class TraitToPropertyMap {
   }
 
   private Object fetchDefaultValue(final boolean onlyFromProperty) {
-    final CdmTraitReference trait = this.fetchTraitReferenceName(CdmTraitName.DOES_HAVE_DEFAULT, onlyFromProperty);
+    final CdmTraitReference trait = this.fetchTraitReference(CdmTraitName.DOES_HAVE_DEFAULT.toString(), onlyFromProperty);
     if (trait != null) {
       Object defVal = fetchTraitReferenceArgumentValue(trait, "default");
       if (defVal != null) {
@@ -495,31 +478,17 @@ public class TraitToPropertyMap {
     }
   }
 
-  private CdmConstantEntityDefinition fetchTraitTable(Object trait, final String argName,
+  private CdmConstantEntityDefinition fetchTraitTable(String traitName, final String argName,
                                                     final boolean onlyFromProperty) {
-    if (trait == null) {
-      return null;
-    }
-
-    if (trait instanceof Enum) {
-      trait = trait.toString();
-    }
-
-    if (trait instanceof String) {
-      final int iTrait = this.getTraits().indexOf((String) trait, onlyFromProperty);
-      if (iTrait == -1) {
-        return null;
-      }
-      trait = this.getTraits().getAllItems().get(iTrait);
-    }
+    CdmTraitReference trait;
+    final int traitIndex = this.getTraits().indexOf(traitName, onlyFromProperty);
+    trait = traitIndex == -1 ? null : (CdmTraitReference) getTraits().get(traitIndex);
 
     final Object locEntRef = fetchTraitReferenceArgumentValue(trait, argName);
     if (locEntRef != null) {
-      // TODO-BQ: Check this implementation, this casting may not be correct, since c# is using dynamic.
-      if (locEntRef instanceof CdmObject) {
         return ((CdmObject) locEntRef).fetchObjectDefinition(null);
-      }
     }
+
     return null;
   }
 
@@ -527,17 +496,17 @@ public class TraitToPropertyMap {
     this.getTraits().remove(traitName, true);
   }
 
-  private void setBooleanTrait(final Enum traitName, final boolean value) {
+  private void mapBooleanTrait(String traitName, final boolean value) {
     if (value) {
       this.fetchOrCreateTrait(traitName, true);
     } else {
-      this.removeTrait(traitName.toString());
+      this.removeTrait(traitName);
     }
   }
 
-  private void updateSingleAttributeTraitTable(final Object trait, final String argName, final String entityName,
+  private void updateSingleAttributeTraitTable(String traitName, final String argName, final String entityName,
                                                final List<String> sourceText) {
-    this.updateTraitTable(trait, argName, entityName, (cEnt, created) -> {
+    this.updateTraitTable(traitName, argName, entityName, (cEnt, created) -> {
       // turn array of Strings into array of array of Strings;
       final List<List<String>> vals = new ArrayList<>();
       for (final String v : sourceText) {
@@ -549,25 +518,17 @@ public class TraitToPropertyMap {
     });
   }
 
-  private void updateTraitArgument(Object inputTrait, final String argName, final Object argValue) {
+  private void updateTraitArgument(String traitName, final String argName, final Object argValue) {
     final CdmTraitReference trait;
+    trait = this.fetchOrCreateTrait(traitName, false);
 
-    if (inputTrait instanceof CdmTraitName) {
-      inputTrait = inputTrait.toString();
-    }
-
-    if (inputTrait instanceof String) {
-      trait = this.fetchOrCreateTrait(inputTrait, false);
-    } else {
-      trait = (CdmTraitReference) inputTrait;
-    }
     final CdmArgumentCollection args = trait.getArguments();
     if (args == null || args.getCount() == 0) {
       if (argValue != null) {
         trait.getArguments().add(argName, argValue);
         return;
       } else {
-        this.removeTrait((String) inputTrait);
+        this.removeTrait(traitName);
       }
     } else {
       for (int iArg = 0; iArg < args.getCount(); ++iArg) {
@@ -576,7 +537,7 @@ public class TraitToPropertyMap {
           if (argValue == null) {
             args.remove(arg);
             if (trait != null && trait.getArguments() != null && trait.getArguments().size() == 0) {
-              this.removeTrait((String) inputTrait);
+              this.removeTrait(traitName);
             }
           } else {
             arg.setValue(argValue);
@@ -602,8 +563,9 @@ public class TraitToPropertyMap {
     final CdmTraitCollection traits = this.getTraits();
 
     if (traits != null) {
-      for (final CdmTraitReference trait : traits) {
-        if (onlyFromProperty && !trait.isFromProperty()) {
+      for (final CdmTraitReferenceBase trait : traits) {
+        if (onlyFromProperty &&
+                (trait instanceof CdmTraitGroupReference || !((CdmTraitReference)trait).isFromProperty())) {
           continue;
         }
 
@@ -702,13 +664,10 @@ public class TraitToPropertyMap {
   }
 
   //  // TODO-BQ: try to resolve Object trait, because it is dynamic now.
-  private void updateTraitTable(Object trait, final String argName, final String entityName,
+  private void updateTraitTable(String traitName, final String argName, final String entityName,
                              final BiConsumer<CdmConstantEntityDefinition, Boolean> action) {
-    if (trait instanceof Enum) {
-      trait = trait.toString();
-    }
 
-    trait = this.fetchOrCreateTrait(trait, false);
+    CdmTraitReference trait = this.fetchOrCreateTrait(traitName, false);
     final CdmTraitReference traitRef = (CdmTraitReference) trait; // TODO-BQ: This cast is very likely to fail. Suggestion is to make extend an interface like "canGetArguments" or something.
     if (traitRef.getArguments() == null || traitRef.getArguments().getCount() == 0) {
       // make the argument nothing but a ref to a constant entity, safe since there is only one param for the trait and it looks cleaner
@@ -755,8 +714,6 @@ public class TraitToPropertyMap {
 
   private void updateDefaultValue(Object newDefault) {
     if (newDefault instanceof ArrayNode) {
-      final CdmTraitReference trait = this.fetchOrCreateTrait("does.haveDefault", false);
-
       final ArrayNode array = (ArrayNode) newDefault;
       final int l = array.size();
       if (l > 0 && array.get(0).get("languageTag") != null
@@ -782,12 +739,12 @@ public class TraitToPropertyMap {
         cEnt.setConstantValues(tab);
 
         newDefault = this.getCtx().getCorpus().makeRef(CdmObjectType.EntityRef, cEnt, false);
-        this.updateTraitArgument(trait, "default", newDefault);
+        this.updateTraitArgument(CdmTraitName.DOES_HAVE_DEFAULT.toString(), "default", newDefault);
       } else {
-        Logger.error(this.host.getCtx(), tag, "updateDefaultValue", null, CdmLogCode.ErrValdnMissingLanguageTag);
+        Logger.error(this.host.getCtx(), TAG, "updateDefaultValue", null, CdmLogCode.ErrValdnMissingLanguageTag);
       }
     } else {
-      Logger.error(this.host.getCtx(), tag, "updateDefaultValue", null, CdmLogCode.ErrUnsupportedType);
+      Logger.error(this.host.getCtx(), TAG, "updateDefaultValue", null, CdmLogCode.ErrUnsupportedType);
     }
   }
 

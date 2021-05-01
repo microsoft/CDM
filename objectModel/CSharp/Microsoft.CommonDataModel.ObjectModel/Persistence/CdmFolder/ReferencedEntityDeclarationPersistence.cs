@@ -12,7 +12,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using System;
     using System.Globalization;
 
-    class ReferencedEntityDeclarationPersistence
+    public class ReferencedEntityDeclarationPersistence
     {
         private static readonly string Tag = nameof(ReferencedEntityDeclarationPersistence);
 

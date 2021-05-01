@@ -139,7 +139,7 @@ export class CdmOperationAddSupportingAttribute extends CdmOperationBase {
         if (projCtx.currentAttributeStateSet.states.length > 0) {
             const lastIndex: number = projCtx.currentAttributeStateSet.states.length - 1;
             const lastState: ProjectionAttributeState = projCtx.currentAttributeStateSet.states[lastIndex];
-            const inSupportOfTrait: CdmTraitReference = this.supportingAttribute.appliedTraits.push('is.addedInSupportOf');
+            const inSupportOfTrait: CdmTraitReference = this.supportingAttribute.appliedTraits.push('is.addedInSupportOf') as CdmTraitReference;
             inSupportOfTrait.arguments.push('inSupportOf', lastState.currentResolvedAttribute.resolvedName);
         }
 

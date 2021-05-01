@@ -18,9 +18,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            dynamic entity = null;
+            dynamic entity;
             bool simpleReference = true;
-            List<CdmTraitReference> appliedTraits = null;
 
             if (obj is JValue)
             {
@@ -36,11 +35,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (!(obj is JValue))
             {
-                appliedTraits = Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]);
-                if (appliedTraits != null)
-                {
-                    Utils.AddListToCdmCollection(entityReference.AppliedTraits, appliedTraits);
-                }
+                Utils.AddListToCdmCollection(entityReference.AppliedTraits, Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]));
             }
 
             return entityReference;

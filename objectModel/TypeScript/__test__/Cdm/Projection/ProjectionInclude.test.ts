@@ -2,19 +2,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
-    CdmAttributeItem,
     CdmCorpusDefinition,
     CdmEntityAttributeDefinition,
     CdmEntityDefinition,
     CdmEntityReference,
-    CdmManifestDefinition,
     CdmOperationIncludeAttributes,
     CdmProjection
 } from '../../../internal';
-import { LocalAdapter } from '../../../Storage';
-import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
-import { AttributeContextUtil } from './AttributeContextUtil';
 import { TypeAttributeParam } from './TypeAttributeParam';
 import { ProjectionOMTestUtil } from './ProjectionOMTestUtil';
 
@@ -52,7 +47,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestExtends', async () => {
         const testName: string = 'TestExtends';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -65,7 +60,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestExtendsProj', async () => {
         const testName: string = 'TestExtendsProj';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -78,7 +73,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestEA', async () => {
         const testName: string = 'TestEA';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -91,7 +86,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestEAProj', async () => {
         const testName: string = 'TestEAProj';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -149,7 +144,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestNested1of3Proj', async () => {
         const testName: string = 'TestNested1of3Proj';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -162,7 +157,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestNested2of3Proj', async () => {
         const testName: string = 'TestNested2of3Proj';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -175,7 +170,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestNested3of3Proj', async () => {
         const testName: string = 'TestNested3of3Proj';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -188,7 +183,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestConditionProj', async () => {
         const testName: string = 'TestConditionProj';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -201,7 +196,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestGroupName', async () => {
         const testName: string = 'TestGroupName';
         const entityName: string = 'Product';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -214,7 +209,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestGroupNameProj', async () => {
         const testName: string = 'TestGroupNameProj';
         const entityName: string = 'Product';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -227,7 +222,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestArray', async () => {
         const testName: string = 'TestArray';
         const entityName: string = 'Sales';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -240,7 +235,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestArrayRename', async () => {
         const testName: string = 'TestArrayRename';
         const entityName: string = 'Sales';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -253,7 +248,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestArrayProj', async () => {
         const testName: string = 'TestArrayProj';
         const entityName: string = 'Sales';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -266,7 +261,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestPolymorphic', async () => {
         const testName: string = 'TestPolymorphic';
         const entityName: string = 'Person';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -279,7 +274,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestPolymorphicProj', async () => {
         const testName: string = 'TestPolymorphicProj';
         const entityName: string = 'Person';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -292,7 +287,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestEmpty', async () => {
         const testName: string = 'TestEmpty';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -305,7 +300,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestEmptyProj', async () => {
         const testName: string = 'TestEmptyProj';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -318,7 +313,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestNestedIncludeExcludeProj', async () => {
         const testName: string = 'TestNestedIncludeExcludeProj';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -331,44 +326,10 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     it('TestIncludeExcludeProj', async () => {
         const testName: string = 'TestIncludeExcludeProj';
         const entityName: string = 'Color';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
     });
-
-    /**
-     * Loads an entity, resolves it, and then validates the generated attribute contexts
-     */
-    async function loadEntityForResolutionOptionAndSave(testName: string, entityName: string, resOpts: string[]): Promise<void> {
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const fileNameSuffix: string = projectionTestUtils.getResolutionOptionNameSuffix(resOpts);
-
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        corpus.storage.mount('expected', new LocalAdapter(expectedOutputPath));
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>(`local:/default.manifest.cdm.json`);
-
-        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, resOpts);
-
-        await validateResolvedAttributes(corpus, resolvedEntity, entityName, fileNameSuffix);
-
-        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, `${entityName}${fileNameSuffix}`, resolvedEntity);
-    }
-
-    /**
-     * Validate the list of resolved attributes against an expected list
-     */
-    async function validateResolvedAttributes(corpus: CdmCorpusDefinition, actualResolvedEntity: CdmEntityDefinition, entityName: string, fileNameSuffix: string) {
-        const expectedResolvedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`expected:/Resolved_${entityName}${fileNameSuffix}.cdm.json/Resolved_${entityName}${fileNameSuffix}`);
-
-        expect(actualResolvedEntity.attributes.length)
-            .toEqual(expectedResolvedEntity.attributes.length);
-
-        for (let i: number = 0; i < expectedResolvedEntity.attributes.length; i++) {
-            expect((actualResolvedEntity.attributes.allItems[i] as CdmAttributeItem).fetchObjectDefinitionName())
-                .toEqual((expectedResolvedEntity.attributes.allItems[i] as CdmAttributeItem).fetchObjectDefinitionName());
-        }
-    }
 });

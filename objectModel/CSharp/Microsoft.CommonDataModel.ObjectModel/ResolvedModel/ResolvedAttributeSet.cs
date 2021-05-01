@@ -186,14 +186,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         {
             foreach (ResolvedAttribute ra in this.Set)
             {
-                if (ra.Target is CdmAttribute att)
-                {
-                    att.Owner = entity;
-                    att.InDocument = entity.InDocument;
-                }
-                else if (ra.Target is ResolvedAttributeSet ras)
+                ra.Owner = entity;
+                
+                if (ra.Target is ResolvedAttributeSet ras)
                 {
                     ras.SetTargetOwner(entity);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Apply a set of resolved traits to this resolved attribute set.
+        /// </summary>
+        /// <param name="traits"></param>
+        internal void ApplyTraits(ResolvedTraitSet traits)
+        {
+            foreach (var resAtt in this.Set)
+            {
+                if (resAtt.Target is ResolvedAttributeSet resAttSet)
+                {
+                    resAttSet.ApplyTraits(traits);
+                }
+                else
+                {
+                    resAtt.ResolvedTraits = resAtt.ResolvedTraits.MergeSet(traits);
                 }
             }
         }
@@ -201,7 +217,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         //  traits that change attributes
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        internal ResolvedAttributeSet ApplyTraits(ResolvedTraitSet traits, ResolveOptions resOpt, CdmAttributeResolutionGuidance resGuide, List<AttributeResolutionApplier> actions)
+        internal ResolvedAttributeSet ApplyTraitsResolutionGuidance(ResolvedTraitSet traits, ResolveOptions resOpt, CdmAttributeResolutionGuidance resGuide, List<AttributeResolutionApplier> actions)
         {
             ResolvedAttributeSet rasResult = this;
             ResolvedAttributeSet rasApplied;
@@ -280,7 +296,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 {
                     under = appliedAttSet.AttributeContext,
                     type = Enums.CdmAttributeContextType.GeneratedSet,
-                    Name = "_generatedAttributeSet"
+                    Name = "_generatedAttributeSet_template"
                 };
                 appliedAttSet.AttributeContext = CdmAttributeContext.CreateChildUnder(traits.ResOpt, acp);
                 acp = new AttributeContextParameters

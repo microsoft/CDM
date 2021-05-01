@@ -82,7 +82,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Parent = instance.Parent?.CopyData(resOpt, options) as string,
                 Definition = instance.Definition?.CopyData(resOpt, options) as string,
                 // i know the trait collection names look wrong. but I wanted to use the def baseclass
-                AppliedTraits = Utils.ListCopyData<dynamic>(resOpt, instance.ExhibitsTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer)),
+                AppliedTraits = Utils.ListCopyData<dynamic>(resOpt, instance.ExhibitsTraits?.Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty)?.ToList(), options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer)),
                 Contents = Utils.ListCopyData<dynamic>(resOpt, instance.Contents, options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer)),
                 Lineage = Utils.ListCopyData<dynamic>(resOpt, instance.Lineage, options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer))
             };

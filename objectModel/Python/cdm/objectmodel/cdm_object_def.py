@@ -31,7 +31,8 @@ class CdmObjectDefinition(CdmObject):
     def exhibits_traits(self) -> 'CdmTraitCollection':
         return self._exhibits_traits
 
-    def _construct_resolved_traits_def(self, base: 'CdmObjectReference', rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
+    def _construct_resolved_traits_def(self, base: Optional['CdmObjectReference'], rtsb: 'ResolvedTraitSetBuilder',
+                                       res_opt: 'ResolveOptions') -> None:
         if base:
             # merge in all from base class
             rtsb.merge_traits(base._fetch_resolved_traits(res_opt))
@@ -68,7 +69,7 @@ class CdmObjectDefinition(CdmObject):
         """
         from .cdm_corpus_def import CdmCorpusDefinition
         cdm_object_ref = self.ctx.corpus.make_object(CdmCorpusDefinition._map_reference_type(self.object_type), 'portable', True)  # type: CdmObjectReference
-        cdm_object_ref.explicit_reference = self.copy()
+        cdm_object_ref._portable_reference = self
         cdm_object_ref.in_document = self.in_document
         cdm_object_ref.owner = self.owner # where it started life
 

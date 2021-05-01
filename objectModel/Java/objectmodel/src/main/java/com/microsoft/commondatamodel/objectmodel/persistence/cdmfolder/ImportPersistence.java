@@ -14,11 +14,11 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class ImportPersistence {
-  private static String tag = ImportPersistence.class.getSimpleName();
+  private static final String TAG = ImportPersistence.class.getSimpleName();
 
   public static CdmImport fromData(final CdmCorpusContext ctx, final Import obj) {
         if (obj == null) {
-          Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistJsonImportConversionError);
+          Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistJsonImportConversionError);
           return null;
         }
 

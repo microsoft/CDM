@@ -44,7 +44,7 @@ class ImportPriorities:
 
 class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     # The maximum json semantic version supported by this ObjectModel version.
-    current_json_schema_semantic_version = '1.1.0'
+    current_json_schema_semantic_version = '1.2.0'
 
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)

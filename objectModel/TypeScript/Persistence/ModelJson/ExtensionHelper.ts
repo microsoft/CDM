@@ -19,10 +19,11 @@ import {
     CdmPurposeDefinition,
     CdmTraitCollection,
     CdmTraitDefinition,
-    CdmTraitReference
+    CdmTraitReference,
+    CdmTraitReferenceBase,
+    Logger
 } from '../../internal';
 import { isCdmTraitDefinition } from '../../Utilities/cdmObjectTypeGuards';
-import { Logger } from '../../Utilities/Logging/Logger';
 
 /**
  * Dictionary used to cache documents with trait definitions by file name.
@@ -260,11 +261,11 @@ export function processExtensionTraitToObject(extensionTraitRef: CdmTraitReferen
 }
 
 /**
- * Checks whether the trait reference is an extension (by checking whether its name has the extension prefix)
+ * Checks whether the trait reference base is an extension (by checking whether its name has the extension prefix)
  * @param trait The trait to be checked
  * @returns Whether the trait is an extension.
  */
-export function traitRefIsExtension(trait: CdmTraitReference): boolean {
+export function traitRefIsExtension(trait: CdmTraitReferenceBase): boolean {
     return traitNameHasExtensionMark(trait.namedReference);
 }
 

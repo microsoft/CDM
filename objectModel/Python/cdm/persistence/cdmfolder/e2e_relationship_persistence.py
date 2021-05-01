@@ -20,10 +20,8 @@ class E2ERelationshipPersistence:
         relationship.from_entity_attribute = data.fromEntityAttribute
         relationship.to_entity = data.toEntity
         relationship.to_entity_attribute = data.toEntityAttribute
-
-        if data.get('exhibitsTraits'):
-            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
-            relationship.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(relationship.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.exhibitsTraits))
 
         return relationship
 

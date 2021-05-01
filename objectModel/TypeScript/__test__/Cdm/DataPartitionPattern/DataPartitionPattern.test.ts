@@ -29,7 +29,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local:/patternManifest.manifest.cdm.json');
 
         const partitionEntity: CdmLocalEntityDeclarationDefinition =
-            cdmManifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+            cdmManifest.entities.allItems[1] as CdmLocalEntityDeclarationDefinition;
         expect(partitionEntity.dataPartitions.length)
             .toBe(1);
 

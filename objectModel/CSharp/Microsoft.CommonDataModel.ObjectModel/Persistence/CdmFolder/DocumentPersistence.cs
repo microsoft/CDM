@@ -75,6 +75,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     {
                         doc.Definitions.Add(TraitPersistence.FromData(ctx, d));
                     }
+                    else if (d["traitGroupName"] != null)
+                    {
+                        doc.Definitions.Add(TraitGroupPersistence.FromData(ctx, d));
+                    }
                     else if (d["entityShape"] != null)
                     {
                         doc.Definitions.Add(ConstantEntityPersistence.FromData(ctx, d));
@@ -92,7 +96,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 var resolvedTrait = entity.ExhibitsTraits.Item("has.entitySchemaAbstractionLevel");
                 // Tries to figure out if the document is in resolved form by looking for the schema abstraction trait
                 // or the presence of the attribute context.
-                isResolvedDoc = resolvedTrait != null && string.Equals(resolvedTrait.Arguments[0].Value, "resolved");
+                isResolvedDoc = resolvedTrait != null && string.Equals((resolvedTrait as CdmTraitReference).Arguments[0].Value, "resolved");
                 isResolvedDoc = isResolvedDoc || entity.AttributeContext != null;
             }
 

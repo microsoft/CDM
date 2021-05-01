@@ -7,14 +7,17 @@ import {
     cdmObjectType,
     CdmTraitCollection,
     CdmTraitDefinition,
+    CdmTraitGroupDefinition,
+    CdmTraitGroupReference,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     ResolvedTrait
 } from '../internal';
 
 export function addTraitRef(
     ctx: CdmCorpusContext,
     collection: CdmTraitCollection,
-    traitDefOrRef: CdmTraitReference | CdmTraitDefinition | string,
+    traitDefOrRef: CdmTraitReference | CdmTraitDefinition | CdmTraitGroupReference | CdmTraitGroupDefinition | string,
     implicitRef: boolean): CdmTraitReference {
     // let bodyCode = () =>
     {
@@ -41,7 +44,7 @@ export function addTraitRef(
     // return p.measure(bodyCode);
 }
 
-export function fetchTraitRefName(traitRefOrDef: CdmTraitReference | CdmTraitDefinition | string | ResolvedTrait): string {
+export function fetchTraitRefName(traitRefOrDef: CdmTraitReference | CdmTraitDefinition | CdmTraitGroupReference | CdmTraitGroupDefinition | string | ResolvedTrait): string {
     // let bodyCode = () =>
     {
         // lots of things this could be on an unresolved object model, so try them
@@ -67,7 +70,7 @@ export function fetchTraitRefName(traitRefOrDef: CdmTraitReference | CdmTraitDef
 
 export function fetchTraitReferenceIndex(
     collection: CdmTraitCollection,
-    traitDef: CdmTraitReference | CdmTraitDefinition | string,
+    traitDef: CdmTraitReference | CdmTraitDefinition | CdmTraitGroupReference | CdmTraitGroupDefinition | string,
     onlyFromProperty: boolean = false): number {
     // let bodyCode = () =>
     {
@@ -78,11 +81,11 @@ export function fetchTraitReferenceIndex(
 
         let traitIndex: number = -1;
         for (let index: number = 0; index < collection.length; index++) {
-            const t: CdmTraitReference = collection.allItems[index];
+            const t: CdmTraitReferenceBase = collection.allItems[index];
             if (fetchTraitRefName(t) === traitName) {
                 // found a trait that satisfies the name, but continue checking for a trait from property.
                 traitIndex = index;
-                if ('isFromProperty' in t ? t.isFromProperty : true) {
+                if (t instanceof CdmTraitGroupReference || ('isFromProperty' in t ? (t as CdmTraitReference).isFromProperty : true)) {
                     return index;
                 }
             }
@@ -96,7 +99,7 @@ export function fetchTraitReferenceIndex(
 
 export function removeTraitRef(
     collection: CdmTraitCollection,
-    traitDef: CdmTraitReference | CdmTraitDefinition | string,
+    traitDef: CdmTraitReference | CdmTraitDefinition | CdmTraitGroupReference | CdmTraitGroupDefinition | string,
     onlyFromProperty?: boolean): void {
     // let bodyCode = () =>
     {

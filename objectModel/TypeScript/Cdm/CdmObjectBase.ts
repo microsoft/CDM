@@ -117,9 +117,6 @@ export abstract class CdmObjectBase implements CdmObject {
                 // just one argument, use the shortcut syntax
                 let val: string | object | CdmObject = CdmObjectBase.protectParameterValues(resOpt, rt.parameterValues.values[0]);
                 if (val !== undefined) {
-                    if (typeof val === 'object' && 'copy' in val && typeof val.copy === 'function') {
-                        val = val.copy(resOpt);
-                    }
                     traitRef.arguments.push(undefined, val);
                 }
             } else {
@@ -127,11 +124,6 @@ export abstract class CdmObjectBase implements CdmObject {
                     const param: CdmParameterDefinition = rt.parameterValues.fetchParameterAtIndex(i);
                     let val: string | object | CdmObject = CdmObjectBase.protectParameterValues(resOpt, rt.parameterValues.values[i]);
                     if (val !== undefined) {
-                        if (typeof val === 'object' && 'copy' in val && typeof val.copy === 'function') {
-                            val = val.copy(resOpt);
-                        } else if (typeof val === 'object') {
-                            val = { ...val };
-                        }
                         traitRef.arguments.push(param.name, val);
                     }
                 }
@@ -169,6 +161,14 @@ export abstract class CdmObjectBase implements CdmObject {
      */
     public copyData(resOpt: resolveOptions, options?: copyOptions): CdmJsonType {
         const persistenceType: string = 'CdmFolder';
+
+        if (resOpt == null) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
+
+        if (options == null) {
+            options = new copyOptions();
+        }
 
         return PersistenceLayer.toData(this, resOpt, options, persistenceType);
     }
@@ -297,12 +297,13 @@ export abstract class CdmObjectBase implements CdmObject {
                 //}
             }
 
+            const currentDepth: number = resOpt.depthInfo.currentDepth;
+
             const kind: string = 'rasb';
             const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
             let rasbResult: ResolvedAttributeSetBuilder;
             let rasbCache: ResolvedAttributeSetBuilder = this.fetchObjectFromCache(resOpt, acpInContext);
             let underCtx: CdmAttributeContext;
-            const currentDepth: number = resOpt.depthInfo.currentDepth;
 
             // store the previous symbol set, we will need to add it with
             // children found from the constructResolvedTraits call
@@ -339,15 +340,15 @@ export abstract class CdmObjectBase implements CdmObject {
 
                         // get the 'underCtx' of the attribute set from the acp that is wired into
                         // the target tree
-                        underCtx = (rasbCache as ResolvedAttributeSetBuilder).ras.attributeContext ?
-                            (rasbCache as ResolvedAttributeSetBuilder).ras.attributeContext.getUnderContextFromCacheContext(resOpt, acpInContext) : undefined;
+                        underCtx = rasbCache.ras.attributeContext ?
+                            rasbCache.ras.attributeContext.getUnderContextFromCacheContext(resOpt, acpInContext) : undefined;
                 }
             } else {
                 // get the 'underCtx' of the attribute set from the cache. The one stored there was build with a different
                 // acp and is wired into the fake placeholder. so now build a new underCtx wired into the output tree but with
                 // copies of all cached children
-                underCtx = (rasbCache as ResolvedAttributeSetBuilder).ras.attributeContext ?
-                    (rasbCache as ResolvedAttributeSetBuilder).ras.attributeContext.getUnderContextFromCacheContext(resOpt, acpInContext) : undefined;
+                underCtx = rasbCache.ras.attributeContext ?
+                    rasbCache.ras.attributeContext.getUnderContextFromCacheContext(resOpt, acpInContext) : undefined;
                 //underCtx.validateLineage(resOpt); // debugging
             }
 
@@ -359,7 +360,7 @@ export abstract class CdmObjectBase implements CdmObject {
 
                 // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
                 rasbResult = new ResolvedAttributeSetBuilder();
-                rasbResult.ras = (rasbCache as ResolvedAttributeSetBuilder).ras.copy();
+                rasbResult.ras = rasbCache.ras.copy();
 
                 // 2. deep copy the tree and map the context references. 
                 if (underCtx) // null context? means there is no tree, probably 0 attributes came out

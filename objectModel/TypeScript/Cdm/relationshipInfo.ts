@@ -10,10 +10,6 @@ export interface relationshipInfo {
     /**
      * @internal
      */
-    rts: ResolvedTraitSet;
-    /**
-     * @internal
-     */
     isByRef: boolean;
     /**
      * @internal
@@ -23,16 +19,4 @@ export interface relationshipInfo {
      * @internal
      */
     selectsOne: boolean;
-    /**
-     * @internal
-     */
-    nextDepth: number;
-    /**
-     * @internal
-     */
-    maxDepth: number;
-    /**
-     * @internal
-     */
-    maxDepthExceeded: boolean;
 }

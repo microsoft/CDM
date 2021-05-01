@@ -24,7 +24,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmTypeAttributeDefinition extends CdmAttribute {
-  private String tag = CdmTypeAttributeDefinition.class.getSimpleName();
+  private static final String TAG = CdmTypeAttributeDefinition.class.getSimpleName();
 
   private CdmDataTypeReference dataType;
   private CdmAttributeContextReference attributeContext;
@@ -274,32 +274,22 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
 
     if (this.getCardinality() != null) {
       if (!CardinalitySettings.isMinimumValid(this.getCardinality().getMinimum())) {
-        Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality,  this.getCardinality().getMinimum());
+        Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality,  this.getCardinality().getMinimum());
         return false;
       }
       if (!CardinalitySettings.isMaximumValid(this.getCardinality().getMaximum())) {
-        Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, this.getCardinality().getMaximum());
+        Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, this.getCardinality().getMaximum());
         return false;
       }
     }
 
     return true;
-  }
-
-  /**
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Override
-  @Deprecated
-  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
-    return constructResolvedAttributes(resOpt, null);
   }
 
   /**
@@ -322,34 +312,42 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     rasb.ownOne(newAtt);
 
     final ResolvedTraitSet rts = this.fetchResolvedTraits(resOpt);
-    // this context object holds all of the info about what needs to happen to resolve these attribute
-    // make a copy and add defaults if missing
-    final CdmAttributeResolutionGuidance resGuideWithDefault;
-    if (this.getResolutionGuidance() != null) {
-      resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance().copy(resOpt);
-    } else {
-      resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
+
+    if (this.getOwner() != null && this.getOwner().getObjectType() == CdmObjectType.EntityDef) {
+      rasb.getResolvedAttributeSet().setTargetOwner((CdmEntityDefinition) this.getOwner());
     }
 
-    // renameFormat is not currently supported for type attributes.
-    resGuideWithDefault.setRenameFormat(null);
-
-    resGuideWithDefault.updateAttributeDefaults(null, this);
-    final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
-
-    // TODO: remove the resolution guidance if projection is being used
-    // from the traits of the datatype, purpose and applied here, see if new attributes get generated
-    rasb.applyTraits(arc);
-    rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
-    // this may have added symbols to the dependencies, so merge them
-    resOpt.getSymbolRefSet().merge(arc.getResOpt().getSymbolRefSet());
-
     if (this.getProjection() != null) {
+      rasb.getResolvedAttributeSet().applyTraits(rts);
+
       ProjectionDirective projDirective = new ProjectionDirective(resOpt, this);
       ProjectionContext projCtx = this.getProjection().constructProjectionContext(projDirective, under, rasb.getResolvedAttributeSet());
 
       ResolvedAttributeSet ras = this.getProjection().extractResolvedAttributes(projCtx, under);
       rasb.setResolvedAttributeSet(ras);
+    } else {
+      // using resolution guidance
+
+      // this context object holds all of the info about what needs to happen to resolve these attribute
+      // make a copy and add defaults if missing
+      final CdmAttributeResolutionGuidance resGuideWithDefault;
+      if (this.getResolutionGuidance() != null) {
+        resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance().copy(resOpt);
+      } else {
+        resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
+      }
+
+      // renameFormat is not currently supported for type attributes.
+      resGuideWithDefault.setRenameFormat(null);
+
+      resGuideWithDefault.updateAttributeDefaults(null, this);
+      final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
+
+      // from the traits of the datatype, purpose and applied here, see if new attributes get generated
+      rasb.applyTraits(arc);
+      rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
+      // this may have added symbols to the dependencies, so merge them
+      resOpt.getSymbolRefSet().merge(arc.getResOpt().getSymbolRefSet());
     }
 
     return rasb;

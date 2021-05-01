@@ -38,7 +38,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         """Test AddAttributeGroup operation nested with ExcludeAttributes"""
         test_name = 'test_combine_ops_nested_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -59,7 +59,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         """Test AddAttributeGroup and IncludeAttributes operations in the same projection"""
         test_name = 'test_combine_ops_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -86,7 +86,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         """Test AddAttributeGroup operation with a 'structured' condition"""
         test_name = 'test_conditional_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -119,7 +119,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
     async def test_conditional_proj_using_object_model(self):
         """Test for creating a projection with an AddAttributeGroup operation and a condition using the object model"""
         test_name = 'test_conditional_proj_using_object_model'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
         local_root = corpus.storage.fetch_root_folder('local')
 
         # Create an entity.
@@ -178,7 +178,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         """Test resolving an entity attribute using resolution guidance"""
         test_name = 'test_entity_attribute'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -199,7 +199,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
     async def test_entity_attribute_proj_using_object_model(self):
         """Test for creating a projection with an AddAttributeGroup operation on an entity attribute using the object model"""
         test_name = 'test_entity_attribute_proj_using_object_model'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
         local_root = corpus.storage.fetch_root_folder('local')
 
         # Create an entity
@@ -238,7 +238,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
     async def test_entity_proj_using_object_model(self):
         """Test for creating a projection with an AddAttributeGroup operation on an entity definition using the object model"""
         test_name = 'test_entity_proj_using_object_model'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
         local_root = corpus.storage.fetch_root_folder('local')
 
         # Create an entity
@@ -276,7 +276,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         """Test AddAttributeGroup operation on an entity definition"""
         test_name = 'test_extends_entity_proj'
         entity_name = 'Child'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -298,7 +298,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         """Multiple AddAttributeGroup operations on the same projection """
         test_name = 'test_multiple_op_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -329,7 +329,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         """Nested projections with AddAttributeGroup"""
         test_name = 'test_nested_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -354,7 +354,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         """Test resolving a type attribute with an add attribute group operation"""
         test_name = 'test_type_attribute_proj'
         entity_name = 'Person'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)

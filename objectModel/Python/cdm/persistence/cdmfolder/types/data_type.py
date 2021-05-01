@@ -3,8 +3,6 @@
 
 from typing import Union, List
 
-from .data_type_reference import DataTypeReference
-from .trait_reference import TraitReference
 from cdm.utilities import JObject
 
 
@@ -14,5 +12,5 @@ class DataType(JObject):
 
         self.explanation = None  # type: str
         self.dataTypeName = None  # type: str
-        self.extendsDataType = None  # type: Union[str, DataTypeReference]
-        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]
+        self.extendsDataType = None  # type: Union[str, 'DataTypeReference']
+        self.exhibitsTraits = None  # type: List[Union[str, 'TraitReference', 'TraitGroupReference']]

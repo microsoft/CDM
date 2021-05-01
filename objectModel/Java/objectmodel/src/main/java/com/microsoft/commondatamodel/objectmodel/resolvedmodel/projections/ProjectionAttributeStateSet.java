@@ -18,7 +18,7 @@ import java.util.*;
  */
 @Deprecated
 public final class ProjectionAttributeStateSet {
-    private static String tag = ProjectionAttributeStateSet.class.getSimpleName();
+    private static final String TAG = ProjectionAttributeStateSet.class.getSimpleName();
 
     /**
      * A list containing all the ProjectionAttributeStates
@@ -72,7 +72,7 @@ public final class ProjectionAttributeStateSet {
         if (pas == null ||
                 pas.getCurrentResolvedAttribute() == null ||
                 StringUtils.isNullOrTrimEmpty(pas.getCurrentResolvedAttribute().getResolvedName())) {
-                    Logger.error(this.ctx, tag, "add", null, CdmLogCode.ErrProjInvalidAttrState);
+                    Logger.error(this.ctx, TAG, "add", null, CdmLogCode.ErrProjInvalidAttrState);
         } else {
             states.add(pas);
         }
@@ -90,24 +90,6 @@ public final class ProjectionAttributeStateSet {
         copy.getStates().addAll(this.getStates());
 
         return copy;
-    }
-
-    /**
-     * Remove from collection
-     * @param pas ProjectionAttributeState
-     * @return boolean
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     */
-    @Deprecated
-    public boolean remove(ProjectionAttributeState pas) {
-        if (pas != null && contains(pas)) {
-            states.remove(pas);
-            return true;
-        } else {
-            Logger.warning(this.ctx, tag, "remove", null, CdmLogCode.WarnProjRemoveOpsFailed);
-            return false;
-        }
     }
 
     /**

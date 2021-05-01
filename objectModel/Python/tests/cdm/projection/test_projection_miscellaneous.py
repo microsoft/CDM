@@ -8,7 +8,7 @@ from cdm.enums import CdmStatusLevel, CdmObjectType
 from cdm.objectmodel import CdmCorpusDefinition, CdmEntityAttributeDefinition, CdmEntityDefinition, CdmEntityReference, CdmProjection, CdmTypeAttributeDefinition
 from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
 from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet
-from tests.common import async_test, TestHelper
+from tests.common import async_test
 from tests.utilities.projection_test_utils import ProjectionTestUtils
 
 
@@ -39,7 +39,7 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
         """
         test_name = 'test_invalid_operation_type'
 
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         def callback(level, message):
             if 'ProjectionPersistence | Invalid operation type \'replaceAsForeignKey11111\'. | from_data' not in message:
@@ -62,7 +62,7 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
         """
         test_name = "test_zero_minimum_cardinality"
 
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         def callback(level, message):
             self.fail(message)
@@ -115,7 +115,7 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
         test_name = 'test_circular_entity_attributes'
         entity_name = 'A'
 
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
 
         entity = await corpus.fetch_object_async('{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
 
@@ -163,6 +163,23 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
         inner_projection.validate()
         self.assertEqual(0, error_count)
 
+    @async_test
+    async def test_max_depth_on_polymorphic_entity(self):
+        """Tests resolution of an entity when maximum depth is reached while resolving a polymorphic entity"""
+        test_name = 'test_max_depth_on_polymorphic_entity'
+        entity_name = 'A'
+
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
+
+        entity = await corpus.fetch_object_async('{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
+
+        res_opt = ResolveOptions(entity)
+        res_opt.max_depth = 1
+        res_entity = await entity.create_resolved_entity_async('resolved-{}'.format(entity_name), res_opt)  # type: CdmEntityDefinition
+
+        self.assertIsNotNone(res_entity)
+        self.assertEqual(4, len(res_entity.attributes))
+
     def test_type_attribute_source(self):
         """Tests if setting the projection "source" on a type attribute triggers an error log"""
 
@@ -207,7 +224,7 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
 
         test_name = 'test_run_sequentially'
         entity_name = 'NewPerson'
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
@@ -228,7 +245,7 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
 
         test_name = 'test_run_sequentially_and_source_input'
         entity_name = 'NewPerson'
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])

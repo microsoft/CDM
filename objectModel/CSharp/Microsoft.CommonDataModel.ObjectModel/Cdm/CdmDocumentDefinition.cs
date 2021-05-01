@@ -65,7 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// The maximum json semantic version supported by this ObjectModel version.
         /// </summary>
-        public static string CurrentJsonSchemaSemanticVersion = "1.1.0";
+        public static string CurrentJsonSchemaSemanticVersion = "1.2.0";
 
         [Obsolete("Only for internal use")]
         public string FolderPath { get; set; }
@@ -760,27 +760,50 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         virtual internal async Task<bool> SaveLinkedDocuments(CopyOptions options = null)
         {
+            List<CdmDocumentDefinition> docs = new List<CdmDocumentDefinition>();
             if (options == null)
             {
                 options = new CopyOptions();
             }
 
-            // the only linked documents would be the imports
             if (this.Imports != null)
             {
+                // the only linked documents would be the imports
                 foreach (CdmImport imp in this.Imports)
                 {
                     // get the document object from the import
                     string docPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(imp.CorpusPath, this);
-                    var docImp = await Ctx.Corpus.FetchObjectAsync<CdmDocumentDefinition>(docPath);
-                    if (docImp != null && docImp.IsDirty)
+                    if (docPath == null)
                     {
-                        // save it with the same name
-                        if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidCorpusPath, imp.CorpusPath);
+                        return false;
+                    }
+                    try
+                    {
+                        CdmObject objAt = await Ctx.Corpus.FetchObjectAsync<CdmObject>(docPath);
+                        if (objAt == null)
                         {
-                            Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocImportSavingFailure, docImp.Name);
+                            Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrPersistObjectNotFound, imp.CorpusPath);
                             return false;
                         }
+                        CdmDocumentDefinition docImp = objAt.InDocument;
+                        if (docImp != null && docImp.IsDirty)
+                        {
+                            docs.Add(docImp);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrPersistObjectNotFound, imp.CorpusPath + " " + e.Message);
+                        return false;
+                    }
+                }
+                foreach (var docImp in docs)
+                {
+                    if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
+                    {
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocImportSavingFailure, docImp.Name);
+                        return false;
                     }
                 }
             }

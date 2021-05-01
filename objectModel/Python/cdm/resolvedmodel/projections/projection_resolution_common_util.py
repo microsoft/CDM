@@ -3,15 +3,17 @@
 
 from typing import Optional, Dict, List
 
-from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmCorpusDefinition, CdmEntityReference, CdmEntityDefinition
+from cdm.enums import CdmAttributeContextType, CdmLogCode, CdmObjectType
+from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmCorpusDefinition, CdmEntityReference, CdmEntityDefinition, CdmObject
 from cdm.resolvedmodel import ResolvedAttributeSet
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
 from cdm.resolvedmodel.projections.projection_context import ProjectionContext
 from cdm.resolvedmodel.projections.projection_directive import ProjectionDirective
 from cdm.resolvedmodel.projections.search_structure import SearchStructure
-from cdm.utilities import AttributeContextParameters
+from cdm.utilities import AttributeContextParameters, logger
+
+TAG = 'ProjectionResolutionCommonUtil'
 
 
 class ProjectionResolutionCommonUtil:
@@ -129,9 +131,9 @@ class ProjectionResolutionCommonUtil:
 
     @staticmethod
     def _create_foreign_key_linked_entity_identifier_trait_parameter(
-        proj_dir: 'ProjectionDirective',
-        corpus: 'CdmCorpusDefinition',
-        ref_found_list: List['ProjectionAttributeState']
+            proj_dir: 'ProjectionDirective',
+            corpus: 'CdmCorpusDefinition',
+            ref_found_list: List['ProjectionAttributeState']
     ) -> 'CdmEntityReference':
         """
         Create a constant entity that contains the source mapping to a foreign key.
@@ -150,13 +152,13 @@ class ProjectionResolutionCommonUtil:
         for ref_found in ref_found_list:
             res_attr = ref_found._current_resolved_attribute
 
-            if (res_attr and res_attr.target and res_attr.target.owner and
-                (res_attr.target.object_type == CdmObjectType.TYPE_ATTRIBUTE_DEF or res_attr.target.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF)):
+            if not res_attr.owner:
+                at_corpus_path = res_attr.target.at_corpus_path if isinstance(res_attr.target, CdmObject) else res_attr.resolved_name
+                logger.warning(corpus.ctx, TAG, '_create_foreign_key_linked_entity_identifier_trait_parameter', at_corpus_path, \
+                    CdmLogCode.WARN_PROJ_CREATE_FOREIGN_KEY_TRAITS, res_attr.resolved_name)
+            elif res_attr.target.object_type == CdmObjectType.TYPE_ATTRIBUTE_DEF or res_attr.target.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
                 # find the linked entity
-                owner = res_attr.target.owner
-
-                while owner and owner.object_type != CdmObjectType.ENTITY_DEF:
-                    owner = owner.owner
+                owner = res_attr.owner
                 
                 # find where the projection is defined
                 projection_doc = proj_dir._owner.in_document if proj_dir._owner else None

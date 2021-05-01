@@ -160,7 +160,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t index document..
+        ///   Looks up a localized string similar to Could not index document..
         /// </summary>
         internal static string ErrIndexFailed {
             get {
@@ -214,7 +214,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t find a storage adapter registered for the namespace &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Could not find a storage adapter registered for the namespace &apos;{0}&apos;..
         /// </summary>
         internal static string ErrPersistAdapterNotFoundForNamespace {
             get {
@@ -322,7 +322,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t find the type for entity declaration.
+        ///   Looks up a localized string similar to Could not find the type for entity declaration.
         /// </summary>
         internal static string ErrPersistEntityDeclarationMissing {
             get {
@@ -340,7 +340,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t find entity path or similar.
+        ///   Looks up a localized string similar to Could not find entity path or similar.
         /// </summary>
         internal static string ErrPersistEntityPathNotFound {
             get {
@@ -358,7 +358,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not persist file &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Could not persist file &apos;{0}&apos;. Reason {1}..
         /// </summary>
         internal static string ErrPersistFilePersistError {
             get {
@@ -529,6 +529,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error while trying to convert {0}&apos;s entity declaration to model json format. Exception: {1}.
+        /// </summary>
+        internal static string ErrPersistModelJsonEntityDeclarationConversionFailure {
+            get {
+                return ResourceManager.GetString("ErrPersistModelJsonEntityDeclarationConversionFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while trying to convert cdm data partition to model.json partition..
         /// </summary>
         internal static string ErrPersistModelJsonEntityPartitionConversionError {
@@ -556,7 +565,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t get object from path {0}.
+        ///   Looks up a localized string similar to Could not get object from path {0}.
         /// </summary>
         internal static string ErrPersistObjectNotFound {
             get {
@@ -1105,7 +1114,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t find an enum value for {0}..
+        ///   Looks up a localized string similar to Could not find an enum value for {0}..
         /// </summary>
         internal static string WarnPersistEnumNotFound {
             get {
@@ -1159,7 +1168,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Couldn&apos;t find data partition&apos;s location for partition {0}..
+        ///   Looks up a localized string similar to Could not find data partition&apos;s location for partition {0}..
         /// </summary>
         internal static string WarnPersistPartitionLocMissing {
             get {
@@ -1204,6 +1213,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Found an attribute without owner while creating relationship traits for attribute {0}..
+        /// </summary>
+        internal static string WarnProjCreateForeignKeyTraits {
+            get {
+                return ResourceManager.GetString("WarnProjCreateForeignKeyTraits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Found ReplaceAsForeignKey operation for attribute &apos;{0}&apos; without a source entity. This operation is only supported on an entity typed attribute..
+        /// </summary>
+        internal static string WarnProjFKWithoutSourceEntity {
+            get {
+                return ResourceManager.GetString("WarnProjFKWithoutSourceEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid ProjectionAttributeState provided for removal from the Set. Remove operation failed..
         /// </summary>
         internal static string WarnProjRemoveOpsFailed {
@@ -1222,7 +1249,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to couldn&apos;t resolve the attribute promise for &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Could not resolve the attribute promise for &apos;{0}&apos;.
         /// </summary>
         internal static string WarnResolveAttrFailed {
             get {

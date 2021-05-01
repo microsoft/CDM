@@ -7,14 +7,13 @@ from cdm.enums import CdmObjectType
 from cdm.resolvedmodel import ParameterCollection
 from cdm.utilities import ResolveOptions, logger
 from cdm.enums import CdmLogCode
-from cdm.utilities.string_utils import StringUtils
 
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_collection import CdmCollection
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmTraitReference, CdmObject, CdmParameterDefinition
-    from cdm.utilities import FriendlyFormatNode, VisitCallback
+    from cdm.objectmodel import CdmCorpusContext, CdmTraitReference, CdmParameterDefinition
+    from cdm.utilities import VisitCallback
 
 
 class CdmTraitDefinition(CdmObjectDefinition):

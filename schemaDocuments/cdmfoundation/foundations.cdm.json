@@ -82,7 +82,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.0"
+              "value": "2.2"
             }
           ]
         }
@@ -105,7 +105,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.0"
+              "value": "2.2"
             }
           ]
         }
@@ -133,7 +133,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.0"
+              "value": "2.2"
             }
           ]
         }
@@ -156,7 +156,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.0"
+              "value": "2.2"
             }
           ]
         }
@@ -184,7 +184,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.0"
+              "value": "2.2"
             }
           ]
         }
@@ -256,7 +256,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.0"
+              "value": "2.2"
             }
           ]
         }
@@ -279,7 +279,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.0"
+              "value": "2.2"
             }
           ]
         }
@@ -308,7 +308,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.0"
+              "value": "2.2"
             }
           ]
         }
@@ -337,7 +337,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "2.0"
+              "value": "2.2"
             }
           ]
         }
@@ -651,6 +651,13 @@
           "dataType": "integer",
           "defaultValue": "0",
           "explanation": "The number of lines to skip over at the start of the .csv file."
+        },
+        {
+          "name": "raggedRight",
+          "dataType": "boolean",
+          "defaultValue": "false",
+          "required": false,
+          "explanation": "Individual records of data in the csv file might be missing column values at the end of the record."
         }
       ]
     },
@@ -850,7 +857,7 @@
     },
     {
       "traitName": "has.origin.domain",
-      "extendsTrait": "has",
+      "extendsTrait": "has.origin",
       "explanation": "A trait defining the domain from which the schema originated.",
       "hasParameters": [
         {
@@ -863,7 +870,7 @@
     },
     {
       "traitName": "has.origin.dataSource",
-      "extendsTrait": "has",
+      "extendsTrait": "has.origin",
       "explanation": "A trait defining the origination of the datasource for the schema.",
       "hasParameters": [
         {
@@ -881,7 +888,7 @@
     },
     {
       "traitName": "has.relational.defaultAggregation",
-      "extendsTrait": "has",
+      "extendsTrait": "has.relational",
       "explanation": "Base trait for default relational aggregations associated with an Attributes.",
       "hasParameters": [
         {
@@ -953,6 +960,79 @@
       "explanation": "Specifies count distinct as the default relational aggregation associated with an Attribute."
     },
     {
+      "traitName": "has.relational.joinType",
+      "extendsTrait": "has.relational",
+      "explanation": "Base trait for relational join types associated with a Relationship.",
+      "hasParameters": [
+        {
+          "name": "joinType",
+          "dataType": "string",
+          "explanation": "the name of the relational join Type",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "has.relational.joinType.inner",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "inner"
+        ]
+      },
+      "explanation": "Specifies INNER JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "has.relational.joinType.leftOuter",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "leftOuter"
+        ]
+      },
+      "explanation": "Specifies LEFT OUTER JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "has.relational.joinType.rightOuter",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "rightOuter"
+        ]
+      },
+      "explanation": "Specifies RIGHT OUTER JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "has.relational.joinType.fullOuter",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "fullOuter"
+        ]
+      },
+      "explanation": "Specifies FULL OUTER JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "has.relational.joinType.leftAnti",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "leftAnti"
+        ]
+      },
+      "explanation": "Specifies LEFT ANTI JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "has.relational.joinType.rightAnti",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "rightAnti"
+        ]
+      },
+      "explanation": "Specifies RIGHT ANTI JOIN as the default relational join type associated with this Relationship."
+    },
+    {
       "traitName": "means.relationship",
       "extendsTrait": "means",
       "explanation": "root trait for semantic traits relevant to relationships"
@@ -964,16 +1044,18 @@
       "hasParameters": [
         {
           "name": "verbPhrase",
-          "dataType": "entity",
           "explanation": "the localized Verb Phrase",
-          "appliedTraits": [
-            {
-              "traitReference": "means.entityName.specific",
-              "arguments": [
-                "localizedTable"
-              ]
-            }
-          ]
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -984,16 +1066,18 @@
       "hasParameters": [
         {
           "name": "verbPhrase",
-          "dataType": "entity",
           "explanation": "the localized Verb Phrase",
-          "appliedTraits": [
-            {
-              "traitReference": "means.entityName.specific",
-              "arguments": [
-                "localizedTable"
-              ]
-            }
-          ]
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          }
         }
       ]
     },
@@ -1034,5 +1118,5 @@
       ]
     }
   ],
-  "documentVersion": "2.0"
+  "documentVersion": "2.2"
 }

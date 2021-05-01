@@ -192,6 +192,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     PreviousStateList = pasMergeList
                 };
 
+                HashSet<string> attributesAddedToContext = new HashSet<string>();
+
                 // Create the attribute context parameters and just store it in the builder for now
                 // We will create the attribute contexts at the end
                 foreach (string select in leafLevelCombineAttributeNames.Keys)
@@ -202,10 +204,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         foreach (ProjectionAttributeState leafLevelForSelect in leafLevelCombineAttributeNames[select])
                         {
-                            attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(select, leafLevelForSelect, newMergeIntoPAS.CurrentResolvedAttribute,
-                                CdmAttributeContextType.AttributeDefinition,
-                                leafLevelForSelect.CurrentResolvedAttribute.AttCtx, // lineage is the source att
-                                newMergeIntoPAS.CurrentResolvedAttribute.AttCtx); // merge into points back here
+                            // When dealing with a polymorphic entity, it is possible that multiple entities have an attribute with the same name
+                            // Only one attribute with each name should be added otherwise the attribute context will end up with duplicated nodes
+                            if (!attributesAddedToContext.Contains(leafLevelForSelect.CurrentResolvedAttribute.ResolvedName))
+                            {
+                                attributesAddedToContext.Add(leafLevelForSelect.CurrentResolvedAttribute.ResolvedName);
+                                attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(select, leafLevelForSelect, newMergeIntoPAS.CurrentResolvedAttribute,
+                                    CdmAttributeContextType.AttributeDefinition,
+                                    leafLevelForSelect.CurrentResolvedAttribute.AttCtx, // lineage is the source att
+                                    newMergeIntoPAS.CurrentResolvedAttribute.AttCtx); // merge into points back here
+                            }
                         }
                     }
                 }

@@ -13,6 +13,14 @@ import {
 } from '../internal';
 
 export class CdmEntityReference extends CdmObjectReferenceBase {
+    /**
+     * Returns true if this entity reference points to a projection.
+     * @internal
+     */
+    public get isProjection(): boolean {
+        return this.explicitReference?.objectType == cdmObjectType.projectionDef;
+    }
+
     public static get objectType(): cdmObjectType {
         return cdmObjectType.entityRef;
     }

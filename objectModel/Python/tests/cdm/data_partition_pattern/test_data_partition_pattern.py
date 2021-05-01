@@ -23,7 +23,7 @@ class _data_partition_patternTest(unittest.TestCase):
         test_name = 'test_refresh_data_partition_patterns'
         cdm_corpus = TestHelper.get_local_corpus(self.test_subpath, test_name)
         cdm_manifest = await cdm_corpus.fetch_object_async('local:/patternManifest.manifest.cdm.json')
-        partition_entity = cdm_manifest.entities[0]
+        partition_entity = cdm_manifest.entities[1]
         self.assertEqual(1, len(partition_entity.data_partitions))
         time_before_load = datetime.now(timezone.utc)
         await cdm_manifest.file_status_check_async()

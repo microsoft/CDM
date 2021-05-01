@@ -7,11 +7,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
-import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.AttributeGroupReferenceDefinition;
-import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DataTypeReferenceDefinition;
-import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.EntityReferenceDefinition;
-import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.PurposeReferenceDefinition;
-import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.TraitReferenceDefinition;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
@@ -22,7 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class CdmObjectRefPersistence {
-  private static String tag = CdmObjectRefPersistence.class.getSimpleName();
+  private static final String TAG = CdmObjectRefPersistence.class.getSimpleName();
 
   public static Object toData(final CdmObjectReference instance, final ResolveOptions resOpt, final CopyOptions options) {
     Object copy = null;
@@ -51,7 +47,11 @@ public class CdmObjectRefPersistence {
         copy = replace;
       }
     }
-
+    
+    if (instance.isOptional() != null) {
+      ((CdmObjectReference)copy).setOptional(instance.isOptional());
+    }
+    
     if (null != copy && instance.getAppliedTraits().getCount() > 0) {
       try {
         final Method setAppliedTraitsMethod = copy.getClass().getMethod("setAppliedTraits", ArrayNode.class);
@@ -59,7 +59,7 @@ public class CdmObjectRefPersistence {
       } catch (final NoSuchMethodException ex) {
         // Fine, some objects like AttributeGroupRef do not have applied traits
       } catch (final IllegalAccessException | InvocationTargetException ex) {
-        Logger.error(instance.getCtx(), tag, "toData", null, CdmLogCode.ErrPersistJsonObjectRefConversionError, ex.getLocalizedMessage());
+        Logger.error(instance.getCtx(), TAG, "toData", null, CdmLogCode.ErrPersistJsonObjectRefConversionError, ex.getLocalizedMessage());
       }
     }
 
@@ -97,6 +97,9 @@ public class CdmObjectRefPersistence {
         ((TraitReferenceDefinition) copy).setArguments(
                 Utils.listCopyDataAsArrayNode(((CdmTraitReference) instance).getArguments(), resOpt, options));
         return copy;
+      case TraitGroupRef:
+        TraitGroupReferenceDefinition tgrd = new TraitGroupReferenceDefinition();
+        tgrd.setTraitGroupReference(refTo);
     }
 
     return null;

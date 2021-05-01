@@ -94,7 +94,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 IsPolymorphicSource = instance.IsPolymorphicSource,
                 Entity = Utils.JsonForm(instance.Entity, resOpt, options),
                 Purpose = Utils.JsonForm(instance.Purpose, resOpt, options),
-                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?.Where(trait => !trait.IsFromProperty), options),
+                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?
+                    .Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty), options),
                 ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options),
                 DisplayName = instance.GetProperty("displayName"),
                 Description = instance.GetProperty("description")

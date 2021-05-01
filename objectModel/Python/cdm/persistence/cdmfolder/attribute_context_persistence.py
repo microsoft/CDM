@@ -4,7 +4,7 @@
 from typing import Optional
 
 from cdm.enums import CdmObjectType, CdmAttributeContextType
-from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext, CdmCollection
+from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext, CdmCollection, CdmTraitGroupReference
 from cdm.persistence import PersistenceLayer
 from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils
 
@@ -99,8 +99,8 @@ class AttributeContextPersistence:
                 attribute_context.definition = AttributeReferencePersistence.from_data(ctx, data.definition)
 
         # I know the trait collection names look wrong. but I wanted to use the def baseclass
-        applied_traits = utils.create_trait_reference_array(ctx, data.get('appliedTraits'))
-        attribute_context.exhibits_traits.extend(applied_traits)
+        utils.add_list_to_cdm_collection(attribute_context.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.get('appliedTraits')))
 
         if data.get('contents'):
             if attribute_context.contents is None:
@@ -125,7 +125,8 @@ class AttributeContextPersistence:
     def to_data(instance: CdmAttributeContext, res_opt: ResolveOptions, options: CopyOptions) -> AttributeContext:
         result = AttributeContext()
 
-        exhibits_traits = [trait for trait in instance.exhibits_traits if not trait.is_from_property]
+        exhibits_traits = [trait for trait in instance.exhibits_traits
+                           if isinstance(trait, CdmTraitGroupReference) or not trait.is_from_property]
 
         result.explanation = instance.explanation
         result.name = instance.name

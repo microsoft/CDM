@@ -61,23 +61,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         }
 
         /// <summary>
-        /// Remove from collection
-        /// </summary>
-        internal bool Remove(ProjectionAttributeState pas)
-        {
-            if (pas != null && Contains(pas))
-            {
-                States.Remove(pas);
-                return true;
-            }
-            else
-            {
-                Logger.Warning(this.Ctx, Tag, nameof(Remove), null, CdmLogCode.WarnProjRemoveOpsFailed);
-                return false;
-            }
-        }
-
-        /// <summary>
         /// Check if exists in collection
         /// </summary>
         internal bool Contains(ProjectionAttributeState pas)

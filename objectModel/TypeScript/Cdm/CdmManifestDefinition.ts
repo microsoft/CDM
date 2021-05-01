@@ -21,6 +21,7 @@ import {
     cdmRelationshipDiscoveryStyle,
     CdmTraitCollection,
     copyOptions,
+    importsLoadStrategy,
     Logger,
     resolveOptions,
     VisitCallback
@@ -458,7 +459,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
     /**
      * @internal
-     * Helper that fixes a path from local to absolute, gets the object from that path 
+     * Helper that fixes a path from local to absolute, gets the object from that path
      * then looks at the document where the object is found.
      * If dirty, the document is saved with the original name.
      */
@@ -490,16 +491,59 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
     /**
      * @internal
+     * Helper that fixes a path from local to absolute.Gets the object from that path.
+     * Created from saveDirtyLink in order to be able to save docs in parallel.
+     * Represents the part of saveDirtyLink that could not be parallelized.
+     */
+    public async fetchDocumentDefinition(relativePath: string): Promise<[CdmDocumentDefinition, boolean]> {
+        // get the document object from the import
+        let ans: [CdmDocumentDefinition, boolean] = [null, false];
+        const docPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(relativePath, this);
+        if (!docPath) {
+            Logger.error(this.ctx, this._TAG, this.fetchDocumentDefinition.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidCorpusPath, relativePath);
+            return ans;
+        }
+
+        const resOpt = new resolveOptions();
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
+        const objAt: CdmObject = await this.ctx.corpus.fetchObjectAsync(relativePath, this);
+        if (!objAt) {
+            Logger.error(this.ctx, this._TAG, this.fetchDocumentDefinition.name, this.atCorpusPath, cdmLogCode.ErrPersistObjectNotFound, docPath);
+            return ans;
+        }
+        return [objAt.inDocument, true];
+    }
+
+    /**
+     * @internal
+     * Saves CdmDocumentDefinition if dirty.
+     * Was created from SaveDirtyLink in order to be able to save docs in parallel.
+     * Represents the part of SaveDirtyLink that could be parallelized.
+     */
+    public async saveDocumentIfDirty(docImp: CdmDocumentDefinition, options: copyOptions): Promise<boolean> {
+        // get the document object from the import
+        if (docImp !== undefined && docImp.isDirty) {
+            // save it with the same name
+            if (await docImp.saveAsAsync(docImp.name, true, options) === false) {
+                Logger.error(this.ctx, this._TAG, this.saveDocumentIfDirty.name, docImp.atCorpusPath, cdmLogCode.ErrDocEntityDocSavingFailure, docImp.name);
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * @internal
      */
     public async saveLinkedDocuments(options?: copyOptions): Promise<boolean> {
+        let links: Set<string> = new Set<string>();
         if (!options) {
             options = new copyOptions();
         }
         if (this.imports !== undefined) {
             for (const imp of this.imports) {
-                if (await this.saveDirtyLink(imp.corpusPath, options) === false) {
-                    Logger.error(this.ctx, this._TAG, this.saveLinkedDocuments.name, this.atCorpusPath, cdmLogCode.ErrDocImportSavingFailure, imp.corpusPath);
-                }
+                links.add(imp.atCorpusPath);
             }
         }
         if (this.entities !== undefined) {
@@ -507,19 +551,13 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             for (const def of this.entities) {
                 if (isLocalEntityDeclarationDefinition(def)) {
                     const defImp: CdmLocalEntityDeclarationDefinition = def;
-                    if (await this.saveDirtyLink(defImp.entityPath, options) === false) {
-                        Logger.error(this.ctx, this._TAG, this.saveLinkedDocuments.name, this.atCorpusPath, cdmLogCode.ErrDocEntityDocSavingFailure, defImp.entityPath);
-                        return false;
-                    }
+                    links.add(defImp.entityPath);
 
                     // also, partitions can have their own schemas
                     if (defImp.dataPartitions !== undefined) {
                         for (const part of defImp.dataPartitions) {
                             if (part.specializedSchema !== undefined) {
-                                if (await this.saveDirtyLink(part.specializedSchema, options) === false) {
-                                    Logger.error(this.ctx, this._TAG, this.saveLinkedDocuments.name, this.atCorpusPath, cdmLogCode.ErrDocEntityDocSavingFailure, defImp.entityPath);
-                                    return false;
-                                }
+                                links.add(part.specializedSchema);
                             }
                         }
                     }
@@ -527,9 +565,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                     if (defImp.dataPartitionPatterns !== undefined) {
                         for (const part of defImp.dataPartitionPatterns) {
                             if (part.specializedSchema !== undefined) {
-                                if (await this.saveDirtyLink(part.specializedSchema, options) === false) {
-                                    Logger.error(this.ctx, this._TAG, this.saveLinkedDocuments.name, this.atCorpusPath, cdmLogCode.ErrDocPartitionSchemaSavingFailure, part.specializedSchema);
-                                }
+                                links.add(part.specializedSchema);
                             }
                         }
                     }
@@ -538,15 +574,30 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         }
         if (this.subManifests !== undefined) {
             for (const sub of this.subManifests) {
-                if (await this.saveDirtyLink(sub.definition, options) === false) {
-                    Logger.error(this.ctx, this._TAG, this.saveLinkedDocuments.name, this.atCorpusPath, cdmLogCode.ErrProjInvalidAttrState, sub.definition);
-                    return false;
-                }
+                links.add(sub.definition);
             }
         }
-
+        let docs: CdmDocumentDefinition[] = [];
+        for (var link of links) {
+            let doc: [CdmDocumentDefinition, boolean];
+            doc = await this.fetchDocumentDefinition(link);
+            if (doc[1] == false) {
+                Logger.error(this.ctx, this._TAG, this.saveLinkedDocuments.name, this.atCorpusPath, cdmLogCode.ErrPersistObjectNotFound, link);
+                return false;
+            }
+            docs.push(doc[0]);
+        }
+        await Promise.all(Array.from(docs)
+                              .map(async (doc: CdmDocumentDefinition) => {
+                                  if (doc != undefined && doc != null) {
+                                      if (!await this.saveDocumentIfDirty(doc, options)) {
+                                          return false;
+                                      }
+                                  }
+                              }));
         return true;
     }
+
 
     /**
      * @internal

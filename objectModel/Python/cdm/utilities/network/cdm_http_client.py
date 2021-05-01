@@ -2,6 +2,10 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import asyncio
+import concurrent.futures
+import functools
+import http
+import threading
 import urllib
 import urllib.parse
 from datetime import datetime
@@ -13,9 +17,22 @@ from cdm.utilities.network.cdm_number_of_retries_exceeded_exception import CdmNu
 from cdm.utilities.network.cdm_timed_out_exception import CdmTimedOutException
 from cdm.utilities import ResolveOptions, logger
 
+from concurrent.futures import ThreadPoolExecutor
+_executor = ThreadPoolExecutor(100)
+
 if TYPE_CHECKING:
     from cdm.utilities.network.cdm_http_request import CdmHttpRequest
     from cdm.objectmodel import CdmCorpusContext
+
+def urlopen_wrapper(request, timeout):
+    return urllib.request.urlopen(request,timeout=timeout)
+    
+
+async def in_thread_urlopen(request, timeout):
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(
+            None, urlopen_wrapper, request, timeout)
+
 
 class CdmHttpClient:
     """
@@ -93,7 +110,7 @@ class CdmHttpClient:
                                 'Sending request: {}, request type: {}, request url: {}, retry number: {}.'.format(
                                     cdm_request.request_id, request.method, cdm_request._strip_sas_sig(), retry_number))
                 # Send the request and convert timeout to seconds from milliseconds.
-                with urllib.request.urlopen(request, timeout=cdm_request.timeout / 1000) as response:  # type: http.client.HTTPResponse
+                with (await in_thread_urlopen(request, timeout=cdm_request.timeout / 1000)) as response:  
                     if response is not None:
                         end_time = datetime.now()
                         if ctx is not None:

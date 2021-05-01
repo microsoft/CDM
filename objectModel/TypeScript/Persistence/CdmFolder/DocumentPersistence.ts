@@ -13,7 +13,8 @@ import {
     copyOptions,
     Logger,
     cdmLogCode,
-    resolveOptions
+    resolveOptions,
+    CdmTraitReferenceBase
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
@@ -73,6 +74,8 @@ export class DocumentPersistence {
                         document.definitions.push(CdmFolder.AttributeGroupPersistence.fromData(ctx, definition));
                     } else if ('traitName' in definition) {
                         document.definitions.push(CdmFolder.TraitPersistence.fromData(ctx, definition));
+                    } else if ('traitGroupName' in definition) {
+                        document.definitions.push(CdmFolder.TraitGroupPersistence.fromData(ctx, definition));
                     } else if ('entityShape' in definition) {
                         document.definitions.push(CdmFolder.ConstantEntityPersistence.fromData(ctx, definition));
                     } else if ('entityName' in definition) {
@@ -85,10 +88,10 @@ export class DocumentPersistence {
         let isResolvedDoc: boolean = false;
         if (document.definitions.length === 1 && document.definitions.allItems[0].objectType == cdmObjectType.entityDef) {
             const entity: CdmEntityDefinition = document.definitions.allItems[0] as CdmEntityDefinition;
-            const resolvedTrait: CdmTraitReference = entity.exhibitsTraits.item('has.entitySchemaAbstractionLevel');
+            const resolvedTrait: CdmTraitReferenceBase = entity.exhibitsTraits.item('has.entitySchemaAbstractionLevel');
             // Tries to figure out if the document is in resolved form by looking for the schema abstraction trait
             // or the presence of the attribute context.
-            isResolvedDoc = resolvedTrait != null && resolvedTrait.arguments.allItems[0].value == 'resolved';
+            isResolvedDoc = resolvedTrait != null && (resolvedTrait as CdmTraitReference).arguments.allItems[0].value == 'resolved';
             isResolvedDoc = isResolvedDoc || !!entity.attributeContext;
         }
 

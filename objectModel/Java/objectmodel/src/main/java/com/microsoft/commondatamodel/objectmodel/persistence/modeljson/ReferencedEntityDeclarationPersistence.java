@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ReferencedEntityDeclarationPersistence {
-  private static String tag = ReferencedEntityDeclarationPersistence.class.getSimpleName();
+  private static final String TAG = ReferencedEntityDeclarationPersistence.class.getSimpleName();
 
   public static CompletableFuture<CdmEntityDeclarationDefinition> fromData(
       final CdmCorpusContext ctx,
@@ -57,7 +57,7 @@ public class ReferencedEntityDeclarationPersistence {
       ExtensionHelper.processExtensionFromJson(ctx, obj, extensionTraits, extensionTraitDefList);
 
       if (extensionTraitDefList.size() > 0) {
-        Logger.warning(ctx, tag, "fromData", null, CdmLogCode.WarnPersistCustomExtNotSupported);
+        Logger.warning(ctx, TAG, "fromData", null, CdmLogCode.WarnPersistCustomExtNotSupported);
       }
 
       return CompletableFuture.completedFuture(referencedEntity);
@@ -70,7 +70,7 @@ public class ReferencedEntityDeclarationPersistence {
     final int sourceIndex = instance.getEntityPath().lastIndexOf("/");
 
     if (sourceIndex == -1) {
-      Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
+      Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
       return CompletableFuture.completedFuture(null);
     }
 
@@ -85,12 +85,12 @@ public class ReferencedEntityDeclarationPersistence {
     Utils.processTraitsAndAnnotationsToData(instance.getCtx(), referenceEntity, instance.getExhibitsTraits());
     final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
 
-    final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReferenceName("is.hidden");
+    final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReference("is.hidden");
     if (isHiddenTrait != null) {
       referenceEntity.setHidden(true);
     }
 
-    final CdmTraitReference propertiesTrait = t2pm.fetchTraitReferenceName("is.propertyContent.multiTrait");
+    final CdmTraitReference propertiesTrait = t2pm.fetchTraitReference("is.propertyContent.multiTrait");
     if (propertiesTrait != null) {
       referenceEntity.setModelId(propertiesTrait.getArguments().get(0).getValue().toString());
     }

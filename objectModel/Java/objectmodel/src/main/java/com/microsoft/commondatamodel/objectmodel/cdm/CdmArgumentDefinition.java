@@ -17,7 +17,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmArgumentDefinition extends CdmObjectSimple {
-  private String tag = CdmArgumentDefinition.class.getSimpleName();
+  private static final String TAG = CdmArgumentDefinition.class.getSimpleName();
 
   private CdmParameterDefinition resolvedParameter;
   private String explanation;
@@ -161,7 +161,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
       } else if (this.getValue() instanceof String){
         copy.setValue(this.getValue());
       } else {
-        Logger.error(this.getCtx(), tag, "copy", this.getAtCorpusPath(), CdmLogCode.ErrUnrecognizedType);
+        Logger.error(this.getCtx(), TAG, "copy", this.getAtCorpusPath(), CdmLogCode.ErrUnrecognizedType);
         throw new RuntimeException("Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
       }
     }
@@ -174,7 +174,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
   public boolean validate() {
     if (this.getValue() == null) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("value"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

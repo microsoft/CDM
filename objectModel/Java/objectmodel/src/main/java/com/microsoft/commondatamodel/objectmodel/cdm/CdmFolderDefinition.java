@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmContainerDefinition {
-  private String tag = CdmFolderDefinition.class.getSimpleName();
+  private static final String TAG = CdmFolderDefinition.class.getSimpleName();
 
   private final Map<String, CdmDocumentDefinition> documentLookup = new LinkedHashMap<>();
   private final CdmFolderCollection childFolders = new CdmFolderCollection(this.getCtx(), this);
@@ -170,7 +170,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
         return CompletableFuture.completedFuture(doc);
       }
       if (doc.isDirty()) {
-        Logger.warning(this.getCtx(), tag, "fetchDocumentFromFolderPathAsync", this.getAtCorpusPath(), CdmLogCode.WarnDocChangesDiscarded , doc.getName());
+        Logger.warning(this.getCtx(), TAG, "fetchDocumentFromFolderPathAsync", this.getAtCorpusPath(), CdmLogCode.WarnDocChangesDiscarded , doc.getName());
       }
       this.documents.remove(docName);
     }
@@ -221,7 +221,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
         }
 
         if (!name.equalsIgnoreCase(childFolder.getName())) {
-          Logger.error(this.getCtx(), tag, "fetchChildFolderFromPath", this.getAtCorpusPath(), CdmLogCode.ErrInvalidPath, path);
+          Logger.error(this.getCtx(), TAG, "fetchChildFolderFromPath", this.getAtCorpusPath(), CdmLogCode.ErrInvalidPath, path);
           return null;
         }
 
@@ -315,7 +315,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.name)) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("name"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

@@ -6,7 +6,7 @@ import unittest
 
 from cdm.enums import CdmStatusLevel, CdmObjectType
 from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
-from tests.common import TestHelper
+from tests.utilities.projection_test_utils import ProjectionTestUtils
 
 
 class CardinalitySettingUnitTest(unittest.TestCase):
@@ -19,7 +19,7 @@ class CardinalitySettingUnitTest(unittest.TestCase):
         """Unit test for CardinalitySetting.IsMinimumValid"""
         test_name = 'TestMinimum'
 
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         def callback(level, message):
             if 'CardinalitySettings | Invalid minimum cardinality -1.' not in message:
@@ -35,7 +35,7 @@ class CardinalitySettingUnitTest(unittest.TestCase):
         """Unit test for CardinalitySetting.IsMaximumValid"""
         test_name = 'TestMaximum'
 
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         def callback(level, message):
             if 'CardinalitySettings | Invalid maximum cardinality Abc.' not in message:

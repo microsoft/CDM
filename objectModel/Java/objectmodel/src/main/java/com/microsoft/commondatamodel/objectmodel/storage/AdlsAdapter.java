@@ -23,10 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -174,7 +172,7 @@ public class AdlsAdapter extends NetworkAdapter {
         this.executeRequest(request).get();
 
         request = this.buildRequest(url + "?action=flush&position=" +
-            (new StringEntity(data, "UTF-8").getContentLength()), "PATCH");
+            (new StringEntity(data, StandardCharsets.UTF_8).getContentLength()), "PATCH");
         this.executeRequest(request).get();
       } catch (final InterruptedException | ExecutionException e) {
         throw new StorageAdapterException("Could not write ADLS content at path, there was an issue at: " + corpusPath, e);
@@ -542,18 +540,9 @@ public class AdlsAdapter extends NetworkAdapter {
     } else {
       throw new RuntimeException("Hostname has to be set for ADLS adapter.");
     }
-    if (configsJson.has("sharedKey")) {
-      // Then it is shared key auth.
-      this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator();
-      this.adlsAdapterAuthenticator.setSharedKey(configsJson.get("sharedKey").asText());
-    } else if (configsJson.has("sasToken")) {
-      this.adlsAdapterAuthenticator.setSasToken(configsJson.get("sasToken").asText());
-    } else if (configsJson.has("tenant") && configsJson.has("clientId")) {
-      // Check first for clientId/secret auth.
-      this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator();
+    if (configsJson.has("tenant") && configsJson.has("clientId")) {
       this.adlsAdapterAuthenticator.setTenant(configsJson.get("tenant").asText());
       this.adlsAdapterAuthenticator.setClientId(configsJson.get("clientId").asText());
-      this.adlsAdapterAuthenticator.setSecret(configsJson.has("secret") ? configsJson.get("secret").asText() : null);
     }
     this.setLocationHint(configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null);
   }

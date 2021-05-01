@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as adal from 'adal-node';
+import * as msal from '@azure/msal-node';
 import * as crypto from 'crypto';
 import { URL } from 'url';
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse, TokenProvider } from '../Utilities/Network';
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { NetworkAdapter } from './NetworkAdapter';
-import { configObjectType, StorageAdapter } from './StorageAdapter';
+import { configObjectType } from './StorageAdapter';
 
 export class ADLSAdapter extends NetworkAdapter {
     /**
@@ -69,17 +69,17 @@ export class ADLSAdapter extends NetworkAdapter {
     private readonly httpXmsContinuation: string = 'x-ms-continuation';
 
     private readonly resource: string = 'https://storage.azure.com';
+    private readonly scopes: string[] = ['https://storage.azure.com/.default']
 
     private _hostname: string;
     private _root: string;
     private _tenant: string;
     private _sasToken: string;
-    private context: adal.AuthenticationContext;
+    private context: msal.IConfidentialClientApplication;
     private formattedHostname: string = '';
     private rootBlobContainer: string = '';
     private unescapedRootSubPath: string = '';
     private escapedRootSubPath: string = '';
-    private tokenResponse: adal.TokenResponse;
     private fileModifiedTimeCache: Map<string, Date> = new Map<string, Date>();
 
     // The ADLS constructor for clientId/secret authentication.
@@ -103,13 +103,6 @@ export class ADLSAdapter extends NetworkAdapter {
                         this._tenant = tenantOrSharedKeyorTokenProvider;
                         this.clientId = clientId;
                         this.secret = secret;
-                        // have to pass in api-version as 'None', the default of '1.0' causes issues accessing resources
-                        this.context = new adal.AuthenticationContext(
-                            `https://login.windows.net/${this.tenant}`,
-                            undefined,
-                            undefined,
-                            'None'
-                        );
                     }
                 } else {
                     this.tokenProvider = tenantOrSharedKeyorTokenProvider;
@@ -339,33 +332,13 @@ export class ADLSAdapter extends NetworkAdapter {
 
         this.updateNetworkConfig(config);
 
-        // Check first for clientId/secret auth.
         if (configJson.tenant && configJson.clientId) {
             this._tenant = configJson.tenant;
             this.clientId = configJson.clientId;
-
-            // Check for a secret, we don't really care is it there, but it is nice if it is.
-            if (configJson.secret) {
-                this.secret = configJson.secret;
-            }
-        }
-
-        // Check for shared key auth
-        if (configJson.sharedKey) {
-            this.sharedKey = configJson.sharedKey;
-        }
-
-        // Check for sas token auth
-        if (configJson.sasToken) {
-            this.sasToken = configJson.sasToken;
         }
 
         if (configJson.locationHint) {
             this.locationHint = configJson.locationHint;
-        }
-
-        if (this.tenant) {
-            this.context = new adal.AuthenticationContext(`https://login.windows.net/${this.tenant}`);
         }
     }
 
@@ -448,7 +421,7 @@ export class ADLSAdapter extends NetworkAdapter {
         } else if (this.sasToken) {
             request = this.setUpCdmRequest(this.applySasToken(url), null, method);
         } else if (this.tenant && this.clientId && this.secret) {
-            const token: adal.TokenResponse = await this.generateBearerToken();
+            const token: msal.AuthenticationResult = await this.generateBearerToken();
             request = this.setUpCdmRequest(
                 url,
                 new Map<string, string>([['authorization', `${token.tokenType} ${token.accessToken}`]]),
@@ -543,18 +516,20 @@ export class ADLSAdapter extends NetworkAdapter {
         return hostname;
     }
 
-    private async generateBearerToken(): Promise<adal.TokenResponse> {
-        return new Promise<adal.TokenResponse>((resolve, reject) => {
-            // In-memory token caching is handled by adal by default.
-            this.context.acquireTokenWithClientCredentials(
-                this.resource,
-                this.clientId,
-                this.secret,
-                (error: Error, response: adal.TokenResponse | adal.ErrorResponse) => {
-                    this.tokenResponse = response as adal.TokenResponse;
-                    resolve(this.tokenResponse);
+    private async generateBearerToken(): Promise<msal.AuthenticationResult> {
+        this.buildContext();
+        return new Promise<msal.AuthenticationResult>((resolve, reject) => {
+            const clientCredentialRequest = {
+                scopes: this.scopes,
+            };
+            this.context.acquireTokenByClientCredential(clientCredentialRequest).then((response) => {
+                if (response.accessToken && response.accessToken.length !== 0 && response.tokenType) {
+                    resolve(response);
                 }
-            );
+                reject(Error('Received invalid ADLS Adapter\'s authentication result. The result might be null, or missing access token or/and token type from the authentication result.'));
+            }).catch((error) => {
+                reject(Error('There was an error while acquiring ADLS Adapter\'s Token with client ID/secret authentication. Exception:' + JSON.stringify(error)));
+            });
         });
     }
 
@@ -567,5 +542,19 @@ export class ADLSAdapter extends NetworkAdapter {
     private updateRootSubPath(value: string): void {
         this.unescapedRootSubPath = value;
         this.escapedRootSubPath = this.escapePath(this.unescapedRootSubPath);
+    }
+
+    // Build context when users make the first call. Also need to ensure client Id, tenant and secret are not null.
+    private buildContext(): void {
+        if (this.context === undefined) {
+            const clientConfig = {
+                auth: {
+                    clientId: this.clientId,
+                    authority: `https://login.microsoftonline.com/${this.tenant}`,
+                    clientSecret: this.secret
+                }
+            };
+            this.context = new msal.ConfidentialClientApplication(clientConfig);
+        }
     }
 }

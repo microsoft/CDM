@@ -222,14 +222,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
             manifest.ExhibitsTraits.Add(trait);
             manifest.ExhibitsTraits.Add(otherTrait);
             manifest.ExhibitsTraits.Add(trait);
-            manifest.ExhibitsTraits[2].IsFromProperty = true;
+            (manifest.ExhibitsTraits[2] as CdmTraitReference).IsFromProperty = true;
             manifest.ExhibitsTraits.Add(otherTrait);
             manifest.ExhibitsTraits.Add(trait);
-            manifest.ExhibitsTraits[4].IsFromProperty = true;
+            (manifest.ExhibitsTraits[4] as CdmTraitReference).IsFromProperty = true;
             manifest.ExhibitsTraits.Add(otherTrait);
             Assert.AreEqual(6, manifest.ExhibitsTraits.Count);
 
-            Assert.IsTrue(manifest.ExhibitsTraits[2].IsFromProperty);
+            Assert.IsTrue((manifest.ExhibitsTraits[2] as CdmTraitReference).IsFromProperty);
 
             manifest.ExhibitsTraits.Remove(trait);
             Assert.AreEqual("TraitName", (manifest.ExhibitsTraits[0].ExplicitReference as CdmTraitDefinition).TraitName);
@@ -248,8 +248,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
             manifest.ExhibitsTraits.Add(trait);
             manifest.ExhibitsTraits.Add(otherTrait);
 
-            Assert.IsFalse(manifest.ExhibitsTraits[0].IsFromProperty);
-            Assert.IsFalse(manifest.ExhibitsTraits[1].IsFromProperty);
+            Assert.IsFalse((manifest.ExhibitsTraits[0] as CdmTraitReference).IsFromProperty);
+            Assert.IsFalse((manifest.ExhibitsTraits[1] as CdmTraitReference).IsFromProperty);
 
             var index = manifest.ExhibitsTraits.IndexOf(trait.TraitName, true);
             Assert.AreEqual(-1, index);
@@ -260,7 +260,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
             manifest.ExhibitsTraits.Add(otherTrait);
 
             Assert.AreEqual(6, manifest.ExhibitsTraits.Count);
-            manifest.ExhibitsTraits[2].IsFromProperty = true;
+            (manifest.ExhibitsTraits[2] as CdmTraitReference).IsFromProperty = true;
             index = manifest.ExhibitsTraits.IndexOf(trait.TraitName, true);
             Assert.AreEqual(2, index);
             index = manifest.ExhibitsTraits.IndexOf(trait.TraitName);

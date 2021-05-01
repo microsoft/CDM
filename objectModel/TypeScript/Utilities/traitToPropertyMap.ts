@@ -16,6 +16,7 @@ import {
     cdmLogCode,
     CdmTraitCollection,
     CdmTraitReference,
+    CdmTraitGroupReference,
     CdmTypeAttributeDefinition,
     Logger,
     ResolvedTrait
@@ -204,7 +205,7 @@ export class traitToPropertyMap {
     public fetchTraitReference(traitName: string, fromProperty: boolean = false): CdmTraitReference {
         const traitIndex: number = this.traits === undefined ? -1 : this.traits.indexOf(traitName, fromProperty);
 
-        return traitIndex !== -1 ? this.traits.allItems[traitIndex] : undefined;
+        return traitIndex !== -1 ? this.traits.allItems[traitIndex] as CdmTraitReference : undefined;
     }
 
     /**
@@ -338,7 +339,7 @@ export class traitToPropertyMap {
     /**
      * @internal
      */
-    public traitsToDataFormat(fromProperty: boolean = false): cdmDataFormat {
+    public traitsToDataFormat(onlyFromProperty: boolean = false): cdmDataFormat {
         let isArray: boolean = false;
         let isBig: boolean = false;
         let isSmall: boolean = false;
@@ -350,7 +351,10 @@ export class traitToPropertyMap {
 
         let baseType: cdmDataFormat = 0;
         for (const trait of this.traits) {
-            if (fromProperty && !trait.isFromProperty) { continue; }
+            if (onlyFromProperty && 
+                (trait instanceof CdmTraitGroupReference || !(trait as CdmTraitReference).isFromProperty)) {
+                continue;
+            }
             const traitName: string = trait.fetchObjectDefinitionName();
             // tslint:disable:switch-default
             switch (traitName) {
@@ -506,7 +510,7 @@ export class traitToPropertyMap {
     public fetchTraitTable(traitName: string, argName: string, fromProperty: boolean): CdmConstantEntityDefinition {
         let trait: CdmTraitReference;
         const traitIndex: number = this.traits.indexOf(traitName, fromProperty);
-        trait = traitIndex !== -1 ? this.traits.allItems[traitIndex] : undefined;
+        trait = traitIndex !== -1 ? this.traits.allItems[traitIndex] as CdmTraitReference : undefined;
 
         const locEntRef: CdmObject = this.fetchTraitReferenceArgumentValue(trait, argName) as CdmObject;
         if (locEntRef) {

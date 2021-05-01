@@ -88,13 +88,15 @@ public final class AttributeContextUtil {
             bldr.append(attribCorpusPath);
             bldr.append(endOfLine);
 
-            for (CdmTraitReference trait : attrib.getAppliedTraits()) {
+            for (CdmTraitReferenceBase trait : attrib.getAppliedTraits()) {
                 String attribTraits = trait.getNamedReference();
                 bldr.append(attribTraits);
                 bldr.append(endOfLine);
 
-                for (CdmArgumentDefinition args : trait.getArguments()) {
-                    getArgumentValues(args);
+                if (trait instanceof CdmTraitReference) {
+                    for (CdmArgumentDefinition args : ((CdmTraitReference) trait).getArguments()) {
+                        getArgumentValues(args);
+                    }
                 }
             }
         }

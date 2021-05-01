@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
  * The relationship persistence.
  */
 public class RelationshipPersistence {
-  private static String tag = RelationshipPersistence.class.getSimpleName();
+  private static final String TAG = RelationshipPersistence.class.getSimpleName();
   public static CompletableFuture<CdmE2ERelationship> fromData(
       final CdmCorpusContext ctx,
       final SingleKeyRelationship obj,
@@ -35,11 +35,11 @@ public class RelationshipPersistence {
     }*/
 
     if (!entityPathByName.containsKey(obj.getFromAttribute().getEntityName())) {
-      Logger.warning(ctx, tag, "fromData", null, CdmLogCode.WarnPersistRelUndefinedSourceEntity , obj.getFromAttribute().getEntityName());
+      Logger.warning(ctx, TAG, "fromData", null, CdmLogCode.WarnPersistRelUndefinedSourceEntity , obj.getFromAttribute().getEntityName());
       return CompletableFuture.completedFuture(null);
     }
     if (!entityPathByName.containsKey(obj.getToAttribute().getEntityName())) {
-      Logger.warning(ctx, tag, "fromData", null, CdmLogCode.WarnPersistRelUndefinedSourceEntity , obj.getFromAttribute().getEntityName());
+      Logger.warning(ctx, TAG, "fromData", null, CdmLogCode.WarnPersistRelUndefinedSourceEntity , obj.getFromAttribute().getEntityName());
       return CompletableFuture.completedFuture(null);
     }
 

@@ -3,10 +3,8 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
-import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -36,18 +34,12 @@ public class ForwardCompatibilityTest {
     public void testAllOperations() throws InterruptedException {
         String testName = "testAllOperations";
         String entityName = "TestAllOperations";
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             if (!message.contains("Projection operation not implemented yet."))
                 Assert.fail("Some unexpected failure - " + message + "!");
         }, CdmStatusLevel.Error);
 
-        String expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-
-        CdmEntityDefinition entTestEntityStringReference = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        Assert.assertNotNull(entTestEntityStringReference);
-        CdmEntityDefinition resolvedTestEntityStringReference = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityStringReference, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
-        Assert.assertNotNull(resolvedTestEntityStringReference);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
+        ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
     }
 }

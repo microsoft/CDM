@@ -3,11 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
-import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationCombineAttributes;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
-import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import org.testng.Assert;
 import org.testng.annotations.Ignore;
@@ -56,7 +54,7 @@ public class ProjectionCombineTest {
     public void TestExtends() throws InterruptedException {
         String testName = "TestExtends";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -70,7 +68,7 @@ public class ProjectionCombineTest {
     public void TestExtendsProj() throws InterruptedException {
         String testName = "TestExtendsProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -84,7 +82,7 @@ public class ProjectionCombineTest {
     public void TestEA() throws InterruptedException {
         String testName = "TestEA";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -98,7 +96,7 @@ public class ProjectionCombineTest {
     public void TestEAProj() throws InterruptedException {
         String testName = "TestEAProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -112,7 +110,7 @@ public class ProjectionCombineTest {
     public void TestNonPolymorphicProj() throws InterruptedException {
         String testName = "TestNonPolymorphicProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
@@ -133,7 +131,7 @@ public class ProjectionCombineTest {
     public void TestEmptyProj() throws InterruptedException {
         String testName = "TestEmptyProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -147,7 +145,7 @@ public class ProjectionCombineTest {
     public void TestCollProj() throws InterruptedException {
         String testName = "TestCollProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -161,7 +159,7 @@ public class ProjectionCombineTest {
     public void TestNestedProj() throws InterruptedException {
         String testName = "TestNestedProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -175,9 +173,13 @@ public class ProjectionCombineTest {
     public void TestMultiProj() throws InterruptedException {
         String testName = "TestMultiProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
+            if (resOpt.contains("structured")) {
+                // Array expansion is not supported on an attribute group yet.
+                continue;
+            }
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
@@ -189,7 +191,7 @@ public class ProjectionCombineTest {
     public void TestCondProj() throws InterruptedException {
         String testName = "TestCondProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -203,9 +205,13 @@ public class ProjectionCombineTest {
     public void TestRenProj() throws InterruptedException {
         String testName = "TestRenProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
+            if (resOpt.contains("structured")) {
+                // Rename attributes is not supported on an attribute group yet.
+                continue;
+            }
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
     }
@@ -217,7 +223,7 @@ public class ProjectionCombineTest {
     public void TestCommProj() throws InterruptedException {
         String testName = "TestCommProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -231,7 +237,7 @@ public class ProjectionCombineTest {
     public void TestMissProj() throws InterruptedException {
         String testName = "TestMissProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -245,7 +251,7 @@ public class ProjectionCombineTest {
     public void TestSeqProj() throws InterruptedException {
         String testName = "TestSeqProj";
         String entityName = "Customer";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -263,31 +269,31 @@ public class ProjectionCombineTest {
         String entityName_Email = "Email";
         List<TypeAttributeParam> attributeParams_Email = new ArrayList<TypeAttributeParam>();
         {
-            attributeParams_Email.add(new TypeAttributeParam("EmailID", "String", "identifiedBy"));
-            attributeParams_Email.add(new TypeAttributeParam("Address", "String", "hasA"));
+            attributeParams_Email.add(new TypeAttributeParam("EmailID", "string", "identifiedBy"));
+            attributeParams_Email.add(new TypeAttributeParam("Address", "string", "hasA"));
             attributeParams_Email.add(new TypeAttributeParam("IsPrimary", "boolean", "hasA"));
         }
 
         String entityName_Phone = "Phone";
         List<TypeAttributeParam> attributeParams_Phone = new ArrayList<TypeAttributeParam>();
         {
-            attributeParams_Phone.add(new TypeAttributeParam("PhoneID", "String", "identifiedBy"));
-            attributeParams_Phone.add(new TypeAttributeParam("Number", "String", "hasA"));
+            attributeParams_Phone.add(new TypeAttributeParam("PhoneID", "string", "identifiedBy"));
+            attributeParams_Phone.add(new TypeAttributeParam("Number", "string", "hasA"));
             attributeParams_Phone.add(new TypeAttributeParam("IsPrimary", "boolean", "hasA"));
         }
 
         String entityName_Social = "Social";
         List<TypeAttributeParam> attributeParams_Social = new ArrayList<TypeAttributeParam>();
         {
-            attributeParams_Social.add(new TypeAttributeParam("SocialID", "String", "identifiedBy"));
-            attributeParams_Social.add(new TypeAttributeParam("Account", "String", "hasA"));
+            attributeParams_Social.add(new TypeAttributeParam("SocialID", "string", "identifiedBy"));
+            attributeParams_Social.add(new TypeAttributeParam("Account", "string", "hasA"));
             attributeParams_Social.add(new TypeAttributeParam("IsPrimary", "boolean", "hasA"));
         }
 
         String entityName_Customer = "Customer";
         List<TypeAttributeParam> attributeParams_Customer = new ArrayList<TypeAttributeParam>();
         {
-            attributeParams_Customer.add(new TypeAttributeParam("CustomerName", "String", "hasA"));
+            attributeParams_Customer.add(new TypeAttributeParam("CustomerName", "string", "hasA"));
         }
 
         List<String> selectedAttributes = new ArrayList<String>();
@@ -309,7 +315,7 @@ public class ProjectionCombineTest {
         util.validateBasicEntity(entity_Customer, entityName_Customer, attributeParams_Customer);
 
         CdmProjection projection_Customer = util.createProjection(entity_Customer.getEntityName());
-        CdmTypeAttributeDefinition typeAttribute_MergeInto = util.createTypeAttribute("MergeInto", "String", "hasA");
+        CdmTypeAttributeDefinition typeAttribute_MergeInto = util.createTypeAttribute("MergeInto", "string", "hasA");
         CdmOperationCombineAttributes operation_CombineAttributes = util.createOperationCombineAttributes(projection_Customer, selectedAttributes, typeAttribute_MergeInto);
         CdmEntityReference projectionEntityRef_Customer = util.createProjectionInlineEntityReference(projection_Customer);
 

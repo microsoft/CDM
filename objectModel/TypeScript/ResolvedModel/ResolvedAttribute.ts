@@ -5,6 +5,7 @@ import {
     AttributeResolutionContext,
     CdmAttribute,
     CdmAttributeContext,
+    CdmEntityDefinition,
     CdmObject,
     ResolvedAttributeSet,
     ResolvedTraitSet,
@@ -90,6 +91,10 @@ export class ResolvedAttribute {
      * @internal
      */
     public resolvedAttributeCount: number;
+    /**
+     * @internal
+     */
+    public owner: CdmEntityDefinition;
     public insertOrder: number = 0;
     public attCtx: CdmAttributeContext;
     public applierState?: any;
@@ -153,16 +158,12 @@ export class ResolvedAttribute {
             copy.insertOrder = this.insertOrder;
             copy.arc = this.arc;
             copy.attCtx = this.attCtx // set here instead of constructor to avoid setting lineage for this copy
+            copy.owner = this.owner;
 
             if (copy.target instanceof ResolvedAttributeSet) {
                 // deep copy when set contains sets. this copies the resolved att set and the context, etc.
                 copy.target = copy.target.copy() as ResolvedAttributeSet;
-            } else if (copy.target instanceof CdmAttribute) {
-                copy.target = copy.target.copy(resOpt) as CdmAttribute;
-                const att: CdmAttribute = this.target as CdmAttribute;
-                copy.target.owner = att.owner;
-                copy.target.inDocument = att.inDocument;
-             }
+            }
 
             if (this.applierState) {
                 copy.applierState = {};

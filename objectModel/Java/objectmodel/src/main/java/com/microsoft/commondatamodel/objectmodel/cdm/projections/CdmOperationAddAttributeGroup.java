@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * Class to handle AddAttributeGroup operations
  */
 public class CdmOperationAddAttributeGroup extends CdmOperationBase {
-    private String tag = CdmOperationAddAttributeGroup.class.getSimpleName();
+    private static final String TAG = CdmOperationAddAttributeGroup.class.getSimpleName();
     private String attributeGroupName;
 
 
@@ -93,7 +93,7 @@ public class CdmOperationAddAttributeGroup extends CdmOperationBase {
             missingFields.add("attributeGroupName");
         }
         if (missingFields.size() > 0) {
-            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;

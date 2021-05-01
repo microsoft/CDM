@@ -15,6 +15,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  * Class to handle CombineAttributes operations
  */
 public class CdmOperationCombineAttributes extends CdmOperationBase {
-    private String tag = CdmOperationCombineAttributes.class.getSimpleName();
+    private static final String TAG = CdmOperationCombineAttributes.class.getSimpleName();
     private List<String> select;
     private CdmTypeAttributeDefinition mergeInto;
 
@@ -95,7 +96,7 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
             missingFields.add("mergeInto");
         }
         if (missingFields.size() > 0) {
-            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -194,6 +195,8 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
             newMergeIntoPAS.setCurrentResolvedAttribute(raNewMergeInto);
             newMergeIntoPAS.setPreviousStateList(pasMergeList);
 
+            LinkedHashSet<String> attributesAddedToContext = new LinkedHashSet<String>();
+
             // Create the attribute context parameters and just store it in the builder for now
             // We will create the attribute contexts at the end
             for (String select : leafLevelCombineAttributeNames.keySet()) {
@@ -201,13 +204,18 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
                         leafLevelCombineAttributeNames.get(select) != null &&
                         leafLevelCombineAttributeNames.get(select).size() > 0) {
                     for (ProjectionAttributeState leafLevelForSelect : leafLevelCombineAttributeNames.get(select)) {
-                        attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
-                                select,
-                                leafLevelForSelect,
-                                newMergeIntoPAS.getCurrentResolvedAttribute(),
-                                CdmAttributeContextType.AttributeDefinition,
-                                leafLevelForSelect.getCurrentResolvedAttribute().getAttCtx(), // lineage is the source att
-                                newMergeIntoPAS.getCurrentResolvedAttribute().getAttCtx()); // merge into points back here
+                        // When dealing with a polymorphic entity, it is possible that multiple entities have an attribute with the same name
+                            // Only one attribute with each name should be added otherwise the attribute context will end up with duplicated nodes
+                            if (!attributesAddedToContext.contains(leafLevelForSelect.getCurrentResolvedAttribute().getResolvedName())) {
+                                attributesAddedToContext.add(leafLevelForSelect.getCurrentResolvedAttribute().getResolvedName());
+                                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                                    select,
+                                    leafLevelForSelect,
+                                    newMergeIntoPAS.getCurrentResolvedAttribute(),
+                                    CdmAttributeContextType.AttributeDefinition,
+                                    leafLevelForSelect.getCurrentResolvedAttribute().getAttCtx(), // lineage is the source att
+                                    newMergeIntoPAS.getCurrentResolvedAttribute().getAttCtx()); // merge into points back here
+                            }
                     }
                 }
             }

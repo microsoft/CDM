@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class LocalEntityDeclarationPersistence {
-  private static String tag = LocalEntityDeclarationPersistence.class.getSimpleName();
+  private static final String TAG = LocalEntityDeclarationPersistence.class.getSimpleName();
 
   public static CompletableFuture<CdmEntityDeclarationDefinition> fromData(
       final CdmCorpusContext ctx,
@@ -41,7 +41,7 @@ public class LocalEntityDeclarationPersistence {
     return DocumentPersistence.fromData(ctx, obj, extensionTraitDefList, localExtensionTraitDefList)
         .thenCompose(entityDoc -> {
           if (entityDoc == null) {
-            Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistDocFetchError);
+            Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistDocFetchError);
             return CompletableFuture.completedFuture(null);
           }
 
@@ -90,7 +90,7 @@ public class LocalEntityDeclarationPersistence {
               if (cdmPartition != null) {
                 localEntity.getDataPartitions().add(cdmPartition);
               } else {
-                Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistDocFetchError);
+                Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistDocFetchError);
                 return CompletableFuture.completedFuture(null);
               }
             }
@@ -113,7 +113,7 @@ public class LocalEntityDeclarationPersistence {
         .thenCompose(localEntity -> {
           if (localEntity != null) {
             final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
-            final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReferenceName("is.hidden");
+            final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReference("is.hidden");
 
             if (localEntity.getDescription() == null) {
                 localEntity.setDescription(instance.getExplanation());
@@ -144,7 +144,7 @@ public class LocalEntityDeclarationPersistence {
                 if (partition != null) {
                   localEntity.getPartitions().add(partition);
                 } else {
-                  Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
+                  Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
                   return CompletableFuture.completedFuture(null);
                 }
               }

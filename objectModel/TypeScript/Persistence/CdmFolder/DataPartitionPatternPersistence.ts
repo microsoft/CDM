@@ -5,7 +5,7 @@ import {
     CdmCorpusContext,
     CdmDataPartitionPatternDefinition,
     cdmObjectType,
-    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     resolveOptions
 } from '../../internal';
@@ -13,6 +13,7 @@ import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import * as timeUtils from '../../Utilities/timeUtils';
 import {
     DataPartitionPattern,
+    TraitGroupReference,
     TraitReference
 } from './types';
 import * as utils from './utils';
@@ -51,7 +52,7 @@ export class DataPartitionPatternPersistence {
         if (dataObj.specializedSchema) {
             newPattern.specializedSchema = dataObj.specializedSchema;
         }
-        utils.addArrayToCdmCollection<CdmTraitReference>(newPattern.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(newPattern.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
 
         return newPattern;
     }
@@ -67,7 +68,7 @@ export class DataPartitionPatternPersistence {
             regularExpression: instance.regularExpression,
             parameters: instance.parameters,
             specializedSchema: instance.specializedSchema,
-            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.exhibitsTraits, options)
         };
     }
 }

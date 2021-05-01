@@ -360,7 +360,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
                         // need the real path to this thing from the explicitRef held in the portable reference
                         // the real path is {monikerFrom/}{path from 'from' document to document holding the explicit ref/{declaredPath of explicitRef}}
                         // if we have never looked up the path between docs, do that now
-                        const docFromDef: CdmDocumentDefinition = ac.definition.explicitReference.inDocument; // if all parts not set, this is a broken portal ref!
+                        const docFromDef: CdmDocumentDefinition = (ac.definition as CdmObjectReferenceBase).portableReference.inDocument; // if all parts not set, this is a broken portal ref!
                         let pathBetweenDocs: string = foundDocPaths.get(docFromDef);
                         if (!pathBetweenDocs) {
                             pathBetweenDocs = docFrom.importPathToDoc(docFromDef);
@@ -371,7 +371,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
                             foundDocPaths.set(docFrom, pathBetweenDocs);
                         }
 
-                        (ac.definition as CdmObjectReferenceBase).localizePortableReference(resOpt, `${monikerForDocFrom}${pathBetweenDocs}`);
+                        (ac.definition as CdmObjectReferenceBase).localizePortableReference(`${monikerForDocFrom}${pathBetweenDocs}`);
                     }
                 }
                 // doc of parent ref

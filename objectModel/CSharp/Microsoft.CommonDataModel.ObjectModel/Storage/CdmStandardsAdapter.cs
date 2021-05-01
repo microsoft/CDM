@@ -6,8 +6,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using System;
-    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
 

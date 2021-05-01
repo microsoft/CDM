@@ -11,13 +11,7 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeItem;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -177,6 +171,8 @@ public class Utils {
         return PurposeReferencePersistence.fromData(ctx, newObj);
       } else if (newObj.has("traitReference")) {
         return TraitReferencePersistence.fromData(ctx, newObj);
+      } else if (newObj.has("traitGroupReference")) {
+        return TraitGroupReferencePersistence.fromData(ctx, newObj);
       } else if (newObj.has("dataTypeReference")) {
         return DataTypeReferencePersistence.fromData(ctx, newObj);
       } else if (newObj.has("entityReference")) {
@@ -224,18 +220,18 @@ public class Utils {
   }
 
   /**
-   * Converts a JSON object to a CdmCollection of TraitReferences.
+   * Converts a JSON object to a CdmCollection of TraitReferences and TraitGroupReferences.
    * @param  ctx CdmCorpusContext
    * @param obj Object
    * @return  ArrayList of CdmAttributeItem
    */
-  public static ArrayList<CdmTraitReference> createTraitReferenceList(final CdmCorpusContext ctx, final Object obj) {
+  public static ArrayList<CdmTraitReferenceBase> createTraitReferenceList(final CdmCorpusContext ctx, final Object obj) {
 
     if (obj == null) {
       return null;
     }
 
-    final ArrayList<CdmTraitReference> result = new ArrayList<>();
+    final ArrayList<CdmTraitReferenceBase> result = new ArrayList<>();
     ArrayNode traitRefObj = null;
     if (obj instanceof ObjectNode) {
       final ObjectNode objectNode = (ObjectNode) obj;
@@ -249,7 +245,12 @@ public class Utils {
     if (traitRefObj != null) {
       for (int i = 0; i < traitRefObj.size(); i++) {
         final JsonNode tr = traitRefObj.get(i);
-        result.add(TraitReferencePersistence.fromData(ctx, tr));
+
+        if (!tr.isValueNode() && tr.get("traitGroupReference") != null) {
+          result.add(TraitGroupReferencePersistence.fromData(ctx, tr));
+        } else {
+          result.add(TraitReferencePersistence.fromData(ctx, tr));
+        }
       }
     }
 

@@ -54,7 +54,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         [TestMethod]
         public void TestBuildTree()
         {
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestBuildTree");
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, "TestBuildTree");
 
             ProjectionContext pc = BuildFakeTree(corpus);
 

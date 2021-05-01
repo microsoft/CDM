@@ -14,6 +14,10 @@ if TYPE_CHECKING:
 
 class CdmEntityReference(CdmObjectReference):
     @property
+    def _is_projection(self) -> bool:
+        return self.explicit_reference and self.explicit_reference.object_type == CdmObjectType.PROJECTION_DEF
+
+    @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.ENTITY_REF
 

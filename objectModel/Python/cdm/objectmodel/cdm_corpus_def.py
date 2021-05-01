@@ -13,7 +13,7 @@ from cdm.enums import CdmLogCode
 from cdm.storage import StorageManager
 from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmStatusLevel, CdmValidationStep, ImportsLoadStrategy
 from cdm.objectmodel import CdmContainerDefinition
-from cdm.utilities import AttributeResolutionDirectiveSet, DepthInfo, DocsResult, ImportInfo, ResolveOptions, \
+from cdm.utilities import AttributeResolutionDirectiveSet, DocsResult, ImportInfo, ResolveOptions, \
     StorageUtils, SymbolSet, logger
 
 from .cdm_attribute_ref import CdmAttributeReference
@@ -21,15 +21,13 @@ from .cdm_corpus_context import CdmCorpusContext
 from .cdm_document_def import CdmDocumentDefinition
 from .cdm_e2e_relationship import CdmE2ERelationship
 from .cdm_object import CdmObject
-from .cdm_object_ref import CdmObjectReference
 from ._document_library import DocumentLibrary
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmArgumentValue, CdmAttributeContext, CdmDocumentDefinition, CdmEntityDefinition, \
-        CdmEntityReference, CdmLocalEntityDeclarationDefinition, CdmManifestDefinition, CdmObject, CdmObjectDefinition, \
-        CdmObjectReference, CdmParameterDefinition, CdmTypeAttributeDefinition, CdmEntityAttributeDefinition
-    from cdm.storage import StorageAdapterBase
-    from cdm.utilities import CdmError, CopyOptions, EventCallback
+        CdmManifestDefinition, CdmObject, CdmObjectDefinition, \
+        CdmObjectReference, CdmParameterDefinition, CdmTypeAttributeDefinition
+    from cdm.utilities import EventCallback
     from cdm.resolvedmodel import ResolvedTraitSet
 
     TObject = TypeVar('TObject', bound=CdmObject)
@@ -37,6 +35,7 @@ if TYPE_CHECKING:
 
 SYMBOL_TYPE_CHECK = {
     CdmObjectType.TRAIT_REF: CdmObjectType.TRAIT_DEF,
+    CdmObjectType.TRAIT_GROUP_REF: CdmObjectType.TRAIT_GROUP_DEF,
     CdmObjectType.DATA_TYPE_REF: CdmObjectType.DATA_TYPE_DEF,
     CdmObjectType.ENTITY_REF: CdmObjectType.ENTITY_DEF,
     CdmObjectType.PARAMETER_DEF: CdmObjectType.PARAMETER_DEF,
@@ -221,6 +220,10 @@ class CdmCorpusDefinition:
                     expected_types.append(CdmObjectType.TRAIT_REF)
                     expected_types.append(CdmObjectType.TRAIT_DEF)
                     expected = 'trait'
+                elif dt.is_derived_from('traitGroup', res_opt):
+                    expected_types.append(CdmObjectType.TRAIT_GROUP_REF)
+                    expected_types.append(CdmObjectType.TRAIT_GROUP_DEF)
+                    expected = 'traitGroup'
                 elif dt.is_derived_from('attributeGroup', res_opt):
                     expected_types.append(CdmObjectType.ATTRIBUTE_GROUP_REF)
                     expected_types.append(CdmObjectType.ATTRIBUTE_GROUP_DEF)
@@ -242,6 +245,7 @@ class CdmCorpusDefinition:
                         found_type = CdmObjectType.ATTRIBUTE_REF
                     else:
                         found_desc = p_value
+                        from cdm.objectmodel import CdmObjectReference
                         seek_res_att = CdmObjectReference._offset_attribute_promise(p_value)
                         if seek_res_att >= 0:
                             # get an object there that will get resolved later after resolved attributes
@@ -346,10 +350,12 @@ class CdmCorpusDefinition:
 
                         resolved_trait_set = None
                         entity_att = owner.fetch_object_definition(res_opt)  # type: 'CdmEntityAttributeDefinition'
-                        if entity_att and entity_att.purpose:
+                        if entity_att and entity_att.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF and entity_att.purpose:
                             resolved_trait_set = entity_att.purpose._fetch_resolved_traits(res_opt)
 
-                        out_rels = self._find_outgoing_relationships_for_projection(out_rels, child, res_opt, res_entity, from_atts, resolved_trait_set)
+                        out_rels = self._find_outgoing_relationships_for_projection(out_rels, child, res_opt,
+                                                                                    res_entity, from_atts,
+                                                                                    resolved_trait_set)
 
                         was_projection_polymorphic = is_polymorphic_source
                     else:
@@ -359,8 +365,7 @@ class CdmCorpusDefinition:
 
                         to_att = [self._get_attribute_name(trait.arguments[0].value.named_reference) for trait in
                                   child.exhibits_traits
-                                  if
-                                  trait.fetch_object_definition_name() == 'is.identifiedBy' and trait.arguments]  # type: List[string]
+                                  if trait.fetch_object_definition_name() == 'is.identifiedBy' and trait.arguments]  # type: List[str]
 
                         out_rels = self._find_outgoing_relationships_for_entity_ref(
                             to_entity,
@@ -674,25 +679,31 @@ class CdmCorpusDefinition:
     def _declare_object_definitions(self, current_doc: 'CdmDocumentDefinition', relative_path: str) -> None:
         ctx = self.ctx
         # TODO: find a better solution for this set
-        skip_duplicate_types = set(
-            [CdmObjectType.ATTRIBUTE_GROUP_REF, CdmObjectType.ATTRIBUTE_CONTEXT_REF, CdmObjectType.DATA_TYPE_REF,
-             CdmObjectType.ENTITY_REF, CdmObjectType.PURPOSE_REF, CdmObjectType.TRAIT_REF,
-             CdmObjectType.CONSTANT_ENTITY_DEF])
-        internal_declaration_types = set(
-            [CdmObjectType.ENTITY_DEF, CdmObjectType.PARAMETER_DEF, CdmObjectType.TRAIT_DEF, CdmObjectType.PURPOSE_DEF,
-             CdmObjectType.DATA_TYPE_DEF, CdmObjectType.TYPE_ATTRIBUTE_DEF, CdmObjectType.ENTITY_ATTRIBUTE_DEF,
-             CdmObjectType.ATTRIBUTE_GROUP_DEF, CdmObjectType.CONSTANT_ENTITY_DEF, CdmObjectType.ATTRIBUTE_CONTEXT_DEF,
-             CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF, CdmObjectType.REFERENCED_ENTITY_DECLARATION_DEF,
-             CdmObjectType.ATTRIBUTE_GROUP_REF, CdmObjectType.ATTRIBUTE_CONTEXT_REF, CdmObjectType.DATA_TYPE_REF,
-             CdmObjectType.ENTITY_REF, CdmObjectType.PURPOSE_REF, CdmObjectType.TRAIT_REF,
-             CdmObjectType.ATTRIBUTE_GROUP_DEF,
-             CdmObjectType.PROJECTION_DEF, CdmObjectType.OPERATION_ADD_COUNT_ATTRIBUTE_DEF,
-             CdmObjectType.OPERATION_ADD_SUPPORTING_ATTRIBUTE_DEF,
-             CdmObjectType.OPERATION_ADD_TYPE_ATTRIBUTE_DEF, CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF,
-             CdmObjectType.OPERATION_ARRAY_EXPANSION_DEF,
-             CdmObjectType.OPERATION_COMBINE_ATTRIBUTES_DEF, CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF,
-             CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF,
-             CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF, CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF])
+        skip_duplicate_types = {CdmObjectType.ATTRIBUTE_GROUP_REF, CdmObjectType.ATTRIBUTE_CONTEXT_REF,
+                                CdmObjectType.DATA_TYPE_REF, CdmObjectType.ENTITY_REF, CdmObjectType.PURPOSE_REF,
+                                CdmObjectType.TRAIT_REF, CdmObjectType.TRAIT_GROUP_REF,
+                                CdmObjectType.CONSTANT_ENTITY_DEF}
+        internal_declaration_types = {CdmObjectType.ENTITY_DEF, CdmObjectType.PARAMETER_DEF,
+                                      CdmObjectType.TRAIT_DEF, CdmObjectType.TRAIT_GROUP_DEF,
+                                      CdmObjectType.PURPOSE_DEF, CdmObjectType.DATA_TYPE_DEF,
+                                      CdmObjectType.TYPE_ATTRIBUTE_DEF, CdmObjectType.ENTITY_ATTRIBUTE_DEF,
+                                      CdmObjectType.ATTRIBUTE_GROUP_DEF, CdmObjectType.CONSTANT_ENTITY_DEF,
+                                      CdmObjectType.ATTRIBUTE_CONTEXT_DEF, CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF,
+                                      CdmObjectType.REFERENCED_ENTITY_DECLARATION_DEF,
+                                      CdmObjectType.ATTRIBUTE_GROUP_REF, CdmObjectType.ATTRIBUTE_CONTEXT_REF,
+                                      CdmObjectType.DATA_TYPE_REF, CdmObjectType.ENTITY_REF, CdmObjectType.PURPOSE_REF,
+                                      CdmObjectType.TRAIT_REF, CdmObjectType.TRAIT_GROUP_REF,
+                                      CdmObjectType.ATTRIBUTE_GROUP_DEF,
+                                      CdmObjectType.PROJECTION_DEF, CdmObjectType.OPERATION_ADD_COUNT_ATTRIBUTE_DEF,
+                                      CdmObjectType.OPERATION_ADD_SUPPORTING_ATTRIBUTE_DEF,
+                                      CdmObjectType.OPERATION_ADD_TYPE_ATTRIBUTE_DEF,
+                                      CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF,
+                                      CdmObjectType.OPERATION_ARRAY_EXPANSION_DEF,
+                                      CdmObjectType.OPERATION_COMBINE_ATTRIBUTES_DEF,
+                                      CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF,
+                                      CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF,
+                                      CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF,
+                                      CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF}
 
         def callback(obj: 'CdmObject', path: str) -> bool:
             # I can't think of a better time than now to make sure any recently changed or added things have an in doc
@@ -955,7 +966,8 @@ class CdmCorpusDefinition:
             if path.find('(unspecified)') > 0:
                 return True
 
-            if i_object.object_type in [CdmObjectType.ENTITY_DEF, CdmObjectType.PARAMETER_DEF, CdmObjectType.TRAIT_DEF,
+            if i_object.object_type in [CdmObjectType.ENTITY_DEF, CdmObjectType.PARAMETER_DEF,
+                                        CdmObjectType.TRAIT_DEF, CdmObjectType.TRAIT_GROUP_DEF,
                                         CdmObjectType.PURPOSE_DEF,
                                         CdmObjectType.DATA_TYPE_DEF, CdmObjectType.TYPE_ATTRIBUTE_DEF,
                                         CdmObjectType.ENTITY_ATTRIBUTE_DEF, CdmObjectType.ATTRIBUTE_GROUP_DEF,
@@ -1175,7 +1187,8 @@ class CdmCorpusDefinition:
 
         def pre_visit(obj: 'CdmObject', path: str) -> bool:
             nonlocal ctx, nesting
-            if obj.object_type == CdmObjectType.TRAIT_DEF or obj.object_type == CdmObjectType.PURPOSE_DEF or obj.object_type == CdmObjectType.DATA_TYPE_DEF or \
+            if obj.object_type == CdmObjectType.TRAIT_DEF or obj.object_type == CdmObjectType.TRAIT_GROUP_DEF or \
+                    obj.object_type == CdmObjectType.PURPOSE_DEF or obj.object_type == CdmObjectType.DATA_TYPE_DEF or \
                     obj.object_type == CdmObjectType.ENTITY_DEF or obj.object_type == CdmObjectType.ATTRIBUTE_GROUP_DEF:
                 if obj.object_type == CdmObjectType.ENTITY_DEF or obj.object_type == CdmObjectType.ATTRIBUTE_GROUP_DEF:
                     nesting += 1
@@ -1257,8 +1270,8 @@ class CdmCorpusDefinition:
         found = doc_best.internal_declarations.get(symbol_def)
         if not found and retry:
             # maybe just locatable from here not defined here.
-            # this happens when the symbol is monikered, but the moniker path doesn't lead to the document where the symbol is defined.
-            # it leads to the document from where the symbol can be found.
+            # this happens when the symbol is monikered, but the moniker path doesn't lead to the document where
+            # the symbol is defined. it leads to the document from where the symbol can be found.
             # Ex.: resolvedFrom/Owner, while resolvedFrom is the Account that imports Owner.
             found = self._resolve_symbol_reference(res_opt, doc_best, symbol_def, expected_type, False)
 
@@ -1270,8 +1283,8 @@ class CdmCorpusDefinition:
                         found.object_type == CdmObjectType.PROJECTION_DEF or found.object_type == CdmObjectType.CONSTANT_ENTITY_DEF):
                     return found
                 type_name = ''.join([name.title() for name in expected_type.name.split('_')])
-                logger.error(self.ctx, self._TAG, '_resolve_symbol_reference', wrt_doc.at_corpus_path, CdmLogCode.ERR_UNEXPECTED_TYPE,
-                             type_name, symbol_def)
+                logger.error(self.ctx, self._TAG, '_resolve_symbol_reference', wrt_doc.at_corpus_path,
+                             CdmLogCode.ERR_UNEXPECTED_TYPE, type_name, symbol_def)
                 found = None
 
         return found
@@ -1279,16 +1292,15 @@ class CdmCorpusDefinition:
     def _resolve_object_definitions(self, res_opt: 'ResolveOptions', current_doc: 'CdmDocumentDefinition') -> None:
         ctx = self.ctx
         res_opt._indexing_doc = current_doc
-        reference_type_set = set([
-            CdmObjectType.ATTRIBUTE_REF, CdmObjectType.ATTRIBUTE_GROUP_REF, CdmObjectType.ATTRIBUTE_CONTEXT_REF,
-            CdmObjectType.DATA_TYPE_REF, CdmObjectType.ENTITY_REF, CdmObjectType.PURPOSE_REF, CdmObjectType.TRAIT_REF
-        ])
+        reference_type_set = {CdmObjectType.ATTRIBUTE_REF, CdmObjectType.ATTRIBUTE_GROUP_REF,
+                              CdmObjectType.ATTRIBUTE_CONTEXT_REF, CdmObjectType.DATA_TYPE_REF,
+                              CdmObjectType.ENTITY_REF, CdmObjectType.PURPOSE_REF, CdmObjectType.TRAIT_REF}
 
         def pre_callback(obj: 'CdmObjectReference', path: str) -> bool:
             if obj.object_type in reference_type_set:
                 ctx._relative_path = path
 
-                if CdmObjectReference._offset_attribute_promise(obj.named_reference) < 0:
+                if obj._offset_attribute_promise(obj.named_reference) < 0:
                     res_new = obj._fetch_resolved_reference(res_opt)
 
                     if not res_new:
@@ -1333,7 +1345,7 @@ class CdmCorpusDefinition:
 
                         param_found = params.resolve_parameter(
                             ctx._current_scope._current_parameter,
-                            obj.get_name())
+                            cast('CdmArgumentDefinition', obj).get_name())
 
                         obj._resolved_parameter = param_found
                         a_value = obj.value
@@ -1484,6 +1496,8 @@ class CdmCorpusDefinition:
             return CdmObjectType.PURPOSE_REF
         if of_type in [CdmObjectType.TRAIT_DEF, CdmObjectType.TRAIT_REF]:
             return CdmObjectType.TRAIT_REF
+        if of_type in [CdmObjectType.TRAIT_GROUP_DEF, CdmObjectType.TRAIT_GROUP_REF]:
+            return CdmObjectType.TRAIT_GROUP_REF
         if of_type in [CdmObjectType.ENTITY_ATTRIBUTE_DEF, CdmObjectType.TYPE_ATTRIBUTE_DEF,
                        CdmObjectType.ATTRIBUTE_REF]:
             return CdmObjectType.ATTRIBUTE_REF
@@ -1576,8 +1590,8 @@ class CdmCorpusDefinition:
 
         return from_attrs
 
-    def _get_to_attributes(self, from_attr_def: 'CdmTypeAttributeDefinition', res_opt: 'ResolveOptions') -> List[
-        Tuple[str, str, str]]:
+    def _get_to_attributes(self, from_attr_def: 'CdmTypeAttributeDefinition', res_opt: 'ResolveOptions') \
+            -> Optional[List[Tuple[str, str, str]]]:
         """For Projections get the list of 'To' Attributes"""
         if from_attr_def and from_attr_def.applied_traits:
             tuple_list = []

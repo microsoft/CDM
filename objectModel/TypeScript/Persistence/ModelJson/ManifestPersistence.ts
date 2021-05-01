@@ -156,12 +156,12 @@ export class ManifestPersistence {
                     const referenceEntity: ReferenceEntity = element as ReferenceEntity;
                     const entityLocation: string = referenceModels.get(referenceEntity.modelId);
                     if (!entityLocation) {
-                         Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistModelIdNotFound);
+                        Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistModelIdNotFound);
                         return;
                     }
                     entity = await ModelJson.ReferencedEntityDeclarationPersistence.fromData(ctx, referenceEntity, entityLocation);
                 } else {
-                     Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistEntityParsingError);
+                    Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistEntityParsingError);
                     return;
                 }
 
@@ -169,7 +169,7 @@ export class ManifestPersistence {
                     manifest.entities.push(entity);
                     entitySchemaByName.set(entity.entityName, entity.entityPath);
                 } else {
-                     Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistEntityParsingError);
+                    Logger.error(ctx, this.TAG, this.fromObject.name, null, cdmLogCode.ErrPersistEntityParsingError);
                     return;
                 }
             }
@@ -299,7 +299,12 @@ export class ManifestPersistence {
 
                         const referenceEntity: ReferenceEntity = element as ReferenceEntity;
                         if (referenceEntity !== undefined) {
-                            entityLocation = entityLocation.substring(0, entityLocation.lastIndexOf('/'));
+                            // path separator can differ depending on the adapter, cover the case where path uses '/' or '\'
+                            const lastSlashLocation: number = entityLocation.lastIndexOf('/') > entityLocation.lastIndexOf('\\') ?
+                                entityLocation.lastIndexOf('/') : entityLocation.lastIndexOf('\\');
+                            if (lastSlashLocation > 0) {
+                                entityLocation = entityLocation.slice(0, lastSlashLocation);
+                            }
 
                             if (referenceEntity.modelId !== undefined) {
                                 const savedLocation: string = referenceModels.get(referenceEntity.modelId);
@@ -325,7 +330,7 @@ export class ManifestPersistence {
                     if (element) {
                         result.entities.push(element);
                     } else {
-                         Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.entityName);
+                        Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonEntityDeclarationConversionError, entity.entityName);
                     }
                 }
             );

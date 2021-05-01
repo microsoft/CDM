@@ -24,7 +24,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
-  private String tag = CdmDataPartitionPatternDefinition.class.getSimpleName();
+  private static final String TAG = CdmDataPartitionPatternDefinition.class.getSimpleName();
 
   private String name;
   private String rootLocation;
@@ -46,7 +46,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
   public boolean validate() {
     if (StringUtils.isNullOrEmpty(getRootLocation())) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("rootLocation"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -130,7 +130,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     }
 
     if (postChildren != null && postChildren.invoke(this, path)) {
-      return false;
+      return true;
     }
 
     return false;
@@ -268,7 +268,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         final StorageAdapter adapter = getCtx().getCorpus().getStorage().fetchAdapter(nameSpace);
 
         if (adapter == null) {
-          Logger.error(this.getCtx(), tag, "fileStatusCheckAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocAdapterNotFound, this.getInDocument().getName());
+          Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocAdapterNotFound, this.getInDocument().getName());
           return;
         }
 
@@ -286,13 +286,13 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
           // Remove namespace from path
           final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(rootCorpus);
           if (pathTuple == null) {
-            Logger.error(this.getCtx(), tag, "fileStatusCheckAsync", rootCorpus, CdmLogCode.ErrStorageNullCorpusPath, this.getAtCorpusPath());
+            Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.ErrStorageNullCorpusPath, this.getAtCorpusPath());
             return;
           }
           // get a list of all corpusPaths under the root
           fileInfoList = adapter.fetchAllFilesAsync(pathTuple.getRight()).join();
         } catch (Exception e) {
-          Logger.warning(this.getCtx(), tag, "fileStatusCheckAsync", rootCorpus, CdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.getMessage());
+          Logger.warning(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.getMessage());
         }
 
         if (fileInfoList != null) {
@@ -305,8 +305,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
           if (getOwner() instanceof CdmLocalEntityDeclarationDefinition) {
             // if both are present log warning and use glob pattern, otherwise use regularExpression
             if (!StringUtils.isNullOrTrimEmpty(this.getGlobPattern()) && !StringUtils.isNullOrTrimEmpty(this.getRegularExpression())) {
-              Logger.warning(this.getCtx(),
-                      tag,
+              Logger.warning(this.getCtx(), TAG,
                       "fileStatusCheckAsync",
                       rootCorpus, CdmLogCode.WarnPartitionGlobAndRegexPresent,
                       this.getGlobPattern(), this.getRegularExpression());
@@ -317,7 +316,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             try {
               regexPattern = Pattern.compile(regularExpression);
             } catch (final PatternSyntaxException e) {
-              Logger.error(this.getCtx(), tag,
+              Logger.error(this.getCtx(), TAG,
                       "fileStatusCheckAsync",
                       rootCorpus, CdmLogCode.ErrValdnInvalidResx, !StringUtils.isNullOrTrimEmpty(this.globPattern) ? "glob pattern" : "regular expression",
                       !StringUtils.isNullOrTrimEmpty(this.globPattern) ? this.globPattern : this.regularExpression, e.getMessage());
@@ -350,7 +349,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                   // Remove namespace from path
                   final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(fullPath);
                   if (pathTuple == null) {
-                    Logger.error(this.getCtx(), tag, "fileStatusCheckAsync", rootCorpus, CdmLogCode.ErrStorageNullCorpusPath, this.getAtCorpusPath());
+                    Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.ErrStorageNullCorpusPath, this.getAtCorpusPath());
                     return;
                   }
                   final OffsetDateTime lastModifiedTime =

@@ -9,6 +9,8 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +37,7 @@ public class CardinalitySettingUnitTest {
     public void testMinimum() throws InterruptedException {
         String testName = "testMinimum";
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
 
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             if (!message.contains("CardinalitySettings | Invalid minimum cardinality -1."))
@@ -55,7 +57,7 @@ public class CardinalitySettingUnitTest {
     public void testMaximum() throws InterruptedException {
         String testName = "TestMaximum";
 
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             if (!message.contains("CardinalitySettings | Invalid maximum cardinality Abc."))
                 Assert.fail("Some unexpected failure - " + message + "!");

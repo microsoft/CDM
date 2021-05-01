@@ -7,15 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmImport;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.MetadataObject;
@@ -35,7 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 final class ExtensionHelper {
-  private static String tag = ExtensionHelper.class.getSimpleName();
+  private static final String TAG = ExtensionHelper.class.getSimpleName();
 
   public static final String EXTENSION_DOC_NAME = "custom.extension.cdm.json";
   /**
@@ -100,7 +92,7 @@ final class ExtensionHelper {
       for (int traitIndex = localExtensionTraitDefList.size() - 1; traitIndex >= 0; traitIndex--) {
         final CdmTraitDefinition extensionTraitDef = localExtensionTraitDefList.get(traitIndex);
         if (!traitDefIsExtension(extensionTraitDef)) {
-          Logger.error(ctx, tag, "standardImportDetection", extensionTraitDef.getAtCorpusPath(), CdmLogCode.ErrPersistInvalidExtensionTrait, extensionTraitDef.getTraitName(), extensionTraitNamePrefix);
+          Logger.error(ctx, TAG, "standardImportDetection", extensionTraitDef.getAtCorpusPath(), CdmLogCode.ErrPersistInvalidExtensionTrait, extensionTraitDef.getTraitName(), extensionTraitNamePrefix);
           return null;
         }
 
@@ -374,12 +366,12 @@ final class ExtensionHelper {
   }
 
   /**
-   * Checks whether a <see cref="CdmTraitReference"/> is an extension.
+   * Checks whether a <see cref="CdmTraitReferenceBase"/> is an extension.
    *
    * @param trait The trait to be checked whether it is an extension.
    * @return Whether the trait is an extension.
    */
-  static boolean traitRefIsExtension(final CdmTraitReference trait) {
+  static boolean traitRefIsExtension(final CdmTraitReferenceBase trait) {
     return traitNameHasExtensionMark(trait.getNamedReference());
   }
 

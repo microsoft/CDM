@@ -10,7 +10,7 @@ from .local_entity_declaration import LocalEntityDeclaration
 from .manifest_declaration import ManifestDeclaration
 from .referenced_entity_declaration import ReferencedEntityDeclaration
 from .trait_reference import TraitReference
-
+from .trait_group_reference import TraitGroupReference
 
 class Folder(JObject):
     def __init__(self):
@@ -22,7 +22,7 @@ class Folder(JObject):
         self.explanation = None  # type: str
         """The folder explanation."""
 
-        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference, TraitGroupReference]]
         """The exhibited traits."""
 
         self.entities = None  # type: List[Union[LocalEntityDeclaration, ReferencedEntityDeclaration]]

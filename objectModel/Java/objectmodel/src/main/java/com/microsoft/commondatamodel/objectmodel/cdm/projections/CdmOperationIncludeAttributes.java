@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * Class to handle IncludeAttributes operations
  */
 public class CdmOperationIncludeAttributes extends CdmOperationBase {
-    private String tag = CdmOperationIncludeAttributes.class.getSimpleName();
+    private static final String TAG = CdmOperationIncludeAttributes.class.getSimpleName();
     private List<String> includeAttributes;
 
     public CdmOperationIncludeAttributes(final CdmCorpusContext ctx) {
@@ -87,7 +87,7 @@ public class CdmOperationIncludeAttributes extends CdmOperationBase {
             missingFields.add("includeAttributes");
         }
         if (missingFields.size() > 0) {
-            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;

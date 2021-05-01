@@ -272,7 +272,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return null;
 
             if (acp.type == CdmAttributeContextType.PassThrough)
-                return acp.under as CdmAttributeContext;
+                return acp.under;
 
             // this flag makes sure we hold on to any resolved object refs when things get copied
             ResolveOptions resOptCopy = resOpt.Copy();
@@ -295,7 +295,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmAttributeContext underChild = acp.under.Ctx.Corpus.MakeObject<CdmAttributeContext>(CdmObjectType.AttributeContextDef, acp.Name);
             // need context to make this a 'live' object
             underChild.Ctx = acp.under.Ctx;
-            underChild.InDocument = (acp.under as CdmAttributeContext).InDocument;
+            underChild.InDocument = acp.under.InDocument;
             underChild.Type = acp.type;
             underChild.Definition = definition;
             // add traits if there are any
@@ -542,7 +542,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         // need the real path to this thing from the explicitRef held in the portable reference
                         // the real path is {monikerFrom/}{path from 'from' document to document holding the explicit ref/{declaredPath of explicitRef}}
                         // if we have never looked up the path between docs, do that now
-                        CdmDocumentDefinition docFromDef = ac.Definition.ExplicitReference.InDocument; // if all parts not set, this is a broken portal ref!
+                        CdmDocumentDefinition docFromDef = (ac.Definition as CdmObjectReferenceBase).PortableReference.InDocument; // if all parts not set, this is a broken portal ref!
                         string pathBetweenDocs;
                         if (foundDocPaths.TryGetValue(docFromDef, out pathBetweenDocs) == false)
                         {
@@ -555,7 +555,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             foundDocPaths[docFrom] = pathBetweenDocs;
                         }
                         
-                        (ac.Definition as CdmObjectReferenceBase).LocalizePortableReference(resOpt, $"{monikerForDocFrom}{pathBetweenDocs}");
+                        (ac.Definition as CdmObjectReferenceBase).LocalizePortableReference($"{monikerForDocFrom}{pathBetweenDocs}");
                     }
                 }
                 // doc of parent ref

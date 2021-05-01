@@ -13,12 +13,13 @@ import {
     CdmEntityDefinition,
     CdmEntityReference,
     CdmFolderDefinition,
-    CdmManifestDefinition
+    CdmManifestDefinition,
+    CdmTraitReferenceBase,
+    CdmTraitReference
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 import { AttributeContextUtil } from '../Projection/AttributeContextUtil';
-import { CdmTraitReference } from 'Cdm/CdmTraitReference';
 
 /**
  * Test to validate calculateEntityGraphAsync function
@@ -191,9 +192,9 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
     function assertEntityShapeInReslovedEntity(resolvedEntity: CdmEntityDefinition, isEntitySet: boolean): void {
         for (const att of resolvedEntity.attributes) {
             if (att && att.appliedTraits) {
-                for (const trait of att.appliedTraits) {
-                    if (trait.namedReference === 'is.linkedEntity.identifier' && trait.arguments.length > 0) {
-                        const constEnt: CdmConstantEntityDefinition = (trait.arguments.allItems[0].value as CdmEntityReference).fetchObjectDefinition<CdmConstantEntityDefinition>();
+                for (const traitRef of att.appliedTraits) {
+                    if (traitRef.namedReference === 'is.linkedEntity.identifier' && (traitRef as CdmTraitReference).arguments.length > 0) {
+                        const constEnt: CdmConstantEntityDefinition = ((traitRef as CdmTraitReference).arguments.allItems[0].value as CdmEntityReference).fetchObjectDefinition<CdmConstantEntityDefinition>();
                         if (constEnt) {
                             if (isEntitySet) {
                                 expect('entitySet')
@@ -286,14 +287,16 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         if (relationship.exhibitsTraits != null && relationship.exhibitsTraits.length != 0) {
             bldr += '  ExhibitsTraits:' + endOfLine;
             var orderedAppliedTraits = relationship.exhibitsTraits.allItems.sort((a, b) => a.namedReference?.localeCompare(b.namedReference));
-            orderedAppliedTraits.forEach((trait : CdmTraitReference) => {
+            orderedAppliedTraits.forEach((trait : CdmTraitReferenceBase) => {
                 bldr += `      ${trait.namedReference}` + endOfLine;
 
-                trait.arguments.allItems.forEach((args : CdmArgumentDefinition) => {
-                    var attrCtxUtil = new AttributeContextUtil();
-                    bldr += `          ${attrCtxUtil.getArgumentValuesAsString(args)}` + endOfLine;
-                })
-            })
+                if (trait instanceof CdmTraitReference) {
+                    (trait as CdmTraitReference).arguments.allItems.forEach((args : CdmArgumentDefinition) => {
+                        var attrCtxUtil = new AttributeContextUtil();
+                        bldr += `          ${attrCtxUtil.getArgumentValuesAsString(args)}` + endOfLine;
+                    });
+                }
+            });
         }
 
         bldr += endOfLine;

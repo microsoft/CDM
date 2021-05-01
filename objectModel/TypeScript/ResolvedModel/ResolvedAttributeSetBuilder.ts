@@ -12,6 +12,7 @@ import {
     cdmAttributeContextType,
     CdmAttributeResolutionGuidance,
     PrimitiveAppliers,
+    relationshipInfo,
     ResolvedAttribute,
     ResolvedAttributeSet,
     ResolvedTraitSet,
@@ -134,6 +135,44 @@ export class AttributeResolutionContext {
         }
     }
 
+    /**
+     * Returns a RelationshipInfo instance containing information about how the entity attribute relationship should be resolved
+     * @param resOpt
+     * @param arc
+     * @internal
+     */
+    public getRelationshipInfo(): relationshipInfo {
+        let hasRef: boolean = false;
+        let isByRef: boolean = false;
+        let isArray: boolean = false;
+        let selectsOne: boolean = false;
+        let maxDepthExceeded: boolean = this.resOpt.depthInfo.maxDepthExceeded;
+
+        if (this.resGuide) {
+            if (this.resGuide.entityByReference !== undefined && this.resGuide.entityByReference.allowReference === true) {
+                hasRef = true;
+            }
+            if (this.resOpt.directives) {
+                // based on directives
+                if (hasRef) {
+                    isByRef = this.resOpt.directives.has('referenceOnly');
+                }
+                selectsOne = this.resOpt.directives.has('selectOne');
+                isArray = this.resOpt.directives.has('isArray');
+            }
+
+            if (!selectsOne && maxDepthExceeded) {
+                // if max depth exceeded, stop and resolve by reference
+                isByRef = true;
+            }
+        }
+
+        return {
+            isByRef: isByRef,
+            isArray: isArray,
+            selectsOne: selectsOne
+        };
+    }
 }
 
 /**
@@ -220,7 +259,7 @@ export class ResolvedAttributeSetBuilder {
         // let bodyCode = () =>
         {
             if (this.ras && arc && arc.traitsToApply) {
-                this.takeReference(this.ras.applyTraits(arc.traitsToApply, arc.resOpt, arc.resGuide, arc.actionsModify));
+                this.takeReference(this.ras.applyTraitsResolutionGuidance(arc.traitsToApply, arc.resOpt, arc.resGuide, arc.actionsModify));
             }
         }
         // return p.measure(bodyCode);

@@ -13,6 +13,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         TraitRef,
         PurposeDef,
         PurposeRef,
+        TraitGroupDef,
+        TraitGroupRef,
         DataTypeDef,
         DataTypeRef,
         AttributeRef,

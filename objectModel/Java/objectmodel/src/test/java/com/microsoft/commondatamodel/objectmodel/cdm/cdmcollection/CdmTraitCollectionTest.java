@@ -243,14 +243,14 @@ public class CdmTraitCollectionTest {
     manifest.getExhibitsTraits().add(trait);
     manifest.getExhibitsTraits().add(otherTrait);
     manifest.getExhibitsTraits().add(trait);
-    manifest.getExhibitsTraits().get(2).setFromProperty(true);
+    ((CdmTraitReference) manifest.getExhibitsTraits().get(2)).setFromProperty(true);
     manifest.getExhibitsTraits().add(otherTrait);
     manifest.getExhibitsTraits().add(trait);
-    manifest.getExhibitsTraits().get(4).setFromProperty(true);
+    ((CdmTraitReference) manifest.getExhibitsTraits().get(4)).setFromProperty(true);
     manifest.getExhibitsTraits().add(otherTrait);
     Assert.assertEquals(6, manifest.getExhibitsTraits().size());
 
-    Assert.assertTrue(manifest.getExhibitsTraits().get(2).isFromProperty());
+    Assert.assertTrue(((CdmTraitReference) manifest.getExhibitsTraits().get(2)).isFromProperty());
 
     final boolean removed = manifest.getExhibitsTraits().remove(trait);
     Assert.assertEquals(
@@ -280,8 +280,8 @@ public class CdmTraitCollectionTest {
     manifest.getExhibitsTraits().add(trait);
     manifest.getExhibitsTraits().add(otherTrait);
 
-    Assert.assertFalse(manifest.getExhibitsTraits().get(0).isFromProperty());
-    Assert.assertFalse(manifest.getExhibitsTraits().get(1).isFromProperty());
+    Assert.assertFalse(((CdmTraitReference) manifest.getExhibitsTraits().get(0)).isFromProperty());
+    Assert.assertFalse(((CdmTraitReference) manifest.getExhibitsTraits().get(1)).isFromProperty());
 
     int index = manifest.getExhibitsTraits().indexOf(trait.getTraitName(), true);
     Assert.assertEquals(-1, index);
@@ -292,7 +292,7 @@ public class CdmTraitCollectionTest {
     manifest.getExhibitsTraits().add(otherTrait);
 
     Assert.assertEquals(6, manifest.getExhibitsTraits().size());
-    manifest.getExhibitsTraits().get(2).setFromProperty(true);
+    ((CdmTraitReference) manifest.getExhibitsTraits().get(2)).setFromProperty(true);
     index = manifest.getExhibitsTraits().indexOf(trait.getTraitName(), true);
     Assert.assertEquals(2, index);
     index = manifest.getExhibitsTraits().indexOf(trait.getTraitName());

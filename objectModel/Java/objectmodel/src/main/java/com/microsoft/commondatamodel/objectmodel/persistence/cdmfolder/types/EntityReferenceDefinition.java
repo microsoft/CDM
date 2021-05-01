@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 public class EntityReferenceDefinition {
     private Object entityReference;
     private ArrayNode appliedTraits;
+    private Boolean optional;
 
     public Object getEntityReference() {
         return entityReference;
@@ -23,6 +24,14 @@ public class EntityReferenceDefinition {
 
     public void setAppliedTraits(final ArrayNode appliedTraits) {
         this.appliedTraits = appliedTraits;
+    }
+
+    public Boolean getOptional() {
+        return optional;
+    }
+
+    public void setOptional(Boolean optional) {
+        this.optional = optional;
     }
 }
 

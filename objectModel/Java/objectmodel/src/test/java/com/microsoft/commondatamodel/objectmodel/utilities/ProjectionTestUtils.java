@@ -8,6 +8,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projection.AttributeContextUtil;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import org.testng.Assert;
 
 import java.io.BufferedWriter;
@@ -24,17 +25,15 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Common utility methods for projection tests
+ * If you want to update the expected output txt files for all the tests that are ran,
+ * please set the parameter updateExpectedOutput true in the method
+ * @see ProjectionTestUtils#validateAttributeContext(List, String, String, CdmEntityDefinition, boolean)
  */
 public class ProjectionTestUtils {
     /**
      * Path to foundations
      */
     private static final String foundationJsonPath = "cdm:/foundations.cdm.json";
-
-    /**
-     * If true, will update the expected output txt files for all the tests that are ran.
-     */
-    private static boolean updateExpectedOutput = false;
 
     /**
      * Resolves an entity
@@ -83,28 +82,37 @@ public class ProjectionTestUtils {
     /**
      * Loads an entity, resolves it, and then validates the generated attribute contexts
      */
-    public static CompletableFuture<Void> loadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, String testName, String testsSubpath, String entityName, List<String> directives) {
-        return CompletableFuture.runAsync(() -> {
-            String expectedOutputPath = null;
-            try {
-                expectedOutputPath = TestHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public static CompletableFuture<CdmEntityDefinition> loadEntityForResolutionOptionAndSave(final CdmCorpusDefinition corpus, final String testName, final String testsSubpath, final String entityName, List<String> directives) {
+        String expectedOutputPath = null;
+        try {
+            expectedOutputPath = TestHelper.getExpectedOutputFolderPath(testsSubpath, testName);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-            CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-            Assert.assertNotNull(entity);
-            CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, directives).join();
-            Assert.assertNotNull(resolvedEntity);
+        CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
+        Assert.assertNotNull(entity);
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, directives).join();
+        Assert.assertNotNull(resolvedEntity);
 
-            validateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity);
-        });
+        validateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity);
+
+        return CompletableFuture.completedFuture(resolvedEntity);
     }
 
     /**
      * Validates if the attribute context of the resolved entity matches the expected output.
+     * @see ProjectionTestUtils#validateAttributeContext(List, String, String, CdmEntityDefinition, boolean)
      */
     private static void validateAttributeContext(List<String> directives, String expectedOutputPath, String entityName, CdmEntityDefinition resolvedEntity) {
+        validateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity, false);
+    }
+
+    /**
+     * Validates if the attribute context of the resolved entity matches the expected output.
+     * @param updateExpectedOutput If true, will update the expected output txt files for all the tests that are ran.
+     */
+    private static void validateAttributeContext(List<String> directives, String expectedOutputPath, String entityName, CdmEntityDefinition resolvedEntity, boolean updateExpectedOutput) {
         if (resolvedEntity.getAttributeContext() == null) {
             Assert.fail("ValidateAttributeContext called with not resolved entity.");
         }
@@ -172,8 +180,13 @@ public class ProjectionTestUtils {
     /**
      * Creates a corpus
      */
-    public static CdmCorpusDefinition getCorpus(String testName, String testsSubpath) throws InterruptedException {
+    public static CdmCorpusDefinition getLocalCorpus(final String testsSubpath, final String testName) throws InterruptedException {
         CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, testName, null);
+
+        corpus.setEventCallback((CdmStatusLevel level, String message) -> {
+            Assert.fail(message);
+        }, CdmStatusLevel.Warning);
+
         return corpus;
     }
 
@@ -201,12 +214,12 @@ public class ProjectionTestUtils {
 
         String attributeName1 = "id";
         CdmTypeAttributeDefinition attribute1 = corpus.makeObject(CdmObjectType.TypeAttributeDef, attributeName1);
-        attribute1.setDataType(corpus.makeRef(CdmObjectType.DataTypeRef, "String", true));
+        attribute1.setDataType(corpus.makeRef(CdmObjectType.DataTypeRef, "string", true));
         entity.getAttributes().add(attribute1);
 
         String attributeName2 = "name";
         CdmTypeAttributeDefinition attribute2 = corpus.makeObject(CdmObjectType.TypeAttributeDef, attributeName2);
-        attribute2.setDataType(corpus.makeRef(CdmObjectType.DataTypeRef, "String", true));
+        attribute2.setDataType(corpus.makeRef(CdmObjectType.DataTypeRef, "string", true));
         entity.getAttributes().add(attribute2);
 
         String attributeName3 = "value";

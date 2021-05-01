@@ -12,6 +12,7 @@ import {
     CdmCorpusContext,
     cdmDataFormat,
     CdmDataTypeReference,
+    CdmEntityDefinition,
     CdmObject,
     CdmObjectDefinition,
     cdmObjectType,
@@ -27,7 +28,6 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    StringUtils,
     traitToPropertyMap,
     VisitCallback
 } from '../internal';
@@ -345,34 +345,41 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             rasb.ownOne(newAtt);
             const rts: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
 
-            // this context object holds all of the info about what needs to happen to resolve these attributes.
-            // make a copy and add defaults if missing
-            let resGuideWithDefault: CdmAttributeResolutionGuidance;
-            if (this.resolutionGuidance !== undefined) {
-                resGuideWithDefault = this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
-            } else {
-                resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
+            if (this.owner && this.owner.objectType == cdmObjectType.entityDef) {
+                rasb.ras.setTargetOwner(this.owner as CdmEntityDefinition);
             }
 
-            // renameFormat is not currently supported for type attributes
-            resGuideWithDefault.renameFormat = undefined;
-
-            resGuideWithDefault.updateAttributeDefaults(undefined, this);
-            const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
-
-            // TODO: remove the resolution guidance if projection is being used
-            // from the traits of the datatype, purpose and applied here, see if new attributes get generated
-            rasb.applyTraits(arc);
-            rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
-            // this may have added symbols to the dependencies, so merge them
-            resOpt.symbolRefSet.merge(arc.resOpt.symbolRefSet);
-
             if (this.projection) {
+                rasb.ras.applyTraits(rts);
+
                 const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this);
                 const projCtx: ProjectionContext = this.projection.constructProjectionContext(projDirective, under, rasb.ras);
 
                 const ras: ResolvedAttributeSet = this.projection.extractResolvedAttributes(projCtx, under);
                 rasb.ras = ras;
+            } else {
+                // using resolution guidance
+
+                // this context object holds all of the info about what needs to happen to resolve these attributes.
+                // make a copy and add defaults if missing
+                let resGuideWithDefault: CdmAttributeResolutionGuidance;
+                if (this.resolutionGuidance !== undefined) {
+                    resGuideWithDefault = this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
+                } else {
+                    resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
+                }
+
+                // renameFormat is not currently supported for type attributes
+                resGuideWithDefault.renameFormat = undefined;
+
+                resGuideWithDefault.updateAttributeDefaults(undefined, this);
+                const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
+
+                // from the traits of the datatype, purpose and applied here, see if new attributes get generated
+                rasb.applyTraits(arc);
+                rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
+                // this may have added symbols to the dependencies, so merge them
+                resOpt.symbolRefSet.merge(arc.resOpt.symbolRefSet);
             }
 
             return rasb;

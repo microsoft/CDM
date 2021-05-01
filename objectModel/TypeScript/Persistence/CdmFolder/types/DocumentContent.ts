@@ -8,14 +8,15 @@ import {
     Entity,
     Import,
     Purpose,
-    Trait
+    Trait,
+    TraitGroup
 } from '.';
 
 export abstract class DocumentContent {
     public $schema: string;
     public jsonSchemaSemanticVersion: string;
     public imports?: Import[];
-    public definitions: (Trait | DataType | Purpose | AttributeGroup | Entity | ConstantEntity)[];
+    public definitions: (Trait | TraitGroup | DataType | Purpose | AttributeGroup | Entity | ConstantEntity)[];
     public documentVersion: string;
 
     /**

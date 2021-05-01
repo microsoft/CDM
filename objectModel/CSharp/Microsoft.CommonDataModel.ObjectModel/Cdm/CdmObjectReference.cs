@@ -9,6 +9,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     public interface CdmObjectReference : CdmObject
     {
         /// <summary>
+        /// Gets or sets the object's Optional property.
+        /// This indicates the SDK to not error out in case the definition could not be resolved.
+        /// </summary>
+        bool? Optional { get; set; }
+
+        /// <summary>
         /// Gets the object reference applied traits.
         /// </summary>
         CdmTraitCollection AppliedTraits { get; }

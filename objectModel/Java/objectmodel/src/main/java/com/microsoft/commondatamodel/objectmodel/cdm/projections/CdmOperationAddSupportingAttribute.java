@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * Class to handle AddSupportingAttribute operations
  */
 public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
-    private String tag = CdmOperationAddSupportingAttribute.class.getSimpleName();
+    private static final String TAG = CdmOperationAddSupportingAttribute.class.getSimpleName();
     private CdmTypeAttributeDefinition supportingAttribute;
 
     public CdmOperationAddSupportingAttribute(final CdmCorpusContext ctx) {
@@ -84,7 +84,7 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
             missingFields.add("supportingAttribute");
         }
         if (missingFields.size() > 0) {
-            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -144,7 +144,7 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
         if (projCtx.getCurrentAttributeStateSet().getStates().size() > 0) {
             int lastIndex = projCtx.getCurrentAttributeStateSet().getStates().size() - 1;
             ProjectionAttributeState lastState = projCtx.getCurrentAttributeStateSet().getStates().get(lastIndex);
-            CdmTraitReference inSupportOfTrait = this.supportingAttribute.getAppliedTraits().add("is.addedInSupportOf");
+            CdmTraitReference inSupportOfTrait = (CdmTraitReference) this.supportingAttribute.getAppliedTraits().add("is.addedInSupportOf");
             inSupportOfTrait.getArguments().add("inSupportOf", lastState.getCurrentResolvedAttribute().getResolvedName());
         }
 

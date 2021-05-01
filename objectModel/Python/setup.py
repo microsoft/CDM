@@ -4,7 +4,7 @@
 import os
 from os.path import isfile, join
 from os import listdir
-from shutil import copytree, ignore_patterns, rmtree
+from shutil import copystat, ignore_patterns, rmtree, copy2
 import distutils.cmd
 import distutils.log
 import setuptools
@@ -19,11 +19,27 @@ class CopyResourcesCommand(distutils.cmd.Command):
 
     user_options = []  # type: List
 
+    def copy_files(self, from_path, to_path, paths_to_ignore):
+        """Copies top-level files from the source folder to destination folder."""
+
+        names = os.listdir(from_path)
+        ignored_names = paths_to_ignore(from_path, names)
+
+        os.makedirs(to_path)
+
+        for name in names:
+            if name in ignored_names:
+                continue
+            srcname = os.path.join(from_path, name)
+            dstname = os.path.join(to_path, name)
+            if os.path.isfile(srcname):
+                copy2(srcname, dstname)
+
+        copystat(from_path, to_path)
+
     def copy_and_overwrite(self, from_path, to_path, paths_to_ignore):
         """Copies the folder from path and overwrites the to path folder."""
-        if os.path.exists(to_path):
-            rmtree(to_path)
-        copytree(from_path, to_path, ignore=ignore_patterns(*paths_to_ignore))
+        self.copy_files(from_path, to_path, ignore_patterns(*paths_to_ignore))
 
     def initialize_options(self):
         pass
@@ -36,9 +52,17 @@ class CopyResourcesCommand(distutils.cmd.Command):
         root_path = os.getcwd()
 
         paths_to_ignore = ['*.manifest.cdm.json', '*.0.6.cdm.json', '*.0.7.cdm.json', '*.0.8.cdm.json', '*.0.8.1.cdm.json',
-                           '*.0.9.cdm.json', '*.1.0.cdm.json', '*core*', '*.git*', '*.jpg', '*.md']
+                           '*.0.9.cdm.json', '*.git*', '*.jpg', '*.md']
 
-        self.copy_and_overwrite('{}/../../schemaDocuments/'.format(root_path), '{}/resources/'.format(root_path), paths_to_ignore)
+        paths_to_copy = ['.', 'cdmfoundation', 'extensions']
+
+        to_path_root = '{}/resources/'.format(root_path)
+
+        if os.path.exists(to_path_root):
+            rmtree(to_path_root)
+
+        for path in paths_to_copy:
+            self.copy_and_overwrite('{}/../../schemaDocuments/{}'.format(root_path, path), '{}/resources/{}'.format(root_path, path), paths_to_ignore)
 
 
 def list_files_in_folder(folders):
@@ -54,7 +78,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="commondatamodel-objectmodel",
-    version="1.1.2",
+    version="1.2.0",
     author="Microsoft",
     description="Common Data Model Object Model library for Python",
     url="https://github.com/pypa/commondatamodel-objectmodel",

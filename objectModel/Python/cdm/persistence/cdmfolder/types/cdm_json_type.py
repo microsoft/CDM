@@ -37,6 +37,8 @@ from .purpose_reference import PurposeReference
 from .referenced_entity_declaration import ReferencedEntityDeclaration
 from .trait import Trait
 from .trait_reference import TraitReference
+from .trait_group import TraitGroup
+from .trait_group_reference import TraitGroupReference
 from .type_attribute import TypeAttribute
 
 CdmJsonType = Union[
@@ -76,5 +78,7 @@ CdmJsonType = Union[
     ReferencedEntityDeclaration,
     Trait,
     TraitReference,
+    TraitGroup,
+    TraitGroupReference,
     TypeAttribute
 ]

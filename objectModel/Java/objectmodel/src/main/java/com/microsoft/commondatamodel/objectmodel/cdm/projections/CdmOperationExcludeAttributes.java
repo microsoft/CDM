@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * Class to handle ExcludeAttributes operations
  */
 public class CdmOperationExcludeAttributes extends CdmOperationBase {
-    private String tag = CdmOperationExcludeAttributes.class.getSimpleName();
+    private static final String TAG = CdmOperationExcludeAttributes.class.getSimpleName();
     private List<String> excludeAttributes;
 
     public CdmOperationExcludeAttributes(final CdmCorpusContext ctx) {
@@ -83,7 +83,7 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
             missingFields.add("excludeAttributes");
         }
         if (missingFields.size() > 0) {
-            Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;

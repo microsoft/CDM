@@ -9,5 +9,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
     {
         public dynamic EntityReference { get; set; }
         public List<JToken> AppliedTraits { get; set; }
+        public bool? Optional { get; set; }
     }
 }

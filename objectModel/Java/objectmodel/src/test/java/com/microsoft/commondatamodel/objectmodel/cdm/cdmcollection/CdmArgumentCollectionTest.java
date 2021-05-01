@@ -135,7 +135,7 @@ public class CdmArgumentCollectionTest {
     final CdmLocalEntityDeclarationDefinition entityReference =
         new CdmLocalEntityDeclarationDefinition(manifest.getCtx(), "entityName");
 
-    final CdmTraitReference trait = entityReference.getExhibitsTraits().add("theTrait");
+    final CdmTraitReference trait = (CdmTraitReference) entityReference.getExhibitsTraits().add("theTrait");
 
     final CdmArgumentDefinition argument =
         trait.getArguments().add("GreatArgumentName", "GreatValue");

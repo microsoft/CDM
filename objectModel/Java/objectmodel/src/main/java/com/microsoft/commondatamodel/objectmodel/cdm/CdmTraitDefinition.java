@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
-  private String tag = CdmTraitDefinition.class.getSimpleName();
+  private static final String TAG = CdmTraitDefinition.class.getSimpleName();
 
   Boolean thisIsKnownToHaveParameters;
   private Boolean baseIsKnownToHaveParameters;
@@ -322,7 +322,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.traitName)) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("traitName"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

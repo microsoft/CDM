@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
 
-  private String tag = CdmManifestDeclarationDefinition.class.getSimpleName();
+  private static final String TAG = CdmManifestDeclarationDefinition.class.getSimpleName();
 
   private String manifestName;
   private OffsetDateTime lastFileStatusCheckTime;
@@ -142,7 +142,7 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
     }
 
     if (postChildren != null && postChildren.invoke(this, path)) {
-      return false;
+      return true;
     }
 
     return false;
@@ -159,7 +159,7 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

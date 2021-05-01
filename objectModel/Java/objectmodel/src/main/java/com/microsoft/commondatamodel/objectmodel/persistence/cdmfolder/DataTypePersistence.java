@@ -13,11 +13,11 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class DataTypePersistence {
-  private static String tag = DataTypePersistence.class.getSimpleName();
+  private static final String TAG = DataTypePersistence.class.getSimpleName();
 
   public static CdmDataTypeDefinition fromData(final CdmCorpusContext ctx, final DataType obj) {
       if (obj == null) {
-        Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistJsonDatatypeConversionError);
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistJsonDatatypeConversionError);
         return null;
       }
 

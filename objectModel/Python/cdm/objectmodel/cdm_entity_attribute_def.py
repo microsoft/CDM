@@ -11,7 +11,6 @@ from cdm.enums import CdmLogCode
 from cdm.utilities.string_utils import StringUtils
 
 from .cdm_attribute_def import CdmAttribute
-from .relationship_info import RelationshipInfo
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmEntityReference
@@ -91,63 +90,51 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         kind = 'rasb'
         ctx = self.ctx
 
-        # check cache at the correct depth for entity attributes
-        rel_info = self._get_relationship_info(res_opt, self._fetch_att_res_context(res_opt))
-        if rel_info.max_depth_exceeded:
-            res_opt._depth_info.current_depth = rel_info.next_depth
-            res_opt._depth_info.max_depth = rel_info.max_depth
-            res_opt._depth_info.max_depth_exceeded = rel_info.max_depth_exceeded
+        # once resolution guidance is fully deprecated, this line can be removed
+        arc = self._fetch_att_res_context(res_opt) if not self.entity._is_projection else None  # type: AttributeResolutionContext
 
+        # update the depth info and check cache at the correct depth for entity attributes
+        res_opt._depth_info._update_to_next_level(res_opt, self.is_polymorphic_source, arc)
         cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
-
-        if rel_info.max_depth_exceeded:
-            # temporaty fix to avoid the depth from being increased while calculating the cache tag
-            res_opt._depth_info.current_depth -= 1
 
         return ctx._cache.get(cache_tag) if cache_tag else None
 
     def _construct_resolved_attributes(self, res_opt: 'ResolveOptions', under: Optional['CdmAttributeContext'] = None) -> 'ResolvedAttributeSetBuilder':
         from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttribute, ResolvedAttributeSetBuilder, ResolvedTrait
         from cdm.utilities import AttributeContextParameters, AttributeResolutionDirectiveSet
-
         from .cdm_object import CdmObject
 
+        # find and cache the complete set of attributes
+        # attributes definitions originate from and then get modified by subsequent re-defintions from (in this order):
+        # the entity used as an attribute, traits applied to that entity,
+        # the purpose of the attribute, any traits applied to the attribute.
         rasb = ResolvedAttributeSetBuilder()
-        ctx_ent = self.entity
         under_att = under
         acp_ent = None
 
         if not res_opt._in_circular_reference:
-            arc = self._fetch_att_res_context(res_opt)
-
-            # complete cheating but is faster.
-            # this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
-            rel_info = self._get_relationship_info(arc.res_opt, arc)
-            res_opt._depth_info.current_depth = rel_info.next_depth
-            res_opt._depth_info.max_depth_exceeded = rel_info.max_depth_exceeded
-            res_opt._depth_info.max_depth = rel_info.max_depth
-
-            ctx_ent_obj_def = ctx_ent.fetch_object_definition(res_opt)
-
-            if ctx_ent_obj_def and ctx_ent_obj_def.object_type == CdmObjectType.PROJECTION_DEF:
+            if self.entity and self.entity._is_projection:
                 # A Projection
 
                 # if the max depth is exceeded it should not try to execute the projection
                 if not res_opt._depth_info.max_depth_exceeded:
-                    proj_directive = ProjectionDirective(res_opt, self, ctx_ent)
-                    proj_def = ctx_ent_obj_def
+                    proj_def = self.entity.fetch_object_definition(res_opt)
+                    proj_directive = ProjectionDirective(res_opt, self, self.entity)
                     proj_ctx = proj_def._construct_projection_context(proj_directive, under)
-                    rasb._resolved_attribute_set = proj_def._extract_resolved_attributes(proj_ctx, under_att)
+                    rasb._resolved_attribute_set = proj_def._extract_resolved_attributes(proj_ctx, under)
             else:
                 # An Entity Reference
+
+                arc = self._fetch_att_res_context(res_opt)
+                rel_info = arc._get_relationship_info()
 
                 if under_att:
                     # make a context for this attribute that holds the attributes that come up from the entity
                     acp_ent = AttributeContextParameters(
                         under=under_att,
                         type=CdmAttributeContextType.ENTITY,
-                        name=ctx_ent.fetch_object_definition_name(),
-                        regarding=ctx_ent,
+                        name=self.entity.fetch_object_definition_name(),
+                        regarding=self.entity,
                         include_traits=True)
 
                 if rel_info.is_by_ref:
@@ -190,7 +177,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                                     rasb._resolved_attribute_set.create_attribute_context(res_opt, acp_ent_att_ent)
 
                     # if we got here because of the max depth, need to impose the directives to make the trait work as expected
-                    if rel_info.max_depth_exceeded:
+                    if res_opt._depth_info.max_depth_exceeded:
                         if not arc.res_opt.directives:
                             arc.res_opt.directives = AttributeResolutionDirectiveSet()
                         arc.res_opt.directives.add('referenceOnly')
@@ -218,7 +205,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                             continue
 
                         if not reqd_trait.parameter_values:
-                            logger.warning(self._ctx, self._TAG,  CdmEntityAttributeDefinition._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.WARN_IDENTIFIER_ARGUMENTS_NOT_SUPPORTED)
+                            logger.warning(self.ctx, self._TAG,  CdmEntityAttributeDefinition._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.WARN_IDENTIFIER_ARGUMENTS_NOT_SUPPORTED)
                             continue
 
                         ent_references = []
@@ -299,58 +286,6 @@ class CdmEntityAttributeDefinition(CdmAttribute):
     def get_name(self) -> str:
         return self.name
 
-    def _get_relationship_info(self, res_opt: 'ResolveOptions', arc: 'AttributeResolutionContext') -> 'RelationshipInfo':
-        rts = None
-        no_max_depth = False
-        has_ref = False
-        is_by_ref = False
-        is_array = False
-        selects_one = False
-        max_depth = None
-        next_depth = res_opt._depth_info.current_depth
-        max_depth_exceeded = False
-
-        if arc and arc.res_guide:
-            if arc.res_guide.entity_by_reference and arc.res_guide.entity_by_reference.allow_reference:
-                has_ref = True
-            if arc.res_opt.directives:
-                no_max_depth = arc.res_opt.directives.has('noMaxDepth')
-                # based on directives
-                if has_ref:
-                    is_by_ref = arc.res_opt.directives.has('referenceOnly')
-                selects_one = arc.res_opt.directives.has('selectOne')
-                is_array = arc.res_opt.directives.has('isArray')
-
-            # if this is a 'selectone', then skip counting this entity in the depth, else count it
-            if not selects_one:
-                # if already a ref, who cares?
-                if not is_by_ref:
-                    
-                    next_depth += 1
-
-                    # max comes from settings but may not be set
-                    max_depth = res_opt.max_depth
-                    if has_ref and arc.res_guide.entity_by_reference.reference_only_after_depth:
-                        max_depth = arc.res_guide.entity_by_reference.reference_only_after_depth
-                    if no_max_depth:
-                        # no max? really? what if we loop forever? if you need more than 32 nested entities,
-                        # then you should buy a different metadata description system.
-                        max_depth = DepthInfo.MAX_DEPTH_LIMIT
-
-                    if next_depth > max_depth:
-                        # don't do it
-                        is_by_ref = True
-                        max_depth_exceeded = True
-
-        return RelationshipInfo(
-            rts=rts,
-            is_by_ref=is_by_ref,
-            is_array=is_array,
-            selects_one=selects_one,
-            next_depth=next_depth,
-            max_depth=max_depth,
-            max_depth_exceeded=max_depth_exceeded)
-
     def fetch_resolved_entity_references(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedEntityReferenceSet':
         # need to copy so that relationship depth of parent is not overwritten
         res_opt = res_opt.copy() if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
@@ -366,7 +301,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         # this context object holds all of the info about what needs to happen to resolve these attributes
         arc = AttributeResolutionContext(res_opt, res_guide, rts_this_att)
 
-        rel_info = self._get_relationship_info(res_opt, arc)
+        rel_info = arc._get_relationship_info()
         if not rel_info.is_by_ref or rel_info.is_array:
             return None
 

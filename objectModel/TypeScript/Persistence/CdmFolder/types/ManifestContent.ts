@@ -7,6 +7,7 @@ import {
     EntityDeclarationDefinition,
     FileStatus,
     ManifestDeclaration,
+    TraitGroupReference,
     TraitReference
 } from '.';
 
@@ -14,7 +15,7 @@ export abstract class ManifestContent extends DocumentContent implements FileSta
     public manifestName?: string;
     public folioName?: string;
     public explanation?: string;
-    public exhibitsTraits: TraitReference[];
+    public exhibitsTraits: (string | TraitReference | TraitGroupReference)[];
     public subManifests?: ManifestDeclaration[];
     public subFolios?: ManifestDeclaration[];
     public entities?: EntityDeclarationDefinition[];

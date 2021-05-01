@@ -175,33 +175,39 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         rasb.own_one(new_att)
         rts = self._fetch_resolved_traits(res_opt)
 
-        # this context object holds all of the info about what needs to happen to resolve these attributes.
-        # make a copy and add defaults if missing
-        res_guide_with_default = None
-        if self.resolution_guidance is not None:
-            res_guide_with_default = self.resolution_guidance.copy(res_opt)
-        else:
-            res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx)
-
-        # rename_format is not currently supported for type attributes
-        res_guide_with_default.rename_format = None
-
-        res_guide_with_default._update_attribute_defaults(None, self)
-        arc = AttributeResolutionContext(res_opt, res_guide_with_default, rts)
-
-        # TODO: remove the resolution guidance if projection is being used
-        # from the traits of the datatype, purpose and applied here, see if new attributes get generated
-        rasb.apply_traits(arc)
-        rasb.generate_applier_attributes(arc, False)  # false = don't apply these traits to added things
-        # this may have added symbols to the dependencies, so merge them
-        res_opt._symbol_ref_set._merge(arc.res_opt._symbol_ref_set)
+        if self.owner and self.owner.object_type == CdmObjectType.ENTITY_DEF:
+            rasb._resolved_attribute_set.set_target_owner(self.owner)
 
         if self.projection:
+            rasb._resolved_attribute_set.apply_traits(rts)
+
             proj_directive = ProjectionDirective(res_opt, self)
             proj_ctx = self.projection._construct_projection_context(proj_directive, under, rasb._resolved_attribute_set)
 
             ras = self.projection._extract_resolved_attributes(proj_ctx, under)
             rasb._resolved_attribute_set = ras
+        else:
+            # using resolution guidance
+
+            # this context object holds all of the info about what needs to happen to resolve these attributes.
+            # make a copy and add defaults if missing
+            res_guide_with_default = None
+            if self.resolution_guidance is not None:
+                res_guide_with_default = self.resolution_guidance.copy(res_opt)
+            else:
+                res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx)
+
+            # rename_format is not currently supported for type attributes
+            res_guide_with_default.rename_format = None
+
+            res_guide_with_default._update_attribute_defaults(None, self)
+            arc = AttributeResolutionContext(res_opt, res_guide_with_default, rts)
+
+            # from the traits of the datatype, purpose and applied here, see if new attributes get generated
+            rasb.apply_traits(arc)
+            rasb.generate_applier_attributes(arc, False)  # false = don't apply these traits to added things
+            # this may have added symbols to the dependencies, so merge them
+            res_opt._symbol_ref_set._merge(arc.res_opt._symbol_ref_set)
 
         return rasb
 

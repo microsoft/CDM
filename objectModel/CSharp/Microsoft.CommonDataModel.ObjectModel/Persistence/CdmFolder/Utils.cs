@@ -107,6 +107,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return PurposeReferencePersistence.FromData(ctx, obj);
                 else if (obj["traitReference"] != null)
                     return TraitReferencePersistence.FromData(ctx, obj);
+                else if (obj["traitGroupReference"] != null)
+                    return TraitGroupReferencePersistence.FromData(ctx, obj);
                 else if (obj["dataTypeReference"] != null)
                     return DataTypeReferencePersistence.FromData(ctx, obj);
                 else if (obj["entityReference"] != null)
@@ -123,14 +125,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         }
 
         /// <summary>
-        /// Converts a JSON object to a CdmCollection of TraitReferences
+        /// Converts a JSON object to a CdmCollection of TraitReferences and TraitGroupReferences
         /// </summary>
-        public static List<CdmTraitReference> CreateTraitReferenceList(CdmCorpusContext ctx, dynamic obj)
+        public static List<CdmTraitReferenceBase> CreateTraitReferenceList(CdmCorpusContext ctx, dynamic obj)
         {
             if (obj == null)
                 return null;
 
-            List<CdmTraitReference> result = new List<CdmTraitReference>();
+            List<CdmTraitReferenceBase> result = new List<CdmTraitReferenceBase>();
             JArray traitRefObj = null;
             if (obj.GetType() == typeof(List<JToken>))
             {
@@ -150,7 +152,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 for (int i = 0; i < traitRefObj.Count; i++)
                 {
                     dynamic tr = traitRefObj[i];
-                    result.Add(TraitReferencePersistence.FromData(ctx, tr));
+
+                    if (!(tr is JValue) && tr["traitGroupReference"] != null)
+                    {
+                        result.Add(TraitGroupReferencePersistence.FromData(ctx, tr));
+                    }
+                    else
+                    {
+                        result.Add(TraitReferencePersistence.FromData(ctx, tr));
+                    }
                 }
             }
 

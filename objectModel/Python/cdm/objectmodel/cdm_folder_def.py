@@ -161,7 +161,7 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
 
             # remove them from the caches since they will be back in a moment
             if doc._is_dirty:
-                logger.warning(self._ctx, self._TAG, CdmFolderDefinition._fetch_document_from_folder_path_async.__name__, self.at_corpus_path,
+                logger.warning(self.ctx, self._TAG, CdmFolderDefinition._fetch_document_from_folder_path_async.__name__, self.at_corpus_path,
                                CdmLogCode.WARN_DOC_CHANGES_DISCARDED , doc.name)
 
             self.documents.remove(doc_name)

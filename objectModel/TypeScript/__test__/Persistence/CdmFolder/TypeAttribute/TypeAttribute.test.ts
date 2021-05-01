@@ -14,17 +14,18 @@ import {
     cdmStatusLevel,
     CdmTraitCollection,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     CdmTypeAttributeDefinition,
     importsLoadStrategy,
     resolveContext,
-    resolveOptions
+    resolveOptions,
+    EventCallback
 } from '../../../../internal';
 import { PersistenceLayer } from '../../../../Persistence';
 import { EntityPersistence } from '../../../../Persistence/CdmFolder/EntityPersistence';
 import { TypeAttributePersistence } from '../../../../Persistence/CdmFolder/TypeAttributePersistence';
 import { Argument, ConstantEntity, Entity, EntityReferenceDefinition, TraitReference, TypeAttribute } from '../../../../Persistence/CdmFolder/types';
 import { LocalAdapter } from '../../../../Storage';
-import { EventCallback } from '../../../../Utilities/EventCallback';
 import { testHelper } from '../../../testHelper';
 
 // tslint:disable-next-line: max-func-body-length
@@ -87,9 +88,9 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toBeTruthy();
 
         // Check that the trait 'is.identifiedBy' is created with the correct argument.
-        const isIdentifiedBy1: CdmTraitReference = typeAttribute.appliedTraits.allItems[1];
+        const isIdentifiedBy1: CdmTraitReferenceBase = typeAttribute.appliedTraits.allItems[1];
         expect(isIdentifiedBy1.namedReference).toEqual('is.identifiedBy');
-        expect(isIdentifiedBy1.arguments.allItems[0].value).toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
+        expect((isIdentifiedBy1 as CdmTraitReference).arguments.allItems[0].value).toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
 
         // Read from a resolved entity schema.
         const resolvedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership_Resolved.cdm.json/TeamMembership', null, resOpt);
@@ -99,11 +100,11 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toBeTruthy();
 
         // Check that the trait 'is.identifiedBy' is created with the correct argument.
-        const isIdentifiedBy2: CdmTraitReference = resolvedTypeAttribute.appliedTraits.allItems[6];
+        const isIdentifiedBy2: CdmTraitReferenceBase = resolvedTypeAttribute.appliedTraits.allItems[6];
         expect(isIdentifiedBy2.namedReference)
             .toEqual('is.identifiedBy');
 
-        const argumentValue: CdmAttributeReference = isIdentifiedBy2.arguments.allItems[0].value as CdmAttributeReference;
+        const argumentValue: CdmAttributeReference = (isIdentifiedBy2 as CdmTraitReference).arguments.allItems[0].value as CdmAttributeReference;
         expect(argumentValue.namedReference)
             .toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
 

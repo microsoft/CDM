@@ -4,12 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.entity;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReferenceBase;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.AttributeGroupPersistence;
@@ -64,7 +59,7 @@ public class CdmEntityDefinitionTest {
             "local:/entA.cdm.json/Entity A"
         ).join();
     final CdmTypeAttributeDefinition att = (CdmTypeAttributeDefinition) obj.getAttributes().get(0);
-    List<CdmTraitReference> result = att.getAppliedTraits()
+    List<CdmTraitReferenceBase> result = att.getAppliedTraits()
         .getAllItems()
         .parallelStream()
         .filter(x -> "is.constrained".equals(x.getNamedReference()))

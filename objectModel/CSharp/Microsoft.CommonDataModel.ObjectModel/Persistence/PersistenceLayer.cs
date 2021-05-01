@@ -334,7 +334,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 }
                 catch (Exception e)
                 {
-                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistFilePersistError, newName + $". Reason '{e.Message}'.");
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistFilePersistError, newName, e.Message);
                     return false;
                 }
 

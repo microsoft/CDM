@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class DataPartitionPersistence {
-  private static String tag = DataPartitionPersistence.class.getSimpleName();
+  private static final String TAG = DataPartitionPersistence.class.getSimpleName();
 
   public static CompletableFuture<CdmDataPartitionDefinition> fromData(
       final CdmCorpusContext ctx,
@@ -44,7 +44,7 @@ public class DataPartitionPersistence {
     partition.setLastFileStatusCheckTime(obj.getLastFileStatusCheckTime());
 
     if (Strings.isNullOrEmpty(partition.getLocation())) {
-      Logger.warning(ctx , tag, "fromData", null, CdmLogCode.WarnPersistPartitionLocMissing , partition.getName());
+      Logger.warning(ctx , TAG, "fromData", null, CdmLogCode.WarnPersistPartitionLocMissing , partition.getName());
     }
 
     if (obj.isHidden() != null && obj.isHidden()) {
@@ -56,7 +56,7 @@ public class DataPartitionPersistence {
       if (obj.getFileFormatSettings() != null) {
         final CdmTraitReference csvFormatTrait = Utils.createCsvTrait(obj.getFileFormatSettings(), ctx);
         if (csvFormatTrait == null) {
-          Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistCsvProcessingError);
+          Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistCsvProcessingError);
 
           return CompletableFuture.completedFuture(null);
         }
@@ -92,22 +92,22 @@ public class DataPartitionPersistence {
 
     if (result.getName() == null)
     {
-      Logger.warning(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.WarnPersistPartitionNameNull);
+      Logger.warning(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.WarnPersistPartitionNameNull);
       result.setName("");
     }
 
     if (Strings.isNullOrEmpty(result.getLocation())) {
-      Logger.warning(instance.getCtx() , tag, "toData", instance.getAtCorpusPath(), CdmLogCode.WarnPersistPartitionLocMissing, result.getName());
+      Logger.warning(instance.getCtx() , TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.WarnPersistPartitionLocMissing, result.getName());
     }
 
     Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits());
     final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
 
-    if (t2pm.fetchTraitReferenceName("is.hidden") != null) {
+    if (t2pm.fetchTraitReference("is.hidden") != null) {
       result.setHidden(true);
     }
 
-    final CdmTraitReference csvTrait = t2pm.fetchTraitReferenceName("is.partition.format.CSV");
+    final CdmTraitReference csvTrait = t2pm.fetchTraitReference("is.partition.format.CSV");
     if (csvTrait != null) {
       final CsvFormatSettings csvFormatSettings = Utils.createCsvFormatSettings(csvTrait);
 
@@ -115,7 +115,7 @@ public class DataPartitionPersistence {
         result.setFileFormatSettings(csvFormatSettings);
         result.getFileFormatSettings().setType("CsvFormatSettings");
       } else {
-        Logger.error(instance.getCtx(), tag, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistCsvProcessingError);
+        Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistCsvProcessingError);
 
         return CompletableFuture.completedFuture(null);
       }

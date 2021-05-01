@@ -8,7 +8,8 @@ from cdm.resolvedmodel.resolved_trait import ResolvedTrait
 from .logging import logger
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmConstantEntityDefinition, CdmObject, CdmTraitCollection, CdmTraitReference
+    from cdm.objectmodel import CdmCorpusContext, CdmConstantEntityDefinition, CdmObject, CdmTraitCollection, \
+        CdmTraitReference, CdmTraitGroupReference
 
 
 trait_to_list_of_properties = {
@@ -257,7 +258,7 @@ class TraitToPropertyMap:
         base_type = CdmDataFormat.UNKNOWN
 
         for trait in self._traits:
-            if only_from_property and not trait.is_from_property:
+            if only_from_property and (trait.object_type == CdmObjectType.TRAIT_GROUP_REF or not trait.is_from_property):
                 continue
 
             trait_name = trait.fetch_object_definition_name()

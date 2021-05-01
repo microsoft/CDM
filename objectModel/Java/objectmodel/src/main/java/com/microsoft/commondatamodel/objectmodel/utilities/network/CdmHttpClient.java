@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * The client also expects a user to specify callback function which will be used in the case of a failure (4xx or 5xx HTTP standard status codes).
  */
 public class CdmHttpClient {
-    private static String tag = CdmHttpClient.class.getSimpleName();
+    private static final String TAG = CdmHttpClient.class.getSimpleName();
 
     @FunctionalInterface
     public interface Callback {
@@ -164,7 +164,7 @@ public class CdmHttpClient {
                 final Instant startTime = java.time.Instant.now();
                 if (ctx != null)
                 {
-                    Logger.info(ctx, tag, "sendAsyncHelper",
+                    Logger.info(ctx, TAG, "sendAsyncHelper",
                             null, Logger.format("Sending request {0}, request type: {1}, request url: {2}, retry number: {3}.", cdmHttpRequest.getRequestId(), httpRequest.getMethod(), cdmHttpRequest.stripSasSig(), retryNumber));
                 }
 
@@ -173,7 +173,7 @@ public class CdmHttpClient {
                 if (ctx != null)
                 {
                     final Instant endTime = java.time.Instant.now();
-                    Logger.info(ctx, tag, "sendAsyncHelper",
+                    Logger.info(ctx, TAG, "sendAsyncHelper",
                             null, Logger.format("Response {0} received, elapsed time: {1} ms.", cdmHttpRequest.getRequestId(), Duration.between(startTime, endTime).toMillis()));
                 }
 
@@ -207,7 +207,7 @@ public class CdmHttpClient {
                         if (exception instanceof ConnectTimeoutException) {
                             if (ctx != null)
                             {
-                                Logger.info(ctx, tag, "sendAsyncHelper",
+                                Logger.info(ctx, TAG, "sendAsyncHelper",
                                         null, Logger.format("Request {0} timeout after {1} s.", cdmHttpRequest.getRequestId(), cdmHttpRequest.getTimeout().getSeconds()));
                             }
 

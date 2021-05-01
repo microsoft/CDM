@@ -342,27 +342,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             }
         }
 
-        static void PrintTrait(CdmTraitReference trait)
+        static void PrintTrait(CdmTraitReferenceBase trait)
         {
             if (!string.IsNullOrEmpty(trait.FetchObjectDefinitionName()))
             {
                 Console.WriteLine("      " + trait.FetchObjectDefinitionName());
-                foreach (var argDef in trait.Arguments)
+
+                if (trait is CdmTraitReference)
                 {
-                    if (argDef.Value is CdmEntityReference)
+                    foreach (var argDef in (trait as CdmTraitReference).Arguments)
                     {
-                        Console.WriteLine("         Constant: [");
-                        var contEntDef = argDef.Value.FetchObjectDefinition<CdmConstantEntityDefinition>();
-                        foreach (List<string> constantValueList in contEntDef.ConstantValues)
+                        if (argDef.Value is CdmEntityReference)
                         {
-                            Console.WriteLine($"             [{String.Join(", ", constantValueList.ToArray())}]");
+                            Console.WriteLine("         Constant: [");
+                            var contEntDef = argDef.Value.FetchObjectDefinition<CdmConstantEntityDefinition>();
+                            foreach (List<string> constantValueList in contEntDef.ConstantValues)
+                            {
+                                Console.WriteLine($"             [{string.Join(", ", constantValueList.ToArray())}]");
+                            }
+                            Console.WriteLine("         ]");
                         }
-                        Console.WriteLine("         ]");
-                    }
-                    else
-                    {
-                        // Default output, nothing fancy for now
-                        Console.WriteLine("         " + argDef.Value);
+                        else
+                        {
+                            // Default output, nothing fancy for now
+                            Console.WriteLine("         " + argDef.Value);
+                        }
                     }
                 }
             }

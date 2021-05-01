@@ -11,12 +11,12 @@ import {
     CdmManifestDefinition,
     cdmObjectType,
     cdmLogCode,
-    CdmTraitReference,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    CdmTraitReferenceBase,
+    Logger
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
-import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
 import { AttributeGroupPersistence } from './AttributeGroupPersistence';
 import { ConstantEntityPersistence } from './ConstantEntityPersistence';
@@ -35,6 +35,7 @@ import {
     entityDeclarationDefinitionType,
     ManifestContent,
     ManifestDeclaration,
+    TraitGroupReference,
     TraitReference
 } from './types';
 import * as utils from './utils';
@@ -136,7 +137,7 @@ export class ManifestPersistence {
                 manifest.lastChildFileModifiedTime = new Date(dataObj.lastChildFileModifiedTime);
             }
 
-            utils.addArrayToCdmCollection<CdmTraitReference>(
+            utils.addArrayToCdmCollection<CdmTraitReferenceBase>(
                     manifest.exhibitsTraits,
                     utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits)
             );
@@ -203,7 +204,7 @@ export class ManifestPersistence {
         manifestContent.lastChildFileModifiedTime = timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime);
         manifestContent.documentVersion = instance.documentVersion;
         manifestContent.explanation = instance.explanation;
-        manifestContent.exhibitsTraits = copyDataUtils.arrayCopyData<TraitReference>(
+        manifestContent.exhibitsTraits = copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(
             resOpt,
             instance.exhibitsTraits.allItems,
             options);

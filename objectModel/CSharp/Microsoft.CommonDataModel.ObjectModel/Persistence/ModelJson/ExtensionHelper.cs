@@ -320,11 +320,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         }
 
         /// <summary>
-        /// Checks whether a <see cref="CdmTraitReference"/> is an extension.
+        /// Checks whether a <see cref="CdmTraitReferenceBase"/> is an extension.
         /// </summary>
         /// <param name="trait">The trait to be checked whether it is an extension.</param>
         /// <returns>Whether the trait is an extension.</returns>
-        public static bool TraitRefIsExtension(CdmTraitReference trait)
+        public static bool TraitRefIsExtension(CdmTraitReferenceBase trait)
         {
             return TraitNameHasExtensionMark(trait.NamedReference);
         }

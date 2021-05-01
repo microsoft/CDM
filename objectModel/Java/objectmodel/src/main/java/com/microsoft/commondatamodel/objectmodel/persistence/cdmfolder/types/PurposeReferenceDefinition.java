@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 public class PurposeReferenceDefinition {
     private Object purposeReference;
     private ArrayNode appliedTraits;
+    private Boolean optional;
 
     public Object getPurposeReference() {
         return purposeReference;
@@ -23,6 +24,14 @@ public class PurposeReferenceDefinition {
 
     public void setAppliedTraits(final ArrayNode appliedTraits) {
         this.appliedTraits = appliedTraits;
+    }
+
+    public Boolean getOptional() {
+        return optional;
+    }
+
+    public void setOptional(Boolean optional) {
+        this.optional = optional;
     }
 }
 

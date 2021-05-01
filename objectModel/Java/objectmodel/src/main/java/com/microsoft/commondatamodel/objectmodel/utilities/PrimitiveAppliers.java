@@ -113,7 +113,7 @@ public class PrimitiveAppliers {
       // use the default name
       appCtx.resAttNew.updateResolvedName(sub.getName());
       // add a supporting trait to this attribute
-      final CdmTraitReference supTraitRef = sub.getAppliedTraits().add("is.addedInSupportOf", false);
+      final CdmTraitReference supTraitRef = (CdmTraitReference) sub.getAppliedTraits().add("is.addedInSupportOf", false);
       final CdmTraitDefinition supTraitDef = supTraitRef.fetchObjectDefinition(appCtx.resOpt);
 
       // get the resolved traits from attribute

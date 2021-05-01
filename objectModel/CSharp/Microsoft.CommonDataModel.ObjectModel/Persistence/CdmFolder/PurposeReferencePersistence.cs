@@ -21,14 +21,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
 
             bool simpleReference = true;
-            dynamic purpose = null;
-            List<CdmTraitReference> appliedTraits = null;
+            bool? optional = null;
+            dynamic purpose;
 
             if (obj is JValue)
                 purpose = obj;
             else
             {
                 simpleReference = false;
+
+                if (obj["optional"] != null)
+                {
+                    if (bool.TryParse(obj["optional"].ToString(), out bool optVal))
+                    {
+                        optional = optVal;
+                    }
+                }
+
                 if (obj["purposeReference"] is JValue)
                     purpose = (string)obj["purposeReference"];
                 else
@@ -36,11 +45,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
 
             CdmPurposeReference purposeReference = ctx.Corpus.MakeRef<CdmPurposeReference>(CdmObjectType.PurposeRef, purpose, simpleReference);
+            
+            if (optional != null)
+            {
+                purposeReference.Optional = optional;
+            }
 
             if (!(obj is JValue))
-                appliedTraits = Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]);
-
-            Utils.AddListToCdmCollection(purposeReference.AppliedTraits, appliedTraits);
+            {
+                Utils.AddListToCdmCollection(purposeReference.AppliedTraits, Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]));
+            }
 
             return purposeReference;
         }

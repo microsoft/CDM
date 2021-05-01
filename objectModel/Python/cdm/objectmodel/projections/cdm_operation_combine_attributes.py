@@ -139,16 +139,22 @@ class CdmOperationCombineAttributes(CdmOperationBase):
             new_merge_into_pas._current_resolved_attribute = ra_new_merge_into
             new_merge_into_pas._previous_state_list = pas_merge_list
 
+            attributes_added_to_context = set()
+
             # Create the attribute context parameters and just store it in the builder for now
             # We will create the attribute contexts at the end
             for select in leaf_level_combine_attribute_names.keys():
                 if select in leaf_level_combine_attribute_names and leaf_level_combine_attribute_names[select] is not None and len(leaf_level_combine_attribute_names[select]) > 0:
                     for leaf_level_for_select in leaf_level_combine_attribute_names[select]:
-                        attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
-                            select, leaf_level_for_select, new_merge_into_pas._current_resolved_attribute,
-                            CdmAttributeContextType.ATTRIBUTE_DEFINITION,
-                            leaf_level_for_select._current_resolved_attribute.att_ctx,  # lineage is the source att
-                            new_merge_into_pas._current_resolved_attribute.att_ctx)  # merge into points back here
+                        # When dealing with a polymorphic entity, it is possible that multiple entities have an attribute with the same name
+                        # Only one attribute with each name should be added otherwise the attribute context will end up with duplicated nodes
+                        if leaf_level_for_select._current_resolved_attribute._resolved_name not in attributes_added_to_context:
+                            attributes_added_to_context.add(leaf_level_for_select._current_resolved_attribute._resolved_name)
+                            attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
+                                select, leaf_level_for_select, new_merge_into_pas._current_resolved_attribute,
+                                CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                                leaf_level_for_select._current_resolved_attribute.att_ctx,  # lineage is the source att
+                                new_merge_into_pas._current_resolved_attribute.att_ctx)  # merge into points back here
 
             proj_attr_state_set._add(new_merge_into_pas)
 

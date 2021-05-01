@@ -35,7 +35,7 @@ class ProjectionExcludeTest(unittest.TestCase):
     @async_test
     async def test_entity_attribute_proj_using_object_model(self):
         """Test for creating a projection with an ExcludeAttributes operation on an entity attribute using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_entity_attribute_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -73,7 +73,7 @@ class ProjectionExcludeTest(unittest.TestCase):
     @async_test
     async def test_entity_proj_using_object_model(self):
         """Test for creating a projection with an ExcludeAttributes operation on an entity definition using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_entity_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_entity_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_entity_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -109,7 +109,7 @@ class ProjectionExcludeTest(unittest.TestCase):
     @async_test
     async def test_nested_proj_using_object_model(self):
         """Test for creating nested projections with ExcludeAttributes operations using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_nested_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_nested_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_nested_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -159,7 +159,7 @@ class ProjectionExcludeTest(unittest.TestCase):
     @async_test
     async def test_conditional_proj_using_object_model(self):
         """Test for creating a projection with an ExcludeAttributes operation and a condition using the object model"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_conditional_proj_using_object_model')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_conditional_proj_using_object_model')
         corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'test_conditional_proj_using_object_model')))
         local_root = corpus.storage.fetch_root_folder('local')
 
@@ -217,7 +217,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes on an entity attribute"""
         test_name = 'test_exclude_attributes'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -236,7 +236,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an entity attribute"""
         test_name = 'test_SSAN'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -255,7 +255,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an entity attribute that has renameFormat = '{m}'"""
         test_name = 'test_SSAN_rename'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -274,7 +274,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """A nested ExcludeAttributes operation in a single projection"""
         test_name = 'test_single_nested_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -293,7 +293,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """Nested projections with ExcludeAttributes"""
         test_name = 'test_nested_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -311,7 +311,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """Multiple ExcludeAttributes in a single projection"""
         test_name = 'test_multiple_exclude'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -332,7 +332,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes on an entity definition"""
         test_name = 'test_extends_entity_proj'
         entity_name = 'Child'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -352,7 +352,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an entity definition"""
         test_name = 'test_extends_entity'
         entity_name = 'Child'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -372,7 +372,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes on a polymorphic source"""
         test_name = 'test_polymorphic_proj'
         entity_name = 'BusinessPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -394,7 +394,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on a polymorphic source"""
         test_name = 'test_polymorphic'
         entity_name = 'BusinessPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -416,7 +416,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes on an array source"""
         test_name = 'test_array_source_proj'
         entity_name = 'FriendGroup'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -446,7 +446,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an array source"""
         test_name = 'test_array_source'
         entity_name = 'FriendGroup'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -477,7 +477,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an array source that has renameFormat = '{m}'"""
         test_name = 'test_array_source_rename'
         entity_name = 'FriendGroup'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -507,7 +507,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes with a condition"""
         test_name = 'test_conditional_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -537,7 +537,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes with an empty exclude attributes list"""
         test_name = 'test_empty_exclude'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -559,7 +559,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes on an entity with an attribute group"""
         test_name = 'test_group_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -578,7 +578,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an entity with an attribute group"""
         test_name = 'test_group'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -597,7 +597,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an entity with an attribute group that has renameFormat = '{m}'"""
         test_name = 'test_group_rename'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -620,7 +620,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """
         test_name = 'test_EA_name_proj'
         entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
@@ -644,7 +644,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         """Test resolving a type attribute with a exclude attributes operation"""
         test_name = 'test_type_attribute_proj'
         entity_name = 'Person'
-        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)

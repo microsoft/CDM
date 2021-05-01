@@ -1,10 +1,11 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Union, List
+from typing import Union, List, Optional
 
 from .file_status import FileStatus
 from .trait_reference import TraitReference
+from .trait_group_reference import TraitGroupReference
 
 
 class DataPartitionPattern(FileStatus):
@@ -34,5 +35,5 @@ class DataPartitionPattern(FileStatus):
         self.specializedSchema = None  # type: str
         """The corpus path for specialized schema to use for matched pattern partitions."""
 
-        self.exhibitsTraits = None  # type: Union[str, TraitReference]
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference, TraitGroupReference]]
         """The exhibited traits."""

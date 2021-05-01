@@ -170,7 +170,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     return doc;
                 }
                 // remove them from the caches since they will be back in a moment
-                if ((doc as CdmDocumentDefinition).IsDirty)
+                if (doc.IsDirty)
                 {
                     Logger.Warning(this.Ctx, Tag, nameof(FetchDocumentFromFolderPathAsync), this.AtCorpusPath, CdmLogCode.WarnDocChangesDiscarded , doc.Name);
                 }

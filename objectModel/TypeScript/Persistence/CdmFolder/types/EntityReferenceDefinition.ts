@@ -4,10 +4,12 @@
 import {
     ConstantEntity,
     Entity,
+    TraitGroupReference,
     TraitReference
 } from '.';
 
 export abstract class EntityReferenceDefinition {
     public entityReference: string | Entity | ConstantEntity;
-    public appliedTraits?: (string | TraitReference)[];
+    public appliedTraits?: (string | TraitReference | TraitGroupReference)[];
+    public optional?: boolean;
 }

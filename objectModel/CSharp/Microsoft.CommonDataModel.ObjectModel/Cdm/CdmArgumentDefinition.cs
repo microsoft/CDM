@@ -128,7 +128,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return false;
             if (this.Value != null)
             {
-                Type valueType = this.Value.GetType();
                 if (this.Value is CdmObject valueAsJObject)
                 {
                     if (valueAsJObject.Visit($"{path}/value/", preChildren, postChildren))

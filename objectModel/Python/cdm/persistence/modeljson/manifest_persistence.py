@@ -211,7 +211,10 @@ class ManifestPersistence:
 
                     reference_entity = element  # type: ReferenceEntity
                     if reference_entity:
-                        location = location[:location.rfind('/')]
+                        # path separator can differ depending on the adapter, cover the case where path uses '/' or '\'
+                        last_slash_location = location.rfind('/') if location.rfind('/') > location.rfind('\\') else location.rfind('\\')
+                        if last_slash_location > 0:
+                            location = location[:last_slash_location]
 
                         if reference_entity.modelId:
                             saved_location = reference_models.get(reference_entity.modelId)

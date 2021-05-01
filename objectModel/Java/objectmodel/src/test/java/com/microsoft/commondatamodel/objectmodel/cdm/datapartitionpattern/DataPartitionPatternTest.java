@@ -37,7 +37,7 @@ public class DataPartitionPatternTest {
     final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRefreshDataPartitionPatterns", null);
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/patternManifest.manifest.cdm.json").join();
 
-    final CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)cdmManifest.getEntities().get(0);
+    final CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)cdmManifest.getEntities().get(1);
     Assert.assertEquals(partitionEntity.getDataPartitions().size(), 1);
 
     final OffsetDateTime timeBeforeLoad = OffsetDateTime.now();

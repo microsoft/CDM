@@ -36,7 +36,7 @@ class ProjectionOMTestUtil:
         self._expected_output_path = TestHelper.get_expected_output_folder_path(self._tests_sub_path, test_name)  # type: str
         self._actual_output_path = TestHelper.get_actual_output_folder_path(self._tests_sub_path, test_name)  # type: str
 
-        self._corpus = TestHelper.get_local_corpus(self._tests_sub_path, test_name)  # type: CdmCorpusDefinition
+        self._corpus = ProjectionTestUtils.get_local_corpus(self._tests_sub_path, test_name)  # type: CdmCorpusDefinition
         self._corpus.storage.mount(self._local_output_storage_ns, LocalAdapter(self._actual_output_path))
         self._corpus.storage.defaultNamespace = self._local_output_storage_ns
 

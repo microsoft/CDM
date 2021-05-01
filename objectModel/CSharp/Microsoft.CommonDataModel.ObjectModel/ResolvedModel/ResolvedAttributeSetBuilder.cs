@@ -122,6 +122,46 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             }
         }
 
+        /// <summary>
+        /// Returns a RelationshipInfo instance containing information about how the entity attribute relationship should be resolved
+        /// </summary>
+        /// <returns></returns>
+        internal RelationshipInfo GetRelationshipInfo()
+        {
+            bool hasRef = false;
+            bool isByRef = false;
+            bool isArray = false;
+            bool selectsOne = false;
+            bool maxDepthExceeded = this.ResOpt.DepthInfo.MaxDepthExceeded;
+
+            if (this.ResGuide != null)
+            {
+                if (this.ResGuide.entityByReference != null && this.ResGuide.entityByReference.allowReference == true)
+                    hasRef = true;
+                if (this.ResOpt.Directives != null)
+                {
+                    // based on directives
+                    if (hasRef)
+                        isByRef = this.ResOpt.Directives.Has("referenceOnly");
+                    selectsOne = this.ResOpt.Directives.Has("selectOne");
+                    isArray = this.ResOpt.Directives.Has("isArray");
+                }
+
+                if (!selectsOne && maxDepthExceeded)
+                {
+                    // if max depth exceeded, stop and resolve by reference
+                    isByRef = true;
+                }
+            }
+
+            return new RelationshipInfo
+            {
+                IsByRef = isByRef,
+                IsArray = isArray,
+                SelectsOne = selectsOne
+            };
+        }
+
     }
 
     internal class ResolvedAttributeSetBuilder
@@ -181,7 +221,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         public void ApplyTraits(AttributeResolutionContext arc)
         {
             if (this.ResolvedAttributeSet != null && arc != null && arc.TraitsToApply != null)
-                this.TakeReference(ResolvedAttributeSet.ApplyTraits(arc.TraitsToApply, arc.ResOpt, arc.ResGuide, arc.ActionsModify));
+                this.TakeReference(ResolvedAttributeSet.ApplyTraitsResolutionGuidance(arc.TraitsToApply, arc.ResOpt, arc.ResGuide, arc.ActionsModify));
         }
 
         public void GenerateApplierAttributes(AttributeResolutionContext arc, bool applyTraitsToNew)

@@ -28,6 +28,8 @@ export * from './Purpose';
 export * from './PurposeReference';
 export * from './Trait';
 export * from './TraitReference';
+export * from './TraitGroup';
+export * from './TraitGroupReference';
 export * from './TypeAttribute';
 export * from './FileStatus';
 export * from './EntityDeclarationDefinition';

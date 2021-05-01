@@ -6,10 +6,10 @@ import {
     CdmCorpusContext,
     CdmLocalEntityDeclarationDefinition,
     cdmObjectType,
-    CdmTraitReference,
     cdmLogCode,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    CdmTraitReferenceBase
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import { Logger } from '../../Utilities/Logging/Logger';
@@ -19,6 +19,7 @@ import {
     DataPartitionPattern,
     EntityDeclarationDefinition,
     entityDeclarationDefinitionType,
+    TraitGroupReference,
     TraitReference
 } from './types';
 import * as utils from './utils';
@@ -62,7 +63,7 @@ export class LocalEntityDeclarationPersistence {
             localDec.explanation = dataObj.explanation;
         }
         
-        utils.addArrayToCdmCollection<CdmTraitReference>(localDec.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(localDec.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
         
         if (dataObj.dataPartitions) {
             for (const dataPartition of dataObj.dataPartitions) {
@@ -89,7 +90,7 @@ export class LocalEntityDeclarationPersistence {
             lastFileStatusCheckTime: timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime),
             lastFileModifiedTime: timeUtils.getFormattedDateString(instance.lastFileModifiedTime),
             lastChildFileModifiedTime: timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime),
-            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options),
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.exhibitsTraits, options),
             entityPath: instance.entityPath,
             dataPartitions: copyDataUtils.arrayCopyData<DataPartition>(resOpt, instance.dataPartitions, options),
             dataPartitionPatterns: copyDataUtils.arrayCopyData<DataPartitionPattern>(resOpt, instance.dataPartitionPatterns, options)

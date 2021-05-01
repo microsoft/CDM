@@ -20,6 +20,7 @@ class DataTypeReferencePersistence(CdmObjectRefPersistence):
         from .data_type_persistence import DataTypePersistence
 
         simple_reference = True
+        optional = None  # type: Optional[bool]
         data_type = None
         applied_traits = None
 
@@ -27,6 +28,8 @@ class DataTypeReferencePersistence(CdmObjectRefPersistence):
             data_type = obj
         else:
             simple_reference = False
+            optional = obj.optional
+
             if isinstance(obj.dataTypeReference, str):
                 data_type = obj.dataTypeReference
             else:
@@ -34,8 +37,12 @@ class DataTypeReferencePersistence(CdmObjectRefPersistence):
 
         data_type_reference = ctx.corpus.make_ref(CdmObjectType.DATA_TYPE_REF, data_type, simple_reference)
 
+        if optional is not None:
+            data_type_reference.optional = optional
+
         if not isinstance(obj, str):
             applied_traits = utils.create_trait_reference_array(ctx, obj.get('appliedTraits'))
-            data_type_reference.applied_traits.extend(applied_traits)
+
+        utils.add_list_to_cdm_collection(data_type_reference.applied_traits, applied_traits)
 
         return data_type_reference

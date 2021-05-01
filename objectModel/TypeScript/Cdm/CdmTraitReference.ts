@@ -20,20 +20,17 @@ import {
     ResolvedTraitSetBuilder,
     resolveOptions,
     SymbolSet,
-    VisitCallback
+    VisitCallback,
+    CdmTraitReferenceBase
 } from '../internal';
 
-export class CdmTraitReference extends CdmObjectReferenceBase {
+export class CdmTraitReference extends CdmTraitReferenceBase {
     public arguments: CdmArgumentCollection;
     public isFromProperty: boolean;
     /**
      * @internal
      */
     public resolvedArguments: boolean;
-
-    public static get objectType(): cdmObjectType {
-        return cdmObjectType.traitRef;
-    }
 
     constructor(ctx: CdmCorpusContext, trait: string | CdmTraitDefinition, simpleReference: boolean, hasArguments: boolean) {
         super(ctx, trait, simpleReference);

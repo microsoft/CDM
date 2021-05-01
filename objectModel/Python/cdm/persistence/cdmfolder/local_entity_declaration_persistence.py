@@ -41,9 +41,8 @@ class LocalEntityDeclarationPersistence:
         if data.get('lastChildFileModifiedTime'):
             local_entity.last_child_file_modified_time = dateutil.parser.parse(data.lastChildFileModifiedTime)
 
-        if data.get('exhibitsTraits'):
-            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
-            local_entity.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(local_entity.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.exhibitsTraits))
 
         if data.get('dataPartitions'):
             for data_partition in data.dataPartitions:

@@ -54,21 +54,6 @@ export class ProjectionAttributeStateSet {
     }
 
     /**
-     * Remove from collection
-     * @internal
-     */
-    public remove(pas: ProjectionAttributeState): boolean {
-        if (pas && this.contains(pas)) {
-            const index: number = this.states.indexOf(pas);
-            this.states.splice(index, 1);
-            return true;
-        } else {
-            Logger.warning(this.ctx, this.TAG, this.remove.name, null, cdmLogCode.WarnProjRemoveOpsFailed);
-            return false;
-        }
-    }
-
-    /**
      * Check if exists in collection
      * @internal
      */

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
-  private String tag = CdmConstantEntityDefinition.class.getSimpleName();
+  private static final String TAG = CdmConstantEntityDefinition.class.getSimpleName();
 
   private String constantEntityName;
   private CdmEntityReference entityShape;
@@ -150,11 +150,11 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     if (null == this.constantValues) {
       final String[] pathSplit = this.getDeclaredPath().split("/", -1);
       final String entityName = (pathSplit.length > 0) ? pathSplit[0] : new String();
-      Logger.warning(this.getCtx(), tag,"validate", this.getAtCorpusPath(), CdmLogCode.WarnValdnEntityNotDefined, entityName);
+      Logger.warning(this.getCtx(), TAG,"validate", this.getAtCorpusPath(), CdmLogCode.WarnValdnEntityNotDefined, entityName);
     }
     if (this.entityShape == null) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("entityShape"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

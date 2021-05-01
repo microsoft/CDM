@@ -37,16 +37,6 @@ class ProjectionAttributeStateSet:
 
         return copy
 
-    def _remove(self, pas: 'ProjectionAttributeState') -> bool:
-        """Remove from collection"""
-        if pas is not None and self._contains(pas):
-            self._states.remove(pas)
-            return True
-        else:
-            logger.warning(self._ctx, self._TAG, ProjectionAttributeStateSet._remove.__name__, None,
-                           CdmLogCode.WARN_PROJ_REMOVE_OPS_FAILED)
-            return False
-
     def _contains(self, pas: 'ProjectionAttributeState') -> bool:
         """Check if exists in collection"""
         return pas in self._states

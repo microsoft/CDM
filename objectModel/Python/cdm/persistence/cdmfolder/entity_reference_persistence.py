@@ -20,7 +20,6 @@ class EntityReferencePersistence(CdmObjectRefPersistence):
 
         simple_reference = True
         entity = None
-        applied_traits = None
 
         if isinstance(data, str):
             entity = data
@@ -31,9 +30,8 @@ class EntityReferencePersistence(CdmObjectRefPersistence):
         entity_reference = ctx.corpus.make_ref(CdmObjectType.ENTITY_REF, entity, simple_reference)
 
         if not isinstance(data, str) and entity_reference:
-            applied_traits = utils.create_trait_reference_array(ctx, data.get('appliedTraits'))
-            if applied_traits is not None:
-                entity_reference.applied_traits.extend(applied_traits)
+            utils.add_list_to_cdm_collection(entity_reference.applied_traits,
+                                             utils.create_trait_reference_array(ctx, data.get('appliedTraits')))
 
         return entity_reference
 

@@ -93,14 +93,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
                 string attribCorpusPath = attrib.AtCorpusPath;
                 bldr.AppendLine(attribCorpusPath);
 
-                foreach (CdmTraitReference trait in attrib.AppliedTraits)
+                foreach (CdmTraitReferenceBase trait in attrib.AppliedTraits)
                 {
                     string attribTraits = trait.NamedReference;
                     bldr.AppendLine(attribTraits);
 
-                    foreach (CdmArgumentDefinition args in trait.Arguments)
+                    if (trait is CdmTraitReference)
                     {
-                        GetArgumentValues(args);
+                        foreach (CdmArgumentDefinition args in (trait as CdmTraitReference).Arguments)
+                        {
+                            GetArgumentValues(args);
+                        }
                     }
                 }
             }

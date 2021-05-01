@@ -20,7 +20,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
 
-  private String TAG = CdmDataTypeDefinition.class.getSimpleName();
+  private static final String TAG = CdmDataTypeDefinition.class.getSimpleName();
 
   private String dataTypeName;
   private CdmDataTypeReference extendsDataType;

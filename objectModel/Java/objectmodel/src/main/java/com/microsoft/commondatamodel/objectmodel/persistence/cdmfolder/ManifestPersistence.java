@@ -30,7 +30,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ManifestPersistence {
-  private static String tag = ManifestPersistence.class.getSimpleName();
+  private static final String TAG = ManifestPersistence.class.getSimpleName();
 
   /**
    * Whether this persistence class has async methods.
@@ -125,7 +125,7 @@ public class ManifestPersistence {
             } else if (EntityDeclaration.EntityDeclarationDefinitionType.ReferencedEntity.equals(type)) {
               entity = ReferencedEntityDeclarationPersistence.fromData(ctx, fullPath, entityNode);
             } else {
-              Logger.error(ctx, tag, "fromObject", null, CdmLogCode.ErrPersistEntityDeclarationMissing);
+              Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistEntityDeclarationMissing);
             }
           } else {
             if (entityNode.has("entitySchema")) {
@@ -138,7 +138,7 @@ public class ManifestPersistence {
           }
           manifest.getEntities().add(entity);
         } catch (final IOException ex) {
-          Logger.error(ctx, tag, "fromObject", null, CdmLogCode.ErrPersistDeserializeError, ex.getLocalizedMessage());
+          Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistDeserializeError, ex.getLocalizedMessage());
         }
       }
     }
@@ -165,7 +165,7 @@ public class ManifestPersistence {
       ManifestContent dataObj = JMapper.MAP.readValue(jsonData, ManifestContent.class);
       return fromObject(ctx, docName, folder.getNamespace(), folder.getFolderPath(), dataObj);
     } catch (final Exception e) {
-      Logger.error(ctx, tag, "fromData", null, CdmLogCode.ErrPersistConversionError, docName, e.getLocalizedMessage());
+      Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistConversionError, docName, e.getLocalizedMessage());
       return null;
     }
   }

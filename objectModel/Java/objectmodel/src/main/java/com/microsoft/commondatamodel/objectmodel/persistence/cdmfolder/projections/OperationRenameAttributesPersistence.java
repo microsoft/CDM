@@ -22,7 +22,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
  * Operation RenameAttributes persistence
  */
 public class OperationRenameAttributesPersistence {
-    private static String tag = OperationRenameAttributesPersistence.class.getSimpleName();
+    private static final String TAG = OperationRenameAttributesPersistence.class.getSimpleName();
 
     public static CdmOperationRenameAttributes fromData(final CdmCorpusContext ctx, final JsonNode obj) {
         if (obj == null) {
@@ -43,7 +43,7 @@ public class OperationRenameAttributesPersistence {
                 renameAttributesOp.setApplyTo(JMapper.MAP.convertValue(obj.get("applyTo"), new TypeReference<ArrayList<String>>() {
                 }));
             } else {
-                Logger.error(ctx, tag, "fromData", renameAttributesOp.getAtCorpusPath(), CdmLogCode.ErrPersistProjUnsupportedProp);
+                Logger.error(ctx, TAG, "fromData", renameAttributesOp.getAtCorpusPath(), CdmLogCode.ErrPersistProjUnsupportedProp);
             }
         }
 

@@ -200,7 +200,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             foreach (var att in resolvedEntity.Attributes)
             {
-                var entRef = att?.AppliedTraits?.Where(x => x.NamedReference == "is.linkedEntity.identifier" && x.Arguments?.Count > 0).FirstOrDefault()?.Arguments[0].Value;
+                var traitRef = att?.AppliedTraits?.Where(x => x.NamedReference == "is.linkedEntity.identifier" && (x as CdmTraitReference).Arguments?.Count > 0).FirstOrDefault();
+                var entRef = (traitRef as CdmTraitReference)?.Arguments[0].Value;
+
                 if (entRef != null) {
                     var entityShape = (entRef.FetchObjectDefinition<CdmConstantEntityDefinition>() as CdmConstantEntityDefinition).EntityShape.NamedReference;
                     if (isEntitySet)
@@ -213,6 +215,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     return;
                 }
             }
+
             Assert.Fail("Unable to find entity shape from resolved model.");
         }
 
@@ -309,14 +312,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             {
                 bldr.AppendLine($"  ExhibitsTraits:");
                 var orderedAppliedTraits = relationship.ExhibitsTraits.AllItems.ToList().OrderBy(x => x.NamedReference);
-                foreach (CdmTraitReference trait in orderedAppliedTraits)
+                foreach (CdmTraitReferenceBase trait in orderedAppliedTraits)
                 {
                     bldr.AppendLine($"      {trait.NamedReference}");
 
-                    foreach (CdmArgumentDefinition args in trait.Arguments)
+                    if (trait is CdmTraitReference)
                     {
-                        AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
-                        bldr.AppendLine($"          {attrCtxUtil.GetArgumentValuesAsString(args)}");
+                        foreach (CdmArgumentDefinition args in (trait as CdmTraitReference).Arguments)
+                        {
+                            AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
+                            bldr.AppendLine($"          {attrCtxUtil.GetArgumentValuesAsString(args)}");
+                        }
                     }
                 }
             }

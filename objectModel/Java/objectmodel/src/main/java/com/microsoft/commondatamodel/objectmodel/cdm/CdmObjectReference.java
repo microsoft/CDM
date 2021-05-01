@@ -39,6 +39,15 @@ public interface CdmObjectReference extends CdmObject {
   void setSimpleNamedReference(boolean value);
 
   /**
+   * Gets or sets the object's Optional property.
+   * This indicates the SDK to not error out in case the definition could not be resolved.
+   * @return Boolean true/false or null
+   */
+  Boolean isOptional();
+
+  void setOptional(Boolean optional);
+
+  /**
    *
    * @return CDM Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not

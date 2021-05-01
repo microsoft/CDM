@@ -60,7 +60,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             var outputConfig = await cdmCorpus.Storage.FetchAdapter("target").ReadAsync("/config.json");
 
-            Assert.AreEqual(outputConfig, resultConfig);
+            Assert.AreEqual(outputConfig.Replace("\r\n  ", "\n"), resultConfig.Replace("\r\n", "\n"));
         }
 
         /// <summary>

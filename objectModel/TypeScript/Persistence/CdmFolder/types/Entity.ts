@@ -8,6 +8,7 @@ import {
     EntityAttribute,
     EntityReferenceDefinition,
     Projection,
+    TraitGroupReference,
     TraitReference,
     TypeAttribute
 } from '.';
@@ -17,7 +18,7 @@ export abstract class Entity {
     public entityName: string;
     public extendsEntity?: (string | EntityReferenceDefinition | Projection);
     public extendsEntityResolutionGuidance: AttributeResolutionGuidance;
-    public exhibitsTraits?: (string | TraitReference)[];
+    public exhibitsTraits?: (string | TraitReference | TraitGroupReference)[];
     public attributeContext?: AttributeContext;
     public hasAttributes?: (string | AttributeGroupReference | TypeAttribute | EntityAttribute)[];
     public sourceName?: string;

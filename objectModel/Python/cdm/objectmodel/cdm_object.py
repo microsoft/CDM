@@ -10,7 +10,7 @@ from cdm.enums import CdmObjectType
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityAttributeDefinition
     from cdm.resolvedmodel import ResolvedTraitSet, ResolvedTraitSetBuilder
-    from cdm.utilities import AttributeContextParameters, FriendlyFormatNode, ResolveOptions
+    from cdm.utilities import AttributeContextParameters, ResolveOptions
 
 
 class CdmObject(abc.ABC):
@@ -95,7 +95,7 @@ class CdmObject(abc.ABC):
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
         raise NotImplementedError('Not implemented in type {}'.format(self.__class__.__name__))
 
-    def _fetch_object_from_cache(self, res_opt: 'ResolveOptions', acp_in_context: Optional['AttributeContextParameters'] = None) -> 'ResolvedAttributeSet':
+    def _fetch_object_from_cache(self, res_opt: 'ResolveOptions', acp_in_context: Optional['AttributeContextParameters']) -> 'ResolvedAttributeSet':
         kind = 'rasb'
         ctx = self.ctx
         cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
@@ -127,13 +127,13 @@ class CdmObject(abc.ABC):
             #if in_circular_reference:
             #    return ResolvedAttributeSet()
 
+        current_depth = res_opt._depth_info.current_depth
+
         kind = 'rasb'
         ctx = self.ctx
         rasb_result = None
-        rasb_cache = self._fetch_object_from_cache(res_opt, acp_in_context)  # type: ResolvedAttributeSetBuilder
+        rasb_cache = self._fetch_object_from_cache(res_opt, acp_in_context)  # type: Optional[ResolvedAttributeSetBuilder]
         under_ctx = None
-
-        current_depth = res_opt._depth_info.current_depth
 
         # store the previous symbol set, we will need to add it with
         # children found from the constructResolvedTraits call
@@ -167,18 +167,17 @@ class CdmObject(abc.ABC):
                     if cache_tag:
                         ctx._cache[cache_tag] = rasb_cache
                 # get the 'under_ctx' of the attribute set from the acp that is wired into the target tree
-                under_ctx = cast(ResolvedAttributeSetBuilder, rasb_cache)\
-                    ._resolved_attribute_set.attribute_context\
+                under_ctx = rasb_cache._resolved_attribute_set.attribute_context \
                     ._get_under_context_from_cache_context(res_opt, acp_in_context) \
-                    if cast(ResolvedAttributeSetBuilder, rasb_cache)._resolved_attribute_set.attribute_context else None
+                    if rasb_cache._resolved_attribute_set.attribute_context else None
         else:
             # get the 'under_ctx' of the attribute set from the cache. The one stored there was build with a different
             # acp and is wired into the fake placeholder. so now build a new under_ctx wired into the output tree but with
             # copies of all cached children
-            under_ctx = cast(ResolvedAttributeSetBuilder, rasb_cache) \
+            under_ctx = rasb_cache \
                 ._resolved_attribute_set.attribute_context \
                 ._get_under_context_from_cache_context(res_opt, acp_in_context) \
-                if cast(ResolvedAttributeSetBuilder, rasb_cache)._resolved_attribute_set.attribute_context else None
+                if rasb_cache._resolved_attribute_set.attribute_context else None
             # under_ctx._validate_lineage(res_opt)  # debugging
 
         if rasb_cache:
@@ -189,7 +188,7 @@ class CdmObject(abc.ABC):
             #
             # 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
             rasb_result = ResolvedAttributeSetBuilder()
-            rasb_result._resolved_attribute_set = cast(ResolvedAttributeSetBuilder, rasb_cache)._resolved_attribute_set.copy()
+            rasb_result._resolved_attribute_set = rasb_cache._resolved_attribute_set.copy()
 
             # 2. deep copy the tree and map the context references.
             if under_ctx: # null context? means there is no tree, probably 0 attributes came out

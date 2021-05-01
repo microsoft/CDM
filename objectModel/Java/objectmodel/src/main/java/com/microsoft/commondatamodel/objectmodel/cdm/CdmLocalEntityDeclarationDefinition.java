@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase implements
     CdmEntityDeclarationDefinition {
 
-  private String tag = CdmLocalEntityDeclarationDefinition.class.getSimpleName();
+  private static final String TAG = CdmLocalEntityDeclarationDefinition.class.getSimpleName();
 
   public String entityName;
   public String entityPath;
@@ -95,7 +95,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     }
 
     if (postChildren != null && postChildren.invoke(this, path)) {
-      return false;
+      return true;
     }
 
     return false;
@@ -241,7 +241,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.entityName)) {
       ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("entityName"));
-      Logger.error(this.getCtx(), tag, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -319,7 +319,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
       newPartition.setLastFileModifiedTime(modifiedTime);
       newPartition.setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
 
-      for (final CdmTraitReference trait : exhibitsTraits) {
+      for (final CdmTraitReferenceBase trait : exhibitsTraits) {
         newPartition.getExhibitsTraits().add(trait);
       }
 

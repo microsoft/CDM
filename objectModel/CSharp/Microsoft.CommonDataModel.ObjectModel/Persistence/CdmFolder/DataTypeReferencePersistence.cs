@@ -19,14 +19,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
 
             bool simpleReference = true;
-            dynamic dataType = null;
-            List<CdmTraitReference> appliedTraits = null;
+            bool? optional = null;
+            dynamic dataType;
+            List<CdmTraitReferenceBase> appliedTraits = null;
 
             if (obj is JValue)
                 dataType = obj;
             else
             {
                 simpleReference = false;
+
+                if (obj["optional"] != null)
+                {
+                    if (bool.TryParse(obj["optional"].ToString(), out bool optVal))
+                    {
+                        optional = optVal;
+                    }
+                }
+
                 if (obj["dataTypeReference"] is JValue)
                     dataType = (string)obj["dataTypeReference"];
                 else
@@ -34,6 +44,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
 
             CdmDataTypeReference dataTypeReference = ctx.Corpus.MakeRef<CdmDataTypeReference>(CdmObjectType.DataTypeRef, dataType, simpleReference);
+            
+            if (optional != null)
+            {
+                dataTypeReference.Optional = optional;
+            }
 
             if (!(obj is JValue))
                 appliedTraits = Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]);

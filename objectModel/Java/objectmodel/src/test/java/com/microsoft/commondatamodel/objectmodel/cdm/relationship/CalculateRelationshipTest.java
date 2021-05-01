@@ -215,11 +215,12 @@ public class CalculateRelationshipTest {
 
     private static void assertEntityShapeInResolvedEntity(CdmEntityDefinition resolvedEntity, boolean isEntitySet) {
         for (final CdmAttributeItem att : resolvedEntity.getAttributes()) {
-            CdmTraitReference traitRef = att.getAppliedTraits().getAllItems()
+            CdmTraitReferenceBase traitRef = att.getAppliedTraits().getAllItems()
                     .stream()
-                    .filter((x) -> "is.linkedEntity.identifier".equals(x.getNamedReference()) && x.getArguments().size() > 0)
+                    .filter((x) -> "is.linkedEntity.identifier".equals(x.getNamedReference()) && ((CdmTraitReference) x).getArguments().size() > 0)
                     .findFirst().orElse(null);
-            CdmEntityReference entRef = traitRef != null ? (CdmEntityReference)traitRef.getArguments().get(0).getValue() : null;
+            CdmEntityReference entRef = traitRef != null ? (CdmEntityReference) ((CdmTraitReference) traitRef).getArguments().get(0).getValue() : null;
+
             if (entRef != null) {
                 final String entityShape = ((CdmConstantEntityDefinition) entRef.fetchObjectDefinition()).getEntityShape().getNamedReference();
                 if (isEntitySet) {
@@ -230,6 +231,7 @@ public class CalculateRelationshipTest {
                 return;
             }
         }
+
         Assert.fail("Unable to find entity shape from resolved model.");
     }
 
@@ -309,12 +311,14 @@ public class CalculateRelationshipTest {
             bldr.append("  ExhibitsTraits:" + endOfLine);
             CdmTraitCollection orderedAppliedTraits = relationship.getExhibitsTraits();
             orderedAppliedTraits.sort(Comparator.comparing(CdmObjectReferenceBase::getNamedReference));
-            for (CdmTraitReference trait : orderedAppliedTraits) {
+            for (CdmTraitReferenceBase trait : orderedAppliedTraits) {
                 bldr.append("      " + trait.getNamedReference() + endOfLine);
 
-                for (CdmArgumentDefinition args : trait.getArguments()) {
-                    AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
-                    bldr.append("          " + attrCtxUtil.getArgumentValuesAsString(args) + endOfLine);
+                if (trait instanceof CdmTraitReference) {
+                    for (CdmArgumentDefinition args : ((CdmTraitReference) trait).getArguments()) {
+                        AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
+                        bldr.append("          " + attrCtxUtil.getArgumentValuesAsString(args) + endOfLine);
+                    }
                 }
             }
         }

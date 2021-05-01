@@ -336,15 +336,15 @@ export class StorageManager {
             let newObjectPath: string = pathTuple[1];
             let finalNamespace: string;
 
-            let prefix: string;
-            let namespaceFromObj: string;
-            if (obj && (obj as CdmContainerDefinition).namespace && (obj as CdmContainerDefinition).folderPath) {
-                prefix = (obj as CdmContainerDefinition).folderPath;
-                namespaceFromObj = (obj as CdmContainerDefinition).namespace;
-            } else if (obj) {
-                prefix = obj.inDocument.folderPath;
-                namespaceFromObj = obj.inDocument.namespace;
-            }
+        let prefix: string;
+        let namespaceFromObj: string;
+        if (obj && (obj as CdmContainerDefinition).namespace && (obj as CdmContainerDefinition).folderPath) {
+            prefix = (obj as CdmContainerDefinition).folderPath;
+            namespaceFromObj = (obj as CdmContainerDefinition).namespace;
+        } else if (obj && obj.inDocument) {
+            prefix = obj.inDocument.folderPath;
+            namespaceFromObj = obj.inDocument.namespace;
+        }
 
             if (prefix && this.containsUnsupportedPathFormat(prefix)) {
                 // already called statusRpt when checking for unsupporetd path format.

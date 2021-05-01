@@ -15,7 +15,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json.Linq;
     using Assert = Microsoft.CommonDataModel.ObjectModel.Tests.AssertExtension;
 
     /// <summary>
@@ -161,7 +160,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var references = new List<CdmEntityDefinition>();
             foreach (var trait in reqdTraits)
             {
-                var constEnt = (trait.Arguments.FetchValue("entityReferences") as CdmEntityReference)?.FetchObjectDefinition<CdmConstantEntityDefinition>(resOpt);
+                var constEnt = ((trait as CdmTraitReference).Arguments.FetchValue("entityReferences") as CdmEntityReference)?.FetchObjectDefinition<CdmConstantEntityDefinition>(resOpt);
                 if (constEnt != null)
                 {
                     List<CdmEntityDefinition> refs = new List<CdmEntityDefinition>();
