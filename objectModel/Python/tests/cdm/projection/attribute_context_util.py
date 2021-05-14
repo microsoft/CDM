@@ -6,7 +6,7 @@ from unittest import TestCase
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmEntityDefinition, CdmAttributeContext, CdmAttributeReference, CdmCorpusDefinition, \
-    CdmArgumentDefinition
+    CdmArgumentDefinition, CdmTraitReference
 
 
 class AttributeContextUtil:
@@ -20,7 +20,7 @@ class AttributeContextUtil:
         # so that we can compare it to the expected output txt file.
         self._bldr = ''
 
-    def get_attribute_context_strings(self, resolved_entity: 'CdmEntityDefinition', attrib_context: 'CdmAttributeContext') -> str:
+    def get_attribute_context_strings(self, resolved_entity: 'CdmEntityDefinition') -> str:
         """Function to get the attribute context string tree from a resolved entity"""
 
         # clear the string builder
@@ -34,17 +34,25 @@ class AttributeContextUtil:
 
         return self._bldr
 
+    def get_argument_values_as_strings(self, args: 'CdmArgumentDefinition') -> str:
+        # clear the string builder
+        self._bldr = ''
+
+        # get the corpus path for each attribute context in the tree
+        self._get_argument_values(args)
+
+        return self._bldr
+
     def _get_content_declared_path(self, attrib_context: 'CdmAttributeContext') -> None:
         """Get the corpus path for each attribute context in the tree and build a string collection that we can
         compare with the expected attribute context corpus path collection."""
         if attrib_context and attrib_context.contents and len(attrib_context.contents) > 0:
             for i in range(len(attrib_context.contents)):
                 content = attrib_context.contents[i]
-                str = content.at_corpus_path
-                self._bldr += str
+                self._bldr += content.at_corpus_path
                 self._bldr += '\n'
 
-                if not isinstance(attrib_context.contents[0], CdmAttributeReference):
+                if not isinstance(content, CdmAttributeReference):
                     self._get_content_declared_path(content)
 
     def _get_traits(self, resolved_entity: 'CdmEntityDefinition') -> None:
@@ -59,10 +67,11 @@ class AttributeContextUtil:
                 self._bldr += attrib_traits
                 self._bldr += '\n'
 
-                for args in trait.arguments:
-                    self._get_argument_values_as_string(args)
+                if isinstance(trait, CdmTraitReference):
+                    for args in trait.arguments:
+                        self._get_argument_values(args)
 
-    def _get_argument_values_as_string(self, args: 'CdmArgumentDefinition') -> None:
+    def _get_argument_values(self, args: 'CdmArgumentDefinition') -> None:
         param_name = args._resolved_parameter.name if args._resolved_parameter else None
         param_default_value = args._resolved_parameter.default_value if args._resolved_parameter else None
 
@@ -89,12 +98,26 @@ class AttributeContextUtil:
                     self._bldr += '\n'
 
     @staticmethod
-    def validate_attribute_context(test: 'TestCase', corpus: 'CdmCorpusDefinition', expected_output_path: str, entity_name: str, resolved_entity: 'CdmEntityDefinition') -> None:
+    async def validate_attribute_context(test: 'TestCase', corpus: 'CdmCorpusDefinition', expected_output_path: str, entity_name: str, resolved_entity: 'CdmEntityDefinition') -> None:
         """A function to validate if the attribute context tree & traits generated for a resolved entity is the same
         as the expected and saved attribute context tree & traits for a test case"""
         if resolved_entity.attribute_context:
             attr_ctx_util = AttributeContextUtil()
-            actual_text = attr_ctx_util.get_attribute_context_strings(resolved_entity, resolved_entity.attribute_context)
-            with open(os.path.join(expected_output_path, 'AttrCtx_{}.txt'.format(entity_name))) as expected_file:
+
+            # Actual
+            actual_file_path = os.path.join(expected_output_path.replace('ExpectedOutput', 'ActualOutput'), 'AttrCtx_{}.txt'.format(entity_name))
+
+            # Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
+            actual_text = attr_ctx_util.get_attribute_context_strings(resolved_entity)
+            actual_attr_ctx_file = open(actual_file_path, "w")
+            actual_attr_ctx_file.write(actual_text)
+            actual_attr_ctx_file.close()
+            await resolved_entity.in_document.save_as_async('Resolved_{}.cdm.json'.format(entity_name), False)
+
+            # Expected
+            expected_file_path = os.path.join(expected_output_path, 'AttrCtx_{}.txt'.format(entity_name))
+            with open(expected_file_path) as expected_file:
                 expected_text = expected_file.read()
-            test.assertEqual(expected_text, actual_text)
+
+            # Test if Actual is Equal to Expected
+            test.assertEqual(expected_text.replace('\r\n', '\n'), actual_text.replace('\r\n', '\n'))

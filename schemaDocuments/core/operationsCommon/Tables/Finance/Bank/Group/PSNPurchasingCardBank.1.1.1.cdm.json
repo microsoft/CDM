@@ -1,0 +1,137 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PSNPurchasingCardBank",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BankAccountTable",
+          "dataType": "CompanyBankAccountId",
+          "description": ""
+        },
+        {
+          "name": "CardHolderName",
+          "dataType": "Name",
+          "displayName": "Card holder name",
+          "description": ""
+        },
+        {
+          "name": "CreditLimit",
+          "dataType": "PSNPurchasingCardCreditLimit",
+          "isNullable": true,
+          "displayName": "Credit limit",
+          "description": ""
+        },
+        {
+          "name": "Expirationdate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Expiry date",
+          "description": ""
+        },
+        {
+          "name": "HcmWorker",
+          "dataType": "RefRecId",
+          "displayName": "Employee",
+          "description": ""
+        },
+        {
+          "name": "PurchasingCardNumberDigits",
+          "dataType": "PSNPurchasingCardNumberDigits",
+          "description": ""
+        },
+        {
+          "name": "ValidDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "From date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_BankAccountTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bank purchasing card"
+    },
+    {
+      "dataTypeName": "CompanyBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSNPurchasingCardCreditLimit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PSNPurchasingCardNumberDigits",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -3,20 +3,18 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
-    using Microsoft.CommonDataModel.ObjectModel.Enums;
-    using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
-    /// Tests to verify if entity resolution is taking places as expected.
+    /// Tests to verify if entity resolution performs as expected.
     /// </summary>
     [TestClass]
     public class EntityResolutionTests
@@ -30,6 +28,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// The path between TestDataPath and TestName.
         /// </summary>
         private string testsSubpath = Path.Combine("Cdm", "Resolution", "EntityResolution");
+
+        /// <summary>
+        /// Tests if the owner of the entity is not changed when calling CreatedResolvedEntityAsync
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestOwnerNotChanged()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestOwnerNotChanged");
+
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/Entity.cdm.json/Entity");
+            var document = await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/Entity.cdm.json");
+
+            Assert.AreEqual(document, entity.Owner);
+
+            await entity.CreateResolvedEntityAsync("res-Entity");
+
+            Assert.AreEqual(document, entity.Owner);
+            Assert.AreEqual(entity, entity.Attributes[0].Owner, "Entity's attribute's owner should have remained unchanged (same as the owning entity)");
+        }
 
         /// <summary>
         /// Test whether or not the test corpus can be resolved
@@ -47,7 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             cdmCorpus.Storage.Mount("local", new LocalAdapter(SchemaDocsPath));
             var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>(TestHelper.CdmStandardSchemaPath) as CdmManifestDefinition;
             var directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" });
-            var allResolved = await ListAllResolved(cdmCorpus, directives, manifest, new StringSpewCatcher());
+            var allResolved = await ResolutionTestUtils.ListAllResolved(cdmCorpus, directives, manifest, new StringSpewCatcher());
             Assert.IsTrue(!string.IsNullOrWhiteSpace(allResolved));
         }
 
@@ -57,7 +75,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestResolvedComposites()
         {
-            await this.ResolveSaveDebuggingFileAndAssert("TestResolvedComposites", "composites");
+            await ResolutionTestUtils.ResolveSaveDebuggingFileAndAssert(testsSubpath, "TestResolvedComposites", "composites");
         }
 
         /// <summary>
@@ -66,7 +84,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestResolvedE2E()
         {
-            await this.ResolveSaveDebuggingFileAndAssert("TestResolvedE2E", "E2EResolution");
+            await ResolutionTestUtils.ResolveSaveDebuggingFileAndAssert(testsSubpath, "TestResolvedE2E", "E2EResolution");
         }
 
         /// <summary>
@@ -75,7 +93,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestResolvedKnowledgeGraph()
         {
-            await this.ResolveSaveDebuggingFileAndAssert("TestResolvedKnowledgeGraph", "KnowledgeGraph");
+            await ResolutionTestUtils.ResolveSaveDebuggingFileAndAssert(testsSubpath, "TestResolvedKnowledgeGraph", "KnowledgeGraph");
         }
 
         /// <summary>
@@ -84,7 +102,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         // [TestMethod]
         public async Task TestResolvedMiniDyn()
         {
-            await this.ResolveSaveDebuggingFileAndAssert("TestResolvedMiniDyn", "MiniDyn");
+            await ResolutionTestUtils.ResolveSaveDebuggingFileAndAssert(testsSubpath, "TestResolvedMiniDyn", "MiniDyn");
         }
 
         /// <summary>
@@ -93,7 +111,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestResolvedOverrides()
         {
-            await this.ResolveSaveDebuggingFileAndAssert("TestResolvedOverrides", "overrides");
+            await ResolutionTestUtils.ResolveSaveDebuggingFileAndAssert(testsSubpath, "TestResolvedOverrides", "overrides");
         }
 
         /// <summary>
@@ -102,7 +120,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestResolvedPovResolution()
         {
-            await this.ResolveSaveDebuggingFileAndAssert("TestResolvedPOVResolution", "POVResolution");
+            await ResolutionTestUtils.ResolveSaveDebuggingFileAndAssert(testsSubpath, "TestResolvedPOVResolution", "POVResolution");
         }
 
         /// <summary>
@@ -111,7 +129,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestResolvedWebClicks()
         {
-            await this.ResolveSaveDebuggingFileAndAssert("TestResolvedWebClicks", "webClicks");
+            await ResolutionTestUtils.ResolveSaveDebuggingFileAndAssert(testsSubpath, "TestResolvedWebClicks", "webClicks");
         }
 
         /// <summary>
@@ -238,129 +256,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             ResolveOptions resOpt = new ResolveOptions { WrtDoc = entity.InDocument, Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" }) };
             CdmEntityDefinition resolvedEntity = await entity.CreateResolvedEntityAsync("resolved", resOpt);
 
-            Assert.AreEqual("is.linkedEntity.name", resolvedEntity.Attributes[1].AppliedTraits[7].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[1].AppliedTraits.Item("is.linkedEntity.name"));
 
             // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
             resOpt = new ResolveOptions { WrtDoc = entity.InDocument, Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly" }) };
             resolvedEntity = await entity.CreateResolvedEntityAsync("resolved2", resOpt);
 
-            Assert.AreEqual("is.linkedEntity.identifier", resolvedEntity.Attributes[0].AppliedTraits[7].NamedReference);
-        }
-
-        /// <summary>
-        /// Creates a storage adapter used to retrieve input files associated with test.
-        /// </summary>
-        /// <param name="testName">The name of the test we should retrieve input files for. </param>
-        /// <returns>The storage adapter to be used by the named test method. </returns>
-        private StorageAdapter CreateStorageAdapterConfigForTest(string testName)
-        {
-            return new LocalAdapter(TestHelper.GetInputFolderPath(this.testsSubpath, testName));
-        }
-
-        /// <summary>
-        /// Function used to test resolving an environment.
-        /// Writes a helper function used for debugging.
-        /// Asserts the result matches the expected result stored in a file.
-        /// </summary>
-        /// <param name="testName">The name of the test. It is used to decide the path of input / output files. </param>
-        /// <parameter name="manifestName">The name of the manifest to be used. </parameter>
-        /// <parameter name="doesWriteDebuggingFiles">Whether debugging files should be written or not. </parameter>
-        /// <returns>Task associated with this function. </returns>
-        private async Task ResolveSaveDebuggingFileAndAssert(string testName, string manifestName, bool doesWriteDebuggingFiles = false)
-        {
-            Assert.IsNotNull(testName);
-            var result = await this.ResolveEnvironment(testName, manifestName);
-
-            if (doesWriteDebuggingFiles)
-            {
-                TestHelper.WriteActualOutputFileContent(testsSubpath, testName, $"{manifestName}.txt", result);
-            }
-
-            var original = TestHelper.GetExpectedOutputFileContent(this.testsSubpath, testName, $"{manifestName}.txt");
-
-            TestHelper.AssertFileContentEquality(original, result);
-        }
-
-        /// <summary>
-        /// Resolve the entities in the given manifest.
-        /// </summary>
-        /// <param name="testName">The name of the test. It is used to decide the path of input / output files. </param>
-        /// <parameter name="manifestName">The name of the manifest to be used. </parameter>
-        /// <returns> The resolved entities. </returns>
-        private async Task<string> ResolveEnvironment(string testName, string manifestName)
-        {
-            var cdmCorpus = new CdmCorpusDefinition();
-            cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-            var testLocalAdapter = this.CreateStorageAdapterConfigForTest(testName);
-            cdmCorpus.Storage.Mount("local", testLocalAdapter);
-
-            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>($"local:/{manifestName}.manifest.cdm.json");
-            var directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" });
-            return await ListAllResolved(cdmCorpus, directives, manifest, new StringSpewCatcher());
-        }
-
-        /// <summary>
-        /// Get the text version of all the resolved entities.
-        /// </summary>
-        /// <param name="cdmCorpus"> The CDM corpus. </param>
-        /// <param name="directives"> The directives to use while getting the resolved entities. </param>
-        /// <param name="manifest"> The manifest to be resolved. </param>
-        /// <param name="spew"> The object used to store the text to be returned. </param>
-        /// <returns> The text version of the resolved entities. (it's in a form that facilitates debugging) </returns>
-        internal static async Task<string> ListAllResolved(CdmCorpusDefinition cdmCorpus, AttributeResolutionDirectiveSet directives, CdmManifestDefinition manifest, StringSpewCatcher spew = null)
-        {
-            var seen = new HashSet<string>();
-            Func<CdmManifestDefinition, Task> seekEntities = null;
-            seekEntities = async (CdmManifestDefinition f) =>
-            {
-                if (f.Entities != null)
-                {
-                    if (spew != null)
-                    {
-                        spew.SpewLine(f.FolderPath);
-                    }
-
-                    foreach (CdmEntityDeclarationDefinition entity in f.Entities)
-                    {
-                        string corpusPath;
-                        CdmEntityDeclarationDefinition ent = entity;
-                        CdmObject currentFile = f;
-                        while (ent is CdmReferencedEntityDeclarationDefinition)
-                        {
-                            corpusPath = cdmCorpus.Storage.CreateAbsoluteCorpusPath(ent.EntityPath, currentFile);
-                            ent = await cdmCorpus.FetchObjectAsync<CdmReferencedEntityDeclarationDefinition>(corpusPath);
-                            currentFile = ent;
-                        }
-                        corpusPath = cdmCorpus.Storage.CreateAbsoluteCorpusPath(((CdmLocalEntityDeclarationDefinition)ent).EntityPath, currentFile);
-                        ResolveOptions resOpt = new ResolveOptions()
-                        {
-                            ImportsLoadStrategy = ImportsLoadStrategy.Load
-                        };
-                        CdmEntityDefinition newEnt = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(corpusPath, null, resOpt);
-                        resOpt.WrtDoc = newEnt.InDocument;
-                        resOpt.Directives = directives;
-                        ResolvedEntity resEnt = new ResolvedEntity(resOpt, newEnt);
-                        if (spew != null)
-                        {
-                            resEnt.Spew(resOpt, spew, " ", true);
-                        }
-                    }
-                }
-                if (f.SubManifests != null)
-                {
-                    // folder.SubManifests.ForEach(async f =>
-                    foreach (CdmManifestDeclarationDefinition subManifest in f.SubManifests)
-                    {
-                        string corpusPath = cdmCorpus.Storage.CreateAbsoluteCorpusPath(subManifest.Definition, f);
-                        await seekEntities(await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>(corpusPath));
-                    }
-                }
-            };
-            await seekEntities(manifest);
-            if (spew != null)
-                return spew.GetContent();
-            return "";
-
+            Assert.IsNotNull(resolvedEntity.Attributes[0].AppliedTraits.Item("is.linkedEntity.identifier"));
         }
     }
 }

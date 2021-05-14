@@ -10,25 +10,21 @@ import {
     CdmAttributeItem,
     CdmAttributeReference,
     CdmCorpusDefinition,
-    CdmEntityDeclarationDefinition,
+    CdmDocumentDefinition,
     CdmEntityDefinition,
     CdmManifestDefinition,
-    CdmObject,
-    CdmReferencedEntityDeclarationDefinition,
     cdmStatusLevel,
-    importsLoadStrategy,
     resolveOptions,
     stringSpewCatcher
 } from '../../../internal';
 import { ResolvedAttributeSet } from '../../../ResolvedModel/ResolvedAttributeSet';
-import { ResolvedEntity } from '../../../ResolvedModel/ResolvedEntity';
 import { LocalAdapter } from '../../../Storage';
 import { AttributeResolutionDirectiveSet } from '../../../Utilities/AttributeResolutionDirectiveSet';
-import { isReferencedEntityDeclarationDefinition } from '../../../Utilities/cdmObjectTypeGuards';
 import { testHelper } from '../../testHelper';
+import { resolutionTestUtils } from './ResolutionTestUtils';
 
 /**
- * Tests to verify if entity resolution is taking places as expected.
+ * Tests to verify if entity resolution performs as expected.
  */
 // tslint:disable-next-line: max-func-body-length
 describe('Cdm/Resolution/EntityResolution', () => {
@@ -37,11 +33,33 @@ describe('Cdm/Resolution/EntityResolution', () => {
     const doesWriteDebuggingFiles: boolean = false;
 
     /**
+     * Tests if the owner of the entity is not changed when calling CreatedResolvedEntityAsync
+     */
+    it('TestOwnerNotChanged', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestOwnerNotChanged');
+
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Entity.cdm.json/Entity');
+        const document: CdmDocumentDefinition = await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/Entity.cdm.json');
+
+        expect(document)
+            .toBe(entity.owner);
+
+        await entity.createResolvedEntityAsync('res-Entity');
+
+        expect(document)
+            .toBe(entity.owner);
+        // Test that entity's attribute's owner should have remained unchanged (same as the owning entity)
+        expect(entity.attributes.allItems[0].owner)
+            .toBe(entity);
+        done();
+    });
+
+    /**
      * Test whether or not the test corpus can be resolved
      */
     it('TestResolveTestCorpus', async () => {
         // this test takes more time than jest expects tests to take
-        jest.setTimeout(100000);
+        jest.setTimeout(500000);
 
         // tslint:disable-next-line: non-literal-fs-path
         expect(fs.existsSync(schemaDocsRoot))
@@ -61,7 +79,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
             .toBeTruthy();
         const directives: AttributeResolutionDirectiveSet =
             new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly']));
-        const allResolved: string = await listAllResolved(cdmCorpus, directives, manifest, new stringSpewCatcher());
+        const allResolved: string = await resolutionTestUtils.listAllResolved(cdmCorpus, directives, manifest, new stringSpewCatcher());
         expect(allResolved)
             .toBeDefined();
         expect(allResolved.length)
@@ -75,21 +93,21 @@ describe('Cdm/Resolution/EntityResolution', () => {
      * Test if the composite resolved entities match
      */
     it('TestResolvedComposites', async () => {
-        await resolveSaveDebuggingFileAndAssert('TestResolvedComposites', 'composites');
+        await resolutionTestUtils.resolveSaveDebuggingFileAndAssert(testsSubpath, 'TestResolvedComposites', 'composites');
     });
 
     /**
      * Test if the composite resolved entities match
      */
     it('TestResolvedE2E', async () => {
-        await resolveSaveDebuggingFileAndAssert('TestResolvedE2E', 'E2EResolution');
+        await resolutionTestUtils.resolveSaveDebuggingFileAndAssert(testsSubpath, 'TestResolvedE2E', 'E2EResolution');
     });
 
     /**
      * Test if the knowledge graph resolved entities match
      */
     it('TestareResolvedKnowledgeGraph', async () => {
-        await resolveSaveDebuggingFileAndAssert('TestResolvedKnowledgeGraph', 'KnowledgeGraph');
+        await resolutionTestUtils.resolveSaveDebuggingFileAndAssert(testsSubpath, 'TestResolvedKnowledgeGraph', 'KnowledgeGraph');
     });
 
     /**
@@ -103,21 +121,21 @@ describe('Cdm/Resolution/EntityResolution', () => {
      * Test if the overrides resolved entities match
      */
     it('TestResolvedOverrides', async () => {
-        await resolveSaveDebuggingFileAndAssert('TestResolvedOverrides', 'overrides');
+        await resolutionTestUtils.resolveSaveDebuggingFileAndAssert(testsSubpath, 'TestResolvedOverrides', 'overrides');
     });
 
     /**
      * Test if the POVResolution resolved entities match
      */
     it('TestResolvedPovResolution', async () => {
-        await resolveSaveDebuggingFileAndAssert('TestResolvedPovResolution', 'POVResolution');
+        await resolutionTestUtils.resolveSaveDebuggingFileAndAssert(testsSubpath, 'TestResolvedPovResolution', 'POVResolution');
     });
 
     /**
      * Test if the WebClicks resolved entities match
      */
     it('TestResolvedWebClicks', async () => {
-        await resolveSaveDebuggingFileAndAssert('TestResolvedWebClicks', 'webClicks');
+        await resolutionTestUtils.resolveSaveDebuggingFileAndAssert(testsSubpath, 'TestResolvedWebClicks', 'webClicks');
     });
 
     /**
@@ -258,110 +276,18 @@ describe('Cdm/Resolution/EntityResolution', () => {
         let resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
         let resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync('resolved', resOpt);
 
-        expect(resolvedEntity.attributes.allItems[1].appliedTraits.allItems[7].namedReference)
-            .toBe('is.linkedEntity.name');
+        expect(resolvedEntity.attributes.allItems[1].appliedTraits.item('is.linkedEntity.name'))
+            .not
+            .toBeUndefined();
 
         // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
         resOpt = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['referenceOnly'])));
         resolvedEntity = await entity.createResolvedEntityAsync('resolved2', resOpt);
 
-        expect(resolvedEntity.attributes.allItems[0].appliedTraits.allItems[7].namedReference)
-            .toBe('is.linkedEntity.identifier');
+        expect(resolvedEntity.attributes.allItems[0].appliedTraits.item('is.linkedEntity.identifier'))
+            .not
+            .toBeUndefined();
 
         done();
     });
-
-    /**
-     * Function used to test resolving an environment.
-     * Writes a helper function used for debugging.
-     * Asserts the result matches the expected result stored in a file.
-     * @param testName The name of the test. It is used to decide the path of input / output files.
-     * @param manifestName The name of the manifest to be used.
-     */
-    async function resolveSaveDebuggingFileAndAssert(testName: string, manifestName: string): Promise<void> {
-        const result: string = (await resolveEnvironment(testName, manifestName));
-        const outputFileName: string = `${manifestName}.txt`;
-        if (doesWriteDebuggingFiles) {
-            testHelper.writeActualOutputFileContent(testsSubpath, testName, outputFileName, result);
-        }
-
-        const original: string = testHelper.getExpectedOutputFileContent(testsSubpath, testName, outputFileName);
-
-        testHelper.assertFileContentEquality(result, original);
-    }
-
-    /**
-     * Resolve the entities in the given manifest
-     * @param testName The name of the test. It is used to decide the path of input / output files.
-     * @param manifestName The name of the manifest to be used.
-     * @return the resolved manifest as a promise.
-     */
-    async function resolveEnvironment(testName: string, manifestName: string): Promise<string> {
-        const inputFileName: string = `local:/${manifestName}.manifest.cdm.json`;
-        const cdmCorpus: CdmCorpusDefinition = testHelper.createCorpusForTest(testsSubpath, testName);
-
-        const manifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(inputFileName);
-        const directives: AttributeResolutionDirectiveSet =
-            new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly']));
-
-        return listAllResolved(cdmCorpus, directives, manifest, new stringSpewCatcher());
-    }
-
-    /**
-     * @internal
-     * Get the text version of all the resolved entities.
-     * @param cdmCorpus The CDM corpus.
-     * @param directives The directives to use while getting the resolved entities.
-     * @param manifest The manifest to be resolved.
-     * @param spew The object used to store the text to be returned.
-     * @returns The text version of the resolved entities. (it's in a form that facilitates debugging)
-     */
-    async function listAllResolved(
-        cdmCorpus: CdmCorpusDefinition,
-        directives: AttributeResolutionDirectiveSet,
-        manifest: CdmManifestDefinition,
-        spew: stringSpewCatcher): Promise<string> {
-        const seen: Set<string> = new Set<string>();
-
-        async function seekEntities(f: CdmManifestDefinition): Promise<void> {
-            if (f && f.entities) {
-                if (spew) {
-                    spew.spewLine(f.folderPath);
-                }
-                for (const entity of f.entities) {
-                    let corpusPath: string;
-                    let ent: CdmEntityDeclarationDefinition = entity;
-                    let currentFile: CdmObject = f;
-                    while (isReferencedEntityDeclarationDefinition(ent)) {
-                        corpusPath =
-                            cdmCorpus.storage.createAbsoluteCorpusPath(ent.entityPath, currentFile);
-                        ent = await cdmCorpus.fetchObjectAsync<CdmReferencedEntityDeclarationDefinition>(corpusPath);
-                        currentFile = ent as CdmObject;
-                    }
-                    corpusPath = cdmCorpus.storage.createAbsoluteCorpusPath(ent.entityPath, currentFile);
-                    const resOpt: resolveOptions = new resolveOptions();
-                    resOpt.importsLoadStrategy = importsLoadStrategy.load;
-                    const newEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(corpusPath, null, resOpt);
-                    resOpt.wrtDoc = newEnt.inDocument;
-                    resOpt.directives = directives;
-                    const resEnt: ResolvedEntity = newEnt.getResolvedEntity(resOpt);
-                    if (spew) {
-                        resEnt.spew(resOpt, spew, ' ', true);
-                    }
-                }
-            }
-            if (f && f.subManifests) {
-                for (const subManifest of f.subManifests) {
-                    const corpusPath: string = cdmCorpus.storage.createAbsoluteCorpusPath(subManifest.definition, f);
-                    await seekEntities(await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>(corpusPath));
-                }
-            }
-        }
-        await seekEntities(manifest);
-        if (spew) {
-            return spew.getContent();
-        }
-
-        return '';
-    }
 });

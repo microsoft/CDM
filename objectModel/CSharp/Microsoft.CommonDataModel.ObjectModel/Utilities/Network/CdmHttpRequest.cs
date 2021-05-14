@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System;
@@ -35,6 +35,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
         public string RequestedUrl { get; set; }
 
         /// <summary>
+        /// The unique id of the request for logging.
+        /// </summary>
+        public Guid RequestId { get; private set; }
+
+        /// <summary>
         /// The timeout of a single request.
         /// </summary>
         public TimeSpan? Timeout { get; set; }
@@ -59,6 +64,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
         {
             this.Headers = new Dictionary<string, string>();
             this.RequestedUrl = url;
+            this.RequestId = Guid.NewGuid();
             this.NumberOfRetries = numberOfRetries;
             
             // If not HTTP method is specified, assume GET.
@@ -70,6 +76,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
             {
                 this.Method = method;
             }
+        }
+
+        /// <summary>
+        /// Strips sas token parameter 'sig'.
+        /// Returns the requested url with the value of 'sig' replaced with 'REMOVED'.
+        /// </summary>
+        internal string StripSasSig()
+        {
+            int sigStartIndex = RequestedUrl.IndexOf("sig=");
+            if (sigStartIndex == -1) {
+                return RequestedUrl;
+            }
+
+            int sigEndIndex = RequestedUrl.IndexOf("&", sigStartIndex + 1);
+            sigEndIndex = sigEndIndex == -1 ? RequestedUrl.Length : sigEndIndex;
+            return RequestedUrl.Substring(0, sigStartIndex + 4) + "REMOVED" + RequestedUrl.Substring(sigEndIndex);
         }
     }
 }

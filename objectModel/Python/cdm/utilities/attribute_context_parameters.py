@@ -17,3 +17,12 @@ class AttributeContextParameters:
         self._under = kwargs.get('under', None)  # type: CdmAttributeContext
         self._type = kwargs.get('type', None)  # type: CdmAttributeContextType
         self._regarding = kwargs.get('regarding', None)  # type: CdmObject
+
+    def copy(self) -> 'AttributeContextParameters':
+        c = AttributeContextParameters()
+        c._name = self._name
+        c._include_traits = self._include_traits
+        c._under = self._under
+        c._type = self._type
+        c._regarding = self._regarding
+        return c

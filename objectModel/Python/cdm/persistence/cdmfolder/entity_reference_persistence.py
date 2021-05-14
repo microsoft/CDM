@@ -17,31 +17,21 @@ class EntityReferencePersistence(CdmObjectRefPersistence):
     def from_data(ctx: CdmCorpusContext, data: Union[str, EntityReference]) -> Optional[CdmEntityReference]:
         if not data:
             return None
-        from .entity_persistence import EntityPersistence
 
         simple_reference = True
         entity = None
-        applied_traits = None
 
         if isinstance(data, str):
             entity = data
         else:
+            entity = EntityReferencePersistence._get_entity_reference(ctx, data)
             simple_reference = False
-            if isinstance(data.entityReference, str):
-                entity = data.entityReference
-            elif data.entityReference and data.entityReference.get('entityShape'):
-                entity = ConstantEntityPersistence.from_data(ctx, data.entityReference)
-            elif data.get('source'):
-                entity = ProjectionPersistence.from_data(ctx, data)
-            else:
-                entity = EntityPersistence.from_data(ctx, data.entityReference)
 
         entity_reference = ctx.corpus.make_ref(CdmObjectType.ENTITY_REF, entity, simple_reference)
 
         if not isinstance(data, str) and entity_reference:
-            applied_traits = utils.create_trait_reference_array(ctx, data.get('appliedTraits'))
-            if applied_traits is not None:
-                entity_reference.applied_traits.extend(applied_traits)
+            utils.add_list_to_cdm_collection(entity_reference.applied_traits,
+                                             utils.create_trait_reference_array(ctx, data.get('appliedTraits')))
 
         return entity_reference
 
@@ -54,3 +44,18 @@ class EntityReferencePersistence(CdmObjectRefPersistence):
             return ProjectionPersistence.to_data(cast('CdmProjection', instance.explicit_reference), res_opt, options)
         else:
             return CdmObjectRefPersistence.to_data(instance, res_opt, options)
+
+    @staticmethod
+    def _get_entity_reference(ctx: 'CdmCorpusContext', data) -> 'CdmObject':
+        from .entity_persistence import EntityPersistence
+
+        entity = None
+        if isinstance(data.entityReference, str):
+            entity = data.entityReference
+        elif data.entityReference and data.entityReference.get('entityShape'):
+            entity = ConstantEntityPersistence.from_data(ctx, data.entityReference)
+        elif data.get('source') or data.get('operations'):
+            entity = ProjectionPersistence.from_data(ctx, data)
+        else:
+            entity = EntityPersistence.from_data(ctx, data.entityReference)
+        return entity

@@ -2,18 +2,23 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    AttributeContextParameters,
     CdmAttributeContext,
+    cdmAttributeContextType,
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
     CdmTypeAttributeDefinition,
-    Errors,
     Logger,
+    ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
+    ResolvedAttribute,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../../internal';
 
@@ -35,8 +40,10 @@ export class CdmOperationAddTypeAttribute extends CdmOperationBase {
      * @inheritdoc
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.copy.name);
-        return new CdmOperationAddTypeAttribute(this.ctx);
+        const copy: CdmOperationAddTypeAttribute = new CdmOperationAddTypeAttribute(this.ctx);
+        copy.typeAttribute = this.typeAttribute.copy(resOpt, host) as CdmTypeAttributeDefinition;
+
+        return copy;
     }
 
     /**
@@ -64,13 +71,7 @@ export class CdmOperationAddTypeAttribute extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -105,8 +106,39 @@ export class CdmOperationAddTypeAttribute extends CdmOperationBase {
      * @inheritdoc
      * @internal
      */
-    public appendProjectionAttributeState(projCtx: ProjectionContext, projAttrStateSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.appendProjectionAttributeState.name);
-        return undefined;
+    public appendProjectionAttributeState(projCtx: ProjectionContext, projOutputSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
+        // Pass through all the input projection attribute states if there are any
+        for (const currentPAS of projCtx.currentAttributeStateSet.states) {
+            projOutputSet.add(currentPAS);
+        }
+
+        // Create a new attribute context for the operation
+        const attrCtxOpAddTypeParam: AttributeContextParameters = {
+            under: attrCtx,
+            type: cdmAttributeContextType.operationAddTypeAttribute,
+            name: `operation/index${this.index}/operationAddTypeAttribute`
+        };
+        const attrCtxOpAddType: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxOpAddTypeParam);
+
+        // Create a new attribute context for the Type attribute we will create
+        const attrCtxTypeAttrParam: AttributeContextParameters = {
+            under: attrCtxOpAddType,
+            type: cdmAttributeContextType.addedAttributeSelectedType,
+            name: '_selectedEntityName'
+        };
+        const attrCtxTypeAttr: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxTypeAttrParam);
+
+        // Create the Type attribute with the specified "typeAttribute" (from the operation) as its target and apply the trait "is.linkedEntity.name" to it
+        const addTrait: string[] = ['is.linkedEntity.name'];
+        const newResAttr: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, attrCtxTypeAttr, this.typeAttribute, undefined, addTrait);
+
+        // Create a new projection attribute state for the new Type attribute and add it to the output set
+        // There is no previous state for the newly created Type attribute
+        const newPAS: ProjectionAttributeState = new ProjectionAttributeState(projOutputSet.ctx);
+        newPAS.currentResolvedAttribute = newResAttr;
+
+        projOutputSet.add(newPAS);
+
+        return projOutputSet;
     }
 }

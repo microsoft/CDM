@@ -4,22 +4,25 @@
 import {
     CdmCorpusContext,
     CdmDataPartitionDefinition,
+    cdmLogCode,
     cdmObjectType,
-    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    Logger
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
-import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
 import {
     DataPartition,
     KeyValPair,
+    TraitGroupReference,
     TraitReference
 } from './types';
 import * as utils from './utils';
 
 export class DataPartitionPersistence {
+    private static TAG: string = DataPartitionPersistence.name;
     /**
      * Creates an instance from data object.
      * @param ctx The context.
@@ -42,12 +45,10 @@ export class DataPartitionPersistence {
         if (dataObj.lastFileModifiedTime) {
             newPartition.lastFileModifiedTime = new Date(dataObj.lastFileModifiedTime);
         }
-        if (dataObj.exhibitsTraits) {
-            utils.addArrayToCdmCollection<CdmTraitReference>(
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(
                 newPartition.exhibitsTraits, 
                 utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits)
-            );
-        }
+        );
         if (dataObj.arguments) {
             for (const argument of dataObj.arguments) {
                 let argName: string;
@@ -64,11 +65,7 @@ export class DataPartitionPersistence {
                     argValue = entries[0][1];
                 }
                 if (!argName || !argValue) {
-                    Logger.warning(
-                        DataPartitionPersistence.name,
-                        ctx,
-                        `invalid set of arguments provided for data partition corresponding to location: ${dataObj.location}`
-                    );
+                    Logger.warning(ctx, this.TAG, this.fromData.name, null, cdmLogCode.WarnPartitionInvalidArguments, dataObj.location.toString());
                 }
 
                 if (newPartition.arguments.has(argName)) {
@@ -93,7 +90,7 @@ export class DataPartitionPersistence {
             location: instance.location,
             lastFileStatusCheckTime: timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime),
             lastFileModifiedTime: timeUtils.getFormattedDateString(instance.lastFileModifiedTime),
-            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options),
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.exhibitsTraits, options),
             arguments: undefined,
             specializedSchema: instance.specializedSchema
         };

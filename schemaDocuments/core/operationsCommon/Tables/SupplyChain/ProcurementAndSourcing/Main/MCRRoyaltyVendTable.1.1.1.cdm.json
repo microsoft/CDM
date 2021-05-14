@@ -1,0 +1,712 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceJour.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTransOpen.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/MCRRoyaltyTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Reference/MCRRoyaltyTablePricing.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/PdsRebateAgreement.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/PdsRebateTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesLine.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRRoyaltyVendTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CorrectedRoyaltyAmt",
+          "dataType": "MCRCorrectedRoyaltyAmt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "AccountNum",
+          "description": ""
+        },
+        {
+          "name": "CustInvoiceJourRefRecId",
+          "dataType": "PdsCustInvoiceJourRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "custInvoiceTransRefRecId",
+          "dataType": "PdsCustInvoiceTransRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerRef",
+          "dataType": "PdsCustomerRef",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CWSalesInvoicedQty",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemRoyaltyGroupId",
+          "dataType": "MCRItemRoyaltyGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "displayName": "Accrual account",
+          "description": ""
+        },
+        {
+          "name": "MarkForCredit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Mark",
+          "description": ""
+        },
+        {
+          "name": "MCRRoyaltyTableRefRecId",
+          "dataType": "PdsRebateAgreementRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OffsetLedgerDimension",
+          "dataType": "MCRRoyaltyOffsetDimensionDefaultAccount",
+          "description": ""
+        },
+        {
+          "name": "ProcessDate",
+          "dataType": "PdsProcessDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyAdjustmentDate",
+          "dataType": "PdsRebateAdjustmentDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyAgreementLineRefRecId",
+          "dataType": "PdsRebateAgreementRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyAmt",
+          "dataType": "PdsRebateAmt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyAmtType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyBalance",
+          "dataType": "MCRRoyaltyBalance",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyCalcDate",
+          "dataType": "PdsRebateCalcDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyClaimId",
+          "dataType": "MCRRoyaltyId",
+          "description": ""
+        },
+        {
+          "name": "RoyaltyCode",
+          "dataType": "MCRRoyaltyCode",
+          "description": ""
+        },
+        {
+          "name": "RoyaltyJournalRefNum",
+          "dataType": "PdsJournalRefNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyMinAmt",
+          "dataType": "TAMRebateMinAmt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyMinQty",
+          "dataType": "TAMVendRebateMinQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyPayTo",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoyaltyValue",
+          "dataType": "PdsRebateValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesAmount",
+          "dataType": "SalesAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesId",
+          "dataType": "SalesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesInvoiceDate",
+          "dataType": "InvoiceDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesInvoicedQty",
+          "dataType": "SalesInvoicedQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesInvoiceId",
+          "dataType": "SalesInvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesLineRefRecId",
+          "dataType": "PdsSalesLineRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesNetExtendedPrice",
+          "dataType": "PdsSalesNetExtdPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPriceUnit",
+          "dataType": "PriceUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTableRefRecId",
+          "dataType": "PdsSalesTableRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartingRoyaltyAmt",
+          "dataType": "MCRStartingRoyaltyAmt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendAccount",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendRoyaltyGroupId",
+          "dataType": "TAMVendRebateGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_CustInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_CustInvoiceJourInvoiceIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_CustInvoiceJourRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceTrans"
+          },
+          "name": "Relationship_CustInvoiceTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTransOpen"
+          },
+          "name": "Relationship_CustTransOpenRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRRoyaltyTable"
+          },
+          "name": "Relationship_MCRRoyaltyTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRRoyaltyTablePricing"
+          },
+          "name": "Relationship_MCRRoyaltyTablePricingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_OffsetLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsRebateAgreement"
+          },
+          "name": "Relationship_PdsAgreementRefRecIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsRebateTable"
+          },
+          "name": "Relationship_PdsRebateTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRRoyaltyTable"
+          },
+          "name": "Relationship_RoyaltyCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesLine"
+          },
+          "name": "Relationship_SalesLineRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendtableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Royalty"
+    },
+    {
+      "dataTypeName": "MCRCorrectedRoyaltyAmt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCustInvoiceJourRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PdsCustInvoiceTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PdsCustomerRef",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCWInventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRItemRoyaltyGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PdsRebateAgreementRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MCRRoyaltyOffsetDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PdsProcessDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PdsRebateAdjustmentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PdsRebateAmt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRRoyaltyBalance",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsRebateCalcDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "MCRRoyaltyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRRoyaltyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsJournalRefNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TAMRebateMinAmt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TAMVendRebateMinQty",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsRebateValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SalesInvoicedQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsSalesLineRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PdsSalesNetExtdPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceUnit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsSalesTableRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MCRStartingRoyaltyAmt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TAMVendRebateGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

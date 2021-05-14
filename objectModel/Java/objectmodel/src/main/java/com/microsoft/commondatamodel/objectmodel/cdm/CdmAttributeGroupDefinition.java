@@ -5,17 +5,18 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReferenceSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -23,6 +24,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase implements CdmReferencesEntities {
 
+  private static final String TAG = CdmAttributeGroupDefinition.class.getSimpleName();
+  
   private CdmAttributeContextReference attributeContext;
   private String attributeGroupName;
   private CdmCollection<CdmAttributeItem> members;
@@ -82,9 +85,12 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
     }
-    if (this.attributeContext != null && this.attributeContext
-        .visit(path + "/attributeContext/", preChildren, postChildren)) {
-      return true;
+    if (this.attributeContext != null) {
+      this.attributeContext.setOwner(this);
+      if (this.attributeContext
+          .visit(path + "/attributeContext/", preChildren, postChildren)) {
+        return true;
+      }
     }
     if (this.getMembers() != null) {
       if (this.members.visitList(path + "/members/", preChildren, postChildren)) {
@@ -168,7 +174,8 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.attributeGroupName)) {
-      Logger.error(CdmAttributeGroupDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("attributeGroupName"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("attributeGroupName"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -244,6 +251,7 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   @Deprecated
   public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, CdmAttributeContext under) {
     final ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
+    final CdmAttributeContext allUnder = under;
     if (under != null) {
       final AttributeContextParameters acpAttGrp = new AttributeContextParameters();
       acpAttGrp.setUnder(under);
@@ -257,7 +265,7 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
 
     if (this.getMembers() != null) {
       for (int i = 0; i < this.getMembers().getCount(); i++) {
-        final CdmObject att = this.members.getAllItems().get(i);
+        final CdmObject att = this.members.get(i);
         AttributeContextParameters acpAtt = null;
         if (under != null) {
           acpAtt = new AttributeContextParameters();
@@ -267,10 +275,17 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
           acpAtt.setRegarding(att);
           acpAtt.setIncludeTraits(false);
         }
-        rasb.mergeAttributes(att.fetchResolvedAttributes(resOpt, acpAtt));
+        ResolvedAttributeSet rasFromAtt = att.fetchResolvedAttributes(resOpt, acpAtt);
+        // before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
+        // from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before
+        // that didn't just pop out of that same named attribute now need to go away.
+        // mark any attributes formerly from this named attribute that don't show again as orphans
+        rasb.getResolvedAttributeSet().markOrphansForRemoval(att.fetchObjectDefinitionName(), rasFromAtt);
+        // now merge
+        rasb.mergeAttributes(rasFromAtt);
       }
     }
-    rasb.getResolvedAttributeSet().setAttributeContext(under);
+    rasb.getResolvedAttributeSet().setAttributeContext(allUnder);  // context must be the one expected from the caller's pov.
 
     // things that need to go away
     rasb.removeRequestedAtts();

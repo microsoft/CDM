@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as fs from 'fs';
+import * as path from 'path';
+
 import { isArray, isDate, isObject, isString } from 'util';
-import { CdmCorpusDefinition, cdmStatusLevel } from '../internal';
+import { CdmCorpusDefinition, cdmStatusLevel, cdmLogCode } from '../internal';
 import { LocalAdapter, RemoteAdapter } from '../Storage';
 
 enum testFolders {
@@ -28,6 +30,11 @@ export const testHelper = {
      * the entire set of CDM standard schemas, after 8000+ F&O entities were added.
      */
     cdmStandardsSchemaPath: 'local:/core/applicationCommon/applicationCommon.manifest.cdm.json',
+    /**
+     * The path of the CDM Sample Schema Documents Folder.
+     */
+    sampleSchemaFolderPath: '../../samples/example-public-standards',
+
     getInputFolderPath: (testSubpath: string, testName: string) =>
         getTestFolderPath(testSubpath, testName, testFolders.Input),
     getExpectedOutputFolderPath: (testSubpath: string, testName: string) =>
@@ -144,6 +151,18 @@ export const testHelper = {
 
         return false;
     },
+    deleteFilesFromActualOutput(actualOutputFolderPath: string) {
+        const itemNameList: string[] = fs.readdirSync(actualOutputFolderPath);
+        itemNameList.forEach((itemName: string) => {
+            const itemPath: string = path.join(actualOutputFolderPath, itemName);
+            if (fs.lstatSync(itemPath).isFile()) {
+                fs.unlinkSync(itemPath);
+            } else if(fs.lstatSync(itemPath).isDirectory()) {
+                testHelper.deleteFilesFromActualOutput(itemPath);
+                fs.rmdirSync(itemPath)
+            }
+        });
+    },
     assertSameObjectWasSerialized(expected: string, actual: string) {
         const deserializedExpected: string = JSON.parse(expected);
         const deserializedActual: string = JSON.parse(actual);
@@ -206,9 +225,26 @@ export const testHelper = {
         // Set empty callback to avoid breaking tests due too many errors in logs,
         // change the event callback to console or file status report if wanted.
         // tslint:disable-next-line: no-empty
-        cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
+        cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.warning);
 
         return cdmCorpus;
+    },
+
+     /**
+    *Asserts the logcode, the same as the expected.
+    * @param corpus The corpus object.
+    * @param expectedcode The expectedcode cdmlogcode.
+    */
+    expectCdmLogCodeEquality(corpus: CdmCorpusDefinition, expectedCode: cdmLogCode): void {
+        var toAssert: boolean = false;
+        corpus.ctx.events.allItems.forEach(logEntry => {
+            if ( ((cdmLogCode[expectedCode].startsWith('Warn') && logEntry.get('level') === cdmStatusLevel[cdmStatusLevel.warning])
+            || (cdmLogCode[expectedCode].startsWith('Err') && logEntry.get('level') === cdmStatusLevel[cdmStatusLevel.error]))
+            && logEntry.get('code') === cdmLogCode[expectedCode]) {
+                toAssert = true;
+            }
+        });
+        expect(toAssert).toBe(true);
     }
 };
 

@@ -5,14 +5,11 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationArrayExpansion,
-    cdmOperationType,
     copyOptions,
-    Logger,
-    OperationTypeConvertor,
     resolveOptions,
-    StringUtils
 } from '../../../internal';
 import { OperationArrayExpansion } from '../types';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation ArrayExpansion persistence
@@ -22,18 +19,8 @@ export class OperationArrayExpansionPersistence {
         if (!object) {
             return undefined;
         }
-        const arrayExpansionOp: CdmOperationArrayExpansion = ctx.corpus.MakeObject<CdmOperationArrayExpansion>(cdmObjectType.operationArrayExpansionDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.arrayExpansion))) {
-            Logger.error(OperationArrayExpansionPersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            arrayExpansionOp.type = cdmOperationType.arrayExpansion;
-        }
-
-        if (object.explanation) {
-            arrayExpansionOp.explanation = object.explanation;
-        }
-
+        const arrayExpansionOp: CdmOperationArrayExpansion = OperationBasePersistence.fromData(ctx, cdmObjectType.operationArrayExpansionDef, object);
         arrayExpansionOp.startOrdinal = object.startOrdinal;
         arrayExpansionOp.endOrdinal = object.endOrdinal;
 
@@ -45,11 +32,10 @@ export class OperationArrayExpansionPersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.arrayExpansion),
-            explanation: instance.explanation,
-            startOrdinal: instance.startOrdinal,
-            endOrdinal: instance.endOrdinal
-        };
+        const data: OperationArrayExpansion = OperationBasePersistence.toData(instance, resOpt, options);
+        data.startOrdinal = instance.startOrdinal;
+        data.endOrdinal = instance.endOrdinal;
+
+        return data;
     }
 }

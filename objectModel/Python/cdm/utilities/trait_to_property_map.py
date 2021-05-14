@@ -3,12 +3,13 @@
 
 from typing import Any, Callable, List, Optional, TYPE_CHECKING
 
-from cdm.enums import CdmDataFormat, CdmObjectType
+from cdm.enums import CdmDataFormat, CdmObjectType, CdmLogCode
 from cdm.resolvedmodel.resolved_trait import ResolvedTrait
 from .logging import logger
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmConstantEntityDefinition, CdmObject, CdmTraitCollection, CdmTraitReference
+    from cdm.objectmodel import CdmCorpusContext, CdmConstantEntityDefinition, CdmObject, CdmTraitCollection, \
+        CdmTraitReference, CdmTraitGroupReference
 
 
 trait_to_list_of_properties = {
@@ -54,8 +55,8 @@ def _fetch_trait_ref_argument_value(trait_ref_or_def: 'CdmTraitDefOrRef', arg_na
 
 class TraitToPropertyMap:
     def __init__(self, host: 'CdmObject') -> None:
-        self._host = host
         self._TAG = TraitToPropertyMap.__name__
+        self._host = host
 
     @property
     def _ctx(self) -> 'CdmCorpusContext':
@@ -257,7 +258,7 @@ class TraitToPropertyMap:
         base_type = CdmDataFormat.UNKNOWN
 
         for trait in self._traits:
-            if only_from_property and not trait.is_from_property:
+            if only_from_property and (trait.object_type == CdmObjectType.TRAIT_GROUP_REF or not trait.is_from_property):
                 continue
 
             trait_name = trait.fetch_object_definition_name()
@@ -458,9 +459,9 @@ class TraitToPropertyMap:
 
     def _update_default_value(self, new_default: Any) -> None:
         if not isinstance(new_default, list):
-            logger.error(self._TAG, self._host.ctx, 'Default value type not supported. Please provide a list.')
+            logger.error(self._host.ctx, self._TAG, '_update_default_value', None, CdmLogCode.ERR_UNSUPPORTED_TYPE)
         elif new_default is None or len(new_default) == 0 or new_default[0].get('languageTag') is None or new_default[0].get('displayText') is None:
-            logger.error(self._TAG, self._host.ctx, 'Default value missing languageTag or displayText.')
+            logger.error(self._host.ctx, self._TAG, '_update_default_value', None, CdmLogCode.ERR_VALDN_MISSING_LANGUAGE_TAG)
         elif new_default:
             # Looks like something we understand.
             corr = new_default[0].get('correlatedValue') is not None

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
@@ -17,6 +17,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     public class DocumentPersistence
     {
+        private static readonly string Tag = nameof(DocumentPersistence);
+
         public static async Task<CdmDocumentDefinition> FromData(CdmCorpusContext ctx, LocalEntity obj, List<CdmTraitDefinition> extensionTraitDefList, List<CdmTraitDefinition> localExtensionTraitDefList)
         {
             var docName = $"{obj.Name}.cdm.json";
@@ -29,7 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (entity == null)
             {
-                Logger.Error(nameof(DocumentPersistence), ctx, "There was an error while trying to convert a model.json entity to the CDM entity.");
+                Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistModelJsonEntityConversionError);
                 return null;
             }
 
@@ -82,13 +84,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     else
                     {
-                        Logger.Warning(nameof(DocumentPersistence), ctx, $"Entity {cdmEntity.GetName()} is not inside a document or its owner is not a document.");
+                        Logger.Warning(ctx, Tag, nameof(ToData), manifest.AtCorpusPath, CdmLogCode.WarnPersistEntityMissing, cdmEntity.GetName());
                     }
                     return entity;
                 }
                 else
                 {
-                    Logger.Error(nameof(DocumentPersistence), ctx, "There was an error while trying to fetch cdm entity doc.");
+                    Logger.Error(ctx, Tag, nameof(ToData), manifest.AtCorpusPath, CdmLogCode.ErrPersistCdmEntityFetchError);
                     return null;
                 }
             }

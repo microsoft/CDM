@@ -12,4 +12,5 @@ export abstract class Projection {
     public condition: string;
     public operations: OperationBase[];
     public source: EntityReferenceDefinition;
+    public runSequentially?: boolean;
 }

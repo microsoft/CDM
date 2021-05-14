@@ -8,4 +8,5 @@ class CdmStatusLevel(IntEnum):
     INFO = 0
     PROGRESS = 1
     WARNING = 2
-    ERROR = 3
+    ERROR = 3,
+    NONE = 4

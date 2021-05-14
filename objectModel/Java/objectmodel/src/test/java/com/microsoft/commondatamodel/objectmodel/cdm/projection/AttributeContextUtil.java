@@ -8,9 +8,12 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import org.testng.Assert;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +33,7 @@ public final class AttributeContextUtil {
     /**
      * Function to get the attribute context string tree from a resolved entity
      */
-    public String getAttributeContextStrings(CdmEntityDefinition resolvedEntity, CdmAttributeContext attribContext) {
+    public String getAttributeContextStrings(CdmEntityDefinition resolvedEntity) {
         // clear the string builder
         bldr.setLength(0);
 
@@ -43,6 +46,15 @@ public final class AttributeContextUtil {
         return bldr.toString();
     }
 
+    public String getArgumentValuesAsString(CdmArgumentDefinition args) {
+        // clear the string builder
+        bldr.setLength(0);
+
+        getArgumentValues(args);
+
+        return bldr.toString();
+    }
+
     /**
      * Get the corpus path for each attribute context in the tree and build a string collection that we can
      * compare with the expected attribute context corpus path collection.
@@ -51,13 +63,13 @@ public final class AttributeContextUtil {
         if (attribContext != null && attribContext.getContents() != null && attribContext.getContents().size() > 0) {
             for (int i = 0; i < attribContext.getContents().size(); i++) {
                 String str = "";
-                if ((attribContext.getContents().get(0) instanceof CdmAttributeReference)) {
-                    CdmAttributeReference ar = (CdmAttributeReference)attribContext.getContents().get(i);
+                if ((attribContext.getContents().get(i) instanceof CdmAttributeReference)) {
+                    CdmAttributeReference ar = (CdmAttributeReference) attribContext.getContents().get(i);
                     str = ar.getAtCorpusPath();
                     bldr.append(str);
                     bldr.append(endOfLine);
                 } else {
-                    CdmAttributeContext ac = (CdmAttributeContext)attribContext.getContents().get(i);
+                    CdmAttributeContext ac = (CdmAttributeContext) attribContext.getContents().get(i);
                     str = ac.getAtCorpusPath();
                     bldr.append(str);
                     bldr.append(endOfLine);
@@ -76,19 +88,21 @@ public final class AttributeContextUtil {
             bldr.append(attribCorpusPath);
             bldr.append(endOfLine);
 
-            for (CdmTraitReference trait : attrib.getAppliedTraits()) {
+            for (CdmTraitReferenceBase trait : attrib.getAppliedTraits()) {
                 String attribTraits = trait.getNamedReference();
                 bldr.append(attribTraits);
                 bldr.append(endOfLine);
 
-                for (CdmArgumentDefinition args : trait.getArguments()) {
-                    getArgumentValuesAsString(args);
+                if (trait instanceof CdmTraitReference) {
+                    for (CdmArgumentDefinition args : ((CdmTraitReference) trait).getArguments()) {
+                        getArgumentValues(args);
+                    }
                 }
             }
         }
     }
 
-    private void getArgumentValuesAsString(CdmArgumentDefinition args) {
+    private void getArgumentValues(CdmArgumentDefinition args) {
         String paramName = args.getResolvedParameter() != null ? args.getResolvedParameter().getName() : null;
         String paramDefaultValue = args.getResolvedParameter() != null ? (String) args.getResolvedParameter().getDefaultValue() : null;
 
@@ -112,7 +126,7 @@ public final class AttributeContextUtil {
                 bldr.append(endOfLine);
             }
         } else if (args.getValue() != null ? ((CdmObjectReference) args.getValue()).getExplicitReference().getObjectType() == CdmObjectType.ConstantEntityDef : false) {
-            CdmConstantEntityDefinition constEnt = (CdmConstantEntityDefinition)((CdmObjectReferenceBase)args.getValue()).getExplicitReference();
+            CdmConstantEntityDefinition constEnt = (CdmConstantEntityDefinition) ((CdmObjectReferenceBase) args.getValue()).getExplicitReference();
             if (constEnt != null) {
                 List<CdmEntityDefinition> refs = new ArrayList<>();
                 for (List<String> val : constEnt.getConstantValues()) {
@@ -130,13 +144,25 @@ public final class AttributeContextUtil {
     public static void validateAttributeContext(CdmCorpusDefinition corpus, String expectedOutputPath, String entityName, CdmEntityDefinition resolvedEntity) {
         if (resolvedEntity.getAttributeContext() != null) {
             AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
-            String actualText = attrCtxUtil.getAttributeContextStrings(resolvedEntity, resolvedEntity.getAttributeContext());
-            try {
-                final String expectedText = new String(Files.readAllBytes(
-                    new File(expectedOutputPath, "AttrCtx_" + entityName + ".txt").toPath()),
-                    StandardCharsets.UTF_8);
 
-                Assert.assertEquals(actualText, expectedText);
+            try {
+                // Actual
+                Path actualStringFilePath = new File(expectedOutputPath.replace("ExpectedOutput", "ActualOutput"), "AttrCtx_" + entityName + ".txt").toPath();
+
+                // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
+                String actualText = attrCtxUtil.getAttributeContextStrings(resolvedEntity);
+                try (final BufferedWriter actualFileWriter = Files.newBufferedWriter(actualStringFilePath, StandardCharsets.UTF_8, StandardOpenOption.CREATE);) {
+                    actualFileWriter.write(actualText);
+                    actualFileWriter.flush();
+                }
+                resolvedEntity.getInDocument().saveAsAsync("Resolved_" + entityName + ".cdm.json", false).join();
+
+                // Expected
+                Path expectedStringFilePath = new File(expectedOutputPath, "AttrCtx_" + entityName + ".txt").toPath();
+                final String expectedText = new String(Files.readAllBytes(expectedStringFilePath), StandardCharsets.UTF_8);
+
+                // Test if Actual is Equal to Expected
+                Assert.assertEquals(actualText.replace("\r\n", "\n"), expectedText.replace("\r\n","\n"));
             } catch (Exception e) {
                 Assert.fail(e.getMessage());
             }

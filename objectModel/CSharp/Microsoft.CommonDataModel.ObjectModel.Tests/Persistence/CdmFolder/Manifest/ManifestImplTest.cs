@@ -26,6 +26,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         /// The path between TestDataPath and TestName.
         /// </summary>
         private readonly string testsSubpath = Path.Combine("Persistence", "CdmFolder", "Manifest");
+        private readonly string InvalidFormatMesg = "The path should start with '.\\' and should not contain '..\\' or '\\.\\'";
 
         /// <summary>
         /// Testing for manifest impl instance with no entities and no sub manifests.
@@ -96,6 +97,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             ManifestContent manifestObject = CdmObjectBase.CopyData(cdmManifest, null, null);
             Assert.AreEqual(manifestObject.Schema, "CdmManifestDefinition.cdm.json");
             Assert.AreEqual(manifestObject.JsonSchemaSemanticVersion, "1.0.0");
+            Assert.AreEqual(manifestObject.DocumentVersion, "2.0.0");
             Assert.AreEqual(manifestObject.ManifestName, "cdmTest");
             Assert.AreEqual(manifestObject.Explanation, "test cdm folder for cdm version 1.0+");
             Assert.AreEqual(manifestObject.Imports.Count, 1);
@@ -198,7 +200,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
                 functionParameter1 = statusLevel;
                 functionParameter2 = message1;
             };
-            corpus.SetEventCallback(callback);
+            corpus.SetEventCallback(callback, CdmStatusLevel.Warning);
 
             var absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
                 new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "Mnp" });
@@ -227,36 +229,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
                 functionParameter1 = statusLevel;
                 functionParameter2 = message1;
             };
-            corpus.SetEventCallback(callback);
+            corpus.SetEventCallback(callback, CdmStatusLevel.Warning);
 
             var absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("./Abc");
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("The path should not start with ./"));
+            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
 
             functionWasCalled = false;
             absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("/./Abc");
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("The path should not contain /./"));
+            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
 
             functionWasCalled = false;
             absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("../Abc");
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("The path should not contain ../"));
+            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
 
             functionWasCalled = false;
             absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc/./Def");
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("The path should not contain /./"));
+            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
 
             functionWasCalled = false;
             absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc/../Def");
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("The path should not contain ../"));
+            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
         }
 
         /// <summary>
@@ -277,20 +279,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
                 functionParameter1 = statusLevel;
                 functionParameter2 = message1;
             };
-            corpus.SetEventCallback(callback);
+            corpus.SetEventCallback(callback, CdmStatusLevel.Warning);
 
             var absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
                 new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "./Mnp" });
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("The path should not start with ./"));
+            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
 
             functionWasCalled = false;
             absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
                 new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "/./Mnp" });
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("The path should not contain /./"));
+            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
 
             functionWasCalled = false;
             absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
@@ -298,7 +300,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             functionParameter2 = functionParameter2.Split("|")[1].Trim();
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("The path should not contain ../"));
+            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
 
             functionWasCalled = false;
             absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
@@ -306,7 +308,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             functionParameter2 = functionParameter2.Split("|")[1].Trim();
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("The path should not contain /./"));
+            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
 
             functionWasCalled = false;
             absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
@@ -314,7 +316,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             functionParameter2 = functionParameter2.Split("|")[1].Trim();
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("The path should not contain ../"));
+            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
         }
     }
 }

@@ -8,13 +8,12 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmLocalEntityDeclarationDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
@@ -38,7 +37,7 @@ public class DataPartitionPatternTest {
     final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRefreshDataPartitionPatterns", null);
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/patternManifest.manifest.cdm.json").join();
 
-    final CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)cdmManifest.getEntities().get(0);
+    final CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)cdmManifest.getEntities().get(1);
     Assert.assertEquals(partitionEntity.getDataPartitions().size(), 1);
 
     final OffsetDateTime timeBeforeLoad = OffsetDateTime.now();
@@ -158,7 +157,7 @@ public class DataPartitionPatternTest {
 
     HashMap<String, String> patternWithGlobAndRegex = new HashMap<>();
     corpus.setEventCallback((CdmStatusLevel level, String message) -> {
-      if (message.equals("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used.")) {
+      if (message.contains("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used.")) {
         patternWithGlobAndRegex.put("Warning Logged", "true");
       }
     }, CdmStatusLevel.Warning);
@@ -169,43 +168,51 @@ public class DataPartitionPatternTest {
     // one pattern object contains both glob and regex
     Assert.assertEquals(patternWithGlobAndRegex.size(), 1);
 
+    int index = 0;
     // make sure '.' in glob is not converted to '.' in regex
-    final CdmLocalEntityDeclarationDefinition dotIsEscaped = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    final CdmLocalEntityDeclarationDefinition dotIsEscaped = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(dotIsEscaped.getDataPartitionPatterns().get(0).getGlobPattern(), "test.ile.csv");
     Assert.assertEquals(dotIsEscaped.getDataPartitions().size(), 0);
+    index++;
 
-    // star pattern should not match anything
-    CdmLocalEntityDeclarationDefinition onlyStar = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(1);
+    // star pattern should match anything in the root folder
+    CdmLocalEntityDeclarationDefinition onlyStar = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(onlyStar.getDataPartitionPatterns().get(0).getGlobPattern(), "*");
-    Assert.assertEquals(onlyStar.getDataPartitions().size(), 0);
+    Assert.assertEquals(onlyStar.getDataPartitions().size(), 1);
+    Assert.assertEquals(onlyStar.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
 
     // star can match nothing
-    CdmLocalEntityDeclarationDefinition starNoMatch = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(2);
+    CdmLocalEntityDeclarationDefinition starNoMatch = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(starNoMatch.getDataPartitionPatterns().get(0).getGlobPattern(), "/testfile*.csv");
     Assert.assertEquals(starNoMatch.getDataPartitions().size(), 1);
     Assert.assertEquals(starNoMatch.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
 
     // star at root level
     // this should match any files at root level, none in subfolders
-    CdmLocalEntityDeclarationDefinition starAtRoot = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(3);
+    CdmLocalEntityDeclarationDefinition starAtRoot = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(starAtRoot.getDataPartitionPatterns().get(0).getGlobPattern(), "/*.csv");
     Assert.assertEquals(starAtRoot.getDataPartitions().size(), 1);
     Assert.assertEquals(starAtRoot.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
 
     // star at deeper level
-    final CdmLocalEntityDeclarationDefinition starAtDeeperLevel = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(4);
+    final CdmLocalEntityDeclarationDefinition starAtDeeperLevel = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(starAtDeeperLevel.getDataPartitionPatterns().get(0).getGlobPattern(), "/*/*.csv");
     Assert.assertEquals(starAtDeeperLevel.getDataPartitions().size(), 1);
     Assert.assertEquals(starAtDeeperLevel.getDataPartitions().get(0).getLocation(), "/partitions/subFolder/testSubFile.csv");
+    index++;
 
     // pattern that ends with star
-    final CdmLocalEntityDeclarationDefinition endsWithStar = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(5);
+    final CdmLocalEntityDeclarationDefinition endsWithStar = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(endsWithStar.getDataPartitionPatterns().get(0).getGlobPattern(), "/testfile*");
     Assert.assertEquals(endsWithStar.getDataPartitions().size(), 1);
     Assert.assertEquals(endsWithStar.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
 
     // globstar (**) on its own matches
-    final CdmLocalEntityDeclarationDefinition globStar = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(6);
+    final CdmLocalEntityDeclarationDefinition globStar = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(globStar.getDataPartitionPatterns().get(0).getGlobPattern(), "**");
     Assert.assertEquals(globStar.getDataPartitions().size(), 2);
     Assert.assertEquals(globStar.getDataPartitions().getAllItems()
@@ -217,15 +224,17 @@ public class DataPartitionPatternTest {
       .parallelStream().filter(x ->
         x.getLocation().equals("/partitions/subFolder/testSubFile.csv")
       ).collect(Collectors.toList()).size(), 1);
+    index++;
 
     // globstar at the beginning of the pattern
-    final CdmLocalEntityDeclarationDefinition beginsWithGlobstar = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(7) ;
+    final CdmLocalEntityDeclarationDefinition beginsWithGlobstar = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index) ;
     Assert.assertEquals(beginsWithGlobstar.getDataPartitionPatterns().get(0).getGlobPattern(), "/**.csv");
     Assert.assertEquals(beginsWithGlobstar.getDataPartitions().size(), 1);
     Assert.assertEquals(beginsWithGlobstar.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
 
     // globstar at the end of the pattern
-    final CdmLocalEntityDeclarationDefinition endsWithGlobstar = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(8);
+    final CdmLocalEntityDeclarationDefinition endsWithGlobstar = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(endsWithGlobstar.getDataPartitionPatterns().get(0).getGlobPattern(), "/**");
     Assert.assertEquals(endsWithGlobstar.getDataPartitions().size(), 2);
     Assert.assertEquals(endsWithGlobstar.getDataPartitions().getAllItems()
@@ -238,9 +247,10 @@ public class DataPartitionPatternTest {
       .filter(x ->
         x.getLocation().equals("/partitions/subFolder/testSubFile.csv")
       ).collect(Collectors.toList()).size(), 1);
+    index++;
 
     // globstar matches zero or more folders
-    final CdmLocalEntityDeclarationDefinition zeroOrMoreFolders = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(9);
+    final CdmLocalEntityDeclarationDefinition zeroOrMoreFolders = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(zeroOrMoreFolders.getDataPartitionPatterns().get(0).getGlobPattern(), "/**/*.csv");
     Assert.assertEquals(zeroOrMoreFolders.getDataPartitions().size(), 2);
     Assert.assertEquals(zeroOrMoreFolders.getDataPartitions().getAllItems()
@@ -253,9 +263,10 @@ public class DataPartitionPatternTest {
       .filter(x ->
         x.getLocation().equals("/partitions/subFolder/testSubFile.csv")
       ).collect(Collectors.toList()).size(), 1);
+    index++;
 
     // globstar matches zero or more folders without starting slash
-    final CdmLocalEntityDeclarationDefinition zeroOrMoreNoStartingSlash = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(10);
+    final CdmLocalEntityDeclarationDefinition zeroOrMoreNoStartingSlash = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(zeroOrMoreNoStartingSlash.getDataPartitionPatterns().get(0).getGlobPattern(), "/**/*.csv");
     Assert.assertEquals(zeroOrMoreNoStartingSlash.getDataPartitions().size(), 2);
     Assert.assertEquals(zeroOrMoreNoStartingSlash.getDataPartitions().getAllItems()
@@ -268,36 +279,132 @@ public class DataPartitionPatternTest {
       .filter(x ->
         x.getLocation().equals("/partitions/subFolder/testSubFile.csv")
       ).collect(Collectors.toList()).size(), 1);
+    index++;
 
     // question mark in the middle of a pattern
-    final CdmLocalEntityDeclarationDefinition questionMark = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(11);
+    final CdmLocalEntityDeclarationDefinition questionMark = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(questionMark.getDataPartitionPatterns().get(0).getGlobPattern(), "/test?ile.csv");
     Assert.assertEquals(questionMark.getDataPartitions().size(), 1);
     Assert.assertEquals(questionMark.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
 
     // question mark at the beginning of a pattern
-    final CdmLocalEntityDeclarationDefinition beginsWithQuestionMark = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(12);
+    final CdmLocalEntityDeclarationDefinition beginsWithQuestionMark = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(beginsWithQuestionMark.getDataPartitionPatterns().get(0).getGlobPattern(), "/?estfile.csv");
     Assert.assertEquals(beginsWithQuestionMark.getDataPartitions().size(), 1);
     Assert.assertEquals(beginsWithQuestionMark.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
 
     // question mark at the end of a pattern
-    final CdmLocalEntityDeclarationDefinition endsWithQuestionMark = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(13);
+    final CdmLocalEntityDeclarationDefinition endsWithQuestionMark = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(endsWithQuestionMark.getDataPartitionPatterns().get(0).getGlobPattern(), "/testfile.cs?");
     Assert.assertEquals(endsWithQuestionMark.getDataPartitions().size(), 1);
     Assert.assertEquals(endsWithQuestionMark.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
 
     // backslash in glob can match slash
-    final CdmLocalEntityDeclarationDefinition backslashInPattern = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(14);
+    final CdmLocalEntityDeclarationDefinition backslashInPattern = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(backslashInPattern.getDataPartitionPatterns().get(0).getGlobPattern(), "\\testfile.csv");
     Assert.assertEquals(backslashInPattern.getDataPartitions().size(), 1);
     Assert.assertEquals(backslashInPattern.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
 
     // pattern object includes glob pattern and regular expression
-    final CdmLocalEntityDeclarationDefinition globAndRegex = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(15);
+    final CdmLocalEntityDeclarationDefinition globAndRegex = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
     Assert.assertEquals(globAndRegex.getDataPartitionPatterns().get(0).getGlobPattern(), "/testfile.csv");
     Assert.assertEquals(globAndRegex.getDataPartitionPatterns().get(0).getRegularExpression(), "/subFolder/testSubFile.csv");
     Assert.assertEquals(globAndRegex.getDataPartitions().size(), 1);
     Assert.assertEquals(globAndRegex.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+  }
+
+  /**
+   * Testing data partition patterns that use glob patterns with variations in path style
+   */
+  @Test
+  public void testGlobPathVariation() throws InterruptedException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testGlobPathVariation", null);
+
+    final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("pattern.manifest.cdm.json").join();
+    manifest.fileStatusCheckAsync().join();
+
+    int index = 0;
+    final CdmLocalEntityDeclarationDefinition noSlash = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
+    Assert.assertEquals(noSlash.getDataPartitionPatterns().get(0).getRootLocation(), "/partitions");
+    Assert.assertEquals(noSlash.getDataPartitionPatterns().get(0).getGlobPattern(), "*.csv");
+    Assert.assertEquals(noSlash.getDataPartitions().size(), 1);
+    Assert.assertEquals(noSlash.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
+
+    final CdmLocalEntityDeclarationDefinition rootLocationSlash = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
+    Assert.assertEquals(rootLocationSlash.getDataPartitionPatterns().get(0).getRootLocation(), "/partitions/");
+    Assert.assertEquals(rootLocationSlash.getDataPartitionPatterns().get(0).getGlobPattern(), "*.csv");
+    Assert.assertEquals(rootLocationSlash.getDataPartitions().size(), 1);
+    Assert.assertEquals(rootLocationSlash.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
+
+    final CdmLocalEntityDeclarationDefinition globPatternSlash = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
+    Assert.assertEquals(globPatternSlash.getDataPartitionPatterns().get(0).getRootLocation(), "/partitions");
+    Assert.assertEquals(globPatternSlash.getDataPartitionPatterns().get(0).getGlobPattern(), "/*.csv");
+    Assert.assertEquals(globPatternSlash.getDataPartitions().size(), 1);
+    Assert.assertEquals(globPatternSlash.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
+
+    final CdmLocalEntityDeclarationDefinition bothSlash = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
+    Assert.assertEquals(bothSlash.getDataPartitionPatterns().get(0).getRootLocation(), "/partitions/");
+    Assert.assertEquals(bothSlash.getDataPartitionPatterns().get(0).getGlobPattern(), "/*.csv");
+    Assert.assertEquals(bothSlash.getDataPartitions().size(), 1);
+    Assert.assertEquals(bothSlash.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
+
+    final CdmLocalEntityDeclarationDefinition noSlashOrStarAtStart = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
+    Assert.assertEquals(noSlashOrStarAtStart.getDataPartitionPatterns().get(0).getRootLocation(), "/partitions/");
+    Assert.assertEquals(noSlashOrStarAtStart.getDataPartitionPatterns().get(0).getGlobPattern(), "t*.csv");
+    Assert.assertEquals(noSlashOrStarAtStart.getDataPartitions().size(), 1);
+    Assert.assertEquals(noSlashOrStarAtStart.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+    index++;
+
+    final CdmLocalEntityDeclarationDefinition noSlashOrStarAndRootLocation = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(index);
+    Assert.assertEquals(noSlashOrStarAndRootLocation.getDataPartitionPatterns().get(0).getRootLocation(), "/partitions");
+    Assert.assertEquals(noSlashOrStarAndRootLocation.getDataPartitionPatterns().get(0).getGlobPattern(), "t*.csv");
+    Assert.assertEquals(noSlashOrStarAndRootLocation.getDataPartitions().size(), 1);
+    Assert.assertEquals(noSlashOrStarAndRootLocation.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+  }
+
+  /**
+   * Verifies that performing file status check on manifest with a partition with
+   * null location is gracefully handled.
+   *
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
+  @Test
+  public void testFileStatusCheckOnNullLocation() throws InterruptedException, ExecutionException {
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFileStatusCheckOnNullLocation");
+    corpus.setEventCallback((level, message) -> {
+      Assert.assertEquals(level, CdmStatusLevel.Error, "Error level message should have been reported");
+      Assert.assertTrue(
+              message.equals("StorageManager | The object path cannot be null or empty. | createAbsoluteCorpusPath") ||
+                      message.equals("CdmCorpusDefinition | The object path cannot be null or empty. | computeLastModifiedTimeFromPartitionPathAsync"),
+              "Unexpected error message received");
+    }, CdmStatusLevel.Warning);
+
+    // Create manifest
+    CdmManifestDefinition manifest = corpus.makeObject(CdmObjectType.ManifestDef, "TestModel");
+    corpus.getStorage().fetchRootFolder("local").getDocuments().add(manifest);
+
+    // Create entity
+    CdmDocumentDefinition entDoc = corpus.getStorage().fetchRootFolder("local").getDocuments().add("MyEntityDoc.cdm.json");
+
+    CdmEntityDefinition entDef = corpus.makeObject(CdmObjectType.EntityDef, "MyEntity");
+    entDoc.getDefinitions().add(entDef);
+
+    CdmEntityDeclarationDefinition entDecl = manifest.getEntities().add(entDef);
+
+    // Create partition
+    CdmDataPartitionDefinition part = corpus.makeObject(CdmObjectType.DataPartitionDef, "MyPartition");
+    entDecl.getDataPartitions().add(part);
+
+    // This should not throw exception
+    manifest.fileStatusCheckAsync().join();
   }
 }

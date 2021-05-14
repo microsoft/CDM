@@ -4,13 +4,16 @@
 from typing import Any, cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmDataFormat, CdmObjectType
-from cdm.utilities import ResolveOptions, TraitToPropertyMap, logger, Errors
+from cdm.resolvedmodel.projections.projection_directive import ProjectionDirective
+from cdm.utilities import ResolveOptions, TraitToPropertyMap, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_attribute_def import CdmAttribute
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmDataTypeReference, CdmObjectReference, \
-    CardinalitySettings
+        CardinalitySettings, CdmProjection
     from cdm.resolvedmodel import ResolvedAttributeSetBuilder, ResolvedEntityReferenceSet
     from cdm.utilities import FriendlyFormatNode, VisitCallback
 
@@ -19,17 +22,20 @@ class CdmTypeAttributeDefinition(CdmAttribute):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx, name)
 
-        # the type attribute context.
+        self._TAG = CdmTypeAttributeDefinition.__name__
+
+        # the type attribute's context.
         self.attribute_context = None  # type: Optional[CdmObjectReference]
 
-        # the type attribute data type.
+        # the type attribute's data type.
         self.data_type = None  # type: Optional[CdmDataTypeReference]
+
+        # the type attribute's projection.
+        self.projection = None  # type: Optional[CdmProjection]
 
         # --- internal ---
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
         self._attribute_count = 1
-
-        self._TAG = CdmTypeAttributeDefinition.__name__
 
     @property
     def object_type(self) -> CdmObjectType:
@@ -74,6 +80,16 @@ class CdmTypeAttributeDefinition(CdmAttribute):
     @display_name.setter
     def display_name(self, val: str) -> None:
         self._trait_to_property_map._update_property_value('displayName', val)
+
+    @property
+    def projection(self) -> Optional['CdmProjection']:
+        return self._projection
+
+    @projection.setter
+    def projection(self, projection: Optional['CdmProjection']) -> None:
+        if projection:
+            projection.owner = self
+        self._projection = projection
 
     @property
     def source_ordering(self) -> int:
@@ -151,7 +167,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         from .cdm_attribute_resolution_guidance_def import CdmAttributeResolutionGuidanceDefinition
 
         rasb = ResolvedAttributeSetBuilder()
-        rasb.ras.attribute_context = under
+        rasb._resolved_attribute_set.attribute_context = under
 
         # add this attribute to the set
         # make a new one and apply any traits
@@ -159,25 +175,39 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         rasb.own_one(new_att)
         rts = self._fetch_resolved_traits(res_opt)
 
-        # this context object holds all of the info about what needs to happen to resolve these attributes.
-        # make a copy and add defaults if missing
-        res_guide_with_default = None
-        if self.resolution_guidance is not None:
-            res_guide_with_default = self.resolution_guidance.copy(res_opt)
+        if self.owner and self.owner.object_type == CdmObjectType.ENTITY_DEF:
+            rasb._resolved_attribute_set.set_target_owner(self.owner)
+
+        if self.projection:
+            rasb._resolved_attribute_set.apply_traits(rts)
+
+            proj_directive = ProjectionDirective(res_opt, self)
+            proj_ctx = self.projection._construct_projection_context(proj_directive, under, rasb._resolved_attribute_set)
+
+            ras = self.projection._extract_resolved_attributes(proj_ctx, under)
+            rasb._resolved_attribute_set = ras
         else:
-            res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx)
+            # using resolution guidance
 
-        # rename_format is not currently supported for type attributes
-        res_guide_with_default.rename_format = None
+            # this context object holds all of the info about what needs to happen to resolve these attributes.
+            # make a copy and add defaults if missing
+            res_guide_with_default = None
+            if self.resolution_guidance is not None:
+                res_guide_with_default = self.resolution_guidance.copy(res_opt)
+            else:
+                res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx)
 
-        res_guide_with_default._update_attribute_defaults(None)
-        arc = AttributeResolutionContext(res_opt, res_guide_with_default, rts)
+            # rename_format is not currently supported for type attributes
+            res_guide_with_default.rename_format = None
 
-        # from the traits of the datatype, purpose and applied here, see if new attributes get generated
-        rasb.apply_traits(arc)
-        rasb.generate_applier_attributes(arc, False)  # false = don't apply these traits to added things
-        # this may have added symbols to the dependencies, so merge them
-        res_opt._symbol_ref_set._merge(arc.res_opt._symbol_ref_set)
+            res_guide_with_default._update_attribute_defaults(None, self)
+            arc = AttributeResolutionContext(res_opt, res_guide_with_default, rts)
+
+            # from the traits of the datatype, purpose and applied here, see if new attributes get generated
+            rasb.apply_traits(arc)
+            rasb.generate_applier_attributes(arc, False)  # false = don't apply these traits to added things
+            # this may have added symbols to the dependencies, so merge them
+            res_opt._symbol_ref_set._merge(arc.res_opt._symbol_ref_set)
 
         return rasb
 
@@ -198,7 +228,10 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         if rtsb.resolved_trait_set and rtsb.resolved_trait_set.has_elevated:
             replacement = CdmAttributeReference(self.ctx, self.name, True)
             replacement.ctx = self.ctx
-            replacement.explicit_reference = self
+            replacement.explicit_reference = self.copy()
+            replacement.in_document = self.in_document
+            replacement.owner = self
+
             rtsb.replace_trait_parameter_value(res_opt, 'does.elevateAttribute', 'attribute', 'this.attribute', replacement)
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmTypeAttributeDefinition'] = None) -> 'CdmTypeAttributeDefinition':
@@ -223,7 +256,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
 
         return copy
 
-    def _fetch_property(self, property_name: str) -> Any:
+    def _get_property(self, property_name: str) -> Any:
         """returns the value direclty assigned to a property (ignore value from traits)."""
         return self._trait_to_property_map._fetch_property_value(property_name, True)
 
@@ -244,15 +277,15 @@ class CdmTypeAttributeDefinition(CdmAttribute):
                 missing_fields.append('cardinality.maximum')
 
         if missing_fields:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
 
         if bool(self.cardinality):
             if not CardinalitySettings._is_minimum_valid(self.cardinality.minimum):
-                logger.error(self._TAG, self.ctx, 'Invalid minimum cardinality {}.'.format(self.cardinality.minimum))
+                logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_MIN_CARDINALITY, self.cardinality.minimum)
                 return False
             if not CardinalitySettings._is_maximum_valid(self.cardinality.maximum):
-                logger.error(self._TAG, self.ctx, 'Invalid maximum cardinality {}.'.format(self.cardinality.maximum))
+                logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_MAX_CARDINALITY, self.cardinality.maximum)
                 return False
         return True
 
@@ -271,6 +304,11 @@ class CdmTypeAttributeDefinition(CdmAttribute):
             return True
 
         if self.attribute_context and self.attribute_context.visit('{}/attributeContext/'.format(path), pre_children, post_children):
+            return True
+
+        if self.projection:
+            self.projection.owner = self
+        if self.projection and self.projection.visit('{}/projection/'.format(path), pre_children, post_children):
             return True
 
         if self._visit_att(path, pre_children, post_children):

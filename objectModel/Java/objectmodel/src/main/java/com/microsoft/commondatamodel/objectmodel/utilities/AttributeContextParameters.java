@@ -27,6 +27,22 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return AttributeContextParameters
+   */
+  @Deprecated
+  public AttributeContextParameters copy() {
+    AttributeContextParameters c = new AttributeContextParameters();
+    c.setName(this.name);
+    c.setIncludeTraits(this.includeTraits);
+    c.setUnder(this.under);
+    c.setType(this.type);
+    c.setRegarding(this.regarding);
+    return c;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
    * @return CdmObject
    */
   @Deprecated

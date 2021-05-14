@@ -66,6 +66,46 @@ describe('Cdm/CdmCorpusDefinition', () => {
 
         done();
     });
+
+    /**
+     * Tests if a document that was fetched with lazy load and imported by another document is property indexed when needed.
+     */
+    it('testLazyLoadCreateResolvedEntity', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLazyLoadCreateResolvedEntity');
+        corpus.setEventCallback((level, message) => {
+            // when the imports are loaded, there should be no reference validation.
+            // no error should be logged.
+            done.fail(new Error(message));
+        }, cdmStatusLevel.warning);
+
+        // load with deferred imports.
+        const resOpt = new resolveOptions();
+        resOpt.importsLoadStrategy = importsLoadStrategy.lazyLoad;
+
+        // load entB which is imported by entA document.
+        var docB = await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/entB.cdm.json', null, resOpt);
+        var entA = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/entA.cdm.json/entA', null, resOpt);
+
+        expect(entA.inDocument.importPriorities)
+            .toBeUndefined();
+        expect(docB.importPriorities)
+            .toBeUndefined();
+
+        // CreateResolvedEntityAsync will force the entA document to be indexed.
+        var resEntA = await entA.createResolvedEntityAsync('resolved-EntA');
+
+        // in CreateResolvedEntityAsync the documents should be indexed.
+        expect(entA.inDocument.importPriorities)
+            .not
+            .toBeUndefined();
+        expect(docB.importPriorities)
+            .not
+            .toBeUndefined();
+        expect(resEntA.inDocument.importPriorities)
+            .not
+            .toBeUndefined();
+        done();
+    });
     
     /**
      * Tests the FetchObjectAsync function with the imports load strategy set to load.
@@ -108,4 +148,21 @@ describe('Cdm/CdmCorpusDefinition', () => {
 
         done();
     });
+
+    /**
+     * Tests if a symbol imported with a moniker can be found as the last resource.
+     * When resolving entityReference from wrtConstEntity, constEntity should be found and resolved.
+     */
+    it('TestResolveConstSymbolReference', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolveConstSymbolReference');
+        corpus.setEventCallback((level, msg) => {
+            done.fail(new Error(msg));
+        }, cdmStatusLevel.warning);
+
+        const wrtEntity = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/wrtConstEntity.cdm.json/wrtConstEntity');
+        const resOpt = new resolveOptions(wrtEntity, new AttributeResolutionDirectiveSet());
+        await wrtEntity.createResolvedEntityAsync('NewEntity', resOpt);
+        done();
+    });
+
 });

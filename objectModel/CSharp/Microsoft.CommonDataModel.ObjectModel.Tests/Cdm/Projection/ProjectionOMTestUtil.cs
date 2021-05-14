@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -10,7 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Utility class to help create object model based tests
@@ -94,7 +94,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             ExpectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, TestName);
             ActualOutputPath = TestHelper.GetActualOutputFolderPath(testsSubpath, TestName);
 
-            Corpus = TestHelper.GetLocalCorpus(testsSubpath, TestName);
+            Corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, TestName);
             Corpus.Storage.Mount(LocalOutputStorageNS, new LocalAdapter(ActualOutputPath));
             Corpus.Storage.DefaultNamespace = LocalOutputStorageNS;
 
@@ -207,7 +207,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// Create an Input Attribute Operation
         /// </summary>
         /// <returns></returns>
-        public CdmOperationIncludeAttributes CreateOperationInputAttribute(CdmProjection projection, List<string> includeAttributes)
+        public CdmOperationIncludeAttributes CreateOperationInputAttributes(CdmProjection projection, List<string> includeAttributes)
         {
             // IncludeAttributes Operation
             CdmOperationIncludeAttributes includeAttributesOp = new CdmOperationIncludeAttributes(Corpus.Ctx)
@@ -226,6 +226,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
+        /// Create a Combine Attribute Operation
+        /// </summary>
+        /// <returns></returns>
+        public CdmOperationCombineAttributes CreateOperationCombineAttributes(CdmProjection projection, List<string> selectedAttributes, CdmTypeAttributeDefinition mergeIntoAttribute)
+        {
+            // CombineAttributes Operation
+            CdmOperationCombineAttributes combineAttributesOp = new CdmOperationCombineAttributes(Corpus.Ctx)
+            {
+                Select = selectedAttributes,
+                MergeInto = mergeIntoAttribute
+            };
+
+            projection.Operations.Add(combineAttributesOp);
+
+            return combineAttributesOp;
+        }
+
+        /// <summary>
+        /// Create a Type Attribute
+        /// </summary>
+        /// <returns></returns>
+        public CdmTypeAttributeDefinition CreateTypeAttribute(string attributeName, string dataType, string purpose)
+        {
+            CdmDataTypeReference dataTypeRef = Corpus.MakeRef<CdmDataTypeReference>(CdmObjectType.DataTypeRef, dataType, simpleNameRef: false);
+
+            CdmPurposeReference purposeRef = Corpus.MakeRef<CdmPurposeReference>(CdmObjectType.PurposeRef, purpose, simpleNameRef: false);
+
+            CdmTypeAttributeDefinition attribute = Corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, nameOrRef: attributeName, simpleNameRef: false);
+            attribute.DataType = dataTypeRef;
+            attribute.Purpose = purposeRef;
+
+            return attribute;
+        }
+
+        /// <summary>
         /// Create an entity attribute
         /// </summary>
         /// <param name="entityAttributeName"></param>
@@ -239,9 +274,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             return entityAttribute;
         }
 
-        public CdmEntityDefinition GetAndValidateResolvedEntity(CdmEntityDefinition entity, List<string> resOpts)
+        public async Task<CdmEntityDefinition> GetAndValidateResolvedEntity(CdmEntityDefinition entity, List<string> resOpts)
         {
-            CdmEntityDefinition resolvedEntity = ProjectionTestUtils.GetResolvedEntity(Corpus, entity, resOpts, addResOptToName: true).GetAwaiter().GetResult();
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(Corpus, entity, resOpts);
             Assert.IsNotNull(resolvedEntity, $"GetAndValidateResolvedEntity: {entity.EntityName} resolution with options '{string.Join(", ", resOpts)}' failed!");
 
             return resolvedEntity;

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System.Runtime.CompilerServices;
@@ -19,6 +19,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 
     internal class TraitToPropertyMap
     {
+        private static readonly string Tag = nameof(TraitToPropertyMap);
+
         private CdmObject Host { get; set; }
         private CdmTraitCollection Traits
         {
@@ -210,7 +212,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         {
             int traitIndex = this.Traits != null ? this.Traits.IndexOf(traitName, onlyFromProperty) : -1;
 
-            return (traitIndex == -1) ? null : this.Traits[traitIndex];
+            return (traitIndex == -1) ? null : this.Traits[traitIndex] as CdmTraitReference;
         }
 
         internal void RemoveTrait(string traitName)
@@ -350,7 +352,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             {
                 foreach (var trait in this.Traits)
                 {
-                    if (onlyFromProperty && !trait.IsFromProperty)
+                    if (onlyFromProperty && 
+                        (trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty))
                     {
                         continue;
                     }
@@ -528,7 +531,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         {
             CdmTraitReference trait;
             int traitIndex = this.Traits.IndexOf(traitName, onlyFromProperty);
-            trait = (traitIndex == -1) ? null : this.Traits[traitIndex];
+            trait = (traitIndex == -1) ? null : this.Traits[traitIndex] as CdmTraitReference;
 
             var locEntRef = FetchTraitReferenceArgumentValue(trait, argName);
             if (locEntRef != null)
@@ -701,12 +704,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 }
                 else
                 {
-                    Logger.Error(nameof(TraitToPropertyMap), this.Host.Ctx, "Default value missing languageTag or displayText.");
+                    Logger.Error(this.Host.Ctx, Tag, null, nameof(UpdateDefaultValue), CdmLogCode.ErrValdnMissingLanguageTag);
                 }
             }
             else
             {
-                Logger.Error(nameof(TraitToPropertyMap), this.Host.Ctx, "Default value type not supported. Please use JArray.");
+                Logger.Error(this.Host.Ctx, Tag, null, nameof(UpdateDefaultValue), CdmLogCode.ErrUnsupportedType);
             }
         }
 

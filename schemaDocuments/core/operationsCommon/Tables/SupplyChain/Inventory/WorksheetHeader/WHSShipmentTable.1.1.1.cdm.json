@@ -1,0 +1,703 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventSite.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSCarrier.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSCarrierGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Group/TMSMode.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSRoute.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "InventTransferTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "WHSLoadTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSShipConsolidationPolicy.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "WHSWaveTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSShipmentTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CarrierCode",
+          "dataType": "TMSCarrierCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountNum",
+          "dataType": "CustVendAC",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Address",
+          "dataType": "Addressing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BillOfLadingId",
+          "dataType": "WHSBillOfLadingId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BrokerCode",
+          "dataType": "TMSBrokerCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierGroupCode",
+          "dataType": "TMSCarrierGroupCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierServiceCode",
+          "dataType": "TMSCarrierServiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountryRegionISOCode",
+          "dataType": "TMSCountryRegionISOCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerRef",
+          "dataType": "CustRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerReq",
+          "dataType": "CustPurchaseOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryName",
+          "dataType": "WHSDeliveryName",
+          "isReadOnly": true,
+          "displayName": "Delivery recipient",
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvTermId",
+          "dataType": "DlvTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DropOffUTCDateTime",
+          "dataType": "WHSDropOffUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FreightTermCode",
+          "dataType": "WHSFreightTermCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSiteId",
+          "dataType": "InventSiteId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadDirection",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadId",
+          "dataType": "WHSLoadId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ModeCode",
+          "dataType": "TMSModeCode",
+          "isNullable": true,
+          "displayName": "Mode of delivery",
+          "description": ""
+        },
+        {
+          "name": "OrderNum",
+          "dataType": "WHSOrderNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProNum",
+          "dataType": "WHSProNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Reference",
+          "dataType": "WHSReference",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteCode",
+          "dataType": "TMSRouteCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SCAC",
+          "dataType": "TMSSCAC",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipCarrierAccount",
+          "dataType": "ShipCarrierAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipConfirmUTCDateTime",
+          "dataType": "WHSShipConfirmUTCDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipmentArrivalUTCDateTime",
+          "dataType": "WHSShipmentArrivalUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipmentId",
+          "dataType": "WHSShipmentId",
+          "description": ""
+        },
+        {
+          "name": "ShipmentStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StopNum",
+          "dataType": "TMSStopNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaveId",
+          "dataType": "WHSWaveId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WayBill",
+          "dataType": "TMSWayBill",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTransType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManifestedWeight",
+          "dataType": "Weight",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Manifested weight",
+          "description": ""
+        },
+        {
+          "name": "ManifestedWeightUOM",
+          "dataType": "WHSWeightUOM",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaveLabelsPrintedDateTime",
+          "dataType": "WHSWaveLabelPrintedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaveLabelsPrintedBy",
+          "dataType": "SysUserId",
+          "isNullable": true,
+          "displayName": "Printed by",
+          "description": ""
+        },
+        {
+          "name": "WaveLabelsPrinted",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Printed",
+          "description": ""
+        },
+        {
+          "name": "ShipConsolidationPolicy",
+          "dataType": "WHSShipConsolidationPolicyRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HMIMMultimodalDGId",
+          "dataType": "HMIMMultimodalDGId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HMIMCarrOfMerchByRoadId",
+          "dataType": "HMIMCarrOfMerchByRoadId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HMIMAirWaybillNum",
+          "dataType": "HMIMAirWaybillNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSite"
+          },
+          "name": "Relationship_InventSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_LogisticsPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrier"
+          },
+          "name": "Relationship_TMSBrokerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrier"
+          },
+          "name": "Relationship_TMSCarrierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrierGroup"
+          },
+          "name": "Relationship_TMSCarrierGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSMode"
+          },
+          "name": "Relationship_TMSModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRoute"
+          },
+          "name": "Relationship_TMSRouteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransferTable"
+          },
+          "name": "Relationship_TransferRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadTable"
+          },
+          "name": "Relationship_WHSLoadTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipConsolidationPolicy"
+          },
+          "name": "Relationship_WHSShipConsolidationPolicyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWaveTable"
+          },
+          "name": "Relationship_WHSWaveTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Shipments"
+    },
+    {
+      "dataTypeName": "TMSCarrierCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendAC",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Addressing",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSBillOfLadingId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSBrokerCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierGroupCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierServiceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCountryRegionISOCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustRef",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPurchaseOrder",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSDeliveryName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DlvTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSDropOffUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSFreightTermCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLoadId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSModeCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSOrderNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSProNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSReference",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSSCAC",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ShipCarrierAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSShipConfirmUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSShipmentArrivalUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSShipmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSStopNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSWaveId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSWayBill",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSWeightUOM",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWaveLabelPrintedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SysUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSShipConsolidationPolicyRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HMIMMultimodalDGId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMCarrOfMerchByRoadId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMAirWaybillNum",
+      "extendsDataType": "string"
+    }
+  ]
+}

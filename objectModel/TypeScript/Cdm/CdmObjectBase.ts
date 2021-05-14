@@ -5,17 +5,23 @@ import {
     AttributeContextParameters,
     CdmAttributeContext,
     CdmCollection,
+    CdmConstantEntityDefinition,
     CdmCorpusContext,
     CdmCorpusDefinition,
     CdmDocumentDefinition,
+    CdmEntityDefinition,
+    CdmEntityReference,
     CdmObject,
     CdmObjectDefinition,
     CdmObjectReference,
-    CdmObjectReferenceBase,
     cdmObjectType,
     CdmParameterDefinition,
+    CdmTraitDefinition,
     CdmTraitReference,
     copyOptions,
+    DepthInfo,
+    isEntityAttributeDefinition,
+    isEntityDefinition,
     resolveContext,
     ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
@@ -38,9 +44,9 @@ export abstract class CdmObjectBase implements CdmObject {
 
     public get atCorpusPath(): string {
         if (!this.inDocument) {
-            return `NULL:/NULL/${this.declaredPath}`;
+            return `NULL:/NULL/${this.declaredPath ? this.declaredPath : ''}`;
         } else {
-            return `${this.inDocument.atCorpusPath}/${this.declaredPath}`;
+            return `${this.inDocument.atCorpusPath}/${this.declaredPath ? this.declaredPath : ''}`;
         }
     }
 
@@ -54,7 +60,6 @@ export abstract class CdmObjectBase implements CdmObject {
      */
     public declaredPath: string;
     public owner: CdmObject;
-    protected resolvingAttributes: boolean = false;
     private resolvingTraits: boolean = false;
     constructor(ctx: CdmCorpusContext) {
         this.ID = CdmCorpusDefinition.nextID();
@@ -110,23 +115,15 @@ export abstract class CdmObjectBase implements CdmObject {
             const l: number = rt.parameterValues.length;
             if (l === 1) {
                 // just one argument, use the shortcut syntax
-                let val: string | object | CdmObject = rt.parameterValues.values[0];
+                let val: string | object | CdmObject = CdmObjectBase.protectParameterValues(resOpt, rt.parameterValues.values[0]);
                 if (val !== undefined) {
-                    if (typeof val === 'object' && 'copy' in val && typeof val.copy === 'function') {
-                        val = val.copy(resOpt);
-                    }
                     traitRef.arguments.push(undefined, val);
                 }
             } else {
                 for (let i: number = 0; i < l; i++) {
                     const param: CdmParameterDefinition = rt.parameterValues.fetchParameterAtIndex(i);
-                    let val: string | object | CdmObject = rt.parameterValues.values[i];
+                    let val: string | object | CdmObject = CdmObjectBase.protectParameterValues(resOpt, rt.parameterValues.values[i]);
                     if (val !== undefined) {
-                        if (typeof val === 'object' && 'copy' in val && typeof val.copy === 'function') {
-                            val = val.copy(resOpt);
-                        } else if (typeof val === 'object') {
-                            val = { ...val };
-                        }
                         traitRef.arguments.push(param.name, val);
                     }
                 }
@@ -137,48 +134,41 @@ export abstract class CdmObjectBase implements CdmObject {
         if (resOpt.saveResolutionsOnCopy) {
             // used to localize references between documents
             traitRef.explicitReference = rt.trait;
-            traitRef.inDocument = rt.trait.inDocument;
+            traitRef.inDocument = (rt.trait as CdmTraitDefinition).inDocument;
         }
         // always make it a property when you can, however the dataFormat traits should be left alone
-        if (rt.trait.associatedProperties && !rt.trait.isDerivedFrom('is.dataFormat', resOpt)) {
+        // also the wellKnown is the first constrained list that uses the datatype to hold the table instead of the default value property.
+        // so until we figure out how to move the enums away from default value, show that trait too
+        if (rt.trait.associatedProperties && !rt.trait.isDerivedFrom('is.dataFormat', resOpt) && rt.trait.traitName !== 'is.constrainedList.wellKnown') {
             traitRef.isFromProperty = true;
         }
 
         return traitRef;
     }
 
-    /**
-     * @internal
-     */
-    public static copyResolveOptions(resOpt: resolveOptions): resolveOptions {
-        const resOptCopy: resolveOptions = new resolveOptions();
-        resOptCopy.wrtDoc = resOpt.wrtDoc;
-        resOptCopy.relationshipDepth = resOpt.relationshipDepth;
-        if (resOpt.directives) {
-            resOptCopy.directives = resOpt.directives.copy();
-        }
-        resOptCopy.localizeReferencesFor = resOpt.localizeReferencesFor;
-        resOptCopy.indexingDoc = resOpt.indexingDoc;
-        resOptCopy.shallowValidation = resOpt.shallowValidation;
-        resOptCopy.resolvedAttributeLimit = resOpt.resolvedAttributeLimit;
-
-        return resOptCopy;
-    }
-
     public abstract isDerivedFrom(baseDef: string, resOpt?: resolveOptions): boolean;
-    public abstract copy(resOpt: resolveOptions, host?: CdmObject): CdmObject;
+    public abstract copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject;
     public abstract validate(): boolean;
 
     public abstract getObjectType(): cdmObjectType;
     public abstract fetchObjectDefinitionName(): string;
     public abstract fetchObjectDefinition<T extends CdmObjectDefinition>(resOpt: resolveOptions): T;
     public abstract createSimpleReference(resOpt: resolveOptions): CdmObjectReference;
+    public abstract createPortableReference(resOpt: resolveOptions): CdmObjectReference;
 
     /**
      * @deprecated
      */
     public copyData(resOpt: resolveOptions, options?: copyOptions): CdmJsonType {
         const persistenceType: string = 'CdmFolder';
+
+        if (resOpt == null) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
+
+        if (options == null) {
+            options = new copyOptions();
+        }
 
         return PersistenceLayer.toData(this, resOpt, options, persistenceType);
     }
@@ -274,6 +264,17 @@ export abstract class CdmObjectBase implements CdmObject {
     /**
      * @internal
      */
+    public fetchObjectFromCache(resOpt: resolveOptions, acpInContext?: AttributeContextParameters): ResolvedAttributeSetBuilder {
+        const kind: string = 'rasb';
+        const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
+        const cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
+
+        return cacheTag ? ctx.cache.get(cacheTag) : undefined;
+    }
+
+    /**
+     * @internal
+     */
     public fetchResolvedAttributes(resOpt?: resolveOptions, acpInContext?: AttributeContextParameters): ResolvedAttributeSet {
         // let bodyCode = () =>
         {
@@ -283,10 +284,25 @@ export abstract class CdmObjectBase implements CdmObject {
                 resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
+            let inCircularReference: boolean = false;
+            const wasInCircularReference: boolean = resOpt.inCircularReference;
+            if (isEntityDefinition(this)) {
+                inCircularReference = resOpt.currentlyResolvingEntities.has(this);
+                resOpt.currentlyResolvingEntities.add(this);
+                resOpt.inCircularReference = inCircularReference;
+
+                // uncomment this line as a test to turn off allowing cycles
+                //if (inCircularReference) {
+                //    return new ResolvedAttributeSet();
+                //}
+            }
+
+            const currentDepth: number = resOpt.depthInfo.currentDepth;
+
             const kind: string = 'rasb';
             const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
-            let cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
-            let rasbCache: ResolvedAttributeSetBuilder = cacheTag ? ctx.cache.get(cacheTag) : undefined;
+            let rasbResult: ResolvedAttributeSetBuilder;
+            let rasbCache: ResolvedAttributeSetBuilder = this.fetchObjectFromCache(resOpt, acpInContext);
             let underCtx: CdmAttributeContext;
 
             // store the previous symbol set, we will need to add it with
@@ -294,76 +310,82 @@ export abstract class CdmObjectBase implements CdmObject {
             const currSymRefSet: SymbolSet = resOpt.symbolRefSet || new SymbolSet();
             resOpt.symbolRefSet = new SymbolSet();
 
-            // get the moniker that was found and needs to be appended to all
-            // refs in the children attribute context nodes
-            const fromMoniker: string = resOpt.fromMoniker;
-            resOpt.fromMoniker = undefined;
+            // if using the cache passes the maxDepth, we cannot use it
+            if (rasbCache && resOpt.depthInfo.currentDepth + rasbCache.ras.depthTraveled > resOpt.depthInfo.maxDepth) {
+                rasbCache = undefined;
+            }
 
             if (!rasbCache) {
-                if (this.resolvingAttributes) {
-                    // re-entered this attribute through some kind of self or looping reference.
-                    this.ctx.corpus.isCurrentlyResolving = wasPreviouslyResolving;
-
-                    return new ResolvedAttributeSet();
-                }
-                this.resolvingAttributes = true;
-
-                // if a new context node is needed for these attributes, make it now
-                if (acpInContext) {
-                    underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
-                }
+                // a new context node is needed for these attributes, 
+                // this tree will go into the cache, so we hang it off a placeholder parent
+                // when it is used from the cache (or now), then this placeholder parent is ignored and the things under it are
+                // put into the 'receiving' tree
+                underCtx = CdmAttributeContext.getUnderContextForCacheContext(resOpt, this.ctx, acpInContext);
 
                 rasbCache = this.constructResolvedAttributes(resOpt, underCtx);
 
                 if (rasbCache !== undefined) {
-
-                    this.resolvingAttributes = false;
-
                     // register set of possible docs
                     const odef: CdmObject = this.fetchObjectDefinition(resOpt);
                     if (odef !== undefined) {
                         ctx.corpus.registerDefinitionReferenceSymbols(odef, kind, resOpt.symbolRefSet);
 
-                        // get the new cache tag now that we have the list of symbols
-                        cacheTag = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
+                        // get the new cache tag now that we have the list of docs
+                        const cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : undefined);
                         // save this as the cached version
                         if (cacheTag) {
                             ctx.cache.set(cacheTag, rasbCache);
                         }
-
-                        if (this instanceof CdmObjectReferenceBase &&
-                            fromMoniker &&
-                            acpInContext &&
-                            (this as unknown as CdmObjectReferenceBase).namedReference) {
-                            // create a fresh context
-                            const oldContext: CdmAttributeContext =
-                                acpInContext.under.contents.allItems[acpInContext.under.contents.length - 1] as CdmAttributeContext;
-                            acpInContext.under.contents.removeAt(acpInContext.under.contents.length - 1);
-                            underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
-
-                            const newContext: CdmAttributeContext =
-                                oldContext.copyAttributeContextTree(resOpt, underCtx, rasbCache.ras, undefined, fromMoniker);
-                            // since THIS should be a refererence to a thing found in a moniker document,
-                            // it already has a moniker in the reference this function just added that same moniker
-                            // to everything in the sub-tree but now this one symbol has too many remove one
-                            const monikerPathAdded: string = `${fromMoniker}/`;
-                            if (newContext.definition && newContext.definition.namedReference &&
-                                newContext.definition.namedReference.startsWith(monikerPathAdded)) {
-                                // slice it off the front
-                                newContext.definition.namedReference = newContext.definition.namedReference.substring(monikerPathAdded.length);
-                            }
-                        }
                     }
+
+                        // get the 'underCtx' of the attribute set from the acp that is wired into
+                        // the target tree
+                        underCtx = rasbCache.ras.attributeContext ?
+                            rasbCache.ras.attributeContext.getUnderContextFromCacheContext(resOpt, acpInContext) : undefined;
                 }
             } else {
-                // cache found. if we are building a context, then fix what we got instead of making a new one
-                if (acpInContext) {
-                    // make the new context
-                    underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
+                // get the 'underCtx' of the attribute set from the cache. The one stored there was build with a different
+                // acp and is wired into the fake placeholder. so now build a new underCtx wired into the output tree but with
+                // copies of all cached children
+                underCtx = rasbCache.ras.attributeContext ?
+                    rasbCache.ras.attributeContext.getUnderContextFromCacheContext(resOpt, acpInContext) : undefined;
+                //underCtx.validateLineage(resOpt); // debugging
+            }
 
-                    (rasbCache.ras.attributeContext).copyAttributeContextTree(resOpt, underCtx, rasbCache.ras, undefined, fromMoniker);
+            if (rasbCache) {
+                // either just built something or got from cache
+                // either way, same deal: copy resolved attributes and copy the context tree associated with it
+                // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
+                // 2. deep copy the tree. 
+
+                // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
+                rasbResult = new ResolvedAttributeSetBuilder();
+                rasbResult.ras = rasbCache.ras.copy();
+
+                // 2. deep copy the tree and map the context references. 
+                if (underCtx) // null context? means there is no tree, probably 0 attributes came out
+                {
+                    if (!underCtx.associateTreeCopyWithAttributes(resOpt, rasbResult.ras)) {
+                        return undefined;
+                    }
                 }
             }
+
+            if (isEntityAttributeDefinition(this)) {
+                // if we hit the maxDepth, we are now going back up
+                resOpt.depthInfo.currentDepth = currentDepth;
+                // now at the top of the chain where max depth does not influence the cache
+                if (resOpt.depthInfo.currentDepth === 0) {
+                    resOpt.depthInfo.maxDepthExceeded = false;
+                }
+            }
+
+            if (!inCircularReference && isEntityDefinition(this)) {
+                // should be removed from the root level only
+                // if it is in a circular reference keep it there
+                resOpt.currentlyResolvingEntities.delete(this);
+            }
+            resOpt.inCircularReference = wasInCircularReference;
 
             // merge child reference symbols set with current
             currSymRefSet.merge(resOpt.symbolRefSet);
@@ -371,7 +393,7 @@ export abstract class CdmObjectBase implements CdmObject {
 
             this.ctx.corpus.isCurrentlyResolving = wasPreviouslyResolving;
 
-            return rasbCache !== undefined ? rasbCache.ras : undefined;
+            return rasbResult ? rasbResult.ras : undefined;
         }
         // return p.measure(bodyCode);
     }
@@ -388,4 +410,18 @@ export abstract class CdmObjectBase implements CdmObject {
     }
 
     public abstract visit(path: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean;
+
+    private static protectParameterValues(resOpt: resolveOptions, val: any) {
+        if (val) {
+            // the value might be a contant entity object, need to protect the original 
+            let cEnt: any = (val as CdmEntityReference) ? (val as CdmEntityReference).explicitReference as CdmConstantEntityDefinition : undefined;
+            if (cEnt) {
+                // copy the constant entity AND the reference that holds it
+                cEnt = cEnt.copy(resOpt) as CdmConstantEntityDefinition;
+                val = (val as CdmEntityReference).copy(resOpt);
+                (val as CdmEntityReference).explicitReference = cEnt;
+            }
+        }
+        return val;
+    }
 }

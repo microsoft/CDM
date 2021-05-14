@@ -72,7 +72,7 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
   /** 
    * @param attName Attribute Name
    */
-  void updateAttributeDefaults(String attName) {
+  void updateAttributeDefaults(String attName, final CdmObject owner) {
     // handle the cardinality and expansion group.
     // default is one, but if there is some hint of an array, make it work
     if (this.cardinality == null) {
@@ -93,11 +93,9 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
         this.expansion.setMaximumExpansion(5);
       }
       if (this.expansion.getCountAttribute() == null) {
-        this.expansion.setCountAttribute(this.getCtx().getCorpus()
-                .makeObject(CdmObjectType.TypeAttributeDef, "count"));
-        this.expansion.getCountAttribute()
-                .setDataType(this.getCtx().getCorpus().makeObject(CdmObjectType.DataTypeRef,
-                        "integer", true));
+        this.expansion.setCountAttribute(this.getCtx().getCorpus().fetchArtifactAttribute("count"));
+        this.expansion.countAttribute.setOwner(owner);
+        this.expansion.countAttribute.setInDocument(owner.getInDocument());
       }
     }
     // entity by ref. anything mentioned?
@@ -109,15 +107,11 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
         if (this.entityByReference.doesAlwaysIncludeForeignKey() == null) {
           this.entityByReference.setAlwaysIncludeForeignKey(false);
         }
-        if (this.entityByReference.getReferenceOnlyAfterDepth() == null) {
-          this.entityByReference.setReferenceOnlyAfterDepth(2);
-        }
         if (this.entityByReference.getForeignKeyAttribute() == null) {
           // make up a fk
-          this.entityByReference.setForeignKeyAttribute(this.getCtx().getCorpus()
-                  .makeObject(CdmObjectType.TypeAttributeDef, "id"));
-          this.entityByReference.getForeignKeyAttribute().setDataType(this.getCtx().getCorpus()
-                  .makeObject(CdmObjectType.DataTypeRef, "entityId", true));
+          this.entityByReference.setForeignKeyAttribute(this.getCtx().getCorpus().fetchArtifactAttribute("id"));
+          this.entityByReference.getForeignKeyAttribute().setOwner(owner);
+          this.entityByReference.getForeignKeyAttribute().setInDocument(owner.getInDocument());
         }
       }
     }
@@ -128,11 +122,10 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
       }
       if ("one".equals(this.selectsSubAttribute.getSelects())) {
         if (this.selectsSubAttribute.getSelectedTypeAttribute() == null) {
-          // make up a fk
-          this.selectsSubAttribute.setSelectedTypeAttribute(this.getCtx().getCorpus()
-                  .makeObject(CdmObjectType.TypeAttributeDef, "type"));
-          this.selectsSubAttribute.getSelectedTypeAttribute().setDataType(this.getCtx()
-                  .getCorpus().makeObject(CdmObjectType.DataTypeRef, "entityName", true));
+          // make up a type indicator
+          this.selectsSubAttribute.setSelectedTypeAttribute(this.getCtx().getCorpus().fetchArtifactAttribute("type"));
+          this.selectsSubAttribute.getSelectedTypeAttribute().setOwner(owner);
+          this.selectsSubAttribute.getSelectedTypeAttribute().setInDocument(owner.getInDocument());
         }
       }
     }

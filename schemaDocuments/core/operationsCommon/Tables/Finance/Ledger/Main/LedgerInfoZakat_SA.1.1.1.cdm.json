@@ -1,0 +1,155 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValue.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerInfoZakat_SA",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ClosingBalanceItemCode",
+          "dataType": "LedgerItemNumZakat_SA",
+          "isNullable": true,
+          "displayName": "Closing balance Zakat items",
+          "description": ""
+        },
+        {
+          "name": "CreditItemCode",
+          "dataType": "LedgerItemNumZakat_SA",
+          "isNullable": true,
+          "displayName": "Credit transaction Zakat item",
+          "description": ""
+        },
+        {
+          "name": "DebitItemCode",
+          "dataType": "LedgerItemNumZakat_SA",
+          "isNullable": true,
+          "displayName": "Debit transaction Zakat item",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "AccountName",
+          "isNullable": true,
+          "displayName": "Zakat account name",
+          "description": ""
+        },
+        {
+          "name": "DimensionAttributeValue",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsProfitLossCreditRepair",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Repair and maintenance",
+          "description": ""
+        },
+        {
+          "name": "IsProfitLossDebitRepair",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Repair and maintenance",
+          "description": ""
+        },
+        {
+          "name": "OpeningBalanceItemCode",
+          "dataType": "LedgerItemNumZakat_SA",
+          "isNullable": true,
+          "displayName": "Opening balance Zakat items",
+          "description": ""
+        },
+        {
+          "name": "ProfitLossCreditItemCode",
+          "dataType": "LedgerItemNumZakat_SA",
+          "isNullable": true,
+          "displayName": "Credit transaction Zakat item",
+          "description": ""
+        },
+        {
+          "name": "ProfitLossDebitItemCode",
+          "dataType": "LedgerItemNumZakat_SA",
+          "isNullable": true,
+          "displayName": "Debit transaction Zakat item",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValue"
+          },
+          "name": "Relationship_DimensionAttributeValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger chart of accounts"
+    },
+    {
+      "dataTypeName": "LedgerItemNumZakat_SA",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AccountName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PurchTableVersion.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchaseOrderResponse",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PurchTableVersion",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RespondingPerson",
+          "dataType": "HcmPersonRecId",
+          "isReadOnly": true,
+          "displayName": "Responding person",
+          "description": ""
+        },
+        {
+          "name": "ResponseDateTime",
+          "dataType": "DateTimeAnswered",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ResponseNote",
+          "dataType": "VendMemo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponseState",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTableVersion"
+          },
+          "name": "Relationship_PurchTableVersionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase order response"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmPersonRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DateTimeAnswered",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendMemo",
+      "extendsDataType": "string"
+    }
+  ]
+}

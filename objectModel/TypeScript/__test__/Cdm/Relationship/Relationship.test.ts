@@ -5,11 +5,11 @@ import {
     CdmCorpusDefinition,
     CdmE2ERelationship,
     CdmEntityDefinition,
+    cdmLogCode,
     CdmManifestDeclarationDefinition,
     CdmManifestDefinition,
     cdmObjectType,
-    cdmRelationshipDiscoveryStyle,
-    cdmStatusLevel
+    cdmRelationshipDiscoveryStyle
 } from '../../../internal';
 import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
@@ -262,6 +262,25 @@ describe('Cdm/Relationship/Relationship', () => {
     });
 
     /**
+     * Test the relationship calculation when using a replace as foreign key operation while extending an entity.
+     */
+    it('testExtendsEntityAndReplaceAsForeignKey', async (done) => {
+        const testName = 'TestExtendsEntityAndReplaceAsForeignKey';
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+
+        const manifest = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
+
+        await corpus.calculateEntityGraphAsync(manifest);
+        // Check if the warning was logged.
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnProjFKWithoutSourceEntity);
+
+        await manifest.populateManifestRelationshipsAsync();
+        expect(manifest.relationships.length)
+            .toEqual(0);
+        done();
+    });
+
+    /**
      * Test relationships are generated correctly when the document name and entity name do not match
      */
     it('TestRelationshipsEntityAndDocumentNameDifferent', async (done) => {
@@ -300,6 +319,29 @@ describe('Cdm/Relationship/Relationship', () => {
         verifyRelationships(manifest, expectedRels);
         done();
     });
+
+    /**
+     * Test that relationships between entities in different namespaces are created correctly
+     */
+    it('TestRelationshipToDifferentNamespace', async (done) => {
+        const expectedRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
+            testsSubpath,
+            'TestRelationshipToDifferentNamespace',
+            'expectedRels.json')) as CdmE2ERelationship[];
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRelationshipToDifferentNamespace');
+
+        // entity B will be in a different namespace
+        corpus.storage.mount('differentNamespace', new LocalAdapter(`${testHelper.getInputFolderPath(testsSubpath, 'TestRelationshipToDifferentNamespace')}\\differentNamespace`));
+
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/main.manifest.cdm.json');
+
+        await corpus.calculateEntityGraphAsync(manifest);
+        await manifest.populateManifestRelationshipsAsync();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+        done();
+    });
 });
 
 function verifyRelationships(manifest: CdmManifestDefinition, expectedRelationships: CdmE2ERelationship[]): void {
@@ -313,7 +355,7 @@ function verifyRelationships(manifest: CdmManifestDefinition, expectedRelationsh
             && x.toEntity === expectedRel.toEntity
             && x.toEntityAttribute === expectedRel.toEntityAttribute
             && ((!x.name && !expectedRel.name)
-            || x.name === expectedRel.name)
+                || x.name === expectedRel.name)
         );
         expect(found.length)
             .toBe(1);

@@ -1,0 +1,216 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/WorksheetHeader/BankLGGuarantee.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetHeader/LedgerJournalTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/ReasonTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankLGAction",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActionNum",
+          "dataType": "BankLGTransNumber",
+          "description": ""
+        },
+        {
+          "name": "BankAccountCurrencyExpenseAmount",
+          "dataType": "BankLGExpenseCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankAccountCurrencyGuaranteeAmount",
+          "dataType": "BankLGValueCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankAccountCurrencyMarginAmount",
+          "dataType": "BankLGMarginCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CancellationReason",
+          "dataType": "BankLGCancellationReasonId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Deleted",
+          "dataType": "BankLGActionDeleted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutionAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutionDateTime",
+          "dataType": "BankLGExecutionDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpiryDateTime",
+          "dataType": "BankLGExpiryDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Guarantee",
+          "dataType": "BankLGRefRecId",
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalTable",
+          "dataType": "LedgerJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestAction",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "RequestDateTime",
+          "dataType": "BankLGRequestDateTime",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankLGGuarantee"
+          },
+          "name": "Relationship_BankLGGuaranteeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTable"
+          },
+          "name": "Relationship_LedgerJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTable"
+          },
+          "name": "Relationship_ReasonTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Letter of guarantee actions"
+    },
+    {
+      "dataTypeName": "BankLGTransNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankLGExpenseCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankLGValueCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankLGMarginCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankLGCancellationReasonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankLGActionDeleted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankLGExecutionDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BankLGExpiryDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BankLGRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankLGRequestDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

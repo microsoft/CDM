@@ -29,7 +29,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         {
             string testName = "TestAllOperations";
             string entityName = testName;
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
             corpus.SetEventCallback(new EventCallback
             {
                 Invoke = (CdmStatusLevel statusLevel, string message) =>
@@ -40,13 +40,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
                     }
                 }
             }, CdmStatusLevel.Error);
-            string expectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, testName);
 
-            CdmEntityDefinition entTestEntityStringReference = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            Assert.IsNotNull(entTestEntityStringReference);
-            CdmEntityDefinition resolvedTestEntityStringReference = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityStringReference, new List<string> { "referenceOnly" });
-            Assert.IsNotNull(resolvedTestEntityStringReference);
-            AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
+            await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { "referenceOnly" });
         }
     }
 }

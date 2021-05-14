@@ -1,0 +1,131 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/InventoryAndAdvancedWarehouse/WorksheetHeader/RetailInventErrorNotifyTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailInventErrorNotifyTxt",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "requestId",
+          "dataType": "RetailRequestId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "staffId",
+          "dataType": "RetailUserIdEx2",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transDate",
+          "dataType": "RetailtransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transTime",
+          "dataType": "RetailTransTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "txt",
+          "dataType": "FreeTxt",
+          "isNullable": true,
+          "displayName": "Comment",
+          "description": ""
+        },
+        {
+          "name": "txtComplete",
+          "dataType": "RetailTxtComplete",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailInventErrorNotifyTable"
+          },
+          "name": "Relationship_RetailInventErrorNotifyTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Invent error notify text"
+    },
+    {
+      "dataTypeName": "RetailRequestId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailUserIdEx2",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailtransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailTransTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "FreeTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTxtComplete",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CatCartLine.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatCartLineState",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CartLine",
+          "dataType": "CatCartLineRecId",
+          "description": ""
+        },
+        {
+          "name": "InvalidityReason",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsSelected",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Selected",
+          "description": ""
+        },
+        {
+          "name": "IsValidProduct",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Valid",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CatCartLine"
+          },
+          "name": "Relationship_CartLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Shopping cart line state"
+    },
+    {
+      "dataTypeName": "CatCartLineRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -6,11 +6,11 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
-    Errors,
     Logger,
     ProjectionAttributeContextTreeBuilder,
     ProjectionAttributeState,
@@ -18,6 +18,7 @@ import {
     ProjectionContext,
     ProjectionResolutionCommonUtil,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../../internal';
 
@@ -72,13 +73,7 @@ export class CdmOperationIncludeAttributes extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -140,7 +135,14 @@ export class CdmOperationIncludeAttributes extends CdmOperationBase {
 
                 // Create the attribute context parameters and just store it in the builder for now
                 // We will create the attribute contexts at the end
-                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(includeAttributeName, currentPAS, currentPAS.currentResolvedAttribute, cdmAttributeContextType.attributeDefinition);
+                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                    includeAttributeName,
+                    currentPAS,
+                    currentPAS.currentResolvedAttribute,
+                    cdmAttributeContextType.attributeDefinition,
+                    currentPAS.currentResolvedAttribute.attCtx, // lineage is the included attribute
+                    undefined // don't know who will point here yet
+                );
 
                 // Create a projection attribute state for the included attribute by creating a copy of the current state
                 // Copy() sets the current state as the previous state for the new one
@@ -151,7 +153,14 @@ export class CdmOperationIncludeAttributes extends CdmOperationBase {
             } else {
                 // Create the attribute context parameters and just store it in the builder for now
                 // We will create the attribute contexts at the end
-                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(undefined, currentPAS, currentPAS.currentResolvedAttribute, cdmAttributeContextType.attributeDefinition);
+                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                    undefined,
+                    currentPAS,
+                    currentPAS.currentResolvedAttribute,
+                    cdmAttributeContextType.attributeDefinition,
+                    currentPAS.currentResolvedAttribute.attCtx, // lineage is the excluded attribute
+                    undefined // don't know who will point here, probably nobody, I mean, we got excluded
+                );
             }
         }
 

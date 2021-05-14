@@ -1,17 +1,20 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
+import os
 import unittest
+from typing import cast
 
 from cdm.enums import CdmStatusLevel, CdmObjectType
 from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition
 from cdm.persistence import PersistenceLayer
 from cdm.storage import LocalAdapter
 
-from tests.common import async_test
+from tests.common import async_test, TestHelper
 
 
-class ManifestResolveTest(unittest.TestCase):
+class ManifestResolution(unittest.TestCase):
+    tests_subpath = os.path.join('Cdm', 'Resolution', 'ManifestResolution')
     @async_test
     async def test_referenced_entity_declaration_resolution(self):
         corpus = CdmCorpusDefinition()
@@ -66,3 +69,21 @@ class ManifestResolveTest(unittest.TestCase):
             await manifest.create_resolved_manifest_async('resolved', None)
         except Exception:
             self.fail('Exception should not be thrown when resolving a manifest that is not in a folder.')
+
+    @async_test
+    async def test_linked_resolved_doc_saving_not_dirtying_logical_entities(self):
+        """
+        Test that saving a resolved manifest will not cause original logical entity doc to be marked dirty.
+        """
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_linked_resolved_doc_saving_not_dirtying_logical_entities')
+
+        manifest_abstract = corpus.make_object(CdmObjectType.MANIFEST_DEF, 'default')  # type: CdmManifestDefinition
+
+        manifest_abstract.imports.append('cdm:/foundations.cdm.json')
+        manifest_abstract.entities.append('B', 'local:/B.cdm.json/B')
+        corpus.storage.fetch_root_folder('output').documents.append(manifest_abstract)
+
+        manifest_resolved = await manifest_abstract.create_resolved_manifest_async('default-resolved', '{n}/{n}.cdm.json')
+        self.assertTrue(not corpus.storage._namespace_folders['local'].documents[0]._is_dirty
+                        and not corpus.storage._namespace_folders['local'].documents[1]._is_dirty,
+                        'Referenced logical document should not become dirty when manifest is resolved')

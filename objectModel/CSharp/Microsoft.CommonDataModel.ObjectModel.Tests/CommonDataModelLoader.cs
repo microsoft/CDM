@@ -3,11 +3,6 @@
 
 using System.Runtime.CompilerServices;
 
-#if INTERNAL_VSTS
-[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
-#else
-[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests")]
-#endif
 namespace Microsoft.CommonDataModel.Tools.Processor
 {
     using System;
@@ -42,7 +37,7 @@ namespace Microsoft.CommonDataModel.Tools.Processor
         public static Action<CdmStatusLevel, string> FileStatusReport = (level, msg) =>
         {
             // This callback is written just as an example and the file name can be changed as desired.
-            using (System.IO.StreamWriter file = new StreamWriter("common-data-model-loader-test-report.txt", true))
+            using (StreamWriter file = new StreamWriter("common-data-model-loader-test-report.txt", true))
             {
                 if (level == CdmStatusLevel.Error)
                     file.WriteLine($"Err: {msg}");

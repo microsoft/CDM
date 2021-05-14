@@ -5,6 +5,7 @@ from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
+from cdm.utilities import DepthInfo
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmObjectDefinition, CdmObjectReference
@@ -20,12 +21,6 @@ class ProjectionDirective:
     """
 
     def __init__(self, res_opt: 'ResolveOptions', owner: 'CdmObjectDefinition', owner_ref: Optional['CdmObjectReference'] = None):
-        # Max depth default
-        self._max_depth_default = 2  # type: int
-
-        # Max depth if 'noMaxDepth' is undefined
-        self._max_depth_has_no_max = 32  # type: int
-
         # --- internal ---
 
         # Resolution option used
@@ -59,20 +54,19 @@ class ProjectionDirective:
         #  Is structured
         self._is_structured = res_opt.directives.has('structured') == True if res_opt.directives else False  # type: bool
 
+        #  Is virtual
+        self._is_virtual = res_opt.directives.has('virtual') == True if res_opt.directives else False  # type: bool
+
         # Has maximum depth override flag
         self._has_no_maximum_depth = res_opt.directives.has('noMaxDepth') == True if res_opt.directives else False  # type: bool
 
         # Is array
         self._is_array = res_opt.directives.has('isArray') == True if res_opt.directives else False  # type: Optional[bool]
 
-        # Current depth of reference
-        self._current_depth = 1 if res_opt and res_opt._relationship_depth == None else res_opt._relationship_depth + 1  # type: Optional[int]
-        res_opt._relationship_depth = self._current_depth
-
-        # if noMaxDepth directive the max depth is 32 else defaults to 2
+        # if noMaxDepth directive the max depth is 32 else defaults to what was set by the user
         # these depths were arbitrary and were set for the resolution guidance
         # re-using the same for projections as well
-        self._maximum_depth = self._max_depth_has_no_max if self._has_no_maximum_depth else self._max_depth_default  # type: Optional[int]
+        self._maximum_depth = DepthInfo.MAX_DEPTH_LIMIT if self._has_no_maximum_depth else res_opt.max_depth  # type: Optional[int]
 
     @property
     def _original_source_entity_attribute_name(self) -> str:

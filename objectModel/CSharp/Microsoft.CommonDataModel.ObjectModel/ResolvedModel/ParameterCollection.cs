@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
@@ -34,7 +34,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 if (this.Lookup.ContainsKey(name))
                 {
-                    throw new Exception($"Duplicate parameter name {name}");
+                    // why not just replace the old one?
+                    this.Lookup[name] = element;
+                    this.Sequence[this.Sequence.IndexOf(this.Sequence.Find((e) => e.GetName() == name))] = element;
+                    this.Ordinals[element] = this.Sequence.Count;
+                    return;
                 }
                 else
                 {

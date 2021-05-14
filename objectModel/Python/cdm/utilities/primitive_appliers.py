@@ -37,6 +37,21 @@ def _is_removed_builder():
 _is_removed = _is_removed_builder()
 
 
+def _is_removed_internal_builder():
+    def will_remove(app_ctx: 'ApplierContext') -> bool:  # pylint: disable=unused-argument
+        return app_ctx.res_att_source.applier_state is not None and app_ctx.res_att_source.applier_state._flex_remove
+
+    _is_removed_internal = AttributeResolutionApplier()
+    _is_removed_internal._match_name = 'is.removed.internal'
+    _is_removed_internal._priority = 10
+    _is_removed_internal._overrides_base = False
+    _is_removed_internal._will_remove = will_remove
+    return _is_removed_internal
+
+
+_is_removed_internal = _is_removed_internal_builder()
+
+
 def _does_reference_entity_builder():
     def will_remove(app_ctx: 'ApplierContext') -> bool:  # pylint: disable=unused-argument
         # Return always false for the time being.

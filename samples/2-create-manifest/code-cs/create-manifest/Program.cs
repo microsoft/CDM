@@ -3,16 +3,12 @@
 
 namespace create_manifest
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Newtonsoft.Json.Linq;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
 
     /*
      * ---------------------------------------------------------------------------------------------------------------------------------------
@@ -100,7 +96,7 @@ namespace create_manifest
                 part.Location = cdmCorpus.Storage.CreateRelativeCorpusPath(location, manifestResolved);
 
                 // Add trait to partition for csv params
-                var csvTrait = part.ExhibitsTraits.Add("is.partition.format.CSV", false);
+                var csvTrait = part.ExhibitsTraits.Add("is.partition.format.CSV", false) as CdmTraitReference;
                 csvTrait.Arguments.Add("columnHeaders", "true");
                 csvTrait.Arguments.Add("delimiter", ",");
                 
@@ -116,7 +112,7 @@ namespace create_manifest
                     header += att.Name;
                 }
 
-                Directory.CreateDirectory(cdmCorpus.Storage.CorpusPathToAdapterPath($"local:/{ entDef.EntityName}"));
+                Directory.CreateDirectory(cdmCorpus.Storage.CorpusPathToAdapterPath($"local:/{entDef.EntityName}"));
                 File.WriteAllText(partPath, header);
             }
 

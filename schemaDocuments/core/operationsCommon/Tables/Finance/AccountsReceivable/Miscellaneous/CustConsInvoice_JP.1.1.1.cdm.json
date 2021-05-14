@@ -1,0 +1,215 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustConsInvoice_JP",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AdjustAmountMST",
+          "dataType": "CustVendConsAdjustAmountMST_JP",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsDate",
+          "dataType": "CustVendConsDate_JP",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ConsId",
+          "dataType": "CustConsId_JP",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CustConsInvoice_JP",
+          "dataType": "CustVendConsRefRecId_JP",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustTable",
+          "dataType": "CustAccount",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutionDate",
+          "dataType": "CustVendExecutionDate_JP",
+          "description": ""
+        },
+        {
+          "name": "InvoiceAmountMST",
+          "dataType": "CustVendConsInvoiceAmountMST_JP",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaidAmountMST",
+          "dataType": "CustVendConsPaidAmountMST_JP",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymTerm",
+          "dataType": "PaymTermId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PreAmountMST",
+          "dataType": "CustVendConsPreAmountMST_JP",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountMST",
+          "dataType": "CustVendConsTaxAmountMST_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Consolidated invoice for customer"
+    },
+    {
+      "dataTypeName": "CustVendConsAdjustAmountMST_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustVendConsDate_JP",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustConsId_JP",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendConsRefRecId_JP",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustVendExecutionDate_JP",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CustVendConsInvoiceAmountMST_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustVendConsPaidAmountMST_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendConsPreAmountMST_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustVendConsTaxAmountMST_JP",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

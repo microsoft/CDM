@@ -43,6 +43,7 @@ public class PredefinedTokens {
             new ArrayList<>(Arrays.asList(PredefinedTokenEnum.REFERENCEONLY, "referenceOnly", PredefinedType.Token)),
             new ArrayList<>(Arrays.asList(PredefinedTokenEnum.NORMALIZED, "normalized", PredefinedType.Token)),
             new ArrayList<>(Arrays.asList(PredefinedTokenEnum.STRUCTURED, "structured", PredefinedType.Token)),
+            new ArrayList<>(Arrays.asList(PredefinedTokenEnum.VIRTUAL, "virtual", PredefinedType.Token)),
             new ArrayList<>(Arrays.asList(PredefinedTokenEnum.OPENPAREN, "(", PredefinedType.OpenParenthesis)),
             new ArrayList<>(Arrays.asList(PredefinedTokenEnum.CLOSEPAREN, ")", PredefinedType.CloseParenthesis))
         )

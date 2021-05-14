@@ -10,16 +10,19 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    VisitCallback
+    VisitCallback,
+    StringUtils
 } from '../internal';
 
 export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmConstantEntityDefinition.name;
+    
     public constantEntityName: string;
     public entityShape: CdmEntityReference;
     public constantValues: string[][];
@@ -54,7 +57,13 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
             }
 
             copy.entityShape = <CdmEntityReference>this.entityShape.copy(resOpt);
-            copy.constantValues = this.constantValues; // is a deep copy needed?
+            if (this.constantValues) {
+                // deep copy the content
+                copy.constantValues = [];
+                for (const row of this.constantValues) {
+                    copy.constantValues.push(Object.assign([], row));
+                }
+            }
             this.copyDef(resOpt, copy);
 
             return copy;
@@ -68,14 +77,11 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
             if (this.constantValues === undefined) {
                 const pathSplit: string[] = this.declaredPath.split('/');
                 const entityName: string = (pathSplit.length > 0) ? pathSplit[0] : ``;
-                Logger.warning(this.constantEntityName, this.ctx, `constant entity '${entityName}' defined without a constant value.'`);
+                Logger.warning(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.WarnValdnEntityNotDefined, entityName);
             }
             if (this.entityShape === undefined) {
-                Logger.error(
-                    CdmConstantEntityDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['entityShape']),
-                    this.validate.name);
+                let missingFields: string[] = ['entityShape'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
 
                 return false;
             }
@@ -170,6 +176,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
                 return false;
             }
             if (this.entityShape) {
+                this.entityShape.owner = this;
                 if (this.entityShape.visit(`${path}/entityShape/`, preChildren, postChildren)) {
                     return true;
                 }

@@ -25,6 +25,12 @@ class CdmOperationBase(CdmObjectDefinition):
 
         self.type = None  # type: CdmOperationType
 
+        # Property of an operation that holds the condition expression string
+        self.condition = None  # type: Optional[bool]
+
+        # Property of an operation that defines if the operation receives the input from previous operation or from source entity
+        self.source_input = None  # type: Optional[bool]
+
         # --- internal ---
 
         # The index of an operation
@@ -73,12 +79,16 @@ class CdmOperationBase(CdmObjectDefinition):
         Projections require a new resolved attribute to be created multiple times
         This function allows us to create new resolved attributes based on a input attribute
         """
+        target_attr = target_attr.copy()
+
         new_res_attr = ResolvedAttribute(
             proj_ctx._projection_directive._res_opt,
             target_attr,
             override_default_name if override_default_name else target_attr.get_name(),
             attr_ctx_under
         )
+
+        target_attr.in_document = proj_ctx._projection_directive._owner.in_document
 
         if added_simple_ref_traits is not None:
             for trait in added_simple_ref_traits:

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,6 +9,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -16,6 +17,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     public class CdmReferencedEntityDeclarationDefinition : CdmObjectDefinitionBase, CdmEntityDeclarationDefinition
     {
+        private static readonly string Tag = nameof(CdmReferencedEntityDeclarationDefinition);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmReferencedEntityDeclarationDefinition"/> class.
         /// </summary>
@@ -112,7 +115,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmReferencedEntityDeclarationDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -128,6 +131,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
+            string path = string.Empty;
+
+            if (preChildren != null && preChildren.Invoke(this, path))
+                return false;
+
+            if (postChildren != null && postChildren.Invoke(this, path))
+                return true;
             return false;
         }
 

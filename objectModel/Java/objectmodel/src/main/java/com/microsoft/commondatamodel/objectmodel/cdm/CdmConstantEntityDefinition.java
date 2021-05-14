@@ -5,13 +5,13 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -20,8 +20,11 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
+  private static final String TAG = CdmConstantEntityDefinition.class.getSimpleName();
+
   private String constantEntityName;
   private CdmEntityReference entityShape;
   private List<List<String>> constantValues;
@@ -77,6 +80,7 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
       return false;
     }
     if (this.getEntityShape() != null) {
+      this.getEntityShape().setOwner(this);
       if (this.getEntityShape().visit(path + "/entityShape/", preChildren, postChildren)) {
         return true;
       }
@@ -146,14 +150,11 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     if (null == this.constantValues) {
       final String[] pathSplit = this.getDeclaredPath().split("/", -1);
       final String entityName = (pathSplit.length > 0) ? pathSplit[0] : new String();
-      Logger.warning(
-          CdmConstantEntityDefinition.class.getSimpleName(),
-          this.getCtx(),
-          Logger.format("constant entity '{0}' defined without a constant value.", entityName)
-      );
+      Logger.warning(this.getCtx(), TAG,"validate", this.getAtCorpusPath(), CdmLogCode.WarnValdnEntityNotDefined, entityName);
     }
     if (this.entityShape == null) {
-      Logger.error(CdmConstantEntityDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("entityShape"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("entityShape"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -197,7 +198,13 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
 
     copy.setConstantEntityName(this.getConstantEntityName());
     copy.setEntityShape((CdmEntityReference) this.getEntityShape().copy(resOpt));
-    copy.setConstantValues(this.getConstantValues()); // is a deep copy needed?
+    if (this.getConstantValues() != null) {
+      // deep copy the content
+      copy.setConstantValues(new ArrayList<>());
+      for (final List<String> row : this.getConstantValues()) {
+        copy.getConstantValues().add(new ArrayList<>(row));
+      }
+    }
     this.copyDef(resOpt, copy);
     return copy;
   }

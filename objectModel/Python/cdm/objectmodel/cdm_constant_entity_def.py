@@ -3,10 +3,12 @@
 
 from typing import Callable, List, Optional, Union, TYPE_CHECKING
 
+from cdm.enums import CdmLogCode
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
 
 from .cdm_object_def import CdmObjectDefinition
+from cdm.utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmEntityReference
@@ -23,6 +25,8 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmConstantEntityDefinition.__name__
+
         # the constant entity name.
         self.constant_entity_name = name  # type: str
 
@@ -31,8 +35,6 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
 
         # the constant entity constant values.
         self.constant_values = []  # type: List[List[str]]
-
-        self._TAG = CdmConstantEntityDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -75,7 +77,12 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
             copy.constant_entity_name = self.constant_entity_name
 
         copy.entity_shape = self.entity_shape.copy(res_opt)
-        copy.constant_values = self.constant_values  # is a deep copy needed?
+        if self.constant_values:
+            # deep copy the content
+            copy.constant_values = list()
+            for row in self.constant_values:
+                copy.constant_values.append(list(row))
+
         self._copy_def(res_opt, copy)
 
         return copy
@@ -159,9 +166,10 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
         if self.constant_values is None:
             path_split = self._declared_path.split('/')
             entity_name = path_split[0] if path_split else ''
-            logger.warning(self._TAG, self.ctx, 'constant entity \'${}\' defined without a constant value.'.format(entity_name))
+            logger.warning(self.ctx, self._TAG, CdmConstantEntityDefinition.validate.__name__, self.at_corpus_path, CdmLogCode.WARN_VALDN_ENTITY_NOT_DEFINED, entity_name)
         if not bool(self.entity_shape):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['entity_shape']))
+            missing_fields = ['entity_shape']
+            logger.error(self.ctx, self._TAG, CdmConstantEntityDefinition.validate.__name__, self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 
@@ -176,8 +184,10 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.entity_shape and self.entity_shape.visit('{}/entityShape/'.format(path), pre_children, post_children):
-            return True
+        if self.entity_shape:
+            self.entity_shape.owner = self
+            if self.entity_shape.visit('{}/entityShape/'.format(path), pre_children, post_children):
+                return True
 
         if post_children and post_children(self, path):
             return True

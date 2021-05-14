@@ -15,14 +15,14 @@
     <apache.checkstyle.version>3.1.0</apache.checkstyle.version>
     <apache.compiler.version>3.8.1</apache.compiler.version>
     <apache.commons.version>3.9</apache.commons.version>
-    <apache.commonio.version>2.6</apache.commonio.version>
-    <apache.httpcomponents.version>4.5.9</apache.httpcomponents.version>
+    <apache.commonio.version>2.7</apache.commonio.version>
+    <apache.httpcomponents.version>4.5.13</apache.httpcomponents.version>
     <apache.logging.version>2.13.2</apache.logging.version>
     <apache.surefire.version>2.14</apache.surefire.version>
-    <fasterxml.jackson.version>2.10.0</fasterxml.jackson.version>
-    <google.guava.version>28.2-jre</google.guava.version>
+    <fasterxml.jackson.version>2.12.1</fasterxml.jackson.version>
+    <google.guava.version>30.1-jre</google.guava.version>
     <java.version>8</java.version>
-    <microsoft.adal4j.version>1.6.5</microsoft.adal4j.version>
+    <microsoft.msal4j.version>1.10.0</microsoft.msal4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <skycreamer.jsonassert.version>1.5.0</skycreamer.jsonassert.version>
     <slf4j.version>1.7.25</slf4j.version>
@@ -132,8 +132,8 @@
 
     <dependency>
       <groupId>com.microsoft.azure</groupId>
-      <artifactId>adal4j</artifactId>
-      <version>${microsoft.adal4j.version}</version>
+      <artifactId>msal4j</artifactId>
+      <version>${microsoft.msal4j.version}</version>
     </dependency>
 
     <dependency>
@@ -222,11 +222,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${apache.surefire.version}</version>
-        <configuration>
-          <excludes>
-            <exclude>${adlsTestExclude}</exclude>
-          </excludes>
-        </configuration>
       </plugin>
 
       <plugin>
@@ -246,15 +241,22 @@
     <resources>
       <resource>
         <directory>../../../schemaDocuments</directory>
+        <includes>
+          <include>**/cdmfoundation/**</include>
+          <include>**/extensions/**</include>
+          <include>foundations.cdm.json</include>
+          <include>meanings.cdm.json</include>
+          <include>primitives.cdm.json</include>
+          <include>schema.cdm.json</include>
+          <include>foundations.*.cdm.json</include>
+          <include>meanings.*.cdm.json</include>
+          <include>primitives.*.cdm.json</include>
+          <include>schema.*.cdm.json</include>
+        </includes>
         <excludes>
-          <exclude>**/core/**</exclude>
-          <exclude>**/office/**</exclude>
+          <exclude>**/*.manifest.cdm.json</exclude>
+          <exclude>*.0.*.cdm.json</exclude>
           <exclude>*.manifest.cdm.json</exclude>
-          <exclude>*.0.7.cdm.json</exclude>
-          <exclude>*.0.8.cdm.json</exclude>
-          <exclude>*.0.8.1.cdm.json</exclude>
-          <exclude>*.0.9.cdm.json</exclude>
-          <exclude>*.1.0.cdm.json</exclude>
           <exclude>*.md</exclude>
           <exclude>*.jpg</exclude>
         </excludes>

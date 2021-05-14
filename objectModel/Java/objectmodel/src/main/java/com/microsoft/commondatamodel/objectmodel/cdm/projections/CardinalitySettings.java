@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttribute;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
@@ -13,6 +14,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
  * Class for attribute cardinality
  */
 public class CardinalitySettings {
+    private static final String TAG = CardinalitySettings.class.getSimpleName();
+
     // By default all attributes in CDM are Not Nullable and hence setting the default value to be 1:1
     private static final int defaultMinimum = 1;
     private static final int defaultMaximum = 1;
@@ -85,7 +88,7 @@ public class CardinalitySettings {
 
     public void setMinimum(final String minimum) {
         if (!CardinalitySettings.isMinimumValid(minimum)) {
-            Logger.error(CardinalitySettings.class.getSimpleName(), this.ctx, Logger.format("Invalid minimum cardinality {0}.", minimum));
+            Logger.error(this.ctx, TAG, "setMinimum", owner.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, minimum);
         } else {
             _minimum = minimum;
             _minimumNumber = getNumber(_minimum, defaultMinimum);
@@ -103,7 +106,7 @@ public class CardinalitySettings {
 
     public void setMaximum(final String maximum) {
         if (!CardinalitySettings.isMaximumValid(maximum)) {
-            Logger.error(CardinalitySettings.class.getSimpleName(), this.ctx, Logger.format("Invalid maximum cardinality {0}.", maximum));
+            Logger.error(this.ctx, TAG, "setMaximum", owner.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMaxCardinality, maximum);
         } else {
             _maximum = maximum;
             _maximumNumber = getNumber(_maximum, defaultMaximum);
@@ -127,7 +130,7 @@ public class CardinalitySettings {
             int number = Integer.parseInt(value);
             return number;
         } catch (NumberFormatException e) {
-            Logger.error(CardinalitySettings.class.getSimpleName(), this.ctx, Logger.format("Unable to get number for string '{0}'. Falling to default value {1}.", value, defaultValue));
+            Logger.error(this.ctx, TAG, "getNumber", owner.getAtCorpusPath(), CdmLogCode.ErrProjStringError, value, Integer.toString(defaultValue));
             // defaults to min:max DefaultMinimum:DefaultMaximum in the invalid values
             return defaultValue;
         }

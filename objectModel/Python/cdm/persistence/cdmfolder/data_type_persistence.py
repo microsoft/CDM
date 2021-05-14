@@ -20,8 +20,8 @@ class DataTypePersistence:
         data_type.extends_data_type = DataTypeReferencePersistence.from_data(ctx, data.get('extendsDataType'))
         data_type.explanation = data.get('explanation')
 
-        exhibits_traits = utils.create_trait_reference_array(ctx, data.get('exhibitsTraits'))
-        data_type.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(data_type.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.get('exhibitsTraits')))
 
         return data_type
 

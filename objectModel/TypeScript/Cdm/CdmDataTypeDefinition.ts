@@ -8,15 +8,18 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../internal';
 
 export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmDataTypeDefinition.name;
+
     public dataTypeName: string;
     public extendsDataType?: CdmDataTypeReference;
 
@@ -24,7 +27,7 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
         return cdmObjectType.dataTypeDef;
     }
 
-    constructor(ctx: CdmCorpusContext, dataTypeName: string, extendsDataType: CdmDataTypeReference) {
+    constructor(ctx: CdmCorpusContext, dataTypeName: string, extendsDataType?: CdmDataTypeReference) {
         super(ctx);
         // let bodyCode = () =>
         {
@@ -70,12 +73,8 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!this.dataTypeName) {
-                Logger.error(
-                    CdmDataTypeDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['dataTypeName']),
-                    this.validate.name);
-
+                let missingFields: string[] = ['dataTypeName'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
             }
 
@@ -119,6 +118,7 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
                 return false;
             }
             if (this.extendsDataType) {
+                this.extendsDataType.owner = this;
                 if (this.extendsDataType.visit(`${path}/extendsDataType/`, preChildren, postChildren)) {
                     return true;
                 }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
@@ -16,6 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     class LocalEntityDeclarationPersistence
     {
+        private static readonly string Tag = nameof(LocalEntityDeclarationPersistence);
 
         public static async Task<CdmLocalEntityDeclarationDefinition> FromData(CdmCorpusContext ctx, CdmFolderDefinition documentFolder, LocalEntity obj, List<CdmTraitDefinition> extensionTraitDefList, CdmManifestDefinition manifest)
         {
@@ -27,7 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (entityDoc == null)
             {
-                Logger.Error(nameof(LocalEntityDeclarationPersistence), ctx, "There was an error while trying to fetch the entity doc from local entity declaration persistence.");
+                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistDocFetchError);
                 return null;
             }
 
@@ -67,7 +68,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     else
                     {
-                        Logger.Error(nameof(LocalEntityDeclarationPersistence), ctx, "There was an error while trying to fetch the entity doc from local entity declaration persistence.");
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistDocFetchError);
                         return null;
                     }
                 }
@@ -120,7 +121,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                         }
                         else
                         {
-                            Logger.Error(nameof(LocalEntityDeclarationPersistence), instance.Ctx, "There was an error while trying to convert cdm data partition to model.json partition.");
+                            Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
                             return null;
                         }
                     }

@@ -8,16 +8,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     /// </summary>
     internal class InputValues
     {
-        public int? nextDepth { get; set; }
-        public int? maxDepth { get; set; }
-        public bool? noMaxDepth { get; set; }
-        public bool? isArray { get; set; }
+        public int? NextDepth { get; set; }
+        public int? MaxDepth { get; set; }
+        public bool? NoMaxDepth { get; set; }
+        public bool? IsArray { get; set; }
 
-        public int? minCardinality { get; set; }
-        public int? maxCardinality { get; set; }
+        public int? MinCardinality { get; set; }
+        public int? MaxCardinality { get; set; }
 
-        public bool referenceOnly { get; set; }
-        public bool normalized { get; set; }
-        public bool structured { get; set; }
+        public bool ReferenceOnly { get; set; }
+        public bool Normalized { get; set; }
+        public bool Structured { get; set; }
+        public bool IsVirtual { get; set; }
+
+        public InputValues() { }
+
+        public InputValues(ProjectionDirective projDirective)
+        {
+            NoMaxDepth = projDirective.HasNoMaximumDepth;
+            IsArray = projDirective.IsArray;
+
+            ReferenceOnly = projDirective.IsReferenceOnly;
+            Normalized = projDirective.IsNormalized;
+            Structured = projDirective.IsStructured;
+            IsVirtual = projDirective.IsVirtual;
+
+            NextDepth = projDirective.ResOpt.DepthInfo.CurrentDepth;
+            MaxDepth = projDirective.MaximumDepth;
+
+            MinCardinality = projDirective.Cardinality?._MinimumNumber;
+            MaxCardinality = projDirective.Cardinality?._MaximumNumber;
+        }
     }
 }

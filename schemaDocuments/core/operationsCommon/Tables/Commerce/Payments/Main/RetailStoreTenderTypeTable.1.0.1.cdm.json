@@ -1,0 +1,890 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailChannelTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Parameter/RetailOperations.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailTenderTypeTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailStoreTenderTypeTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "changeTenderId",
+          "dataType": "RetailTenderTypeId",
+          "isNullable": true,
+          "displayName": "Change tender",
+          "description": ""
+        },
+        {
+          "name": "aboveMinimumTenderId",
+          "dataType": "RetailTenderTypeId",
+          "isNullable": true,
+          "displayName": "Above minimum change tender",
+          "description": ""
+        },
+        {
+          "name": "accountType",
+          "dataType": "RetailAccountType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountTypeGiftCardCompany",
+          "dataType": "RetailAccountType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActiveAccount",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use bank account",
+          "description": ""
+        },
+        {
+          "name": "allowFloat",
+          "dataType": "RetailAllowFloat",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "allowOvertender",
+          "dataType": "RetailAllowOvertender",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "allowReturnNegative",
+          "dataType": "RetailAllowReturnNegative",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "allowUndertender",
+          "dataType": "RetailAllowUndertender",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "askForDate",
+          "dataType": "RetailAskForDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankBagAccountType",
+          "dataType": "RetailAccountType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankBagLedgerDimension",
+          "dataType": "DimensionDynamicDefaultAccount",
+          "isNullable": true,
+          "displayName": "Account number",
+          "description": ""
+        },
+        {
+          "name": "changeLineOnReceipt",
+          "dataType": "RetailChangeLineOnReceipt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Channel",
+          "dataType": "RetailChannelRecId",
+          "description": ""
+        },
+        {
+          "name": "checkPayee",
+          "dataType": "RetailCheckPayee",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "compressPaymentEntries",
+          "dataType": "RetailCompressPaymentEntries",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConnectorName",
+          "dataType": "RetailConnectorName",
+          "isNullable": true,
+          "displayName": "Connector name",
+          "description": ""
+        },
+        {
+          "name": "countingRequired",
+          "dataType": "RetailCountingRequired",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiffAccBigDiffLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Big difference account",
+          "description": ""
+        },
+        {
+          "name": "DifferenceAccLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Difference account",
+          "description": ""
+        },
+        {
+          "name": "endorseCheck",
+          "dataType": "RetailEndorseCheck",
+          "isNullable": true,
+          "displayName": "Endorse check",
+          "description": ""
+        },
+        {
+          "name": "endorsmentLine1",
+          "dataType": "RetailEndorsmentLine",
+          "isNullable": true,
+          "displayName": "Endorsement line 1",
+          "description": ""
+        },
+        {
+          "name": "endorsmentLine2",
+          "dataType": "RetailEndorsmentLine",
+          "isNullable": true,
+          "displayName": "Endorsement line 2",
+          "description": ""
+        },
+        {
+          "name": "fiscalPrinterTenderType_BR",
+          "dataType": "RetailFiscalPrinterTenderType_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "frontOfCheck",
+          "dataType": "RetailFrontOfCheck",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "function",
+          "dataType": "RetailTenderTypeFunction",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GiftCardCompany",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "displayName": "Gift card company",
+          "description": ""
+        },
+        {
+          "name": "GiftCardItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "displayName": "Gift card item number",
+          "description": ""
+        },
+        {
+          "name": "GiftCardCashOutThreshold",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Gift card cash out threshold",
+          "description": ""
+        },
+        {
+          "name": "HideCardInputDetailsInPOS",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Hide card input details in POS",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "DimensionDynamicDefaultAccount",
+          "isNullable": true,
+          "displayName": "Account number",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimensionGiftCardCompany",
+          "dataType": "DimensionDynamicAccount",
+          "isNullable": true,
+          "displayName": "Account number",
+          "description": ""
+        },
+        {
+          "name": "lineNumInTransaction",
+          "dataType": "RetailLineNumInTransaction",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maxCountingDifference",
+          "dataType": "RetailMaxCountingDifference",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maximumAmountAllowed",
+          "dataType": "RetailAmountEnteredAllowed",
+          "isNullable": true,
+          "displayName": "Maximum amount per transaction",
+          "description": ""
+        },
+        {
+          "name": "maximumAmountEntered",
+          "dataType": "RetailAmountEnteredAllowed",
+          "isNullable": true,
+          "displayName": "Maximum amount per line",
+          "description": ""
+        },
+        {
+          "name": "maximumOvertenderAmount",
+          "dataType": "RetailOvertenderAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maxNormalDifferenceAmount",
+          "dataType": "RetailMaxDifferenceAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maxRecount",
+          "dataType": "RetailMaxRecount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "minimumAmountAllowed",
+          "dataType": "RetailAmountEnteredAllowed",
+          "isNullable": true,
+          "displayName": "Minimum amount per transaction",
+          "description": ""
+        },
+        {
+          "name": "minimumAmountEntered",
+          "dataType": "RetailAmountEnteredAllowed",
+          "isNullable": true,
+          "displayName": "Minimum amount per line",
+          "description": ""
+        },
+        {
+          "name": "minimumChangeAmount",
+          "dataType": "RetailMinimumChangeAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "multiplyInTenderOperations",
+          "dataType": "RetailMultiplyInTenderOperations",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "dataType": "RetailTenderTypeName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "openDrawer",
+          "dataType": "RetailOpenDrawer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "payAccountBill",
+          "dataType": "RetailPayAccountBill",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymTermId",
+          "dataType": "PaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "posCountEntries",
+          "dataType": "RetailPosCountEntries",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "posOperation",
+          "dataType": "RetailOperationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "rounding",
+          "dataType": "RoundOff",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "roundingMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SafeAccLedgerDimension",
+          "dataType": "DimensionDynamicDefaultAccount",
+          "isNullable": true,
+          "displayName": "Safe account",
+          "description": ""
+        },
+        {
+          "name": "safeAccountType",
+          "dataType": "RetailAccountType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "safeActiveAccount",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use safe account",
+          "description": ""
+        },
+        {
+          "name": "seekAuthorization",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "sigCapEnabled",
+          "dataType": "RetailSigCapEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "sigCapMinAmount",
+          "dataType": "RetailSigCapMinAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "slipBackInPrinter",
+          "dataType": "RetailSlipInPrinter",
+          "isNullable": true,
+          "displayName": "Slip back in printer",
+          "description": ""
+        },
+        {
+          "name": "slipFrontInPrinter",
+          "dataType": "RetailSlipInPrinter",
+          "isNullable": true,
+          "displayName": "Slip front in printer",
+          "description": ""
+        },
+        {
+          "name": "takenToBank",
+          "dataType": "RetailTakenToBank",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "takenToSafe",
+          "dataType": "RetailTakenToSafe",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TenderFlowLedgerDimension_RU",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Offset account",
+          "description": ""
+        },
+        {
+          "name": "tenderTypeId",
+          "dataType": "RetailStoreTenderTypeId",
+          "description": ""
+        },
+        {
+          "name": "undertenderAmount",
+          "dataType": "RetailUndertenderAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "bankTransactionType",
+          "dataType": "BankTransactionType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LegacyConnectorName",
+          "dataType": "RetailConnectorName",
+          "isNullable": true,
+          "displayName": "Legacy connector name",
+          "description": ""
+        },
+        {
+          "name": "CashDrawerLimitEnabled",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDrawerLimit",
+          "dataType": "Price",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RestrictReturnsWithoutReceipt",
+          "dataType": "RetailRestrictReturnsWithoutReceipt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination3Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombination4Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombinationGCRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DimensionAttributeValueSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelTable"
+          },
+          "name": "Relationship_RetailChannelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailOperations"
+          },
+          "name": "Relationship_RetailOperationsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTenderTypeTable"
+          },
+          "name": "Relationship_RetailTenderTypeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTenderTypeTable"
+          },
+          "name": "Relationship_RetailTenderTypeTable1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTenderTypeTable"
+          },
+          "name": "Relationship_RetailTenderTypeTable2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_TenderFlowLedgerDimension_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payment method"
+    },
+    {
+      "dataTypeName": "RetailTenderTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailAccountType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAllowFloat",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAllowOvertender",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAllowReturnNegative",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAllowUndertender",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAskForDate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DimensionDynamicDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailChangeLineOnReceipt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailChannelRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCheckPayee",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCompressPaymentEntries",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailConnectorName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCountingRequired",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailEndorseCheck",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEndorsmentLine",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFiscalPrinterTenderType_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFrontOfCheck",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailTenderTypeFunction",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DimensionDynamicAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailLineNumInTransaction",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailMaxCountingDifference",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailAmountEnteredAllowed",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailOvertenderAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailMaxDifferenceAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailMaxRecount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailMinimumChangeAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailMultiplyInTenderOperations",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailTenderTypeName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailOpenDrawer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailPayAccountBill",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailPosCountEntries",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailOperationId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RoundOff",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailSigCapEnabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailSigCapMinAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailSlipInPrinter",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTakenToBank",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailTakenToSafe",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailStoreTenderTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailUndertenderAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankTransactionType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Price",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailRestrictReturnsWithoutReceipt",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -4,11 +4,11 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
@@ -23,9 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase implements
     CdmEntityDeclarationDefinition {
+
+  private static final String TAG = CdmLocalEntityDeclarationDefinition.class.getSimpleName();
 
   public String entityName;
   public String entityPath;
@@ -92,7 +95,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     }
 
     if (postChildren != null && postChildren.invoke(this, path)) {
-      return false;
+      return true;
     }
 
     return false;
@@ -237,7 +240,8 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.entityName)) {
-      Logger.error(CdmLocalEntityDeclarationDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("entityName"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("entityName"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -315,7 +319,7 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
       newPartition.setLastFileModifiedTime(modifiedTime);
       newPartition.setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
 
-      for (final CdmTraitReference trait : exhibitsTraits) {
+      for (final CdmTraitReferenceBase trait : exhibitsTraits) {
         newPartition.getExhibitsTraits().add(trait);
       }
 

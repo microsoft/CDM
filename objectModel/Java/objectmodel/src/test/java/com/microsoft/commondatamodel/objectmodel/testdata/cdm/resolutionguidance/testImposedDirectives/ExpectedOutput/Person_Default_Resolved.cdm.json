@@ -1,5 +1,5 @@
 {
-  "jsonSchemaSemanticVersion": "1.0.0",
+  "jsonSchemaSemanticVersion": "1.2.0",
   "imports": [
     {
       "corpusPath": "local:/Person_Default.cdm.json",
@@ -9,6 +9,17 @@
   "definitions": [
     {
       "entityName": "Person_Resolved",
+      "exhibitsTraits": [
+        {
+          "traitReference": "has.entitySchemaAbstractionLevel",
+          "arguments": [
+            {
+              "name": "level",
+              "value": "resolved"
+            }
+          ]
+        }
+      ],
       "attributeContext": {
         "type": "entity",
         "name": "Person_Resolved",
@@ -51,30 +62,36 @@
               },
               {
                 "type": "generatedSet",
-                "name": "_generatedAttributeSet",
+                "name": "_generatedAttributeSet_template",
                 "parent": "Person_Resolved/attributeContext/Person_Resolved/Address",
                 "contents": [
                   {
                     "type": "generatedRound",
                     "name": "_generatedAttributeRound0",
-                    "parent": "Person_Resolved/attributeContext/Person_Resolved/Address/_generatedAttributeSet",
+                    "parent": "Person_Resolved/attributeContext/Person_Resolved/Address/_generatedAttributeSet_template",
                     "contents": [
                       {
                         "type": "attributeDefinition",
                         "name": "Street",
-                        "parent": "Person_Resolved/attributeContext/Person_Resolved/Address/_generatedAttributeSet/_generatedAttributeRound0",
+                        "parent": "Person_Resolved/attributeContext/Person_Resolved/Address/_generatedAttributeSet_template/_generatedAttributeRound0",
                         "definition": "resolvedFrom/Address/hasAttributes/Street",
                         "contents": [
                           "Person_Resolved/hasAttributes/AddressStreet"
+                        ],
+                        "lineage": [
+                          "Person_Resolved/attributeContext/Person_Resolved/Address/Address/Street"
                         ]
                       },
                       {
                         "type": "attributeDefinition",
                         "name": "Pincode",
-                        "parent": "Person_Resolved/attributeContext/Person_Resolved/Address/_generatedAttributeSet/_generatedAttributeRound0",
+                        "parent": "Person_Resolved/attributeContext/Person_Resolved/Address/_generatedAttributeSet_template/_generatedAttributeRound0",
                         "definition": "resolvedFrom/Address/hasAttributes/Pincode",
                         "contents": [
                           "Person_Resolved/hasAttributes/AddressPincode"
+                        ],
+                        "lineage": [
+                          "Person_Resolved/attributeContext/Person_Resolved/Address/Address/Pincode"
                         ]
                       }
                     ]
@@ -100,7 +117,7 @@
             "is.dataFormat.character",
             "is.dataFormat.array"
           ],
-          "attributeContext": "Person_Resolved/attributeContext/Person_Resolved/Address/_generatedAttributeSet/_generatedAttributeRound0/Street",
+          "attributeContext": "Person_Resolved/attributeContext/Person_Resolved/Address/_generatedAttributeSet_template/_generatedAttributeRound0/Street",
           "dataFormat": "String"
         },
         {
@@ -108,7 +125,7 @@
           "appliedTraits": [
             "is.dataFormat.integer"
           ],
-          "attributeContext": "Person_Resolved/attributeContext/Person_Resolved/Address/_generatedAttributeSet/_generatedAttributeRound0/Pincode",
+          "attributeContext": "Person_Resolved/attributeContext/Person_Resolved/Address/_generatedAttributeSet_template/_generatedAttributeRound0/Pincode",
           "dataFormat": "Int32"
         }
       ]

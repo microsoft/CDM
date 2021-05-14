@@ -1,0 +1,97 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PayrollAccrual.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollAccrualBasisEarningcode",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Accrual",
+          "dataType": "PayrollAccrualRecId",
+          "description": ""
+        },
+        {
+          "name": "AccrualRate",
+          "dataType": "PayrollAccrualCompensatoryRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccuralType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Earning type",
+          "description": ""
+        },
+        {
+          "name": "EarningCode",
+          "dataType": "PayrollEarningCodeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EarningCodeGroup",
+          "dataType": "PayrollEarningCodeGroupRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollAccrual"
+          },
+          "name": "Relationship_PayrollAccrualRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Accrual basis earnings"
+    },
+    {
+      "dataTypeName": "PayrollAccrualRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PayrollAccrualCompensatoryRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PayrollEarningCodeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PayrollEarningCodeGroupRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

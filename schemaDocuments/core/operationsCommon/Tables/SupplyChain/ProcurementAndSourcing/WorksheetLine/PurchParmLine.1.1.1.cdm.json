@@ -1,0 +1,978 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CFOPTable_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PurchLine.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchParmSubTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchParmTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/Tax1099Fields.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressState.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendLedger.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchParmLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "OrderAccount",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFOPTable_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "changedManually",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Change quantity manually",
+          "description": ""
+        },
+        {
+          "name": "closed",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Close for receipt",
+          "description": ""
+        },
+        {
+          "name": "currencyCode",
+          "dataType": "VendCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryName",
+          "dataType": "LogisticsDeliveryName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "InvoiceLineDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeviationQty_RU",
+          "dataType": "PurchDeviationQty_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentOrigin",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventNow",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "displayName": "Update",
+          "description": ""
+        },
+        {
+          "name": "InventProfileType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "TradeInventTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAccount",
+          "dataType": "VendInvoiceAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Net amount",
+          "description": ""
+        },
+        {
+          "name": "LineDisc",
+          "dataType": "PurchLineDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LinePercent",
+          "dataType": "PurchLinePercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MultiLnDisc",
+          "dataType": "PurchMultiLnDisc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MultiLnPercent",
+          "dataType": "PurchMultiLnPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Ordering",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Update",
+          "description": ""
+        },
+        {
+          "name": "OrigPurchId",
+          "dataType": "PurchIdOrig",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "description": ""
+        },
+        {
+          "name": "PdsCountryOfOrigin1",
+          "dataType": "PdsCountryOfOrigin1",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCountryOfOrigin2",
+          "dataType": "PdsCountryOfOrigin2",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWPreviousReceiveNow",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWReceiveNow",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "displayName": "CW update",
+          "description": ""
+        },
+        {
+          "name": "PdsCWRemainAfterInvent",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "displayName": "CW deliver remainder",
+          "description": ""
+        },
+        {
+          "name": "PdsCWRemainBeforeInvent",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "displayName": "CW remaining quantity",
+          "description": ""
+        },
+        {
+          "name": "PdsUseVendBatchDate",
+          "dataType": "PdsUseVendBatchDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsUseVendBatchExp",
+          "dataType": "PdsUseVendBatchExp",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsVendBatchDate",
+          "dataType": "PdsVendBatchDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsVendBatchId",
+          "dataType": "PdsVendBatchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsVendExpiryDate",
+          "dataType": "PdsVendExpiryDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile_RU",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreviousDeviationQty",
+          "dataType": "PurchDeviationQty_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreviousInventNow",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreviousReceiveNow",
+          "dataType": "PurchQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceUnit",
+          "dataType": "PriceUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcurementCategory",
+          "dataType": "PurchCategory",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchaseLineLineNumber",
+          "dataType": "TradeLineNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchLineRecId",
+          "dataType": "PurchLineRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchMarkup",
+          "dataType": "PurchMarkup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchPrice",
+          "dataType": "PurchPrice",
+          "isNullable": true,
+          "displayName": "Unit price",
+          "description": ""
+        },
+        {
+          "name": "ReasonTableRef",
+          "dataType": "ReasonRefRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiveNow",
+          "dataType": "PurchQty",
+          "isNullable": true,
+          "displayName": "Update",
+          "description": ""
+        },
+        {
+          "name": "RemainAfter",
+          "dataType": "PurchQty",
+          "isNullable": true,
+          "displayName": "Deliver remainder",
+          "description": ""
+        },
+        {
+          "name": "RemainAfterInvent",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "displayName": "Deliver remainder",
+          "description": ""
+        },
+        {
+          "name": "RemainBefore",
+          "dataType": "PurchQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Remaining quantity",
+          "description": ""
+        },
+        {
+          "name": "RemainBeforeInvent",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "displayName": "Remaining quantity",
+          "description": ""
+        },
+        {
+          "name": "RemainBeforeInventPhysical",
+          "dataType": "TradeRemainBeforeInventPhysical",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TableRefId",
+          "dataType": "TradeLineRefId",
+          "description": ""
+        },
+        {
+          "name": "Tax1099Amount",
+          "dataType": "Tax1099Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Tax1099Fields",
+          "dataType": "Tax1099FieldsRecId",
+          "isNullable": true,
+          "displayName": "1099 box code",
+          "description": ""
+        },
+        {
+          "name": "Tax1099State",
+          "dataType": "Tax1099State",
+          "isNullable": true,
+          "displayName": "Delivery state",
+          "description": ""
+        },
+        {
+          "name": "Tax1099StateAmount",
+          "dataType": "Tax1099StateAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "displayName": "Item sales tax",
+          "description": ""
+        },
+        {
+          "name": "TaxServiceCode_BR",
+          "dataType": "TaxServiceCodeId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssessableValue_IN",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Assessable value",
+          "description": ""
+        },
+        {
+          "name": "AcceptedQty_IN",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomsBillOfEntryNumberTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomsImportInvoiceNumberTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomsInvoiceRegnRecId_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaximumRetailPrice_IN",
+          "dataType": "MaximumRetailPrice_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceivedQty_IN",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RejectedQty_IN",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CFOPTable_BR"
+          },
+          "name": "Relationship_CFOPTable_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_DeliveryPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_InvoiceVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_OrderVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_PdsCountryOfOrigin1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_PdsCountryOfOrigin2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_ProcurementCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchParmSubTable"
+          },
+          "name": "Relationship_PurchParmSubTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchParmTable"
+          },
+          "name": "Relationship_PurchParmTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Tax1099Fields"
+          },
+          "name": "Relationship_Tax1099FieldsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressState"
+          },
+          "name": "Relationship_Tax1099StateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase order line - delivery address - update table"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsDeliveryName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InvoiceLineDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchDeviationQty_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TradeInventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendInvoiceAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchLineDisc",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchLinePercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchMultiLnDisc",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchMultiLnPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchIdOrig",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCountryOfOrigin1",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCountryOfOrigin2",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCWInventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsUseVendBatchDate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsUseVendBatchExp",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsVendBatchDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PdsVendBatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsVendExpiryDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceUnit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchCategory",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TradeLineNumber",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchLineRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchMarkup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReasonRefRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TradeRemainBeforeInventPhysical",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TradeLineRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Tax1099Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Tax1099FieldsRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Tax1099State",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Tax1099StateAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MaximumRetailPrice_IN",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

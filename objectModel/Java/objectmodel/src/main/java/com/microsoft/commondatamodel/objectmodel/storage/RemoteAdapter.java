@@ -39,7 +39,7 @@ public class RemoteAdapter extends NetworkAdapter {
    */
   public RemoteAdapter(Map<String, String> hosts) {
     if (hosts != null) {
-      this.hosts = hosts;
+      setHosts(hosts);
     }
     // Create a new CdmHttp Client without base URL.
     this.httpClient = new CdmHttpClient();

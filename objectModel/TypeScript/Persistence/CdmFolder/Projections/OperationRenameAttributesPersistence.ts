@@ -5,43 +5,34 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationRenameAttributes,
-    cdmOperationType,
     copyOptions,
+    cdmLogCode,
     Logger,
-    OperationTypeConvertor,
     resolveOptions,
-    StringUtils
 } from '../../../internal';
 import { OperationRenameAttributes } from '../types';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation RenameAttributes persistence
  */
 export class OperationRenameAttributesPersistence {
+    private static TAG: string = OperationRenameAttributesPersistence.name;
+
     public static fromData(ctx: CdmCorpusContext, object: OperationRenameAttributes): CdmOperationRenameAttributes {
         if (!object) {
             return undefined;
         }
-        const renameAttributesOp: CdmOperationRenameAttributes = ctx.corpus.MakeObject<CdmOperationRenameAttributes>(cdmObjectType.operationRenameAttributesDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.renameAttributes))) {
-            Logger.error(OperationRenameAttributesPersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            renameAttributesOp.type = cdmOperationType.renameAttributes;
-        }
-
-        if (object.explanation) {
-            renameAttributesOp.explanation = object.explanation;
-        }
-
+        const renameAttributesOp: CdmOperationRenameAttributes = OperationBasePersistence.fromData(ctx, cdmObjectType.operationRenameAttributesDef, object);
         renameAttributesOp.renameFormat = object.renameFormat;
 
-        if (typeof(object.applyTo) === 'string') {
-            renameAttributesOp.applyTo = [ object.applyTo ]
+        if (typeof (object.applyTo) === 'string') {
+            renameAttributesOp.applyTo = [object.applyTo]
         } else if (Array.isArray(object.applyTo)) {
             renameAttributesOp.applyTo = object.applyTo;
         } else if (object.applyTo !== undefined) {
-            Logger.error(OperationRenameAttributes.name, ctx, 'Unsupported: applyTo property type should be string or List<string>.');
+            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjUnsupportedProp);
         }
 
         return renameAttributesOp;
@@ -52,11 +43,10 @@ export class OperationRenameAttributesPersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.renameAttributes),
-            explanation: instance.explanation,
-            renameFormat: instance.renameFormat,
-            applyTo: instance.applyTo
-        };
+        const data: OperationRenameAttributes = OperationBasePersistence.toData(instance, resOpt, options);
+        data.renameFormat = instance.renameFormat;
+        data.applyTo = instance.applyTo;
+
+        return data;
     }
 }

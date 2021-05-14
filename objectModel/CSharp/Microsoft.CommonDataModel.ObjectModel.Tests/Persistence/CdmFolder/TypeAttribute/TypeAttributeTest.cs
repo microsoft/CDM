@@ -76,9 +76,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.IsTrue((bool)typeAttribute.IsPrimaryKey);
 
             // Check that the trait "is.identifiedBy" is created with the correct argument.
-            CdmTraitReference isIdentifiedBy1 = typeAttribute.AppliedTraits[1];
+            var isIdentifiedBy1 = typeAttribute.AppliedTraits[1];
             Assert.AreEqual("is.identifiedBy", isIdentifiedBy1.NamedReference);
-            Assert.AreEqual("TeamMembership/(resolvedAttributes)/teamMembershipId", isIdentifiedBy1.Arguments[0].Value);
+            Assert.AreEqual("TeamMembership/(resolvedAttributes)/teamMembershipId", (isIdentifiedBy1 as CdmTraitReference).Arguments[0].Value);
 
             // Read from a resolved entity schema.
             CdmEntityDefinition resolvedEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TeamMembership_Resolved.cdm.json/TeamMembership", null, resOpt);
@@ -87,10 +87,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.IsTrue((bool)resolvedTypeAttribute.IsPrimaryKey);
 
             // Check that the trait "is.identifiedBy" is created with the correct argument.
-            CdmTraitReference isIdentifiedBy2 = resolvedTypeAttribute.AppliedTraits[6];
+            var isIdentifiedBy2 = resolvedTypeAttribute.AppliedTraits[6];
             Assert.AreEqual("is.identifiedBy", isIdentifiedBy2.NamedReference);
 
-            CdmAttributeReference argumentValue = isIdentifiedBy2.Arguments[0].Value;
+            CdmAttributeReference argumentValue = (isIdentifiedBy2 as CdmTraitReference).Arguments[0].Value;
             Assert.AreEqual("TeamMembership/(resolvedAttributes)/teamMembershipId", argumentValue.NamedReference);
         }
 
@@ -398,10 +398,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         private static HashSet<string> FetchTraitNamedReferences(CdmTraitCollection traits)
         {
             HashSet<string> namedReferences = new HashSet<string>();
-            foreach (var trait in traits)
-            {
-                namedReferences.Add(trait.NamedReference);
-            }
+
+            traits.AllItems.ForEach(trait => namedReferences.Add(trait.NamedReference));
+
             return namedReferences;
         }
     }

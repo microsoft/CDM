@@ -10,15 +10,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmConstantEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
@@ -134,7 +126,7 @@ public class TypeAttributeTest {
     Assert.assertTrue(typeAttribute.fetchIsPrimaryKey());
 
     // Check that the trait "is.identifiedBy" is created with the correct argument.
-    CdmTraitReference isIdentifiedBy1 = typeAttribute.getAppliedTraits().get(1);
+    CdmTraitReference isIdentifiedBy1 = (CdmTraitReference) typeAttribute.getAppliedTraits().get(1);
     Assert.assertEquals(isIdentifiedBy1.getNamedReference(), "is.identifiedBy");
     Assert.assertEquals(isIdentifiedBy1.getArguments().get(0).getValue(), "TeamMembership/(resolvedAttributes)/teamMembershipId");
 
@@ -145,7 +137,7 @@ public class TypeAttributeTest {
     Assert.assertTrue(resolvedTypeAttribute.fetchIsPrimaryKey());
 
     // Check that the trait "is.identifiedBy" is created with the correct argument.
-    CdmTraitReference isIdentifiedBy2 = resolvedTypeAttribute.getAppliedTraits().get(6);
+    CdmTraitReference isIdentifiedBy2 = (CdmTraitReference) resolvedTypeAttribute.getAppliedTraits().get(6);
     Assert.assertEquals(isIdentifiedBy2.getNamedReference(), "is.identifiedBy");
 
     CdmAttributeReference argumentValue = (CdmAttributeReference) isIdentifiedBy2.getArguments().get(0).getValue();
@@ -453,7 +445,7 @@ public class TypeAttributeTest {
 
   private Set<String> fetchTraitNamedReferences(CdmTraitCollection traits) {
     Set<String> namedReferences = new HashSet<String>();
-    for (CdmTraitReference trait : traits) {
+    for (CdmTraitReferenceBase trait : traits) {
       namedReferences.add(trait.getNamedReference());
     }
     return namedReferences;

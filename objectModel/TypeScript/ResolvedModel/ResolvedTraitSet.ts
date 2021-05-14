@@ -4,7 +4,7 @@
 import {
     ArgumentValue,
     CdmArgumentDefinition,
-    CdmObjectBase,
+    CdmParameterDefinition,
     CdmTraitDefinition,
     ParameterCollection,
     ParameterValue,
@@ -50,7 +50,7 @@ export class ResolvedTraitSet {
     constructor(resOpt: resolveOptions) {
         // let bodyCode = () =>
         {
-            this.resOpt = CdmObjectBase.copyResolveOptions(resOpt);
+            this.resOpt = resOpt.copy();
             this.set = [];
             this.lookupByTrait = new Map<CdmTraitDefinition, ResolvedTrait>();
             this.hasElevated = false;
@@ -246,9 +246,18 @@ export class ResolvedTraitSet {
                 const av: ArgumentValue[] = resTrait.parameterValues.values;
                 const newVal: ArgumentValue = arg.getValue();
                 // get the value index from the parameter collection given the parameter that this argument is setting
-                const iParam: number = resTrait.parameterValues.indexOf(arg.getParameterDef());
-                av[iParam] = ParameterValue.fetchReplacementValue(this.resOpt, av[iParam], newVal, true);
-                resTrait.parameterValues.wasSet[iParam] = true;
+                let paramDef: CdmParameterDefinition = arg.getParameterDef();
+                if (paramDef)
+                {
+                    const iParam: number = resTrait.parameterValues.indexOf(paramDef);
+                    av[iParam] = ParameterValue.fetchReplacementValue(this.resOpt, av[iParam], newVal, true);
+                    resTrait.parameterValues.wasSet[iParam] = true;
+                }
+                else
+                {
+                    // debug
+                    paramDef = arg.getParameterDef();
+                }
             }
         }
         // return p.measure(bodyCode);

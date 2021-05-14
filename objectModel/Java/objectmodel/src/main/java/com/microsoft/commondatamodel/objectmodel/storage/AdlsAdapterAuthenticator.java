@@ -4,10 +4,17 @@
 package com.microsoft.commondatamodel.objectmodel.storage;
 
 import com.google.common.base.Strings;
-import com.microsoft.aad.adal4j.AuthenticationContext;
-import com.microsoft.aad.adal4j.AuthenticationResult;
-import com.microsoft.aad.adal4j.ClientCredential;
+import com.microsoft.aad.msal4j.AzureCloudEndpoint;
+import com.microsoft.aad.msal4j.ClientCredentialFactory;
+import com.microsoft.aad.msal4j.ClientCredentialParameters;
+import com.microsoft.aad.msal4j.ConfidentialClientApplication;
+import com.microsoft.aad.msal4j.IAuthenticationResult;
+import com.microsoft.aad.msal4j.IClientCredential;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
+import org.apache.commons.codec.binary.Base64;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -22,15 +29,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.codec.binary.Base64;
+import java.util.Collections;
+import java.util.Set;
 
 /**
- * It is used for handling authentication items for ADLS requests.
+ * AdlsAdapterAuthenticator handles authentication items for ADLS requests.
  */
 class AdlsAdapterAuthenticator {
   private static final String HMAC_SHA256 = "HmacSHA256";
@@ -40,40 +43,24 @@ class AdlsAdapterAuthenticator {
   private static final String HTTP_XMS_DATE = "x-ms-date";
   // The MS version key, used during shared key auth.
   private static final String HTTP_XMS_VERSION = "x-ms-version";
+  // The default scope.
+  private final static Set<String> SCOPE = Collections.singleton("https://storage.azure.com/.default");
 
   private String sharedKey;
-  private final String tenant;
+  private String tenant;
   private String clientId;
   private String secret;
-  private AuthenticationResult lastAuthenticationResult;
+  private ConfidentialClientApplication context;
+  private String sasToken;
+  private IAuthenticationResult lastAuthenticationResult;
   private TokenProvider tokenProvider;
 
-  AdlsAdapterAuthenticator(final String sharedKey) {
-    if (sharedKey == null) {
-      throw new IllegalArgumentException("sharedKey is null");
-    }
-    this.sharedKey = sharedKey;
+  AdlsAdapterAuthenticator() {
+    this.sharedKey = null;
     this.clientId = null;
     this.secret = null;
     this.tenant = null;
-  }
-
-  AdlsAdapterAuthenticator(final String tenant, final String clientId, final String secret) {
-    if ( tenant == null || clientId == null) {
-      throw new IllegalArgumentException("tenant or clientId is null");
-    }
-    this.sharedKey = null;
-    this.tenant = tenant;
-    this.clientId = clientId;
-    this.secret = secret;
-  }
-
-  AdlsAdapterAuthenticator(TokenProvider tokenProvider) {
-    this.sharedKey = null;
-    this.tenant = null;
-    this.clientId = null;
-    this.secret = null;
-    this.tokenProvider = tokenProvider;
+    this.tokenProvider = null;
   }
 
   /**
@@ -83,25 +70,33 @@ class AdlsAdapterAuthenticator {
    * @param content The content of the request
    * @param contentType The contentType of the request
    * @return The authentication headers
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws URISyntaxException
    */
   Map<String, String> buildAuthenticationHeader(
       final String url,
       final String method,
       final String content,
       final String contentType)
-      throws NoSuchAlgorithmException, InvalidKeyException, URISyntaxException, UnsupportedEncodingException {
+          throws NoSuchAlgorithmException, InvalidKeyException, URISyntaxException, UnsupportedEncodingException {
     if (sharedKey != null) {
       return buildAuthenticationHeaderWithSharedKey(url, method, content, contentType);
-    } else if (this.tokenProvider != null) {
+    } else if (tokenProvider != null) {
       final Map<String, String> header = new LinkedHashMap<>();
-      header.put("authorization", this.tokenProvider.getToken());
+      header.put("authorization", tokenProvider.getToken());
       return header;
+    } else if (clientId != null && tenant != null && secret != null) {
+      return buildAuthenticationHeaderWithClientIdAndSecret();
+    } else {
+      throw new StorageAdapterException("ADLS adapter is not configured with any auth method");
     }
+  }
 
-    return buildAuthenticationHeaderWithClientIdAndSecret();
+  /**
+   * Appends SAS token to the given URL.
+   * @param url URL to be appended with the SAS token
+   * @return URL with the SAS token appended
+   */
+  String buildSasAuthenticatedUrl(String url) {
+    return url + (url.contains("?") ? "&" : "?") + sasToken;
   }
 
   /**
@@ -150,12 +145,13 @@ class AdlsAdapterAuthenticator {
     builder.append(uri.getRawPath());
     // Append canonicalized queries.
     if (!Strings.isNullOrEmpty(uri.getQuery())) {
-      final String queryParameters = uri.getQuery();
+      final String queryParameters = uri.getRawQuery();
       final String[] queryParts = queryParameters.split("&");
       for(final String item : queryParts) {
         final String[] keyValuePair = item.split("=");
+        String queryName = keyValuePair[0].toLowerCase();
         String decodedValue = URLDecoder.decode(keyValuePair[1], "UTF-8");
-        builder.append("\n").append(keyValuePair[0]).append(":").append(decodedValue);
+        builder.append("\n").append(queryName).append(":").append(decodedValue);
       }
     }
 
@@ -179,7 +175,7 @@ class AdlsAdapterAuthenticator {
       this.refreshToken();
     }
 
-    header.put("authorization", this.lastAuthenticationResult.getAccessTokenType() + " " + this.lastAuthenticationResult.getAccessToken());
+    header.put("authorization", "Bearer " + this.lastAuthenticationResult.accessToken());
     return header;
   }
 
@@ -193,26 +189,42 @@ class AdlsAdapterAuthenticator {
     }
 
     Date now = new Date();
-    return this.lastAuthenticationResult.getExpiresOnDate().before(now);
+    return this.lastAuthenticationResult.expiresOnDate().before(now);
   }
 
   /**
    * Refresh the authentication token.
    */
   private void refreshToken() {
-    ExecutorService executorService = Executors.newFixedThreadPool(10);
-    AuthenticationContext authenticationContext = null;
+    this.buildContext();
+    IAuthenticationResult result;
     try {
-      authenticationContext = new AuthenticationContext("https://login.windows.net/" + this.tenant,
-          true,
-          executorService);
-      final ClientCredential clientCredentials = new ClientCredential(this.clientId, this.secret);
+      ClientCredentialParameters parameters = ClientCredentialParameters.builder(SCOPE).build();
+      result = this.context.acquireToken(parameters).join();
+    } catch (Exception ex) {
+        throw new StorageAdapterException("There was an error while acquiring ADLS Adapter's Token with client ID/secret authentication. Exception: ", ex);
+    }
 
-      this.lastAuthenticationResult = authenticationContext.acquireToken("https://storage.azure.com", clientCredentials, null).get();
-    } catch (MalformedURLException | InterruptedException | ExecutionException e) {
-      throw new StorageAdapterException("Failed to refresh AdlsAdapter's token", e);
-    } finally {
-      executorService.shutdown();
+    if (result == null || result.accessToken() == null) {
+      throw new StorageAdapterException("Received invalid ADLS Adapter's authentication result. The result might be null, or missing access token from the authentication result.");
+    }
+    this.lastAuthenticationResult = result;
+  }
+
+  /**
+   * Build context when users make the first call. Also need to ensure client Id, tenant and secret are not null.
+   */
+  private void buildContext() {
+    if (this.context == null) {
+      IClientCredential credential = ClientCredentialFactory.createFromSecret(this.secret);
+      try {
+        this.context = ConfidentialClientApplication
+                .builder(this.clientId, credential)
+                .authority(AzureCloudEndpoint.AzurePublic.endpoint + this.tenant)
+                .build();
+      } catch (MalformedURLException e) {
+        throw new StorageAdapterException("There was an error while building context. Exception: ", e);
+      }
     }
   }
 
@@ -226,6 +238,10 @@ class AdlsAdapterAuthenticator {
 
   String getTenant() {
     return tenant;
+  }
+
+  void setTenant(String tenant) {
+    this.tenant = tenant;
   }
 
   String getClientId() {
@@ -242,6 +258,20 @@ class AdlsAdapterAuthenticator {
 
   void setSecret(String secret) {
     this.secret = secret;
+  }
+
+  String getSasToken() {
+    return sasToken;
+  }
+
+  /**
+   * Sets the SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
+   * @param sasToken The SAS token
+   */
+  void setSasToken(String sasToken) {
+    this.sasToken = sasToken != null ?
+            (sasToken.startsWith("?") ? sasToken.substring(1) : sasToken)
+            : null;
   }
 
   TokenProvider getTokenProvider() {

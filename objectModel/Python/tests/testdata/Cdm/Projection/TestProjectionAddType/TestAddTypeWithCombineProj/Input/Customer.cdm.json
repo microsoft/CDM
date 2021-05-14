@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Customer",
+      "hasAttributes": [
+        {
+          "name": "ContactAt",
+          "isPolymorphicSource": true,
+          "entity": {
+            "operations": [
+              {
+                "$type": "addTypeAttribute",
+                "typeAttribute": {
+                  "name": "contactType",
+                  "dataType": "entityName",
+                  "appliedTraits": []
+                }
+              }
+            ],
+            "source": {
+              "operations": [
+                {
+                  "$type": "combineAttributes",
+                  "select": [ "emailId", "phoneId", "socialId" ],
+                  "mergeInto": {
+                    "name": "contactId",
+                    "dataType": "entityId"
+                  }
+                }
+              ],
+              "source": "ContactInfo"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

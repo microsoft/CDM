@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
@@ -15,16 +15,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     /// </summary>
     internal sealed class ProjectionDirective
     {
-        /// <summary>
-        /// Max Depth default
-        /// </summary>
-        const int MaxDepthDefault = 2;
-
-        /// <summary>
-        /// Max Depth if 'noMaxDepth' is defined
-        /// </summary>
-        const int MaxDepthHasNoMax = 32;
-
         /// <summary>
         /// Resolution option used
         /// </summary>
@@ -69,11 +59,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         internal bool IsSourcePolymorphic { get; private set; }
 
         /// <summary>
-        /// Current depth of reference
-        /// </summary>
-        internal int? CurrentDepth { get; set; }
-
-        /// <summary>
         /// Has maximum depth override flag
         /// </summary>
         internal bool HasNoMaximumDepth { get; private set; }
@@ -103,6 +88,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         /// </summary>
         internal bool IsStructured { get; private set; }
 
+        /// <summary>
+        /// Is virtual
+        /// </summary>
+        internal bool IsVirtual { get; private set; }
+
         public ProjectionDirective(ResolveOptions resOpt, CdmObjectDefinitionBase owner, CdmObjectReference ownerRef = null)
         {
             this.ResOpt = resOpt;
@@ -131,16 +121,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             this.IsReferenceOnly = (resOpt.Directives?.Has("referenceOnly") == true);
             this.IsNormalized = (resOpt.Directives?.Has("normalized") == true);
             this.IsStructured = (resOpt.Directives?.Has("structured") == true);
+            this.IsVirtual = (resOpt.Directives?.Has("virtual") == true);
             this.HasNoMaximumDepth = (resOpt.Directives?.Has("noMaxDepth") == true);
             this.IsArray = (resOpt.Directives?.Has("isArray") == true);
 
-            this.CurrentDepth = (resOpt?.RelationshipDepth == null) ? 1 : resOpt.RelationshipDepth + 1;
-            resOpt.RelationshipDepth = this.CurrentDepth;
-
-            // if noMaxDepth directive the max depth is 32 else defaults to 2
+            // if noMaxDepth directive the max depth is 32 else defaults to what was set by the user
             // these depths were arbitrary and were set for the resolution guidance
             // re-using the same for projections as well
-            this.MaximumDepth = this.HasNoMaximumDepth ? MaxDepthHasNoMax : MaxDepthDefault;
+            this.MaximumDepth = this.HasNoMaximumDepth ? DepthInfo.MaxDepthLimit : resOpt.MaxDepth;
         }
     }
 }

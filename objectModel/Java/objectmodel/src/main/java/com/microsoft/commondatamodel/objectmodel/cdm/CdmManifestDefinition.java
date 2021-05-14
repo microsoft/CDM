@@ -6,14 +6,17 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryStyle;
+import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -21,8 +24,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmObjectDefinition, CdmFileStatus {
+  private static final String TAG = CdmManifestDefinition.class.getSimpleName();
+
   private String manifestName;
   private CdmCollection<CdmManifestDeclarationDefinition> subManifests;
   private CdmEntityCollection entities;
@@ -138,47 +144,24 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   @Override
   @Deprecated
   public CompletableFuture<Boolean> saveLinkedDocumentsAsync(final CopyOptions options) {
+
     return CompletableFuture.supplyAsync(() -> {
+      HashSet<String> links = new HashSet<String>();
       if (this.getImports() != null) {
         for (final CdmImport imp : this.getImports()) {
-          if (!saveDirtyLinkAsync(imp.getCorpusPath(), options).join()) {
-            Logger.error(
-                CdmManifestDefinition.class.getSimpleName(),
-                this.getCtx(),
-                Logger.format("Failed saving imported document '{0}'", imp.getCorpusPath()),
-                "saveLinkedDocumentsAsync"
-            );
-            return false;
-          }
+          links.add(imp.getCorpusPath());
         }
       }
       if (this.getEntities() != null) {
         // only the local entity declarations please
         for (final CdmEntityDeclarationDefinition def : this.getEntities()) {
           if (def.getObjectType() == CdmObjectType.LocalEntityDeclarationDef) {
-            if (!saveDirtyLinkAsync(def.getEntityPath(), options).join()) {
-              Logger.error(
-                  CdmManifestDefinition.class.getSimpleName(),
-                  this.getCtx(),
-                  Logger.format("Failed saving local entity schema document '{0}'", def.getEntityPath()),
-                  "saveLinkedDocumentsAsync"
-              );
-              return false;
-            }
-
+            links.add(def.getEntityPath());
             // also, partitions can have their own schemas
             if (def.getDataPartitions() != null) {
               for (final CdmDataPartitionDefinition part : def.getDataPartitions()) {
                 if (part.getSpecializedSchema() != null) {
-                  if (!saveDirtyLinkAsync(part.getSpecializedSchema(), options).join()) {
-                    Logger.error(
-                        CdmManifestDefinition.class.getSimpleName(),
-                        this.getCtx(),
-                        Logger.format("Failed saving partition schema document '{0}'", part.getSpecializedSchema()),
-                        "saveLinkedDocumentsAsync"
-                    );
-                    return false;
-                  }
+                  links.add(part.getSpecializedSchema());
                 }
               }
             }
@@ -186,15 +169,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             if (def.getDataPartitionPatterns() != null) {
               for (final CdmDataPartitionPatternDefinition part : def.getDataPartitionPatterns()) {
                 if (part.getSpecializedSchema() != null) {
-                  if (!saveDirtyLinkAsync(part.getSpecializedSchema(), options).join()) {
-                    Logger.error(
-                        CdmManifestDefinition.class.getSimpleName(),
-                        this.getCtx(),
-                        Logger.format("failed saving partition schema document '{0}'", part.getSpecializedSchema()),
-                        "saveLinkedDocumentsAsync"
-                    );
-                    return false;
-                  }
+                  links.add(part.getSpecializedSchema());
                 }
               }
             }
@@ -203,31 +178,41 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
       }
       if (this.getSubManifests() != null) {
         for (final CdmManifestDeclarationDefinition sub : this.getSubManifests()) {
-          if (!saveDirtyLinkAsync(sub.getDefinition(), options).join()) {
-            Logger.error(
-                CdmManifestDefinition.class.getSimpleName(),
-                this.getCtx(),
-                Logger.format("Failed saving sub-manifest document '{0}'.", sub.getDefinition()),
-                "saveLinkedDocumentsAsync"
-            );
-            return false;
-          }
+          links.add(sub.getDefinition());
         }
       }
+ 
+      for (final String link : links) {
+        Pair<CdmDocumentDefinition, Boolean> doc = fetchDocumentDefinition(link).join();
+        if(!doc.getValue()){
+          Logger.error(this.getCtx(), TAG, "saveLinkedDocumentsAsync", this.getAtCorpusPath(), CdmLogCode.ErrPersistObjectNotFound, link);
+          return false;
+        }
+        saveDocumentIfDirty(doc.getKey(), options).join();
+      }
       return true;
-    });
+
+     });
   }
 
+  /**
+   * Helper that fixes a path from local to absolute.
+   * Gets the object from that path then looks at the document where the object is found.
+   * If dirty, the document is saved with the original name.
+   */
   private CompletableFuture<Boolean> saveDirtyLinkAsync(final String relative, final CopyOptions options) {
     return CompletableFuture.supplyAsync(() -> {
-      final CdmObject objAt = this.getCtx().getCorpus().fetchObjectAsync(relative, this).join();
+      // get the document object from the import
+      String docPath =this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(relative, this);
+      if (docPath == null)
+      {
+          Logger.error(this.getCtx(), TAG, "saveDirtyLinkAsync", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidCorpusPath, relative);
+          return false;
+      }
+      
+      final CdmObject objAt = this.getCtx().getCorpus().fetchObjectAsync(docPath).join();
       if (objAt == null) {
-        Logger.error(
-            CdmManifestDefinition.class.getSimpleName(),
-            this.getCtx(),
-            Logger.format("Invalid corpus path '{0}'", relative),
-            "saveDirtyLinkAsync"
-        );
+        Logger.error(this.getCtx(), TAG, "saveDirtyLinkAsync", this.getAtCorpusPath(), CdmLogCode.ErrPersistObjectNotFound, docPath);
         return false;
       }
 
@@ -236,12 +221,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         if (docImp.isDirty()) {
           // save it with the same name
           if (!docImp.saveAsAsync(docImp.getName(), true, options).join()) {
-            Logger.error(
-                CdmManifestDefinition.class.getSimpleName(),
-                this.getCtx(),
-                Logger.format("Failed saving document '{0}'", docImp.getName()),
-                "saveDirtyLinkAsync"
-            );
+            Logger.error(this.getCtx(), TAG, "saveDirtyLinkAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocEntityDocSavingFailure, docImp.getName());
             return false;
           }
         }
@@ -251,99 +231,136 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     });
   }
 
+  private CompletableFuture<Pair<CdmDocumentDefinition, Boolean>> fetchDocumentDefinition(final String relativePath) {
+    return CompletableFuture.supplyAsync(() -> {
+      Pair<CdmDocumentDefinition, Boolean> result = Pair.of(null, false);
+       // get the document object from the import
+      String docPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(relativePath, this);
+      if (docPath == null)
+      {
+           Logger.error(this.getCtx(), TAG, "fetchDocumentDefinition", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidCorpusPath, relativePath);
+           return result;
+      }
+      
+      final ResolveOptions resOpt = new ResolveOptions();
+      resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
+      final CdmObject objAt = this.getCtx().getCorpus().fetchObjectAsync(docPath, null, resOpt).join();
+      if (objAt == null) {
+         Logger.error(this.getCtx(), TAG, "fetchDocumentDefinition", this.getAtCorpusPath(), CdmLogCode.ErrPersistObjectNotFound, docPath);
+         return result;
+      }
+      return Pair.of(objAt.getInDocument(),true);
+    });
+  }
+  
+  private CompletableFuture<Boolean> saveDocumentIfDirty(final CdmDocumentDefinition docImp, final CopyOptions options) {
+    return CompletableFuture.supplyAsync(() -> {
+      if (docImp != null && docImp.isDirty()) {
+          // save it with the same name
+          if (!docImp.saveAsAsync(docImp.getName(), true, options).join()) {
+              return false;
+          }
+      }
+      return true;
+    });
+  } 
+  
+
   public CompletableFuture<Void> populateManifestRelationshipsAsync() {
     return populateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle.All);
   }
 
   public CompletableFuture<Void> populateManifestRelationshipsAsync(final CdmRelationshipDiscoveryStyle option) {
     return CompletableFuture.runAsync(() -> {
-      this.getRelationships().clear();
-      final Set<String> relCache = ConcurrentHashMap.newKeySet();
+      try (Logger.LoggerScope logScope = Logger.enterScope(CdmManifestDefinition.class.getSimpleName(), getCtx(), "populateManifestRelationshipsAsync")) {
+        this.getRelationships().clear();
+        final Set<String> relCache = ConcurrentHashMap.newKeySet();
 
-      for (final CdmEntityDeclarationDefinition entDec : getEntities()) {
-        final String entPath = this.createEntityPathFromDeclarationAsync(entDec, this).join();
-        final CdmEntityDefinition currEntity = this.getCtx().getCorpus().<CdmEntityDefinition>fetchObjectAsync(entPath).join();
+        for (final CdmEntityDeclarationDefinition entDec : getEntities()) {
+          final String entPath = this.createEntityPathFromDeclarationAsync(entDec, this).join();
+          final CdmEntityDefinition currEntity = this.getCtx().getCorpus().<CdmEntityDefinition>fetchObjectAsync(entPath).join();
 
-        if (currEntity == null) {
-          continue;
-        }
-
-        // handle the outgoing relationships
-        final ArrayList<CdmE2ERelationship> outgoingRels = this.getCtx().getCorpus().fetchOutgoingRelationships(currEntity);
-        if (outgoingRels != null) {
-          for (final CdmE2ERelationship outgoingRel : outgoingRels) {
-            final String cacheKey = rel2CacheKey(outgoingRel);
-            if (!relCache.contains(cacheKey) && isRelAllowed(outgoingRel, option)) {
-              this.getRelationships().add(localizeRelToManifest(outgoingRel));
-              relCache.add(cacheKey);
-            }
+          if (currEntity == null) {
+            continue;
           }
-        }
 
-        final ArrayList<CdmE2ERelationship> incomingRels = this.getCtx().getCorpus().fetchIncomingRelationships(currEntity);
-
-        if (incomingRels != null) {
-          for (final CdmE2ERelationship inRel : incomingRels) {
-            // get entity object for current toEntity
-            CdmEntityDefinition currentInBase =
-                this.getCtx().getCorpus().<CdmEntityDefinition>fetchObjectAsync(inRel.getToEntity(), this).join();
-
-            if (currentInBase == null) {
-              continue;
-            }
-
-            // create graph of inheritance for to currentInBase
-            // graph represented by an array where entity at i extends entity at i+1
-            final CdmCollection<CdmEntityDefinition> toInheritanceGraph = new CdmCollection<>(this.getCtx(), this, this.getObjectType());
-            while (currentInBase != null) {
-              final ResolveOptions resOpt = new ResolveOptions();
-              resOpt.setWrtDoc(currentInBase.getInDocument());
-              currentInBase = currentInBase.getExtendsEntity() != null
-                  ? currentInBase.getExtendsEntity().fetchObjectDefinition(resOpt)
-                  : null;
-              if (currentInBase != null) {
-                toInheritanceGraph.add(currentInBase);
+          // handle the outgoing relationships
+          final ArrayList<CdmE2ERelationship> outgoingRels = this.getCtx().getCorpus().fetchOutgoingRelationships(currEntity);
+          if (outgoingRels != null) {
+            for (final CdmE2ERelationship outgoingRel : outgoingRels) {
+              final String cacheKey = rel2CacheKey(outgoingRel);
+              if (!relCache.contains(cacheKey) && isRelAllowed(outgoingRel, option)) {
+                this.getRelationships().add(localizeRelToManifest(outgoingRel));
+                relCache.add(cacheKey);
               }
             }
+          }
 
-            // add current incoming relationship
-            final String cacheKey = rel2CacheKey(inRel);
-            if (!relCache.contains(cacheKey) && isRelAllowed(inRel, option)) {
-              this.getRelationships().add(localizeRelToManifest(inRel));
-              relCache.add(cacheKey);
-            }
+          final ArrayList<CdmE2ERelationship> incomingRels = this.getCtx().getCorpus().fetchIncomingRelationships(currEntity);
 
-            // if A points at B, A's base classes must point at B as well
-            for (final CdmEntityDefinition baseEntity : toInheritanceGraph) {
-              final ArrayList<CdmE2ERelationship> incomingRelsForBase = this.getCtx()
-                  .getCorpus()
-                  .fetchIncomingRelationships(baseEntity);
+          if (incomingRels != null) {
+            for (final CdmE2ERelationship inRel : incomingRels) {
+              // get entity object for current toEntity
+              CdmEntityDefinition currentInBase =
+                      this.getCtx().getCorpus().<CdmEntityDefinition>fetchObjectAsync(inRel.getToEntity(), this).join();
 
-              if (incomingRelsForBase != null) {
-                for (final CdmE2ERelationship inRelBase : incomingRelsForBase) {
-                  final CdmE2ERelationship newRel = new CdmE2ERelationship(this.getCtx(), "");
-                  newRel.setFromEntity(inRelBase.getFromEntity());
-                  newRel.setFromEntityAttribute(inRelBase.getFromEntityAttribute());
-                  newRel.setToEntity(inRel.getToEntity());
-                  newRel.setToEntityAttribute(inRel.getToEntityAttribute());
+              if (currentInBase == null) {
+                continue;
+              }
 
-                  final String baseRelCacheKey = rel2CacheKey(newRel);
-                  if (!relCache.contains(baseRelCacheKey) && isRelAllowed(newRel, option)) {
-                    this.getRelationships().add(localizeRelToManifest(newRel));
-                    relCache.add(baseRelCacheKey);
+              // create graph of inheritance for to currentInBase
+              // graph represented by an array where entity at i extends entity at i+1
+              final CdmCollection<CdmEntityDefinition> toInheritanceGraph = new CdmCollection<>(this.getCtx(), this, this.getObjectType());
+              while (currentInBase != null) {
+                final ResolveOptions resOpt = new ResolveOptions();
+                resOpt.setWrtDoc(currentInBase.getInDocument());
+                currentInBase = currentInBase.getExtendsEntity() != null
+                        ? currentInBase.getExtendsEntity().fetchObjectDefinition(resOpt)
+                        : null;
+                if (currentInBase != null) {
+                  toInheritanceGraph.add(currentInBase);
+                }
+              }
+
+              // add current incoming relationship
+              final String cacheKey = rel2CacheKey(inRel);
+              if (!relCache.contains(cacheKey) && isRelAllowed(inRel, option)) {
+                this.getRelationships().add(localizeRelToManifest(inRel));
+                relCache.add(cacheKey);
+              }
+
+              // if A points at B, A's base classes must point at B as well
+              for (final CdmEntityDefinition baseEntity : toInheritanceGraph) {
+                final ArrayList<CdmE2ERelationship> incomingRelsForBase = this.getCtx()
+                        .getCorpus()
+                        .fetchIncomingRelationships(baseEntity);
+
+                if (incomingRelsForBase != null) {
+                  for (final CdmE2ERelationship inRelBase : incomingRelsForBase) {
+                    final CdmE2ERelationship newRel = new CdmE2ERelationship(this.getCtx(), "");
+                    newRel.setFromEntity(inRelBase.getFromEntity());
+                    newRel.setFromEntityAttribute(inRelBase.getFromEntityAttribute());
+                    newRel.setToEntity(inRel.getToEntity());
+                    newRel.setToEntityAttribute(inRel.getToEntityAttribute());
+
+                    final String baseRelCacheKey = rel2CacheKey(newRel);
+                    if (!relCache.contains(baseRelCacheKey) && isRelAllowed(newRel, option)) {
+                      this.getRelationships().add(localizeRelToManifest(newRel));
+                      relCache.add(baseRelCacheKey);
+                    }
                   }
                 }
               }
             }
           }
         }
-      }
 
-      if (this.getSubManifests() != null) {
-        for (final CdmManifestDeclarationDefinition subManifestDef : this.getSubManifests()) {
-          final String corpusPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(subManifestDef.getDefinition(), this);
-          final CdmManifestDefinition subManifest = (CdmManifestDefinition) this.getCtx().getCorpus().fetchObjectAsync(corpusPath).join();
-          subManifest.populateManifestRelationshipsAsync(option).join();
+        if (this.getSubManifests() != null) {
+          for (final CdmManifestDeclarationDefinition subManifestDef : this.getSubManifests()) {
+            final String corpusPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(subManifestDef.getDefinition(), this);
+            final CdmManifestDefinition subManifest = (CdmManifestDefinition) this.getCtx().getCorpus().fetchObjectAsync(corpusPath).join();
+            subManifest.populateManifestRelationshipsAsync(option).join();
+          }
         }
       }
     });
@@ -352,41 +369,41 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return CompletableFuture.runAsync(() -> {
-      StorageAdapter storageAdapterInterface = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace()); 
-      StorageAdapterBase.CacheContext cacheContext = null;
-      if(storageAdapterInterface instanceof StorageAdapterBase) {
-        cacheContext = ((StorageAdapterBase)storageAdapterInterface).createFileQueryCacheContext();
-      }      
-      try {
-
-        final OffsetDateTime modifiedTime = getCtx().getCorpus()
-            .computeLastModifiedTimeFromObjectAsync(this).join();
-
-        setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
-
-        if (getLastFileModifiedTime() == null) {
-          setLastFileModifiedTime(getFileSystemModifiedTime());
+      try (Logger.LoggerScope logScope = Logger.enterScope(CdmManifestDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
+        StorageAdapter storageAdapterInterface = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace());
+        StorageAdapterBase.CacheContext cacheContext = null;
+        if (storageAdapterInterface instanceof StorageAdapterBase) {
+          cacheContext = ((StorageAdapterBase) storageAdapterInterface).createFileQueryCacheContext();
         }
+        try {
 
-        // reload the manifest if it has been updated in the file system
-        if (!Objects.equals(modifiedTime, getFileSystemModifiedTime())) {
-          reloadAsync().join();
-          setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
-          setFileSystemModifiedTime(getLastFileModifiedTime());
-        }
+          final OffsetDateTime modifiedTime = getCtx().getCorpus()
+                  .computeLastModifiedTimeFromObjectAsync(this).join();
 
-        for (final CdmEntityDeclarationDefinition entity : getEntities()) {
-          entity.fileStatusCheckAsync().join();
-        }
+          setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
 
-        for (final CdmManifestDeclarationDefinition subManifest : getSubManifests()) {
-          subManifest.fileStatusCheckAsync().join();
-        }
-      }
-      finally{
-        if(cacheContext != null)
-        {
-          cacheContext.dispose();
+          if (getLastFileModifiedTime() == null) {
+            setLastFileModifiedTime(getFileSystemModifiedTime());
+          }
+
+          // reload the manifest if it has been updated in the file system
+          if (!Objects.equals(modifiedTime, getFileSystemModifiedTime())) {
+            reloadAsync().join();
+            setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
+            setFileSystemModifiedTime(getLastFileModifiedTime());
+          }
+
+          for (final CdmEntityDeclarationDefinition entity : getEntities()) {
+            entity.fileStatusCheckAsync().join();
+          }
+
+          for (final CdmManifestDeclarationDefinition subManifest : getSubManifests()) {
+            subManifest.fileStatusCheckAsync().join();
+          }
+        } finally {
+          if (cacheContext != null) {
+            cacheContext.dispose();
+          }
         }
       }
     });
@@ -506,189 +523,165 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
    * @return CompletableFuture
    */
   public CompletableFuture<CdmManifestDefinition> createResolvedManifestAsync(
-      String newManifestName,
-      String newEntityDocumentNameFormat,
-      AttributeResolutionDirectiveSet directives) {
-    if (null == this.getEntities()) {
-      return CompletableFuture.completedFuture(null);
-    }
-
-    if (this.getFolder() == null) {
-      Logger.error(
-          CdmManifestDefinition.class.getSimpleName(),
-          this.getCtx(),
-          Logger.format("Cannot resolve the manifest '{0}' because it has not been added to a folder.", this.manifestName),
-          "createResolvedManifestAsync"
-      );
-      return CompletableFuture.completedFuture(null);
-    }
-
-    if (null == newEntityDocumentNameFormat) {
-      newEntityDocumentNameFormat = "{f}resolved/{n}.cdm.json";
-    } else if (newEntityDocumentNameFormat.isEmpty()) { // For backwards compatibility.
-      newEntityDocumentNameFormat = "{n}.cdm.json";
-    } else if (!newEntityDocumentNameFormat.contains("{n}")) { // For backwards compatibility.
-      newEntityDocumentNameFormat = newEntityDocumentNameFormat + "/{n}.cdm.json";
-    }
-
-    final String sourceManifestPath = this.getCtx().getCorpus()
-        .getStorage()
-        .createAbsoluteCorpusPath(this.getAtCorpusPath(), this);
-    final String sourceManifestFolderPath = this.getCtx().getCorpus()
-        .getStorage()
-        .createAbsoluteCorpusPath(this.getFolder().getAtCorpusPath(), this);
-
-    int resolvedManifestPathSplit = newManifestName.lastIndexOf("/") + 1;
-    CdmFolderDefinition resolvedManifestFolder;
-    if (resolvedManifestPathSplit > 0) {
-      String resolvedManifestPath = newManifestName.substring(0, resolvedManifestPathSplit);
-      final String newFolderPath = this.getCtx().getCorpus()
-          .getStorage()
-          .createAbsoluteCorpusPath(resolvedManifestPath, this);
-      resolvedManifestFolder = this.getCtx()
-          .getCorpus()
-          .<CdmFolderDefinition>fetchObjectAsync(newFolderPath).join();
-      if (resolvedManifestFolder == null) {
-        Logger.error(
-            CdmManifestDefinition.class.getSimpleName(),
-            this.getCtx(),
-            Logger.format("New folder for manifest not found {0}", newFolderPath),
-            "createResolvedManifestAsync"
-        );
-        return CompletableFuture.completedFuture(null);
-      }
-      newManifestName = newManifestName.substring(resolvedManifestPathSplit);
-    } else {
-      resolvedManifestFolder = (CdmFolderDefinition) this.getOwner();
-    }
-
-    Logger.debug(
-        CdmManifestDefinition.class.getSimpleName(),
-        this.getCtx(),
-        Logger.format("Resolving manifest '{0}'", sourceManifestPath),
-        "createResolvedManifestAsync"
-    );
-
-    // Using the references present in the resolved entities, get an entity.
-    // Create an imports doc with all the necessary resolved entity references and then resolve it.
-    final CdmManifestDefinition resolvedManifest = new CdmManifestDefinition(this.getCtx(), newManifestName);
-
-    // bring over any imports in this document or other bobbles
-    resolvedManifest.setSchema(this.getSchema());
-    resolvedManifest.setExplanation(this.explanation);
-    for (CdmImport imp: this.getImports()) {
-      resolvedManifest.getImports().add((CdmImport)imp.copy());
-    }
-
-    // Add the new document to the folder.
-    if (resolvedManifestFolder.getDocuments().add(resolvedManifest) == null) {
-      // When would this happen?
-      return CompletableFuture.completedFuture(null);
-    }
-
-    final String finalNewEntityDocumentNameFormat = newEntityDocumentNameFormat;
+      final String newManifestName,
+      final String newEntityDocumentNameFormat,
+      final AttributeResolutionDirectiveSet directives) {
     return CompletableFuture.supplyAsync(() -> {
-      for (final CdmEntityDeclarationDefinition entity : this.getEntities()) {
-        final CdmEntityDefinition entDef = this.getEntityFromReferenceAsync(entity, this).join();
-        if (null == entDef) {
-          Logger.error(CdmManifestDefinition.class.getSimpleName(), this.getCtx(), "Unable to get entity from reference", "createResolvedManifestAsync");
+      try (Logger.LoggerScope logScope = Logger.enterScope(CdmManifestDefinition.class.getSimpleName(), getCtx(), "createResolvedManifestAsync")) {
+
+        String innerNewEntityDocumentNameFormat = newEntityDocumentNameFormat;
+        String innerNewManifestName = newManifestName;
+
+        if (null == this.getEntities()) {
           return null;
         }
 
-        if (entDef.getInDocument().getFolder() == null) {
-          Logger.error(
-              CdmManifestDefinition.class.getSimpleName(),
-              this.getCtx(),
-              Logger.format("The document containing the entity '{0}' is not in a folder", entDef.getEntityName()),
-              "createResolvedManifestAsync"
-          );
+        if (this.getFolder() == null) {
+          Logger.error(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveManifestFailed, this.manifestName);
           return null;
         }
 
-        // get the path from this manifest to the source entity. this will be the {f} replacement value
-        String sourceEntityFullPath = this.getCtx()
-            .getCorpus()
-            .getStorage()
-            .createAbsoluteCorpusPath(entDef.getInDocument().getFolder().getAtCorpusPath(), this);
-        String f = "";
-        if (sourceEntityFullPath.startsWith(sourceManifestFolderPath)) {
-          f = sourceEntityFullPath.substring(sourceManifestFolderPath.length());
+        if (null == innerNewEntityDocumentNameFormat) {
+          innerNewEntityDocumentNameFormat = "{f}resolved/{n}.cdm.json";
+        } else if (innerNewEntityDocumentNameFormat.isEmpty()) { // For backwards compatibility.
+          innerNewEntityDocumentNameFormat = "{n}.cdm.json";
+        } else if (!innerNewEntityDocumentNameFormat.contains("{n}")) { // For backwards compatibility.
+          innerNewEntityDocumentNameFormat = innerNewEntityDocumentNameFormat + "/{n}.cdm.json";
         }
 
-        // Make sure the new folder exists.
-        String newDocumentFullPath = finalNewEntityDocumentNameFormat
-            .replace("{n}", entDef.getEntityName());
-        newDocumentFullPath = newDocumentFullPath.replace("{f}", f);
-        newDocumentFullPath = this.getCtx()
-            .getCorpus()
-            .getStorage()
-            .createAbsoluteCorpusPath(newDocumentFullPath, this);
-        final int newDocumentPathSplit = newDocumentFullPath.lastIndexOf("/") + 1;
-        final String newDocumentPath = newDocumentFullPath.substring(0, newDocumentPathSplit);
-        final String newDocumentName = newDocumentFullPath.substring(newDocumentPathSplit);
+        final String sourceManifestPath = this.getCtx().getCorpus()
+                .getStorage()
+                .createAbsoluteCorpusPath(this.getAtCorpusPath(), this);
+        final String sourceManifestFolderPath = this.getCtx().getCorpus()
+                .getStorage()
+                .createAbsoluteCorpusPath(this.getFolder().getAtCorpusPath(), this);
 
-        final CdmFolderDefinition folder =
-            this.getCtx().getCorpus().<CdmFolderDefinition>fetchObjectAsync(newDocumentPath).join();
-        if (null == folder) {
-          Logger.error(
-              CdmManifestDefinition.class.getSimpleName(),
-              this.getCtx(),
-              Logger.format("New folder not found '{0}'", newDocumentPath),
-              "createResolvedManifestAsync"
-          );
+        int resolvedManifestPathSplit = innerNewManifestName.lastIndexOf("/") + 1;
+        CdmFolderDefinition resolvedManifestFolder;
+        if (resolvedManifestPathSplit > 0) {
+          String resolvedManifestPath = innerNewManifestName.substring(0, resolvedManifestPathSplit);
+          final String newFolderPath = this.getCtx().getCorpus()
+                  .getStorage()
+                  .createAbsoluteCorpusPath(resolvedManifestPath, this);
+          resolvedManifestFolder = this.getCtx()
+                  .getCorpus()
+                  .<CdmFolderDefinition>fetchObjectAsync(newFolderPath).join();
+          if (resolvedManifestFolder == null) {
+            Logger.error( this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveFolderNotFound, newFolderPath);
+            return null;
+          }
+          innerNewManifestName = innerNewManifestName.substring(resolvedManifestPathSplit);
+        } else {
+          resolvedManifestFolder = (CdmFolderDefinition) this.getOwner();
+        }
+
+        Logger.debug(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), Logger.format("Resolving manifest '{0}'", sourceManifestPath));
+
+        // Using the references present in the resolved entities, get an entity.
+        // Create an imports doc with all the necessary resolved entity references and then resolve it.
+        // sometimes they might send the docname, that makes sense a bit, don't include the suffix in the name
+        if (innerNewManifestName.toLowerCase().endsWith(".manifest.cdm.json")) {
+          innerNewManifestName = innerNewManifestName.substring(0, innerNewManifestName.length() - ".manifest.cdm.json".length());
+        }
+        final CdmManifestDefinition resolvedManifest = new CdmManifestDefinition(this.getCtx(), innerNewManifestName);
+
+        // bring over any imports in this document or other bobbles
+        resolvedManifest.setSchema(this.getSchema());
+        resolvedManifest.setExplanation(this.getExplanation());
+        resolvedManifest.setDocumentVersion(this.getDocumentVersion());
+        for (CdmImport imp : this.getImports()) {
+          resolvedManifest.getImports().add((CdmImport) imp.copy());
+        }
+
+        // Add the new document to the folder.
+        if (resolvedManifestFolder.getDocuments().add(resolvedManifest) == null) {
+          // When would this happen?
           return null;
         }
 
-        // Next create the resolved entity.
-        AttributeResolutionDirectiveSet withDirectives =
-          directives != null ? directives : this.getCtx().getCorpus().getDefaultResolutionDirectives();
-        final ResolveOptions resOpt = new ResolveOptions(entDef.getInDocument(), withDirectives != null ? withDirectives.copy() : null);
-        Logger.debug(
-            CdmManifestDefinition.class.getSimpleName(),
-            this.getCtx(),
-            Logger.format("    resolving entity {0} to document {1}", sourceEntityFullPath, newDocumentFullPath),
-            "createResolvedManifestAsync"
-        );
+        for (final CdmEntityDeclarationDefinition entity : this.getEntities()) {
+          final CdmEntityDefinition entDef = this.getEntityFromReferenceAsync(entity, this).join();
+          if (null == entDef) {
+            Logger.error(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveEntityRefError);
+            return null;
+          }
 
-        final CdmEntityDefinition resolvedEntity = entDef
-            .createResolvedEntityAsync(entDef.getEntityName(), resOpt, folder, newDocumentName).join();
+          if (entDef.getInDocument().getFolder() == null) {
+            Logger.error(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocIsNotFolder, entDef.getEntityName());
+            return null;
+          }
 
-        if (null == resolvedEntity) {
-          // Fail all resolution, if any one entity resolution fails.
-          return null;
+          // get the path from this manifest to the source entity. this will be the {f} replacement value
+          String sourceEntityFullPath = this.getCtx()
+                  .getCorpus()
+                  .getStorage()
+                  .createAbsoluteCorpusPath(entDef.getInDocument().getFolder().getAtCorpusPath(), this);
+          String f = "";
+          if (sourceEntityFullPath.startsWith(sourceManifestFolderPath)) {
+            f = sourceEntityFullPath.substring(sourceManifestFolderPath.length());
+          }
+
+          // Make sure the new folder exists.
+          String newDocumentFullPath = innerNewEntityDocumentNameFormat
+                  .replace("{n}", entDef.getEntityName());
+          newDocumentFullPath = newDocumentFullPath.replace("{f}", f);
+          newDocumentFullPath = this.getCtx()
+                  .getCorpus()
+                  .getStorage()
+                  .createAbsoluteCorpusPath(newDocumentFullPath, this);
+          final int newDocumentPathSplit = newDocumentFullPath.lastIndexOf("/") + 1;
+          final String newDocumentPath = newDocumentFullPath.substring(0, newDocumentPathSplit);
+          final String newDocumentName = newDocumentFullPath.substring(newDocumentPathSplit);
+
+          final CdmFolderDefinition folder =
+                  this.getCtx().getCorpus().<CdmFolderDefinition>fetchObjectAsync(newDocumentPath).join();
+          if (null == folder) {
+            Logger.error(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveFolderNotFound, newDocumentPath);
+            return null;
+          }
+
+          // Next create the resolved entity.
+          AttributeResolutionDirectiveSet withDirectives =
+                  directives != null ? directives : this.getCtx().getCorpus().getDefaultResolutionDirectives();
+          final ResolveOptions resOpt = new ResolveOptions(entDef.getInDocument(), withDirectives != null ? withDirectives.copy() : null);
+          Logger.debug(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), Logger.format("resolving entity {0} to document {1}", sourceEntityFullPath, newDocumentFullPath));
+
+          final CdmEntityDefinition resolvedEntity = entDef
+                  .createResolvedEntityAsync(entDef.getEntityName(), resOpt, folder, newDocumentName).join();
+
+          if (null == resolvedEntity) {
+            // Fail all resolution, if any one entity resolution fails.
+            return null;
+          }
+
+          CdmEntityDeclarationDefinition result = (CdmEntityDeclarationDefinition) entity.copy(resOpt);
+          if (result.getObjectType() == CdmObjectType.LocalEntityDeclarationDef) {
+            result.setEntityPath(
+                    ObjectUtils.firstNonNull(
+                            this.getCtx()
+                                    .getCorpus()
+                                    .getStorage()
+                                    .createRelativeCorpusPath(resolvedEntity.getAtCorpusPath(), resolvedManifest),
+                            result.getAtCorpusPath()));
+          }
+
+          resolvedManifest.getEntities().add(result);
         }
 
-        CdmEntityDeclarationDefinition result = (CdmEntityDeclarationDefinition) entity.copy(resOpt);
-        if (result.getObjectType() == CdmObjectType.LocalEntityDeclarationDef) {
-          result.setEntityPath(
-              ObjectUtils.firstNonNull(
-                  this.getCtx()
-                      .getCorpus()
-                      .getStorage()
-                      .createRelativeCorpusPath(resolvedEntity.getAtCorpusPath(), resolvedManifest),
-                  result.getAtCorpusPath()));
-        }
+        Logger.debug(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), "calculating relationships");
 
-        resolvedManifest.getEntities().add(result);
+        // Calculate the entity graph for just this folio and any subManifests.
+        this.getCtx().getCorpus().calculateEntityGraphAsync(resolvedManifest).join();
+        // Stick results into the relationships list for the manifest.
+        // Only put in relationships that are between the entities that are used in the manifest.
+        resolvedManifest.populateManifestRelationshipsAsync(
+                CdmRelationshipDiscoveryStyle.Exclusive
+        ).join();
 
-        // Absolute path is needed for generating relationships.
-        final String absoluteEntPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(result.getEntityPath(), resolvedManifest);
-        this.getCtx().getCorpus().resEntMap.put(this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument()), absoluteEntPath);
+        // Needed until Matt's changes with collections where I can propagate.
+        resolvedManifest.setDirty(true);
+        return resolvedManifest;
       }
-
-      Logger.debug(CdmManifestDefinition.class.getSimpleName(), this.getCtx(), "    calculating relationships", "createResolvedManifestAsync");
-
-      // Calculate the entity graph for just this folio and any subManifests.
-      this.getCtx().getCorpus().calculateEntityGraphAsync(resolvedManifest).join();
-      // Stick results into the relationships list for the manifest.
-      // Only put in relationships that are between the entities that are used in the manifest.
-      resolvedManifest.populateManifestRelationshipsAsync(
-          CdmRelationshipDiscoveryStyle.Exclusive
-      ).join();
-
-      // Needed until Matt's changes with collections where I can propagate.
-      resolvedManifest.setDirty(true);
-      return resolvedManifest;
     });
   }
 
@@ -709,12 +702,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
           .join();
 
       if (null == result) {
-        Logger.error(
-            CdmManifestDefinition.class.getSimpleName(),
-            this.getCtx(),
-            Logger.format("Failed to resolve entity {0}", entityPath),
-            "getEntityFromReferenceAsync"
-        );
+        Logger.error(this.getCtx(), TAG, "getEntityFromReferenceAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveEntityFailure, entityPath);
       }
       return result;
     });
@@ -801,6 +789,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         .createRelativeCorpusPath(rel.getFromEntity(), this));
     relCopy.setToEntityAttribute(rel.getToEntityAttribute());
     relCopy.setFromEntityAttribute(rel.getFromEntityAttribute());
+    relCopy.getExhibitsTraits().addAll(rel.getExhibitsTraits());
     return relCopy;
   }
 

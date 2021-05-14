@@ -3,10 +3,13 @@
 
 import * as http from 'http';
 import * as https from '../../Storage/request';
+import { CdmCorpusContext } from '../../Cdm/CdmCorpusContext';
 import { StorageAdapterConfigCallback } from '../../Storage/StorageAdapterConfigCallback';
+import { Logger } from '../Logging/Logger';
 import { CdmHttpRequest } from './CdmHttpRequest';
 import { CdmHttpResponse } from './CdmHttpResponse';
 import { HttpRequestCallback } from './HttpRequestCallback';
+import { cdmLogCode } from '../../internal';
 
 /**
  * CDM Http Client is an HTTP client which implements retry logic to execute retries in the case of failed requests.
@@ -17,6 +20,7 @@ import { HttpRequestCallback } from './HttpRequestCallback';
  */
 export class CdmHttpClient {
 
+    private TAG: string = CdmHttpClient.name;
     /**
      * @internal
      */
@@ -25,6 +29,8 @@ export class CdmHttpClient {
     private apiEndpoint: string;
 
     private httpHandler: HttpRequestCallback;
+
+    private maximumTimeoutReached: boolean = false;
 
     /**
      * Initializes a new instance of the CdmHttpClient.
@@ -77,13 +83,22 @@ export class CdmHttpClient {
      */
     public async SendAsync(
         cdmRequest: CdmHttpRequest,
-        callback?: StorageAdapterConfigCallback): Promise<CdmHttpResponse> {
+        callback?: StorageAdapterConfigCallback,
+        ctx?: CdmCorpusContext): Promise<CdmHttpResponse> {
         // Merge headers first.
         this.headers.forEach((value: string, key: string) => {
             cdmRequest.headers.set(key, value);
         });
 
-        return this.raceAsyncTaskAgainstTimeout(cdmRequest.maximumTimeout, this.SendAsyncHelper(cdmRequest, callback), 'Maximum timeout exceeded.');
+        try {
+            const res: CdmHttpResponse = await this.raceAsyncTaskAgainstTimeout(cdmRequest.maximumTimeout, this.SendAsyncHelper(cdmRequest, callback, ctx), 'Maximum timeout exceeded.');
+            return res;
+        } catch (e) {
+            if (typeof e === 'string' && e === 'Maximum timeout exceeded.') {
+                this.maximumTimeoutReached = true;
+            }
+            throw e;
+        }
     }
 
     /**
@@ -95,12 +110,13 @@ export class CdmHttpClient {
      */
     private async SendAsyncHelper(
         cdmRequest: CdmHttpRequest,
-        callback?: StorageAdapterConfigCallback): Promise<CdmHttpResponse> {
+        callback?: StorageAdapterConfigCallback,
+        ctx?: CdmCorpusContext): Promise<CdmHttpResponse> {
         return new Promise<CdmHttpResponse>(async (resolve, reject) => {
             let fullUrl: string;
 
             if (this.apiEndpoint !== undefined) {
-                fullUrl = CdmHttpClient.Combine(this.apiEndpoint, cdmRequest.requestedUrl);
+                fullUrl = CdmHttpClient.Combine(this.apiEndpoint, cdmRequest.stripSasSig());
             } else {
                 fullUrl = cdmRequest.requestedUrl;
             }
@@ -122,14 +138,31 @@ export class CdmHttpClient {
             // If the number of retries is 0, we only try once, otherwise we retry the specified number of times.
             for (let retryNumber: number = 0; retryNumber <= cdmRequest.numberOfRetries; retryNumber++) {
 
+                if (this.maximumTimeoutReached) {
+                    return;
+                }
+
                 let hasFailed: boolean = false;
                 let response: CdmHttpResponse;
 
                 try {
+                    const startTime = new Date();
+                    if (ctx != null) {
+                        Logger.info(ctx, this.TAG, this.SendAsyncHelper.name, null, `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, request url: ${cdmRequest.stripSasSig()}, retry number: ${retryNumber}.`);
+                       
+                    }
+
                     response = await this.raceAsyncTaskAgainstTimeout(
                         cdmRequest.timeout,
                         this.httpHandler(fullUrl, cdmRequest.method, cdmRequest.content, outgoingHeaders),
-                            'Request timeout.');
+                        'Request timeout.',
+                        ctx,
+                        `Request ${cdmRequest.requestId} timeout after ${cdmRequest.timeout / 1000} s.`);
+
+                    if (ctx != null) {
+                        const endTime = new Date();
+                        Logger.info(ctx, this.TAG, this.SendAsyncHelper.name, null, `Response for request ${cdmRequest.requestId} received, elapsed time: ${endTime.valueOf() - startTime.valueOf()} ms.`);
+                    }
                 } catch (err) {
                     hasFailed = true;
 
@@ -187,10 +220,14 @@ export class CdmHttpClient {
      * @param {Promise} promise The promise that is competing against the timeout promise.
      * @return {Promise} which one the race.
      */
-    private async raceAsyncTaskAgainstTimeout(ms: number, promise: Promise<CdmHttpResponse>, errorMessage: string): Promise<CdmHttpResponse> {
+    private async raceAsyncTaskAgainstTimeout(ms: number, promise: Promise<CdmHttpResponse>, errorMessage: string, ctx?: CdmCorpusContext, infoMessage?: string): Promise<CdmHttpResponse> {
         let timeout;
         const timeoutPromise = new Promise<CdmHttpResponse>((resolve, reject) => {
             timeout = setTimeout(() => {
+                if (ctx != null && infoMessage != null) {
+                     Logger.info(ctx, this.TAG, this.raceAsyncTaskAgainstTimeout.name, null, infoMessage);
+
+                }
                 clearTimeout(timeout);
                 reject(errorMessage);
             }, ms);

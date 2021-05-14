@@ -3,12 +3,13 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
+import com.microsoft.commondatamodel.objectmodel.utilities.ImportInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -18,6 +19,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -27,11 +29,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContainerDefinition {
+  private static final String TAG = CdmDocumentDefinition.class.getSimpleName();
+
   protected Map<String, CdmObjectBase> internalDeclarations;
   protected boolean isDirty = true;
   protected boolean isValid;
   protected boolean declarationsIndexed;
-  private ImportPriorities importPriorities;
+  protected ImportPriorities importPriorities;
   private boolean needsIndexing;
   private CdmDefinitionCollection definitions;
   private CdmImportCollection imports;
@@ -43,6 +47,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   private String name;
   private String schema;
   private String jsonSchemaSemanticVersion;
+  private String documentVersion;
   private OffsetDateTime _fileSystemModifiedTime;
 
   public CdmDocumentDefinition() {
@@ -53,7 +58,8 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.setInDocument(this);
     this.setObjectType(CdmObjectType.DocumentDef);
     this.name = name;
-    this.jsonSchemaSemanticVersion = "1.0.0";
+    this.jsonSchemaSemanticVersion = getCurrentJsonSchemaSemanticVersion();
+    this.documentVersion = null;
     this.needsIndexing = true;
     this.isDirty = true;
     this.importsIndexed = false;
@@ -130,6 +136,13 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.namespace = namespace;
   }
 
+  /**
+   * The maximum json semantic version supported by this ObjectModel version.
+   */
+  public static String getCurrentJsonSchemaSemanticVersion() {
+    return "1.2.0";
+  }
+
   @Deprecated
   boolean isImportsIndexed() {
     return importsIndexed;
@@ -194,6 +207,14 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.jsonSchemaSemanticVersion = jsonSchemaSemanticVersion;
   }
 
+  public String getDocumentVersion() {
+    return this.documentVersion;
+  }
+
+  public void setDocumentVersion(final String documentVersion) {
+    this.documentVersion = documentVersion;
+  }
+
   void clearCaches() {
     this.internalDeclarations = new LinkedHashMap<>();
 
@@ -216,12 +237,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.getCtx().getCorpus().blockDeclaredPathChanges = true;
 
     // shout into the void
-    Logger.info(
-        CdmDocumentDefinition.class.getSimpleName(),
-        this.getCtx(),
-        Logger.format("Localizing corpus paths in document '{0}'.", this.getName()),
-        "localizeCorpusPaths"
-    );
+    Logger.info(this.getCtx(), TAG, "localizeCorpusPaths", newFolder.getAtCorpusPath(), Logger.format("Localizing corpus paths in document '{0}'.", this.getName()));
 
     // find anything in the document that is a corpus path
     this.visit("", (iObject, path) -> {
@@ -396,6 +412,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    * @param resOpt Resolved options
+   * @param finalLoadImports boolean
    * @return CompletableFuture
    */
   @Deprecated
@@ -404,12 +421,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return CompletableFuture.supplyAsync(() -> {
       if (this.getNeedsIndexing() && !this.currentlyIndexing) {
         if (this.getFolder() == null) {
-          Logger.error(
-              CdmDocumentDefinition.class.getSimpleName(),
-              this.getCtx(),
-              Logger.format("Document '{0}' is not in a folder", this.name),
-              "indexIfNeededAsync"
-          );
+          Logger.error(this.getCtx(), TAG, "indexIfNeededAsync", this.getAtCorpusPath(), CdmLogCode.ErrValdnMissingDoc, this.name);
           return false;
         }
 
@@ -438,36 +450,41 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return saveAsAsync(newName, false);
   }
 
-  public CompletableFuture<Boolean> saveAsAsync(
-      final String newName,
-      final boolean saveReferenced) {
+  public CompletableFuture<Boolean> saveAsAsync(final String newName, final boolean saveReferenced) {
     return saveAsAsync(newName, saveReferenced, new CopyOptions());
   }
 
-  public CompletableFuture<Boolean> saveAsAsync(
-      final String newName,
-      final boolean saveReferenced,
-      CopyOptions options) {
-    if (options == null) {
-      options = new CopyOptions();
-    }
+  /**
+   * Saves the document back through the adapter in the requested format.
+   * Format is specified via document name/extension based on conventions:
+   * 'model.json' for the back compatible model, '*.manifest.cdm.json' for manifest, '*.folio.cdm.json' for folio, *.cdm.json' for CDM definitions.
+   * saveReferenced (default false) when true will also save any schema defintion documents that are
+   * linked from the source doc and that have been modified. existing document names are used for those.
+   * Returns false on any failure.
+   * @param newName the new name
+   * @param saveReferenced the save referenced flag
+   * @param options the copy options
+   * @return true if save succeeded, false otherwise
+   */
+  public CompletableFuture<Boolean> saveAsAsync(final String newName, final boolean saveReferenced, CopyOptions options) {
+    try (Logger.LoggerScope logScope = Logger.enterScope(CdmDocumentDefinition.class.getSimpleName(), getCtx(), "saveAsAsync")) {
+      if (options == null) {
+        options = new CopyOptions();
+      }
 
-    final ResolveOptions resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    
-    if (!this.indexIfNeededAsync(resOpt, false).join()) {
-      Logger.error(
-          CdmDocumentDefinition.class.getSimpleName(),
-          this.getCtx(),
-          Logger.format("Failed to index document prior to save '{0}'", this.getName()),
-          "saveAsAsync"
-      );
-      return CompletableFuture.completedFuture(false);
-    }
+      final ResolveOptions resOpt = new ResolveOptions(this, getCtx().getCorpus().getDefaultResolutionDirectives());
 
-    if (newName.equals(this.getName())) {
-      this.isDirty = false;
+      if (!this.indexIfNeededAsync(resOpt, false).join()) {
+        Logger.error(getCtx(), TAG, "saveAsAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
+        return CompletableFuture.completedFuture(false);
+      }
+
+      if (newName.equals(this.getName())) {
+        this.isDirty = false;
+      }
+
+      return this.getCtx().getCorpus().getPersistence().saveDocumentAsAsync(this, newName, saveReferenced, options);
     }
-    return this.getCtx().getCorpus().getPersistence().saveDocumentAsAsync(this, newName, saveReferenced, options);
   }
 
   CdmObject fetchObjectFromDocumentPath(final String objectPath, final ResolveOptions resOpt) {
@@ -513,6 +530,11 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   @Override
+  public String fetchObjectDefinitionName() {
+    return this.name;
+  }
+
+  @Override
   public String getAtCorpusPath() {
     if (this.folder == null) {
       return "NULL:/" + this.name;
@@ -545,7 +567,8 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.getName())) {
-      Logger.error(CdmDocumentDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("name"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("name"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;
@@ -592,6 +615,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     copy.setFolderPath(this.getFolderPath());
     copy.setSchema(this.getSchema());
     copy.setJsonSchemaSemanticVersion(this.getJsonSchemaSemanticVersion());
+    copy.setDocumentVersion(this.getDocumentVersion());
 
     for (final CdmObjectDefinition definition : this.getDefinitions()) {
       copy.getDefinitions().add(definition);
@@ -658,7 +682,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     // for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
     // maps document to priority.
-    final Map<CdmDocumentDefinition, Integer> priorityMap = importPriorities.getImportPriority();
+    final Map<CdmDocumentDefinition, ImportInfo> priorityMap = importPriorities.getImportPriority();
 
     // maps moniker to document.
     final Map<String, CdmDocumentDefinition> monikerMap = importPriorities.getMonikerPriorityMap();
@@ -666,8 +690,8 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     // if already in list, don't do this again
     if (processedSet.contains(this)) {
       // if the first document in the priority map is this then the document was the starting point of the recursion.
-      // and if this document is present in the processedSet we know that there is a cicular list of imports.
-      if (priorityMap.containsKey(this) && priorityMap.get(this) == 0) {
+      // and if this document is present in the processedSet we know that there is a circular list of imports.
+      if (priorityMap.containsKey(this) && priorityMap.get(this).getPriority() == 0) {
           importPriorities.setHasCircularImport(true);
       }
 
@@ -679,16 +703,24 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
       // first add the imports done at this level only.
       final int l = this.getImports().getCount();
+      final ArrayList<CdmDocumentDefinition> monikerImports = new ArrayList<>();
       // reverse order
       for (int i = l - 1; i >= 0; i--) {
         final CdmImport imp = this.getImports().get(i);
         final CdmDocumentDefinition impDoc = imp.getDocument();
-        // don't add the moniker imports to the priority list.
+        // moniker imports will be added to the end of the priority list later.
         final boolean isMoniker = !StringUtils.isNullOrTrimEmpty(imp.getMoniker());
-        if (imp.getDocument() != null && !isMoniker && !priorityMap.containsKey(impDoc)) {
-          // add doc.
-          priorityMap.put(impDoc, sequence);
-          sequence++;
+
+        if (impDoc != null) {
+          if (imp.getDocument() != null && !isMoniker && !priorityMap.containsKey(impDoc)) {
+            // add doc.
+            priorityMap.put(impDoc, new ImportInfo(sequence, false));
+            sequence++;
+          } else {
+            monikerImports.add(impDoc);
+          }
+        } else {
+          Logger.warning(this.getCtx(), TAG, "prioritizeImports", this.getAtCorpusPath(), CdmLogCode.WarnDocImportNotLoaded ,imp.getCorpusPath());
         }
       }
 
@@ -698,20 +730,26 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
         final CdmDocumentDefinition impDoc = imp.getDocument();
         // don't add the moniker imports to the priority list.
         final boolean isMoniker = !StringUtils.isNullOrTrimEmpty(imp.getMoniker());
-        
+
+        if (impDoc == null) {
+          Logger.warning(this.getCtx(), TAG, "prioritizeImports", this.getAtCorpusPath(), CdmLogCode.WarnDocImportNotLoaded, imp.getCorpusPath());
+        }
+
         // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
         // since the document itself will always be the first one on the list.
         if (impDoc != null && impDoc.importPriorities != null && !impDoc.importPriorities.getHasCircularImport()) {
           // lucky, already done so avoid recursion and copy.
           final ImportPriorities impPriSub = impDoc.getImportPriorities();
           impPriSub.getImportPriority().remove(impDoc); // because already added above.
-          for (final Map.Entry<CdmDocumentDefinition, Integer> ip : impPriSub.getImportPriority().entrySet()
+          for (final Map.Entry<CdmDocumentDefinition, ImportInfo> ip : impPriSub.getImportPriority().entrySet()
               .stream().sorted(
-                  Comparator.comparing(entry -> entry.getKey().getName()))
+                  Comparator.comparing(entry -> entry.getValue().getPriority()))
               .collect(Collectors.toList())) {
-            if (priorityMap.containsKey(ip.getKey()) == false) {
+            // if the document is imported with moniker in another document do not include it in the priority list of this one.
+            // moniker imports are only added to the priority list of the document that directly imports them.
+            if (!priorityMap.containsKey(ip.getKey()) && !ip.getValue().getIsMoniker()) {
               // add doc
-              priorityMap.put(ip.getKey(), sequence);
+              priorityMap.put(ip.getKey(), new ImportInfo(sequence, false));
               sequence++;
             }
           }
@@ -738,9 +776,42 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
             monikerMap.put(imp.getMoniker(), imp.getDocument());
           }
         }
+
+        // if the document index is zero, the document being processed is the root of the imports chain.
+        // in this case add the monikered imports to the end of the priorityMap.
+        if (priorityMap.containsKey(this) && priorityMap.get(this).getPriority() == 0) {
+          for (final CdmDocumentDefinition imp : monikerImports) {
+            if (!priorityMap.containsKey(imp)) {
+              priorityMap.put(imp, new ImportInfo(sequence, true));
+              sequence++;
+            }
+          }
+        }
+
+        // if the document index is zero, the document being processed is the root of the imports chain.
+        // in this case add the monikered imports to the end of the priorityMap.
+        if (priorityMap.containsKey(this) && priorityMap.get(this).getPriority() == 0) {
+          for (final CdmDocumentDefinition imp : monikerImports) {
+            if (!priorityMap.containsKey(imp)) {
+              priorityMap.put(imp, new ImportInfo(sequence, true));
+              sequence++;
+            }
+          }
+        }
       }
     }
     return sequence;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param docDest CdmDocumentDefinition
+   * @return String
+   */
+  @Deprecated
+  public String importPathToDoc(CdmDocumentDefinition docDest) {
+    return internalImportPathToDoc(this, "", docDest, new LinkedHashSet<>());
   }
 
   /**
@@ -772,12 +843,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
           if (docImp != null && docImp.isDirty) {
             // save it with the same name
             if (!docImp.saveAsAsync(docImp.getName(), true, options).join()) {
-              Logger.error(
-                  CdmDocumentDefinition.class.getSimpleName(),
-                  this.getCtx(),
-                  Logger.format("Failed to save import '{0}'", docImp.getName()),
-                  "saveLinkedDocumentsAsync"
-              );
+              Logger.error(this.getCtx(), TAG, "saveLinkedDocumentsAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocImportSavingFailure, docImp.getName());
               return false;
             }
           }
@@ -798,7 +864,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   ImportPriorities getImportPriorities() {
     if (this.importPriorities == null) {
       final ImportPriorities importPriorities = new ImportPriorities();
-      importPriorities.getImportPriority().put(this, 0);
+      importPriorities.getImportPriority().put(this, new ImportInfo(0, false));
       this.prioritizeImports(new LinkedHashSet<>(), importPriorities, 1, false);
       this.importPriorities = importPriorities;
     }
@@ -834,5 +900,56 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return getCtx().getCorpus().fetchObjectAsync(getAtCorpusPath(), null, true)
         .thenAccept((v) -> {
         });
+  }
+
+  private String internalImportPathToDoc(final CdmDocumentDefinition docCheck, final String path, final CdmDocumentDefinition docDest, final HashSet<CdmDocumentDefinition> avoidLoop) {
+    if (docCheck == docDest) {
+      return "";
+    }
+    if (avoidLoop.contains(docCheck)) {
+      return null;
+    }
+    avoidLoop.add(docCheck);
+    // if the docDest is one of the monikered imports of docCheck, then add the moniker and we are cool
+    if (docCheck.getImportPriorities() != null && docCheck.getImportPriorities().getMonikerPriorityMap() != null
+            && docCheck.getImportPriorities().getMonikerPriorityMap().size() > 0) {
+      for(final Map.Entry<String, CdmDocumentDefinition> monPair : docCheck.getImportPriorities().getMonikerPriorityMap().entrySet()) {
+        if (monPair.getValue() == docDest) {
+          return String.format("%s%s/", path, monPair.getKey());
+        }
+      }
+    }
+    // ok, what if the document can be reached directly from the imports here
+    ImportInfo impInfo = docCheck.getImportPriorities() != null && docCheck.getImportPriorities().getImportPriority() != null ? docCheck.getImportPriorities().getImportPriority().get(docDest) : null;
+
+    if (impInfo != null && !impInfo.getIsMoniker()) {
+      // good enough
+      return path;
+    }
+
+    // still nothing, now we need to check those docs deeper
+    if (docCheck.getImportPriorities() != null && docCheck.getImportPriorities().getMonikerPriorityMap() != null
+            && docCheck.getImportPriorities().getMonikerPriorityMap().size() > 0) {
+
+      for(final Map.Entry<String, CdmDocumentDefinition> monPair : docCheck.getImportPriorities().getMonikerPriorityMap().entrySet()) {
+        if (monPair.getValue() == docDest) {
+          String pathFound = internalImportPathToDoc(monPair.getValue(), String.format("%s%s/", path, monPair.getKey()), docDest, avoidLoop);
+          if (pathFound != null) {
+            return pathFound;
+          }
+        }
+      }
+    }
+    if (docCheck.getImportPriorities() != null && docCheck.getImportPriorities().getImportPriority() != null && docCheck.getImportPriorities().getImportPriority().size() > 0) {
+      for(final Map.Entry<CdmDocumentDefinition, ImportInfo> impInfoPair : docCheck.getImportPriorities().getImportPriority().entrySet()) {
+        if (impInfoPair.getValue().getIsMoniker()) {
+          String pathFound = internalImportPathToDoc(impInfoPair.getKey(), path, docDest, avoidLoop);
+          if (pathFound != null) {
+            return pathFound;
+          }
+        }
+      }
+    }
+    return null;
   }
 }

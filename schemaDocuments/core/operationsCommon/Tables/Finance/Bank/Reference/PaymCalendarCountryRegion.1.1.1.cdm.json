@@ -1,0 +1,84 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PaymCalendar.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PaymCalendarCountryRegion",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountryRegion",
+          "dataType": "LogisticsAddressCountryRegionRecId",
+          "description": ""
+        },
+        {
+          "name": "PaymCalendar",
+          "dataType": "PaymCalendarRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_CountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymCalendar"
+          },
+          "name": "Relationship_PaymCalendarRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payment calendar country/region"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCountryRegionRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PaymCalendarRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

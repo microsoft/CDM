@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -28,7 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestProjectionUsingObjectModel()
         {
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestProjectionUsingObjectModel");
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, "TestProjectionUsingObjectModel");
             corpus.Storage.Mount("local", new LocalAdapter(TestHelper.GetActualOutputFolderPath(testsSubpath, "TestProjectionUsingObjectModel")));
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
             CdmManifestDefinition manifestDefault = CreateDefaultManifest(corpus, localRoot);
@@ -337,10 +337,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 // CombineAttributes Operation
                 CdmOperationCombineAttributes combineAttributesOp = new CdmOperationCombineAttributes(corpus.Ctx)
                 {
-                    Take = new List<string>(),
+                    Select = new List<string>(),
                     MergeInto = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef)
                 };
-                combineAttributesOp.Take.Add("testAttribute1");
+                combineAttributesOp.Select.Add("testAttribute1");
                 projection.Operations.Add(combineAttributesOp);
 
                 // RenameAttributes Operation

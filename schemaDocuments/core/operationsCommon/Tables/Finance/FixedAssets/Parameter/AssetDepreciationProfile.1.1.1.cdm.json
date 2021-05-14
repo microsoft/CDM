@@ -1,0 +1,273 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Reference/AssetDepRateSchedule_JP.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetDepreciationProfile",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Accrual",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetDepRateSchedule_JP",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Depreciation rate schedule",
+          "description": ""
+        },
+        {
+          "name": "AssetEndDependOnServiceLife",
+          "dataType": "AssetEndDependOnServiceLife",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalculationBase",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationYear",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FullYearDepreciation_DE",
+          "dataType": "FullYearDepreciation_DE",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HalfYearDepreciation_AT",
+          "dataType": "AssetAdditionalAcqDepreciation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Interval",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LVPFirstYearPercentage_AU",
+          "dataType": "AssetLowValuePoolFirstYearPercentage_AU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LVPLowValueCost_AU",
+          "dataType": "AssetLowValueCost_AU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LVPPercentage_AU",
+          "dataType": "AssetLowValuePoolPercentage_AU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Method",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "AssetDepreciationProfileName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfYearsEquallyDivided_JP",
+          "dataType": "AssetDepNumOfYearsEquallyDivided_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Percentage",
+          "dataType": "AssetDepreciationPercentage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Profile",
+          "dataType": "AssetDepreciationProfileId",
+          "description": ""
+        },
+        {
+          "name": "ShiftDepreciation_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Shift depreciation",
+          "description": ""
+        },
+        {
+          "name": "SmoothDepForTheYearOver95_JP",
+          "dataType": "AssetDepSmoothDepForTheYearOver95_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepAccountingMethod_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepApplyNumOfPeriods_JP",
+          "dataType": "AssetSpecialDepApplyNumOfPeriods_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepBaseRatio_JP",
+          "dataType": "AssetSpecialDepBaseRatio_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepRate_JP",
+          "dataType": "AssetSpecialDepRate_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationBase_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepRateSchedule_JP"
+          },
+          "name": "Relationship_AssetDepRateSchedule_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fixed asset depreciation profiles"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetEndDependOnServiceLife",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FullYearDepreciation_DE",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetAdditionalAcqDepreciation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetLowValuePoolFirstYearPercentage_AU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetLowValueCost_AU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetLowValuePoolPercentage_AU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetDepreciationProfileName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepNumOfYearsEquallyDivided_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDepreciationPercentage",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetDepreciationProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDepSmoothDepForTheYearOver95_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetSpecialDepApplyNumOfPeriods_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetSpecialDepBaseRatio_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetSpecialDepRate_JP",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

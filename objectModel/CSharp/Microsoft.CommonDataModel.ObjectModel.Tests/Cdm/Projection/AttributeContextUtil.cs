@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -9,6 +9,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Multiple test classes in projections test the attribute context tree generated for various scenarios.
@@ -23,9 +24,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// Function to get the attribute context string tree from a resolved entity
         /// </summary>
         /// <param name="resolvedEntity"></param>
-        /// <param name="attribContext"></param>
         /// <returns></returns>
-        public string GetAttributeContextStrings(CdmEntityDefinition resolvedEntity, CdmAttributeContext attribContext)
+        public string GetAttributeContextStrings(CdmEntityDefinition resolvedEntity)
         {
             // clear the string builder
             bldr.Clear();
@@ -35,6 +35,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             // get the traits for all the attributes of a resolved entity
             GetTraits(resolvedEntity);
+
+            return bldr.ToString();
+        }
+
+        public string GetArgumentValuesAsString(CdmArgumentDefinition args)
+        {
+            // clear the string builder
+            bldr.Clear();
+
+            // get the corpus path for each attribute context in the tree
+            GetArgumentValues(args);
 
             return bldr.ToString();
         }
@@ -52,8 +63,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             {
                 for (int i = 0; i < attribContext.Contents.Count; i++)
                 {
-                    string str = "";
-                    if ((attribContext.Contents[0] is CdmAttributeReference))
+                    string str;
+                    if ((attribContext.Contents[i] is CdmAttributeReference))
                     {
                         CdmAttributeReference ar = (CdmAttributeReference)attribContext.Contents[i];
                         str = ar.AtCorpusPath;
@@ -82,20 +93,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 string attribCorpusPath = attrib.AtCorpusPath;
                 bldr.AppendLine(attribCorpusPath);
 
-                foreach (CdmTraitReference trait in attrib.AppliedTraits)
+                foreach (CdmTraitReferenceBase trait in attrib.AppliedTraits)
                 {
                     string attribTraits = trait.NamedReference;
                     bldr.AppendLine(attribTraits);
 
-                    foreach (CdmArgumentDefinition args in trait.Arguments)
+                    if (trait is CdmTraitReference)
                     {
-                        GetArgumentValuesAsString(args);
+                        foreach (CdmArgumentDefinition args in (trait as CdmTraitReference).Arguments)
+                        {
+                            GetArgumentValues(args);
+                        }
                     }
                 }
             }
         }
 
-        private void GetArgumentValuesAsString(CdmArgumentDefinition args)
+        private void GetArgumentValues(CdmArgumentDefinition args)
         {
             string paramName = args.ResolvedParameter?.Name;
             string paramDefaultValue = args.ResolvedParameter?.DefaultValue;
@@ -144,17 +158,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// <param name="expectedOutputPath"></param>
         /// <param name="entityName"></param>
         /// <param name="resolvedEntity"></param>
-        public static void ValidateAttributeContext(CdmCorpusDefinition corpus, string expectedOutputPath, string entityName, CdmEntityDefinition resolvedEntity)
+        public static async Task ValidateAttributeContext(CdmCorpusDefinition corpus, string expectedOutputPath, string entityName, CdmEntityDefinition resolvedEntity)
         {
             if (resolvedEntity.AttributeContext != null)
             {
                 AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
-                string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity, resolvedEntity.AttributeContext);
+
+                // Actual
+                string actualStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, "..", "ActualOutput", $"AttrCtx_{entityName}.txt"));
+
+                // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
+                string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity);
+                File.WriteAllText(actualStringFilePath, actualText);
+                await resolvedEntity.InDocument.SaveAsAsync($"Resolved_{entityName}.cdm.json", saveReferenced: false);
+
+                // Expected
                 string expectedStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, $"AttrCtx_{entityName}.txt"));
                 string expectedText = File.ReadAllText(expectedStringFilePath);
-                string actualStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, "..", "ActualOutput", $"AttrCtx_{entityName}.txt"));
-                File.WriteAllText(actualStringFilePath, actualText);
-                Assert.AreEqual(expectedText, actualText);
+
+                // Test if Actual is Equal to Expected
+                Assert.AreEqual(expectedText.Replace("\r\n", "\n"), actualText.Replace("\r\n", "\n"));
             }
         }
     }

@@ -4,6 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContextReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.utilities.ApplierContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.ApplierState;
@@ -44,6 +45,9 @@ public class ResolvedAttributeSetBuilder {
     if (rasNew != null) {
       takeReference(resolvedAttributeSet.mergeSet(rasNew));
     }
+    if (rasNew.getDepthTraveled() > this.getResolvedAttributeSet().getDepthTraveled()) {
+      this.getResolvedAttributeSet().setDepthTraveled(rasNew.getDepthTraveled());
+    }
   }
 
   private void takeReference(final ResolvedAttributeSet rasNew) {
@@ -73,7 +77,7 @@ public class ResolvedAttributeSetBuilder {
 
     takeReference(new ResolvedAttributeSet());
 
-    resolvedAttributeSet.merge(ra, ra.getAttCtx());
+    resolvedAttributeSet.merge(ra);
     // reapply the old attribute context
     resolvedAttributeSet.setAttributeContext(attCtx);
   }
@@ -81,7 +85,7 @@ public class ResolvedAttributeSetBuilder {
   public void applyTraits(final AttributeResolutionContext arc) {
     if (resolvedAttributeSet != null && arc != null && arc.getTraitsToApply() != null) {
       takeReference(resolvedAttributeSet
-              .applyTraits(arc.getTraitsToApply(), arc.getResOpt(), arc.getResGuide(), arc.getActionsModify()));
+              .applyTraitsResolutionGuidance(arc.getTraitsToApply(), arc.getResOpt(), arc.getResGuide(), arc.getActionsModify()));
     }
   }
 
@@ -153,7 +157,7 @@ public class ResolvedAttributeSetBuilder {
       ResolvedAttributeSet ras = resolvedAttributeSet;
 
       for (final ResolvedAttribute ra : newAtts) {
-        ras = ras.merge(ra, ra.getAttCtx());
+        ras = ras.merge(ra);
       }
 
       takeReference(ras);
@@ -428,12 +432,12 @@ public class ResolvedAttributeSetBuilder {
               .combineResolutionGuidance(appCtx.resGuideNew);
       appCtx.resAttNew.setArc(new AttributeResolutionContext(arc.getResOpt(),
           appCtx.resGuideNew,
-              appCtx.resAttNew.fetchResolvedTraits()));
+              appCtx.resAttNew.getResolvedTraits()));
 
       if (applyModifiers) {
         // add the sets traits back in to this newly added one
         appCtx.resAttNew.setResolvedTraits(
-                appCtx.resAttNew.fetchResolvedTraits().mergeSet(arc.getTraitsToApply()));
+                appCtx.resAttNew.getResolvedTraits().mergeSet(arc.getTraitsToApply()));
 
         // be sure to use the new arc, the new attribute may have added actions. For now, only modify and remove will get acted on because recursion. ugh.
         // do all of the modify traits
@@ -449,6 +453,18 @@ public class ResolvedAttributeSetBuilder {
       }
 
       appCtx.resAttNew.completeContext(appCtx.resOpt);
+      // tie this new resolved att to the source via lineage
+      if (appCtx.resAttNew.getAttCtx() != null && resAttSource != null && resAttSource.getAttCtx() != null
+              && resAttSource.getApplierState() != null &&  resAttSource.getApplierState().getFlexRemove() != true){
+        if (resAttSource.getAttCtx().getLineage() != null && resAttSource.getAttCtx().getLineage().size() > 0){
+          for (final CdmAttributeContextReference lineage : resAttSource.getAttCtx().getLineage())
+          {
+            appCtx.resAttNew.getAttCtx().addLineage(lineage);
+          }
+        } else{
+          appCtx.resAttNew.getAttCtx().addLineage(resAttSource.getAttCtx());
+        }
+      }
     }
 
     return appCtx;

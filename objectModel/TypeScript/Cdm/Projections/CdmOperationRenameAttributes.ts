@@ -7,11 +7,11 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
-    Errors,
     Logger,
     ProjectionAttributeContextTreeBuilder,
     ProjectionAttributeState,
@@ -75,13 +75,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -118,7 +112,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
      */
     public appendProjectionAttributeState(projCtx: ProjectionContext, projOutputSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
         // Create a new attribute context for the operation
-        const attrCtxOpRenameAttrsParam: AttributeContextParameters =  {
+        const attrCtxOpRenameAttrsParam: AttributeContextParameters = {
             under: attrCtx,
             type: cdmAttributeContextType.operationRenameAttributes,
             name: `operation/index${this.index}/operationRenameAttributes`
@@ -155,7 +149,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
                 if ((currentPAS.currentResolvedAttribute.target as CdmAttribute).getObjectType) {
                     // The current attribute should be renamed
 
-                    const newAttributeName: string = this.renameAttribute(currentPAS, sourceAttributeName);
+                    const newAttributeName: string = this.getNewAttributeName(currentPAS, sourceAttributeName);
 
                     // Create new resolved attribute with the new name, set the new attribute as target
                     const resAttrNew: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, undefined, currentPAS.currentResolvedAttribute.target as CdmAttribute, newAttributeName);
@@ -165,7 +159,14 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
 
                     // Create the attribute context parameters and just store it in the builder for now
                     // We will create the attribute contexts at the end
-                    attrCtxTreeBuilder.createAndStoreAttributeContextParameters(applyToName, currentPAS, resAttrNew, cdmAttributeContextType.attributeDefinition);
+                    attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                        applyToName,
+                        currentPAS,
+                        resAttrNew,
+                        cdmAttributeContextType.attributeDefinition,
+                        currentPAS.currentResolvedAttribute.attCtx, // lineage is the original attribute
+                        undefined // don't know who will point here yet
+                    );
 
                     // Create a projection attribute state for the renamed attribute by creating a copy of the current state
                     // Copy() sets the current state as the previous state for the new one
@@ -177,10 +178,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
 
                     projOutputSet.add(newPAS);
                 } else {
-                    Logger.warning(
-                        this.TAG,
-                        this.ctx,
-                        'RenameAttributes is not supported on an attribute group yet.');
+                    Logger.warning(this.ctx, this.TAG, this.appendProjectionAttributeState.name, null, cdmLogCode.WarnProjRenameAttrNotSupported);
                     // Add the attribute without changes
                     projOutputSet.add(currentPAS);
                 }
@@ -191,7 +189,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
         }
 
         // Create all the attribute contexts and construct the tree
-        attrCtxTreeBuilder.constructAttributeContextTree(projCtx, true);
+        attrCtxTreeBuilder.constructAttributeContextTree(projCtx);
 
         return projOutputSet;
     }
@@ -201,17 +199,13 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
      * @param attributeState The attribute state
      * @params ourceAttributeNameThe parent attribute name (if any)
      */
-    renameAttribute(attributeState: ProjectionAttributeState, sourceAttributeName: string): string {
+    getNewAttributeName(attributeState: ProjectionAttributeState, sourceAttributeName: string): string {
         const currentAttributeName: string = attributeState.currentResolvedAttribute.resolvedName;
         const ordinal: string = attributeState.ordinal !== undefined ? attributeState.ordinal.toString() : '';
         const format: string = this.renameFormat;
 
         if (!format) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                'RenameFormat should be set for this operation to work.');
-            return '';
+            Logger.error(this.ctx, this.TAG, this.getNewAttributeName.name, null, cdmLogCode.ErrProjRenameFormatIsNotSet);
         }
 
         let attributeName: string = StringUtils.replace(format, 'a', sourceAttributeName);

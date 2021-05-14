@@ -3,10 +3,10 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
-import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.*;
+import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -59,7 +59,7 @@ public class SearchStructureUnitTest {
      */
     @Test
     public void testBuildTree() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testBuildTree", null);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, "testBuildTree");
 
         ProjectionContext pc = buildFakeTree(corpus);
 

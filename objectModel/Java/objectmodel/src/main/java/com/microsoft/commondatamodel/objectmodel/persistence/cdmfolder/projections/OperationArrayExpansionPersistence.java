@@ -24,18 +24,7 @@ public class OperationArrayExpansionPersistence {
             return null;
         }
 
-        CdmOperationArrayExpansion arrayExpansionOp = ctx.getCorpus().makeObject(CdmObjectType.OperationArrayExpansionDef);
-
-        if (obj.get("$type") != null && !StringUtils.equalsWithIgnoreCase(obj.get("$type").asText(), OperationTypeConvertor.operationTypeToString(CdmOperationType.ArrayExpansion))) {
-            Logger.error(OperationArrayExpansionPersistence.class.getSimpleName(), ctx, Logger.format("$type {0} is invalid for this operation.", obj.get("$type").asText()));
-        } else {
-            arrayExpansionOp.setType(CdmOperationType.ArrayExpansion);
-        }
-
-        if (obj.get("explanation") != null) {
-            arrayExpansionOp.setExplanation(obj.get("explanation").asText());
-        }
-
+        CdmOperationArrayExpansion arrayExpansionOp = OperationBasePersistence.fromData(ctx, CdmObjectType.OperationArrayExpansionDef, obj);
         arrayExpansionOp.setStartOrdinal(obj.get("startOrdinal") == null ? null : obj.get("startOrdinal").asInt());
         arrayExpansionOp.setEndOrdinal(obj.get("endOrdinal") == null ? null : obj.get("endOrdinal").asInt());
 
@@ -47,9 +36,7 @@ public class OperationArrayExpansionPersistence {
             return null;
         }
 
-        OperationArrayExpansion obj = new OperationArrayExpansion();
-        obj.setType(OperationTypeConvertor.operationTypeToString(CdmOperationType.ArrayExpansion));
-        obj.setExplanation(instance.getExplanation());
+        OperationArrayExpansion obj = OperationBasePersistence.toData(instance, resOpt, options);
         obj.setStartOrdinal(instance.getStartOrdinal());
         obj.setEndOrdinal(instance.getEndOrdinal());
 

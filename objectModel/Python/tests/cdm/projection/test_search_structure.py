@@ -12,7 +12,7 @@ from cdm.resolvedmodel.projections.projection_directive import ProjectionDirecti
 from cdm.resolvedmodel.projections.search_result import SearchResult
 from cdm.resolvedmodel.projections.search_structure import SearchStructure
 from cdm.utilities import ResolveOptions
-from tests.common import TestHelper
+from tests.utilities.projection_test_utils import ProjectionTestUtils
 
 
 class SearchStructureUnitTest(unittest.TestCase):
@@ -50,7 +50,7 @@ class SearchStructureUnitTest(unittest.TestCase):
 
     # Unit test for building a tree
     def test_build_tree(self):
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_build_tree')
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, 'test_build_tree')
 
         pc = self._build_fake_tree(corpus)
 

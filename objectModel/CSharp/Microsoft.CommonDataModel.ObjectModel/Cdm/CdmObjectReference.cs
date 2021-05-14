@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -8,6 +8,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public interface CdmObjectReference : CdmObject
     {
+        /// <summary>
+        /// Gets or sets the object's Optional property.
+        /// This indicates the SDK to not error out in case the definition could not be resolved.
+        /// </summary>
+        bool? Optional { get; set; }
+
         /// <summary>
         /// Gets the object reference applied traits.
         /// </summary>

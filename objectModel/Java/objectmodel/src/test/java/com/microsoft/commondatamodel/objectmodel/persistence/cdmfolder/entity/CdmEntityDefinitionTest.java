@@ -4,18 +4,15 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.entity;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReferenceBase;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.AttributeGroupPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.EntityPersistence;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.AttributeGroup;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.InterceptLog;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
 import java.io.File;
@@ -62,7 +59,7 @@ public class CdmEntityDefinitionTest {
             "local:/entA.cdm.json/Entity A"
         ).join();
     final CdmTypeAttributeDefinition att = (CdmTypeAttributeDefinition) obj.getAttributes().get(0);
-    List<CdmTraitReference> result = att.getAppliedTraits()
+    List<CdmTraitReferenceBase> result = att.getAppliedTraits()
         .getAllItems()
         .parallelStream()
         .filter(x -> "is.constrained".equals(x.getNamedReference()))
@@ -140,6 +137,17 @@ public class CdmEntityDefinitionTest {
     cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").join();
     // Load resolved entity with shallowValidation = false.
     cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/ResolvedEntity.cdm.json/ResolvedEntity").join();
+  }
+
+  /**
+   * 
+   */
+  public void testPersistAttributeGroupDefinition() {
+    CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+    CdmAttributeGroupDefinition attGroup = new CdmAttributeGroupDefinition(corpus.getCtx(), "attGroup");
+    AttributeGroup persistedGroup = (AttributeGroup) AttributeGroupPersistence.toData(attGroup,
+        new ResolveOptions(attGroup.getInDocument()), new CopyOptions());
+    Assert.assertNotNull(persistedGroup.getMembers());
   }
 }
 

@@ -5,14 +5,15 @@ from typing import Optional, List, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.resolvedmodel import ParameterCollection
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
+from cdm.enums import CdmLogCode
 
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_collection import CdmCollection
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmTraitReference, CdmObject, CdmParameterDefinition
-    from cdm.utilities import FriendlyFormatNode, VisitCallback
+    from cdm.objectmodel import CdmCorpusContext, CdmTraitReference, CdmParameterDefinition
+    from cdm.utilities import VisitCallback
 
 
 class CdmTraitDefinition(CdmObjectDefinition):
@@ -20,6 +21,8 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
     def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_trait: Optional['CdmTraitReference'] = None) -> None:
         super().__init__(ctx)
+
+        self._TAG = CdmTraitDefinition.__name__
 
         # the trait associated properties.
         self.associated_properties = []  # type: List[str]
@@ -43,8 +46,6 @@ class CdmTraitDefinition(CdmObjectDefinition):
         self._has_set_flags = False
         self._all_parameters = None
         self._parameters = None
-
-        self._TAG = CdmTraitDefinition.__name__
 
     @property
     def parameters(self) -> 'CdmCollection[CdmParameterDefinition]':
@@ -130,7 +131,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
         if self._base_is_known_to_have_parameters:
             cache_tag_extra = str(self.extends_trait.id)
 
-        cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
+        cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
         rts_result = ctx._cache.get(cache_tag) if cache_tag else None
 
         # store the previous reference symbol set, we will need to add it with
@@ -176,7 +177,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
             # register set of possible symbols
             ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt._symbol_ref_set)
             # get the new cache tag now that we have the list of docs
-            cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
+            cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
             if cache_tag:
                 ctx._cache[cache_tag] = rts_result
         else:
@@ -199,7 +200,8 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
     def validate(self) -> bool:
         if not bool(self.trait_name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['trait_name']))
+            missing_fields = ['trait_name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 
@@ -214,8 +216,10 @@ class CdmTraitDefinition(CdmObjectDefinition):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.extends_trait and self.extends_trait.visit('{}/extendsTrait/'.format(path), pre_children, post_children):
-            return True
+        if self.extends_trait:
+            self.extends_trait.owner = self
+            if self.extends_trait.visit('{}/extendsTrait/'.format(path), pre_children, post_children):
+                return True
 
         if self.parameters and self.parameters._visit_array('{}/hasParameters/'.format(path), pre_children, post_children):
             return True

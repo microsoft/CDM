@@ -6,7 +6,8 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataTypeReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DataType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -18,35 +19,40 @@ import java.io.IOException;
 import java.util.List;
 
 public class DataTypeReferencePersistence {
-  public static CdmDataTypeReference fromData(final CdmCorpusContext ctx, final JsonNode obj) {
+    private static final String TAG = DataTypeReferencePersistence.class.getSimpleName();
+
+    public static CdmDataTypeReference fromData(final CdmCorpusContext ctx, final JsonNode obj) {
         if (obj == null) {
             return null;
         }
 
         boolean simpleReference = true;
+        Boolean optional = null;
         Object dataType = null;
-        List<CdmTraitReference> appliedTraits = null;
+        List<CdmTraitReferenceBase> appliedTraits = null;
 
         if (obj.isValueNode())
-           dataType = obj;
+            dataType = obj;
         else {
             simpleReference = false;
+
+            optional = Utils.propertyFromDataToBoolean(obj.get("optional"));
+
             if (obj.get("dataTypeReference").isValueNode())
                 dataType = obj.get("dataTypeReference").asText();
             else
                 try {
                     dataType = DataTypePersistence.fromData(ctx, JMapper.MAP.treeToValue(obj.get("dataTypeReference"), DataType.class));
                 } catch (final IOException ex) {
-                    Logger.error(
-                        DataTypeReferencePersistence.class.getSimpleName(),
-                        ctx,
-                        Logger.format("There was an error while trying to convert from JSON to DataTypeRef. Reason: '{0}'", ex.getLocalizedMessage()),
-                        "fromData"
-                    );
+                    Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistJsonDatatypeRefConversionError, ex.getLocalizedMessage());
                 }
         }
 
         final CdmDataTypeReference dataTypeReference = ctx.getCorpus().makeRef(CdmObjectType.DataTypeRef, dataType, simpleReference);
+
+        if (optional != null) {
+            dataTypeReference.setOptional(optional);
+        }
 
         if (!obj.isValueNode())
             appliedTraits = Utils.createTraitReferenceList(ctx, obj.get("appliedTraits"));
@@ -56,7 +62,7 @@ public class DataTypeReferencePersistence {
         return dataTypeReference;
     }
 
-  public static Object toData(final CdmDataTypeReference instance, final ResolveOptions resOpt, final CopyOptions options) {
+    public static Object toData(final CdmDataTypeReference instance, final ResolveOptions resOpt, final CopyOptions options) {
         return CdmObjectRefPersistence.toData(instance, resOpt, options);
     }
 }

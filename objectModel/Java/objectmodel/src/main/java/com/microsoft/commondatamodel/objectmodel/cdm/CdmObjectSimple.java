@@ -37,6 +37,12 @@ public abstract class CdmObjectSimple extends CdmObjectBase {
   }
 
   @Override
+  @Deprecated
+  public CdmObjectReference createPortableReference(ResolveOptions resOpt) {
+    return null;
+  }
+
+  @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
     if (resOpt == null) {
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());

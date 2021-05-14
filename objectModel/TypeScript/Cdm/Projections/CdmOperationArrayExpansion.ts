@@ -7,17 +7,19 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
-    Errors,
     Logger,
     ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
     ResolvedAttribute,
+    ResolvedAttributeSet,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../../internal';
 
@@ -76,13 +78,7 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                this.TAG,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 
@@ -128,23 +124,19 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
 
         // Expansion steps start at round 0
         let round: number = 0;
-        const projAttrStatesFromRounds: ProjectionAttributeState[] = [];
+        let projAttrStatesFromRounds: ProjectionAttributeState[] = [];
 
         // Ordinal validation
         if (this.startOrdinal > this.endOrdinal) {
-            Logger.warning(this.TAG, this.ctx, `startOrdinal ${this.startOrdinal} should not be greater than endOrdinal ${this.endOrdinal}`, this.appendProjectionAttributeState.name);
+            Logger.warning(this.ctx, this.TAG, this.appendProjectionAttributeState.name, this.atCorpusPath, cdmLogCode.WarnValdnOrdinalStartEndOrder, this.startOrdinal.toString(), this.endOrdinal.toString());
+            
         } else {
             // Ordinals should start at startOrdinal or 0, whichever is larger.
             const startingOrdinal: number = Math.max(0, this.startOrdinal);
 
             // Ordinals should end at endOrdinal or the maximum ordinal allowed (set in resolve options), whichever is smaller.
             if (this.endOrdinal > projCtx.projectionDirective.resOpt.maxOrdinalForArrayExpansion) {
-                Logger.warning(
-                    this.TAG,
-                    this.ctx,
-                    `endOrdinal ${this.endOrdinal} is greater than the maximum allowed ordinal of ${projCtx.projectionDirective.resOpt.maxOrdinalForArrayExpansion}. Using the maximum allowed ordinal instead.`,
-                    this.appendProjectionAttributeState.name
-                );
+                Logger.warning(this.ctx, this.TAG, this.appendProjectionAttributeState.name, this.atCorpusPath, cdmLogCode.WarnValdnMaxOrdinalTooHigh, this.endOrdinal, projCtx.projectionDirective.resOpt.maxOrdinalForArrayExpansion.toString());
             }
             const endingOrdinal: number = Math.min(projCtx.projectionDirective.resOpt.maxOrdinalForArrayExpansion, this.endOrdinal);
 
@@ -169,8 +161,15 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
                     };
                     const attrCtxExpandedAttr: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxExpandedAttrParam);
 
+                    if (currentPAS.currentResolvedAttribute.target instanceof ResolvedAttributeSet) {
+                        Logger.error(this.ctx, this.TAG, this.appendProjectionAttributeState.name, this.atCorpusPath, cdmLogCode.ErrProjUnsupportedAttrGroups);
+                        projAttrStatesFromRounds = [];
+                        break;
+                    }
+
                     // Create a new resolved attribute for the expanded attribute
                     const newResAttr: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.currentResolvedAttribute.target as CdmAttribute, currentPAS.currentResolvedAttribute.resolvedName);
+                    newResAttr.attCtx.addLineage(currentPAS.currentResolvedAttribute.attCtx);
 
                     // Create a projection attribute state for the expanded attribute
                     const newPAS: ProjectionAttributeState = new ProjectionAttributeState(projOutputSet.ctx);

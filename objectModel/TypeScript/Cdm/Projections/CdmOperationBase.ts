@@ -29,6 +29,16 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
      */
     public index: number;
 
+    /***
+     * Property of an operation that holds the condition expression string
+     */
+    public condition?: string;
+
+    /**
+     * Property of an operation that defines if the operation receives the input from previous operation or from source entity
+     */
+    public sourceInput?: boolean;
+
     public type: cdmOperationType;
 
     constructor(ctx: CdmCorpusContext) {
@@ -85,12 +95,17 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
         overrideDefaultName: string = null,
         addedSimpleRefTraits: string[] = null
     ): ResolvedAttribute {
+        targetAttr = targetAttr.copy() as CdmAttribute;
+
         const newResAttr: ResolvedAttribute = new ResolvedAttribute(
             projCtx.projectionDirective.resOpt,
             targetAttr,
             overrideDefaultName ? overrideDefaultName : targetAttr.getName(),
             attrCtxUnder
         );
+        targetAttr.inDocument = projCtx.projectionDirective.owner.inDocument;
+
+        targetAttr.inDocument = projCtx.projectionDirective.owner.inDocument;
 
         if (addedSimpleRefTraits) {
             for (const trait of addedSimpleRefTraits) {

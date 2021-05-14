@@ -4,15 +4,18 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
-from cdm.persistence.cdmfolder import TraitReferencePersistence
+from cdm.enums import CdmObjectType, CdmLogCode
+from cdm.persistence.cdmfolder import TraitReferencePersistence, TraitGroupReferencePersistence
 from cdm.utilities import logger
 
 from . import ArgumentPersistence, extension_helper
 from .types import CsvFormatSettings
+from cdm.persistence.modeljson.types import Annotation
+from cdm.utilities.namevaluepair import NameValuePair
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmArgumentDefinition, CdmCorpusContext, CdmCollection, CdmTraitCollection, CdmTraitReference
+    from cdm.objectmodel import CdmArgumentDefinition, CdmCorpusContext, CdmTraitCollection, \
+        CdmTraitReference, CdmTraitGroupReference
     from .types import MetadataObject
 
 annotation_to_trait_map = {
@@ -113,7 +116,10 @@ async def process_annotations_from_data(ctx: 'CdmCorpusContext', obj: 'MetadataO
     if obj.get('annotations'):
         for annotation in obj.get('annotations'):
             if not should_annotation_go_into_a_single_trait(annotation.name):
-                multi_trait_annotations.append(annotation)
+                cdm_element = NameValuePair()
+                cdm_element.name = annotation.name
+                cdm_element.value = annotation.value
+                multi_trait_annotations.append(cdm_element)
             else:
                 inner_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, convert_annotation_to_trait(annotation.name))
                 inner_trait.arguments.append(await ArgumentPersistence.from_data(ctx, annotation))
@@ -129,7 +135,10 @@ async def process_annotations_from_data(ctx: 'CdmCorpusContext', obj: 'MetadataO
 
     if obj.get('traits'):
         for trait in obj.get('traits'):
-            traits.append(TraitReferencePersistence.from_data(ctx, trait))
+            if not isinstance(trait, str) and trait.traitGroupReference is not None:
+                traits.append(TraitGroupReferencePersistence.from_data(ctx, trait))
+            else:
+                traits.append(TraitReferencePersistence.from_data(ctx, trait))
 
 
 def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_object: 'MetadataObject', traits: 'CdmTraitCollection'):
@@ -146,13 +155,24 @@ def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_objec
 
         if trait.named_reference == 'is.modelConversion.otherAnnotations':
             for annotation in trait.arguments[0].value:
-                if isinstance(annotation, dict) and annotation.get('name'):
+                if isinstance(annotation, NameValuePair):
+                    element = Annotation()
+                    element.name = annotation.name
+                    element.value = annotation.value
+                    annotations.append(element)
+                elif isinstance(annotation, dict) and annotation.get('name'):
                     annotations.append(annotation)
                 else:
-                    logger.warning(_TAG, ctx, 'Unsupported annotation type.')
+                    logger.warning(ctx, _TAG, process_traits_and_annotations_to_data.__name__, None,
+                                   CdmLogCode.WARN_ANNOTATION_TYPE_NOT_SUPPORTED)
 
-        elif trait.named_reference not in ignored_traits and not trait.named_reference.startswith('is.dataFormat') and not (trait.named_reference in model_json_property_traits and trait.is_from_property):
-            extension = TraitReferencePersistence.to_data(trait, None, None)
+        elif trait.named_reference not in ignored_traits and not trait.named_reference.startswith('is.dataFormat') \
+                and not (trait.named_reference in model_json_property_traits
+                         and trait.object_type == CdmObjectType.TRAIT_REF and trait.is_from_property):
+            if trait.object_type == CdmObjectType.TRAIT_GROUP_REF:
+                extension = TraitGroupReferencePersistence.to_data(trait, None, None)
+            else:
+                extension = TraitReferencePersistence.to_data(trait, None, None)
             extensions.append(extension)
 
         if annotations:

@@ -10,7 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     /// Class to generate an expression tree so that expression can be evaluated or parsed at a later date
     /// </summary>
     /// <unitTest>ExpressionTreeUnitTest</unitTest>
-    internal sealed class ExpressionTree
+    internal static class ExpressionTree
     {
         internal static Dictionary<string, PredefinedTokenEnum> textToTokenHash = PredefinedTokens.InitializeTextToTokenHash();
 
@@ -20,15 +20,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         /// <param name="value"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        private Node CreateNewNode(dynamic value, PredefinedType type)
+        private static Node CreateNewNode(dynamic value, PredefinedType type)
         {
-            Node newNode = new Node();
+            Node newNode = new Node
+            {
+                Value = value,
+                ValueType = type,
 
-            newNode.Value = value;
-            newNode.ValueType = type;
-
-            newNode.Left = null;
-            newNode.Right = null;
+                Left = null,
+                Right = null
+            };
 
             return newNode;
         }
@@ -38,7 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        internal Node ConstructExpressionTree(string expression)
+        internal static Node ConstructExpressionTree(string expression)
         {
             if (string.IsNullOrWhiteSpace(expression))
             {
@@ -181,7 +182,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         /// </summary>
         /// <param name="op"></param>
         /// <returns></returns>
-        private int OperatorPriority(string op)
+        private static int OperatorPriority(string op)
         {
             if (!textToTokenHash.ContainsKey(op))
             {
@@ -213,112 +214,132 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         }
 
         /// <summary>
+        /// Given a condition and the input values, evaluate the condition
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="inputValues"></param>
+        /// <returns></returns>
+        internal static bool EvaluateCondition(string condition, InputValues inputValues)
+        {
+            if (string.IsNullOrWhiteSpace(condition))
+            {
+                return true;
+            }
+
+            Node treeRoot = ConstructExpressionTree(condition);
+            return EvaluateExpressionTree(treeRoot, inputValues);
+        }
+
+        /// <summary>
         /// Given an expression tree, evaluate the expression
         /// </summary>
         /// <param name="top"></param>
-        /// <param name="input"></param>
+        /// <param name="inputValues"></param>
         /// <returns></returns>
-        internal static dynamic EvaluateExpressionTree(Node top, InputValues input)
+        internal static dynamic EvaluateExpressionTree(Node top, InputValues inputValues)
         {
-            if (top != null)
+            if (top == null)
             {
-                dynamic leftReturn = false, rightReturn = false;
+                return false;
+            }
 
-                if (top.Left != null)
+            dynamic leftReturn = false, rightReturn = false;
+
+            if (top.Left != null)
+            {
+                leftReturn = EvaluateExpressionTree(top.Left, inputValues);
+            }
+
+            if (top.Right != null)
+            {
+                rightReturn = EvaluateExpressionTree(top.Right, inputValues);
+            }
+
+            if (top.ValueType == PredefinedType.Custom)
+            {
+                // check if number and return number
+                int num;
+                if (int.TryParse(top.Value, out num))
                 {
-                    leftReturn = EvaluateExpressionTree(top.Left, input);
+                    return num;
                 }
 
-                if (top.Right != null)
+                // check if bool and return bool
+                bool bl = false;
+                if (bool.TryParse(top.Value, out bl))
                 {
-                    rightReturn = EvaluateExpressionTree(top.Right, input);
-                }
-
-                if (top.ValueType == PredefinedType.Custom)
-                {
-                    // check if number and return number
-                    int num;
-                    if (int.TryParse(top.Value, out num))
-                    {
-                        return num;
-                    }
-
-                    // check if bool and return bool
-                    bool bl = false;
-                    if (bool.TryParse(top.Value, out bl))
-                    {
-                        return bl;
-                    }
-                }
-
-                if (!textToTokenHash.ContainsKey(top.Value))
-                {
-                    return top.Value;
-                }
-                else
-                {
-                    switch (textToTokenHash[top.Value])
-                    {
-                        case PredefinedTokenEnum.AND:
-                            return (leftReturn == null || rightReturn == null) ? false : leftReturn && rightReturn;
-                        case PredefinedTokenEnum.NOT:
-                            return (rightReturn == null) ? false : !rightReturn;
-                        case PredefinedTokenEnum.OR:
-                            return (leftReturn == null || rightReturn == null) ? false : leftReturn || rightReturn;
-
-                        case PredefinedTokenEnum.GT:
-                            return (leftReturn == null || rightReturn == null) ? false : leftReturn > rightReturn;
-                        case PredefinedTokenEnum.LT:
-                            return (leftReturn == null || rightReturn == null) ? false : leftReturn < rightReturn;
-                        case PredefinedTokenEnum.GE:
-                            return (leftReturn == null || rightReturn == null) ? false : leftReturn >= rightReturn;
-                        case PredefinedTokenEnum.LE:
-                            return (leftReturn == null || rightReturn == null) ? false : leftReturn <= rightReturn;
-                        case PredefinedTokenEnum.EQ:
-                            return (leftReturn == null || rightReturn == null) ? false : leftReturn == rightReturn;
-                        case PredefinedTokenEnum.NE:
-                            return (leftReturn == null || rightReturn == null) ? false : leftReturn != rightReturn;
-
-                        case PredefinedTokenEnum.TRUE:
-                            return true;
-                        case PredefinedTokenEnum.FALSE:
-                            return false;
-
-                        case PredefinedTokenEnum.OPENPAREN:
-                        case PredefinedTokenEnum.CLOSEPAREN:
-                            return true;
-
-                        case PredefinedTokenEnum.DEPTH:
-                            return input.nextDepth;
-                        case PredefinedTokenEnum.MAXDEPTH:
-                            return input.maxDepth;
-
-                        case PredefinedTokenEnum.ISARRAY:
-                            return input.isArray;
-                        case PredefinedTokenEnum.NOMAXDEPTH:
-                            return input.noMaxDepth;
-
-                        case PredefinedTokenEnum.MINCARDINALITY:
-                            return input.minCardinality;
-                        case PredefinedTokenEnum.MAXCARDINALITY:
-                            return input.maxCardinality;
-
-                        case PredefinedTokenEnum.NORMALIZED:
-                            return input.normalized;
-                        case PredefinedTokenEnum.REFERENCEONLY:
-                            return input.referenceOnly;
-                        case PredefinedTokenEnum.STRUCTURED:
-                            return input.structured;
-
-                        case PredefinedTokenEnum.ALWAYS:
-                            return true;
-
-                        default:
-                            return top.Value;
-                    }
+                    return bl;
                 }
             }
-            return false;
+
+            if (!textToTokenHash.ContainsKey(top.Value))
+            {
+                return top.Value;
+            }
+            else
+            {
+                switch (textToTokenHash[top.Value])
+                {
+                    case PredefinedTokenEnum.AND:
+                        return (leftReturn == null || rightReturn == null) ? false : leftReturn && rightReturn;
+                    case PredefinedTokenEnum.NOT:
+                        return (rightReturn == null) ? false : !rightReturn;
+                    case PredefinedTokenEnum.OR:
+                        return (leftReturn == null || rightReturn == null) ? false : leftReturn || rightReturn;
+
+                    case PredefinedTokenEnum.GT:
+                        return (leftReturn == null || rightReturn == null) ? false : leftReturn > rightReturn;
+                    case PredefinedTokenEnum.LT:
+                        return (leftReturn == null || rightReturn == null) ? false : leftReturn < rightReturn;
+                    case PredefinedTokenEnum.GE:
+                        return (leftReturn == null || rightReturn == null) ? false : leftReturn >= rightReturn;
+                    case PredefinedTokenEnum.LE:
+                        return (leftReturn == null || rightReturn == null) ? false : leftReturn <= rightReturn;
+                    case PredefinedTokenEnum.EQ:
+                        return (leftReturn == null || rightReturn == null) ? false : leftReturn == rightReturn;
+                    case PredefinedTokenEnum.NE:
+                        return (leftReturn == null || rightReturn == null) ? false : leftReturn != rightReturn;
+
+                    case PredefinedTokenEnum.TRUE:
+                        return true;
+                    case PredefinedTokenEnum.FALSE:
+                        return false;
+
+                    case PredefinedTokenEnum.OPENPAREN:
+                    case PredefinedTokenEnum.CLOSEPAREN:
+                        return true;
+
+                    case PredefinedTokenEnum.DEPTH:
+                        return inputValues.NextDepth;
+                    case PredefinedTokenEnum.MAXDEPTH:
+                        return inputValues.MaxDepth;
+
+                    case PredefinedTokenEnum.ISARRAY:
+                        return inputValues.IsArray;
+                    case PredefinedTokenEnum.NOMAXDEPTH:
+                        return inputValues.NoMaxDepth;
+
+                    case PredefinedTokenEnum.MINCARDINALITY:
+                        return inputValues.MinCardinality;
+                    case PredefinedTokenEnum.MAXCARDINALITY:
+                        return inputValues.MaxCardinality;
+
+                    case PredefinedTokenEnum.NORMALIZED:
+                        return inputValues.Normalized;
+                    case PredefinedTokenEnum.REFERENCEONLY:
+                        return inputValues.ReferenceOnly;
+                    case PredefinedTokenEnum.STRUCTURED:
+                        return inputValues.Structured;
+                    case PredefinedTokenEnum.VIRTUAL:
+                        return inputValues.IsVirtual;
+
+                    case PredefinedTokenEnum.ALWAYS:
+                        return true;
+
+                    default:
+                        return top.Value;
+                }
+            }
         }
 
         /// <summary>

@@ -1,14 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System.Runtime.CompilerServices;
 
 #if INTERNAL_VSTS
-[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi" + Microsoft.CommonDataModel.AssemblyRef.ProductPublicKey)]
-[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Versioning" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
 #else
-[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi")]
-[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests")]
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Versioning")]
 #endif
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -28,6 +26,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmCorpusDefinition
     {
+        private readonly string Tag = nameof(CdmCorpusDefinition);
+
         internal static int _nextId = 0;
 
         /// <summary>
@@ -91,6 +91,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal IDictionary<string, string> resEntMap { get; set; }
 
         internal SpinLock spinLock;
+
+        private Dictionary<string, CdmTypeAttributeDefinition> KnownArtifactAttributes;
 
         /// <summary>
         /// Constructs a CdmCorpusDefinition.
@@ -200,7 +202,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (preEnd == 0)
                 {
                     // absolute reference
-                    Logger.Error(nameof(CdmCorpusDefinition), ctx, "no support for absolute references yet. fix '" + symbol + "'", ctx.RelativePath);
+                    Logger.Error(ctx, Tag, nameof(DocsForSymbol), wrtDoc.AtCorpusPath, CdmLogCode.ErrUnsupportedRef, symbol, ctx.RelativePath) ;
                     return null;
                 }
                 if (preEnd > 0)
@@ -239,7 +241,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 return currDocsResult;
                             }
                         }
-                        resOpt.FromMoniker = prefix;
                         result.DocBest = tempMonikerDoc;
                     }
                     else
@@ -265,18 +266,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             CdmDocumentDefinition wrtDoc = resOpt.WrtDoc as CdmDocumentDefinition;
 
-            var indexTask = wrtDoc.IndexIfNeeded(resOpt, true);
-            indexTask.Wait();
+            var indexTask = Task.Run(async () => await wrtDoc.IndexIfNeeded(resOpt, true));
+
             // if the wrtDoc needs to be indexed (like it was just modified) then do that first
             if (!indexTask.Result)
             {
-                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, "Couldn't index source document.", nameof(ResolveSymbolReference));
+                Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), wrtDoc.AtCorpusPath, CdmLogCode.ErrIndexFailed);
                 return null;
             }
 
             if (wrtDoc.NeedsIndexing && resOpt.ImportsLoadStrategy == ImportsLoadStrategy.DoNotLoad)
             {
-                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Cannot find symbol definition '{symbolDef}' because the ImportsLoadStrategy is set to DoNotLoad", nameof(ResolveSymbolReference));
+                Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), wrtDoc.AtCorpusPath, CdmLogCode.ErrSymbolNotFound, symbolDef, "because the ImportsLoadStrategy is set to DoNotLoad");
                 return null;
             }
 
@@ -301,7 +302,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     return null;
                 }
 
-                IDictionary<CdmDocumentDefinition, int> importPriority = wrtDoc.ImportPriorities.ImportPriority;
+                IDictionary<CdmDocumentDefinition, ImportInfo> importPriority = wrtDoc.ImportPriorities.ImportPriority;
                 if (importPriority.Count == 0)
                 {
                     return null;
@@ -336,124 +337,137 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     case CdmObjectType.TraitRef:
                         if (found.ObjectType != CdmObjectType.TraitDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type trait", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "trait", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.DataTypeRef:
                         if (found.ObjectType != CdmObjectType.DataTypeDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type dataType", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "dataType", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.EntityRef:
-                        if (found.ObjectType != CdmObjectType.EntityDef && found.ObjectType != CdmObjectType.ProjectionDef)
+                        if (found.ObjectType != CdmObjectType.EntityDef && found.ObjectType != CdmObjectType.ProjectionDef && found.ObjectType != CdmObjectType.ConstantEntityDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type entity or type projection", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "entity or type projection or type constant entity", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.ParameterDef:
                         if (found.ObjectType != CdmObjectType.ParameterDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type parameter", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "parameter", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.PurposeRef:
                         if (found.ObjectType != CdmObjectType.PurposeDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type purpose", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "purpose", symbolDef);
+                            found = null;
+                        }
+                        break;
+                    case CdmObjectType.TraitGroupRef:
+                        if (found.ObjectType != CdmObjectType.TraitGroupDef)
+                        {
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "traitGroup", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.AttributeGroupRef:
                         if (found.ObjectType != CdmObjectType.AttributeGroupDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type attributeGroup", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "attributeGroup", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.ProjectionDef:
                         if (found.ObjectType != CdmObjectType.ProjectionDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type projection", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "projection", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.OperationAddCountAttributeDef:
                         if (found.ObjectType != CdmObjectType.OperationAddCountAttributeDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type add count attribute operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "add count attribute operation", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.OperationAddSupportingAttributeDef:
                         if (found.ObjectType != CdmObjectType.OperationAddSupportingAttributeDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type add supporting attribute operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "add supporting attribute operation", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.OperationAddTypeAttributeDef:
                         if (found.ObjectType != CdmObjectType.OperationAddTypeAttributeDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type add type attribute operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "type attribute operation", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.OperationExcludeAttributesDef:
                         if (found.ObjectType != CdmObjectType.OperationExcludeAttributesDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type exclude attributes operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "exclude attributes operation", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.OperationArrayExpansionDef:
                         if (found.ObjectType != CdmObjectType.OperationArrayExpansionDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type array expansion operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, " array expansion operation", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.OperationCombineAttributesDef:
                         if (found.ObjectType != CdmObjectType.OperationCombineAttributesDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type combine attributes operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "combine attributes operation", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.OperationRenameAttributesDef:
                         if (found.ObjectType != CdmObjectType.OperationRenameAttributesDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type rename attributes operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "rename attributes operation", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.OperationReplaceAsForeignKeyDef:
                         if (found.ObjectType != CdmObjectType.OperationReplaceAsForeignKeyDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type replace as foreign key operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "replace as foreign key operation", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.OperationIncludeAttributesDef:
                         if (found.ObjectType != CdmObjectType.OperationIncludeAttributesDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type include attributes operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "include attributes operation", symbolDef);
                             found = null;
                         }
                         break;
                     case CdmObjectType.OperationAddAttributeGroupDef:
                         if (found.ObjectType != CdmObjectType.OperationAddAttributeGroupDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type add attribute group operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "add attribute group operation", symbolDef);
                             found = null;
                         }
                         break;
                 }
             }
+
+            if (resOpt.SymbolRefToObjects != null && found is CdmObjectDefinitionBase foundDef)
+            {
+                resOpt.SymbolRefToObjects.Add(Tuple.Create(symbolDef, foundDef));
+            }
+
             return found;
         }
 
@@ -509,6 +523,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             StringBuilder tagSuffix = new StringBuilder();
             tagSuffix.AppendFormat("-{0}-{1}", kind, thisId);
             tagSuffix.AppendFormat("-({0})", resOpt.Directives != null ? resOpt.Directives.GetTag() : string.Empty);
+            if (resOpt.DepthInfo.MaxDepthExceeded)
+            {
+                DepthInfo currDepthInfo = resOpt.DepthInfo;
+                tagSuffix.AppendFormat("-${0}", currDepthInfo.MaxDepth - currDepthInfo.CurrentDepth);
+            }
+            if (resOpt.InCircularReference)
+            {
+                tagSuffix.Append("-pk");
+            }
             if (!string.IsNullOrEmpty(extraTags))
             {
                 tagSuffix.AppendFormat("-{0}", extraTags);
@@ -687,6 +710,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 case CdmObjectType.TraitRef:
                     newObj = new CdmTraitReference(this.Ctx, nameOrRef, simpleNameRef, false);
                     break;
+                case CdmObjectType.TraitGroupDef:
+                    newObj = new CdmTraitGroupDefinition(this.Ctx, nameOrRef);
+                    break;
+                case CdmObjectType.TraitGroupRef:
+                    newObj = new CdmTraitGroupReference(this.Ctx, nameOrRef, simpleNameRef);
+                    break;
                 case CdmObjectType.TypeAttributeDef:
                     newObj = new CdmTypeAttributeDefinition(this.Ctx, nameOrRef);
                     break;
@@ -763,6 +792,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 case CdmObjectType.TraitRef:
                     return CdmObjectType.TraitRef;
 
+                case CdmObjectType.TraitGroupDef:
+                case CdmObjectType.TraitGroupRef:
+                    return CdmObjectType.TraitGroupRef;
+
                 case CdmObjectType.EntityAttributeDef:
                 case CdmObjectType.TypeAttributeDef:
                 case CdmObjectType.AttributeRef:
@@ -779,18 +812,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return definition.Id.ToString() + "-" + kind;
         }
 
-        internal static CdmDocumentDefinition FetchPriorityDocument(List<CdmDocumentDefinition> docs, IDictionary<CdmDocumentDefinition, int> importPriority)
+        internal static CdmDocumentDefinition FetchPriorityDocument(List<CdmDocumentDefinition> docs, IDictionary<CdmDocumentDefinition, ImportInfo> importPriority)
         {
             CdmDocumentDefinition docBest = null;
             int indexBest = int.MaxValue;
             foreach (CdmDocumentDefinition docDefined in docs)
             {
                 // is this one of the imported docs?
-                int indexFound = int.MaxValue;
-                bool worked = importPriority.TryGetValue(docDefined, out indexFound);
-                if (worked && indexFound < indexBest)
+                bool worked = importPriority.TryGetValue(docDefined, out ImportInfo importInfo);
+                if (worked && importInfo.Priority < indexBest)
                 {
-                    indexBest = indexFound;
+                    indexBest = importInfo.Priority;
                     docBest = docDefined;
                     // hard to be better than the best
                     if (indexBest == 0)
@@ -837,7 +869,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 if (!doc.DeclarationsIndexed)
                 {
-                    Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"index start: {doc.AtCorpusPath}", nameof(this.IndexDocuments));
+                    Logger.Debug(this.Ctx, Tag, nameof(IndexDocuments), doc.AtCorpusPath, $"index start: {doc.AtCorpusPath}");
                     doc.ClearCaches();
                 }
             }
@@ -877,7 +909,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (doc.IsValid)
                     {
-                        ResolveOptions resOptLocal = CdmObjectBase.CopyResolveOptions(resOpt);
+                        ResolveOptions resOptLocal = resOpt.Copy();
                         resOptLocal.WrtDoc = doc;
                         this.ResolveObjectDefinitions(resOptLocal, doc);
                     }
@@ -888,7 +920,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (doc.IsValid)
                     {
-                        ResolveOptions resOptLocal = CdmObjectBase.CopyResolveOptions(resOpt);
+                        ResolveOptions resOptLocal = resOpt.Copy();
                         resOptLocal.WrtDoc = doc;
                         this.ResolveTraitArguments(resOptLocal, doc);
                     }
@@ -897,8 +929,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             // finish up.
             foreach (CdmDocumentDefinition doc in docsNotIndexed)
-            {                    
-                Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"index finish: { doc.AtCorpusPath}", nameof(this.IndexDocuments));
+            {
+                Logger.Debug(this.Ctx, Tag, nameof(IndexDocuments), doc.AtCorpusPath, $"index finish: { doc.AtCorpusPath}");
                 this.FinishDocumentResolve(doc, loadImports);
             }
 
@@ -913,7 +945,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(objectPath);
                 if (pathTuple == null)
                 {
-                    Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, "The object path cannot be null or empty.", nameof(LoadFolderOrDocument));
+                    Logger.Error(this.Ctx, Tag, nameof(LoadFolderOrDocument), objectPath, CdmLogCode.ErrPathNullObjectPath);
                     return null;
                 }
                 string nameSpace = !string.IsNullOrWhiteSpace(pathTuple.Item1) ? pathTuple.Item1 : this.Storage.DefaultNamespace;
@@ -925,10 +957,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     StorageAdapter namespaceAdapter = this.Storage.FetchAdapter(nameSpace);
                     if (namespaceFolder == null || namespaceAdapter == null)
                     {
-                        Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, "The namespace '" + nameSpace + "' has not been registered", $"LoadFolderOrDocument({objectPath})");
+                        Logger.Error(this.Ctx, Tag, nameof(LoadFolderOrDocument), objectPath, CdmLogCode.ErrStorageNamespaceNotRegistered, nameSpace);
                         return null;
                     }
-                    CdmFolderDefinition lastFolder = await namespaceFolder.FetchChildFolderFromPathAsync(objectPath, false);
+                    CdmFolderDefinition lastFolder = namespaceFolder.FetchChildFolderFromPath(objectPath, false);
 
                     // don't create new folders, just go as far as possible
                     if (lastFolder != null)
@@ -958,70 +990,73 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="forceReload">Optional parameter. When true, the document containing the requested object is reloaded from storage to access any external changes made to the document since it may have been cached by the corpus.</param>
         /// <returns>The object obtained from the provided path.</returns>
         public async Task<T> FetchObjectAsync<T>(string objectPath, CdmObject obj = null, ResolveOptions resOpt = null, bool forceReload = false)
-            where T: CdmObject
+            where T : CdmObject
         {
-            if (resOpt == null)
+            using (Logger.EnterScope(Tag, Ctx, nameof(FetchObjectAsync)))
             {
-                resOpt = new ResolveOptions();
-            }
-
-            // convert the object path to the absolute corpus path.
-            objectPath = this.Storage.CreateAbsoluteCorpusPath(objectPath, obj);
-
-            var documentPath = objectPath;
-            var documentNameIndex = objectPath.LastIndexOf(PersistenceLayer.CdmExtension);
-
-            if (documentNameIndex != -1)
-            {
-                // if there is something after the document path, split it into document path and object path.
-                documentNameIndex += PersistenceLayer.CdmExtension.Count();
-                documentPath = objectPath.Slice(0, documentNameIndex);
-            }
-
-            Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"request object: {objectPath}", nameof(this.FetchObjectAsync));
-            CdmContainerDefinition newObj = await LoadFolderOrDocument(documentPath, forceReload);
-
-            if (newObj != null)
-            {
-                // get imports and index each document that is loaded
-                if (newObj is CdmDocumentDefinition doc)
+                if (resOpt == null)
                 {
-                    if (!await doc.IndexIfNeeded(resOpt))
+                    resOpt = new ResolveOptions();
+                }
+
+                // convert the object path to the absolute corpus path.
+                objectPath = this.Storage.CreateAbsoluteCorpusPath(objectPath, obj);
+
+                var documentPath = objectPath;
+                var documentNameIndex = objectPath.LastIndexOf(PersistenceLayer.CdmExtension);
+
+                if (documentNameIndex != -1)
+                {
+                    // if there is something after the document path, split it into document path and object path.
+                    documentNameIndex += PersistenceLayer.CdmExtension.Count();
+                    documentPath = objectPath.Slice(0, documentNameIndex);
+                }
+
+                Logger.Debug(this.Ctx, Tag, nameof(FetchObjectAsync), objectPath, $"request object: {objectPath}");
+                CdmContainerDefinition newObj = await LoadFolderOrDocument(documentPath, forceReload);
+
+                if (newObj != null)
+                {
+                    // get imports and index each document that is loaded
+                    if (newObj is CdmDocumentDefinition doc)
                     {
+                        if (!await doc.IndexIfNeeded(resOpt))
+                        {
+                            return default;
+                        }
+
+                        if (!doc.IsValid)
+                        {
+                            Logger.Error(this.Ctx, Tag, nameof(FetchObjectAsync), newObj.AtCorpusPath, CdmLogCode.ErrValdnInvalidDoc, objectPath);
+                            return default;
+                        }
+                    }
+
+                    if (documentPath.Equals(objectPath))
+                    {
+                        return (T)newObj;
+                    }
+
+                    if (documentNameIndex == -1)
+                    {
+                        // there is no remaining path to be loaded, so return.
                         return default;
                     }
 
-                    if (!doc.IsValid)
+                    // trim off the document path to get the object path in the doc
+                    var remainingObjectPath = objectPath.Slice(documentNameIndex + 1);
+
+                    var result = ((CdmDocumentDefinition)newObj).FetchObjectFromDocumentPath(remainingObjectPath, resOpt);
+                    if (result == null)
                     {
-                        Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, $"The requested path: {objectPath} involves a document that failed validation", nameof(this.FetchObjectAsync));
-                        return default;
+                        Logger.Error(this.Ctx, Tag, nameof(FetchObjectAsync), newObj.AtCorpusPath, CdmLogCode.ErrDocSymbolNotFound, objectPath, newObj.AtCorpusPath);
                     }
+
+                    return (T)result;
                 }
 
-                if (documentPath.Equals(objectPath))
-                {
-                    return (T)newObj;
-                }
-
-                if (documentNameIndex == -1)
-                {
-                    // there is no remaining path to be loaded, so return.
-                    return default;
-                }
-
-                // trim off the document path to get the object path in the doc
-                var remainingObjectPath = objectPath.Slice(documentNameIndex + 1);
-
-                var result = ((CdmDocumentDefinition)newObj).FetchObjectFromDocumentPath(remainingObjectPath, resOpt);
-                if (result == null)
-                {
-                    Logger.Error(nameof(CdmCorpusDefinition), (ResolveContext)this.Ctx, $"Could not find symbol '{objectPath}' in document[{newObj.AtCorpusPath}]", nameof(FetchObjectAsync));
-                }
-
-                return (T)result;
+                return default;
             }
-
-            return default;
         }
 
         /// <summary>
@@ -1046,11 +1081,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// A callback that gets called on an event.
         /// </summary>
-        public void SetEventCallback(EventCallback status, CdmStatusLevel reportAtLevel = CdmStatusLevel.Info)
+        /// <param name="status">The callback</param>
+        /// <param name="reportAtLevel">Messages at this or higher level will only be reported</param>
+        /// <param name="correlationId">Optional correlation ID to attach to messages</param>
+        public void SetEventCallback(EventCallback status, CdmStatusLevel reportAtLevel = CdmStatusLevel.Info, string correlationId = null)
         {
             ResolveContext ctx = this.Ctx as ResolveContext;
             ctx.StatusEvent = status;
             ctx.ReportAtLevel = reportAtLevel;
+            ctx.CorrelationId = correlationId;
         }
 
         /// <summary>
@@ -1085,7 +1124,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         // no document set for this import, see if it is already loaded into the corpus
                         var path = this.Storage.CreateAbsoluteCorpusPath(imp.CorpusPath, doc);
-                        var impDoc = this.documentLibrary.FetchDocumentAndMarkForIndexing(path);
+                        var impDoc = this.documentLibrary.FetchDocument(path);
                         if (impDoc != null)
                         {
                             imp.Document = impDoc;
@@ -1106,50 +1145,56 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             var docsNowLoaded = new ConcurrentDictionary<CdmDocumentDefinition, byte>();
             List<string> docsNotLoaded = this.documentLibrary.ListDocsNotLoaded();
 
-            if (docsNotLoaded.Count > 0)
+            if (docsNotLoaded.Count == 0)
             {
-                async Task loadDocs(string missing)
-                {
-                    if (this.documentLibrary.NeedToLoadDocument(missing))
-                    {
-                        // load it
-                        var newDoc = await this.LoadFolderOrDocument(missing, false, resOpt) as CdmDocumentDefinition;
-
-                        if (this.documentLibrary.MarkDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded))
-                        {
-                            Logger.Info(nameof(CdmCorpusDefinition), this.Ctx, $"resolved import for '{newDoc.Name}'", doc.AtCorpusPath);
-                        }
-                        else
-                        {
-                            Logger.Warning(nameof(CdmCorpusDefinition), this.Ctx, $"unable to resolve import for '{missing}'", doc.AtCorpusPath);
-                        }
-                    }
-                }
-
-                var taskList = new List<Task>();
-                foreach (var missing in docsNotLoaded)
-                {
-                    taskList.Add(loadDocs(missing));
-                }
-
-                // wait for all of the missing docs to finish loading
-                await Task.WhenAll(taskList);
-
-                // now that we've loaded new docs, find imports from them that need loading
-                foreach (var loadedDoc in docsNowLoaded.Keys)
-                {
-                    this.FindMissingImportsFromDocument(loadedDoc);
-                }
-
-                // repeat this process for the imports of the imports
-                List<Task> importTaskList = new List<Task>();
-                foreach (var loadedDoc in docsNowLoaded.Keys)
-                {
-                    importTaskList.Add(this.LoadImportsAsync(loadedDoc, resOpt));
-                }
-
-                await Task.WhenAll(importTaskList);
+                return;
             }
+
+            async Task loadDocs(string missing)
+            {
+                if (this.documentLibrary.NeedToLoadDocument(missing, docsNowLoaded))
+                {
+                    this.documentLibrary.concurrentReadLock.Acquire();
+
+                    // load it
+                    var newDoc = await this.LoadFolderOrDocument(missing, false, resOpt) as CdmDocumentDefinition;
+
+                    if (this.documentLibrary.MarkDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded))
+                    {
+                        Logger.Info(this.Ctx, Tag, nameof(LoadImportsAsync), newDoc.AtCorpusPath, $"resolved import for '{newDoc.Name}'");
+                    }
+                    else
+                    {
+                        Logger.Warning(this.Ctx, Tag, nameof(LoadImportsAsync), null, CdmLogCode.WarnResolveImportFailed, missing);
+                    }
+
+                    this.documentLibrary.concurrentReadLock.Release();
+                }
+            }
+
+            var taskList = new List<Task>();
+            foreach (var missing in docsNotLoaded)
+            {
+                taskList.Add(loadDocs(missing));
+            }
+
+            // wait for all of the missing docs to finish loading
+            await Task.WhenAll(taskList);
+
+            // now that we've loaded new docs, find imports from them that need loading
+            foreach (var loadedDoc in docsNowLoaded.Keys)
+            {
+                this.FindMissingImportsFromDocument(loadedDoc);
+            }
+
+            // repeat this process for the imports of the imports
+            List<Task> importTaskList = new List<Task>();
+            foreach (var loadedDoc in docsNowLoaded.Keys)
+            {
+                importTaskList.Add(this.LoadImportsAsync(loadedDoc, resOpt));
+            }
+
+            await Task.WhenAll(importTaskList);
         }
 
         /// <summary>
@@ -1182,7 +1227,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         (iObject as CdmObjectBase).Ctx = ctx;
                     }
 
-                    Logger.Info(nameof(CdmCorpusDefinition), ctx, $"checked '{path}'", CurrentDoc.FolderPath + path);
+                    Logger.Info(ctx, Tag, nameof(CheckObjectIntegrity), (iObject as CdmObjectBase).AtCorpusPath, $"checked '{path}'");
                     return false;
                 }
             };
@@ -1200,6 +1245,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 Invoke = (iObject, path) =>
                 {
+                    // I can't think of a better time than now to make sure any recently changed or added things have an in doc
+                    iObject.InDocument = CurrentDoc;
+
                     if (path.IndexOf("(unspecified)") > 0)
                         return true;
                     bool skipDuplicates = false;
@@ -1216,6 +1264,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         case CdmObjectType.ParameterDef:
                         case CdmObjectType.TraitDef:
                         case CdmObjectType.PurposeDef:
+                        case CdmObjectType.TraitGroupDef:
+                        case CdmObjectType.TraitGroupRef:
                         case CdmObjectType.AttributeContextDef:
                         case CdmObjectType.DataTypeDef:
                         case CdmObjectType.TypeAttributeDef:
@@ -1237,7 +1287,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             if (iObject.ObjectType == CdmObjectType.AttributeGroupRef || iObject.ObjectType == CdmObjectType.AttributeContextRef
                             || iObject.ObjectType == CdmObjectType.DataTypeRef || iObject.ObjectType == CdmObjectType.EntityRef
                             || iObject.ObjectType == CdmObjectType.PurposeRef || iObject.ObjectType == CdmObjectType.TraitRef
-                            || iObject.ObjectType == CdmObjectType.ConstantEntityDef)
+                            || iObject.ObjectType == CdmObjectType.TraitGroupRef || iObject.ObjectType == CdmObjectType.ConstantEntityDef)
                             {
                                 // these are all references
                                 // we will now allow looking up a reference object based on path, so they get indexed too
@@ -1248,7 +1298,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             string corpusPath = CorpusPathRoot + '/' + path;
                             if (CurrentDoc.InternalDeclarations.ContainsKey(path) && !skipDuplicates)
                             {
-                                Logger.Error(nameof(CdmCorpusDefinition), ctx, $"duplicate declaration for item '{path}'", corpusPath);
+                                Logger.Error(this.Ctx, Tag, nameof(DeclareObjectDefinitions), corpusPath, CdmLogCode.ErrPathIsDuplicate, corpusPath);
                                 return false;
                             }
                             else
@@ -1256,7 +1306,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 CurrentDoc.InternalDeclarations.TryAdd(path, iObject as CdmObjectBase);
                                 this.RegisterSymbol(path, CurrentDoc);
 
-                                Logger.Info(nameof(CdmCorpusDefinition), ctx, $"declared '{path}'", corpusPath);
+                                Logger.Info(ctx, Tag, nameof(DeclareObjectDefinitions), corpusPath, $"declared '{path}'");
                             }
                             break;
                     }
@@ -1280,6 +1330,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         case CdmObjectType.EntityDef:
                         case CdmObjectType.ParameterDef:
                         case CdmObjectType.TraitDef:
+                        case CdmObjectType.TraitGroupDef:
                         case CdmObjectType.PurposeDef:
                         case CdmObjectType.DataTypeDef:
                         case CdmObjectType.TypeAttributeDef:
@@ -1321,7 +1372,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (dt == null)
                 {
                     dt = paramDef.DataTypeRef.FetchObjectDefinition<CdmDataTypeDefinition>(resOpt);
-                    Logger.Error(nameof(CdmCorpusDefinition), ctx, $"parameter '${paramDef.Name}' has an unrecognized dataType.", ctx.RelativePath);
+                    Logger.Error(ctx, Tag, nameof(ConstTypeCheck), CurrentDoc.FolderPath + CurrentDoc.Name, CdmLogCode.ErrUnrecognizedDataType, paramDef.Name);
                     return null;
                 }
                 // compare with passed in value or default for parameter
@@ -1364,6 +1415,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             expectedTypes.Add(CdmObjectType.PurposeDef);
                             expected = "purpose";
                         }
+                        else if (dt.IsDerivedFrom("traitGroup", resOpt))
+                        {
+                            expectedTypes.Add(CdmObjectType.TraitGroupRef);
+                            expectedTypes.Add(CdmObjectType.TraitGroupDef);
+                            expected = "traitGroup";
+                        }
                         else if (dt.IsDerivedFrom("trait", resOpt))
                         {
                             expectedTypes.Add(CdmObjectType.TraitRef);
@@ -1379,7 +1436,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                         if (expectedTypes.Count == 0)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, $"parameter '${paramDef.Name}' has an unexpected dataType.", ctx.RelativePath);
+                            Logger.Error(ctx, Tag,nameof(ConstTypeCheck), CurrentDoc.FolderPath + CurrentDoc.Name, CdmLogCode.ErrUnexpectedDataType, paramDef.Name);
                         }
 
                         // if a string constant, resolve to an object ref.
@@ -1433,11 +1490,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                         if (expectedTypes.IndexOf(foundType) == -1)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, $"parameter '{paramDef.Name}' has the dataType of '{expected}' but the value '{foundDesc}' doesn't resolve to a known {expected} referenece", CurrentDoc.FolderPath + ctx.RelativePath);
+                            Logger.Error(ctx, Tag, nameof(ConstTypeCheck), CurrentDoc.AtCorpusPath, CdmLogCode.ErrResolutionFailure, paramDef.Name, expected, foundDesc, expected);
                         }
                         else
                         {
-                            Logger.Info(nameof(CdmCorpusDefinition), ctx, $"    resolved '{foundDesc}'", ctx.RelativePath);
+                            Logger.Info(ctx, Tag, nameof(ConstTypeCheck), CurrentDoc.AtCorpusPath, $"resolved '{foundDesc}'");
                         }
                     }
                 }
@@ -1479,18 +1536,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     // It's okay if references can't be resolved when shallow validation is enabled.
                                     if (resOpt.ShallowValidation)
                                     {
-                                        Logger.Warning(nameof(CdmCorpusDefinition), ctx, message, messagePath);
+                                        Logger.Warning(ctx, Tag, nameof(ResolveObjectDefinitions), CurrentDoc.AtCorpusPath, CdmLogCode.WarnResolveReferenceFailure, reff.NamedReference);
                                     }
                                     else
                                     {
-                                        Logger.Error(nameof(CdmCorpusDefinition), ctx, message, messagePath);
+                                        Logger.Error(ctx, Tag, nameof(ResolveObjectDefinitions), CurrentDoc.AtCorpusPath, CdmLogCode.ErrResolveReferenceFailure, reff.NamedReference);
+
+                                        // don't check in this file without both of these comments. handy for debug of failed lookups
+                                        // CdmObjectDefinitionBase resTest = ref.FetchObjectDefinition(resOpt);
                                     }
-                                    // don't check in this file without both of these comments. handy for debug of failed lookups
-                                    // CdmObjectDefinitionBase resTest = ref.FetchObjectDefinition(resOpt);
                                 }
                                 else
                                 {
-                                    Logger.Info(nameof(CdmCorpusDefinition), ctx, $"    resolved '{reff.NamedReference}'", $"{CurrentDoc.FolderPath}{path}");
+                                    Logger.Info(ctx, Tag, nameof(ResolveObjectDefinitions), CurrentDoc.AtCorpusPath, $"resolved '{reff.NamedReference}'");
                                 }
                             }
                             break;
@@ -1550,20 +1608,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     {
                                         (iObject as CdmArgumentDefinition).Value = aValue;
                                     }
-                                            
+
                                 }
                             }
                             catch (Exception e)
                             {
-                                Logger.Error(nameof(CdmCorpusDefinition), ctx, e.ToString(), path);
-                                Logger.Error(nameof(CdmCorpusDefinition), ctx, $"failed to resolve parameter on trait '{ctx.CurrentScope.CurrentTrait?.GetName()}'", CurrentDoc.FolderPath + path);
+                                Logger.Error(ctx, Tag, nameof(ResolveTraitArguments), CurrentDoc.AtCorpusPath, CdmLogCode.ErrTraitResolutionFailure, ctx.CurrentScope.CurrentTrait?.GetName(), e.ToString());
                             }
                             ctx.CurrentScope.CurrentParameter++;
                             break;
                     }
                     return false;
                 }
-            }, new VisitCallback
+            },
+            new VisitCallback
             {
                 Invoke = (iObject, path) =>
                 {
@@ -1598,7 +1656,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (def.ObjectType == CdmObjectType.EntityDef)
                     {
-                        Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"indexed entity: {def.AtCorpusPath}");
+                        Logger.Debug(this.Ctx, Tag, nameof(FinishDocumentResolve), def.AtCorpusPath, $"indexed entity: {def.AtCorpusPath}");
                     }
                 });
             }
@@ -1610,7 +1668,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ////////////////////////////////////////////////////////////////////////////////////////////////////
             //  cleanup references
             ////////////////////////////////////////////////////////////////////////////////////////////////////
-            Logger.Debug(nameof(CdmCorpusDefinition), ctx, "finishing...");
+            Logger.Debug(ctx, Tag, nameof(FinishResolve), null, message: "finishing...");
             // turn elevated traits back on, they are off by default and should work fully now that everything is resolved
             List<CdmDocumentDefinition> AllDocuments = this.documentLibrary.ListAllDocuments();
             int l = AllDocuments.Count;
@@ -1623,7 +1681,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         private bool IsPathManifestDocument(string path)
         {
             return (path.EndsWith(PersistenceLayer.ManifestExtension)) || path.EndsWith(PersistenceLayer.ModelJsonExtension)
-                || path.EndsWith(PersistenceLayer.FolioExtension) || path.EndsWith(PersistenceLayer.OdiExtension);
+                || path.EndsWith(PersistenceLayer.FolioExtension);
         }
 
         /// <summary>
@@ -1653,75 +1711,78 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <returns>A <see cref="Task"/> for the completion of entity graph calculation.</returns>
         public async Task CalculateEntityGraphAsync(CdmManifestDefinition currManifest)
         {
-            if (currManifest.Entities != null)
+            using (Logger.EnterScope(nameof(CdmCorpusDefinition), Ctx, nameof(CalculateEntityGraphAsync)))
             {
-                foreach (var entityDec in currManifest.Entities)
+                if (currManifest.Entities != null)
                 {
-                    var entityPath = await currManifest.GetEntityPathFromDeclaration(entityDec, currManifest);
-                    // the path returned by GetEntityPathFromDeclaration is an absolute path.
-                    // no need to pass the manifest to FetchObjectAsync.
-                    var entity = await this.FetchObjectAsync<CdmEntityDefinition>(entityPath);
-
-                    if (entity == null)
-                        continue;
-
-                    CdmEntityDefinition resEntity;
-                    // make options wrt this entity document and "relational" always
-                    var resOpt = new ResolveOptions(entity.InDocument, new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" }));
-
-                    bool isResolvedEntity = entity.AttributeContext != null;
-
-                    // only create a resolved entity if the entity passed in was not a resolved entity
-                    if (!isResolvedEntity)
+                    foreach (var entityDec in currManifest.Entities)
                     {
-                        // first get the resolved entity so that all of the references are present
-                        resEntity = await entity.CreateResolvedEntityAsync($"wrtSelf_{entity.EntityName}", resOpt);
-                    }
-                    else
-                    {
-                        resEntity = entity;
-                    }
+                        var entityPath = await currManifest.GetEntityPathFromDeclaration(entityDec, currManifest);
+                        // the path returned by GetEntityPathFromDeclaration is an absolute path.
+                        // no need to pass the manifest to FetchObjectAsync.
+                        var entity = await this.FetchObjectAsync<CdmEntityDefinition>(entityPath);
 
-                    // find outgoing entity relationships using attribute context
-                    List<CdmE2ERelationship> outgoingRelationships = this.FindOutgoingRelationships(
-                        resOpt,
-                        resEntity,
-                        resEntity.AttributeContext,
-                        isResolvedEntity);
+                        if (entity == null)
+                            continue;
 
-                    this.OutgoingRelationships[entity] = outgoingRelationships;
+                        CdmEntityDefinition resEntity;
+                        // make options wrt this entity document and "relational" always
+                        var resOpt = new ResolveOptions(entity.InDocument, new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" }));
 
-                    // flip outgoing entity relationships list to get incoming relationships map
-                    if (outgoingRelationships != null)
-                    {
-                        foreach (CdmE2ERelationship rel in outgoingRelationships)
+                        bool isResolvedEntity = entity.AttributeContext != null;
+
+                        // only create a resolved entity if the entity passed in was not a resolved entity
+                        if (!isResolvedEntity)
                         {
-                            var targetEnt = await this.FetchObjectAsync<CdmEntityDefinition>(rel.ToEntity, currManifest);
-                            if (targetEnt != null)
-                            {
-                                if (!this.IncomingRelationships.ContainsKey(targetEnt))
-                                    this.IncomingRelationships[targetEnt] = new List<CdmE2ERelationship>();
+                            // first get the resolved entity so that all of the references are present
+                            resEntity = await entity.CreateResolvedEntityAsync($"wrtSelf_{entity.EntityName}", resOpt);
+                        }
+                        else
+                        {
+                            resEntity = entity;
+                        }
 
-                                this.IncomingRelationships[targetEnt].Add(rel);
+                        // find outgoing entity relationships using attribute context
+                        List<CdmE2ERelationship> outgoingRelationships = this.FindOutgoingRelationships(
+                            resOpt,
+                            resEntity,
+                            resEntity.AttributeContext,
+                            isResolvedEntity);
+
+                        this.OutgoingRelationships[entity] = outgoingRelationships;
+
+                        // flip outgoing entity relationships list to get incoming relationships map
+                        if (outgoingRelationships != null)
+                        {
+                            foreach (CdmE2ERelationship rel in outgoingRelationships)
+                            {
+                                var targetEnt = await this.FetchObjectAsync<CdmEntityDefinition>(rel.ToEntity, currManifest);
+                                if (targetEnt != null)
+                                {
+                                    if (!this.IncomingRelationships.ContainsKey(targetEnt))
+                                        this.IncomingRelationships[targetEnt] = new List<CdmE2ERelationship>();
+
+                                    this.IncomingRelationships[targetEnt].Add(rel);
+                                }
                             }
                         }
+
+                        // delete the resolved entity if we created one here
+                        if (!isResolvedEntity)
+                            resEntity.InDocument.Folder.Documents.Remove(resEntity.InDocument.Name);
+
                     }
 
-                    // delete the resolved entity if we created one here
-                    if (!isResolvedEntity)
-                        resEntity.InDocument.Folder.Documents.Remove(resEntity.InDocument.Name);
-
-                }
-
-                if (currManifest.SubManifests != null)
-                {
-                    foreach (CdmManifestDeclarationDefinition subManifestDef in currManifest.SubManifests)
+                    if (currManifest.SubManifests != null)
                     {
-                        var corpusPath = this.Storage.CreateAbsoluteCorpusPath(subManifestDef.Definition, currManifest);
-                        var subManifest = await this.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
-                        if (subManifest != null)
+                        foreach (CdmManifestDeclarationDefinition subManifestDef in currManifest.SubManifests)
                         {
-                            await this.CalculateEntityGraphAsync(subManifest);
+                            var corpusPath = this.Storage.CreateAbsoluteCorpusPath(subManifestDef.Definition, currManifest);
+                            var subManifest = await this.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
+                            if (subManifest != null)
+                            {
+                                await this.CalculateEntityGraphAsync(subManifest);
+                            }
                         }
                     }
                 }
@@ -1735,8 +1796,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             bool isResolvedEntity,
             CdmAttributeContext generatedAttSetContext = null,
             bool wasProjectionPolymorphic = false,
-            bool wasEntityRef = false,
-            List<CdmAttributeReference> fromAtts = null)
+            List<CdmAttributeReference> fromAtts = null,
+            CdmAttributeContext entityAttAttContext = null)
         {
             List<CdmE2ERelationship> outRels = new List<CdmE2ERelationship>();
 
@@ -1756,6 +1817,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (subAttCtx.ObjectType == CdmObjectType.AttributeContextDef)
                     {
+                        // find the top level entity definition's attribute context
+                        if (entityAttAttContext == null && attCtx.Type == CdmAttributeContextType.AttributeDefinition
+                            && attCtx.Definition.FetchObjectDefinition<CdmObjectDefinition>(resOpt)?.ObjectType == CdmObjectType.EntityAttributeDef)
+                        {
+                            entityAttAttContext = attCtx;
+                        }
+
                         // find entity references that identifies the 'this' entity
                         var child = subAttCtx as CdmAttributeContext;
                         if (child?.Definition?.ObjectType == CdmObjectType.EntityRef)
@@ -1767,8 +1835,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 // Projections
 
                                 isEntityRef = false;
-                                isPolymorphicSource = (toEntity?.Owner?.ObjectType == CdmObjectType.EntityAttributeDef &&
-                                    ((CdmEntityAttributeDefinition)toEntity.Owner).IsPolymorphicSource == true);
+
+                                CdmObject owner = toEntity.Owner?.Owner;
+
+                                if (owner != null)
+                                {
+                                    isPolymorphicSource = (owner.ObjectType == CdmObjectType.EntityAttributeDef &&
+                                        ((CdmEntityAttributeDefinition)owner).IsPolymorphicSource == true);
+                                }
+                                else
+                                {
+                                    Logger.Error(this.Ctx, Tag, nameof(FindOutgoingRelationships), null, CdmLogCode.ErrObjectWithoutOwnerFound);
+                                }
 
                                 // From the top of the projection (or the top most which contains a generatedSet / operations)
                                 // get the attribute names for the foreign key
@@ -1777,12 +1855,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     fromAtts = GetFromAttributes(newGenSet, fromAtts);
                                 }
 
+                                // Fetch purpose traits
+                                ResolvedTraitSet resolvedTraitSet = null;
+                                CdmEntityAttributeDefinition entityAtt = owner.FetchObjectDefinition<CdmObjectDefinition>(resOpt) as CdmEntityAttributeDefinition;
+                                if (entityAtt?.Purpose != null)
+                                {
+                                    resolvedTraitSet = entityAtt.Purpose.FetchResolvedTraits(resOpt);
+                                }
+
                                 outRels = FindOutgoingRelationshipsForProjection(
                                     outRels,
                                     child,
                                     resOpt,
                                     resEntity,
-                                    fromAtts);
+                                    fromAtts, 
+                                    resolvedTraitSet);
 
                                 wasProjectionPolymorphic = isPolymorphicSource;
                             }
@@ -1793,10 +1880,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 isEntityRef = true;
 
                                 List<string> toAtt = child.ExhibitsTraits
-                                    .Where(x => x.FetchObjectDefinitionName() == "is.identifiedBy" && x.Arguments?.Count > 0)
+                                    .Where(x => x.FetchObjectDefinitionName() == "is.identifiedBy" && (x as CdmTraitReference).Arguments?.Count > 0)
                                     .Select(y =>
                                     {
-                                        string namedRef = (y.Arguments[0].Value as CdmAttributeReference).NamedReference;
+                                        string namedRef = ((y as CdmTraitReference).Arguments[0].Value as CdmAttributeReference).NamedReference;
                                         return namedRef.Slice(namedRef.LastIndexOf("/") + 1);
                                     }
                                     )
@@ -1812,7 +1899,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     resEntity,
                                     isResolvedEntity,
                                     wasProjectionPolymorphic: wasProjectionPolymorphic,
-                                    wasEntityRef: isEntityRef);
+                                    wasEntityRef: isEntityRef,
+                                    attributeCtx: entityAttAttContext);
                             }
                         }
 
@@ -1826,8 +1914,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             isResolvedEntity,
                             newGenSet,
                             wasProjectionPolymorphic: wasProjectionPolymorphic,
-                            wasEntityRef: isEntityRef,
-                            fromAtts: fromAtts);
+                            fromAtts: fromAtts,
+                            entityAttAttContext: entityAttAttContext);
                         outRels.AddRange(subOutRels);
 
                         // if it was a projection-based polymorphic source up through this branch of the tree and currently it has reached the end of the projection tree to come to a non-projection source,
@@ -1845,6 +1933,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
+        /// Fetch resolved traits on purpose
+        /// </summary>
+        /// <param name="resOpt"></param>
+        /// <param name="attributeCtx"></param>
+        internal ResolvedTraitSet FetchPurposeResolvedTraitsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx)
+        {
+            CdmObjectDefinition def = attributeCtx.Definition.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
+            if (def?.ObjectType == CdmObjectType.EntityAttributeDef && (def as CdmEntityAttributeDefinition)?.Purpose != null)
+            {
+                return (def as CdmEntityAttributeDefinition).Purpose.FetchResolvedTraits(resOpt);
+            }
+            
+            return null;
+        }
+
+        /// <summary>
         /// Find the outgoing relationships for Projections.
         /// Given a list of 'From' attributes, find the E2E relationships based on the 'To' information stored in the trait of the attribute in the resolved entity
         /// </summary>
@@ -1859,18 +1963,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmAttributeContext child,
             ResolveOptions resOpt,
             CdmEntityDefinition resEntity,
-            List<CdmAttributeReference> fromAtts = null)
+            List<CdmAttributeReference> fromAtts = null,
+            ResolvedTraitSet resolvedTraitSet = null)
         {
             if (fromAtts != null)
             {
-                ResolveOptions resOptCopy = CdmObjectBase.CopyResolveOptions(resOpt);
+                ResolveOptions resOptCopy = resOpt.Copy();
                 resOptCopy.WrtDoc = resEntity.InDocument;
 
                 // Extract the from entity from resEntity
                 CdmObjectReference refToLogicalEntity = resEntity.AttributeContext.Definition;
                 CdmEntityDefinition unResolvedEntity = refToLogicalEntity?.FetchObjectDefinition<CdmEntityDefinition>(resOptCopy);
                 string fromEntity = unResolvedEntity?.Ctx.Corpus.Storage.CreateRelativeCorpusPath(unResolvedEntity.AtCorpusPath, unResolvedEntity.InDocument);
-
+                
                 for (int i = 0; i < fromAtts.Count; i++)
                 {
                     // List of to attributes from the constant entity argument parameter
@@ -1882,11 +1987,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         CdmE2ERelationship newE2ERel = new CdmE2ERelationship(this.Ctx, tuple.Item3)
                         {
-                            FromEntity = fromEntity,
+                            FromEntity = this.Storage.CreateAbsoluteCorpusPath(fromEntity, unResolvedEntity),
                             FromEntityAttribute = fromAtts[i].FetchObjectDefinitionName(),
-                            ToEntity = tuple.Item1,
+                            ToEntity = this.Storage.CreateAbsoluteCorpusPath(tuple.Item1, unResolvedEntity),
                             ToEntityAttribute = tuple.Item2
                         };
+
+                        if (resolvedTraitSet != null)
+                        {
+                            resolvedTraitSet.Set.ForEach(rt =>
+                            {
+                                var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOpt, rt);
+                                if (traitRef != null)
+                                {
+                                    newE2ERel.ExhibitsTraits.Add(traitRef);
+                                }
+                            });
+                        }
 
                         outRels.Add(newE2ERel);
                     }
@@ -1917,7 +2034,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmEntityDefinition resEntity,
             bool isResolvedEntity,
             bool wasProjectionPolymorphic = false,
-            bool wasEntityRef = false)
+            bool wasEntityRef = false,
+            CdmAttributeContext attributeCtx = null)
         {
             // entity references should have the "is.identifiedBy" trait, and the entity ref should be valid
             if (toAtt.Count == 1 && toEntity != null)
@@ -1960,7 +2078,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     // this list will contain the final tuples used for the toEntity where
                     // index 0 is the absolute path to the entity and index 1 is the toEntityAttribute
-                    List<Tuple<string, string>> toAttList = new List<Tuple<string, string>>();
+                     List<Tuple<string, string>> toAttList = new List<Tuple<string, string>>();
 
                     // get the list of toAttributes from the traits on the resolved attribute
                     var resolvedResOpt = new ResolveOptions(resEntity.InDocument);
@@ -1971,10 +2089,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                         foreach (var constEnt in fkArgValues)
                         {
-                            var absolutePath = this.Storage.CreateAbsoluteCorpusPath(constEnt.Item1, toEntity);
+                            var absolutePath = this.Storage.CreateAbsoluteCorpusPath(constEnt.Item1, attFromFk);
                             toAttList.Add(new Tuple<string, string>(absolutePath, constEnt.Item2));
                         }
                     }
+
+                    var resolvedTraitSet = FetchPurposeResolvedTraitsFromAttCtx(resOpt, attributeCtx);
 
                     foreach (var attributeTuple in toAttList)
                     {
@@ -1985,6 +2105,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             FromEntityAttribute = fromAtt,
                             ToEntityAttribute = attributeTuple.Item2
                         };
+
+                        if (resolvedTraitSet != null)
+                        {
+                            resolvedTraitSet.Set.ForEach(rt =>
+                            {
+                                var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOpt, rt);
+                                if (traitRef != null)
+                                {
+                                    newE2ERel.ExhibitsTraits.Add(traitRef);
+                                }
+                            });
+                        }
 
                         if (isResolvedEntity)
                         {
@@ -2049,8 +2181,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (adapter == null)
                 {
-                    Logger.Error(nameof(CdmCorpusDefinition), this.Ctx,
-                        $"Adapter not found for the Cdm object by ID {currObject.Id}.", "GetLastModifiedTimeAsyncFromObject");
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromObject), currObject.AtCorpusPath, CdmLogCode.ErrAdapterNotFound, currObject.Id.ToString());
                     return null;
                 }
 
@@ -2058,10 +2189,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(currObject.AtCorpusPath);
                 if (pathTuple == null)
                 {
-                    Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, "The object's AtCorpusPath should not be null or empty.", nameof(GetLastModifiedTimeAsyncFromObject));
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromObject), currObject.AtCorpusPath, CdmLogCode.ErrStorageNullCorpusPath);
                     return null;
                 }
-                return await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+
+                try
+                {
+                    return await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromObject), currObject.AtCorpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.Item2, e.Message);
+                    return null;
+                }
             }
             else
             {
@@ -2078,7 +2218,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
             if (pathTuple == null)
             {
-                Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, "The object path cannot be null or empty.", nameof(GetLastModifiedTimeAsyncFromPartitionPath));
+                Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromPartitionPath), corpusPath, CdmLogCode.ErrPathNullObjectPath);
                 return null;
             }
             string nameSpace = pathTuple.Item1;
@@ -2088,12 +2228,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (adapter == null)
                 {
-                    Logger.Error(nameof(CdmCorpusDefinition), this.Ctx,
-                        $"Adapter not found for the corpus path '{corpusPath}'", "GetLastModifiedTimeAsyncFromPartitionPath");
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromPartitionPath), corpusPath, CdmLogCode.ErrStorageAdapterNotFound, corpusPath);
                     return null;
                 }
 
-                return await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+                try
+                {
+                    return await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromPartitionPath), corpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.Item2, e.Message);
+                }
             }
             return null;
         }
@@ -2116,7 +2262,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 directives = this.DefaultResolutionDirectives;
             }
 
-            resOpt = new ResolveOptions { WrtDoc = null, Directives = directives, RelationshipDepth = 0 };
+            resOpt = new ResolveOptions
+            {
+                WrtDoc = null,
+                Directives = directives
+            };
+            resOpt.DepthInfo.Reset();
 
             foreach (CdmDocumentDefinition doc in this.documentLibrary.ListAllDocuments())
             {
@@ -2189,7 +2340,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmValidationStep nextStage)
         {
             var ctx = this.Ctx as ResolveContext;
-            Logger.Debug(nameof(CdmCorpusDefinition), ctx, statusMessage);
+            Logger.Debug(ctx, Tag, nameof(ResolveReferencesStep), null, message: statusMessage);
             int entityNesting = 0;
             foreach (CdmDocumentDefinition doc in this.documentLibrary.ListAllDocuments())
             {
@@ -2299,7 +2450,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             var ctx = this.Ctx as ResolveContext;
             Action<CdmObject> checkRequiredParamsOnResolvedTraits = obj =>
                 {
-                    ResolvedTraitSet rts = (obj as CdmObjectBase).FetchResolvedTraits(resOpt);
+                    CdmObjectBase cdmObj = obj as CdmObjectBase;
+                    ResolvedTraitSet rts = cdmObj.FetchResolvedTraits(resOpt);
                     if (rts != null)
                     {
                         for (int i = 0; i < rts.Size; i++)
@@ -2316,7 +2468,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                         found++;
                                         if (rt.ParameterValues.FetchValue(iParam) == null)
                                         {
-                                            Logger.Error(nameof(CdmCorpusDefinition), ctx, $"no argument supplied for required parameter '{rt.ParameterValues.FetchParameterAtIndex(iParam).Name}' of trait '{rt.TraitName}' on '{obj.FetchObjectDefinition<CdmObjectDefinition>(resOpt).GetName()}'", CurrentDoc.FolderPath + ctx.RelativePath);
+                                            Logger.Error(ctx, Tag, nameof(ResolveReferencesTraitsArguments), CurrentDoc.AtCorpusPath, CdmLogCode.ErrTraitArgumentMissing,
+                                                rt.ParameterValues.FetchParameterAtIndex(iParam).Name, rt.TraitName, obj.FetchObjectDefinition<CdmObjectDefinition>(resOpt)?.GetName());
                                         }
                                         else
                                             resolved++;
@@ -2325,7 +2478,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             }
                             if (found > 0 && found == resolved)
                             {
-                                Logger.Info(nameof(CdmCorpusDefinition), ctx, $"found and resolved '{found}' required parameters of trait '{rt.TraitName}' on '{obj.FetchObjectDefinition<CdmObjectDefinition>(resOpt).GetName()}'", CurrentDoc.FolderPath + ctx.RelativePath);
+                                Logger.Info(ctx, Tag, nameof(ResolveReferencesTraitsArguments), CurrentDoc.AtCorpusPath, $"found and resolved '{found}' required parameters of trait '{rt.TraitName}' on '{obj.FetchObjectDefinition<CdmObjectDefinition>(resOpt)?.GetName()}'");
                             }
                         }
                     }
@@ -2382,6 +2535,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         case CdmObjectType.TraitDef:
                         case CdmObjectType.PurposeDef:
+                        case CdmObjectType.TraitGroupDef:
                         case CdmObjectType.DataTypeDef:
                         case CdmObjectType.EntityDef:
                         case CdmObjectType.AttributeGroupDef:
@@ -2453,7 +2607,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resolvedEntity.FetchResolvedTraits(resOpt).Find(resOpt, "is.identifiedBy") == null)
             {
-                Logger.Warning(nameof(CdmCorpusDefinition), this.Ctx as ResolveContext, $"There is a primary key missing for the entry {resolvedEntity.GetName()}.");
+                Logger.Warning(this.Ctx as ResolveContext,Tag, nameof(CheckPrimaryKeyAttributes), resolvedEntity.AtCorpusPath, CdmLogCode.WarnValdnPrimaryKeyMissing, resolvedEntity.GetName());
             }
         }
 
@@ -2497,14 +2651,79 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         private List<Tuple<string, string, string>> GetToAttributes(CdmTypeAttributeDefinition fromAttrDef, ResolveOptions resOpt)
         {
             var tupleList = fromAttrDef?.AppliedTraits?
-                .Where(x => x.NamedReference == "is.linkedEntity.identifier" && x.Arguments?.Count > 0)?
-                .Select(y => ((y.Arguments[0].Value as CdmEntityReference).FetchObjectDefinition<CdmConstantEntityDefinition>(resOpt) as CdmConstantEntityDefinition))?
+                .Where(x => x.NamedReference == "is.linkedEntity.identifier" && (x as CdmTraitReference).Arguments?.Count > 0)?
+                .Select(y => ((y as CdmTraitReference).Arguments[0].Value as CdmEntityReference).FetchObjectDefinition<CdmConstantEntityDefinition>(resOpt))?
                 .Where(e => e.ConstantValues.Count > 0)?
                 .SelectMany(f => f.ConstantValues)?
                 .Select(z => new Tuple<string, string, string>(z[0], z[1], z.Count > 2 ? z[2] : ""))?
-                .ToList() as List<Tuple<string, string, string>>;
+                .ToList();
 
             return tupleList;
+        }
+        
+        /// <summary>
+        /// fetches from primitives or creates the default attributes that get added by resolution 
+        /// </summary>
+        /// <returns></returns>
+        internal async Task<bool> PrepareArtifactAttributesAsync()
+        {
+            if (this.KnownArtifactAttributes == null)
+            {
+                this.KnownArtifactAttributes = new Dictionary<string, CdmTypeAttributeDefinition>();
+                // see if we can get the value from primitives doc
+                // this might fail, and we do not want the user to know about it.
+                var oldStatus = this.Ctx.StatusEvent; // todo, we should make an easy way for our code to do this and set it back
+                var oldLevel = this.Ctx.ReportAtLevel;
+                this.SetEventCallback(new EventCallback
+                    {
+                        Invoke = (level, message) =>{ }
+                    }, CdmStatusLevel.Error);
+
+                CdmEntityDefinition entArt = null;
+                try
+                {
+                    entArt = await this.FetchObjectAsync<CdmEntityDefinition>("cdm:/primitives.cdm.json/defaultArtifacts");
+                }
+                finally
+                {
+                    this.SetEventCallback(oldStatus, oldLevel);
+                }
+
+                if (entArt == null)
+                {
+                    // fallback to the old ways, just make some
+                    CdmTypeAttributeDefinition artAtt = this.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "count");
+                    artAtt.DataType = this.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "integer", true);
+                    this.KnownArtifactAttributes["count"] = artAtt;
+                    artAtt = this.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "id");
+                    artAtt.DataType =this.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "entityId", true);
+                    this.KnownArtifactAttributes["id"] = artAtt;
+                    artAtt = this.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "type");
+                    artAtt.DataType = this.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "entityName", true);
+                    this.KnownArtifactAttributes["type"] = artAtt;
+                }
+                else
+                {
+                    // point to the ones from the file
+                    foreach(CdmAttribute att in entArt.Attributes)
+                    {
+                        this.KnownArtifactAttributes[att.Name] = att as CdmTypeAttributeDefinition;
+                    }
+                }
+            }
+            return true;
+        }
+        /// <summary>
+        /// returns the (previously prepared) artifact attribute of the known name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        internal CdmTypeAttributeDefinition FetchArtifactAttribute(string name)
+        {
+            if (this.KnownArtifactAttributes == null)
+                return null; // this is a usage mistake. never call this before success from the PrepareArtifactAttributesAsync
+
+            return  this.KnownArtifactAttributes[name].Copy() as CdmTypeAttributeDefinition;
         }
     }
 }

@@ -8,6 +8,7 @@ from .entity_declaration_definition import EntityDeclarationDefinition
 from .file_status import FileStatus
 from .manifest_declaration import ManifestDeclaration
 from .trait_reference import TraitReference
+from .trait_group_reference import TraitGroupReference
 
 
 class ManifestContent(DocumentContent, FileStatus):
@@ -16,6 +17,6 @@ class ManifestContent(DocumentContent, FileStatus):
 
         self.manifestName = None  # type: str
         self.explanation = None  # type: str
-        self.exhibitsTraits = None  # type: List[TraitReference]
+        self.exhibitsTraits = None  # type: List[str, TraitReference, TraitGroupReference]
         self.subManifests = None  # type: List[ManifestDeclaration]
         self.entities = None  # type: List[EntityDeclarationDefinition]

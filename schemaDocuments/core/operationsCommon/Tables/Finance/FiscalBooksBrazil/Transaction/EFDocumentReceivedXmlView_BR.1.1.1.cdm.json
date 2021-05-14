@@ -1,0 +1,249 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EFDocumentReceivedXML_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EFDocumentReceivedXmlView_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EFDocumentReceivedXML_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ICMSAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "ICMS",
+          "description": ""
+        },
+        {
+          "name": "ICMSBaseAmount",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "ICMS base amount",
+          "description": ""
+        },
+        {
+          "name": "ICMSSTAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "ICMS-ST",
+          "description": ""
+        },
+        {
+          "name": "ICMSSTBaseAmount",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "ICMS-ST base amount",
+          "description": ""
+        },
+        {
+          "name": "IPIAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "IPI",
+          "description": ""
+        },
+        {
+          "name": "IssueDate",
+          "dataType": "EFDocRecXmlIssueDate_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ThirdPartyCNPJ",
+          "dataType": "CNPJNum_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ThirdPartyIE",
+          "dataType": "IENum_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ThirdPartyIEST",
+          "dataType": "IENum_BR",
+          "isNullable": true,
+          "displayName": "Tributary Substitution Registry",
+          "description": ""
+        },
+        {
+          "name": "ThirdPartyName",
+          "dataType": "EFDocRecXmlThirdPartyName_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Total amount",
+          "description": ""
+        },
+        {
+          "name": "TotalDiscount",
+          "dataType": "DiscAmountMST",
+          "isNullable": true,
+          "displayName": "Total discount",
+          "description": ""
+        },
+        {
+          "name": "TotalMarkupFreightAmount",
+          "dataType": "MarkupSumFreight_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalMarkupInsuranceAmount",
+          "dataType": "MarkupSumInsurance_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalMarkupOtherAmount",
+          "dataType": "MarkupSumOthers_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalProductAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Total products amount",
+          "description": ""
+        },
+        {
+          "name": "IssueTime",
+          "dataType": "EFDocRecXmlIssueTime_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IssueTimezone",
+          "dataType": "EFDocRecXmlIssueTimezone_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EFDocumentReceivedXML_BR"
+          },
+          "name": "Relationship_EFDocumentReceivedXml_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Received NF-e XML documents"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EFDocRecXmlIssueDate_BR",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CNPJNum_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IENum_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EFDocRecXmlThirdPartyName_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DiscAmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MarkupSumFreight_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MarkupSumInsurance_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MarkupSumOthers_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EFDocRecXmlIssueTime_BR",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "EFDocRecXmlIssueTimezone_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

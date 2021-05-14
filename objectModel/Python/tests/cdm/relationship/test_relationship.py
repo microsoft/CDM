@@ -4,7 +4,7 @@
 import unittest
 import os
 
-from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle
+from cdm.enums import CdmLogCode, CdmObjectType, CdmRelationshipDiscoveryStyle
 from cdm.storage import LocalAdapter
 
 from tests.common import async_test, TestHelper
@@ -174,6 +174,24 @@ class RelationshipTest(unittest.TestCase):
         self.verify_relationships(manifest, expected_rels)
 
     @async_test
+    async def test_extends_entity_and_replace_as_foreign_key(self):
+        """Test the relationship calculation when using a replace as foreign key operation while extending an entity."""
+
+        test_name = 'test_extends_entity_and_replace_as_foreign_key'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+
+
+        manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')  # type: CdmManifestDefinition
+
+        await corpus.calculate_entity_graph_async(manifest)
+        # Check if the warning was logged.
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_PROJ_FK_WITHOUT_SOURCE_ENTITY, self)
+
+        await manifest.populate_manifest_relationships_async()
+
+        self.assertEqual(0, len(manifest.relationships))
+
+    @async_test
     async def test_relationships_entity_and_document_name_different(self):
         test_name = 'test_relationships_entity_and_document_name_different'
         expected_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedRels.json')
@@ -195,6 +213,22 @@ class RelationshipTest(unittest.TestCase):
 
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
 
+        manifest = await corpus.fetch_object_async('local:/main.manifest.cdm.json')  # type: CdmManifestDefinition
+
+        await corpus.calculate_entity_graph_async(manifest)
+        await manifest.populate_manifest_relationships_async()
+
+        # check that each relationship has been created correctly
+        self.verify_relationships(manifest, expected_rels)
+
+    @async_test
+    async def test_relationship_to_different_namespace(self):
+        test_name = 'test_relationship_to_different_namespace'
+        expected_rels = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'expectedRels.json')
+
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        # entity B will be in a different namespace
+        corpus.storage.mount("differentNamespace", LocalAdapter(os.path.join(TestHelper.get_input_folder_path(self.tests_subpath, 'TestRelationshipToDifferentNamespace'), 'differentNamespace')))
         manifest = await corpus.fetch_object_async('local:/main.manifest.cdm.json')  # type: CdmManifestDefinition
 
         await corpus.calculate_entity_graph_async(manifest)

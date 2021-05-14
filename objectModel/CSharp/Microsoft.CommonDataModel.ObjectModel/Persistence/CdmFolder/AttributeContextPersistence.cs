@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -59,6 +59,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                         attributeContext.Contents.Add(FromData(ctx, ct));
                 }
             }
+            if (obj.Value<JToken>("lineage") != null)
+            {
+                attributeContext.Lineage = new CdmCollection<CdmAttributeContextReference>(ctx, attributeContext, CdmObjectType.AttributeContextRef);
+                for (int i = 0; i < obj.Value<JToken>("lineage").Count; i++)
+                {
+                    JToken ct = obj.Value<JToken>("lineage")[i];
+                    attributeContext.Lineage.Add(AttributeContextReferencePersistence.FromData(ctx, ct));
+                }
+            }
+
             return attributeContext;
         }
 
@@ -72,8 +82,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Parent = instance.Parent?.CopyData(resOpt, options) as string,
                 Definition = instance.Definition?.CopyData(resOpt, options) as string,
                 // i know the trait collection names look wrong. but I wanted to use the def baseclass
-                AppliedTraits = Utils.ListCopyData<dynamic>(resOpt, instance.ExhibitsTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer)),
-                Contents = Utils.ListCopyData<dynamic>(resOpt, instance.Contents, options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer))
+                AppliedTraits = Utils.ListCopyData<dynamic>(resOpt, instance.ExhibitsTraits?.Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty)?.ToList(), options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer)),
+                Contents = Utils.ListCopyData<dynamic>(resOpt, instance.Contents, options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer)),
+                Lineage = Utils.ListCopyData<dynamic>(resOpt, instance.Lineage, options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer))
             };
         }
 
@@ -128,7 +139,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 case "operationAddAttributeGroup":
                     return CdmAttributeContextType.OperationAddAttributeGroup;
                 default:
-                    return null;
+                    return CdmAttributeContextType.Unknown;
             }
         }
 

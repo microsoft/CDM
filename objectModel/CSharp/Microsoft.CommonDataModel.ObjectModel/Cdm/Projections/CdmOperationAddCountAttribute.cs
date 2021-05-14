@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,13 +9,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle AddCountAttribute operations
     /// </summary>
     public class CdmOperationAddCountAttribute : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationAddCountAttribute);
+        private static readonly string Tag = nameof(CdmOperationAddCountAttribute);
 
         public CdmTypeAttributeDefinition CountAttribute { get; set; }
 
@@ -28,8 +29,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(Copy));
-            return new CdmOperationAddCountAttribute(this.Ctx);
+            CdmOperationAddCountAttribute copy = new CdmOperationAddCountAttribute(this.Ctx)
+            {
+                CountAttribute = this.CountAttribute.Copy(resOpt, host) as CdmTypeAttributeDefinition
+            };
+            return copy;
         }
 
         /// <inheritdoc />
@@ -61,7 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -97,8 +101,44 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ProjectionAttributeStateSet projOutputSet,
             CdmAttributeContext attrCtx)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(AppendProjectionAttributeState));
-            return null;
+            // Pass through all the input projection attribute states if there are any
+            foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
+            {
+                projOutputSet.Add(currentPAS);
+            }
+
+            // Create a new attribute context for the operation
+            AttributeContextParameters attrCtxOpAddCountParam = new AttributeContextParameters
+            {
+                under = attrCtx,
+                type = CdmAttributeContextType.OperationAddCountAttribute,
+                Name = $"operation/index{Index}/operationAddCountAttribute"
+            };
+            CdmAttributeContext attrCtxOpAddCount = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxOpAddCountParam);
+
+            // Create a new attribute context for the Count attribute we will create
+            AttributeContextParameters attrCtxCountAttrParam = new AttributeContextParameters
+            {
+                under = attrCtxOpAddCount,
+                type = CdmAttributeContextType.AddedAttributeExpansionTotal,
+                Name = this.CountAttribute.Name
+            };
+            CdmAttributeContext attrCtxCountAttr = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxCountAttrParam);
+
+            // Create the Count attribute with the specified CountAttribute as its target and apply the trait "is.linkedEntity.array.count" to it
+            List<string> addTrait = new List<string>() { "is.linkedEntity.array.count" };
+            ResolvedAttribute newResAttr = CreateNewResolvedAttribute(projCtx, attrCtxCountAttr, this.CountAttribute, addedSimpleRefTraits: addTrait);
+
+            // Create a new projection attribute state for the new Count attribute and add it to the output set
+            // There is no previous state for the newly created Count attribute
+            ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.Ctx)
+            {
+                CurrentResolvedAttribute = newResAttr
+            };
+
+            projOutputSet.Add(newPAS);
+
+            return projOutputSet;
         }
     }
 }

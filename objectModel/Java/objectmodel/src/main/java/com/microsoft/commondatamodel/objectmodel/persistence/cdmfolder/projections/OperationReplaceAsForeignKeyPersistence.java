@@ -26,17 +26,7 @@ public class OperationReplaceAsForeignKeyPersistence {
             return null;
         }
 
-        CdmOperationReplaceAsForeignKey replaceAsForeignKeyOp = ctx.getCorpus().makeObject(CdmObjectType.OperationReplaceAsForeignKeyDef);
-
-        if (obj.get("$type") != null && !StringUtils.equalsWithIgnoreCase(obj.get("$type").asText(), OperationTypeConvertor.operationTypeToString(CdmOperationType.ReplaceAsForeignKey))) {
-            Logger.error(OperationReplaceAsForeignKeyPersistence.class.getSimpleName(), ctx, Logger.format("$type {0} is invalid for this operation.", obj.get("$type").asText()));
-        } else {
-            replaceAsForeignKeyOp.setType(CdmOperationType.ReplaceAsForeignKey);
-        }
-
-        if (obj.get("explanation") != null) {
-            replaceAsForeignKeyOp.setExplanation(obj.get("explanation").asText());
-        }
+        CdmOperationReplaceAsForeignKey replaceAsForeignKeyOp = OperationBasePersistence.fromData(ctx, CdmObjectType.OperationReplaceAsForeignKeyDef, obj);
 
         if (obj.get("reference") != null) {
             replaceAsForeignKeyOp.setReference(obj.get("reference").asText());
@@ -54,9 +44,7 @@ public class OperationReplaceAsForeignKeyPersistence {
             return null;
         }
 
-        OperationReplaceAsForeignKey obj = new OperationReplaceAsForeignKey();
-        obj.setType(OperationTypeConvertor.operationTypeToString(CdmOperationType.ReplaceAsForeignKey));
-        obj.setExplanation(instance.getExplanation());
+        OperationReplaceAsForeignKey obj = OperationBasePersistence.toData(instance, resOpt, options);
         obj.setReference(instance.getReference());
         obj.setReplaceWith(Utils.jsonForm(instance.getReplaceWith(), resOpt, options));
 

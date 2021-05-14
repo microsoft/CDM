@@ -3,12 +3,13 @@
 
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 
 public class ResolveOptions {
   /**
@@ -29,10 +30,6 @@ public class ResolveOptions {
    */
   private ImportsLoadStrategy importsLoadStrategy = ImportsLoadStrategy.LazyLoad;
   /**
-   * When enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
-   */
-  private Boolean strictValidation = true;
-  /**
    * The limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail
    */
   private Integer resolvedAttributeLimit = 4000;
@@ -41,10 +38,9 @@ public class ResolveOptions {
    */
   private int maxOrdinalForArrayExpansion = 20;
   /**
-   * Tracks the number of entity attributes that have been travered when collecting resolved traits
-   * or attributes. prevents run away loops.
+   * The maximum depth that entity attributes will be resolved before giving up
    */
-  private Integer relationshipDepth;
+  private int maxDepth = 2;
   /**
    * When references get copied, use previous resolution results if available (for use with copy
    * method).
@@ -65,21 +61,32 @@ public class ResolveOptions {
    */
   private CdmDocumentDefinition indexingDoc;
   private String fromMoniker; // moniker that was found on the ref
-
-  public ResolveOptions() {
-    // Default constructor
-  }
+  /**
+   * Contains information about the depth that we are resolving at
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public DepthInfo depthInfo;
+  /**
+   * Indicates whether we are resolving inside of a circular reference, resolution is different in that case
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public boolean inCircularReference;
+  private HashMap<CdmAttributeContext, CdmAttributeContext> mapOldCtxToNewCtx;
+  /**
+   * @deprecated
+   */
+  public HashSet<CdmEntityDefinition> currentlyResolvingEntities;
 
   /**
    * Creates a new instance of Resolve Options using most common parameters.
    * @param cdmDocument Document to use as point of reference when resolving relative paths and symbol names.
    */
   public ResolveOptions(final CdmDocumentDefinition cdmDocument) {
-    this.setWrtDoc(cdmDocument);
-    this.setDirectives(
-        new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized")))
-    );
-    this.symbolRefSet = new SymbolSet();
+    this(cdmDocument, null);
   }
 
   /**
@@ -88,9 +95,9 @@ public class ResolveOptions {
    * @param directives Directives to use when resolving attributes
    */
   public ResolveOptions(final CdmDocumentDefinition cdmDocument, AttributeResolutionDirectiveSet directives) {
+    this();
     this.setWrtDoc(cdmDocument);
-      this.setDirectives(directives != null ? directives.copy() : new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized"))));
-    this.symbolRefSet = new SymbolSet();
+    this.setDirectives(directives != null ? directives.copy() : new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized"))));
   }
 
   /**
@@ -98,11 +105,7 @@ public class ResolveOptions {
    * @param cdmObject A CdmObject from which to take the With Regards To Document
    */
   public ResolveOptions(final CdmObject cdmObject) {
-    this.setWrtDoc(fetchDocument(cdmObject));
-    this.setDirectives(
-        new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized")))
-    );
-    this.symbolRefSet = new SymbolSet();
+    this(cdmObject, null);
   }
 
   /**
@@ -111,9 +114,20 @@ public class ResolveOptions {
    * @param directives Directives to use when resolving attributes
    */
   public ResolveOptions(final CdmObject cdmObject, AttributeResolutionDirectiveSet directives) {
+    this();
     this.setWrtDoc(fetchDocument(cdmObject));
     this.setDirectives(directives != null ? directives.copy() : new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized"))));
+  }
+
+  /**
+   * Creates a new instance of Resolve Options using most common parameters.
+   */
+  public ResolveOptions() {
     this.symbolRefSet = new SymbolSet();
+
+    this.depthInfo = new DepthInfo();
+    this.inCircularReference = false;
+    this.currentlyResolvingEntities = new HashSet<CdmEntityDefinition>();
   }
 
   /**
@@ -143,6 +157,7 @@ public class ResolveOptions {
   }
 
   /**
+   * @return Boolean
    * @deprecated please use importsLoadStrategy instead.
    */
   @Deprecated
@@ -214,16 +229,6 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
-   * @param relationshipDepth Integer 
-   */
-  @Deprecated
-  public void setRelationshipDepth(final Integer relationshipDepth) {
-    this.relationshipDepth = relationshipDepth;
-  }
-
-  /**
-   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
-   * to be called externally at all. Please refrain from using it.
    * @return boolean
    */
   @Deprecated
@@ -258,16 +263,6 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
-   * @return Integer
-   */
-  @Deprecated
-  public Integer getRelationshipDepth() {
-    return relationshipDepth;
-  }
-
-  /**
-   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
-   * to be called externally at all. Please refrain from using it.
    * @return CdmDocumentDefinition
    */
   @Deprecated
@@ -285,6 +280,14 @@ public class ResolveOptions {
     this.localizeReferencesFor = localizeReferencesFor;
   }
 
+  public int getMaxDepth() {
+    return maxDepth;
+  }
+
+  public void setMaxDepth(final int maxDepth) {
+    this.maxDepth = maxDepth;
+  }
+
   /**
    * Returns a new copy of this object.
    *
@@ -293,12 +296,20 @@ public class ResolveOptions {
   public ResolveOptions copy() {
     final ResolveOptions resOptCopy = new ResolveOptions();
     resOptCopy.wrtDoc = this.wrtDoc;
-    resOptCopy.relationshipDepth = this.relationshipDepth;
+    resOptCopy.depthInfo = this.depthInfo.copy();
+    resOptCopy.localizeReferencesFor = this.localizeReferencesFor;
+    resOptCopy.indexingDoc = this.indexingDoc;
+    resOptCopy.shallowValidation = this.shallowValidation;
+    resOptCopy.resolvedAttributeLimit = this.resolvedAttributeLimit;
+    resOptCopy.setMapOldCtxToNewCtx(this.mapOldCtxToNewCtx); // ok to share this map
+    resOptCopy.importsLoadStrategy = this.importsLoadStrategy;
+    resOptCopy.saveResolutionsOnCopy = this.saveResolutionsOnCopy;
+    resOptCopy.currentlyResolvingEntities = new HashSet<>(this.currentlyResolvingEntities);
+
     if (this.directives != null) {
       resOptCopy.directives = this.directives.copy();
     }
-    resOptCopy.localizeReferencesFor = this.localizeReferencesFor;
-    resOptCopy.indexingDoc = this.indexingDoc;
+
     return resOptCopy;
   }
 
@@ -322,6 +333,25 @@ public class ResolveOptions {
     this.fromMoniker = fromMoniker;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   * @return String
+   */
+  @Deprecated
+  public HashMap<CdmAttributeContext, CdmAttributeContext> getMapOldCtxToNewCtx() {
+    return mapOldCtxToNewCtx;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   * @param mapOldCtxToNewCtx LinkedHashMap of CdmAttributeContext and CdmAttributeContext
+   */
+  @Deprecated
+  public void setMapOldCtxToNewCtx(final HashMap<CdmAttributeContext, CdmAttributeContext> mapOldCtxToNewCtx) {
+    this.mapOldCtxToNewCtx = mapOldCtxToNewCtx;
+  }
   /**
    * Fetches the document that contains the owner of the CdmObject.
    * @param obj CdmObject to fetch the document for

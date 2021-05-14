@@ -1,0 +1,220 @@
+{
+  "$schema": "./schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.2.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "traitName": "means.TraitG1",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.TraitG2",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.TraitG3",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.TraitG100",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.TraitG200",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.TraitG300",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.TraitG400",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.TraitG500",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.TraitG4",
+      "extendsTrait": "means",
+      "explanation": "Trait 4 with parameters",
+      "hasParameters": [
+        {
+          "name": "precision",
+          "explanation": "the total number of significant digits",
+          "dataType": "integer",
+          "direction": "both"
+        },
+        {
+          "name": "scale",
+          "explanation": "the number of digits to the right of the decimal place",
+          "dataType": "integer",
+          "direction": "both"
+        }
+      ]
+    },
+    {
+      "traitName": "means.TraitG5",
+      "extendsTrait": "means",
+      "explanation": "Trait 5 with parameters",
+      "hasParameters": [
+        {
+          "name": "MaxLen",
+          "explanation": "the max number characters in the string",
+          "dataType": "integer",
+          "direction": "both"
+        },
+        {
+          "name": "MinLen",
+          "explanation": "the min number characters in the string",
+          "dataType": "integer",
+          "direction": "both"
+        }
+      ]
+    },
+    {
+      "traitGroupName": "JobTitleBase",
+      "explanation": "Trait group that defines JobTitle base traits",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.TraitG100"
+        },
+        {
+          "traitReference": "means.TraitG200"
+        },
+        {
+          "traitReference": "means.TraitG300"
+        },
+        "means.TraitG400"
+      ]
+    },
+    {
+      "traitGroupName": "JobTitleNL",
+      "explanation": "Trait group that defines NL metadata for JobTitle",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.TraitG5",
+          "arguments": [
+            {
+              "name": "MinLen",
+              "value": "10"
+            },
+            {
+              "name": "MaxLen",
+              "value": "100"
+            }
+          ]
+        },
+        {
+          "traitReference": "means.TraitG3"
+        }
+      ]
+    },
+    {
+      "traitGroupName": "JobTitle",
+      "explanation": "Trait group that defines JobTitle overall",
+      "exhibitsTraits": [
+        {
+          "traitGroupReference": "JobTitleBase"
+        },
+        {
+          "traitGroupReference": "JobTitleNL",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "traitGroupName": "JobTitleSynapse",
+      "explanation": "Trait group that defines JobTitle overall with undefined traitGroup",
+      "exhibitsTraits": [
+        {
+          "traitGroupReference": "JobTitleBase"
+        },
+        {
+          "traitGroupReference": "SynapseTraits",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "traitGroupName": "NewTraitGroupForContact",
+      "explanation": "Trait group that defines JobTitle overall",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.TraitG4",
+          "arguments": [
+            {
+              "name": "precision",
+              "value": "5"
+            },
+            {
+              "name": "scale",
+              "value": "15"
+            }
+          ]
+        },
+        {
+          "traitGroupReference": "JobTitleBase"
+        },
+        {
+          "traitGroupReference": "JobTitleNL"
+        }
+      ]
+    },
+    {
+      "traitGroupName": "NewTraitGroupForBaseContact",
+      "explanation": "Trait group that defines JobTitle overall",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.TraitG4",
+          "arguments": [
+            {
+              "name": "precision",
+              "value": "6"
+            },
+            {
+              "name": "scale",
+              "value": "16"
+            }
+          ]
+        },
+        {
+          "traitGroupReference": "JobTitleBase"
+        },
+        {
+          "traitGroupReference": "JobTitleNL"
+        }
+      ]
+    },
+    {
+      "traitGroupName": "NewTraitGroupForAddress",
+      "explanation": "Trait group that defines JobTitle overall",
+      "exhibitsTraits": [
+        {
+          "traitReference": "means.TraitG4",
+          "arguments": [
+            {
+              "name": "precision",
+              "value": "7"
+            },
+            {
+              "name": "scale",
+              "value": "17"
+            }
+          ]
+        },
+        {
+          "traitGroupReference": "JobTitleBase"
+        },
+        {
+          "traitGroupReference": "JobTitleNL"
+        }
+      ]
+    }
+  ]
+}

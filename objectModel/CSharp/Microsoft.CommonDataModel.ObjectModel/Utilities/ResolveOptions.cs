@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
@@ -16,12 +16,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         public ImportsLoadStrategy ImportsLoadStrategy { get; set; } = ImportsLoadStrategy.LazyLoad; // defines at which point the Object Model will try to load the imported documents.
         public int? ResolvedAttributeLimit { get; set; } = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail 
         public int MaxOrdinalForArrayExpansion { get; set; } = 20; // the maximum value for the end ordinal in an ArrayExpansion operation
-        internal int? RelationshipDepth { get; set; } // tracks the number of entity attributes that have been travered when collecting resolved traits or attributes. prevents run away loops
+        public int MaxDepth { get; set; } = 2; // the maximum depth that entity attributes will be resolved before giving up
         internal bool SaveResolutionsOnCopy { get; set; } // when references get copied, use previous resolution results if available (for use with copy method)
         internal SymbolSet SymbolRefSet { get; set; } // set of set of symbol that the current chain of resolution depends upon. used with importPriority to find what docs and versions of symbols to use
         internal CdmDocumentDefinition LocalizeReferencesFor { get; set; } // forces symbolic references to be re-written to be the precisely located reference based on the wrtDoc
         internal CdmDocumentDefinition IndexingDoc { get; set; } // document currently being indexed
         internal string FromMoniker { get; set; } // moniker that was found on the ref
+        internal Dictionary<CdmAttributeContext, CdmAttributeContext> MapOldCtxToNewCtx;
+        // Contains information about the depth that we are resolving at
+        internal DepthInfo DepthInfo { get; set; }
+        // Indicates whether we are resolving inside of a circular reference, resolution is different in that case
+        internal bool InCircularReference { get; set; }
+
+        internal ISet<CdmEntityDefinition> CurrentlyResolvingEntities { get; set; }
+
+        /// <summary>
+        /// A set containng the symbols and their definitions. This is currently only used by the versioning tool.
+        /// It will only be populated if initialized before calling the resolution APIs.
+        /// </summary>
+        internal HashSet<Tuple<string, CdmObjectDefinitionBase>> SymbolRefToObjects;
 
         [Obsolete("Please use ImportsLoadStrategy instead.")]
         // when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
@@ -58,11 +71,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// <param name="cdmDocument">Document to use as point of reference when resolving relative paths and symbol names.</param>
         /// <param name="Directives">Directives to use when resolving attributes</param>
         public ResolveOptions(CdmDocumentDefinition cdmDocument, AttributeResolutionDirectiveSet Directives = null)
+            : this()
         {
             WrtDoc = cdmDocument;
             // provided or default to 'avoid one to many relationship nesting and to use foreign keys for many to one refs'. this is for back compat with behavior before the corpus has a default directive property
             this.Directives = Directives != null ? Directives.Copy() : new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" });
-            SymbolRefSet = new SymbolSet();
         }
 
         /// <summary>
@@ -71,11 +84,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// <param name="cdmObject">a CdmObject from which to take the With Regards To Document</param>
         /// <param name="Directives">Directives to use when resolving attributes</param>
         public ResolveOptions(CdmObject cdmObject, AttributeResolutionDirectiveSet Directives = null)
+            : this()
         {
             WrtDoc = FetchDocument(cdmObject);
             // provided or default to 'avoid one to many relationship nesting and to use foreign keys for many to one refs'. this is for back compat with behavior before the corpus has a default directive property
             this.Directives = Directives != null ? Directives.Copy() : new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" });
-            SymbolRefSet = new SymbolSet();
         }
 
         /// <summary>
@@ -83,6 +96,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// </summary>
         public ResolveOptions()
         {
+            SymbolRefSet = new SymbolSet();
+            this.DepthInfo = new DepthInfo();
+            this.InCircularReference = false;
+            this.CurrentlyResolvingEntities = new HashSet<CdmEntityDefinition>();
+        }
+
+        /// <summary>
+        /// Creates a copy of the resolve options object
+        /// </summary>
+        internal ResolveOptions Copy()
+        {
+            ResolveOptions resOptCopy = new ResolveOptions
+            {
+                WrtDoc = this.WrtDoc,
+                DepthInfo = this.DepthInfo.Copy(),
+                LocalizeReferencesFor = this.LocalizeReferencesFor,
+                IndexingDoc = this.IndexingDoc,
+                ShallowValidation = this.ShallowValidation,
+                ResolvedAttributeLimit = this.ResolvedAttributeLimit,
+                MapOldCtxToNewCtx = this.MapOldCtxToNewCtx, // ok to share this map
+                ImportsLoadStrategy = this.ImportsLoadStrategy,
+                SaveResolutionsOnCopy = this.SaveResolutionsOnCopy,
+                CurrentlyResolvingEntities = new HashSet<CdmEntityDefinition>(this.CurrentlyResolvingEntities)
+            };
+
+            if (this.Directives != null)
+                resOptCopy.Directives = this.Directives.Copy();
+
+            return resOptCopy;
         }
 
         /// <summary>

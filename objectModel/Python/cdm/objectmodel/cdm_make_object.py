@@ -28,6 +28,8 @@ from .cdm_referenced_entity_declaration_def import CdmReferencedEntityDeclaratio
 from .cdm_type_attribute_def import CdmTypeAttributeDefinition
 from .cdm_trait_ref import CdmTraitReference
 from .cdm_trait_def import CdmTraitDefinition
+from .cdm_trait_group_ref import CdmTraitGroupReference
+from .cdm_trait_group_def import CdmTraitGroupDefinition
 from .cdm_argument_def import CdmArgumentDefinition
 from .cdm_parameter_def import CdmParameterDefinition
 from .cdm_purpose_def import CdmPurposeDefinition
@@ -71,7 +73,8 @@ switcher = {
     CdmObjectType.TYPE_ATTRIBUTE_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmTypeAttributeDefinition(ctx, name_or_ref),
     CdmObjectType.TRAIT_REF: lambda ctx, name_or_ref, simple_name_ref: CdmTraitReference(ctx, name_or_ref, simple_name_ref),
     CdmObjectType.TRAIT_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmTraitDefinition(ctx, name_or_ref, None),
-    CdmObjectType.ARGUMENT_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmArgumentDefinition(ctx, name_or_ref),
+    CdmObjectType.TRAIT_GROUP_REF: lambda ctx, name_or_ref, simple_name_ref: CdmTraitGroupReference(ctx, name_or_ref, simple_name_ref),
+    CdmObjectType.TRAIT_GROUP_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmTraitGroupDefinition(ctx, name_or_ref),
     CdmObjectType.PARAMETER_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmParameterDefinition(ctx, name_or_ref),
     CdmObjectType.PURPOSE_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmPurposeDefinition(ctx, name_or_ref, None),
     CdmObjectType.PURPOSE_REF: lambda ctx, name_or_ref, simple_name_ref: CdmPurposeReference(ctx, name_or_ref, simple_name_ref),

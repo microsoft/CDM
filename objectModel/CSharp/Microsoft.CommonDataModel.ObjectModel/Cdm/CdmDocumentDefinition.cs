@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -7,16 +7,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using System.Collections.Generic;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
+    using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using System;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     internal class ImportPriorities
     {
-        internal IDictionary<CdmDocumentDefinition, int> ImportPriority;
+        internal IDictionary<CdmDocumentDefinition, ImportInfo> ImportPriority;
         internal IDictionary<string, CdmDocumentDefinition> MonikerPriorityMap;
         
         /// <summary>
@@ -27,7 +27,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal ImportPriorities()
         {
-            this.ImportPriority = new Dictionary<CdmDocumentDefinition, int>();
+            this.ImportPriority = new Dictionary<CdmDocumentDefinition, ImportInfo>();
             this.MonikerPriorityMap = new Dictionary<string, CdmDocumentDefinition>();
             this.hasCircularImport = false;
         }
@@ -37,13 +37,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ImportPriorities copy = new ImportPriorities();
             if (this.ImportPriority != null)
             {
-                foreach (KeyValuePair<CdmDocumentDefinition, int> pair in this.ImportPriority)
+                foreach (KeyValuePair<CdmDocumentDefinition, ImportInfo> pair in this.ImportPriority)
+                {
                     copy.ImportPriority[pair.Key] = pair.Value;
+                }
             }
             if (this.MonikerPriorityMap != null)
             {
                 foreach (KeyValuePair<string, CdmDocumentDefinition> pair in this.MonikerPriorityMap)
+                {
                     copy.MonikerPriorityMap[pair.Key] = pair.Value;
+                }
             }
             copy.hasCircularImport = this.hasCircularImport;
             return copy;
@@ -52,10 +56,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     public class CdmDocumentDefinition : CdmObjectSimple, CdmContainerDefinition
     {
+        private static readonly string Tag = nameof(CdmDocumentDefinition);
+
         internal ConcurrentDictionary<string, CdmObjectBase> InternalDeclarations;
         internal ImportPriorities ImportPriorities;
         internal bool NeedsIndexing;
         internal bool IsDirty = true;
+        /// <summary>
+        /// The maximum json semantic version supported by this ObjectModel version.
+        /// </summary>
+        public static string CurrentJsonSchemaSemanticVersion = "1.2.0";
 
         [Obsolete("Only for internal use")]
         public string FolderPath { get; set; }
@@ -79,7 +89,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.InDocument = this;
             this.ObjectType = CdmObjectType.DocumentDef;
             this.Name = name;
-            this.JsonSchemaSemanticVersion = "1.0.0";
+            this.JsonSchemaSemanticVersion = CurrentJsonSchemaSemanticVersion;
+            this.DocumentVersion = null;
             this.NeedsIndexing = true;
             this.IsDirty = true;
             this.ImportsIndexed = false;
@@ -121,6 +132,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public CdmImportCollection Imports { get; }
 
+        /// <summary>
+        /// Gets or sets the document version.
+        /// </summary>
+        public string DocumentVersion { get; set; }
+
         internal void ClearCaches()
         {
             this.InternalDeclarations = new ConcurrentDictionary<string, CdmObjectBase>();
@@ -145,7 +161,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.Ctx.Corpus.blockDeclaredPathChanges = true;
 
             // shout into the void
-            Logger.Info(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Localizing corpus paths in document '{this.Name}'", nameof(LocalizeCorpusPaths));
+            Logger.Info((ResolveContext)this.Ctx, Tag, nameof(LocalizeCorpusPaths), newFolder.AtCorpusPath, $"Localizing corpus paths in document '{this.Name}'");
 
             // find anything in the document that is a corpus path
             this.Visit("", new VisitCallback
@@ -280,6 +296,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.FolderPath = this.FolderPath;
             copy.Schema = this.Schema;
             copy.JsonSchemaSemanticVersion = this.JsonSchemaSemanticVersion;
+            copy.DocumentVersion = this.DocumentVersion;
 
             foreach (var def in this.Definitions)
                 copy.Definitions.Add(def);
@@ -363,12 +380,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return default(T);
         }
 
+        public override string FetchObjectDefinitionName()
+        {
+            return this.Name;
+        }
+
         /// <inheritdoc />
         public override bool Validate()
         {
             if (string.IsNullOrWhiteSpace(this.Name))
             {
-                Logger.Error(nameof(CdmDocumentDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Name" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "Name" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -413,27 +436,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public async Task<bool> SaveAsAsync(string newName, bool saveReferenced = false, CopyOptions options = null)
         {
-            if (options == null)
+            using (Logger.EnterScope(nameof(CdmDocumentDefinition), Ctx, nameof(SaveAsAsync)))
             {
-                options = new CopyOptions();
-            }
+                if (options == null)
+                {
+                    options = new CopyOptions();
+                }
 
-            ResolveOptions resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
-            if (!await this.IndexIfNeeded(resOpt))
-            {
-                Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to index document prior to save '{this.Name}'", nameof(SaveAsAsync));
-                return false;
-            }
+                ResolveOptions resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+                if (!await this.IndexIfNeeded(resOpt))
+                {
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveAsAsync), this.AtCorpusPath, CdmLogCode.ErrIndexFailed);
+                    return false;
+                }
 
-            // if save to the same document name, then we are no longer 'dirty'
-            if (newName == this.Name)
-                this.IsDirty = false;
+                // if save to the same document name, then we are no longer 'dirty'
+                if (newName == this.Name)
+                    this.IsDirty = false;
 
-            if (await this.Ctx.Corpus.Persistence.SaveDocumentAsAsync(this, options, newName, saveReferenced) == false)
-            {
-                return false;
+                if (await this.Ctx.Corpus.Persistence.SaveDocumentAsAsync(this, options, newName, saveReferenced) == false)
+                {
+                    return false;
+                }
+                return true;
             }
-            return true;
         }
 
         /// <summary>
@@ -459,7 +485,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 if (this.Folder == null)
                 {
-                    Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Document '{this.Name}' is not in a folder", nameof(IndexIfNeeded));
+                    Logger.Error(this.Ctx, Tag, nameof(IndexIfNeeded), this.AtCorpusPath, CdmLogCode.ErrValdnMissingDoc, this.Name);
                     return false;
                 }
 
@@ -510,7 +536,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.ImportPriorities == null)
             {
                 var importPriorities = new ImportPriorities();
-                importPriorities.ImportPriority.Add(this, 0);
+                importPriorities.ImportPriority.Add(this, new ImportInfo(0, false));
                 this.PrioritizeImports(new HashSet<CdmDocumentDefinition>(), importPriorities, 1, false);
                 this.ImportPriorities = importPriorities;
             }
@@ -526,7 +552,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
             // maps document to priority.
-            IDictionary<CdmDocumentDefinition, int> priorityMap = importPriorities.ImportPriority;
+            IDictionary<CdmDocumentDefinition, ImportInfo> priorityMap = importPriorities.ImportPriority;
 
             // maps moniker to document.
             IDictionary<string, CdmDocumentDefinition> monikerMap = importPriorities.MonikerPriorityMap;
@@ -535,8 +561,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (processedSet.Contains(this))
             {
                 // if the first document in the priority map is this then the document was the starting point of the recursion.
-                // and if this document is present in the processedSet we know that there is a cicular list of imports.
-                if (priorityMap.ContainsKey(this) && priorityMap[this] == 0)
+                // and if this document is present in the processedSet we know that there is a circular list of imports.
+                if (priorityMap.ContainsKey(this) && priorityMap[this].Priority == 0)
                 {
                     importPriorities.hasCircularImport = true;
                 }
@@ -548,6 +574,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.Imports != null)
             {
                 var reversedImports = this.Imports.Reverse();
+                var monikerImports = new List<CdmDocumentDefinition>();
 
                 // first add the imports done at this level only in reverse order.
                 foreach (var imp in reversedImports)
@@ -555,12 +582,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     var impDoc = imp.Document;
                     bool isMoniker = !string.IsNullOrWhiteSpace(imp.Moniker);
 
-                    // don't add the moniker imports to the priority list.
-                    if (impDoc != null && !isMoniker && !priorityMap.ContainsKey(impDoc))
+                    // moniker imports will be added to the end of the priority list later.
+                    if (impDoc != null)
                     {
-                        // add doc.
-                        priorityMap.Add(impDoc, sequence);
-                        sequence++;
+                        if (!isMoniker && !priorityMap.ContainsKey(impDoc))
+                        {
+                            // add doc.
+                            priorityMap.Add(impDoc, new ImportInfo(sequence, false));
+                            sequence++;
+                        }
+                        else
+                        {
+                            monikerImports.Add(impDoc);
+                        }
+                    } 
+                    else
+                    {
+                        Logger.Warning(this.Ctx, Tag, nameof(PrioritizeImports), this.AtCorpusPath, CdmLogCode.WarnDocImportNotLoaded ,imp.CorpusPath);
                     }
                 }
 
@@ -569,6 +607,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     CdmDocumentDefinition impDoc = imp.Document;
                     bool isMoniker = !string.IsNullOrWhiteSpace(imp.Moniker);
+
+                    if (impDoc == null)
+                    {
+                        Logger.Warning(this.Ctx, Tag, nameof(PrioritizeImports), this.AtCorpusPath, CdmLogCode.WarnDocImportNotLoaded, imp.CorpusPath);
+                    }
 
                     // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
                     // since the document itself will always be the first one on the list.
@@ -580,10 +623,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                         foreach (var ip in impPriSub.ImportPriority)
                         {
-                            if (priorityMap.ContainsKey(ip.Key) == false)
+                            // if the document is imported with moniker in another document do not include it in the priority list of this one.
+                            // moniker imports are only added to the priority list of the document that directly imports them.
+                            if (!priorityMap.ContainsKey(ip.Key) && !ip.Value.IsMoniker)
                             {
                                 // add doc.
-                                priorityMap.Add(ip.Key, sequence);
+                                priorityMap.Add(ip.Key, new ImportInfo(sequence, false));
                                 sequence++;
                             }
                         }
@@ -616,10 +661,96 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             monikerMap[imp.Moniker] = imp.Document;
                         }
                     }
+
+                    // if the document index is zero, the document being processed is the root of the imports chain.
+                    // in this case add the monikered imports to the end of the priorityMap.
+                    if (priorityMap.ContainsKey(this) && priorityMap[this].Priority == 0)
+                    {
+                        foreach (var imp in monikerImports)
+                        {
+                            if (!priorityMap.ContainsKey(imp))
+                            {
+                                priorityMap.Add(imp, new ImportInfo(sequence, true));
+                                sequence++;
+                            }
+                        }
+                    }
                 }
             }
 
             return sequence;
+        }
+
+        internal string ImportPathToDoc(CdmDocumentDefinition docDest)
+        {
+            HashSet<CdmDocumentDefinition> avoidLoop = new HashSet<CdmDocumentDefinition>();
+            Func<CdmDocumentDefinition, string, string> InternalImportPathToDoc = null;
+            InternalImportPathToDoc = (docCheck, path) => 
+            {
+                if (docCheck == docDest)
+                {
+                    return "";
+                }
+                if (avoidLoop.Contains(docCheck))
+                {
+                    return null;
+                }
+                avoidLoop.Add(docCheck);
+                // if the docDest is one of the monikered imports of docCheck, then add the moniker and we are cool
+                if (docCheck.ImportPriorities?.MonikerPriorityMap?.Count > 0)
+                {
+                    foreach(var monPair in docCheck.ImportPriorities?.MonikerPriorityMap)
+                    {
+                        if (monPair.Value == docDest)
+                        {
+                            return $"{path}{monPair.Key}/";
+                        }
+                    }
+                }
+                // ok, what if the document can be reached directly from the imports here
+                ImportInfo impInfo = null;
+                if (docCheck.ImportPriorities?.ImportPriority?.TryGetValue(docDest, out impInfo) == false)
+                {
+                    impInfo = null;
+                }
+                if (impInfo != null && impInfo.IsMoniker == false)
+                {
+                    // good enough
+                    return path;
+                }
+
+                // still nothing, now we need to check those docs deeper
+                if (docCheck.ImportPriorities?.MonikerPriorityMap?.Count > 0)
+                {
+                    foreach(var monPair in docCheck.ImportPriorities?.MonikerPriorityMap)
+                    {
+                        string pathFound = InternalImportPathToDoc(monPair.Value, $"{path}{monPair.Key}/");
+                        if (pathFound != null)
+                        {
+                            return pathFound;
+                        }
+                    }
+                }
+                if (docCheck.ImportPriorities?.ImportPriority?.Count > 0)
+                {
+                    foreach(var impInfoPair in docCheck.ImportPriorities.ImportPriority)
+                    {
+                        if (!impInfoPair.Value.IsMoniker)
+                        {
+                            string pathFound = InternalImportPathToDoc(impInfoPair.Key, path);
+                            if (pathFound != null)
+                            {
+                                return pathFound;
+                            }
+                        }
+                    }
+                }
+                return null;
+               
+            };
+
+            return InternalImportPathToDoc(this, "");
+
         }
 
         internal async Task Reload()
@@ -629,27 +760,50 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         virtual internal async Task<bool> SaveLinkedDocuments(CopyOptions options = null)
         {
+            List<CdmDocumentDefinition> docs = new List<CdmDocumentDefinition>();
             if (options == null)
             {
                 options = new CopyOptions();
             }
 
-            // the only linked documents would be the imports
             if (this.Imports != null)
             {
+                // the only linked documents would be the imports
                 foreach (CdmImport imp in this.Imports)
                 {
                     // get the document object from the import
                     string docPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(imp.CorpusPath, this);
-                    var docImp = await Ctx.Corpus.FetchObjectAsync<CdmDocumentDefinition>(docPath);
-                    if (docImp != null && docImp.IsDirty)
+                    if (docPath == null)
                     {
-                        // save it with the same name
-                        if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidCorpusPath, imp.CorpusPath);
+                        return false;
+                    }
+                    try
+                    {
+                        CdmObject objAt = await Ctx.Corpus.FetchObjectAsync<CdmObject>(docPath);
+                        if (objAt == null)
                         {
-                            Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to save import '{docImp.Name}'", nameof(SaveLinkedDocuments));
+                            Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrPersistObjectNotFound, imp.CorpusPath);
                             return false;
                         }
+                        CdmDocumentDefinition docImp = objAt.InDocument;
+                        if (docImp != null && docImp.IsDirty)
+                        {
+                            docs.Add(docImp);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrPersistObjectNotFound, imp.CorpusPath + " " + e.Message);
+                        return false;
+                    }
+                }
+                foreach (var docImp in docs)
+                {
+                    if (await docImp.SaveAsAsync(docImp.Name, true, options) == false)
+                    {
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocImportSavingFailure, docImp.Name);
+                        return false;
                     }
                 }
             }

@@ -12,16 +12,18 @@ import {
     CdmDocumentDefinition,
     CdmEntityDefinition,
     CdmImport,
+    cdmLogCode,
     CdmObject,
     cdmObjectType,
     CdmParameterDefinition,
     CdmPurposeDefinition,
     CdmTraitCollection,
     CdmTraitDefinition,
-    CdmTraitReference
+    CdmTraitReference,
+    CdmTraitReferenceBase,
+    Logger
 } from '../../internal';
 import { isCdmTraitDefinition } from '../../Utilities/cdmObjectTypeGuards';
-import { Logger } from '../../Utilities/Logging/Logger';
 
 /**
  * Dictionary used to cache documents with trait definitions by file name.
@@ -76,13 +78,7 @@ export async function standardImportDetection(
     for (let traitIndex: number = localExtensionTraitDefList.length - 1; traitIndex >= 0; traitIndex--) {
         const extensionTraitDef: CdmTraitDefinition = localExtensionTraitDefList[traitIndex];
         if (!traitDefIsExtension(extensionTraitDef)) {
-            Logger.error(
-                'ExtensionHelper',
-                ctx,
-                `Invalid extension trait name ${extensionTraitDef.traitName},
-                         expected prefix ${extensionTraitNamePrefix}.`
-            );
-
+            Logger.error(this.ctx, this.TAG, this.standardImportDetection.name, null, cdmLogCode.ErrPersistInvalidExtensionTrait, extensionTraitDef.traitName, extensionTraitNamePrefix);
             return undefined;
         }
 
@@ -265,11 +261,11 @@ export function processExtensionTraitToObject(extensionTraitRef: CdmTraitReferen
 }
 
 /**
- * Checks whether the trait reference is an extension (by checking whether its name has the extension prefix)
+ * Checks whether the trait reference base is an extension (by checking whether its name has the extension prefix)
  * @param trait The trait to be checked
  * @returns Whether the trait is an extension.
  */
-export function traitRefIsExtension(trait: CdmTraitReference): boolean {
+export function traitRefIsExtension(trait: CdmTraitReferenceBase): boolean {
     return traitNameHasExtensionMark(trait.namedReference);
 }
 

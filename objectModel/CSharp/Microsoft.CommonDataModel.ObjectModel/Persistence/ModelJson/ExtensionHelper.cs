@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.CommonDataModel.ObjectModel.Cdm;
@@ -14,6 +14,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
     static class ExtensionHelper
     {
+        private static readonly string Tag = nameof(ExtensionHelper);
+
         /// <summary>
         /// Dictionary used to cache documents with trait definitions by file name.
         /// </summary>
@@ -71,8 +73,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 CdmTraitDefinition extensionTraitDef = localExtensionTraitDefList[traitIndex];
                 if (!TraitDefIsExtension(extensionTraitDef))
                 {
-                    Logger.Error(nameof(ExtensionHelper), ctx, $"Invalid extension trait name {extensionTraitDef.TraitName}, expected prefix {ExtensionTraitNamePrefix}.");
-
+                    Logger.Error(ctx, Tag, nameof(StandardImportDetection), extensionTraitDef.AtCorpusPath, CdmLogCode.ErrPersistInvalidExtensionTrait, extensionTraitDef.TraitName, ExtensionTraitNamePrefix);
                     return null;
                 }
 
@@ -319,11 +320,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         }
 
         /// <summary>
-        /// Checks whether a <see cref="CdmTraitReference"/> is an extension.
+        /// Checks whether a <see cref="CdmTraitReferenceBase"/> is an extension.
         /// </summary>
         /// <param name="trait">The trait to be checked whether it is an extension.</param>
         /// <returns>Whether the trait is an extension.</returns>
-        public static bool TraitRefIsExtension(CdmTraitReference trait)
+        public static bool TraitRefIsExtension(CdmTraitReferenceBase trait)
         {
             return TraitNameHasExtensionMark(trait.NamedReference);
         }

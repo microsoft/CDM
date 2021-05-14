@@ -10,6 +10,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
@@ -29,8 +31,8 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
   private TraitToPropertyMap t2pm;
   private String location;
   private boolean inferred;
-
-  CdmDataPartitionDefinition(final CdmCorpusContext ctx, final String name) {
+  
+  public CdmDataPartitionDefinition(final CdmCorpusContext ctx, final String name) {
     super(ctx);
     this.setName(name);
     this.setObjectType(CdmObjectType.DataPartitionDef);
@@ -123,7 +125,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     }
 
     if (postChildren != null && postChildren.invoke(this, path)) {
-      return false;
+      return true;
     }
 
     return false;
@@ -264,21 +266,22 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
    */
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
-    final String nameSpace = getInDocument().getNamespace();
-    final String fullPath =
-        this.getCtx()
-            .getCorpus()
-            .getStorage()
-            .createAbsoluteCorpusPath(this.getLocation(), this.getInDocument());
+    try (Logger.LoggerScope logScope = Logger.enterScope(CdmDataPartitionDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
+      final String fullPath =
+              this.getCtx()
+                      .getCorpus()
+                      .getStorage()
+                      .createAbsoluteCorpusPath(this.getLocation(), this.getInDocument());
 
-    final OffsetDateTime modifiedTime =
-        this.getCtx().getCorpus().computeLastModifiedTimeFromPartitionPathAsync(fullPath).join();
+      final OffsetDateTime modifiedTime =
+              this.getCtx().getCorpus().computeLastModifiedTimeFromPartitionPathAsync(fullPath).join();
 
-    // update modified times
-    setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
-    setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
+      // update modified times
+      setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+      setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
 
-    return reportMostRecentTimeAsync(getLastFileModifiedTime());
+      return reportMostRecentTimeAsync(getLastFileModifiedTime());
+    }
   }
 
   /**

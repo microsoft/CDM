@@ -3,7 +3,6 @@
 
 import { isString } from 'util';
 import {
-    addTraitRef,
     AttributeContextParameters,
     CdmAttribute,
     CdmAttributeContext,
@@ -18,7 +17,7 @@ import {
     CdmObjectReference,
     cdmObjectType,
     CdmTraitCollection,
-    Errors,
+    cdmLogCode,
     isCdmObjectReference,
     Logger,
     resolveContext,
@@ -33,14 +32,40 @@ import {
 } from '../internal';
 
 export abstract class CdmObjectReferenceBase extends CdmObjectBase implements CdmObjectReference {
+    private TAG: string = CdmObjectReferenceBase.name;
+
     /**
      * @internal
      */
-    public static resAttToken: string = '/(resolvedAttributes)/';
+    public static readonly resAttToken: string = '/(resolvedAttributes)/';
     public readonly appliedTraits: CdmTraitCollection;
     public namedReference?: string;
-    public explicitReference?: CdmObjectDefinition;
+
+    private _explicitReference: CdmObjectDefinition;
+
+    get explicitReference(): CdmObjectDefinition {
+        return this._explicitReference;
+    }
+    set explicitReference(value: CdmObjectDefinition) {
+        if (value) {
+            value.owner = this;
+        }
+        this._explicitReference = value;
+    }
+
     public simpleNamedReference?: boolean;
+    /**
+     * Gets or sets the object's Optional property.
+     * This indicates the SDK to not error out in case the definition could not be resolved.
+     */
+    public optional?: boolean;
+    /**
+     * A portable explicit reference used to manipulate nodes in the attribute context.
+     * For more information, refer to the `createPortableReference` method in CdmObjectDef and CdmObjectRef.
+     * @internal
+     */
+    public portableReference: CdmObjectDefinitionBase;
+
     /**
      * @internal
      */
@@ -130,11 +155,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                     = (this.ctx.corpus).resolveSymbolReference(resOpt, this.inDocument, entName, cdmObjectType.entityDef, true);
 
                 if (!ent) {
-                    Logger.warning(
-                        CdmObjectReferenceBase.name,
-                        ctx,
-                        `unable to resolve an entity named '${entName}' from the reference '${this.namedReference}'`
-                    );
+                    Logger.warning(ctx, this.TAG, this.fetchResolvedReference.name, this.atCorpusPath, cdmLogCode.WarnResolveEntityFailed, entName, this.namedReference);
 
                     return undefined;
                 }
@@ -148,12 +169,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 if (ra) {
                     res = ra.target as CdmAttribute;
                 } else {
-                    Logger.warning(
-                        CdmObjectReferenceBase.name,
-                        ctx,
-                        `couldn't resolve the attribute promise for '${this.namedReference}'`,
-                        `${resOpt.wrtDoc.atCorpusPath}`
-                    );
+                    Logger.warning(this.ctx, this.TAG, this.constructResolvedAttributes.name, this.atCorpusPath, cdmLogCode.WarnResolveObjectFailed, this.namedReference);
                 }
             } else {
                 // normal symbolic reference, look up from the Corpus, it knows where everything is
@@ -179,10 +195,43 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         return this.copyRefObject(resOpt, newDeclaredPath, true);
     }
 
+    /**
+     * @internal
+     * Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
+     * into some final document. 
+     */
+    public createPortableReference(resOpt: resolveOptions): CdmObjectReference {
+        const cdmObjectDef: CdmObjectDefinitionBase = this.fetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
+
+        if (!cdmObjectDef || !this.inDocument) {
+            return undefined; // not allowed
+        }
+
+        const cdmObjectRef: CdmObjectReferenceBase = this.ctx.corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.mapReferenceType(this.objectType), 'portable', true);
+        cdmObjectRef.portableReference = cdmObjectDef;
+        cdmObjectRef.optional = this.optional;
+        cdmObjectRef.inDocument = this.inDocument;
+        cdmObjectRef.owner = this.owner;
+
+        return cdmObjectRef;
+    }
+
+    /**
+     * @internal
+     * Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
+     * into some final document. 
+     */
+    public localizePortableReference(importPath: string): void {
+        let newDeclaredPath: string = this.portableReference.declaredPath;
+        newDeclaredPath = newDeclaredPath && newDeclaredPath.endsWith('/(ref)') ? newDeclaredPath.substring(0, newDeclaredPath.length - 6) : newDeclaredPath;
+        this.namedReference = `${importPath}${newDeclaredPath}`;
+    }
+
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         if (!resOpt) {
             resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
+
         const copy: CdmObjectReferenceBase = this.copyRefObject(
             resOpt,
             this.namedReference
@@ -190,14 +239,20 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 : this.explicitReference,
             this.simpleNamedReference,
             host as CdmObjectReferenceBase);
+
+        copy.optional = this.optional;
+        copy.portableReference = this.portableReference;
+
         if (resOpt.saveResolutionsOnCopy) {
-            copy.explicitReference = this.explicitReference;
-            copy.inDocument = this.inDocument;
+            copy.explicitReference = this.explicitReference ? this.explicitReference.copy(resOpt) as CdmObjectDefinition : undefined;
         }
         copy.appliedTraits.clear();
         for (const trait of this.appliedTraits) {
             copy.appliedTraits.push(trait);
         }
+
+        // Don't do anything else after this, as it may cause InDocument to become dirty
+        copy.inDocument = this.inDocument;
 
         return copy;
     }
@@ -269,7 +324,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
 
             const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
             if (!await wrtDoc.indexIfNeeded(resOpt, true)) {
-                Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Could not index document ${wrtDoc.atCorpusPath}.`, this.fetchObjectDefinitionAsync.name);
+                Logger.error(this.ctx, this.TAG, this.fetchObjectDefinitionAsync.name, wrtDoc.atCorpusPath, cdmLogCode.ErrIndexFailed);
                 return null;
             }
 
@@ -290,13 +345,8 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         // let bodyCode = () =>
         {
             if (!this.namedReference && !this.explicitReference) {
-                Logger.error(
-                    CdmObjectReferenceBase.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['namedReference', 'explicitReference'], true),
-                    this.validate.name
-                );
-
+                let missingFields: string[] = ['namedReference', 'explicitReference'];
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
                 return false;
             }
 
@@ -344,10 +394,8 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             if (preChildren && preChildren(this, refPath)) {
                 return false;
             }
-            if (this.explicitReference && !this.namedReference) {
-                if (this.explicitReference.visit(path, preChildren, postChildren)) {
-                    return true;
-                }
+            if (this.explicitReference && !this.namedReference && this.explicitReference.visit(path, preChildren, postChildren)) {
+                return true;
             }
             if (this.visitRef(path, preChildren, postChildren)) {
                 return true;
@@ -382,7 +430,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             // find and cache the complete set of attributes
             const rasb: ResolvedAttributeSetBuilder = new ResolvedAttributeSetBuilder();
             rasb.ras.setAttributeContext(under);
-            const def: CdmObjectDefinition = this.fetchObjectDefinition(resOpt);
+            let def: CdmObjectDefinition = this.fetchObjectDefinition(resOpt);
             if (def) {
                 let acpRef: AttributeContextParameters;
                 if (under) {
@@ -394,13 +442,13 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 }
                 let resAtts: ResolvedAttributeSet = def.fetchResolvedAttributes(resOpt, acpRef);
                 if (resAtts && resAtts.set.length > 0) {
-                    resAtts = resAtts.copy();
+                    // resAtts = resAtts.copy(); should not need this copy now that we copy from the cache. lets try!
                     rasb.mergeAttributes(resAtts);
                     rasb.removeRequestedAtts();
                 }
             } else {
                 const defName: string = this.fetchObjectDefinitionName();
-                Logger.warning(defName, this.ctx, `unable to resolve an object from the reference '${defName}'`);
+                Logger.warning(this.ctx, this.TAG, this.constructResolvedAttributes.name, this.atCorpusPath, cdmLogCode.WarnResolveObjectFailed, defName);
             }
 
             return rasb;
@@ -498,9 +546,9 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                     rtsInh = rtsInh.deepCopy();
                 }
                 rtsb.takeReference(rtsInh);
-            } else {
-                const defName: string = this.fetchObjectDefinitionName();
-                Logger.warning(defName, this.ctx, `unable to resolve an object from the reference '${defName}'`);
+            } else if (this.optional !== undefined && !this.optional) {
+                Logger.warning(this.ctx, this.TAG, this.constructResolvedTraits.name, this.atCorpusPath, 
+                    cdmLogCode.WarnResolveObjectFailed, this.fetchObjectDefinitionName());
             }
 
             if (this.appliedTraits) {

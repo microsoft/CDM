@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
@@ -62,17 +62,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 throw new Exception($"There is no resource found for {corpusPath}.");
             }
 
-            try
+            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
             {
-                using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
-                {
-                    return await reader.ReadToEndAsync();
-                }
-            }
-            catch (Exception exception)
-            {
-                throw new Exception($"There was an issue while reading file at {corpusPath}. Exception: {exception.Message.ToString()}");
+                return await reader.ReadToEndAsync();
             }
         }
     }
 }
+ 

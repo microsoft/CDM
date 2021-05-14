@@ -3,7 +3,6 @@
 
 from typing import Union, List
 
-from .trait_reference import TraitReference
 from .parameter import Parameter
 from cdm.utilities import JObject
 
@@ -14,7 +13,7 @@ class Trait(JObject):
 
         self.explanation = None  # type: str
         self.traitName = None  # type: str
-        self.extendsTrait = None  # type: Union[str, TraitReference]
+        self.extendsTrait = None  # type: Union[str, 'TraitReference']
         self.hasParameters = None  # type: List[Union[str, Parameter]]
         self.elevated = False  # type: bool
         self.modifiesAttributes = False  # type: bool

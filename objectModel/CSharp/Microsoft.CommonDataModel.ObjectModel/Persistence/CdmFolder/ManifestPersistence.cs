@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -15,6 +15,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     public class ManifestPersistence
     {
+        private static readonly string Tag = nameof(ManifestPersistence);
         /// <summary>
         /// Whether this persistence class has async methods.
         /// </summary>
@@ -43,16 +44,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             if (!string.IsNullOrEmpty(dataObj.Schema))
                 manifest.Schema = dataObj.Schema;
             if (DynamicObjectExtensions.HasProperty(dataObj, "JsonSchemaSemanticVersion") && !string.IsNullOrEmpty(dataObj.JsonSchemaSemanticVersion))
+            {
                 manifest.JsonSchemaSemanticVersion = dataObj.JsonSchemaSemanticVersion;
+            }
+
+            if (!string.IsNullOrEmpty(dataObj.DocumentVersion))
+            {
+                manifest.DocumentVersion = dataObj.DocumentVersion;
+            }
 
             if (!string.IsNullOrEmpty(dataObj.ManifestName))
+            {
                 manifest.ManifestName = dataObj.ManifestName;
-            // Might be populated in the case of folio.cdm.json or manifest.cdm.json file.
+            }
             else if (!string.IsNullOrEmpty(dataObj.FolioName))
+            {
+                // Might be populated in the case of folio.cdm.json or manifest.cdm.json file.
                 manifest.ManifestName = dataObj.FolioName;
+            }
 
-            if (dataObj.ExhibitsTraits != null)
-                Utils.AddListToCdmCollection(manifest.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, JArray.FromObject(dataObj.ExhibitsTraits)));
+            Utils.AddListToCdmCollection(manifest.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, dataObj.ExhibitsTraits));
+
             if (dataObj.Imports != null)
             {
                 foreach (var importObj in dataObj.Imports)
@@ -116,7 +128,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                        }
                        else
                        {
-                            Logger.Error(nameof(ManifestPersistence), ctx, "Couldn't find the type for entity declaration", nameof(FromObject));
+                            Logger.Error(ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistEntityDeclarationMissing);
                        }
                     } 
                     else
@@ -179,7 +191,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 ManifestName = instance.ManifestName,
                 JsonSchemaSemanticVersion = documentContent.JsonSchemaSemanticVersion,
                 Schema = documentContent.Schema,
-                Imports = documentContent.Imports
+                Imports = documentContent.Imports,
+                DocumentVersion = documentContent.DocumentVersion
             };
 
             manifestContent.ManifestName = instance.ManifestName;
@@ -193,7 +206,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (instance.Relationships != null && instance.Relationships.Count > 0)
             {
-                manifestContent.Relationships = instance.Relationships.Select(relationship => { return E2ERelationshipPersistence.ToData(relationship); }).ToList();
+                manifestContent.Relationships = instance.Relationships.Select(relationship => { return E2ERelationshipPersistence.ToData(relationship, resOpt, options); }).ToList();
             }
 
             return manifestContent;

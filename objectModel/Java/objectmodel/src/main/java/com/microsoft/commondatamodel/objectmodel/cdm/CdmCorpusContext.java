@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.EventList;
 
 public interface CdmCorpusContext {
 
@@ -19,4 +20,22 @@ public interface CdmCorpusContext {
   EventCallback getStatusEvent();
 
   void setStatusEvent(EventCallback value);
+
+  /**
+   * Collects events emitted by the SDK.
+   * @return the events
+   */
+  EventList getEvents();
+
+  /**
+   * Returns (optional) correlation ID to be stamped on all recorded status events.
+   * @return the correlation ID
+   */
+  String getCorrelationId();
+
+  /**
+   * Sets correlation ID to be stamped on all recorded status events.
+   * @param correlationId the correlation ID
+   */
+  void setCorrelationId(String correlationId);
 }

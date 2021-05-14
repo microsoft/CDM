@@ -32,6 +32,7 @@ class PredefinedTokens:
         (PredefinedTokenEnum.REFERENCEONLY, 'referenceOnly', PredefinedType.TOKEN),
         (PredefinedTokenEnum.NORMALIZED, 'normalized', PredefinedType.TOKEN),
         (PredefinedTokenEnum.STRUCTURED, 'structured', PredefinedType.TOKEN),
+        (PredefinedTokenEnum.VIRTUAL, 'virtual', PredefinedType.TOKEN),
         (PredefinedTokenEnum.OPENPAREN, '(', PredefinedType.OPEN_PARENTHESIS),
         (PredefinedTokenEnum.CLOSEPAREN, ')', PredefinedType.CLOSE_PARENTHESIS)
     ]

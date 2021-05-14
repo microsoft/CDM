@@ -8,6 +8,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinitionBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
 /**
@@ -21,16 +22,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
  */
 @Deprecated
 public final class ProjectionDirective {
-    /**
-     * Max depth default
-     */
-    final int maxDepthDefault = 2;
-
-    /**
-     * Max Depth if 'noMaxDepth' is defined
-     */
-    final int maxDepthHasNoMax = 32;
-
     private ResolveOptions resOpt;
     private CdmObjectDefinitionBase owner;
     private CdmObjectReference ownerRef;
@@ -38,13 +29,13 @@ public final class ProjectionDirective {
     private String originalSourceEntityAttributeName;
     private CardinalitySettings cardinality;
     private boolean isSourcePolymorphic;
-    private Integer currentDepth;
     private boolean hasNoMaximumDepth;
     private Integer maximumDepth;
     private Boolean isArray;
     private boolean isReferenceOnly;
     private boolean isNormalized;
     private boolean isStructured;
+    private boolean isVirtual;
 
     public ProjectionDirective(ResolveOptions resOpt, CdmObjectDefinitionBase owner) {
         this(resOpt, owner, null);
@@ -75,17 +66,15 @@ public final class ProjectionDirective {
             this.isReferenceOnly = (resOpt.getDirectives().has("referenceOnly") == true);
             this.isNormalized = (resOpt.getDirectives().has("normalized") == true);
             this.isStructured = (resOpt.getDirectives().has("structured") == true);
+            this.isVirtual = (resOpt.getDirectives().has("virtual") == true);
             this.hasNoMaximumDepth = (resOpt.getDirectives().has("noMaxDepth") == true);
             this.isArray = (resOpt.getDirectives().has("isArray") == true);
         }
 
-        this.currentDepth = (resOpt != null && resOpt.getRelationshipDepth() == null) ? 1 : resOpt.getRelationshipDepth() + 1;
-        resOpt.setRelationshipDepth(this.currentDepth);
-
-        // if noMaxDepth directive the max depth is 32 else defaults to 2
+        // if noMaxDepth directive the max depth is 32 else defaults to what was set by the user
         // these depths were arbitrary and were set for the resolution guidance
         // re-using the same for projections as well
-        this.maximumDepth = this.hasNoMaximumDepth ? maxDepthHasNoMax : maxDepthDefault;
+        this.maximumDepth = this.hasNoMaximumDepth ? DepthInfo.maxDepthLimit : resOpt.getMaxDepth();
     }
 
     /**
@@ -175,28 +164,6 @@ public final class ProjectionDirective {
     }
 
     /**
-     * Current depth of reference
-     *
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     * @return Integer
-     */
-    @Deprecated
-    public Integer getCurrentDepth() {
-        return currentDepth;
-    }
-
-    /**
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     * @param currentDepth Integer 
-     */
-    @Deprecated
-    public void setCurrentDepth(final Integer currentDepth) {
-        this.currentDepth = currentDepth;
-    }
-
-    /**
      * Has maximum depth override flag
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
@@ -266,5 +233,17 @@ public final class ProjectionDirective {
     @Deprecated
     public boolean getIsStructured() {
         return isStructured;
+    }
+
+    /**
+     * Is structured
+     *
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     * @return Boolean
+     */
+    @Deprecated
+    public boolean getIsVirtual() {
+        return isVirtual;
     }
 }

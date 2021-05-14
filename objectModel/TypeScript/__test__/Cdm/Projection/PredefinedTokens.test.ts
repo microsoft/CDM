@@ -15,7 +15,7 @@ describe('Cdm/Projection/PredefinedTokensUnitTest', () => {
     it('TestGetPredefinedTokens', () => {
         const tokens: string[] = PredefinedTokens.getPredefinedTokens();
 
-        const expected: string = 'always depth maxDepth noMaxDepth isArray cardinality.minimum cardinality.maximum referenceOnly normalized structured';
+        const expected: string = 'always depth maxDepth noMaxDepth isArray cardinality.minimum cardinality.maximum referenceOnly normalized structured virtual';
         const actual: string = tokens.join(' ');
         expect(actual)
             .toEqual(expected);

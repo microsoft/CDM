@@ -128,7 +128,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             TestHelper.AssertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
         }
         /// <summary>/// 
-        /// Test that saving a model.json or odi.json that isn't named exactly as such fails to save. 
+        /// Test that saving a model.json that isn't named exactly as such fails to save. 
         /// </summary>
         [TestMethod]
         public async Task TestSavingInvalidModelJsonName()
@@ -139,7 +139,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             corpus.Storage.DefaultNamespace = "local";
             var manifest = new CdmManifestDefinition(corpus.Ctx, "manifest");
             corpus.Storage.FetchRootFolder("local").Documents.Add(manifest);
-
 
             ConcurrentDictionary<string, string> allDocs = new ConcurrentDictionary<string, string>();
             var testAdapter = new TestStorageAdapter(allDocs);

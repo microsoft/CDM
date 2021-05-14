@@ -1,0 +1,125 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SATAuthorizationNumber_MX",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AuthorizationCode",
+          "dataType": "AuthorizationCode_MX",
+          "description": ""
+        },
+        {
+          "name": "AuthorizationYear",
+          "dataType": "AuthorizationYear_MX",
+          "description": ""
+        },
+        {
+          "name": "FromNumber",
+          "dataType": "Integer",
+          "displayName": "From number",
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Number sequence code",
+          "description": ""
+        },
+        {
+          "name": "Series",
+          "dataType": "InvoiceSeries_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToNumber",
+          "dataType": "Integer",
+          "displayName": "To number",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_NumberSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Authorization numbers"
+    },
+    {
+      "dataTypeName": "AuthorizationCode_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AuthorizationYear_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InvoiceSeries_MX",
+      "extendsDataType": "string"
+    }
+  ]
+}

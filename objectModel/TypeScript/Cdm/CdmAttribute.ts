@@ -51,7 +51,7 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
     public copyAtt(resOpt: resolveOptions, copy: CdmAttribute): CdmAttribute {
         // let bodyCode = () =>
         {
-            copy.purpose = this.purpose ? <CdmPurposeReference>this.purpose.copy(resOpt) : undefined;
+            copy.purpose = this.purpose ? this.purpose.copy(resOpt) as CdmPurposeReference : undefined;
             copy.resolutionGuidance = this.resolutionGuidance ?
                 this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance
                 : undefined;
@@ -92,6 +92,7 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
         // let bodyCode = () =>
         {
             if (this.purpose) {
+                this.purpose.owner = this;
                 if (this.purpose.visit(`${pathFrom}/purpose/`, preChildren, postChildren)) {
                     return true;
                 }
@@ -102,6 +103,7 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
                 }
             }
             if (this.resolutionGuidance) {
+                this.resolutionGuidance.owner = this;
                 if (this.resolutionGuidance.visit(`${pathFrom}/resolutionGuidance/`, preChildren, postChildren)) {
                     return true;
                 }
@@ -121,10 +123,7 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
     public addResolvedTraitsApplied(rtsb: ResolvedTraitSetBuilder, resOpt: resolveOptions): ResolvedTraitSet {
         // let bodyCode = () =>
         {
-            const l: number = this.appliedTraits.length;
-            for (let i: number = 0; i < l; i++) {
-                rtsb.mergeTraits(this.appliedTraits.allItems[i].fetchResolvedTraits(resOpt));
-            }
+            this.appliedTraits.allItems.forEach(trait => rtsb.mergeTraits(trait.fetchResolvedTraits(resOpt)));
 
             // any applied on use
             return rtsb.rts;

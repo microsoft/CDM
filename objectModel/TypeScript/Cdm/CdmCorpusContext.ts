@@ -4,11 +4,16 @@
 import {
     CdmCorpusDefinition,
     cdmStatusLevel,
-    EventCallback
+    EventCallback,
+    EventList
 } from '../internal';
 
 export interface CdmCorpusContext {
     reportAtLevel: cdmStatusLevel;
     corpus: CdmCorpusDefinition;
     statusEvent: EventCallback;
+    /** Collects events emitted by the SDK. */
+    events: EventList;
+    /** Optional correlation ID to be stamped on all recorded status events. */
+    correlationId: string;
 }

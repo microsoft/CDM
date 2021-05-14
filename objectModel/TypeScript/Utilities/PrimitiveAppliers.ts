@@ -29,6 +29,11 @@ export interface ResolutionAppliers {
     /**
      * @internal
      */
+    isRemovedInternal: AttributeResolutionApplier;
+
+    /**
+     * @internal
+     */
     doesReferenceEntity: AttributeResolutionApplier;
 
     /**
@@ -76,6 +81,15 @@ const PrimitiveAppliers: ResolutionAppliers = {
         overridesBase: false,
         willRemove: (onStep: applierContext): boolean => {
             return true;
+        }
+    },
+    isRemovedInternal:
+    {
+        matchName: 'is.removed.internal',
+        priority: 10,
+        overridesBase: false,
+        willRemove: (onStep: applierContext): boolean => {
+            return onStep.resAttSource.applierState && onStep.resAttSource.applierState.flex_remove;
         }
     },
     doesReferenceEntity:
@@ -146,7 +160,7 @@ const PrimitiveAppliers: ResolutionAppliers = {
             // use the default name.
             appCtx.resAttNew.resolvedName = sub.getName();
             // add a supporting trait to this attribute
-            const supTraitRef: CdmTraitReference = sub.appliedTraits.push('is.addedInSupportOf', false);
+            const supTraitRef: CdmTraitReference = sub.appliedTraits.push('is.addedInSupportOf', false) as CdmTraitReference;
             const supTraitDef: CdmTraitDefinition = supTraitRef.fetchObjectDefinition(appCtx.resOpt);
 
             // get the resolved traits from attribute
@@ -377,7 +391,7 @@ const PrimitiveAppliers: ResolutionAppliers = {
             const isArray: boolean = dir && dir.has('isArray');
             const isRefOnly: boolean = dir && dir.has('referenceOnly');
             const alwaysAdd: boolean = appCtx.resGuide.entityByReference.foreignKeyAttribute !== undefined &&
-                                        appCtx.resGuide.entityByReference.alwaysIncludeForeignKey === true;
+                appCtx.resGuide.entityByReference.alwaysIncludeForeignKey === true;
             const doFK: boolean = (alwaysAdd || isRefOnly) && (isNorm === false || isArray === false);
             let visible: boolean = true;
             if (doFK && appCtx.resAttSource) {
@@ -397,7 +411,7 @@ const PrimitiveAppliers: ResolutionAppliers = {
             const isArray: boolean = dir && dir.has('isArray');
             const isRefOnly: boolean = dir && dir.has('referenceOnly');
             const alwaysAdd: boolean = appCtx.resGuide.entityByReference.foreignKeyAttribute !== undefined &&
-                                        appCtx.resGuide.entityByReference.alwaysIncludeForeignKey === true;
+                appCtx.resGuide.entityByReference.alwaysIncludeForeignKey === true;
 
             // add a foreign key and remove everything else when asked to do so.
             // however, avoid doing this for normalized arrays, since they remove all alls anyway
@@ -430,7 +444,7 @@ const PrimitiveAppliers: ResolutionAppliers = {
             const isArray: boolean = dir && dir.has('isArray');
             const isRefOnly: boolean = dir && dir.has('referenceOnly');
             const alwaysAdd: boolean = appCtx.resGuide.entityByReference.foreignKeyAttribute !== undefined &&
-                                        appCtx.resGuide.entityByReference.alwaysIncludeForeignKey === true;
+                appCtx.resGuide.entityByReference.alwaysIncludeForeignKey === true;
 
             return (isRefOnly || alwaysAdd) && (isNorm === false || isArray === false);
         },
@@ -483,20 +497,20 @@ const PrimitiveAppliers: ResolutionAppliers = {
             return true;
         },
         doCreateContext: (appCtx: applierContext): void => {
-            if (appCtx.resAttNew && appCtx.resAttNew.applierState && appCtx.resAttNew.applierState.array_specializedContext){
+            if (appCtx.resAttNew && appCtx.resAttNew.applierState && appCtx.resAttNew.applierState.array_specializedContext) {
                 // this attribute may have a special context that it wants, use that instead
                 appCtx.resAttNew.applierState.array_specializedContext(appCtx);
-            }else {
+            } else {
                 let ctxType: cdmAttributeContextType = cdmAttributeContextType.attributeDefinition;
                 // if this is the group add, then we are adding the counter
-                if (appCtx.state === 'group'){
+                if (appCtx.state === 'group') {
                     ctxType = cdmAttributeContextType.addedAttributeExpansionTotal;
                 }
                 const acp: AttributeContextParameters = {
                     under: appCtx.attCtx,
                     type: ctxType
                 };
-                appCtx.attCtx = CdmAttributeContext.createChildUnder(appCtx.resOpt, acp);        
+                appCtx.attCtx = CdmAttributeContext.createChildUnder(appCtx.resOpt, acp);
             }
         },
         willAttributeAdd: (appCtx: applierContext): boolean => {

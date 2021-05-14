@@ -4,20 +4,27 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeState;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeStateSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle AddCountAttribute operations
  */
 public class CdmOperationAddCountAttribute extends CdmOperationBase {
-    private String TAG = CdmOperationAddCountAttribute.class.getSimpleName();
+    private static final String TAG = CdmOperationAddCountAttribute.class.getSimpleName();
     private CdmTypeAttributeDefinition countAttribute;
 
     public CdmOperationAddCountAttribute(final CdmCorpusContext ctx) {
@@ -28,8 +35,9 @@ public class CdmOperationAddCountAttribute extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "copy");
-        return new CdmOperationAddCountAttribute(this.getCtx());
+        CdmOperationAddCountAttribute copy = new CdmOperationAddCountAttribute(this.getCtx());
+        copy.countAttribute = (CdmTypeAttributeDefinition) this.countAttribute.copy(resOpt, host);
+        return copy;
     }
 
     public CdmTypeAttributeDefinition getCountAttribute() {
@@ -73,7 +81,7 @@ public class CdmOperationAddCountAttribute extends CdmOperationBase {
             missingFields.add("countAttribute");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -107,8 +115,37 @@ public class CdmOperationAddCountAttribute extends CdmOperationBase {
      */
     @Override
     @Deprecated
-    public ProjectionAttributeStateSet appendProjectionAttributeState(ProjectionContext projCtx, ProjectionAttributeStateSet projAttrStateSet, CdmAttributeContext attrCtx) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "appendProjectionAttributeState");
-        return null;
+    public ProjectionAttributeStateSet appendProjectionAttributeState(ProjectionContext projCtx, ProjectionAttributeStateSet projOutputSet, CdmAttributeContext attrCtx) {
+        // Pass through all the input projection attribute states if there are any
+        for (ProjectionAttributeState currentPAS : projCtx.getCurrentAttributeStateSet().getStates()) {
+            projOutputSet.add(currentPAS);
+        }
+
+        // Create a new attribute context for the operation
+        AttributeContextParameters attrCtxOpAddCountParam = new AttributeContextParameters();
+        attrCtxOpAddCountParam.setUnder(attrCtx);
+        attrCtxOpAddCountParam.setType(CdmAttributeContextType.OperationAddCountAttribute);
+        attrCtxOpAddCountParam.setName("operation/index" + this.getIndex() + "/operationAddCountAttribute");
+        CdmAttributeContext attrCtxOpAddCount = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxOpAddCountParam);
+
+        // Create a new attribute context for the Count attribute we will create
+        AttributeContextParameters attrCtxCountAttrParam = new AttributeContextParameters();
+        attrCtxCountAttrParam.setUnder(attrCtxOpAddCount);
+        attrCtxCountAttrParam.setType(CdmAttributeContextType.AddedAttributeExpansionTotal);
+        attrCtxCountAttrParam.setName(this.countAttribute.getName());
+        CdmAttributeContext attrCtxCountAttr = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxCountAttrParam);
+
+        // Create the Count attribute with the specified CountAttribute as its target and apply the trait "is.linkedEntity.array.count" to it
+        List<String> addTrait = new ArrayList<String>(Arrays.asList("is.linkedEntity.array.count"));
+        ResolvedAttribute newResAttr = createNewResolvedAttribute(projCtx, attrCtxCountAttr, this.countAttribute, null, addTrait);
+
+        // Create a new projection attribute state for the new Count attribute and add it to the output set
+        // There is no previous state for the newly created Count attribute
+        ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.getCtx());
+        newPAS.setCurrentResolvedAttribute(newResAttr);
+
+        projOutputSet.add(newPAS);
+
+        return projOutputSet;
     }
 }

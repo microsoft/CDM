@@ -8,7 +8,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json.Linq;
     using System;
@@ -193,7 +192,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsForSelectsOneAttribute", "expectedRels.json")).ToObject<List<E2ERelationship>>();
             var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestCalculateRelationshipsForSelectsOneAttribute");
-            corpus.Storage.Mount("cdm", new LocalAdapter(TestHelper.SchemaDocumentsPath));
 
             var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/selectsOne.manifest.cdm.json");
 
@@ -202,6 +200,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             // check that each relationship has been created correctly
             VerifyRelationships(manifest, expectedRels);
+        }
+
+        /// <summary>
+        /// Test the relationship calculation when using a replace as foreign key operation while extending an entity.
+        /// </summary>
+        [TestMethod]
+        public async Task TestExtendsEntityAndReplaceAsForeignKey()
+        {
+            var testName = "TestExtendsEntityAndReplaceAsForeignKey";
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
+
+            await corpus.CalculateEntityGraphAsync(manifest);
+            // Check if the warning was logged.
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnProjFKWithoutSourceEntity);
+
+            await manifest.PopulateManifestRelationshipsAsync();
+            Assert.AreEqual(0, manifest.Relationships.Count);
         }
 
         /// <summary>
@@ -230,6 +247,45 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestRelationshipToMultipleEntities", "expectedRels.json")).ToObject<List<E2ERelationship>>();
             var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRelationshipToMultipleEntities");
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
+
+            await corpus.CalculateEntityGraphAsync(manifest);
+            await manifest.PopulateManifestRelationshipsAsync();
+
+            // check that each relationship has been created correctly
+            VerifyRelationships(manifest, expectedRels);
+        }
+
+        /// <summary>
+        /// Test that relationships between entities in different namespaces are created correctly
+        /// </summary>
+        [TestMethod]
+        public async Task TestRelationshipToDifferentNamespace()
+        {
+            var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestRelationshipToDifferentNamespace", "expectedRels.json")).ToObject<List<E2ERelationship>>();
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRelationshipToDifferentNamespace");
+
+            // entity B will be in a different namespace
+            corpus.Storage.Mount("differentNamespace", new LocalAdapter($"{TestHelper.GetInputFolderPath(testsSubpath, "TestRelationshipToDifferentNamespace")}\\differentNamespace"));
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
+
+            await corpus.CalculateEntityGraphAsync(manifest);
+            await manifest.PopulateManifestRelationshipsAsync();
+
+            // check that each relationship has been created correctly
+            VerifyRelationships(manifest, expectedRels);
+        }
+
+        /// <summary>
+        /// Test that relationships pointing from a manifest to an entity in a submanifest create correct paths
+        /// </summary>
+        [TestMethod]
+        public async Task TestRelationshipPointingToSubManifest()
+        {
+            var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestRelationshipPointingToSubManifest", "expectedRels.json")).ToObject<List<E2ERelationship>>();
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRelationshipPointingToSubManifest");
 
             var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
 

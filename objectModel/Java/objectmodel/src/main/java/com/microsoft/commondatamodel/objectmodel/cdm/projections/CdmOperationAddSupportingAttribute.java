@@ -4,20 +4,27 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeState;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeStateSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to handle AddSupportingAttribute operations
  */
 public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
-    private String TAG = CdmOperationAddSupportingAttribute.class.getSimpleName();
+    private static final String TAG = CdmOperationAddSupportingAttribute.class.getSimpleName();
     private CdmTypeAttributeDefinition supportingAttribute;
 
     public CdmOperationAddSupportingAttribute(final CdmCorpusContext ctx) {
@@ -28,8 +35,12 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "copy");
-        return new CdmOperationAddSupportingAttribute(this.getCtx());
+        CdmOperationAddSupportingAttribute copy = new CdmOperationAddSupportingAttribute(this.getCtx());
+        if (this.supportingAttribute != null) {
+            copy.supportingAttribute = (CdmTypeAttributeDefinition) this.supportingAttribute.copy();
+        }
+
+        return copy;
     }
 
     public CdmTypeAttributeDefinition getSupportingAttribute() {
@@ -73,7 +84,7 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
             missingFields.add("supportingAttribute");
         }
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -107,8 +118,47 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
      */
     @Override
     @Deprecated
-    public ProjectionAttributeStateSet appendProjectionAttributeState(ProjectionContext projCtx, ProjectionAttributeStateSet projAttrStateSet, CdmAttributeContext attrCtx) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "appendProjectionAttributeState");
-        return null;
+    public ProjectionAttributeStateSet appendProjectionAttributeState(ProjectionContext projCtx, ProjectionAttributeStateSet projOutputSet, CdmAttributeContext attrCtx) {
+        // Pass through all the input projection attribute states if there are any
+        for (ProjectionAttributeState currentPAS : projCtx.getCurrentAttributeStateSet().getStates()) {
+            projOutputSet.add(currentPAS);
+        }
+
+        // Create a new attribute context for the operation
+        AttributeContextParameters attrCtxOpAddSupportingAttrParam = new AttributeContextParameters();
+        attrCtxOpAddSupportingAttrParam.setUnder(attrCtx);
+        attrCtxOpAddSupportingAttrParam.setType(CdmAttributeContextType.OperationAddSupportingAttribute);
+        attrCtxOpAddSupportingAttrParam.setName("operation/index" + this.getIndex() + "/" + this.getName());
+        CdmAttributeContext attrCtxOpAddSupportingAttr = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxOpAddSupportingAttrParam);
+
+        // Create a new attribute context for the supporting attribute we will create
+        AttributeContextParameters attrCtxSupportingAttrParam = new AttributeContextParameters();
+        attrCtxSupportingAttrParam.setUnder(attrCtxOpAddSupportingAttr);
+        attrCtxSupportingAttrParam.setType(CdmAttributeContextType.AddedAttributeSupporting);
+        attrCtxSupportingAttrParam.setName(this.supportingAttribute.getName());
+        CdmAttributeContext attrCtxSupportingAttr = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxSupportingAttrParam);
+        
+        // TODO: this if statement keeps the functionality the same way it works currently in resolution guidance.
+        // This should be changed to point to the foreign key attribute instead. 
+        // There has to be some design decisions about how this will work and will be done in the next release.
+        if (projCtx.getCurrentAttributeStateSet().getStates().size() > 0) {
+            int lastIndex = projCtx.getCurrentAttributeStateSet().getStates().size() - 1;
+            ProjectionAttributeState lastState = projCtx.getCurrentAttributeStateSet().getStates().get(lastIndex);
+            CdmTraitReference inSupportOfTrait = (CdmTraitReference) this.supportingAttribute.getAppliedTraits().add("is.addedInSupportOf");
+            inSupportOfTrait.getArguments().add("inSupportOf", lastState.getCurrentResolvedAttribute().getResolvedName());
+        }
+
+        // Create the supporting attribute with the specified "supportingAttribute" property as its target and apply the trait "is.virtual.attribute" to it
+        List<String> addTrait = new ArrayList<String>(Arrays.asList("is.virtual.attribute"));
+        ResolvedAttribute newResAttr = createNewResolvedAttribute(projCtx, attrCtxSupportingAttr, this.supportingAttribute, null, addTrait);
+
+        // Create a new projection attribute state for the new supporting attribute and add it to the output set
+        // There is no previous state for the newly created supporting attribute
+        ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.getCtx());
+        newPAS.setCurrentResolvedAttribute(newResAttr);
+
+        projOutputSet.add(newPAS);
+
+        return projOutputSet;
     }
 }

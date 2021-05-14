@@ -1,0 +1,282 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "SMAServiceObjectRelation.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "SMAServiceObjectTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "SMATemplateBOMTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SMAServiceBOMTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BOMCopyRefId",
+          "dataType": "SMABOMCopyRefId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMCopyRefParentLineId",
+          "dataType": "SMATemplateBOMParentLineId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMCopyRefType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMQty",
+          "dataType": "BOMQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMVersionDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "BOM date",
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "ItemType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ObjectId",
+          "dataType": "SMAServiceObjectId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigLine",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Original",
+          "description": ""
+        },
+        {
+          "name": "ServiceBOMId",
+          "dataType": "SMATemplateBOMId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceBOMLineId",
+          "dataType": "SMATemplateBOMLineId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceBOMParentLineId",
+          "dataType": "SMATemplateBOMParentLineId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceObjectRelationId",
+          "dataType": "SMAServiceObjectRelationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitID",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceObjectRelation"
+          },
+          "name": "Relationship_SMAServiceObjectRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceObjectTable"
+          },
+          "name": "Relationship_SMAServiceObjectTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMATemplateBOMTable"
+          },
+          "name": "Relationship_SMATemplateBOMTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Template BOM lines"
+    },
+    {
+      "dataTypeName": "SMABOMCopyRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMATemplateBOMParentLineId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BOMQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SMAServiceObjectId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SMATemplateBOMId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMATemplateBOMLineId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAServiceObjectRelationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    }
+  ]
+}

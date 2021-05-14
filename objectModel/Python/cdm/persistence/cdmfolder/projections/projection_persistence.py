@@ -3,7 +3,7 @@
 
 from typing import TYPE_CHECKING, Union
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.enums.cdm_operation_type import CdmOperationType, OperationTypeConvertor
 from cdm.objectmodel import CdmOperationBase, CdmEntityReference
 from cdm.persistence.cdmfolder.projections.operation_add_attribute_group_persistence import \
@@ -51,6 +51,8 @@ class ProjectionPersistence:
         if data.condition:
             projection.condition = data.condition
 
+        projection.run_sequentially = data.runSequentially
+
         if data.operations is not None:
             operation_jsons = data.operations
             for operation_json in operation_jsons:
@@ -87,7 +89,7 @@ class ProjectionPersistence:
                     add_attribute_group_op = OperationAddAttributeGroupPersistence.from_data(ctx, operation_json)
                     projection.operations.append(add_attribute_group_op)
                 else:
-                    logger.error(_TAG, ctx, 'Invalid operation type \'{}\'.'.format(type), ProjectionPersistence.from_data.__name__)
+                    logger.error(ctx, _TAG, ProjectionPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_PROJ_INVALID_OPS_TYPE, type)
 
         projection.source = source
 
@@ -151,5 +153,6 @@ class ProjectionPersistence:
         obj.source = source
         obj.operations = operations
         obj.condition = instance.condition
+        obj.runSequentially = instance.run_sequentially
 
         return obj

@@ -1,21 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
 
     [TestClass]
     public class ProjectionFKTest
     {
-        private static List<List<string>> restOptsCombinations = new List<List<string>>() {
+        private static List<List<string>> resOptsCombinations = new List<List<string>>() {
             new List<string> { },
             new List<string> { "referenceOnly" },
             new List<string> { "normalized" },
@@ -36,10 +34,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestEntityAttribute";
             string entityName = "SalesEntityAttribute";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -48,10 +47,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestEntityAttributeProj";
             string entityName = "SalesEntityAttribute";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -60,10 +60,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestSourceWithEA";
             string entityName = "SalesSourceWithEA";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -72,10 +73,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestSourceWithEAProj";
             string entityName = "SalesSourceWithEA";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -84,10 +86,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestGroupFK";
             string entityName = "SalesGroupFK";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -96,10 +99,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestGroupFKProj";
             string entityName = "SalesGroupFK";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -108,10 +112,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestNestedFKProj";
             string entityName = "SalesNestedFK";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -120,10 +125,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestPolymorphic";
             string entityName = "PersonPolymorphicSource";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -132,10 +138,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestPolymorphicProj";
             string entityName = "PersonPolymorphicSource";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -144,10 +151,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestPolymorphicFKProj";
             string entityName = "PersonPolymorphicSourceFK";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -156,10 +164,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestArraySource";
             string entityName = "SalesArraySource";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -168,10 +177,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestArraySourceProj";
             string entityName = "SalesArraySource";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -180,10 +190,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestForeignKey";
             string entityName = "SalesForeignKey";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -192,10 +203,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestForeignKeyProj";
             string entityName = "SalesForeignKey";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -204,10 +216,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestForeignKeyAlways";
             string entityName = "SalesForeignKeyAlways";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
         }
 
@@ -216,49 +229,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestCompositeKeyProj";
             string entityName = "SalesCompositeKey";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
-        }
-
-        private async Task LoadEntityForResolutionOptionAndSave(string testName, string entityName, List<string> resOpts)
-        {
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
-            CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"local:/default.manifest.cdm.json");
-
-            string expectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, testName);
-            string fileNameSuffix = ProjectionTestUtils.GetResolutionOptionNameSuffix(resOpts);
-
-            CdmEntityDefinition entSalesForeignKeyProjection = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
-            Assert.IsNotNull(entSalesForeignKeyProjection);
-            CdmEntityDefinition resolvedSalesForeignKeyProjection = await SaveResolved(corpus, manifest, testName, entSalesForeignKeyProjection, resOpts);
-            Assert.IsNotNull(resolvedSalesForeignKeyProjection);
-            AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, $"{entityName}{fileNameSuffix}", resolvedSalesForeignKeyProjection);
-        }
-
-        private async Task<CdmEntityDefinition> SaveResolved(CdmCorpusDefinition corpus, CdmManifestDefinition manifest, string testName, CdmEntityDefinition inputEntity, List<string> resolutionOptions)
-        {
-            HashSet<string> roHashSet = new HashSet<string>();
-            for (int i = 0; i < resolutionOptions.Count; i++)
-            {
-                roHashSet.Add(resolutionOptions[i]);
-            }
-
-            string fileNameSuffix = ProjectionTestUtils.GetResolutionOptionNameSuffix(resolutionOptions);
-
-            string resolvedEntityName = $"Resolved_{inputEntity.EntityName}{fileNameSuffix}.cdm.json";
-
-            ResolveOptions ro = new ResolveOptions(inputEntity.InDocument)
-            {
-                Directives = new AttributeResolutionDirectiveSet(roHashSet)
-            };
-
-            CdmFolderDefinition resolvedFolder = corpus.Storage.FetchRootFolder("output");
-            CdmEntityDefinition resolvedEntity = await inputEntity.CreateResolvedEntityAsync(resolvedEntityName, ro, resolvedFolder);
-
-            return resolvedEntity;
         }
     }
 }

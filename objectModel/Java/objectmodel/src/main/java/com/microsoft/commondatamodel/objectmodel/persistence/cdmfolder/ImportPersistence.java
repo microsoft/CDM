@@ -8,15 +8,18 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmImport;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class ImportPersistence {
+  private static final String TAG = ImportPersistence.class.getSimpleName();
+
   public static CdmImport fromData(final CdmCorpusContext ctx, final Import obj) {
         if (obj == null) {
-            Logger.error(ImportPersistence.class.getSimpleName(), ctx, "There was an error while trying to convert from JSON to CdmImport. Reason: JSON object is null", "fromData");
-            return null;
+          Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistJsonImportConversionError);
+          return null;
         }
 
         final CdmImport theImport = ctx.getCorpus().makeObject(CdmObjectType.Import);

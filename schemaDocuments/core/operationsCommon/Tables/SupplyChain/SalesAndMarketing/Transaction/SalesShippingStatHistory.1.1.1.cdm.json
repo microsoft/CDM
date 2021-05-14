@@ -1,0 +1,178 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SalesShippingStat.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesShippingStatHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CartonsQty",
+          "dataType": "CartonsQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FreightZone",
+          "dataType": "CustFreightZoneId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GrossWeight",
+          "dataType": "GrossWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetWeight",
+          "dataType": "ItemNetWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Nolabels",
+          "dataType": "PrintCopies",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "InventQty",
+          "displayName": "Number of units",
+          "description": ""
+        },
+        {
+          "name": "SalesShippingStat",
+          "dataType": "SalesShippingStatRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "UnitWeight",
+          "dataType": "UnitPackingWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDateTime",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDateTime",
+          "description": ""
+        },
+        {
+          "name": "Volume",
+          "dataType": "Volume",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SalesShippingStat"
+          },
+          "name": "Relationship_SalesShippingStatRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Shipping specification"
+    },
+    {
+      "dataTypeName": "CartonsQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustFreightZoneId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "GrossWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemNetWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PrintCopies",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesShippingStatRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UnitPackingWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ValidFromDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Volume",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

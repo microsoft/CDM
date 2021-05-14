@@ -18,6 +18,7 @@ import {
     CdmOperationIncludeAttributes,
     cdmOperationType,
     CdmProjection,
+    cdmLogCode,
     copyOptions,
     OperationTypeConvertor,
     resolveOptions,
@@ -55,6 +56,8 @@ import { OperationIncludeAttributesPersistence } from './OperationIncludeAttribu
  * Projection persistence
  */
 export class ProjectionPersistence {
+    private static TAG: string = ProjectionPersistence.name;
+
     public static fromData(ctx: CdmCorpusContext, object: Projection): CdmProjection {
         if (!object) {
             return undefined;
@@ -64,13 +67,9 @@ export class ProjectionPersistence {
 
         const source: CdmEntityReference = EntityReferencePersistence.fromData(ctx, object.source);
 
-        if ('explanation' in object && object.explanation) {
-            projection.explanation = object.explanation;
-        }
-
-        if ('condition' in object) {
-            projection.condition = object.condition;
-        }
+        projection.explanation = object.explanation;
+        projection.condition = object.condition;
+        projection.runSequentially = object.runSequentially;
 
         if ('operations' in object && object.operations) {
             const operationJsons: OperationBase[] = object.operations;
@@ -119,7 +118,7 @@ export class ProjectionPersistence {
                         projection.operations.push(addAttributeGroupOp);
                         break;
                     default:
-                        Logger.error(ProjectionPersistence.name, ctx, `Invalid operation type '${type}'.`, ProjectionPersistence.fromData.name);
+                        Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjInvalidOpsType, type);
                 }
             });
         }
@@ -191,8 +190,7 @@ export class ProjectionPersistence {
                         break;
                     default:
                         const baseOp: OperationBase = {
-                            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.error),
-                            explanation: undefined
+                            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.error)
                         };
                         operations.push(baseOp);
                 }
@@ -203,7 +201,8 @@ export class ProjectionPersistence {
             explanation: instance.explanation,
             source: source,
             operations: operations,
-            condition: instance.condition
+            condition: instance.condition,
+            runSequentially: instance.runSequentially
         };
     }
 }

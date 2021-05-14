@@ -15,7 +15,7 @@ import {
     CdmReferencedEntityDeclarationDefinition,
     cdmStatusLevel,
     CdmTraitReference,
-    CdmTypeAttributeDefinition
+    CdmTypeAttributeDefinition,
 } from '../../../internal';
 import { CdmFolder, ModelJson } from '../../../Persistence';
 import {
@@ -277,7 +277,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const referenceEntity1: CdmReferencedEntityDeclarationDefinition =
             new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity1');
         referenceEntity1.entityPath = 'remote:/contoso/entity1.model.json/Entity1';
-        const modelIdTrait1: CdmTraitReference = referenceEntity1.exhibitsTraits.push('is.propertyContent.multiTrait');
+        const modelIdTrait1: CdmTraitReference = referenceEntity1.exhibitsTraits.push('is.propertyContent.multiTrait') as CdmTraitReference;
         modelIdTrait1.isFromProperty = true;
         modelIdTrait1.arguments.push('modelId', 'f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612');
         manifest.entities.push(referenceEntity1);
@@ -292,7 +292,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const referenceEntity3: CdmReferencedEntityDeclarationDefinition =
             new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity3');
         referenceEntity3.entityPath = 'remote:/contoso/entity3.model.json/Entity3';
-        const modelIdTrait3: CdmTraitReference = referenceEntity3.exhibitsTraits.push('is.propertyContent.multiTrait');
+        const modelIdTrait3: CdmTraitReference = referenceEntity3.exhibitsTraits.push('is.propertyContent.multiTrait') as CdmTraitReference;
         modelIdTrait3.isFromProperty = true;
         modelIdTrait3.arguments.push('modelId', '3b2e040a-c8c5-4508-bb42-09952eb04a50');
         manifest.entities.push(referenceEntity3);
@@ -301,7 +301,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const referenceEntity4: CdmReferencedEntityDeclarationDefinition =
             new CdmReferencedEntityDeclarationDefinition(corpus.ctx, 'ReferenceEntity4');
         referenceEntity4.entityPath = 'remote:/contoso/entity.model.json/Entity4';
-        const modelIdTrait4: CdmTraitReference = referenceEntity4.exhibitsTraits.push('is.propertyContent.multiTrait');
+        const modelIdTrait4: CdmTraitReference = referenceEntity4.exhibitsTraits.push('is.propertyContent.multiTrait') as CdmTraitReference;
         modelIdTrait4.isFromProperty = true;
         modelIdTrait4.arguments.push('modelId', 'f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612');
         manifest.entities.push(referenceEntity4);

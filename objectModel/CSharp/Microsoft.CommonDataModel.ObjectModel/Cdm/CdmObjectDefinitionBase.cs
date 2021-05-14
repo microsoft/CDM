@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -40,6 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.ExhibitsTraits.Clear();
             foreach (var trait in this.ExhibitsTraits)
                 copy.ExhibitsTraits.Add(trait);
+            copy.InDocument = this.InDocument; // if gets put into a new document, this will change. until, use the source
         }
 
         /// <inheritdoc />
@@ -56,7 +57,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            resOpt.FromMoniker = null;
             return (dynamic)this;
         }
 
@@ -90,7 +90,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // merge in dynamic that are exhibited by this class
             if (this.ExhibitsTraits != null)
             {
-                foreach (CdmTraitReference exhibitsTrait in this.ExhibitsTraits)
+                foreach (CdmTraitReferenceBase exhibitsTrait in this.ExhibitsTraits)
                 {
                     rtsb.MergeTraits(exhibitsTrait.FetchResolvedTraits(resOpt));
                 }
@@ -118,6 +118,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 cdmObjectRef.ExplicitReference = this;
                 cdmObjectRef.InDocument = this.InDocument;
             }
+            return cdmObjectRef;
+        }
+
+        /// Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
+        /// into some final document. 
+        internal override CdmObjectReference CreatePortableReference(ResolveOptions resOpt)
+        {
+            CdmObjectReferenceBase cdmObjectRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.MapReferenceType(this.ObjectType), "portable", true) as CdmObjectReferenceBase;
+            cdmObjectRef.PortableReference = this;
+            cdmObjectRef.InDocument = this.InDocument; // where it started life
+            cdmObjectRef.Owner = this.Owner;
+
             return cdmObjectRef;
         }
     }

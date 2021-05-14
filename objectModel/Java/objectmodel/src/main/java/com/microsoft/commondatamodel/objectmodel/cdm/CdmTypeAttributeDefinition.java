@@ -4,20 +4,19 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.AttributeResolutionContext;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReferenceSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.*;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionDirective;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
@@ -25,8 +24,12 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmTypeAttributeDefinition extends CdmAttribute {
+  private static final String TAG = CdmTypeAttributeDefinition.class.getSimpleName();
+
   private CdmDataTypeReference dataType;
   private CdmAttributeContextReference attributeContext;
+
+  private CdmProjection projection;
   private TraitToPropertyMap t2pm;
 
   public CdmTypeAttributeDefinition(final CdmCorpusContext ctx, final String name) {
@@ -41,6 +44,17 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   public void setAttributeContext(final CdmAttributeContextReference value) {
     this.attributeContext = value;
+  }
+
+  public CdmProjection getProjection() {
+    return projection;
+  }
+
+  public void setProjection(CdmProjection projection) {
+    if (projection != null) {
+      projection.setOwner(this);
+    }
+    this.projection = projection;
   }
 
   public CdmDataFormat fetchDataFormat() {
@@ -230,6 +244,12 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
             .visit(path + "/attributeContext/", preChildren, postChildren)) {
       return true;
     }
+
+    if (this.getProjection() != null
+            && this.getProjection()
+            .visit(path + "/projection/", preChildren, postChildren)) {
+      return true;
+    }
     if (this.visitAtt(path, preChildren, postChildren)) {
       return true;
     }
@@ -254,32 +274,22 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
 
     if (this.getCardinality() != null) {
       if (!CardinalitySettings.isMinimumValid(this.getCardinality().getMinimum())) {
-        Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Logger.format("Invalid minimum cardinality {0}", this.getCardinality().getMinimum()), "validate");
+        Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality,  this.getCardinality().getMinimum());
         return false;
       }
       if (!CardinalitySettings.isMaximumValid(this.getCardinality().getMaximum())) {
-        Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Logger.format("Invalid maximum cardinality {0}", this.getCardinality().getMaximum()), "validate");
+        Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, this.getCardinality().getMaximum());
         return false;
       }
     }
 
     return true;
-  }
-
-  /**
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Override
-  @Deprecated
-  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
-    return constructResolvedAttributes(resOpt, null);
   }
 
   /**
@@ -302,26 +312,43 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     rasb.ownOne(newAtt);
 
     final ResolvedTraitSet rts = this.fetchResolvedTraits(resOpt);
-    // this context object holds all of the info about what needs to happen to resolve these attribute
-    // make a copy and add defaults if missing
-    final CdmAttributeResolutionGuidance resGuideWithDefault;
-    if (this.getResolutionGuidance() != null) {
-      resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance().copy(resOpt);
-    } else {
-      resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
+
+    if (this.getOwner() != null && this.getOwner().getObjectType() == CdmObjectType.EntityDef) {
+      rasb.getResolvedAttributeSet().setTargetOwner((CdmEntityDefinition) this.getOwner());
     }
 
-    // renameFormat is not currently supported for type attributes.
-    resGuideWithDefault.setRenameFormat(null);
+    if (this.getProjection() != null) {
+      rasb.getResolvedAttributeSet().applyTraits(rts);
 
-    resGuideWithDefault.updateAttributeDefaults(null);
-    final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
+      ProjectionDirective projDirective = new ProjectionDirective(resOpt, this);
+      ProjectionContext projCtx = this.getProjection().constructProjectionContext(projDirective, under, rasb.getResolvedAttributeSet());
 
-    // from the traits of the datatype, purpose and applied here, see if new attributes get generated
-    rasb.applyTraits(arc);
-    rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
-    // this may have added symbols to the dependencies, so merge them
-    resOpt.getSymbolRefSet().merge(arc.getResOpt().getSymbolRefSet());
+      ResolvedAttributeSet ras = this.getProjection().extractResolvedAttributes(projCtx, under);
+      rasb.setResolvedAttributeSet(ras);
+    } else {
+      // using resolution guidance
+
+      // this context object holds all of the info about what needs to happen to resolve these attribute
+      // make a copy and add defaults if missing
+      final CdmAttributeResolutionGuidance resGuideWithDefault;
+      if (this.getResolutionGuidance() != null) {
+        resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance().copy(resOpt);
+      } else {
+        resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
+      }
+
+      // renameFormat is not currently supported for type attributes.
+      resGuideWithDefault.setRenameFormat(null);
+
+      resGuideWithDefault.updateAttributeDefaults(null, this);
+      final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
+
+      // from the traits of the datatype, purpose and applied here, see if new attributes get generated
+      rasb.applyTraits(arc);
+      rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
+      // this may have added symbols to the dependencies, so merge them
+      resOpt.getSymbolRefSet().merge(arc.getResOpt().getSymbolRefSet());
+    }
 
     return rasb;
   }
@@ -342,7 +369,9 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     if (resolvedTraitSet != null && resolvedTraitSet.getHasElevated() != null && resolvedTraitSet.getHasElevated()) {
       final CdmAttributeReference replacement = new CdmAttributeReference(this.getCtx(), this.getName(), true);
       replacement.setCtx(this.getCtx());
-      replacement.setExplicitReference(this);
+      replacement.setExplicitReference((CdmObjectDefinition) this.copy());
+      replacement.setInDocument(this.getInDocument());
+      replacement.setOwner(this);
 
       rtsb.replaceTraitParameterValue(resOpt, "does.elevateAttribute",
               "attribute", "this.attribute", replacement);

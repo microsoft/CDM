@@ -7,9 +7,12 @@ from typing import Any, cast, Dict, Iterable, List, Optional, Set, Union, TYPE_C
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 from cdm.persistence import PersistenceLayer
 from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttributeSet
-from cdm.utilities import AttributeContextParameters, logger, ResolveOptions, Errors
+from cdm.utilities import AttributeContextParameters, logger, ResolveOptions
+from cdm.enums import CdmLogCode
 
+from .cdm_argument_def import CdmArgumentDefinition
 from .cdm_attribute_context import CdmAttributeContext
+from .cdm_attribute_def import CdmAttribute
 from .cdm_collection import CdmCollection
 from .cdm_object import CdmObject
 from .cdm_object_def import CdmObjectDefinition
@@ -19,19 +22,19 @@ from ..utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttributeContext, CdmAttributeGroupDefinition, CdmAttributeGroupReference, \
-        CdmAttributeItem, CdmAttributeReference, CdmAttributeResolutionGuidanceDefinition, CdmCollection, \
-        CdmCorpusContext, CdmDocumentDefinition, \
+        CdmAttributeItem, CdmAttributeResolutionGuidanceDefinition, CdmCollection, CdmCorpusContext, \
         CdmEntityAttributeDefinition, CdmEntityReference, CdmFolderDefinition, CdmTraitReference, \
-        CdmTypeAttributeDefinition
+        CdmTypeAttributeDefinition, CdmObjectReference, CdmArgumentCollection
     from cdm.resolvedmodel import ResolvedAttribute, ResolvedAttributeSetBuilder, ResolvedEntityReferenceSet, \
         ResolvedTraitSetBuilder, TraitSpec
-    from cdm.utilities import FriendlyFormatNode, TraitToPropertyMap, VisitCallback
+    from cdm.utilities import TraitToPropertyMap, VisitCallback
 
 
 class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
-    def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_entity: Optional['CdmEntityReference']) -> None:
+    def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_entity: Optional['CdmEntityReference'] = None) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmEntityDefinition.__name__
         # the entity attribute Context.
         self.attribute_context = None  # type: Optional[CdmAttributeContext]
 
@@ -49,8 +52,6 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         self._resolving_entity_references = False  # type: bool
         self._attributes = CdmCollection(self.ctx, self, CdmObjectType.TYPE_ATTRIBUTE_DEF)  # type: CdmCollection
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
-
-        self._TAG = CdmEntityDefinition.__name__
 
     @property
     def attributes(self) -> 'CdmCollection[CdmAttributeItem]':
@@ -84,6 +85,16 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
     @display_name.setter
     def display_name(self, val: str) -> None:
         self._trait_to_property_map._update_property_value('displayName', val)
+    
+    @property
+    def extends_entity(self) -> Optional['CdmEntityReference']:
+        return self._extends_entity
+    
+    @extends_entity.setter
+    def extends_entity(self, extends_entity: Optional['CdmEntityReference']) -> None:
+        if extends_entity:
+            extends_entity.owner = self
+        self._extends_entity = extends_entity
 
     @property
     def version(self) -> str:
@@ -113,6 +124,14 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             self._ttpm = TraitToPropertyMap(self)
         return self._ttpm
 
+    @property
+    def _extends_entity_ref(self) -> 'CdmObjectReference':
+        return self.extends_entity
+
+    @_extends_entity_ref.setter
+    def _extends_entity_ref(self, val: 'CdmObjectReference') -> None:
+        self.extends_entity = cast(CdmEntityReference, val)
+
     def _add_attribute_def(self, attribute_def: 'CdmAttributeItem') -> 'CdmAttributeItem':
         self.attributes.append(attribute_def)
         return attribute_def
@@ -124,11 +143,13 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         # the (datatype or entity) used as an attribute, traits applied to that datatype or entity,
         # the relationsip of the attribute, the attribute definition itself and included attribute groups,
         #  any traits applied to the attribute.
+        from cdm.objectmodel import CdmEntityAttributeDefinition
         from cdm.resolvedmodel import ResolvedAttributeSetBuilder
         from cdm.utilities import AttributeContextParameters
 
         self._rasb = ResolvedAttributeSetBuilder()
-        self._rasb.ras.attribute_context = under
+        rasb = self._rasb  # local var needed because we now allow reentry
+        rasb._resolved_attribute_set.attribute_context = under
 
         if self.extends_entity:
             ext_ref = self.extends_entity
@@ -142,7 +163,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                     name='extends',
                     regarding=None,
                     include_traits=False)
-                extends_ref_under = self._rasb.ras.create_attribute_context(res_opt, acp_ext)
+                extends_ref_under = rasb._resolved_attribute_set.create_attribute_context(res_opt, acp_ext)
 
             if ext_ref.explicit_reference and ext_ref.fetch_object_definition(res_opt).object_type == CdmObjectType.PROJECTION_DEF:
                 # A Projection
@@ -161,7 +182,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 proj_def = ext_ref_obj_def
                 proj_ctx = proj_def._construct_projection_context(proj_directive, extends_ref_under)
 
-                self._rasb.ras = proj_def._extract_resolved_attributes(proj_ctx)
+                rasb._resolved_attribute_set = proj_def._extract_resolved_attributes(proj_ctx, under)
             else:
                 # An Entity Reference
 
@@ -171,17 +192,13 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                         type=CdmAttributeContextType.ENTITY,
                         name=ext_ref.named_reference if ext_ref.named_reference else ext_ref.explicit_reference.get_name(),
                         regarding=ext_ref,
-                        include_traits=False
+                        include_traits=True  # "Entity" is the thing with traits - That perches in the tree - And sings the tune and never waits - To see what it should be.
                     )
 
-                # save moniker, extended entity may attach a different moniker that we do not
-                # want to pass along to getting this entities attributes
-                old_moniker = res_opt._from_moniker
+                rasb.merge_attributes(self.extends_entity._fetch_resolved_attributes(res_opt, acp_ext_ent))
 
-                self._rasb.merge_attributes(self.extends_entity._fetch_resolved_attributes(res_opt, acp_ext_ent))
-
-                if not res_opt._check_attribute_count(self._rasb.ras._resolved_attribute_count):
-                    logger.error(self._TAG, self.ctx, 'Maximum number of resolved attributes reached for the entity: {}.'.format(self.entity_name))
+                if not res_opt._check_attribute_count(rasb._resolved_attribute_set._resolved_attribute_count):
+                    logger.error(self.ctx, self._TAG, self._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.ERR_REL_MAX_RESOLVED_ATTR_REACHED, self.entity_name)
                     return None
 
                 if self.extends_entity_resolution_guidance:
@@ -191,19 +208,17 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                     # this context object holds all of the info about what needs to happen to resolve these attributes.
                     # make a copy and set defaults if needed
                     res_guide = self.extends_entity_resolution_guidance.copy(res_opt)  # CdmAttributeResolutionGuidanceDefinition
-                    res_guide._update_attribute_defaults(res_guide.fetch_object_definition_name())
+                    res_guide._update_attribute_defaults(res_guide.fetch_object_definition_name(), self)
                     # holds all the info needed by the resolver code
                     arc = AttributeResolutionContext(res_opt, res_guide, rts_base)  # type: AttributeResolutionContext
 
-                    self._rasb.generate_applier_attributes(arc, False)  # true = apply the prepared traits to new atts
+                    rasb.generate_applier_attributes(arc, False)  # true = apply the prepared traits to new atts
 
-                # reset to the old moniker
-                res_opt._from_moniker = old_moniker
+        rasb.mark_inherited()
+        rasb._resolved_attribute_set.attribute_context = under
 
-        self._rasb.mark_inherited()
-        self._rasb.ras.attribute_context = under
-
-        if self.attributes:
+        if self.attributes is not None:
+            furthest_child_depth = 0
             for att in self.attributes:
                 acp_att = None
                 if under:
@@ -213,19 +228,37 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                         name=att.fetch_object_definition_name(),
                         regarding=att,
                         include_traits=False)
-                self._rasb.merge_attributes(att._fetch_resolved_attributes(res_opt, acp_att))
 
-                if not res_opt._check_attribute_count(self._rasb.ras._resolved_attribute_count):
-                    logger.error(self._TAG, self.ctx, 'Maximum number of resolved attributes reached for the entity: {}.'.format(self.entity_name))
+                ras_from_att = att._fetch_resolved_attributes(res_opt, acp_att)
+
+                # we can now set depth now that children nodes have been resolved
+                if isinstance(att, CdmEntityAttributeDefinition):
+                    furthest_child_depth = ras_from_att._depth_traveled if ras_from_att._depth_traveled > furthest_child_depth else furthest_child_depth
+
+                # before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
+                # from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before
+                # that didn't just pop out of that same named attribute now need to go away.
+                # mark any attributes formerly from this named attribute that don't show again as orphansCreateDataPartitionFromPattern
+                rasb._resolved_attribute_set.mark_orphans_for_removal(cast('CdmAttributeItem', att).fetch_object_definition_name(), ras_from_att)
+                # now merge
+                rasb.merge_attributes(ras_from_att)
+
+                if not res_opt._check_attribute_count(rasb._resolved_attribute_set._resolved_attribute_count):
+                    logger.error(self.ctx, self._TAG, self._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.ERR_REL_MAX_RESOLVED_ATTR_REACHED, self.entity_name)
                     return None
+            rasb._resolved_attribute_set._depth_traveled = furthest_child_depth
 
-        self._rasb.mark_order()
-        self._rasb.ras.attribute_context = under
+        rasb.mark_order()
+        rasb._resolved_attribute_set.attribute_context = under
 
         # things that need to go away
-        self._rasb.remove_requested_atts()
+        rasb.remove_requested_atts()
 
-        return self._rasb
+        # recursively sets the target owner's to be this entity.
+        # required because the replaceAsForeignKey operation uses the owner to generate the `is.linkedEntity.identifier` trait.
+        rasb._resolved_attribute_set.set_target_owner(self)
+
+        return rasb
 
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
         from cdm.resolvedmodel import ResolvedTraitSet
@@ -235,7 +268,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             # merge in all from base class
             rtsb.merge_traits(base._fetch_resolved_traits(res_opt))
 
-        if self.attributes:
+        if self.attributes is not None:
             rts_elevated = ResolvedTraitSet(res_opt)
             for att in self.attributes:
                 rts_att = att._fetch_resolved_traits(res_opt)
@@ -261,8 +294,9 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         copy.extends_entity_resolution_guidance = self.extends_entity_resolution_guidance.copy(res_opt) if self.extends_entity_resolution_guidance else None
         copy.attribute_context = cast('CdmAttributeContext', self.attribute_context.copy(res_opt)) if self.attribute_context else None
 
+        att: CdmAttributeItem
         for att in self.attributes:
-            copy.attributes.append(att)
+            copy.attributes.append(att.copy(res_opt))
 
         self._copy_def(res_opt, copy)
 
@@ -272,356 +306,484 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
     async def create_resolved_entity_async(self, new_ent_name: str, res_opt: Optional['ResolveOptions'] = None, folder: 'CdmFolderDefinition' = None,
                                            new_doc_name: str = None) -> 'CdmEntityDefinition':
         """Create a resolved copy of the entity."""
+        with logger._enter_scope(self._TAG, self.ctx, self.create_resolved_entity_async.__name__):
+            if not res_opt:
+                res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
-        if not res_opt:
-            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
+            if not res_opt.wrt_doc:
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_WRT_DOC_NOT_FOUND)
+                return None
 
-        if not res_opt.wrt_doc:
-            logger.error(self._TAG, self.ctx, 'No WRT document was supplied.', self.create_resolved_entity_async.__name__)
-            return None
+            if not new_ent_name:
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_ENTITY_NOTFOUND)
+                return None
 
-        if not new_ent_name:
-            logger.error(self._TAG, self.ctx, 'No Entity Name provided.', self.create_resolved_entity_async.__name__)
-            return None
+            # if the wrtDoc needs to be indexed (like it was just modified) then do that first
+            if not await res_opt.wrt_doc._index_if_needed(res_opt, True):
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_INDEX_FAILED)
+                return None
 
-        folder = folder or self.in_document.folder
-        file_name = new_doc_name or new_ent_name + PersistenceLayer.CDM_EXTENSION
-        orig_doc = self.in_document.at_corpus_path
+            folder = folder or self.in_document.folder
+            file_name = new_doc_name or new_ent_name + PersistenceLayer.CDM_EXTENSION
+            orig_doc = self.in_document.at_corpus_path
 
-        # Don't overwite the source document.
-        target_at_corpus_path = self.ctx.corpus.storage.create_absolute_corpus_path(folder.at_corpus_path, folder) + file_name
-        if StringUtils.equals_with_ignore_case(target_at_corpus_path, orig_doc):
-            logger.error(self._TAG, self.ctx, 'Attempting to replace source entity\'s document \'{}\''.format(
-                target_at_corpus_path), self.create_resolved_entity_async.__name__)
-            return None
+            # Don't overwite the source document.
+            target_at_corpus_path = self.ctx.corpus.storage.create_absolute_corpus_path(folder.at_corpus_path, folder) + file_name
+            if StringUtils.equals_with_ignore_case(target_at_corpus_path, orig_doc):
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ENTITY_REPLACEMENT_FAILURE, target_at_corpus_path)
+                return None
 
-        if not await res_opt.wrt_doc._index_if_needed(res_opt, True):
-            logger.error(self._TAG, self.ctx, 'Couldn\'t index source document.', self.create_resolved_entity_async.__name__)
-            return None
+            # make sure the corpus has a set of default artifact attributes
+            await self.ctx.corpus._prepare_artifact_attributes_async()
 
-        # Make the top level attribute context for this entity.
-        # for this whole section where we generate the attribute context tree and get resolved attributes
-        # set the flag that keeps all of the parent changes and document dirty from from happening
-        was_resolving = self.ctx.corpus._is_currently_resolving
-        self.ctx.corpus._is_currently_resolving = True
-        ent_name = new_ent_name
-        ctx = self.ctx
-        att_ctx_ent = ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_DEF, ent_name, True)  # type: CdmAttributeContext
-        att_ctx_ent.ctx = ctx
-        att_ctx_ent.in_document = self.in_document
+            # Make the top level attribute context for this entity.
+            # for this whole section where we generate the attribute context tree and get resolved attributes
+            # set the flag that keeps all of the parent changes and document dirty from from happening
+            was_resolving = self.ctx.corpus._is_currently_resolving
+            self.ctx.corpus._is_currently_resolving = True
+            ent_name = new_ent_name
+            ctx = self.ctx
+            att_ctx_ent = ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_DEF, ent_name, True)  # type: CdmAttributeContext
+            att_ctx_ent.ctx = ctx
+            att_ctx_ent.in_document = self.in_document
 
-        # Cheating a bit to put the paths in the right place.
-        acp = AttributeContextParameters()
-        acp._under = att_ctx_ent
-        acp._type = CdmAttributeContextType.ATTRIBUTE_GROUP
-        acp._name = 'attributeContext'
+            # Cheating a bit to put the paths in the right place.
+            acp = AttributeContextParameters()
+            acp._under = att_ctx_ent
+            acp._type = CdmAttributeContextType.ATTRIBUTE_GROUP
+            acp._name = 'attributeContext'
 
-        att_ctx_ac = CdmAttributeContext._create_child_under(res_opt, acp)
-        acp_ent = AttributeContextParameters()
-        acp_ent._under = att_ctx_ac
-        acp_ent._type = CdmAttributeContextType.ENTITY
-        acp_ent._name = ent_name
-        acp_ent._regarding = ctx.corpus.make_ref(CdmObjectType.ENTITY_REF, self.get_name(), True)
+            att_ctx_ac = CdmAttributeContext._create_child_under(res_opt, acp)
+            # this is the node that actually is first in the context we save. all definition refs should take the new perspective that they
+            # can only be understood through the resolvedFrom moniker
+            ent_ref_this = ctx.corpus.make_object(CdmObjectType.ENTITY_REF, self.get_name(), True)  # type: CdmEntityReference
+            ent_ref_this.owner = self
+            ent_ref_this.in_document = self.in_document  # need to set owner and inDocument to this starting entity so the ref will be portable to the new document
+            prev_owner = self.owner
+            ent_ref_this.explicit_reference = self
+            # we don't want to change the owner of this entity to the entity reference
+            # re-assign whatever was there before
+            self.owner = prev_owner
 
-        # Use this whenever we need to keep references pointing at things that were already found.
-        # Used when 'fixing' references by localizing to a new document.
-        res_opt_copy = CdmObject._copy_resolve_options(res_opt)
-        res_opt_copy._save_resolutions_on_copy = True
+            acp_ent = AttributeContextParameters()
+            acp_ent._under = att_ctx_ac
+            acp_ent._type = CdmAttributeContextType.ENTITY
+            acp_ent._name = ent_name
+            acp_ent._regarding = ent_ref_this
 
-        # Resolve attributes with this context. the end result is that each resolved attribute points to the level of
-        # the context where it was created.
-        ras = self._fetch_resolved_attributes(res_opt_copy, acp_ent)
+            # reset previous depth information in case there are left overs
+            res_opt._depth_info._reset()
 
-        if ras is None:
-            self._resolving_attributes = False
-            return None
+            res_opt_copy = CdmAttributeContext.prepare_options_for_resolve_attributes(res_opt)
 
-        # Create a new copy of the attribute context for this entity.
-        # TODO: all_att_ctx type ideally should be ordered set
-        all_att_ctx = []  # type: List[CdmAttributeContext]
-        new_node = cast('CdmAttributeContext', att_ctx_ent.copy_node(res_opt))
-        att_ctx_ent = att_ctx_ent._copy_attribute_context_tree(res_opt, new_node, ras, all_att_ctx, 'resolvedFrom')
-        att_ctx = cast('CdmAttributeContext', cast('CdmAttributeContext', att_ctx_ent.contents[0]).contents[0])
+            # Resolve attributes with this context. the end result is that each resolved attribute points to the level of
+            # the context where it was created last modified, merged, created
+            ras = self._fetch_resolved_attributes(res_opt_copy, acp_ent)
 
-        self.ctx.corpus._is_currently_resolving = was_resolving
+            if ras is None:
+                return None
 
-        # make a new document in given folder if provided or the same folder as the source entity
-        folder.documents.remove(file_name)
-        doc_res = folder.documents.append(file_name)
-        # add a import of the source document
-        orig_doc = self.ctx.corpus.storage.create_relative_corpus_path(orig_doc, doc_res)  # just in case we missed the prefix
-        doc_res.imports.append(orig_doc, "resolvedFrom")
+            self.ctx.corpus._is_currently_resolving = was_resolving
 
-        # make the empty entity
-        ent_resolved = doc_res.definitions.append(ent_name)
-        # set the context to the copy of the tree. fix the docs on the context nodes
-        ent_resolved.attribute_context = att_ctx
+            # make a new document in given folder if provided or the same folder as the source entity
+            folder.documents.remove(file_name)
+            doc_res = folder.documents.append(file_name)
+            # add a import of the source document
+            orig_doc = self.ctx.corpus.storage.create_relative_corpus_path(orig_doc, doc_res)  # just in case we missed the prefix
+            doc_res.imports.append(orig_doc, "resolvedFrom")
+            doc_res.document_version = self.in_document.document_version
 
-        def visit_callback(obj: 'CdmObject', path: str) -> bool:
-            obj.in_document = doc_res
-            return False
+            # make the empty entity
+            ent_resolved = doc_res.definitions.append(ent_name)  # type: CdmEntityDefinition
 
-        att_ctx.visit('{}/attributeContext/'.format(ent_name), visit_callback, None)
+            # grab that context that comes from fetchResolvedAttributes. We are sure this tree is a copy that we can own, so no need to copy it again
+            att_ctx = cast(CdmAttributeContext, att_ctx_ac.contents[0]) \
+                if att_ctx_ac and att_ctx_ac.contents and len(att_ctx_ac.contents) == 1 \
+                else None  # type: Optional[CdmAttributeContext]
+            ent_resolved.attribute_context = att_ctx
 
-        # add the traits of the entity
-        rts_ent = self._fetch_resolved_traits(res_opt)
-        for rt in rts_ent.rt_set:
-            trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt_copy, rt)
-            ent_resolved.exhibits_traits.append(trait_ref)
 
-        # The attributes have been named, shaped, etc. for this entity so now it is safe to go and make each attribute
-        # context level point at these final versions of attributes.
-        att_path_to_order = {}  # type: Dict[str, int]
+            if att_ctx:
+                # fix all of the definition references, parent and lineage references, owner documents, etc. in the context tree
+                att_ctx._finalize_attribute_context(res_opt_copy, '{}/attributeContext/'.format(ent_name), doc_res, self.in_document, 'resolvedFrom', True)
 
-        def point_context_at_resolved_atts(ras_sub: 'ResolvedAttributeSet', path: str) -> None:
-            for ra in ras_sub._set:
-                ra_ctx_in_ent = []  # type: List[CdmAttributeContext]
-                ra_ctx_set = ras_sub.rattr_to_attctxset.get(ra)
 
-                # find the correct attctx for this copy, intersect these two sets
-                # (interate over the shortest list)
-                if len(all_att_ctx) < len(ra_ctx_set):
-                    for curr_att_ctx in all_att_ctx:
-                        if curr_att_ctx in ra_ctx_set:
-                            ra_ctx_in_ent.append(curr_att_ctx)
-                else:
-                    for curr_att_ctx in ra_ctx_set:
-                        if curr_att_ctx in all_att_ctx:
-                            ra_ctx_in_ent.append(curr_att_ctx)
-                for ra_ctx in ra_ctx_in_ent:
-                    refs = ra_ctx.contents
+                # TEST CODE in C# by Jeff
+                # run over the resolved attributes and make sure none have the dummy context
+                # Action<ResolvedAttributeSet> testResolveAttributeCtx = null;
+                # testResolveAttributeCtx = (rasSub) =>
+                # {
+                #    if (rasSub.Set.Count != 0 && rasSub.AttributeContext.AtCoprusPath.StartsWith("cacheHolder"))
+                #        System.Diagnostics.Debug.WriteLine("Bad");
+                #    rasSub.Set.ForEach(ra =>
+                #    {
+                #        if (ra.AttCtx.AtCoprusPath.StartsWith("cacheHolder"))
+                #            System.Diagnostics.Debug.WriteLine("Bad");
 
-                    #  there might be more than one explanation for where and attribute came from when things get merges as they do
-                    # This won't work when I add the structured attributes to avoid name collisions.
-                    att_ref_path = path + ra.resolved_name
-                    if isinstance(ra.target, CdmObject):
-                        if not att_ref_path in att_path_to_order:
-                            att_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_REF, att_ref_path, True)  # type: CdmObjectReference
-                            # only need one explanation for this path to the insert order
-                            att_path_to_order[att_ref.named_reference] = ra.insert_order
-                            refs.append(att_ref)
-                    else:
-                        att_ref_path += '/members/'
-                        point_context_at_resolved_atts(cast('ResolvedAttributeSet', ra.target), att_ref_path)
+                #        # the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
+                #        if (ra.Target is ResolvedAttributeSet)
+                #        {
+                #            testResolveAttributeCtx(ra.Target as ResolvedAttributeSet);
+                #        }
+                #    });
+                # };
+                # testResolveAttributeCtx(ras);
 
-        point_context_at_resolved_atts(ras, ent_name + '/hasAttributes/')
 
-        # generated attribute structures may end up with 0 attributes after that. prune them
-        def clean_sub_group(sub_item, under_generated) -> bool:
-            if sub_item.object_type == CdmObjectType.ATTRIBUTE_REF:
-                return True  # not empty
+            # add the traits of the entity, also add to attribute context top node
+            rts_ent = self._fetch_resolved_traits(res_opt)
+            for rt in rts_ent.rt_set:
+                trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt_copy, rt)
+                ent_resolved.exhibits_traits.append(trait_ref)
+                trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt_copy, rt)  # fresh copy
+                if ent_resolved.attribute_context:
+                    ent_resolved.attribute_context.exhibits_traits.append(trait_ref)
 
-            ac = sub_item  # type: CdmAttributeContext
+            # special trait to explain this is a resolved entity
+            ent_resolved._indicate_abstraction_level('resolved', res_opt)
 
-            if ac.type == CdmAttributeContextType.GENERATED_SET:
-                under_generated = True
-            if not ac.contents:
-                return False  # empty
+            if ent_resolved.attribute_context:
+                # The attributes have been named, shaped, etc. for this entity so now it is safe to go and make each attribute
+                # context level point at these final versions of attributes.
+                # What we have is a resolved attribute set (maybe with structure) where each ra points at the best tree node
+                # we also have the tree of context, we need to flip this around so that the right tree nodes point at the paths to the
+                # right attributes. so run over the resolved atts and then add a path reference to each one into the context contents where is last lived
+                att_path_to_order = {}  # type: Dict[str, int]
+                finished_groups = set()
+                all_primary_ctx = set()  # keep a list so it is easier to think about these later
 
-            # look at all children, make a set to remove
-            to_remove = []  # type: List[CdmAttributeContext]
-            for sub_sub in ac.contents:
-                if not clean_sub_group(sub_sub, under_generated):
-                    potential_target = under_generated
-                    if not potential_target:
-                        # cast is safe because we returned false meaning empty and not a attribute ref
-                        # so is this the set holder itself?
-                        potential_target = sub_sub.type == CdmAttributeContextType.GENERATED_SET
-                    if potential_target:
-                        to_remove.append(sub_sub)
-            for to_die in to_remove:
-                ac.contents.remove(to_die)
-            return bool(ac.contents)
+                def _point_context_at_resolved_atts(ras_sub: 'ResolvedAttributeSet', path: str) -> None:
+                    for ra in ras_sub._set:
+                        ra_ctx = ra.att_ctx
+                        refs = ra_ctx.contents
+                        all_primary_ctx.add(ra_ctx)
 
-        clean_sub_group(att_ctx, False)
+                        att_ref_path = path + ra.resolved_name
+                        # the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
+                        if isinstance(ra.target, CdmAttribute):
+                            if 'object_type' in dir(ra.target):
+                                # It was an attribute, add to the content of the context, also, keep track of the ordering for all of the att paths we make up
+                                # as we go through the resolved attributes, this is the order of atts in the final resolved entity
+                                if att_ref_path not in att_path_to_order:
+                                    att_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_REF, att_ref_path, True)  # type: CdmObjectReference
+                                    # only need one explanation for this path to the insert order
+                                    att_path_to_order[att_ref.named_reference] = ra.insert_order
+                                    ra_ctx.contents.append(att_ref)
+                        else:
+                            # A group, so we know an attribute group will get created later with the name of the group
+                            # and the things it contains will be in the members of that group
+                            att_ref_path += '/members/'
+                            if att_ref_path not in finished_groups:
+                                _point_context_at_resolved_atts(cast('ResolvedAttributeSet', ra.target), att_ref_path)
+                                finished_groups.add(att_ref_path)
 
-        # Create an all-up ordering of attributes at the leaves of this tree based on insert order. Sort the attributes
-        # in each context by their creation order and mix that with the other sub-contexts that have been sorted.
-        def get_order_num(item: 'CdmObject') -> int:
-            if item.object_type == CdmObjectType.ATTRIBUTE_CONTEXT_DEF:
-                return order_contents(item)
-            if item.object_type == CdmObjectType.ATTRIBUTE_REF:
-                return att_path_to_order[item.named_reference]
-            # put the mystery item on top.
-            return -1
+                _point_context_at_resolved_atts(ras, ent_name + '/hasAttributes/')
 
-        def order_contents(under: 'CdmAttributeContext') -> int:
-            if under._lowest_order is None:
-                under._lowest_order = -1
-                if len(under.contents) == 1:
-                    under._lowest_order = get_order_num(under.contents[0])
-                else:
-                    def get_and_update_order(item1: 'CdmObject', item2: 'CdmObject'):
-                        left_order = get_order_num(item1)
-                        right_order = get_order_num(item2)
-                        if left_order != -1 and (under._lowest_order == -1 or left_order < under._lowest_order):
-                            under._lowest_order = left_order
-                        if right_order != -1 and (under._lowest_order == -1 or right_order < under._lowest_order):
-                            under._lowest_order = right_order
-                        return left_order - right_order
-                    under.contents.sort(key=functools.cmp_to_key(get_and_update_order))
-            return under._lowest_order
+                # The generated attribute structures sometimes has a LOT of extra nodes that don't say anything or
+                # explain anything our goal now is to prune that tree to just have the stuff one may need
+                # Do this by keeping the leafs and all of the lineage nodes for the attributes that end up in the
+                # resolved entity along with some special nodes that explain entity structure and inherit
 
-        order_contents(att_ctx)
+                # Run over the whole tree and make a set of the nodes that should be saved for sure.
+                # This is anything NOT under a generated set (so base entity chains, entity attributes entity definitions)
+                nodes_to_save = set()
 
-        # Resolved attributes can gain traits that are applied to an entity when referenced since these traits are
-        # described in the context, it is redundant and messy to list them in the attribute. So, remove them. Create and
-        # cache a set of names to look for per context. There is actually a hierarchy to this. All attributes from the
-        # base entity should have all traits applied independently of the sub-context they come from. Same is true of
-        # attribute entities. So do this recursively top down.
-        ctx_to_trait_names = {}  # type: Dict[CdmAttributeContext, Set[str]]
+                def _save_structure_nodes(sub_item: CdmObject) -> bool:
+                    ac = cast(CdmAttributeContext, sub_item) if isinstance(sub_item, CdmAttributeContext) else None # type: CdmAttributeContext
+                    if not ac or ac.type == CdmAttributeContextType.GENERATED_SET:
+                        return True
+                    nodes_to_save.add(ac)
+                    if not ac.contents:
+                        return True
 
-        def collect_context_traits(sub_att_ctx: 'CdmAttributeContext', inherited_trait_names: Set[str]) -> None:
-            trait_names_here = set(inherited_trait_names)
-            traits_here = sub_att_ctx.exhibits_traits
-            if traits_here:
-                for tat in traits_here:
-                    trait_names_here.add(tat.named_reference)
+                    # look at all children
+                    for sub_sub in ac.contents:
+                        if _save_structure_nodes(sub_sub) is False:
+                            return False
+                    return True
 
-            ctx_to_trait_names[sub_att_ctx] = trait_names_here
-            for cr in sub_att_ctx.contents:
-                if cr.object_type == CdmObjectType.ATTRIBUTE_CONTEXT_DEF:
-                    # do this for all types?
-                    collect_context_traits(cast('CdmAttributeContext', cr), trait_names_here)
+                if _save_structure_nodes(att_ctx) is False:
+                    return None
 
-        collect_context_traits(att_ctx, set())
+                # Next, look at the attCtx for every resolved attribute. follow the lineage chain
+                # and mark all of those nodes as ones to save
+                # Also mark any parents of those as savers
 
-        # add the attributes, put them in attribute groups if structure needed.
-        res_att_to_ref_path = {}  # type: Dict[ResolvedAttribute, str]
+                # Helper that save the passed node and anything up the parent chain
+                def _save_parent_nodes(curr_node: CdmAttributeContext) -> bool:
+                    if curr_node in nodes_to_save:
+                        return True
+                    nodes_to_save.add(curr_node)
+                    # get the parent
+                    if curr_node.parent and curr_node.parent.explicit_reference:
+                        return _save_parent_nodes(cast(CdmAttributeContext, curr_node.parent.explicit_reference))
+                    return True
 
-        def add_attributes(ras_sub: 'ResolvedAttributeSet', container: 'Union[CdmEntityDefinition, CdmAttributeGroupDefinition]', path: str) -> None:
-            for ra in ras_sub._set:
-                att_path = path + ra.resolved_name
-                # use the path of the context associated with this attribute to find the new context that matches on path.
-                ra_ctx_set = ras_sub.rattr_to_attctxset[ra]
-                # find the correct att_ctx for this copy.
-                # ra_ctx = next((ac for ac in all_att_ctx if ac in ra_ctx_set), None) # type: CdmAttributeContext
+                # Helper that saves the current node (and parents) plus anything in the lineage (with their parents)
+                def _save_lineage_nodes(curr_node: CdmAttributeContext) -> bool:
+                    if _save_parent_nodes(curr_node) is False:
+                        return False
+                    if curr_node.lineage:
+                        for lin in curr_node.lineage:
+                            if lin.explicit_reference:
+                                if _save_lineage_nodes(cast(CdmAttributeContext, lin.explicit_reference)) is False:
+                                    return False
+                    return True
 
-                if len(all_att_ctx) < len(ra_ctx_set):
-                    for curr_att_ctx in all_att_ctx:
-                        if curr_att_ctx in ra_ctx_set:
-                            ra_ctx = curr_att_ctx
-                            break
-                else:
-                    for curr_att_ctx in ra_ctx_set:
-                        if curr_att_ctx in all_att_ctx:
-                            ra_ctx = curr_att_ctx
-                            break
+                # so, do that ^^^ for every primary context found earlier
+                for prim_ctx in all_primary_ctx:
+                    if _save_lineage_nodes(prim_ctx) is False:
+                        return None
 
-                if isinstance(ra.target, ResolvedAttributeSet) and cast('ResolvedAttributeSet', ra.target)._set:
-                    # this is a set of attributes. Make an attribute group to hold them.
-                    att_grp = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_GROUP_DEF, ra.resolved_name)  # type: CdmAttributeGroupDefinition
-                    att_grp.attribute_context = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_REF, ra_ctx.at_corpus_path, True)
-                    # take any traits from the set and make them look like traits exhibited by the group.
-                    avoid_set = ctx_to_trait_names[ra_ctx]
-                    rts_att = ra.resolved_traits
-                    for rt in rts_att.rt_set:
-                        if not rt.trait.ugly:  # Don't mention your ugly traits.
-                            if not avoid_set or rt.trait_name not in avoid_set:  # Avoid the ones from the context.
-                                trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt_copy, rt)
-                                cast('CdmObjectDefinition', att_grp).exhibits_traits.append(trait_ref, isinstance(trait_ref, str))
+                # Now the cleanup, we have a set of the nodes that should be saved
+                # Run over the tree and re-build the contents collection with only the things to save
+                def _clean_sub_group(sub_item: CdmObject) -> bool:
+                    if sub_item.object_type == CdmObjectType.ATTRIBUTE_REF:
+                        return True  # not empty
 
-                    # wrap it in a reference and then recurse with this as the new container.
-                    att_grp_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_GROUP_REF, None)  # type: CdmAttributeGroupReference
-                    att_grp_ref.explicit_reference = att_grp
-                    container._add_attribute_def(att_grp_ref)
-                    # isn't this where ...
-                    add_attributes(cast('ResolvedAttributeSet', ra.target), att_grp, att_path + '/(object)/members/')
-                else:
-                    att = self.ctx.corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, ra.resolved_name)  # type: CdmTypeAttributeDefinition
-                    att.attribute_context = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_REF, ra_ctx.at_corpus_path, True)
-                    avoid_set = ctx_to_trait_names[ra_ctx]
-                    rts_att = ra.resolved_traits
-                    for rt in rts_att.rt_set:
-                        if not rt.trait.ugly:  # Don't mention your ugly traits.
-                            if not avoid_set or rt.trait_name not in avoid_set:  # Avoid the ones from the context.
-                                trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt_copy, rt)
-                                cast('CdmTypeAttributeDefinition', att).applied_traits.append(trait_ref, isinstance(trait_ref, str))
+                    ac = cast(CdmAttributeContext, sub_item)
 
-                    # none of the dataformat traits have the bit set that will make them turn into a property
-                    # this is intentional so that the format traits make it into the resolved object
-                    # but, we still want a guess as the data format, so get it and set it.
-                    implied_data_format = att.data_format
-                    if implied_data_format:
-                        att.data_format = implied_data_format
+                    if ac not in nodes_to_save:
+                        return False  # don't even look at content, this all goes away
 
-                    container._add_attribute_def(att)
-                    res_att_to_ref_path[ra] = att_path
+                    if ac.contents:
+                        # need to clean up the content array without triggering the code that fixes in document or paths
+                        new_content = []
+                        for sub in ac.contents:
+                            # true means keep this as a child
+                            if _clean_sub_group(sub) is True:
+                                new_content.append(sub)
+                        # clear the old content and replace
+                        ac.contents.clear()
+                        ac.contents.extend(new_content)
 
-        add_attributes(ras, ent_resolved, ent_name + '/hasAttributes/')
+                    return True
 
-        # Any resolved traits that hold arguments with attribute refs should get 'fixed' here.
-        def replace_trait_att_ref(tr: 'CdmTraitReference', entity_hint: str) -> None:
-            if tr.arguments:
-                for arg in tr.arguments:
-                    v = arg._unresolved_value or arg.value
-                    # Is this an attribute reference?
-                    if v and isinstance(v, CdmObject) and cast('CdmObject', v).object_type == CdmObjectType.ATTRIBUTE_REF:
-                        # Only try this if the reference has no path to it (only happens with intra-entity att refs).
-                        att_ref = cast('CdmAttributeReference', v)
-                        if att_ref.named_reference and att_ref.named_reference.find('/') == -1:
-                            if not arg._unresolved_value:
-                                arg._unresolved_value = arg.value
-                            # Give a promise that can be worked out later.
-                            # Assumption is that the attribute must come from this entity.
-                            new_att_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_REF, entity_hint +
-                                                                      '/(resolvedAttributes)/' + att_ref.named_reference, True)
-                            # inDocument is not propagated during resolution, so set it here
-                            new_att_ref.in_document = arg.in_document
-                            arg.set_value(new_att_ref)
+                _clean_sub_group(att_ctx)
 
-        # Fix entity traits.
-        if ent_resolved.exhibits_traits:
-            for et in ent_resolved.exhibits_traits:
-                replace_trait_att_ref(et, new_ent_name)
+                # Create an all-up ordering of attributes at the leaves of this tree based on insert order. Sort the attributes
+                # in each context by their creation order and mix that with the other sub-contexts that have been sorted.
+                def get_order_num(item: 'CdmObject') -> int:
+                    if item.object_type == CdmObjectType.ATTRIBUTE_CONTEXT_DEF:
+                        return order_contents(item)
+                    if item.object_type == CdmObjectType.ATTRIBUTE_REF:
+                        return att_path_to_order[item.named_reference]
+                    # put the mystery item on top.
+                    return -1
 
-        # Fix context traits.
-        def fix_context_traits(sub_att_ctx: 'CdmAttributeContext', entity_hint: str) -> None:
-            traits_here = sub_att_ctx.exhibits_traits
-            if traits_here:
-                for tr in traits_here:
-                    replace_trait_att_ref(tr, entity_hint)
+                def order_contents(under: 'CdmAttributeContext') -> int:
+                    if under._lowest_order is None:
+                        under._lowest_order = -1
+                        if len(under.contents) == 1:
+                            under._lowest_order = get_order_num(under.contents[0])
+                        else:
+                            def get_and_update_order(item1: 'CdmObject', item2: 'CdmObject'):
+                                left_order = get_order_num(item1)
+                                right_order = get_order_num(item2)
+                                if left_order != -1 and (under._lowest_order == -1 or left_order < under._lowest_order):
+                                    under._lowest_order = left_order
+                                if right_order != -1 and (under._lowest_order == -1 or right_order < under._lowest_order):
+                                    under._lowest_order = right_order
+                                return left_order - right_order
+                            under.contents.sort(key=functools.cmp_to_key(get_and_update_order))
+                    return under._lowest_order
 
-            for cr in sub_att_ctx.contents:
-                if cr.object_type == CdmObjectType.ATTRIBUTE_CONTEXT_DEF:
-                    # If this is a new entity context, get the name to pass along.
-                    sub_sub_att_ctx = cast('CdmAttributeContext', cr)
-                    sub_entity_hint = entity_hint
-                    if sub_sub_att_ctx.type == CdmAttributeContextType.ENTITY:
-                        sub_entity_hint = sub_sub_att_ctx.definition.named_reference
-                    # Do this for all types.
-                    fix_context_traits(sub_sub_att_ctx, sub_entity_hint)
+                order_contents(cast(CdmAttributeContext, att_ctx))
 
-        fix_context_traits(att_ctx, new_ent_name)
+                # Resolved attributes can gain traits that are applied to an entity when referenced since these traits are
+                # described in the context, it is redundant and messy to list them in the attribute. So, remove them. Create and
+                # cache a set of names to look for per context. There is actually a hierarchy to this. All attributes from the
+                # base entity should have all traits applied independently of the sub-context they come from. Same is true of
+                # attribute entities. So do this recursively top down.
+                ctx_to_trait_names = {}  # type: Dict[CdmAttributeContext, Set[str]]
 
-        # And the attribute traits.
-        ent_atts = ent_resolved.attributes
-        if ent_atts:
-            for attribute in ent_atts:
-                att_traits = attribute.applied_traits
-                if att_traits:
-                    for tr in att_traits:
-                        replace_trait_att_ref(tr, new_ent_name)
+                def collect_context_traits(sub_att_ctx: 'CdmAttributeContext', inherited_trait_names: Set[str]) -> None:
+                    trait_names_here = set(inherited_trait_names)
+                    traits_here = sub_att_ctx.exhibits_traits
+                    if traits_here:
+                        for tat in traits_here:
+                            trait_names_here.add(tat.named_reference)
 
-        # We are about to put this content created in the context of various documents (like references to attributes
-        # from base entities, etc.) into one specific document. All of the borrowed refs need to work. so, re-write all
-        # string references to work from this new document. The catch-22 is that the new document needs these fixes done
-        # before it can be used to make these fixes. The fix needs to happen in the middle of the refresh trigger the
-        # document to refresh current content into the resolved OM.
-        cast('CdmAttributeContext', att_ctx).parent = None  # Remove the fake parent that made the paths work.
-        res_opt_new = CdmObject._copy_resolve_options(res_opt)
-        res_opt_new.wrt_doc = doc_res
-        res_opt_new._localize_references_for = doc_res
-        if not await doc_res.refresh_async(res_opt_new):
-            logger.error(self._TAG, self.ctx, 'Failed to index the resolved document.', self.create_resolved_entity_async.__name__)
-            return None
+                    ctx_to_trait_names[sub_att_ctx] = trait_names_here
+                    for cr in sub_att_ctx.contents:
+                        if cr.object_type == CdmObjectType.ATTRIBUTE_CONTEXT_DEF:
+                            # do this for all types?
+                            collect_context_traits(cast('CdmAttributeContext', cr), trait_names_here)
 
-        # Get a fresh ref.
-        ent_resolved = cast('CdmEntityDefinition', doc_res._fetch_object_from_document_path(ent_name, res_opt_new))
+                collect_context_traits(att_ctx, set())
 
-        self.ctx.corpus._res_ent_map[self.at_corpus_path] = ent_resolved.at_corpus_path
+                # add the attributes, put them in attribute groups if structure needed.
+                res_att_to_ref_path = {}  # type: Dict[ResolvedAttribute, str]
 
-        return ent_resolved
+                def _add_attributes(ras_sub: 'ResolvedAttributeSet', container: 'Union[CdmEntityDefinition, CdmAttributeGroupDefinition]', path: str) -> None:
+                    for ra in ras_sub._set:
+                        att_path = path + ra.resolved_name
+                        # use the path of the context associated with this attribute to find the new context that matches on path.
+                        ra_ctx = ra.att_ctx
+
+                        if isinstance(ra.target, ResolvedAttributeSet):
+                            # this is a set of attributes.
+                            # Make an attribute group to hold them.
+                            att_grp = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_GROUP_DEF, ra.resolved_name)  # type: CdmAttributeGroupDefinition
+                            att_grp.attribute_context = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_REF, ra_ctx.at_corpus_path, True)
+                            # debugLineage
+                            # att_grp.attribute_context.named_reference = '{}({})'.format(ra_ctx.at_corpus_path, att_ctx.id)
+
+                            # take any traits from the set and make them look like traits exhibited by the group.
+                            avoid_set = ctx_to_trait_names[ra_ctx]
+                            # traits with the same name can show up on entities and attributes AND have different meanings.
+                            avoid_set.clear()
+
+                            rts_att = ra.resolved_traits
+                            for rt in rts_att.rt_set:
+                                if not rt.trait.ugly:
+                                    # Don't mention your ugly traits.
+                                    if not avoid_set or rt.trait_name not in avoid_set:
+                                        # Avoid the ones from the context.
+                                        trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt_copy, rt)
+                                        cast('CdmObjectDefinition', att_grp).exhibits_traits.append(trait_ref)
+
+                            # wrap it in a reference and then recurse with this as the new container.
+                            att_grp_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_GROUP_REF, None)  # type: CdmAttributeGroupReference
+                            att_grp_ref.explicit_reference = att_grp
+                            container._add_attribute_def(att_grp_ref)
+                            # isn't this where ...
+                            _add_attributes(cast('ResolvedAttributeSet', ra.target), att_grp, att_path + '/members/')
+                        else:
+                            att = self.ctx.corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, ra.resolved_name)  # type: CdmTypeAttributeDefinition
+                            att.attribute_context = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_REF, ra_ctx.at_corpus_path, True)
+                            # debugLineage
+                            # att.attribute_context.named_reference = '{}({})'.format(ra_ctx.at_corpus_path, ra_ctx.id)
+
+                            avoid_set = ctx_to_trait_names[ra_ctx]
+
+                            # I don't know why i thought this was the right thing to do,
+                            # traits with the same name can show up on entities and attributes AND have different meanings.
+                            avoid_set.clear()
+                            # I really need to figure out the effects of this before making this change
+                            # without it, some traits don't make it to the resolved entity
+                            # with it, too many traits might make it there
+                            rts_att = ra.resolved_traits
+                            for rt in rts_att.rt_set:
+                                if not rt.trait.ugly:
+                                    # Don't mention your ugly traits.
+                                    if not avoid_set or rt.trait_name not in avoid_set:
+                                        # Avoid the ones from the context.
+                                        trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt_copy, rt)
+                                        cast('CdmTypeAttributeDefinition', att).applied_traits.append(trait_ref)
+
+                                        # The trait that points at other entities for foreign keys, that is trouble
+                                        # The string value in the table needs to be a relative path from the document of this entity
+                                        # to the document of the related entity. but, right now it is a relative path to the source entity
+                                        # So find those traits, and adjust the paths in the tables they hold
+                                        if rt.trait_name == 'is.linkedEntity.identifier':
+                                            from .cdm_argument_collection import CdmArgumentCollection
+                                            from .cdm_constant_entity_def import CdmConstantEntityDefinition
+                                            # grab the content of the table from the new ref (should be a copy of orig)
+                                            link_table = None
+                                            if trait_ref.arguments:
+                                                args = trait_ref.arguments  # type: CdmArgumentCollection
+                                                ent_ref = args[0].value if args else None  # type: CdmEntityReference
+                                                link_table = cast(CdmConstantEntityDefinition, ent_ref.explicit_reference).constant_values \
+                                                    if ent_ref.explicit_reference and cast(CdmConstantEntityDefinition, ent_ref.explicit_reference) \
+                                                    else None
+                                            if link_table:
+                                                for row in link_table:
+                                                    if len(row) == 2 or len(row) == 3:  # either the old table or the new one with relationship name can be there
+                                                        # entity path an attribute name
+                                                        fixed_path = row[0]
+                                                        fixed_path = self.ctx.corpus.storage.create_absolute_corpus_path(fixed_path, self.in_document)  # absolute from relative to this
+                                                        fixed_path = self.ctx.corpus.storage.create_relative_corpus_path(fixed_path, doc_res)  # realtive to new entity
+                                                        row[0] = fixed_path
+
+                            # none of the dataformat traits have the bit set that will make them turn into a property
+                            # this is intentional so that the format traits make it into the resolved object
+                            # but, we still want a guess as the data format, so get it and set it.
+                            implied_data_format = att.data_format
+                            if implied_data_format:
+                                att.data_format = implied_data_format
+
+                            container._add_attribute_def(att)
+                            res_att_to_ref_path[ra] = att_path
+
+                _add_attributes(ras, ent_resolved, ent_name + '/hasAttributes/')
+
+                # Any resolved traits that hold arguments with attribute refs should get 'fixed' here.
+                def replace_trait_att_ref(tr: 'CdmTraitReference', entity_hint: str) -> None:
+                    if tr.arguments:
+                        for arg in tr.arguments:
+                            v = arg._unresolved_value or arg.value
+                            # Is this an attribute reference?
+                            if v and isinstance(v, CdmObject) and cast('CdmObject', v).object_type == CdmObjectType.ATTRIBUTE_REF:
+                                # Only try this if the reference has no path to it (only happens with intra-entity att refs).
+                                att_ref = cast('CdmAttributeReference', v)
+                                if att_ref.named_reference and att_ref.named_reference.find('/') == -1:
+                                    if not arg._unresolved_value:
+                                        arg._unresolved_value = arg.value
+                                    # Give a promise that can be worked out later.
+                                    # Assumption is that the attribute must come from this entity.
+                                    new_att_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_REF, entity_hint +
+                                                                            '/(resolvedAttributes)/' + att_ref.named_reference, True)
+                                    # inDocument is not propagated during resolution, so set it here
+                                    new_att_ref.in_document = arg.in_document
+                                    arg.set_value(new_att_ref)
+
+                # Fix entity traits.
+                if ent_resolved.exhibits_traits:
+                    for et in ent_resolved.exhibits_traits:
+                        if et.object_type == CdmObjectType.TRAIT_REF:
+                            replace_trait_att_ref(et, new_ent_name)
+
+                # Fix context traits.
+                def fix_context_traits(sub_att_ctx: 'CdmAttributeContext', entity_hint: str) -> None:
+                    traits_here = sub_att_ctx.exhibits_traits
+                    if traits_here:
+                        for tr in traits_here:
+                            if tr.object_type == CdmObjectType.TRAIT_REF:
+                                replace_trait_att_ref(tr, entity_hint)
+
+                    for cr in sub_att_ctx.contents:
+                        if cr.object_type == CdmObjectType.ATTRIBUTE_CONTEXT_DEF:
+                            # If this is a new entity context, get the name to pass along.
+                            sub_sub_att_ctx = cast('CdmAttributeContext', cr)
+                            sub_entity_hint = entity_hint
+                            if sub_sub_att_ctx.type == CdmAttributeContextType.ENTITY:
+                                sub_entity_hint = sub_sub_att_ctx.definition.named_reference
+                            # Do this for all types.
+                            fix_context_traits(sub_sub_att_ctx, sub_entity_hint)
+
+                fix_context_traits(att_ctx, new_ent_name)
+
+                # And the attribute traits.
+                ent_atts = ent_resolved.attributes
+                if ent_atts:
+                    for attribute in ent_atts:
+                        att_traits = attribute.applied_traits
+                        if att_traits:
+                            for tr in att_traits:
+                                if tr.object_type == CdmObjectType.TRAIT_REF:
+                                    replace_trait_att_ref(tr, new_ent_name)
+
+            # We are about to put this content created in the context of various documents (like references to attributes
+            # from base entities, etc.) into one specific document. All of the borrowed refs need to work. so, re-write all
+            # string references to work from this new document. The catch-22 is that the new document needs these fixes done
+            # before it can be used to make these fixes. The fix needs to happen in the middle of the refresh trigger the
+            # document to refresh current content into the resolved OM.
+            if att_ctx:
+                cast('CdmAttributeContext', att_ctx).parent = None  # Remove the fake parent that made the paths work.
+            res_opt_new = res_opt.copy()
+            res_opt_new._localize_references_for = doc_res
+            res_opt_new.wrt_doc = doc_res
+            if not await doc_res.refresh_async(res_opt_new):
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_INDEX_FAILED)
+                return None
+
+            # Get a fresh ref.
+            ent_resolved = cast('CdmEntityDefinition', doc_res._fetch_object_from_document_path(ent_name, res_opt_new))
+
+            self.ctx.corpus._res_ent_map[self.at_corpus_path] = ent_resolved.at_corpus_path
+
+            return ent_resolved
 
     def _count_inherited_attributes(self, res_opt: Optional['ResolveOptions'] = None) -> int:
         """Return the count of attibutes inherited by this entity."""
@@ -639,7 +801,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
     def get_name(self) -> str:
         return self.entity_name
 
-    def _fetch_property(self, property_name: str) -> Any:
+    def _get_property(self, property_name: str) -> Any:
         """returns the value direclty assigned to a property (ignore value from traits)."""
         return self._trait_to_property_map._fetch_property_value(property_name, True)
 
@@ -657,7 +819,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         if not res_opt:
             res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
-        res_opt = CdmObject._copy_resolve_options(res_opt)
+        res_opt = res_opt.copy()
         res_opt.directives = AttributeResolutionDirectiveSet(set(['normalized', 'referenceOnly']))
 
         ctx = self.ctx
@@ -707,7 +869,8 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
     def validate(self) -> bool:
         if not bool(self.entity_name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['entity_name']))
+            missing_fields = ['entity_name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 
@@ -725,11 +888,18 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         if self.extends_entity and self.extends_entity.visit(path + '/extendsEntity/', pre_children, post_children):
             return True
 
+        if self.extends_entity_resolution_guidance:
+            self.extends_entity_resolution_guidance.owner = self
+            if self.extends_entity_resolution_guidance.visit(path + '/extendsEntityResolutionGuidance/', pre_children, post_children):
+                return True
+
         if self._visit_def(path, pre_children, post_children):
             return True
 
-        if self.attribute_context and self.attribute_context.visit(path + '/attributeContext/', pre_children, post_children):
-            return True
+        if self.attribute_context:
+            self.attribute_context.owner = self
+            if self.attribute_context.visit(path + '/attributeContext/', pre_children, post_children):
+                return True
 
         if self.attributes and self.attributes._visit_array(path + '/hasAttributes/', pre_children, post_children):
             return True
@@ -738,3 +908,30 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             return True
 
         return False
+
+    def _indicate_abstraction_level(self, level: str, res_opt: ResolveOptions) -> None:
+        """
+        Creates or sets the has.entitySchemaAbstractionLevel trait to logical, composition, resolved or unknown
+        Todo: consider making this public API
+        """
+        # see if entitySchemaAbstractionLevel is a known trait to this entity
+        if res_opt and \
+            self.ctx.corpus._resolve_symbol_reference(res_opt, self.in_document, 'has.entitySchemaAbstractionLevel', CdmObjectType.TRAIT_DEF, retry=False) is None:
+            return
+
+        # get or add the trait
+        trait_ref = self.exhibits_traits.item('has.entitySchemaAbstractionLevel')
+        if not trait_ref:
+            from cdm.objectmodel import CdmTraitReference
+            trait_ref = CdmTraitReference(self.ctx, 'has.entitySchemaAbstractionLevel', False)
+            self.exhibits_traits.append(trait_ref)
+
+        # get or add the one argument
+        if trait_ref.arguments and len(trait_ref.arguments) == 1:
+            arg_def = trait_ref.arguments[0]
+        else:
+            arg_def = CdmArgumentDefinition(self.ctx, 'level')
+            trait_ref.arguments.append(arg_def)
+
+        # set it
+        arg_def.value = level

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,12 +9,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// The CDM definition that contains a collection of CdmAttributeItem objects.
     /// </summary>
     public class CdmAttributeGroupDefinition : CdmObjectDefinitionBase, CdmReferencesEntities
     {
+        private static readonly string Tag = nameof(CdmAttributeGroupDefinition);
         /// <summary>
         /// Constructs a CdmAttributeGroupDefinition.
         /// </summary>
@@ -95,7 +97,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.AttributeGroupName))
             {
-                Logger.Error(nameof(CdmAttributeGroupDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "AttributeGroupName" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "AttributeGroupName" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) => $"'{s}'")));
                 return false;
             }
             return true;
@@ -119,7 +122,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 for (int i = 0; i < this.Members.Count; i++)
                 {
-                    rers.Add(this.Members.AllItems[i].FetchResolvedEntityReferences(resOpt));
+                    rers.Add(this.Members[i].FetchResolvedEntityReferences(resOpt));
                 }
             }
             return rers;
@@ -142,6 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
+            if (this.AttributeContext != null) this.AttributeContext.Owner = this;
             if (this.AttributeContext?.Visit(path + "/attributeContext/", preChildren, postChildren) == true)
                 return true;
             if (this.Members != null)
@@ -164,6 +168,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal override ResolvedAttributeSetBuilder ConstructResolvedAttributes(ResolveOptions resOpt, CdmAttributeContext under = null)
         {
             ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
+            CdmAttributeContext allUnder = under;
             if (under != null)
             {
                 AttributeContextParameters acpAttGrp = new AttributeContextParameters
@@ -181,8 +186,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 for (int i = 0; i < this.Members.Count; i++)
                 {
-                    dynamic att = this.Members.AllItems[i];
-                    CdmAttributeContext attUnder = under;
+                    CdmObjectBase att = this.Members[i] as CdmObjectBase;
                     AttributeContextParameters acpAtt = null;
                     if (under != null)
                     {
@@ -195,10 +199,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             IncludeTraits = false
                         };
                     }
-                    rasb.MergeAttributes(att.FetchResolvedAttributes(resOpt, acpAtt));
+
+                    ResolvedAttributeSet rasFromAtt = att.FetchResolvedAttributes(resOpt, acpAtt);
+                    // before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
+                    // from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before
+                    // that didn't just pop out of that same named attribute now need to go away.
+                    // mark any attributes formerly from this named attribute that don't show again as orphans
+                    rasb.ResolvedAttributeSet.MarkOrphansForRemoval((att as CdmAttributeItem).FetchObjectDefinitionName(), rasFromAtt);
+                    // now merge
+                    rasb.MergeAttributes(rasFromAtt);
+
                 }
             }
-            rasb.ResolvedAttributeSet.AttributeContext = under;
+            rasb.ResolvedAttributeSet.AttributeContext = allUnder; // context must be the one expected from the caller's pov.
 
             // things that need to go away
             rasb.RemoveRequestedAtts();

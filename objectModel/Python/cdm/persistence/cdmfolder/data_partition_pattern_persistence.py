@@ -14,7 +14,8 @@ from .types import DataPartitionPattern
 class DataPartitionPatternPersistence:
     @staticmethod
     def from_data(ctx: CdmCorpusContext, data: DataPartitionPattern) -> CdmDataPartitionPatternDefinition:
-        pattern = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_PATTERN_DEF, data.name if data.get('name') else None)
+        pattern = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_PATTERN_DEF,
+                                         data.name if data.get('name') else None)
 
         pattern.root_location = data.rootLocation
         if data.globPattern:
@@ -31,14 +32,14 @@ class DataPartitionPatternPersistence:
         if data.get('lastFileModifiedTime'):
             pattern.lastFileModifiedTime = dateutil.parser.parse(data.lastFileModifiedTime)
 
-        if data.get('exhibitsTraits'):
-            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
-            pattern.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(pattern.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.exhibitsTraits))
 
         return pattern
 
     @staticmethod
-    def to_data(instance: CdmDataPartitionPatternDefinition, res_opt: ResolveOptions, options: CopyOptions) -> DataPartitionPattern:
+    def to_data(instance: CdmDataPartitionPatternDefinition, res_opt: ResolveOptions, options: CopyOptions) \
+            -> DataPartitionPattern:
         data = DataPartitionPattern()
 
         data.name = instance.name

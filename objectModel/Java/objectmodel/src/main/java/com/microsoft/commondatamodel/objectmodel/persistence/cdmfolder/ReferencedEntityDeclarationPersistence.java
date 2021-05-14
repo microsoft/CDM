@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.EntityDeclaration;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ReferencedEntityDeclaration;
@@ -18,6 +19,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.time.OffsetDateTime;
 
 public class ReferencedEntityDeclarationPersistence {
+  private static final String TAG = ReferencedEntityDeclarationPersistence.class.getSimpleName();
+
   public static CdmEntityDeclarationDefinition fromData(
       final CdmCorpusContext ctx,
       final String prefixPath,
@@ -29,7 +32,7 @@ public class ReferencedEntityDeclarationPersistence {
         ? obj.get("entityPath").asText()
         : obj.get("entityDeclaration").asText();
     if (entityPath == null) {
-      Logger.error(ReferencedEntityDeclarationPersistence.class.getSimpleName(), ctx, "Couldn't find entity path or similar.", "fromData");
+      Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistEntityPathNotFound);
     }
 
     // The entity path has to be absolute.
@@ -52,9 +55,7 @@ public class ReferencedEntityDeclarationPersistence {
       newRef.setExplanation(obj.get("explanation").asText());
     }
 
-    if (obj.get("exhibitsTraits") != null) {
-      Utils.addListToCdmCollection(newRef.getExhibitsTraits(), Utils.createTraitReferenceList(ctx, obj.get("exhibitsTraits")));
-    }
+    Utils.addListToCdmCollection(newRef.getExhibitsTraits(), Utils.createTraitReferenceList(ctx, obj.get("exhibitsTraits")));
 
     return newRef;
   }

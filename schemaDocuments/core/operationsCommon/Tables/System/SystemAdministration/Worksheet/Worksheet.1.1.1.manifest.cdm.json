@@ -1,0 +1,76 @@
+{
+  "documentVersion": "1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "manifestName": "Worksheet",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "SysTestTable",
+      "entityPath": "SysTestTable.1.1.1.cdm.json/SysTestTable"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "SysTestLine",
+      "entityPath": "SysTestLine.1.1.1.cdm.json/SysTestLine"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "SysTestJobTable",
+      "entityPath": "SysTestJobTable.1.0.1.cdm.json/SysTestJobTable"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "SysTestLineLog",
+      "entityPath": "SysTestLineLog.1.1.1.cdm.json/SysTestLineLog"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "KeyVaultParameters",
+      "entityPath": "KeyVaultParameters.1.1.1.cdm.json/KeyVaultParameters"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "SysTestTable.1.1.1.cdm.json/SysTestTable",
+      "fromEntityAttribute": "Relationship_SysTestJobTableRelationshipId",
+      "toEntity": "SysTestJobTable.1.0.1.cdm.json/SysTestJobTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/System/SystemAdministration/Miscellaneous/SysTestRecordCountTable.1.1.1.cdm.json/SysTestRecordCountTable",
+      "fromEntityAttribute": "Relationship_SysTestTableRelationshipId",
+      "toEntity": "SysTestTable.1.1.1.cdm.json/SysTestTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "SysTestLine.1.1.1.cdm.json/SysTestLine",
+      "fromEntityAttribute": "Relationship_SysTestTableRelationshipId",
+      "toEntity": "SysTestTable.1.1.1.cdm.json/SysTestTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/System/SystemAdministration/Miscellaneous/SysTestRecordCountTable.1.1.1.cdm.json/SysTestRecordCountTable",
+      "fromEntityAttribute": "Relationship_sysTestLineRelationshipId",
+      "toEntity": "SysTestLine.1.1.1.cdm.json/SysTestLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "SysTestLineLog.1.1.1.cdm.json/SysTestLineLog",
+      "fromEntityAttribute": "Relationship_SysTestLineRelationshipId",
+      "toEntity": "SysTestLine.1.1.1.cdm.json/SysTestLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "KeyVaultParameters.1.1.1.cdm.json/KeyVaultParameters",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/System/SystemAdministration/Miscellaneous/KeyVaultCertificateTable.1.1.1.cdm.json/KeyVaultCertificateTable",
+      "fromEntityAttribute": "Relationship_KeyVaultParametersRelationshipId",
+      "toEntity": "KeyVaultParameters.1.1.1.cdm.json/KeyVaultParameters",
+      "toEntityAttribute": "RecId"
+    }
+  ]
+}

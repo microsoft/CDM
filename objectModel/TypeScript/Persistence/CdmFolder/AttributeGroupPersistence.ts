@@ -6,7 +6,7 @@ import {
     CdmAttributeGroupDefinition,
     CdmCorpusContext,
     cdmObjectType,
-    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     resolveOptions
 } from '../../internal';
@@ -30,7 +30,7 @@ export class AttributeGroupPersistence {
             attributeGroup.explanation = object.explanation;
         }
         attributeGroup.attributeContext = CdmFolder.AttributeContextReferencePersistence.fromData(ctx, object.attributeContext as string);
-        utils.addArrayToCdmCollection<CdmTraitReference>(
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(
             attributeGroup.exhibitsTraits,
             utils.createTraitReferenceArray(ctx, object.exhibitsTraits)
         );
@@ -51,7 +51,7 @@ export class AttributeGroupPersistence {
             attributeContext: instance.
                 attributeContext ? instance.attributeContext.copyData(resOpt, options) as (string | identifierRef) : undefined,
             members: copyDataUtils.
-                arrayCopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(resOpt, instance.members, options)
+                arrayCopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(resOpt, instance.members, options) || []
         };
     }
 }

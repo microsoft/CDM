@@ -4,7 +4,9 @@
 from typing import Dict, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import logger, Errors
+from cdm.utilities import logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_container_def import CdmContainerDefinition
 from .cdm_document_collection import CdmDocumentCollection
@@ -22,6 +24,7 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmFolderDefinition.__name__
         #  the folder name.
         self.name = name  # type: str
 
@@ -41,7 +44,6 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
 
         self._corpus = None  # type: CdmDocumentDefinition
 
-        self._TAG = CdmFolderDefinition.__name__
 
     @property
     def at_corpus_path(self) -> str:
@@ -71,7 +73,8 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
 
     def validate(self) -> bool:
         if not bool(self.name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            missing_fields = ['name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, missing_fields)
             return False
         return True
 
@@ -83,8 +86,7 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
                                    acp_in_context: 'AttributeContextParameters') -> 'ResolvedAttributeSet':
         return None
 
-    async def _fetch_child_folder_from_path_async(self, path: str, adapter: 'StorageAdapterBase',
-                                                  make_folder: bool) -> 'CdmFolderDefinition':
+    def _fetch_child_folder_from_path(self, path: str, make_folder: bool) -> 'CdmFolderDefinition':
         """Gets the child folder from corpus path.
 
         arguments:
@@ -92,43 +94,46 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         makeFolder: Create the folder if it doesn't exist."""
 
         name = None
-        remaining_path = None
+        remaining_path = path
+        child_folder = self
 
-        first = path.find('/')
+        while child_folder and remaining_path.find('/') != -1:
+            first = remaining_path.find('/')
+            name = remaining_path[0: first]
+            remaining_path = remaining_path[first + 1:]
 
-        if first < 0:
-            name = path
-            remaining_path = ''
-        else:
-            name = path[0: first]
-            remaining_path = path[first + 1:]
+            if name.lower() != child_folder.name.lower():
+                logger.error(self.ctx, self._TAG, '_fetch_child_folder_from_path', self.at_corpus_path, CdmLogCode.ERR_INVALID_PATH, path)
+                return None
 
-        if name.lower() == self.name.lower():
             # the end?
             if not remaining_path:
-                return self
+                return child_folder
+
+            first = remaining_path.find('/')
+            child_folder_name = remaining_path
+            if first != -1:
+                child_folder_name = remaining_path[0: first]
+            else:
+                # the last part of the path will be considered part of the part depending on the make_folder flag.
+                break
 
             # check children folders
             result = None
-            if self.child_folders:
-                for folder in self.child_folders:
-                    result = await folder._fetch_child_folder_from_path_async(remaining_path, adapter, make_folder)
-                    if result:
-                        return result
+            if child_folder.child_folders:
+                for folder in child_folder.child_folders:
+                    if child_folder_name == folder.name:
+                        result = folder
+                        break
+            if not result:
+                result = child_folder.child_folders.append(child_folder_name)
 
-            # get the next folder
-            first = remaining_path.find('/')
-            name = remaining_path[:first] if first > 0 else remaining_path
+            child_folder = result
 
-            if first != -1:
-                return await self.child_folders.append(name)._fetch_child_folder_from_path_async(remaining_path, adapter, make_folder)
+        if make_folder:
+            child_folder = child_folder.child_folders.append(remaining_path)
 
-            if make_folder:
-                # huh, well need to make the fold here
-                return await self.child_folders.append(name)._fetch_child_folder_from_path_async(remaining_path, adapter, make_folder)
-
-            return self
-        return None
+        return child_folder
 
     async def _fetch_document_from_folder_path_async(self, document_path: str, adapter: 'StorageAdapterBase',
                                                      force_reload: bool, res_opt: Optional['ResolveOptions'] = None) -> 'CdmDocumentDefinition':
@@ -156,7 +161,8 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
 
             # remove them from the caches since they will be back in a moment
             if doc._is_dirty:
-                logger.warning(self._TAG, self.ctx, 'discarding changes in document: {}'.format(doc.name))
+                logger.warning(self.ctx, self._TAG, CdmFolderDefinition._fetch_document_from_folder_path_async.__name__, self.at_corpus_path,
+                               CdmLogCode.WARN_DOC_CHANGES_DISCARDED , doc.name)
 
             self.documents.remove(doc_name)
 

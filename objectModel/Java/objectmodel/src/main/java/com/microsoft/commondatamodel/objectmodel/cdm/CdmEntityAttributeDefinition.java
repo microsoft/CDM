@@ -7,6 +7,7 @@ import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.*;
@@ -15,7 +16,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.Proje
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
+import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
@@ -29,9 +30,13 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 public class CdmEntityAttributeDefinition extends CdmAttribute {
+  private static final String TAG = CdmEntityAttributeDefinition.class.getSimpleName();
+
   private CdmEntityReference entity;
   private TraitToPropertyMap t2pm;
   private Boolean isPolymorphicSource;
+
+  
 
   public CdmEntityAttributeDefinition(final CdmCorpusContext ctx, final String name) {
     super(ctx, name);
@@ -100,8 +105,10 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
       return false;
     }
 
-    if (this.getEntity().visit(path + "/entity/", preChildren, postChildren)) {
-      return true;
+    if (this.getEntity() != null) {
+      if (this.getEntity().visit(path + "/entity/", preChildren, postChildren)) {
+        return true;
+      }
     }
     if (this.visitAtt(path, preChildren,
         postChildren)) {
@@ -118,8 +125,11 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     return this.entity;
   }
 
-  public void setEntity(final CdmEntityReference value) {
-    this.entity = value;
+  public void setEntity(final CdmEntityReference entity) {
+    if (entity != null) {
+      entity.setOwner(this);
+    }
+    this.entity = entity;
   }
 
   /**
@@ -142,6 +152,9 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
       directives.add("normalized");
       directives.add("referenceOnly");
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    } else {
+      // need to copy so that relationship depth of parent is not overwritten
+      resOpt = resOpt.copy();
     }
 
     final ResolvedTraitSet rtsThisAtt = this.fetchResolvedTraits(resOpt);
@@ -151,7 +164,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     // this context object holds all of the info about what needs to happen to resolve these attributes
     final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuide, rtsThisAtt);
 
-    final RelationshipInfo relInfo = this.getRelationshipInfo(resOpt, arc);
+    final RelationshipInfo relInfo = arc.getRelationshipInfo();
     if (relInfo.isByRef() && !relInfo.isArray()) {
       {
         // only place this is used, so logic here instead of encapsulated.
@@ -210,17 +223,17 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(CdmEntityAttributeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
 
     if (this.getCardinality() != null) {
       if (!CardinalitySettings.isMinimumValid(this.getCardinality().getMinimum())) {
-        Logger.error(CdmEntityAttributeDefinition.class.getSimpleName(), this.getCtx(), Logger.format("Invalid minimum cardinality {0}", this.getCardinality().getMinimum()), "validate");
+        Logger.error(this.getCtx(), TAG,"validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, this.getCardinality().getMinimum());
         return false;
       }
       if (!CardinalitySettings.isMaximumValid(this.getCardinality().getMaximum())) {
-        Logger.error(CdmEntityAttributeDefinition.class.getSimpleName(), this.getCtx(), Logger.format("Invalid maximum cardinality {0}", this.getCardinality().getMaximum()), "validate");
+        Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMaxCardinality, this.getCardinality().getMaximum());
         return false;
       }
     }
@@ -274,75 +287,48 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     //rtsb.CleanUp();
   }
 
-  private RelationshipInfo getRelationshipInfo(final ResolveOptions resOpt,
-                                               final AttributeResolutionContext arc) {
-    final ResolvedTraitSet rts = null;
-    boolean noMaxDepth = false;
-    boolean hasRef = false;
-    boolean isByRef = false;
-    boolean isArray = false;
-    boolean selectsOne = false;
-    Integer nextDepth = null;
-    boolean maxDepthExceeded = false;
+  /**
+   * Creates an AttributeResolutionContext object based off of resolution guidance information
+   * @param resOpt The resolve options
+   * @return AttributeResolutionContext
+   */
+  private AttributeResolutionContext fetchAttResContext(ResolveOptions resOpt) {
+    final ResolvedTraitSet rtsThisAtt = this.fetchResolvedTraits(resOpt);
 
-    if (arc != null && arc.getResGuide() != null) {
-      final EntityByReference resGuide = arc.getResGuide()
-          .getEntityByReference();
-      if (resGuide != null && resGuide.doesAllowReference()) {
-        hasRef = true;
-      }
-
-      final AttributeResolutionDirectiveSet resDirectives = arc.getResOpt().getDirectives();
-      if (resDirectives != null) {
-        noMaxDepth = resDirectives.has("noMaxDepth");
-        // based on directives
-        if (hasRef) {
-          isByRef = resDirectives.has("referenceOnly");
-        }
-        selectsOne = resDirectives.has("selectOne");
-        isArray = resDirectives.has("isArray");
-      }
-      // figure out the depth for the next level
-      final Integer oldDepth = resOpt.getRelationshipDepth();
-      nextDepth = oldDepth;
-      // if this is a 'selectone', then skip counting this entity in the depth, else count it
-      if (!selectsOne) {
-        // if already a ref, who cares?
-        if (!isByRef) {
-          if (nextDepth == null) {
-            //    TODO-BQ: Verify this if statement. Might not be reachable.
-            nextDepth = 1;
-          } else {
-            nextDepth++;
-          }
-
-          // max comes from settings but may not be set
-          int maxDepth = 2;
-          if (hasRef
-              && arc.getResGuide().getEntityByReference().getReferenceOnlyAfterDepth() != null) {
-            maxDepth = arc.getResGuide().getEntityByReference().getReferenceOnlyAfterDepth();
-          }
-          if (noMaxDepth) {
-            maxDepth = 32; // no max? really? what if we loop forever? if you need more than 32 nested entities, then you should buy a different metadata description system.
-          }
-
-          if (nextDepth > maxDepth) {
-            // don't do it
-            isByRef = true;
-            maxDepthExceeded = true;
-          }
-        }
-      }
+    // this context object holds all of the info about what needs to happen to resolve these attributes.
+    // make a copy and add defaults if missing
+    final CdmAttributeResolutionGuidance resGuideWithDefault;
+    if (this.getResolutionGuidance() != null) {
+      resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance()
+                .copy(resOpt);
+    } else {
+      resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
     }
+    resGuideWithDefault.updateAttributeDefaults(this.getName(), this);
 
-    final RelationshipInfo relationshipInfo = new RelationshipInfo();
-    relationshipInfo.setRts(rts);
-    relationshipInfo.setByRef(isByRef);
-    relationshipInfo.setArray(isArray);
-    relationshipInfo.setSelectsOne(selectsOne);
-    relationshipInfo.setNextDepth(nextDepth);
-    relationshipInfo.setMaxDepthExceeded(maxDepthExceeded);
-    return relationshipInfo;
+    return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
+  }
+
+  @Override
+  @Deprecated
+  public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext) {
+    final String kind = "rasb";
+    final ResolveContext ctx = (ResolveContext) this.getCtx();
+
+    // once resolution guidance is fully deprecated, this line can be removed
+    AttributeResolutionContext arc = !this.entity.getIsProjection() ? this.fetchAttResContext(resOpt): null;
+
+    // update the depth info and check cache at the correct depth for entity attributes
+    resOpt.depthInfo.updateToNextLevel(resOpt, this.isPolymorphicSource, arc);
+
+    String cacheTag = ctx.getCorpus()
+            .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
+
+    Object rasbCache = null;
+    if (cacheTag != null) {
+      rasbCache = ctx.getCache().get(cacheTag);
+    }
+    return (ResolvedAttributeSetBuilder)rasbCache;
   }
 
   /**
@@ -374,213 +360,211 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     // the entity used as an attribute, traits applied to that entity,
     // the purpose of the attribute, any traits applied to the attribute.
     ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
-    final CdmEntityReference ctxEnt = this.getEntity();
     final CdmAttributeContext underAtt = under;
     AttributeContextParameters acpEnt = null;
 
-    CdmObjectDefinition ctxEntObjDef = ctxEnt.fetchObjectDefinition(resOpt);
-    if (ctxEntObjDef != null && ctxEntObjDef.getObjectType() == CdmObjectType.ProjectionDef) {
-      // A Projection
+    if (!resOpt.inCircularReference) {
+      if (this.entity != null && this.entity.getIsProjection()) {
+        // A Projection
 
-      ProjectionDirective projDirective = new ProjectionDirective(resOpt, this, ctxEnt);
-      CdmProjection projDef = (CdmProjection)ctxEntObjDef;
-      ProjectionContext projCtx = projDef.constructProjectionContext(projDirective, under);
-
-      ResolvedAttributeSet ras = projDef.extractResolvedAttributes(projCtx);
-      rasb.setResolvedAttributeSet(ras);
-    } else {
-      // An Entity Reference
-
-      if (underAtt != null) {
-        // make a context for this attribute that holds the attributes that come up from the entity
-        acpEnt = new AttributeContextParameters();
-        acpEnt.setUnder(underAtt);
-        acpEnt.setType(CdmAttributeContextType.Entity);
-        acpEnt.setName(ctxEnt.fetchObjectDefinitionName());
-        acpEnt.setRegarding(ctxEnt);
-        acpEnt.setIncludeTraits(true);
-      }
-
-      final ResolvedTraitSet rtsThisAtt = this.fetchResolvedTraits(resOpt);
-
-      // this context object holds all of the info about what needs to happen to resolve these attributes.
-      // make a copy and add defaults if missing
-      final CdmAttributeResolutionGuidance resGuideWithDefault;
-      if (this.getResolutionGuidance() != null) {
-        resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance()
-                .copy(resOpt);
-      } else {
-        resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
-      }
-      resGuideWithDefault.updateAttributeDefaults(this.getName());
-
-      final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault,
-              rtsThisAtt);
-
-      // complete cheating but is faster.
-      // this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
-      final RelationshipInfo relInfo = this.getRelationshipInfo(arc.getResOpt(), arc);
-      if (relInfo.isByRef()) {
-        // make the entity context that a real recursion would have give us
-        if (under != null) {
-          under = rasb.getResolvedAttributeSet().createAttributeContext(resOpt, acpEnt);
-        }
-        // if selecting from one of many attributes, then make a context for each one
-        if (under != null && relInfo.doSelectsOne()) {
-          // the right way to do this is to get a resolved entity from the embedded entity and then
-          // look through the attribute context hierarchy for non-nested entityReferenceAsAttribute nodes
-          // that seems like a disaster waiting to happen given endless looping, etc.
-          // for now, just insist that only the top level entity attributes declared in the ref entity will work
-          final CdmEntityDefinition entPickFrom = ((CdmEntityReference) this.getEntity()).fetchObjectDefinition(resOpt);
-          CdmCollection<CdmAttributeItem> attsPick = null;
-          if (entPickFrom != null) {
-            attsPick = entPickFrom.getAttributes();
-          }
-
-          if (entPickFrom != null && attsPick != null) {
-            for (int i = 0; i < attsPick.getCount(); i++) {
-              if (attsPick.getAllItems().get(i).getObjectType() == CdmObjectType.EntityAttributeDef) {
-                // a table within a table. as expected with a selectsOne attribute
-                // since this is by ref, we won't get the atts from the table, but we do need the traits that hold the key
-                // these are the same contexts that would get created if we recursed
-                // first this attribute
-                final AttributeContextParameters acpEntAtt = new AttributeContextParameters();
-                acpEntAtt.setUnder(under);
-                acpEntAtt.setType(CdmAttributeContextType.AttributeDefinition);
-                acpEntAtt.setName(attsPick.getAllItems().get(i).fetchObjectDefinitionName());
-                acpEntAtt.setRegarding(attsPick.getAllItems().get(i));
-                acpEntAtt.setIncludeTraits(true);
-
-                final CdmAttributeContext pickUnder = rasb.getResolvedAttributeSet().createAttributeContext(resOpt, acpEntAtt);
-                final CdmEntityReference pickEnt = (((CdmEntityAttributeDefinition) attsPick.getAllItems().get(i))).getEntity();
-                CdmAttributeContextType pickEntType = (pickEnt.fetchObjectDefinition(resOpt).getObjectType() == CdmObjectType.ProjectionDef) ?
-                        CdmAttributeContextType.Projection :
-                        CdmAttributeContextType.Entity;
-
-                final AttributeContextParameters acpEntAttEnt = new AttributeContextParameters();
-                acpEntAttEnt.setUnder(pickUnder);
-                acpEntAttEnt.setType(pickEntType);
-                acpEntAttEnt.setName(pickEnt.fetchObjectDefinitionName());
-                acpEntAttEnt.setRegarding(pickEnt);
-                acpEntAttEnt.setIncludeTraits(true);
-
-                rasb.getResolvedAttributeSet().createAttributeContext(resOpt, acpEntAttEnt);
-              }
-            }
-          }
-        }
-
-        // if we got here because of the max depth, need to impose the directives to make the trait work as expected
-        if (relInfo.isMaxDepthExceeded()) {
-          if (arc.getResOpt().getDirectives() == null) {
-            arc.getResOpt().setDirectives(new AttributeResolutionDirectiveSet());
-          }
-          arc.getResOpt().getDirectives().add("referenceOnly");
+        // if the max depth is exceeded it should not try to execute the projection
+        if (!resOpt.depthInfo.getMaxDepthExceeded()) {
+          CdmProjection projDef = this.getEntity().fetchObjectDefinition(resOpt);
+          ProjectionDirective projDirective = new ProjectionDirective(resOpt, this, this.getEntity());
+          ProjectionContext projCtx = projDef.constructProjectionContext(projDirective, under);
+          rasb.setResolvedAttributeSet(projDef.extractResolvedAttributes(projCtx, under));
         }
       } else {
-        final ResolveOptions resLink = copyResolveOptions(resOpt);
-        resLink.setSymbolRefSet(resOpt.getSymbolRefSet());
-        resLink.setRelationshipDepth(relInfo.getNextDepth());
-        rasb.mergeAttributes(this.getEntity().fetchResolvedAttributes(resLink, acpEnt));
-      }
+        // An Entity Reference
 
-      // from the traits of purpose and applied here, see if new attributes get generated
-      rasb.getResolvedAttributeSet().setAttributeContext(underAtt);
-      rasb.applyTraits(arc);
-      rasb.generateApplierAttributes(arc, true); // true = apply the prepared traits to new atts
-      // this may have added symbols to the dependencies, so merge them
-      resOpt.getSymbolRefSet().merge(arc.getResOpt().getSymbolRefSet());
+        AttributeResolutionContext arc = this.fetchAttResContext(resOpt);
+        final RelationshipInfo relInfo = arc.getRelationshipInfo();
 
-      // use the traits for linked entity identifiers to record the actual foreign key links
-      if (rasb.getResolvedAttributeSet() != null && rasb.getResolvedAttributeSet().getSet() != null
-              && relInfo.isByRef()) {
-        for (final ResolvedAttribute att : rasb.getResolvedAttributeSet().getSet()) {
-          if (att.fetchResolvedTraits() != null) {
-            final ResolvedTrait reqdTrait = att.fetchResolvedTraits()
-                    .find(resOpt, "is.linkedEntity.identifier");
-            if (reqdTrait == null) {
-              continue;
+        if (underAtt != null) {
+          // make a context for this attribute that holds the attributes that come up from the entity
+          acpEnt = new AttributeContextParameters();
+          acpEnt.setUnder(underAtt);
+          acpEnt.setType(CdmAttributeContextType.Entity);
+          acpEnt.setName(this.getEntity().fetchObjectDefinitionName());
+          acpEnt.setRegarding(this.getEntity());
+          acpEnt.setIncludeTraits(true);
+        }
+
+        if (relInfo.isByRef()) {
+          // make the entity context that a real recursion would have give us
+          if (under != null) {
+            under = rasb.getResolvedAttributeSet().createAttributeContext(resOpt, acpEnt);
+          }
+          // if selecting from one of many attributes, then make a context for each one
+          if (under != null && relInfo.doSelectsOne()) {
+            // the right way to do this is to get a resolved entity from the embedded entity and then
+            // look through the attribute context hierarchy for non-nested entityReferenceAsAttribute nodes
+            // that seems like a disaster waiting to happen given endless looping, etc.
+            // for now, just insist that only the top level entity attributes declared in the ref entity will work
+            final CdmEntityDefinition entPickFrom = ((CdmEntityReference) this.getEntity()).fetchObjectDefinition(resOpt);
+            CdmCollection<CdmAttributeItem> attsPick = null;
+            if (entPickFrom != null) {
+              attsPick = entPickFrom.getAttributes();
             }
 
-            if (reqdTrait.getParameterValues() == null
-                    || reqdTrait.getParameterValues().length() == 0) {
-              Logger.warning(CdmEntityAttributeDefinition.class.getSimpleName(), this.getCtx(), "is.linkedEntity.identifier does not support arguments");
-              continue;
-            }
+            if (entPickFrom != null && attsPick != null) {
+              for (int i = 0; i < attsPick.getCount(); i++) {
+                if (attsPick.getAllItems().get(i).getObjectType() == CdmObjectType.EntityAttributeDef) {
+                  // a table within a table. as expected with a selectsOne attribute
+                  // since this is by ref, we won't get the atts from the table, but we do need the traits that hold the key
+                  // these are the same contexts that would get created if we recursed
+                  // first this attribute
+                  final AttributeContextParameters acpEntAtt = new AttributeContextParameters();
+                  acpEntAtt.setUnder(under);
+                  acpEntAtt.setType(CdmAttributeContextType.AttributeDefinition);
+                  acpEntAtt.setName(attsPick.getAllItems().get(i).fetchObjectDefinitionName());
+                  acpEntAtt.setRegarding(attsPick.getAllItems().get(i));
+                  acpEntAtt.setIncludeTraits(true);
 
-            final List<String> entReferences = new ArrayList<>();
-            final List<String> attReferences = new ArrayList<>();
+                  final CdmAttributeContext pickUnder = rasb.getResolvedAttributeSet().createAttributeContext(resOpt, acpEntAtt);
+                  final CdmEntityReference pickEnt = (((CdmEntityAttributeDefinition) attsPick.getAllItems().get(i))).getEntity();
+                  CdmAttributeContextType pickEntType = (pickEnt.fetchObjectDefinition(resOpt).getObjectType() == CdmObjectType.ProjectionDef) ?
+                          CdmAttributeContextType.Projection :
+                          CdmAttributeContextType.Entity;
 
-            if (relInfo.doSelectsOne()) {
-              final CdmEntityDefinition entPickFrom = (((CdmEntityReference) this.getEntity())).fetchObjectDefinition(resOpt);
+                  final AttributeContextParameters acpEntAttEnt = new AttributeContextParameters();
+                  acpEntAttEnt.setUnder(pickUnder);
+                  acpEntAttEnt.setType(pickEntType);
+                  acpEntAttEnt.setName(pickEnt.fetchObjectDefinitionName());
+                  acpEntAttEnt.setRegarding(pickEnt);
+                  acpEntAttEnt.setIncludeTraits(true);
 
-              List<CdmObject> attsPick = null;
-              if (entPickFrom != null && entPickFrom.getAttributes() != null) {
-                attsPick = entPickFrom.getAttributes().getAllItems()
-                        .stream()
-                        .map(attribute -> (CdmObject) attribute)
-                        .collect(Collectors.toList());
-              }
-
-              if (entPickFrom != null && attsPick != null) {
-                for (int i = 0; i < attsPick.size(); i++) {
-                  if (attsPick.get(i).getObjectType() == CdmObjectType.EntityAttributeDef) {
-                    final CdmEntityAttributeDefinition entAtt = (CdmEntityAttributeDefinition) attsPick.get(i);
-                    addEntityReference(entAtt.getEntity(), resOpt, entReferences, attReferences, this.getInDocument().getNamespace());
-                  }
+                  rasb.getResolvedAttributeSet().createAttributeContext(resOpt, acpEntAttEnt);
                 }
               }
-            } else {
-              addEntityReference(
-                      this.getEntity(),
-                      resOpt,
-                      entReferences,
-                      attReferences,
-                      this.getInDocument() == null
-                              ? null
-                              : this.getInDocument().getNamespace());
             }
+          }
 
-            final CdmConstantEntityDefinition constantEntity = this.getCtx().getCorpus()
-                    .makeObject(CdmObjectType.ConstantEntityDef);
-            constantEntity.setEntityShape(
-                    this.getCtx().getCorpus().makeRef(CdmObjectType.EntityRef, "entityGroupSet", true));
-            final List<List<String>> listOfStringLists = new ArrayList<>();
-
-            for (int i = 0; i < entReferences.size(); i++) {
-              final List<String> stringList = new ArrayList<>();
-              stringList.add(entReferences.get(i));
-              stringList.add(attReferences.get(i));
-              listOfStringLists.add(stringList);
+          // if we got here because of the max depth, need to impose the directives to make the trait work as expected
+          if (resOpt.depthInfo.getMaxDepthExceeded()) {
+            if (arc.getResOpt().getDirectives() == null) {
+              arc.getResOpt().setDirectives(new AttributeResolutionDirectiveSet());
             }
+            arc.getResOpt().getDirectives().add("referenceOnly");
+          }
+        } else {
+          final ResolveOptions resLink = resOpt.copy();
+          resLink.setSymbolRefSet(resOpt.getSymbolRefSet());
+          rasb.mergeAttributes(this.getEntity().fetchResolvedAttributes(resLink, acpEnt));
 
-            constantEntity.setConstantValues(listOfStringLists);
-            final CdmEntityReference traitParam = this.getCtx().getCorpus()
-                    .makeRef(CdmObjectType.EntityRef, constantEntity, false);
-            reqdTrait.getParameterValues().setParameterValue(resOpt, "entityReferences", traitParam);
+          // need to pass up maxDepthExceeded if it was hit
+          if (resLink.depthInfo.getMaxDepthExceeded()) {
+            resOpt.depthInfo = resLink.depthInfo.copy();
           }
         }
-      }
 
-      // a 'structured' directive wants to keep all entity attributes together in a group
-      if (arc.getResOpt().getDirectives() != null && arc.getResOpt().getDirectives().has("structured")) {
-        final ResolvedAttribute raSub = new ResolvedAttribute(rtsThisAtt.getResOpt(),
-                rasb.getResolvedAttributeSet(),
-                this.getName(),
-                rasb.getResolvedAttributeSet().getAttributeContext());
-        if (relInfo.isArray()) {
-          // put a resolved trait on this att group, yuck, hope I never need to do this again and then need to make a function for this
-          final CdmTraitReference tr = this.getCtx().getCorpus()
-                  .makeObject(CdmObjectType.TraitRef, "is.linkedEntity.array", true);
-          final CdmTraitDefinition t = tr.fetchObjectDefinition(resOpt);
-          final ResolvedTrait rt = new ResolvedTrait(t, null, new ArrayList<>(), new ArrayList<>());
-          raSub.setResolvedTraits(raSub.fetchResolvedTraits().merge(rt, true));
+        // from the traits of purpose and applied here, see if new attributes get generated
+        rasb.getResolvedAttributeSet().setAttributeContext(underAtt);
+        rasb.applyTraits(arc);
+        rasb.generateApplierAttributes(arc, true); // true = apply the prepared traits to new atts
+        // this may have added symbols to the dependencies, so merge them
+        resOpt.getSymbolRefSet().merge(arc.getResOpt().getSymbolRefSet());
+
+        // use the traits for linked entity identifiers to record the actual foreign key links
+        if (rasb.getResolvedAttributeSet() != null && rasb.getResolvedAttributeSet().getSet() != null
+                && relInfo.isByRef()) {
+          for (final ResolvedAttribute att : rasb.getResolvedAttributeSet().getSet()) {
+            if (att.getResolvedTraits() != null) {
+              final ResolvedTrait reqdTrait = att.getResolvedTraits()
+                      .find(resOpt, "is.linkedEntity.identifier");
+              if (reqdTrait == null) {
+                continue;
+              }
+
+              if (reqdTrait.getParameterValues() == null
+                      || reqdTrait.getParameterValues().length() == 0) {
+                Logger.warning(this.getCtx(), TAG, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.WarnIdentifierArgumentsNotSupported);
+                continue;
+              }
+
+              final List<String> entReferences = new ArrayList<>();
+              final List<String> attReferences = new ArrayList<>();
+
+              if (relInfo.doSelectsOne()) {
+                final CdmEntityDefinition entPickFrom = (((CdmEntityReference) this.getEntity())).fetchObjectDefinition(resOpt);
+
+                List<CdmObject> attsPick = null;
+                if (entPickFrom != null && entPickFrom.getAttributes() != null) {
+                  attsPick = entPickFrom.getAttributes().getAllItems()
+                          .stream()
+                          .map(attribute -> (CdmObject) attribute)
+                          .collect(Collectors.toList());
+                }
+
+                if (entPickFrom != null && attsPick != null) {
+                  for (int i = 0; i < attsPick.size(); i++) {
+                    if (attsPick.get(i).getObjectType() == CdmObjectType.EntityAttributeDef) {
+                      final CdmEntityAttributeDefinition entAtt = (CdmEntityAttributeDefinition) attsPick.get(i);
+                      addEntityReference(entAtt.getEntity(), resOpt, entReferences, attReferences, this.getInDocument().getNamespace());
+                    }
+                  }
+                }
+              } else {
+                addEntityReference(
+                        this.getEntity(),
+                        resOpt,
+                        entReferences,
+                        attReferences,
+                        this.getInDocument() == null
+                                ? null
+                                : this.getInDocument().getNamespace());
+              }
+
+              final CdmConstantEntityDefinition constantEntity = this.getCtx().getCorpus()
+                      .makeObject(CdmObjectType.ConstantEntityDef);
+              constantEntity.setEntityShape(
+                      this.getCtx().getCorpus().makeRef(CdmObjectType.EntityRef, "entityGroupSet", true));
+              final List<List<String>> listOfStringLists = new ArrayList<>();
+
+              for (int i = 0; i < entReferences.size(); i++) {
+                final List<String> stringList = new ArrayList<>();
+                stringList.add(entReferences.get(i));
+                stringList.add(attReferences.get(i));
+                listOfStringLists.add(stringList);
+              }
+
+              constantEntity.setConstantValues(listOfStringLists);
+              final CdmEntityReference traitParam = this.getCtx().getCorpus()
+                      .makeRef(CdmObjectType.EntityRef, constantEntity, false);
+              reqdTrait.getParameterValues().setParameterValue(resOpt, "entityReferences", traitParam);
+            }
+          }
         }
-        rasb = new ResolvedAttributeSetBuilder();
-        rasb.getResolvedAttributeSet().setAttributeContext(raSub.getAttCtx()); // this got set to null with the new builder
-        rasb.ownOne(raSub);
+
+        // a 'structured' directive wants to keep all entity attributes together in a group
+        if (arc.getResOpt().getDirectives() != null && arc.getResOpt().getDirectives().has("structured")) {
+          // make one resolved attribute with a name from this entityAttribute that contains the set
+          // of atts we just put together.
+
+          final ResolvedAttribute raSub = new ResolvedAttribute(arc.getTraitsToApply().getResOpt(),
+                  rasb.getResolvedAttributeSet(),
+                  this.getName(),
+                  rasb.getResolvedAttributeSet().getAttributeContext());
+          if (relInfo.isArray()) {
+            // put a resolved trait on this att group, hope I never need to do this again and then need to make a function for this
+            final CdmTraitReference tr = this.getCtx().getCorpus()
+                    .makeObject(CdmObjectType.TraitRef, "is.linkedEntity.array", true);
+            final CdmTraitDefinition t = tr.fetchObjectDefinition(resOpt);
+            final ResolvedTrait rt = new ResolvedTrait(t, null, new ArrayList<>(), new ArrayList<>());
+            raSub.setResolvedTraits(raSub.getResolvedTraits().merge(rt, true));
+          }
+          int depth = rasb.getResolvedAttributeSet().getDepthTraveled();
+          rasb = new ResolvedAttributeSetBuilder();
+          rasb.getResolvedAttributeSet().setAttributeContext(raSub.getAttCtx()); // this got set to null with the new builder
+          rasb.ownOne(raSub);
+          rasb.getResolvedAttributeSet().setDepthTraveled(depth);
+        }
       }
     }
+
+    // how ever they got here, mark every attribute from this entity attribute as now being 'owned' by this entityAtt
+    rasb.getResolvedAttributeSet().setAttributeOwnership(this.getName());
+    rasb.getResolvedAttributeSet().setDepthTraveled(rasb.getResolvedAttributeSet().getDepthTraveled() + 1);
 
     return rasb;
   }
@@ -604,15 +588,11 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
         final String[] bits = attRef instanceof String ? ((String) attRef).split("/")
             : ((CdmObjectReference) attRef).getNamedReference().split("/");
         final String attName = bits[bits.length - 1];
-        // path should be absolute and without a namespace
-        String relativeEntPath = this.getCtx()
+        String absoluteEntPath = this.getCtx()
             .getCorpus()
             .getStorage()
             .createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument());
-        if (relativeEntPath.startsWith(nameSpace + ":")) {
-          relativeEntPath = relativeEntPath.substring(nameSpace.length() + 1);
-        }
-        entReferences.add(relativeEntPath);
+        entReferences.add(absoluteEntPath);
         attReferences.add(attName);
       }
     }

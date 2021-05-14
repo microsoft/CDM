@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitGroupReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.AttributeContext;
@@ -14,7 +16,6 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Ent
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,16 +38,12 @@ public class EntityPersistence {
 
     entity.setExtendsEntity(EntityReferencePersistence.fromData(ctx, obj.get("extendsEntity")));
 
+    entity.setExplanation(Utils.propertyFromDataToString(obj.get("explanation")));
+
     entity.setExtendsEntityResolutionGuidance(
         AttributeResolutionGuidancePersistence.fromData(
             ctx,
             obj.get("extendsEntityResolutionGuidance")));
-
-    entity.setExplanation(Utils.getStringFromJson(obj.get("explanation")));
-    entity.setSourceName(Utils.getStringFromJson(obj.get("sourceName")));
-    entity.setDisplayName(Utils.getStringFromJson(obj.get("displayName")));
-    entity.setDescription(Utils.getStringFromJson(obj.get("description")));
-    entity.setVersion(Utils.getStringFromJson(obj.get("version")));
 
     Utils.addListToCdmCollection(
         entity.getExhibitsTraits(),
@@ -62,10 +59,16 @@ public class EntityPersistence {
     Utils.addListToCdmCollection(
         entity.getAttributes(),
         Utils.createAttributeList(ctx, obj.get("hasAttributes"), entity.getEntityName()));
+
+    entity.setSourceName(Utils.propertyFromDataToString(obj.get("sourceName")));
+    entity.setDisplayName(Utils.propertyFromDataToString(obj.get("displayName")));
+    entity.setDescription(Utils.propertyFromDataToString(obj.get("description")));
+    entity.setVersion(Utils.propertyFromDataToString(obj.get("version")));
     entity.setCdmSchemas(obj.has("cdmSchemas")
-        ? null
-        : JMapper.MAP.convertValue(obj.get("cdmSchemas"), new TypeReference<List<String>>() {
+            ? null
+            : JMapper.MAP.convertValue(obj.get("cdmSchemas"), new TypeReference<List<String>>() {
     }));
+
     return entity;
   }
 
@@ -85,7 +88,7 @@ public class EntityPersistence {
     obj.setExhibitsTraits(Utils.listCopyDataAsArrayNode(
         instance.getExhibitsTraits().getAllItems()
             .stream()
-            .filter(trait -> !trait.isFromProperty())
+            .filter(trait -> trait instanceof CdmTraitGroupReference || !((CdmTraitReference)trait).isFromProperty())
             .collect(Collectors.toList()),
         resOpt,
         options));

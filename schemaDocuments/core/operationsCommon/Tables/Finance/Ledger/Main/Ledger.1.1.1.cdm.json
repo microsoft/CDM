@@ -1,0 +1,255 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/ExchangeRateType.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "LedgerChartOfAccounts.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Reference/FiscalCalendar.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttrValueLedgerOverride.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Ledger",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingCurrency",
+          "dataType": "CurrencyCode",
+          "displayName": "Accounting currency",
+          "description": ""
+        },
+        {
+          "name": "BudgetExchangeRateType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Default budget exchange rate type",
+          "description": ""
+        },
+        {
+          "name": "ChartOfAccounts",
+          "dataType": "RefRecId",
+          "displayName": "Chart of accounts",
+          "description": ""
+        },
+        {
+          "name": "DefaultExchangeRateType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Default exchange rate type",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalCalendar",
+          "dataType": "FiscalCalendarRecId",
+          "displayName": "Fiscal calendar",
+          "description": ""
+        },
+        {
+          "name": "IsBudgetControlEnabled",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enabled for budget control",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "LedgerName",
+          "description": ""
+        },
+        {
+          "name": "PrimaryForLegalEntity",
+          "dataType": "RefRecId",
+          "displayName": "Primary legal entity",
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrency",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "displayName": "Reporting currency",
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyExchangeRateType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Reporting currency exchange rate type",
+          "description": ""
+        },
+        {
+          "name": "MostRecentYearEndClose",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Date of last year-end close",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_BudgetExchangeRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerChartOfAccounts"
+          },
+          "name": "Relationship_ChartOfAccountsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_AccountingCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_ReportingCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_DefaultExchangeRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalCalendar"
+          },
+          "name": "Relationship_FiscalCalendarRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryForLegalEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttrValueLedgerOverride"
+          },
+          "name": "Relationship_DimensionAttrValueLedgerOverrideRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_ReportingCurrencyExchangeRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalCalendarRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

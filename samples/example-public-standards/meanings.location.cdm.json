@@ -209,6 +209,51 @@
             "exhibitsTraits": [
                 "means.location.timezone"
             ]
-        }
+        },
+        {
+            "traitName": "is.inTimeZone",
+            "extendsTrait": "is",
+            "explanation": "the associated data is assumed to be in the specified time zone",
+            "hasParameters": [
+              {
+                "name": "timeZoneName",
+                "dataType": "timezone",
+                "required": true,
+                "explanation": "the name of a time zone"
+              },
+              {
+                "name": "format",
+                "dataType": "stringFormat",
+                "required": true,
+                "explanation": "the time zone naming scheme used for the timeZoneName parameter"
+              }
+            ]
+          },
+          {
+            "traitName": "is.inTimeZone.MicrosoftFormat",
+            "extendsTrait": {
+              "traitReference": "is.inTimeZone",
+              "arguments": [
+                {
+                  "name": "format",
+                  "value": "MicrosoftFormat"
+                }
+              ]
+            },
+            "explanation": "the associated data is assumed to be in the specified time zone. timeZoneName value is a Microsoft standard time zone name. see https://support.microsoft.com/en-us/help/973627"
+          },
+          {
+            "traitName": "is.inTimeZone.tzDatabaseFormat",
+            "extendsTrait": {
+              "traitReference": "is.inTimeZone",
+              "arguments": [
+                {
+                  "name": "format",
+                  "value": "tzDatabaseFormat"
+                }
+              ]
+            },
+            "explanation": "the associated data is assumed to be in the specified time zone. timeZoneName value is a Time Zone Database standard time zone name. see https://www.iana.org/time-zones"
+          }
     ]
 }

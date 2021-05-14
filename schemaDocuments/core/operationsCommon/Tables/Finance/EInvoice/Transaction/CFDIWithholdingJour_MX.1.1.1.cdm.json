@@ -1,0 +1,175 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EInvoice/Group/CFDIWithholdingType_MX.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CFDIWithholdingJour_MX",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExemptAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Exempt amount",
+          "description": ""
+        },
+        {
+          "name": "OperationAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Operation amount",
+          "description": ""
+        },
+        {
+          "name": "PeriodEndDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Period end date",
+          "description": ""
+        },
+        {
+          "name": "PeriodStartDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Period start date",
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmount",
+          "dataType": "TaxBaseCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WithholdingAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Withholding amount",
+          "description": ""
+        },
+        {
+          "name": "WithholdingJournalID",
+          "dataType": "CFDIWithholdingJournalID_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WithholdingTypeCode",
+          "dataType": "CFDIWithholdingTypeCode_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WithholdingJournalDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Creation date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CFDIWithholdingType_MX"
+          },
+          "name": "Relationship_CFDIWithholdingType_MXRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "CFDI withholding journal"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxBaseCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CFDIWithholdingJournalID_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CFDIWithholdingTypeCode_MX",
+      "extendsDataType": "string"
+    }
+  ]
+}

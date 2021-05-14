@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -16,6 +16,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     /// </summary>
     public class ProjectionPersistence
     {
+        private static readonly string Tag = nameof(ProjectionPersistence);
+
         public static CdmProjection FromData(CdmCorpusContext ctx, JToken obj)
         {
             if (obj == null)
@@ -33,6 +35,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
 
             projection.Condition = obj["condition"]?.ToString();
+            projection.RunSequentially = (bool?)obj["runSequentially"];
 
             if (obj["operations"] != null)
             {
@@ -83,7 +86,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                             projection.Operations.Add(addAttributeGroupOp);
                             break;
                         default:
-                            Logger.Error(nameof(ProjectionPersistence), ctx, $"Invalid operation type '{type}'.", nameof(FromData));
+                            Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistProjInvalidOpsType, type);
                             break;
                     }
                 }
@@ -178,6 +181,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Source = source,
                 Operations = operations,
                 Condition = instance.Condition,
+                RunSequentially = instance.RunSequentially
             };
         }
     }

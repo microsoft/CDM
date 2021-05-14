@@ -1,0 +1,115 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Miscellaneous/RetailConnSchedule.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailConnSchedulerJobTable.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailConnScheduleJobMapping",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "enabled",
+          "dataType": "RetailConnEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "lastCheckedDate",
+          "dataType": "RetailConnLastCheckedDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "lastCheckedTime",
+          "dataType": "RetailConnLastCheckedTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ScheduleRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SchedulerJobId",
+          "dataType": "RetailConnJobId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailConnSchedule"
+          },
+          "name": "Relationship_RetailConnScheduleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailConnSchedulerJobTable"
+          },
+          "name": "Relationship_RetailConnSchedulerJobTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Mapping between distribution schedule and scheduler job"
+    },
+    {
+      "dataTypeName": "RetailConnEnabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailConnLastCheckedDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailConnLastCheckedTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailConnJobId",
+      "extendsDataType": "string"
+    }
+  ]
+}

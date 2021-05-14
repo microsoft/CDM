@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -10,13 +10,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle ExcludeAttributes operations
     /// </summary>
     public class CdmOperationExcludeAttributes : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationExcludeAttributes);
+        private static readonly string Tag = nameof(CdmOperationExcludeAttributes);
 
         public List<string> ExcludeAttributes { get; set; }
 
@@ -69,7 +70,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -131,7 +132,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     // Create the attribute context parameters and just store it in the builder for now
                     // We will create the attribute contexts at the end
-                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(null, currentPAS, currentPAS.CurrentResolvedAttribute, CdmAttributeContextType.AttributeDefinition);
+                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(null, currentPAS, currentPAS.CurrentResolvedAttribute,
+                        CdmAttributeContextType.AttributeDefinition,
+                        currentPAS.CurrentResolvedAttribute.AttCtx, // lineage is the included attribute
+                        null); // don't know who will point here yet
 
                     // Create a projection attribute state for the included attribute by creating a copy of the current state
                     // Copy() sets the current state as the previous state for the new one
@@ -150,7 +154,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     // Create the attribute context parameters and just store it in the builder for now
                     // We will create the attribute contexts at the end
-                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.CurrentResolvedAttribute, CdmAttributeContextType.AttributeDefinition);
+                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.CurrentResolvedAttribute,
+                        CdmAttributeContextType.AttributeDefinition,
+                        currentPAS.CurrentResolvedAttribute.AttCtx, // lineage is the included attribute
+                        null); // don't know who will point here yet, excluded, so... this could be the end for you.
+
                 }
             }
 

@@ -1,0 +1,135 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/WorksheetHeader/AssetDocumentAcceleratedDepTable_JP.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "AssetDocumentEntry_JP.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetDocumentAcceleratedDepEntry_JP",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetDocumentAcceleratedDepTable_JP",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetDocumentEntry_JP",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlannedHours",
+          "dataType": "AssetAcceleratedDepActualHours_JP",
+          "isNullable": true,
+          "displayName": "Planned",
+          "description": ""
+        },
+        {
+          "name": "ReservedHours",
+          "dataType": "AssetAcceleratedDepActualHours_JP",
+          "isNullable": true,
+          "displayName": "Reserved",
+          "description": ""
+        },
+        {
+          "name": "ActualHours",
+          "dataType": "AssetAcceleratedDepActualHours_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalOveruseHours",
+          "dataType": "AssetAcceleratedDepOveruseHoursPerDay_JP",
+          "isNullable": true,
+          "displayName": "Total overuse hours",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDocumentAcceleratedDepTable_JP"
+          },
+          "name": "Relationship_AssetDocumentAcceleratedDepTable_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDocumentEntry_JP"
+          },
+          "name": "Relationship_AssetDocumentEntry_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Document entry for accelerated depreciation"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetAcceleratedDepActualHours_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetAcceleratedDepOveruseHoursPerDay_JP",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

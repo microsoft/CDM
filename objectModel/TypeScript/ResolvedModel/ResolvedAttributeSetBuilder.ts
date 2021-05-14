@@ -8,15 +8,13 @@ import {
     AttributeContextParameters,
     AttributeResolutionApplier,
     AttributeResolutionApplierCapabilities,
-    CdmAttribute,
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmAttributeResolutionGuidance,
-    CdmObjectBase,
     PrimitiveAppliers,
+    relationshipInfo,
     ResolvedAttribute,
     ResolvedAttributeSet,
-    ResolvedTrait,
     ResolvedTraitSet,
     resolveOptions
 } from '../internal';
@@ -51,7 +49,7 @@ export class AttributeResolutionContext {
         this.actionsRemove = [];
         this.applierCaps = undefined;
 
-        this.resOpt = CdmObjectBase.copyResolveOptions(resOpt);
+        this.resOpt = resOpt.copy();
 
         if (resGuide) {
             if (!this.applierCaps) {
@@ -137,6 +135,44 @@ export class AttributeResolutionContext {
         }
     }
 
+    /**
+     * Returns a RelationshipInfo instance containing information about how the entity attribute relationship should be resolved
+     * @param resOpt
+     * @param arc
+     * @internal
+     */
+    public getRelationshipInfo(): relationshipInfo {
+        let hasRef: boolean = false;
+        let isByRef: boolean = false;
+        let isArray: boolean = false;
+        let selectsOne: boolean = false;
+        let maxDepthExceeded: boolean = this.resOpt.depthInfo.maxDepthExceeded;
+
+        if (this.resGuide) {
+            if (this.resGuide.entityByReference !== undefined && this.resGuide.entityByReference.allowReference === true) {
+                hasRef = true;
+            }
+            if (this.resOpt.directives) {
+                // based on directives
+                if (hasRef) {
+                    isByRef = this.resOpt.directives.has('referenceOnly');
+                }
+                selectsOne = this.resOpt.directives.has('selectOne');
+                isArray = this.resOpt.directives.has('isArray');
+            }
+
+            if (!selectsOne && maxDepthExceeded) {
+                // if max depth exceeded, stop and resolve by reference
+                isByRef = true;
+            }
+        }
+
+        return {
+            isByRef: isByRef,
+            isArray: isArray,
+            selectsOne: selectsOne
+        };
+    }
 }
 
 /**
@@ -161,6 +197,9 @@ export class ResolvedAttributeSetBuilder {
         {
             if (rasNew) {
                 this.takeReference(this.ras.mergeSet(rasNew));
+                if (rasNew.depthTraveled > this.ras.depthTraveled) {
+                    this.ras.depthTraveled = rasNew.depthTraveled;
+                }
             }
         }
         // return p.measure(bodyCode);
@@ -209,7 +248,7 @@ export class ResolvedAttributeSetBuilder {
             // save the current context
             const attCtx: CdmAttributeContext = this.ras.attributeContext;
             this.takeReference(new ResolvedAttributeSet());
-            this.ras.merge(ra, ra.attCtx);
+            this.ras.merge(ra);
             // reapply the old attribute context
             this.ras.setAttributeContext(attCtx);
         }
@@ -220,7 +259,7 @@ export class ResolvedAttributeSetBuilder {
         // let bodyCode = () =>
         {
             if (this.ras && arc && arc.traitsToApply) {
-                this.takeReference(this.ras.applyTraits(arc.traitsToApply, arc.resOpt, arc.resGuide, arc.actionsModify));
+                this.takeReference(this.ras.applyTraitsResolutionGuidance(arc.traitsToApply, arc.resOpt, arc.resGuide, arc.actionsModify));
             }
         }
         // return p.measure(bodyCode);
@@ -243,49 +282,49 @@ export class ResolvedAttributeSetBuilder {
                 const l: number = set.length;
                 for (let i: number = 0; i < l; i++) {
                     set[i].arc = arc;
+                }
 
-                    // the resolution guidance may be asking for a one time 'take' or avoid of attributes from the source
-                    // this also can re-order the attributes
-                    if (arc.resGuide && arc.resGuide.selectsSubAttribute &&
-                        arc.resGuide.selectsSubAttribute.selects === 'some' &&
-                        (arc.resGuide.selectsSubAttribute.selectsSomeTakeNames || arc.resGuide.selectsSubAttribute.selectsSomeAvoidNames)) {
-                        // we will make a new resolved attribute set from the 'take' list
-                        const takeSet: ResolvedAttribute[] = [];
-                        const selectsSomeTakeNames: string[] = arc.resGuide.selectsSubAttribute.selectsSomeTakeNames;
-                        const selectsSomeAvoidNames: string[] = arc.resGuide.selectsSubAttribute.selectsSomeAvoidNames;
+                // the resolution guidance may be asking for a one time 'take' or avoid of attributes from the source
+                // this also can re-order the attributes
+                if (arc.resGuide && arc.resGuide.selectsSubAttribute &&
+                    arc.resGuide.selectsSubAttribute.selects === 'some' &&
+                    (arc.resGuide.selectsSubAttribute.selectsSomeTakeNames || arc.resGuide.selectsSubAttribute.selectsSomeAvoidNames)) {
+                    // we will make a new resolved attribute set from the 'take' list
+                    const takeSet: ResolvedAttribute[] = [];
+                    const selectsSomeTakeNames: string[] = arc.resGuide.selectsSubAttribute.selectsSomeTakeNames;
+                    const selectsSomeAvoidNames: string[] = arc.resGuide.selectsSubAttribute.selectsSomeAvoidNames;
 
-                        if (selectsSomeTakeNames && !selectsSomeAvoidNames) {
-                            // make an index that goes from name to insertion order
-                            const inverted: Map<string, number> = new Map<string, number>();
-                            for (let iOrder: number = 0; iOrder < l; iOrder++) {
-                                inverted.set(set[iOrder].resolvedName, iOrder);
-                            }
-
-                            for (const take of selectsSomeTakeNames) {
-                                // if in the original set of attributes, take it in the new order
-                                if (inverted.has(take)) {
-                                    takeSet.push(set[inverted.get(take)]);
-                                }
-                            }
-                        }
-                        if (selectsSomeAvoidNames) {
-                            // make a quick look up of avoid names
-                            const avoid: Set<string> = new Set<string>();
-                            for (const avoidName of selectsSomeAvoidNames) {
-                                avoid.add(avoidName);
-                            }
-
-                            for (let iAtt: number = 0; iAtt < l; iAtt++) {
-                                // only take the ones not in avoid the list given
-                                if (!avoid.has(set[iAtt].resolvedName)) {
-                                    takeSet.push(set[iAtt]);
-                                }
-                            }
+                    if (selectsSomeTakeNames && !selectsSomeAvoidNames) {
+                        // make an index that goes from name to insertion order
+                        const inverted: Map<string, number> = new Map<string, number>();
+                        for (let iOrder: number = 0; iOrder < l; iOrder++) {
+                            inverted.set(set[iOrder].resolvedName, iOrder);
                         }
 
-                        // replace the guts of the resolvedAttributeSet with this
-                        this.ras.alterSetOrderAndScope(takeSet);
+                        for (const take of selectsSomeTakeNames) {
+                            // if in the original set of attributes, take it in the new order
+                            if (inverted.has(take)) {
+                                takeSet.push(set[inverted.get(take)]);
+                            }
+                        }
                     }
+                    if (selectsSomeAvoidNames) {
+                        // make a quick look up of avoid names
+                        const avoid: Set<string> = new Set<string>();
+                        for (const avoidName of selectsSomeAvoidNames) {
+                            avoid.add(avoidName);
+                        }
+
+                        for (let iAtt: number = 0; iAtt < l; iAtt++) {
+                            // only take the ones not in avoid the list given
+                            if (!avoid.has(set[iAtt].resolvedName)) {
+                                takeSet.push(set[iAtt]);
+                            }
+                        }
+                    }
+
+                    // replace the guts of the resolvedAttributeSet with this
+                    this.ras.alterSetOrderAndScope(takeSet);
                 }
             }
 
@@ -296,7 +335,7 @@ export class ResolvedAttributeSetBuilder {
                 let ras: ResolvedAttributeSet = this.ras;
                 for (let i: number = 0; i < l; i++) {
                     // here we want the context that was created in the appliers
-                    ras = ras.merge(newAtts[i], newAtts[i].attCtx);
+                    ras = ras.merge(newAtts[i]);
                 }
                 this.takeReference(ras);
             }
@@ -477,8 +516,8 @@ export class ResolvedAttributeSetBuilder {
 
                         // combine resolution guidence for this set with anything new from the new attribute
                         // tslint:disable-next-line: max-line-length
-                        appCtx.resGuideNew = (appCtx.resGuide as CdmAttributeResolutionGuidance).combineResolutionGuidance(appCtx.resGuideNew as CdmAttributeResolutionGuidance);
-                        appCtx.resAttNew.arc = new AttributeResolutionContext(arc.resOpt, appCtx.resGuideNew as CdmAttributeResolutionGuidance, appCtx.resAttNew.resolvedTraits);
+                        appCtx.resGuideNew = (appCtx.resGuide).combineResolutionGuidance(appCtx.resGuideNew);
+                        appCtx.resAttNew.arc = new AttributeResolutionContext(arc.resOpt, appCtx.resGuideNew, appCtx.resAttNew.resolvedTraits);
 
                         if (applyModifiers) {
                             // add the sets traits back in to this newly added one
@@ -499,6 +538,16 @@ export class ResolvedAttributeSetBuilder {
                             }
                         }
                         appCtx.resAttNew.completeContext(appCtx.resOpt);
+                        // tie this new resolved att to the source via lineage
+                        if (appCtx.resAttNew.attCtx && resAttSource && resAttSource.attCtx && (!resAttSource.applierState || !resAttSource.applierState.flex_remove)) {
+                            if (resAttSource.attCtx.lineage && resAttSource.attCtx.lineage.length > 0) {
+                                for (const lineage of resAttSource.attCtx.lineage) {
+                                    appCtx.resAttNew.attCtx.addLineage(lineage);
+                                }
+                            } else {
+                                appCtx.resAttNew.attCtx.addLineage(resAttSource.attCtx);
+                            }
+                        }
                     }
 
                     return appCtx;
@@ -573,8 +622,7 @@ export class ResolvedAttributeSetBuilder {
                     resAttsLastRound = resAttThisRound;
                     round++;
                     if (attCtxContainerGroup) {
-                        const acp: AttributeContextParameters =
-                        {
+                        const acp: AttributeContextParameters = {
                             under: attCtxContainerGroup,
                             type: cdmAttributeContextType.generatedRound,
                             name: `_generatedAttributeRound${round}`

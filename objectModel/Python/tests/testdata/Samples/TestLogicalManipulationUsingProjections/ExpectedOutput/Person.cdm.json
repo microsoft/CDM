@@ -1,0 +1,72 @@
+{
+  "jsonSchemaSemanticVersion": "1.2.0",
+  "imports": [
+    {
+      "corpusPath": "local:/Address.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Person",
+      "hasAttributes": [
+        {
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "name": "age",
+          "dataType": "string"
+        },
+        {
+          "name": "address",
+          "entity": {
+            "operations": [
+              {
+                "$type": "replaceAsForeignKey",
+                "condition": "referenceOnly",
+                "reference": "addressLine",
+                "replaceWith": {
+                  "name": "addressFK",
+                  "dataType": "entityId"
+                }
+              },
+              {
+                "$type": "addAttributeGroup",
+                "condition": "structured",
+                "attributeGroupName": "address"
+              }
+            ],
+            "runSequentially": true,
+            "source": {
+              "condition": "!normalized",
+              "operations": [
+                {
+                  "$type": "arrayExpansion",
+                  "startOrdinal": 1,
+                  "endOrdinal": 3
+                },
+                {
+                  "$type": "renameAttributes",
+                  "renameFormat": "{m}{A}{o}"
+                },
+                {
+                  "$type": "addCountAttribute",
+                  "countAttribute": {
+                    "name": "countAttribute",
+                    "dataType": "integer"
+                  }
+                }
+              ],
+              "runSequentially": true,
+              "source": "Address"
+            }
+          }
+        },
+        {
+          "name": "email",
+          "dataType": "string"
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,8 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * The entity to entity relationship object that will be populated in a manifest.
@@ -15,7 +17,7 @@ public class E2ERelationship {
     private String fromEntityAttribute;
     private String toEntity;
     private String toEntityAttribute;
-
+    private ArrayNode exhibitsTraits;
     /**
      * Gets the name of the relationship
      * @return String
@@ -95,4 +97,16 @@ public class E2ERelationship {
     public void setToEntityAttribute(final String toEntityAttribute) {
         this.toEntityAttribute = toEntityAttribute;
     }
+
+    /**
+     * Gets the purpose resolved traits that represent relationship meanings.
+     * @return ArrayNode
+     */
+    public ArrayNode getExhibitsTraits() { return exhibitsTraits; }
+
+    /**
+     * Sets the purpose resolved traits that represent relationship meanings.
+     * @param  exhibitsTraits ArrayNode
+     */
+    public void setExhibitsTraits(final ArrayNode exhibitsTraits) { this.exhibitsTraits = exhibitsTraits; }
 }

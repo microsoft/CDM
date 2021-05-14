@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.utilities.network;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class CdmHttpRequest {
     /**
@@ -33,6 +34,11 @@ public class CdmHttpRequest {
     private String requestedUrl;
 
     /**
+     * The unique id of the request for logging.
+     */
+    private UUID requestId;
+
+    /**
      * The timeout of a single request.
      */
     private Duration timeout;
@@ -58,6 +64,7 @@ public class CdmHttpRequest {
     public CdmHttpRequest(final String url, final int numberOfRetries, final String method) {
         this.headers = new LinkedHashMap<>();
         this.requestedUrl = url;
+        this.requestId = UUID.randomUUID();
         this.numberOfRetries = numberOfRetries;
 
         if (method == null) {
@@ -107,6 +114,14 @@ public class CdmHttpRequest {
         this.requestedUrl = requestedUrl;
     }
 
+    public UUID getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(final UUID requestId) {
+        this.requestId = requestId;
+    }
+
     public Duration getTimeout() {
         return timeout;
     }
@@ -132,5 +147,23 @@ public class CdmHttpRequest {
 
     public void setNumberOfRetries(final int numberOfRetries) {
         this.numberOfRetries = numberOfRetries;
+    }
+
+    /**
+     * Strips sas token parameter 'sig'. 
+     * @return The requested url with the value of 'sig' replaced with 'REMOVED'.
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     */
+    @Deprecated
+    public String stripSasSig () {
+        int sigStartIndex = this.requestedUrl.indexOf("sig=");
+        if (sigStartIndex == -1) {
+            return this.requestedUrl;
+        }
+
+        int sigEndIndex = this.requestedUrl.indexOf("&", sigStartIndex + 1);
+        sigEndIndex = sigEndIndex == -1 ? this.requestedUrl.length() : sigEndIndex;
+        return this.requestedUrl.substring(0, sigStartIndex + 4) + "REMOVED" + this.requestedUrl.substring(sigEndIndex);
     }
 }

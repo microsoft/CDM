@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
@@ -16,6 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     class RelationshipPersistence
     {
+        private static readonly string Tag = nameof(RelationshipPersistence);
         public static async Task<CdmE2ERelationship> FromData(CdmCorpusContext ctx, SingleKeyRelationship obj, Dictionary<string, string> entitySchemaByName)
         {
             // TODO: re-add this once Dan's serializer is merged. 
@@ -29,14 +30,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (!entitySchemaByName.ContainsKey(obj.FromAttribute.EntityName))
             {
-                Logger.Warning(nameof(RelationshipPersistence), ctx, $"Relationship's source entity '{obj.FromAttribute.EntityName}' is not defined.");
+                Logger.Warning(ctx, Tag, nameof(FromData), null, CdmLogCode.WarnPersistRelUndefinedSourceEntity, obj.FromAttribute.EntityName);
 
                 return null;
             }
 
             if (!entitySchemaByName.ContainsKey(obj.ToAttribute.EntityName))
             {
-                Logger.Warning(nameof(RelationshipPersistence), ctx, $"Relationship's target entity '{obj.ToAttribute.EntityName}' is not defined.");
+                Logger.Warning(ctx, Tag, nameof(FromData), null, CdmLogCode.WarnPersistRelUndefinedTargetEntity);
 
                 return null;
             }

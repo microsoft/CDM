@@ -6,14 +6,17 @@ package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.TraitGroupReferencePersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.TraitReferencePersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Annotation;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.CsvFormatSettings;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.MetadataObject;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+import com.microsoft.commondatamodel.objectmodel.utilities.NameValuePair;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,6 +30,8 @@ import java.util.concurrent.CompletableFuture;
  * Utility methods for model.json persistence.
  */
 public class Utils {
+  private static final String TAG = Utils.class.getSimpleName();
+
   private static final Map<String, String> annotationToTraitMap = new LinkedHashMap<String, String>() {
     private static final long serialVersionUID = 1863481726936L;
 
@@ -67,13 +72,16 @@ public class Utils {
       final MetadataObject obj,
       final CdmTraitCollection traits) {
     return CompletableFuture.runAsync(() -> {
-      final List<Annotation> multiTraitAnnotations = new ArrayList<>();
+      final List<NameValuePair> multiTraitAnnotations = new ArrayList<>();
 
       if (obj.getAnnotations() != null) {
 
         for (final Annotation element : obj.getAnnotations()) {
           if (!shouldAnnotationGoIntoASingleTrait(element.getName())) {
-            multiTraitAnnotations.add(element);
+            NameValuePair cdmElement = new NameValuePair();
+            cdmElement.setName(element.getName());
+            cdmElement.setValue(element.getValue());
+            multiTraitAnnotations.add(cdmElement);
           } else {
             final CdmTraitReference innerTrait = ctx.getCorpus()
                     .makeObject(CdmObjectType.TraitRef, convertAnnotationToTrait(element.getName()),
@@ -99,8 +107,11 @@ public class Utils {
 
       if (obj.getTraits() != null) {
         for (final JsonNode trait : obj.getTraits()) {
-          final CdmTraitReference traitInstance = TraitReferencePersistence.fromData(ctx, JMapper.MAP.valueToTree(trait));
-          traits.add(traitInstance);
+          if (!trait.isValueNode() && trait.get("traitGroupReference") != null) {
+            traits.add(TraitGroupReferencePersistence.fromData(ctx, JMapper.MAP.valueToTree(trait)));
+          } else {
+            traits.add(TraitReferencePersistence.fromData(ctx, JMapper.MAP.valueToTree(trait)));
+          }
         }
       }
     });
@@ -117,37 +128,45 @@ public class Utils {
         final List<Annotation> annotations = new ArrayList<>();
         final List<JsonNode> extensions = new ArrayList<>();
   
-        for (final CdmTraitReference trait : traits) {
+        for (final CdmTraitReferenceBase trait : traits) {
           if (ExtensionHelper.traitRefIsExtension(trait)) {
-            ExtensionHelper.processExtensionTraitToObject(trait, obj);
+            // Safe to cast since extensions can only be trait refs, not trait group refs
+            ExtensionHelper.processExtensionTraitToObject((CdmTraitReference) trait, obj);
             continue;
           }
   
           if ("is.modelConversion.otherAnnotations".equals(trait.getNamedReference())) {
-            final Object traitArgument = trait.getArguments().get(0).getValue();
+            // Safe to cast since "is.modelConversion.otherAnnotations" is a trait, not trait group
+            final Object traitArgument = ((CdmTraitReference)trait).getArguments().get(0).getValue();
             Iterable<?> traitArguments = new ArrayList<>();
             if (traitArgument instanceof List<?>) {
               traitArguments = (ArrayList<?>) traitArgument;
             } else if (traitArgument instanceof JsonNode && ((JsonNode) traitArgument).isArray()) {
               traitArguments =  (JsonNode) traitArgument;
             } else {
-              Logger.error(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
+              Logger.warning(ctx, TAG, "processTraitsAndAnnotationsToData", null, CdmLogCode.WarnAnnotationTypeNotSupported);
             }
             for (final Object annotation : traitArguments) {
               if (annotation instanceof JsonNode) {
                 final JsonNode jAnnotation = (JsonNode) annotation;
                 annotations.add(JMapper.MAP.convertValue(jAnnotation, Annotation.class));
-              } else if (annotation instanceof Annotation) {
-                annotations.add((Annotation) annotation);
+              } else if (annotation instanceof NameValuePair) {
+                Annotation element = new Annotation();
+                element.setName(((NameValuePair)annotation).getName());
+                element.setValue(((NameValuePair)annotation).getValue());
+                annotations.add(element);
               } else {
-                Logger.warning(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
+                Logger.warning(ctx, TAG, "processTraitsAndAnnotationsToData", null, CdmLogCode.WarnAnnotationTypeNotSupported);
               }
             }
           } else if (!ignoredTraits.contains(trait.getNamedReference())
                   && !trait.getNamedReference().startsWith("is.dataFormat")
-                  && !(modelJsonPropertyTraits.contains(trait.getNamedReference()) && trait.isFromProperty())
+                  && !(modelJsonPropertyTraits.contains(trait.getNamedReference())
+                  && trait instanceof CdmTraitReference && ((CdmTraitReference)trait).isFromProperty())
           ) {
-            final Object extension = TraitReferencePersistence.toData(trait, null, null);
+            final Object extension = trait instanceof CdmTraitGroupReference ?
+                    TraitGroupReferencePersistence.toData((CdmTraitGroupReference) trait, null, null)
+                    : TraitReferencePersistence.toData((CdmTraitReference) trait, null, null);
             extensions.add(JMapper.MAP.valueToTree(extension));
           }
         }
@@ -252,10 +271,7 @@ public class Utils {
    * @param <T> Type
    * @return List of JsonNode
    */
-  public static <T> List<JsonNode> listCopyData(
-          final Iterable<T> source,
-          final ResolveOptions resOpt,
-          final CopyOptions options) {
+  public static <T> List<JsonNode> listCopyData(final Iterable<T> source, final ResolveOptions resOpt, final CopyOptions options) {
     if (source == null) {
       return null;
     }

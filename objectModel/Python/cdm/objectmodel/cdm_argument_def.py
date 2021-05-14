@@ -7,9 +7,10 @@ import json
 from cdm.enums import CdmObjectType
 from cdm.utilities import ResolveOptions, logger
 
+from cdm.enums import CdmLogCode
 from .cdm_object import CdmObject
 from .cdm_object_simple import CdmObjectSimple
-from cdm.utilities.errors import Errors
+from cdm.utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmParameterDefinition
@@ -19,6 +20,8 @@ if TYPE_CHECKING:
 class CdmArgumentDefinition(CdmObjectSimple):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
+
+        self._TAG = CdmArgumentDefinition.__name__
 
         # the argument explanation.
         self.explanation = None  # type: Optional[str]
@@ -35,11 +38,12 @@ class CdmArgumentDefinition(CdmObjectSimple):
         self._declared_path = None  # Optional[str]
         self._unresolved_value = None  # type: Optional[CdmArgumentValue]
 
-        self._TAG = CdmArgumentDefinition.__name__
-
     @property
     def object_type(self) -> CdmObjectType:
         return CdmObjectType.ARGUMENT_DEF
+
+    def _get_parameter_def(self) -> 'CdmParameterDefinition':
+        return self._resolved_parameter
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmArgumentDefinition'] = None) -> 'CdmArgumentDefinition':
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
@@ -72,7 +76,8 @@ class CdmArgumentDefinition(CdmObjectSimple):
 
     def validate(self) -> bool:
         if self.value is None:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['value']))
+            missing_fields = ['value']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -10,6 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -17,6 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     public class CdmManifestDeclarationDefinition : CdmObjectDefinitionBase, CdmFileStatus
     {
+        private static readonly string Tag = nameof(CdmManifestDeclarationDefinition);
         /// <summary>
         /// Initializes a new instance of the <see cref="CdmManifestDeclarationDefinition"/> class.
         /// </summary>
@@ -118,7 +120,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 missingFields.Add("Definition");
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmManifestDeclarationDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -146,17 +148,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             if (preChildren != null && preChildren.Invoke(this, path))
-            {
                 return false;
-            }
 
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
 
             if (postChildren != null && postChildren.Invoke(this, path))
-            {
-                return false;
-            }
+                return true;
             return false;
         }
 

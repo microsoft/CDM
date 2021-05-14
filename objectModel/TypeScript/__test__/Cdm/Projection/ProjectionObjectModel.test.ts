@@ -27,7 +27,9 @@ import {
     CdmPurposeReference,
     CdmTypeAttributeDefinition
 } from '../../../internal';
+import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
+import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 
 describe('Cdm/Projection/ProjectionObjectModel', () => {
     const foundationJsonPath: string = 'cdm:/foundations.cdm.json';
@@ -40,7 +42,8 @@ describe('Cdm/Projection/ProjectionObjectModel', () => {
      * Basic test to save projection based entities and then try to reload them and validate that the projections were persisted correctly
      */
     it('TestProjectionUsingObjectModel', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestProjectionUsingObjectModel');
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, 'TestProjectionUsingObjectModel');
+        corpus.storage.mount('local', new LocalAdapter(testHelper.getActualOutputFolderPath(testsSubpath, 'TestProjectionUsingObjectModel')));
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
         const manifestDefault: CdmManifestDefinition = createDefaultManifest(corpus, localRoot);
 
@@ -310,9 +313,9 @@ describe('Cdm/Projection/ProjectionObjectModel', () => {
 
         // CombineAttributes Operation
         const combineAttributesOp: CdmOperationCombineAttributes = new CdmOperationCombineAttributes(corpus.ctx);
-        combineAttributesOp.take = [];
+        combineAttributesOp.select = [];
         combineAttributesOp.mergeInto = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef);
-        combineAttributesOp.take.push('testAttribute1');
+        combineAttributesOp.select.push('testAttribute1');
         projection.operations.push(combineAttributesOp);
 
         // RenameAttributes Operation

@@ -4,7 +4,7 @@
 from typing import Optional
 
 from cdm.enums import CdmObjectType, CdmAttributeContextType
-from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext
+from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext, CdmCollection, CdmTraitGroupReference
 from cdm.persistence import PersistenceLayer
 from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils
 
@@ -39,7 +39,8 @@ map_type_name_to_enum = {
     'operationRenameAttributes': CdmAttributeContextType.OPERATION_RENAME_ATTRIBUTES,
     'operationReplaceAsForeignKey': CdmAttributeContextType.OPERATION_REPLACE_AS_FOREIGN_KEY,
     'operationIncludeAttributes': CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES,
-    'operationAddAttributeGroup': CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP
+    'operationAddAttributeGroup': CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP,
+    'unknown': CdmAttributeContextType.UNKNOWN
 }
 
 map_enum_to_type_name = {
@@ -65,7 +66,8 @@ map_enum_to_type_name = {
     CdmAttributeContextType.OPERATION_RENAME_ATTRIBUTES: 'operationRenameAttributes',
     CdmAttributeContextType.OPERATION_REPLACE_AS_FOREIGN_KEY: 'operationReplaceAsForeignKey',
     CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES: 'operationIncludeAttributes',
-    CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP: 'operationAddAttributeGroup'
+    CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP: 'operationAddAttributeGroup',
+    CdmAttributeContextType.UNKNOWN: 'unknown'
 }
 
 
@@ -97,8 +99,8 @@ class AttributeContextPersistence:
                 attribute_context.definition = AttributeReferencePersistence.from_data(ctx, data.definition)
 
         # I know the trait collection names look wrong. but I wanted to use the def baseclass
-        applied_traits = utils.create_trait_reference_array(ctx, data.get('appliedTraits'))
-        attribute_context.exhibits_traits.extend(applied_traits)
+        utils.add_list_to_cdm_collection(attribute_context.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.get('appliedTraits')))
 
         if data.get('contents'):
             if attribute_context.contents is None:
@@ -110,21 +112,32 @@ class AttributeContextPersistence:
                 else:
                     attribute_context.contents.append(AttributeContextPersistence.from_data(ctx, elem))
 
+        if data.get('lineage'):
+            if attribute_context.lineage is None:
+                attribute_context.lineage = CdmCollection(ctx, attribute_context, CdmObjectType.ATTRIBUTE_CONTEXT_REF)
+
+            for elem in data.lineage:
+                attribute_context.lineage.append(AttributeContextReferencePersistence.from_data(ctx, elem))
+
         return attribute_context
 
     @staticmethod
     def to_data(instance: CdmAttributeContext, res_opt: ResolveOptions, options: CopyOptions) -> AttributeContext:
         result = AttributeContext()
 
-        exhibits_traits = [trait for trait in instance.exhibits_traits if not trait.is_from_property]
+        exhibits_traits = [trait for trait in instance.exhibits_traits
+                           if isinstance(trait, CdmTraitGroupReference) or not trait.is_from_property]
 
         result.explanation = instance.explanation
         result.name = instance.name
         result.type = map_enum_to_type_name[instance.type]
         result.parent = AttributeContextReferencePersistence.to_data(instance.parent, res_opt, options) if instance.parent is not None else None
-        result.definition = PersistenceLayer.to_data(instance.definition, res_opt, options, PersistenceLayer.CDM_FOLDER) if instance.definition is not None else None
+        definition = PersistenceLayer.to_data(instance.definition, res_opt, options,
+                                              PersistenceLayer.CDM_FOLDER) if instance.definition is not None else None
+        result.definition = definition if isinstance(definition, str) else None
         # I know the trait collection names look wrong. but I wanted to use the def baseclass
         result.appliedTraits = copy_data_utils._array_copy_data(res_opt, exhibits_traits, options)
         result.contents = copy_data_utils._array_copy_data(res_opt, instance.contents, options)
+        result.lineage = copy_data_utils._array_copy_data(res_opt, instance.lineage, options)
 
         return result

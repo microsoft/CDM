@@ -9,13 +9,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Class to handle ReplaceAsForeignKey operations
     /// </summary>
     public class CdmOperationReplaceAsForeignKey : CdmOperationBase
     {
-        private static readonly string TAG = nameof(CdmOperationReplaceAsForeignKey);
+        private static readonly string Tag = nameof(CdmOperationReplaceAsForeignKey);
 
         public string Reference { get; set; }
 
@@ -30,8 +31,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(Copy));
-            return new CdmOperationReplaceAsForeignKey(this.Ctx);
+            CdmOperationReplaceAsForeignKey copy = new CdmOperationReplaceAsForeignKey(this.Ctx)
+            {
+                Reference = this.Reference,
+                ReplaceWith = this.ReplaceWith?.Copy() as CdmTypeAttributeDefinition
+            };
+
+            return copy;
         }
 
         /// <inheritdoc />
@@ -66,7 +72,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
 
@@ -129,8 +135,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmAttributeContext attrCtxFK = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxFKParam);
 
             // get the added attribute and applied trait
-            // the name here will be {m} and not {A}{o}{M} - should this map to the not projections approach and default to {A}{o}{M} - ???
-            CdmTypeAttributeDefinition subFK = this.ReplaceWith as CdmTypeAttributeDefinition;
+            CdmTypeAttributeDefinition subFK = this.ReplaceWith;
             List<string> addTrait = new List<string>() { "is.linkedEntity.identifier" };
 
             // Create new resolved attribute, set the new attribute as target, and apply "is.linkedEntity.identifier" trait
@@ -148,12 +153,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string refAttrName)
         {
             List<ProjectionAttributeState> pasList = ProjectionResolutionCommonUtil.GetLeafList(projCtx, refAttrName);
+            string sourceEntity = projCtx.ProjectionDirective.OriginalSourceEntityAttributeName;
+
+            if (sourceEntity == null)
+            {
+                Logger.Warning(projOutputSet.Ctx, Tag, nameof(CreateNewProjectionAttributeStateSet), null, CdmLogCode.WarnProjFKWithoutSourceEntity, refAttrName);
+            }
 
             if (pasList != null)
             {
                 // update the new foreign key resolved attribute with trait param with reference details
                 ResolvedTrait reqdTrait = newResAttrFK.ResolvedTraits.Find(projCtx.ProjectionDirective.ResOpt, "is.linkedEntity.identifier");
-                if (reqdTrait != null)
+                if (reqdTrait != null && sourceEntity != null)
                 {
                     CdmEntityReference traitParamEntRef = ProjectionResolutionCommonUtil.CreateForeignKeyLinkedEntityIdentifierTraitParameter(projCtx.ProjectionDirective, projOutputSet.Ctx.Corpus, pasList);
                     reqdTrait.ParameterValues.SetParameterValue(projCtx.ProjectionDirective.ResOpt, "entityReferences", traitParamEntRef);
@@ -171,7 +182,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 // Log error & return projOutputSet without any change
-                Logger.Error(TAG, projOutputSet.Ctx, $"Unable to locate state for reference attribute \"{refAttrName}\".", nameof(CreateNewProjectionAttributeStateSet));
+                Logger.Error(projOutputSet.Ctx, Tag, nameof(CreateNewProjectionAttributeStateSet), null, CdmLogCode.ErrProjRefAttrStateFailure, refAttrName);
             }
 
             return projOutputSet;

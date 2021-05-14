@@ -3,11 +3,11 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
@@ -17,10 +17,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitionBase implements
     CdmEntityDeclarationDefinition {
+
+  private static final String TAG = CdmReferencedEntityDeclarationDefinition.class.getSimpleName();
 
   private String entityName;
   private String entitySchema;
@@ -96,6 +99,15 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
 
   @Override
   public boolean visit(final String pathRoot, final VisitCallback preChildren, final VisitCallback postChildren) {
+    String path = "";
+
+    if (preChildren != null && preChildren.invoke(this, path)) {
+      return false;
+    }
+
+    if (postChildren!= null && postChildren.invoke(this, path)) {
+      return true;
+    }
     return false;
   }
 
@@ -139,7 +151,7 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
     }
 
     if (missingFields.size() > 0) {
-      Logger.error(CdmReferencedEntityDeclarationDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

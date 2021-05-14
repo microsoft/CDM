@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,9 +9,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class CdmTypeAttributeDefinition : CdmAttribute
     {
+        private static readonly string Tag = nameof(CdmTypeAttributeDefinition);
         /// <summary>
         /// Gets or sets the type attribute's data type.
         /// </summary>
@@ -21,6 +23,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Gets or sets the type attribute's attribute context.
         /// </summary>
         public CdmAttributeContextReference AttributeContext { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type attribute's attribute projection.
+        /// </summary>
+        public CdmProjection Projection
+        {
+            get => this.projection;
+            set
+            {
+                if (value != null)
+                    value.Owner = this;
+                this.projection = value;
+            }
+        }
 
         /// <summary>
         /// Gets whether the type attribute is the primary key.
@@ -219,6 +235,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         private TraitToPropertyMap TraitToPropertyMap { get; }
+        private CdmProjection projection;
 
         /// <summary>
         /// Constructs a CdmTypeAttributeDefinition.
@@ -287,19 +304,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             if (Cardinality != null)
             {
                 if (!CardinalitySettings.IsMinimumValid(Cardinality.Minimum))
                 {
-                    Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, $"Invalid minimum cardinality {Cardinality.Minimum}.", nameof(Validate));
+                    Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidMinCardinality, Cardinality.Minimum);
                     return false;
                 }
                 if (!CardinalitySettings.IsMaximumValid(Cardinality.Maximum))
                 {
-                    Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, $"Invalid maximum cardinality {Cardinality.Maximum}.", nameof(Validate));
+                    Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidMaxCardinality, Cardinality.Maximum);
                     return false;
                 }
             }
@@ -310,17 +327,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             return false;
-        }
-
-        internal CdmDataTypeReference GetDataTypeRef()
-        {
-            return this.DataType;
-        }
-
-        internal CdmDataTypeReference SetDataTypeRef(CdmDataTypeReference dataType)
-        {
-            this.DataType = dataType as CdmDataTypeReference;
-            return dataType;
         }
 
         /// <inheritdoc />
@@ -340,9 +346,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
-            if (this.DataType?.Visit(path + "/dataType/", preChildren, postChildren) == true)
+            if (this.DataType?.Visit($"{path}/dataType/", preChildren, postChildren) == true)
                 return true;
-            if (this.AttributeContext?.Visit(path + "/attributeContext/", preChildren, postChildren) == true)
+            if (this.AttributeContext?.Visit($"{path}/attributeContext/", preChildren, postChildren) == true)
+                return true;
+            if (this.Projection?.Visit($"{path}/projection/", preChildren, postChildren) == true)
                 return true;
             if (this.VisitAtt(path, preChildren, postChildren))
                 return true;
@@ -368,7 +376,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 CdmAttributeReference replacement = new CdmAttributeReference(this.Ctx, this.Name, true)
                 {
                     Ctx = this.Ctx,
-                    ExplicitReference = this
+                    ExplicitReference = this.Copy() as CdmObjectDefinition,
+                    InDocument = this.InDocument,
+                    Owner = this,
                 };
                 rtsb.ReplaceTraitParameterValue(resOpt, "does.elevateAttribute", "attribute", "this.attribute", replacement);
             }
@@ -390,25 +400,46 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             rasb.OwnOne(newAtt);
 
             ResolvedTraitSet rts = this.FetchResolvedTraits(resOpt);
-            // this context object holds all of the info about what needs to happen to resolve these attribute
-            // make a copy and add defaults if missing
-            CdmAttributeResolutionGuidance resGuideWithDefault;
-            if (this.ResolutionGuidance != null)
-                resGuideWithDefault = (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt);
+
+            if (this.Owner?.ObjectType == CdmObjectType.EntityDef)
+            {
+                rasb.ResolvedAttributeSet.SetTargetOwner(this.Owner as CdmEntityDefinition);
+            }
+
+            if (this.Projection != null)
+            {
+                rasb.ResolvedAttributeSet.ApplyTraits(rts);
+
+                ProjectionDirective projDirective = new ProjectionDirective(resOpt, this);
+                ProjectionContext projCtx = this.Projection.ConstructProjectionContext(projDirective, under, rasb.ResolvedAttributeSet);
+
+                ResolvedAttributeSet ras = this.Projection.ExtractResolvedAttributes(projCtx, under);
+                rasb.ResolvedAttributeSet = ras;
+            }
             else
-                resGuideWithDefault = new CdmAttributeResolutionGuidance(this.Ctx);
+            {
+                // using resolution guidance
 
-            // renameFormat is not currently supported for type attributes
-            resGuideWithDefault.renameFormat = null;
+                // this context object holds all of the info about what needs to happen to resolve these attribute
+                // make a copy and add defaults if missing
+                CdmAttributeResolutionGuidance resGuideWithDefault;
+                if (this.ResolutionGuidance != null)
+                    resGuideWithDefault = (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt);
+                else
+                    resGuideWithDefault = new CdmAttributeResolutionGuidance(this.Ctx);
 
-            resGuideWithDefault.UpdateAttributeDefaults(null);
-            AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
+                // renameFormat is not currently supported for type attributes
+                resGuideWithDefault.renameFormat = null;
 
-            // from the traits of the datatype, purpose and applied here, see if new attributes get generated
-            rasb.ApplyTraits(arc);
-            rasb.GenerateApplierAttributes(arc, false); // false = don't apply these traits to added things
-            // this may have added symbols to the dependencies, so merge them
-            resOpt.SymbolRefSet.Merge(arc.ResOpt.SymbolRefSet);
+                resGuideWithDefault.UpdateAttributeDefaults(null, this);
+                AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
+
+                // from the traits of the datatype, purpose and applied here, see if new attributes get generated
+                rasb.ApplyTraits(arc);
+                rasb.GenerateApplierAttributes(arc, false); // false = don't apply these traits to added things
+                                                            // this may have added symbols to the dependencies, so merge them
+                resOpt.SymbolRefSet.Merge(arc.ResOpt.SymbolRefSet);
+            }
 
             return rasb;
         }

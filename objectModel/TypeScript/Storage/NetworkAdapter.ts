@@ -87,7 +87,7 @@ export abstract class NetworkAdapter extends StorageAdapterBase {
 
     protected async executeRequest(httpRequest: CdmHttpRequest): Promise<CdmHttpResponse> {
         try {
-            const res: CdmHttpResponse = await this.httpClient.SendAsync(httpRequest, this.waitTimeCallback.bind(this));
+            const res: CdmHttpResponse = await this.httpClient.SendAsync(httpRequest, this.waitTimeCallback.bind(this), this.ctx);
 
             if (res === undefined) {
                 throw new Error('The result of a network adapter request is undefined.');
@@ -95,7 +95,7 @@ export abstract class NetworkAdapter extends StorageAdapterBase {
 
             if (!res.isSuccessful) {
                 throw new Error(
-                    `HTTP ${res.statusCode} - ${res.reason}. Response headers: ${Array.from(res.responseHeaders.entries()).map((m) => `${m[0]}:${m[1]}`).join(', ')}. URL: ${httpRequest.requestedUrl}`);
+                    `HTTP ${res.statusCode} - ${res.reason}. Response headers: ${Array.from(res.responseHeaders.entries()).map((m) => `${m[0]}:${m[1]}`).join(', ')}. URL: ${httpRequest.stripSasSig()}`);
             }
 
             return res;
@@ -108,7 +108,7 @@ export abstract class NetworkAdapter extends StorageAdapterBase {
      * Sets up a CDM request that can be used by CDM Http Client.
      * @param {string} path The partial or full path to a network location.
      * @param {number} numberOfRetries The number of retries.
-     * @param {Map<string, string>} headers The headers.
+     * @param {Map<string, string>} headers Optional headers.
      * @param {string} method The HTTP method.
      * @return {CdmHttpRequest}, representing the CDM HTTP request.
      */

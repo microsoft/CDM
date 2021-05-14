@@ -1,0 +1,138 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InterCompanyTradingPartner",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "VendorDataAreaId",
+          "dataType": "InterCompanyTradingVendorDataAreaID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerDataAreaId",
+          "dataType": "InterCompanyTradingCustomerDataAreaID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerParty",
+          "dataType": "InterCompanyTradingCustomerPartyID",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TradingPartnerType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "VendorParty",
+          "dataType": "InterCompanyTradingVendorPartyID",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_CustomerPartyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_VendorPartyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Trading partner"
+    },
+    {
+      "dataTypeName": "InterCompanyTradingVendorDataAreaID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InterCompanyTradingCustomerDataAreaID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InterCompanyTradingCustomerPartyID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InterCompanyTradingVendorPartyID",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

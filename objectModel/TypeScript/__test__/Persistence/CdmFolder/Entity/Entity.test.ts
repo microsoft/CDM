@@ -2,16 +2,19 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    CdmAttributeGroupDefinition,
     CdmCorpusDefinition,
     CdmEntityDefinition,
     cdmStatusLevel,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
+    copyOptions,
     resolveOptions
 } from '../../../../internal';
+import { AttributeGroupPersistence } from '../../../../Persistence/CdmFolder/AttributeGroupPersistence';
 import { EntityPersistence } from '../../../../Persistence/CdmFolder/EntityPersistence';
+import { AttributeGroup } from '../../../../Persistence/CdmFolder/types';
 import { LocalAdapter } from '../../../../Storage';
-import { AttributeResolutionDirectiveSet } from '../../../../Utilities/AttributeResolutionDirectiveSet';
 import { testHelper } from '../../../testHelper';
 
 describe('Persistence.CdmFolder.Entity', () => {
@@ -122,5 +125,17 @@ describe('Persistence.CdmFolder.Entity', () => {
         await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/ResolvedEntity.cdm.json/ResolvedEntity');
 
         done();
+    });
+
+    /**
+     * Testing that an empty list in an Attribute Group still exists after persisting
+     */
+    it('TestPersistAttributeGroupDefinition', () => {
+        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+        const attGroup: CdmAttributeGroupDefinition = new CdmAttributeGroupDefinition(corpus.ctx, 'attGroup');
+        const persistedGroup: AttributeGroup =
+            AttributeGroupPersistence.toData(attGroup, new resolveOptions(attGroup.inDocument), new copyOptions());
+        expect(persistedGroup.members).not
+            .toBeUndefined();
     });
 });

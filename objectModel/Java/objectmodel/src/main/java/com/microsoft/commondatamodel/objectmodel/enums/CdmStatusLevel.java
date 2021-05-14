@@ -10,5 +10,6 @@ public enum CdmStatusLevel {
   Info,
   Progress,
   Warning,
-  Error
+  Error,
+  None
 }

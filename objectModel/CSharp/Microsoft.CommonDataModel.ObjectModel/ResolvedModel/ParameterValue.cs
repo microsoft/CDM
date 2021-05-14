@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
@@ -57,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                     }
                     List<IDictionary<string, string>> rows = new List<IDictionary<string, string>>();
                     ResolvedAttributeSet shapeAtts = entShape.FetchResolvedAttributes(resOpt);
-                    if (shapeAtts != null)
+                    if (shapeAtts != null && shapeAtts.Set != null && shapeAtts.Set.Count > 0)
                     {
                         for (int r = 0; r < entValues.Count; r++)
                         {
@@ -140,7 +140,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                     return ov;
 
                 // BUG
-                if (oldEnt == null || (oldEnt.EntityShape.FetchObjectDefinition<CdmEntityDefinition>(resOpt) != newEnt.EntityShape.FetchObjectDefinition<CdmEntityDefinition>(resOpt)))
+                CdmEntityDefinition entDefShape = null;
+                if (oldEnt == null || ((entDefShape = oldEnt.EntityShape.FetchObjectDefinition<CdmEntityDefinition>(resOpt)) != newEnt.EntityShape.FetchObjectDefinition<CdmEntityDefinition>(resOpt)))
                     return nv;
 
                 var oldCv = oldEnt.ConstantValues;
@@ -155,29 +156,55 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 // make a set of rows in the old one and add the new ones. this will union the two
                 // find rows in the new one that are not in the old one. slow, but these are small usually
                 IDictionary<string, List<string>> unionedRows = new Dictionary<string, List<string>>();
+
+                // see if any of the entity atts are the primary key, meaning, the only thing that causes us to merge dups unique.
+                // i know this makes you think about a snake eating its own tail, but fetch the resolved attributes of the constant shape
+                int pkAtt = -1;
+                if (entDefShape != null)
+                {
+                    var resOptShape = new ResolveOptions(entDefShape.InDocument);
+                    var resAttsShape = entDefShape.FetchResolvedAttributes(resOptShape);
+                    if (resAttsShape != null)
+                    {
+                        pkAtt = resAttsShape.Set.FindIndex((ra) => ra.ResolvedTraits.Find(resOptShape, "is.identifiedBy") != null);
+                    }
+                }
+
                 for (int i = 0; i < oldCv.Count; i++)
                 {
                     List<string> row = oldCv[i];
-                    string key = row.Aggregate((prev, curr) =>
+                    string key;
+                    // the entity might have a PK, if so, only look at that values as the key
+                    if (pkAtt != -1)
                     {
-                        StringBuilder result = new StringBuilder(!string.IsNullOrEmpty(prev) ? prev : "");
-                        result.Append("::");
-                        result.Append(curr);
-                        return result.ToString();
-                    });
+                        key = row[pkAtt];
+                    }
+                    else 
+                    {
+                        key  = row.Aggregate((prev, curr) =>
+                        {
+                            return $"{(!string.IsNullOrEmpty(prev) ? prev : "")}::{curr}";
+                        });
+                    }
                     unionedRows[key] = row;
                 }
 
                 for (int i = 0; i < newCv.Count; i++)
                 {
                     List<string> row = newCv[i];
-                    string key = row.Aggregate((prev, curr) =>
+                    string key;
+                    // the entity might have a PK, if so, only look at that values as the key
+                    if (pkAtt != -1)
                     {
-                        StringBuilder result = new StringBuilder(!string.IsNullOrEmpty(prev) ? prev : "");
-                        result.Append("::");
-                        result.Append(curr);
-                        return result.ToString();
-                    });
+                        key = row[pkAtt];
+                    }
+                    else 
+                    {
+                        key  = row.Aggregate((prev, curr) =>
+                        {
+                            return $"{(!string.IsNullOrEmpty(prev) ? prev : "")}::{curr}";
+                        });
+                    }
                     unionedRows[key] = row;
                 }
 

@@ -4,11 +4,11 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -19,8 +19,11 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmContainerDefinition {
+  private static final String TAG = CdmFolderDefinition.class.getSimpleName();
+
   private final Map<String, CdmDocumentDefinition> documentLookup = new LinkedHashMap<>();
   private final CdmFolderCollection childFolders = new CdmFolderCollection(this.getCtx(), this);
   private final CdmDocumentCollection documents = new CdmDocumentCollection(this.getCtx(), this);
@@ -142,6 +145,11 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
     return documentLookup;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   CompletableFuture<CdmDocumentDefinition> fetchDocumentFromFolderPathAsync(
       final String objectPath,
       final StorageAdapter adapter,
@@ -162,15 +170,12 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
         return CompletableFuture.completedFuture(doc);
       }
       if (doc.isDirty()) {
-        Logger.warning(CdmFolderDefinition.class.getSimpleName(), this.getCtx(), Logger.format("discarding changes in document: {0}", doc.getName()));
+        Logger.warning(this.getCtx(), TAG, "fetchDocumentFromFolderPathAsync", this.getAtCorpusPath(), CdmLogCode.WarnDocChangesDiscarded , doc.getName());
       }
       this.documents.remove(docName);
     }
 
-    return CompletableFuture.supplyAsync(() -> {
-      final CdmDocumentDefinition documentDefinition = this.corpus.getPersistence().loadDocumentFromPathAsync(this, docName, doc, resOpt).join();
-      return documentDefinition;
-    });
+    return this.corpus.getPersistence().loadDocumentFromPathAsync(this, docName, doc, resOpt);
   }
 
   @Override
@@ -190,10 +195,6 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
     return null;
   }
 
-  CompletableFuture<CdmFolderDefinition> fetchChildFolderFromPathAsync(final String path) {
-    return fetchChildFolderFromPathAsync(path, false);
-  }
-
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
@@ -202,72 +203,88 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
    * @return CompletableFuture of CdmFolderDefinition
    */
   @Deprecated
+  public CdmFolderDefinition fetchChildFolderFromPath(
+      final String path,
+      final boolean makeFolder) {
+      String name;
+      String remainingPath = path;
+      CdmFolderDefinition childFolder = this;
+
+      while (childFolder != null && remainingPath.indexOf('/') != -1) {
+        int first = remainingPath.indexOf('/');
+        if (first < 0) {
+          name = remainingPath;
+          remainingPath = "";
+        } else {
+          name = StringUtils.slice(remainingPath, 0, first);
+          remainingPath = StringUtils.slice(remainingPath, first + 1);
+        }
+
+        if (!name.equalsIgnoreCase(childFolder.getName())) {
+          Logger.error(this.getCtx(), TAG, "fetchChildFolderFromPath", this.getAtCorpusPath(), CdmLogCode.ErrInvalidPath, path);
+          return null;
+        }
+
+        // the end?
+        if (remainingPath.length() == 0) {
+          return childFolder;
+        }
+
+        first = remainingPath.indexOf('/');
+        String childFolderName = remainingPath;
+        if (first != -1) {
+          childFolderName = StringUtils.slice(remainingPath, 0, first);
+        } else {
+          // the last part of the path will be considered part of the part depending on the makeFolder flag.
+          break;
+        }
+
+        // check children folders
+        CdmFolderDefinition result = null;
+        for (int i = 0; i < childFolder.getChildFolders().size(); i++) {
+          CdmFolderDefinition folder = childFolder.getChildFolders()
+                  .get(i);
+          if (childFolderName.equalsIgnoreCase(folder.getName())) {
+            result = folder;
+            break;
+          }
+        }
+
+        if (result == null) {
+          result = childFolder.getChildFolders().add(childFolderName);
+        }
+
+        childFolder = result;
+      }
+
+      if (makeFolder) {
+        childFolder = childFolder.childFolders.add(remainingPath);
+      }
+
+      return childFolder;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  CompletableFuture<CdmFolderDefinition> fetchChildFolderFromPathAsync(final String path) {
+    return fetchChildFolderFromPathAsync(path, false);
+  }
+
+  /**
+   * @param path String 
+   * @param makeFolder boolean
+   * @return CompletableFuture of CdmFolderDefinition
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public CompletableFuture<CdmFolderDefinition> fetchChildFolderFromPathAsync(
       final String path,
       final boolean makeFolder) {
-    return CompletableFuture.supplyAsync(() -> {
-      String name;
-      final String remainingPath;
-      int first = path.indexOf('/');
-      if (first < 0) {
-        name = path;
-        remainingPath = "";
-      } else {
-        name = StringUtils.slice(path, 0, first);
-        remainingPath = StringUtils.slice(path, first + 1);
-      }
-
-      if (name.equalsIgnoreCase(this.getName())) {
-        // the end?
-        if (remainingPath.length() == 0) {
-          return this;
-        }
-        // check children folders
-        CdmFolderDefinition result = null;
-        if (this.getChildFolders() != null) {
-          for (int i = 0; i < this.getChildFolders().size(); i++) {
-            result =
-                    this.getChildFolders()
-                            .get(i)
-                            .fetchChildFolderFromPathAsync(remainingPath, makeFolder)
-                            .join();
-            if (result != null) {
-              break;
-            }
-          }
-        }
-        if (result != null) {
-          return result;
-        }
-
-        // get the next folder
-        first = remainingPath.indexOf("/");
-        name = first > 0 ? remainingPath.substring(0, first) : remainingPath;
-
-        if (first != -1) {
-          final CdmFolderDefinition childPath = this.getChildFolders().add(name).fetchChildFolderFromPathAsync(remainingPath, makeFolder).join();
-          if (childPath == null) {
-            Logger.error(
-                CdmFolderDefinition.class.getSimpleName(),
-                this.getCtx(),
-                Logger.format("Invalid path '{0}'.", path),
-                "fetchChildFolderFromPathAsync"
-            );
-          }
-          return childPath;
-        }
-
-        if (makeFolder) {
-          // huh, well need to make the fold here
-          return this.getChildFolders().add(name).fetchChildFolderFromPathAsync(remainingPath, makeFolder).join();
-        } else {
-          // good enough, return where we got to
-          return this;
-        }
-      }
-
-      return null;
-    });
+      return CompletableFuture.completedFuture(this.fetchChildFolderFromPath(path, makeFolder));
   }
 
   @Override
@@ -297,7 +314,8 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.name)) {
-      Logger.error(CdmFolderDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("name"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("name"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

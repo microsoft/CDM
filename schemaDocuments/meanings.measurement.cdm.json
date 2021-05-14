@@ -1,10 +1,11 @@
 {
+  "documentVersion": "1.3.1",
   "$schema": "./schema.cdm.json",
   "jsonSchemaSemanticVersion": "1.0.0",
   "explanation": "Measurement of quantities",
   "imports": [
     {
-      "uri": "/primitives.cdm.json"
+      "corpusPath": "/primitives.cdm.json"
     }
   ],
   "definitions": [
@@ -1839,6 +1840,32 @@
     {
       "traitName": "means.measurement.size.width",
       "extendsTrait": "means.measurement.size"
+    },
+    {
+      "traitName": "means.measurement.currencyCode",
+      "extendsTrait": "means.measurement",
+      "explanation": "indicates this value represents an ISO 4217 currency code"
+    },
+    {
+      "dataTypeName": "currencyCode",
+      "extendsDataType": "string",
+      "explanation": "value is a ISO 4217 currency code",
+      "exhibitsTraits": [
+        "means.measurement.currencyCode"
+      ]
+    },
+    {
+      "traitName": "is.inCurrency",
+      "extendsTrait": "is",
+      "explanation": "the data represents an amount of the specified currency",
+      "hasParameters": [
+        {
+          "name": "code",
+          "dataType": "currencyCode",
+          "required": true,
+          "explanation": "ISO 4217 currency code"
+        }
+      ]
     },
     {
       "dataTypeName": "currency",

@@ -1,0 +1,129 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetControlConfiguration.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetCycle.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetModel.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetControlBudgetCycle",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetControlConfiguration",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetCycle",
+          "dataType": "RefRecId",
+          "displayName": "Budget cycle",
+          "description": ""
+        },
+        {
+          "name": "BudgetModelDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetModelId",
+          "dataType": "BudgetModelId",
+          "description": ""
+        },
+        {
+          "name": "BudgetModelSubModelId",
+          "dataType": "BudgetModelSubId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetModelType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetControlConfiguration"
+          },
+          "name": "Relationship_BudgetControlConfigurationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetCycle"
+          },
+          "name": "Relationship_BudgetCycleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetModel"
+          },
+          "name": "Relationship_BudgetModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget models by budget cycle"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetModelId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetModelSubId",
+      "extendsDataType": "string"
+    }
+  ]
+}

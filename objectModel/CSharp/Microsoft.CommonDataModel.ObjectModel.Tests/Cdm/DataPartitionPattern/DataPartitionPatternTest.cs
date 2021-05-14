@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
@@ -34,7 +35,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRefreshDataPartitionPatterns");
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/patternManifest.manifest.cdm.json");
 
-            var partitionEntity = cdmManifest.Entities.AllItems[0];
+            var partitionEntity = cdmManifest.Entities.AllItems[1];
             Assert.AreEqual(partitionEntity.DataPartitions.Count, 1);
 
             var timeBeforeLoad = DateTime.Now;
@@ -123,7 +124,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             {
                 Invoke = (CdmStatusLevel statusLevel, string message) =>
                 {
-                    if (message.Contains("The folder location 'local:/testLocation' described by a partition pattern does not exist"))
+                    if (message.Contains("Failed to fetch all files in the folder location 'local:/testLocation' described by a partition pattern. Exception:"))
                     {
                         errorLogged++;
                     }
@@ -171,10 +172,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestPartitionPatternWithGlob");
 
             int patternWithGlobAndRegex = 0;
-            corpus.SetEventCallback(new EventCallback { Invoke = (CdmStatusLevel statusLevel, string message) => {
-                if (message.Equals("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | FileStatusCheckAsync"))
-                    patternWithGlobAndRegex++;
-            }
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (CdmStatusLevel statusLevel, string message) =>
+                {
+                    if (message.Contains("CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | FileStatusCheckAsync"))
+                        patternWithGlobAndRegex++;
+                }
             }, CdmStatusLevel.Warning);
 
             CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("pattern.manifest.cdm.json");
@@ -183,43 +187,51 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             // one pattern object contains both glob and regex
             Assert.AreEqual(1, patternWithGlobAndRegex);
 
+            int index = 0;
             // make sure '.' in glob is not converted to '.' in regex
-            CdmLocalEntityDeclarationDefinition dotIsEscaped = (CdmLocalEntityDeclarationDefinition)manifest.Entities[0];
+            CdmLocalEntityDeclarationDefinition dotIsEscaped = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(dotIsEscaped.DataPartitionPatterns[0].GlobPattern, "test.ile.csv");
             Assert.AreEqual(dotIsEscaped.DataPartitions.Count, 0);
+            index++;
 
-            // star pattern should not match anything
-            CdmLocalEntityDeclarationDefinition onlyStar = (CdmLocalEntityDeclarationDefinition)manifest.Entities[1];
+            // star pattern should match anything in the root folder
+            CdmLocalEntityDeclarationDefinition onlyStar = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(onlyStar.DataPartitionPatterns[0].GlobPattern, "*");
-            Assert.AreEqual(onlyStar.DataPartitions.Count, 0);
+            Assert.AreEqual(onlyStar.DataPartitions.Count, 1);
+            Assert.AreEqual(onlyStar.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
 
             // star can match nothing
-            CdmLocalEntityDeclarationDefinition starNoMatch = (CdmLocalEntityDeclarationDefinition)manifest.Entities[2];
+            CdmLocalEntityDeclarationDefinition starNoMatch = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(starNoMatch.DataPartitionPatterns[0].GlobPattern, "/testfile*.csv");
             Assert.AreEqual(starNoMatch.DataPartitions.Count, 1);
             Assert.AreEqual(starNoMatch.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
 
             // star at root level
             // this should match any files at root level, none in subfolders
-            CdmLocalEntityDeclarationDefinition starAtRoot = (CdmLocalEntityDeclarationDefinition)manifest.Entities[3];
+            CdmLocalEntityDeclarationDefinition starAtRoot = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(starAtRoot.DataPartitionPatterns[0].GlobPattern, "/*.csv");
             Assert.AreEqual(starAtRoot.DataPartitions.Count, 1);
             Assert.AreEqual(starAtRoot.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
 
             // star at deeper level
-            CdmLocalEntityDeclarationDefinition starAtDeeperLevel = (CdmLocalEntityDeclarationDefinition)manifest.Entities[4];
+            CdmLocalEntityDeclarationDefinition starAtDeeperLevel = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(starAtDeeperLevel.DataPartitionPatterns[0].GlobPattern, "/*/*.csv");
             Assert.AreEqual(starAtDeeperLevel.DataPartitions.Count, 1);
             Assert.AreEqual(starAtDeeperLevel.DataPartitions[0].Location, "/partitions/subFolder/testSubFile.csv");
+            index++;
 
             // pattern that ends with star
-            CdmLocalEntityDeclarationDefinition endsWithStar = (CdmLocalEntityDeclarationDefinition)manifest.Entities[5];
+            CdmLocalEntityDeclarationDefinition endsWithStar = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(endsWithStar.DataPartitionPatterns[0].GlobPattern, "/testfile*");
             Assert.AreEqual(endsWithStar.DataPartitions.Count, 1);
             Assert.AreEqual(endsWithStar.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
 
             // globstar (**) on its own matches
-            CdmLocalEntityDeclarationDefinition globStar = (CdmLocalEntityDeclarationDefinition)manifest.Entities[6];
+            CdmLocalEntityDeclarationDefinition globStar = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(globStar.DataPartitionPatterns[0].GlobPattern, "**");
             Assert.AreEqual(2, globStar.DataPartitions.Count);
             Assert.AreEqual(1, globStar.DataPartitions.Where(x =>
@@ -228,15 +240,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             Assert.AreEqual(1, globStar.DataPartitions.Where(x =>
                 x.Location == "/partitions/subFolder/testSubFile.csv"
               ).ToList().Count);
+            index++;
 
             // globstar at the beginning of the pattern
-            CdmLocalEntityDeclarationDefinition beginsWithGlobstar = (CdmLocalEntityDeclarationDefinition)manifest.Entities[7];
+            CdmLocalEntityDeclarationDefinition beginsWithGlobstar = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(beginsWithGlobstar.DataPartitionPatterns[0].GlobPattern, "/**.csv");
             Assert.AreEqual(1, beginsWithGlobstar.DataPartitions.Count);
             Assert.AreEqual(beginsWithGlobstar.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
 
             // globstar at the end of the pattern
-            CdmLocalEntityDeclarationDefinition endsWithGlobstar = (CdmLocalEntityDeclarationDefinition)manifest.Entities[8];
+            CdmLocalEntityDeclarationDefinition endsWithGlobstar = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(endsWithGlobstar.DataPartitionPatterns[0].GlobPattern, "/**");
             Assert.AreEqual(endsWithGlobstar.DataPartitions.Count, 2);
             Assert.AreEqual(1, endsWithGlobstar.DataPartitions.Where(x =>
@@ -245,9 +259,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             Assert.AreEqual(1, endsWithGlobstar.DataPartitions.Where(x =>
                 x.Location == "/partitions/subFolder/testSubFile.csv"
               ).ToList().Count);
+            index++;
 
             // globstar matches zero or more folders
-            CdmLocalEntityDeclarationDefinition zeroOrMoreFolders = (CdmLocalEntityDeclarationDefinition)manifest.Entities[9];
+            CdmLocalEntityDeclarationDefinition zeroOrMoreFolders = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(zeroOrMoreFolders.DataPartitionPatterns[0].GlobPattern, "/**/*.csv");
             Assert.AreEqual(2, zeroOrMoreFolders.DataPartitions.Count);
             Assert.AreEqual(1, zeroOrMoreFolders.DataPartitions.Where(x =>
@@ -256,9 +271,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             Assert.AreEqual(1, zeroOrMoreFolders.DataPartitions.Where(x =>
                 x.Location == "/partitions/subFolder/testSubFile.csv"
               ).ToList().Count);
+            index++;
 
             // globstar matches zero or more folders without starting slash
-            CdmLocalEntityDeclarationDefinition zeroOrMoreNoStartingSlash = (CdmLocalEntityDeclarationDefinition)manifest.Entities[10];
+            CdmLocalEntityDeclarationDefinition zeroOrMoreNoStartingSlash = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(zeroOrMoreNoStartingSlash.DataPartitionPatterns[0].GlobPattern, "/**/*.csv");
             Assert.AreEqual(2, zeroOrMoreNoStartingSlash.DataPartitions.Count);
             Assert.AreEqual(1, zeroOrMoreNoStartingSlash.DataPartitions.Where(x =>
@@ -267,39 +283,137 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             Assert.AreEqual(1, zeroOrMoreNoStartingSlash.DataPartitions.Where(x =>
                 x.Location == "/partitions/subFolder/testSubFile.csv"
               ).ToList().Count);
+            index++;
 
             // question mark in the middle of a pattern
-            CdmLocalEntityDeclarationDefinition questionMark = (CdmLocalEntityDeclarationDefinition)manifest.Entities[11];
+            CdmLocalEntityDeclarationDefinition questionMark = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(questionMark.DataPartitionPatterns[0].GlobPattern, "/test?ile.csv");
             Assert.AreEqual(1, questionMark.DataPartitions.Count);
             Assert.AreEqual(questionMark.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
 
             // question mark at the beginning of a pattern
-            CdmLocalEntityDeclarationDefinition beginsWithQuestionMark = (CdmLocalEntityDeclarationDefinition)manifest.Entities[12];
+            CdmLocalEntityDeclarationDefinition beginsWithQuestionMark = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(beginsWithQuestionMark.DataPartitionPatterns[0].GlobPattern, "/?estfile.csv");
             Assert.AreEqual(1, beginsWithQuestionMark.DataPartitions.Count);
             Assert.AreEqual(beginsWithQuestionMark.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
 
             // question mark at the end of a pattern
-            CdmLocalEntityDeclarationDefinition endsWithQuestionMark = (CdmLocalEntityDeclarationDefinition)manifest.Entities[13];
+            CdmLocalEntityDeclarationDefinition endsWithQuestionMark = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(endsWithQuestionMark.DataPartitionPatterns[0].GlobPattern, "/testfile.cs?");
             Assert.AreEqual(1, endsWithQuestionMark.DataPartitions.Count);
             Assert.AreEqual(endsWithQuestionMark.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
 
             // backslash in glob can match slash
-            CdmLocalEntityDeclarationDefinition backslashInPattern = (CdmLocalEntityDeclarationDefinition)manifest.Entities[14];
+            CdmLocalEntityDeclarationDefinition backslashInPattern = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(backslashInPattern.DataPartitionPatterns[0].GlobPattern, "\\testfile.csv");
             Assert.AreEqual(1, backslashInPattern.DataPartitions.Count);
             Assert.AreEqual(backslashInPattern.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
 
             // pattern object includes glob pattern and regular expression
-            CdmLocalEntityDeclarationDefinition globAndRegex = (CdmLocalEntityDeclarationDefinition)manifest.Entities[15];
+            CdmLocalEntityDeclarationDefinition globAndRegex = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
             Assert.AreEqual(globAndRegex.DataPartitionPatterns[0].GlobPattern, "/testfile.csv");
             Assert.AreEqual(globAndRegex.DataPartitionPatterns[0].RegularExpression, "/subFolder/testSubFile.csv");
             Assert.AreEqual(1, globAndRegex.DataPartitions.Count);
             // matching this file means the glob pattern was (correctly) used
             Assert.AreEqual(globAndRegex.DataPartitions[0].Location, "/partitions/testfile.csv");
+        }
 
+        /// <summary>
+        /// Testing data partition patterns that use glob patterns with variations in path style
+        /// </summary>
+        [TestMethod]
+        public async Task TestGlobPathVariation()
+        {
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestGlobPathVariation");
+
+            CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("pattern.manifest.cdm.json");
+            await manifest.FileStatusCheckAsync();
+
+            int index = 0;
+            CdmLocalEntityDeclarationDefinition noSlash = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
+            Assert.AreEqual(noSlash.DataPartitionPatterns[0].RootLocation, "/partitions");
+            Assert.AreEqual(noSlash.DataPartitionPatterns[0].GlobPattern, "*.csv");
+            Assert.AreEqual(noSlash.DataPartitions.Count, 1);
+            Assert.AreEqual(noSlash.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
+
+            CdmLocalEntityDeclarationDefinition rootLocationSlash = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
+            Assert.AreEqual(rootLocationSlash.DataPartitionPatterns[0].RootLocation, "/partitions/");
+            Assert.AreEqual(rootLocationSlash.DataPartitionPatterns[0].GlobPattern, "*.csv");
+            Assert.AreEqual(rootLocationSlash.DataPartitions.Count, 1);
+            Assert.AreEqual(rootLocationSlash.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
+
+            CdmLocalEntityDeclarationDefinition globPatternSlash = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
+            Assert.AreEqual(globPatternSlash.DataPartitionPatterns[0].RootLocation, "/partitions");
+            Assert.AreEqual(globPatternSlash.DataPartitionPatterns[0].GlobPattern, "/*.csv");
+            Assert.AreEqual(globPatternSlash.DataPartitions.Count, 1);
+            Assert.AreEqual(globPatternSlash.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
+
+            CdmLocalEntityDeclarationDefinition bothSlash = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
+            Assert.AreEqual(bothSlash.DataPartitionPatterns[0].RootLocation, "/partitions/");
+            Assert.AreEqual(bothSlash.DataPartitionPatterns[0].GlobPattern, "/*.csv");
+            Assert.AreEqual(bothSlash.DataPartitions.Count, 1);
+            Assert.AreEqual(bothSlash.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
+
+            CdmLocalEntityDeclarationDefinition noSlashOrStarAtStart = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
+            Assert.AreEqual(noSlashOrStarAtStart.DataPartitionPatterns[0].RootLocation, "/partitions/");
+            Assert.AreEqual(noSlashOrStarAtStart.DataPartitionPatterns[0].GlobPattern, "t*.csv");
+            Assert.AreEqual(noSlashOrStarAtStart.DataPartitions.Count, 1);
+            Assert.AreEqual(noSlashOrStarAtStart.DataPartitions[0].Location, "/partitions/testfile.csv");
+            index++;
+
+            CdmLocalEntityDeclarationDefinition noSlashOrStarAndRootLocation = (CdmLocalEntityDeclarationDefinition)manifest.Entities[index];
+            Assert.AreEqual(noSlashOrStarAndRootLocation.DataPartitionPatterns[0].RootLocation, "/partitions");
+            Assert.AreEqual(noSlashOrStarAndRootLocation.DataPartitionPatterns[0].GlobPattern, "t*.csv");
+            Assert.AreEqual(noSlashOrStarAndRootLocation.DataPartitions.Count, 1);
+            Assert.AreEqual(noSlashOrStarAndRootLocation.DataPartitions[0].Location, "/partitions/testfile.csv");
+        }
+
+        /// <summary>
+        /// Verifies that performing file status check on manifest with a partition with
+        /// null location is gracefully handled.
+        /// </summary>
+        [TestMethod]
+        public async Task TestFileStatusCheckOnNullLocation()
+        {
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestFileStatusCheckOnNullLocation");
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (CdmStatusLevel statusLevel, string message) =>
+                {
+                    Assert.AreEqual(statusLevel, CdmStatusLevel.Error, "Error level message should have been reported");
+                    Assert.IsTrue(
+                        message == "StorageManager | The object path cannot be null or empty. | CreateAbsoluteCorpusPath" ||
+                        message == "CdmCorpusDefinition | The object path cannot be null or empty. | GetLastModifiedTimeAsyncFromPartitionPath",
+                       "Unexpected error message received");
+                }
+            }, CdmStatusLevel.Warning);
+
+            // Create manifest
+            var manifest = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "TestModel");
+            corpus.Storage.FetchRootFolder("local").Documents.Add(manifest);
+
+            // Create entity
+            var entDoc = corpus.Storage.FetchRootFolder("local").Documents.Add("MyEntityDoc.cdm.json");
+
+            var entDef = corpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, "MyEntity");
+            entDoc.Definitions.Add(entDef);
+
+            var entDecl = manifest.Entities.Add(entDef);
+
+            // Create partition
+            var part = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "MyPartition");
+            entDecl.DataPartitions.Add(part);
+
+            // This should not throw exception
+            await manifest.FileStatusCheckAsync();
         }
     }
 }

@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -177,7 +178,7 @@ public class ResolvedTraitSet {
     return copy;
   }
 
-  ResolvedTraitSet shallowCopy() {
+  public ResolvedTraitSet shallowCopy() {
     final ResolvedTraitSet copy = new ResolvedTraitSet(resOpt);
 
     if (set != null) {
@@ -213,9 +214,15 @@ public class ResolvedTraitSet {
       final List<Object> av = resTrait.getParameterValues().getValues();
       final Object newVal = arg.getValue();
       // get the value index from the parameter collection given the parameter that this argument is setting
-      final int iParam = resTrait.getParameterValues().indexOf(arg.getParameterDef());
-      av.set(iParam, ParameterValue.fetchReplacementValue(resOpt, av.get(iParam), newVal, true));
-      resTrait.getParameterValues().getWasSet().set(iParam, true);
+      CdmParameterDefinition paramDef = arg.getParameterDef();
+      if (paramDef != null) {
+        int iParam = resTrait.getParameterValues().indexOf(paramDef);
+        av.set(iParam, ParameterValue.fetchReplacementValue(resOpt, av.get(iParam), newVal, true));
+        resTrait.getParameterValues().getWasSet().set(iParam, true);
+      } else {
+        // debug
+        paramDef = arg.getParameterDef();
+      }
     }
   }
 

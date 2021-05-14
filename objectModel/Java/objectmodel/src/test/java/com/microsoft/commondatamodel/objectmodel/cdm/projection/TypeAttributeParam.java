@@ -3,8 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
-import org.testng.annotations.Test;
-
 /**
  * Type Attribute Test Parameters
  */

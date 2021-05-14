@@ -10,6 +10,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.EntityReferencePersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.*;
@@ -25,6 +26,8 @@ import java.util.List;
  * Projection persistence
  */
 public class ProjectionPersistence {
+    private static final String TAG = ProjectionPersistence.class.getSimpleName();
+
     public static CdmProjection fromData(final CdmCorpusContext ctx, final JsonNode obj) {
         if (obj == null) {
             return null;
@@ -40,6 +43,10 @@ public class ProjectionPersistence {
 
         if (obj.get("condition") != null) {
             projection.setCondition(obj.get("condition").asText());
+        }
+
+        if (obj.get("runSequentially") != null) {
+            projection.setRunSequentially(obj.get("runSequentially").asBoolean());
         }
 
         if (obj.get("operations") != null) {
@@ -90,7 +97,7 @@ public class ProjectionPersistence {
                         projection.getOperations().add(addAttributeGroupOp);
                         break;
                     default:
-                        Logger.error(ProjectionPersistence.class.getSimpleName(), ctx, Logger.format("Invalid operation type '{0}'.", type), "fromData");
+                        Logger.error(ctx, TAG, "fromData", source.getAtCorpusPath(), CdmLogCode.ErrPersistProjInvalidOpsType, type);
                         break;
                 }
             }
@@ -176,6 +183,7 @@ public class ProjectionPersistence {
         obj.setSource(source);
         obj.setOperations(operations);
         obj.setCondition(instance.getCondition());
+        obj.setRunSequentially(instance.getRunSequentially());
 
         return obj;
     }

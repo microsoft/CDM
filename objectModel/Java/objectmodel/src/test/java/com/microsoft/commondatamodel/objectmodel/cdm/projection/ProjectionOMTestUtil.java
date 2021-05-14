@@ -4,6 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationCombineAttributes;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationIncludeAttributes;
@@ -173,7 +174,7 @@ public class ProjectionOMTestUtil {
         setExpectedOutputPath(TestHelper.getExpectedOutputFolderPath(testsSubPath, getTestName()));
         setActualOutputPath(TestHelper.getActualOutputFolderPath(testsSubPath, getTestName()));
 
-        setCorpus(TestHelper.getLocalCorpus(testsSubPath, getTestName(), null));
+        setCorpus(ProjectionTestUtils.getLocalCorpus(testsSubPath, getTestName()));
         getCorpus().getStorage().mount(LOCAL_OUTPUT_STORAGE_NS, new LocalAdapter(getActualOutputPath()));
         getCorpus().getStorage().setDefaultNamespace(LOCAL_OUTPUT_STORAGE_NS);
 
@@ -267,7 +268,7 @@ public class ProjectionOMTestUtil {
     /**
      * Create an Input Attribute Operation
      */
-    public CdmOperationIncludeAttributes createOperationInputAttribute(CdmProjection projection, List<String> includeAttributes) {
+    public CdmOperationIncludeAttributes createOperationInputAttributes(CdmProjection projection, List<String> includeAttributes) {
         // IncludeAttributes Operation
         CdmOperationIncludeAttributes includeAttributesOp = new CdmOperationIncludeAttributes(getCorpus().getCtx());
         includeAttributesOp.setIncludeAttributes(new ArrayList<String>());
@@ -282,6 +283,35 @@ public class ProjectionOMTestUtil {
     }
 
     /**
+     * Create a Combine Attribute Operation
+     */
+    public CdmOperationCombineAttributes createOperationCombineAttributes(CdmProjection projection, List<String> selectedAttributes, CdmTypeAttributeDefinition mergeIntoAttribute) {
+        // CombineAttributes Operation
+        CdmOperationCombineAttributes combineAttributesOp = new CdmOperationCombineAttributes(getCorpus().getCtx());
+        combineAttributesOp.setSelect(selectedAttributes);
+        combineAttributesOp.setMergeInto(mergeIntoAttribute);
+
+        projection.getOperations().add(combineAttributesOp);
+
+        return combineAttributesOp;
+    }
+
+    /**
+     * Create a Type Attribute
+     */
+    public CdmTypeAttributeDefinition createTypeAttribute(String attributeName, String dataType, String purpose) {
+        CdmDataTypeReference dataTypeRef = (CdmDataTypeReference) getCorpus().makeRef(CdmObjectType.DataTypeRef, dataType, false);
+
+        CdmPurposeReference purposeRef = (CdmPurposeReference) getCorpus().makeRef(CdmObjectType.PurposeRef, purpose, false);
+
+        CdmTypeAttributeDefinition attribute = (CdmTypeAttributeDefinition) getCorpus().makeObject(CdmObjectType.TypeAttributeDef, attributeName, false);
+        attribute.setDataType(dataTypeRef);
+        attribute.setPurpose(purposeRef);
+
+        return attribute;
+    }
+
+    /**
      * Create an entity attribute
      */
     public CdmEntityAttributeDefinition createEntityAttribute(String entityAttributeName, CdmEntityReference projectionSourceEntityRef) {
@@ -292,7 +322,7 @@ public class ProjectionOMTestUtil {
     }
 
     public CdmEntityDefinition getAndValidateResolvedEntity(CdmEntityDefinition entity, List<String> resOpts) {
-        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(getCorpus(), entity, resOpts, true).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(getCorpus(), entity, resOpts).join();
         Assert.assertNotNull(resolvedEntity, "GetAndValidateResolvedEntity: " + entity.getEntityName() + " resolution with options '" + String.join(",", resOpts) + "' failed!");
 
         return resolvedEntity;

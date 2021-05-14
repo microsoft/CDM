@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.CommonDataModel.ObjectModel.Cdm;
+using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Storage;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.CommonDataModel.Tools.Processor;
@@ -24,6 +25,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// Here will be found input files and expected output files used by tests
         /// </summary>
         public const string TestDataPath = "../../../TestData";
+
+        /// <summary>
+        /// The path of the sample schema documents folder.
+        /// </summary>
+        public const string SampleSchemaFolderPath = "../../../../../../samples/example-public-standards";
 
         /// <summary>
         /// The path of the CDM Schema Documents Folder.
@@ -106,6 +112,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             return File.ReadAllText(pathOfExpectedOutputFile);
         }
 
+        /// <summary>
+        /// Writes the content of an expected output file for a particular test.
+        /// </summary>
+        /// <param name="testSubpath">The subpath of the test. Path is formed from {TestDataPath}{TestSubpath}{TestName}{FolderUse}</param>
+        /// <param name="testName">The name of the test this file is an expected output for.</param>
+        /// <param name="fileName">The name of the file to be read.</param>
+        /// <param name="fileContent">The content of the file to be written.</param>
+        /// <returns>The content of the file</returns>
+        public static void WriteExpectedOutputFileContent(string testSubpath, string testName, string fileName, string fileContent)
+        {
+            var pathOfExpectedOutputFolder = GetExpectedOutputFolderPath(testSubpath, testName);
+
+            var pathOfExpectedOutputFile = Path.Combine(pathOfExpectedOutputFolder, fileName);
+            Assert.IsTrue(File.Exists(pathOfExpectedOutputFile),
+                $"Was unable to find the expected output file for test {testName}, file name = {fileName}");
+
+            File.WriteAllText(pathOfExpectedOutputFile, fileContent);
+        }
+
         public static CdmCorpusDefinition GetLocalCorpus(string testSubpath, string testName, string testInputDir = null)
         {
             testInputDir = testInputDir ?? GetInputFolderPath(testSubpath, testName);
@@ -156,6 +181,56 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        /// <summary>
+        /// Asserts the files in actualFolderPath and their content are the same as the files in expectedFolderPath.
+        /// </summary>
+        /// <param name="expectedFolderPath">The expected output folder path.</param>
+        /// <param name="actualFolderPath">The actual output folder path.</param>
+        public static void AssertFolderFilesEquality(string expectedFolderPath, string actualFolderPath)
+        {
+            var expectedFilePaths = Directory.GetFiles(expectedFolderPath);
+            Assert.AreEqual(
+                expectedFilePaths.Length,
+                Directory.GetFiles(actualFolderPath).Length,
+                String.Format("The number of files in actual directory {0} is different.", actualFolderPath));
+
+            foreach (var expectedFilePath in expectedFilePaths)
+            {
+                var expectedFilename = Path.GetRelativePath(expectedFolderPath, expectedFilePath);
+                var actualFilePath = Path.Combine(actualFolderPath, expectedFilename);
+                var expectedFileContent = File.ReadAllText(expectedFilePath);
+                var actualFileContent = File.ReadAllText(actualFilePath);
+                AssertFileContentEquality(expectedFileContent, actualFileContent);
+            }
+
+            var expectedSubFolders = Directory.GetDirectories(expectedFolderPath);
+            foreach (var expectedSubFolderPath in expectedSubFolders)
+            {
+                var expectedSubFolderName = Path.GetRelativePath(expectedFolderPath, expectedSubFolderPath);
+                var actualSubFolderPath = Path.Combine(actualFolderPath, expectedSubFolderName);
+                AssertFolderFilesEquality(expectedSubFolderPath, actualSubFolderPath);
+            }
+        }
+
+        /// <summary>
+        /// Asserts in logcode, if expected log code is not in log codes recorded list.
+        /// </summary>
+        /// <param name="corpus">The corpus object.</param>
+        /// <param name="expectedcode">The expectedcode cdmlogcode.</param>
+        public static void AssertCdmLogCodeEquality(CdmCorpusDefinition corpus, CdmLogCode expectedCode)
+        {
+            bool toAssert = false;
+            corpus.Ctx.Events.ForEach(logEntry =>
+            {
+                if ( ((expectedCode.ToString().StartsWith("Warn") && logEntry["level"].Equals(CdmStatusLevel.Warning.ToString()))
+                     || (expectedCode.ToString().StartsWith("Err") && logEntry["level"].Equals(CdmStatusLevel.Error.ToString())))
+                    && logEntry["code"].Equals(expectedCode.ToString()))
+                {
+                    toAssert = true;
+                }
+            });
+            Assert.IsTrue(toAssert, $"The recorded log events should have contained message with log code {expectedCode} of appropriate level");
+        }
         public static bool CompareObjectsContent(object expected, object actual, bool logError = false)
         {
             if (expected == actual)
@@ -304,6 +379,64 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Copy files from inputFolderPath to actualFolderPath.
+        /// </summary>
+        /// <param name="testSubPath">Test sub path.</param>
+        /// <param name="testName">Test name.</param>
+        public static void CopyFilesFromInputToActualOutput(string testSubPath, string testName)
+        {
+            CopyFilesFromInputToActualOutputHelper(
+                TestHelper.GetInputFolderPath(testSubPath, testName),
+                TestHelper.GetActualOutputFolderPath(testSubPath, testName));
+        }
+
+        /// <summary>
+        /// Helper function to copy files from inputFolderPath to actualFolderPath recursively.
+        /// </summary>
+        /// <param name="inputFolderPath">Input folder path.</param>
+        /// <param name="actualFolderPath">Actual folder path.</param>
+        private static void CopyFilesFromInputToActualOutputHelper(string inputFolderPath, string actualFolderPath)
+        {
+            var inputFilePaths = Directory.GetFiles(inputFolderPath);
+
+            foreach (var inputFilePath in inputFilePaths)
+            {
+                var inputFilename = Path.GetRelativePath(inputFolderPath, inputFilePath);
+                var actualFilePath = Path.Combine(actualFolderPath, inputFilename);
+
+                File.Copy(inputFilePath, actualFilePath, true);
+            }
+
+            var inputSubFolders = Directory.GetDirectories(inputFolderPath);
+            foreach (var inputSubFolderPath in inputSubFolders)
+            {
+                var inputSubFolderName = Path.GetRelativePath(inputFolderPath, inputSubFolderPath);
+                var actualSubFolderPath = Path.Combine(actualFolderPath, inputSubFolderName);
+
+                Directory.CreateDirectory(actualSubFolderPath);
+                CopyFilesFromInputToActualOutputHelper(inputSubFolderPath, actualSubFolderPath);
+            }
+        }
+
+        /// <summary>
+        /// Delete files in actual output directory if exists.
+        /// </summary>
+        /// <param name="actualOutputFolderPath">The actual output folder path.</param>
+        public static void DeleteFilesFromActualOutput(string actualOutputFolderPath)
+        {
+            foreach (var file in Directory.GetFiles(actualOutputFolderPath))
+            {
+                File.Delete(file);
+            }
+
+            foreach (var directory in Directory.GetDirectories(actualOutputFolderPath))
+            {
+                DeleteFilesFromActualOutput(directory);
+                Directory.Delete(directory);
+            }
         }
 
         public static void AssertSameObjectWasSerialized(string expected, string actual)

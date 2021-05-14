@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -6,11 +6,14 @@ using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     public class CdmE2ERelationship : CdmObjectDefinitionBase
     {
+        private static readonly string Tag = nameof(CdmE2ERelationship);
+
         /// <summary>
         /// Gets or sets the relationship name.
         /// </summary>
@@ -105,7 +108,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(nameof(CdmE2ERelationship), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;

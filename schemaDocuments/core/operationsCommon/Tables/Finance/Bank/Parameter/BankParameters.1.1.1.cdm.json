@@ -1,0 +1,482 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/BankTransType.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ImportedPaymentJournalName_RU",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Payment journal",
+          "description": ""
+        },
+        {
+          "name": "AllowBankLedgerCheck",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow checks for bank or ledger accounts",
+          "description": ""
+        },
+        {
+          "name": "AllowCheckReuse",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow check reuse",
+          "description": ""
+        },
+        {
+          "name": "AllowedReconciliationMatchingMaxDiffDays",
+          "dataType": "BankReconciliationMatchingMaxDiffDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowInactiveBankPrenote",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow prenote creation on inactive bank accounts:",
+          "description": ""
+        },
+        {
+          "name": "AllowPaymentCopies",
+          "dataType": "AllowPaymentCopies",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankLCExportEnable",
+          "dataType": "BankLCExportEnable",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankLCImportChargeEnable_SA",
+          "dataType": "BankLCImportChargeEnable_SA",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankLCImportEnable",
+          "dataType": "BankLCImportEnable",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankLGEnable",
+          "dataType": "BankLGEnable",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankLGJournalName",
+          "dataType": "BankLGLedgerJournalNameId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankStatementShowDrCrAmount",
+          "dataType": "BankStatementShowDrCrAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CheckReconciliationMatchingDiffDays",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Validate date difference",
+          "description": ""
+        },
+        {
+          "name": "CheckReconciliationMatchingTransType",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Validate transaction type mapping",
+          "description": ""
+        },
+        {
+          "name": "CreditLimitTolerance",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrCodeControl_W",
+          "dataType": "CurrCodeControl_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnablePDC",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable postdated checks",
+          "description": ""
+        },
+        {
+          "name": "ExchDiffCalcType_PL",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GeneralJournalNamePDC",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "General journal for clearing entries",
+          "description": ""
+        },
+        {
+          "name": "GiroAccountValidationEnabled_W",
+          "dataType": "BankGiroAccountValidationEnabled_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IssueClearingPDC",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Clearing account for issued checks",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NSFTransactionType",
+          "dataType": "BankTransactionType",
+          "isNullable": true,
+          "displayName": "NSF",
+          "description": ""
+        },
+        {
+          "name": "PostTransPDC",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post journal entries for postdated checks",
+          "description": ""
+        },
+        {
+          "name": "ReceiptClearingPDC",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Clearing account for received checks",
+          "description": ""
+        },
+        {
+          "name": "RequireChequeReversalJour",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use review process for payment reversals",
+          "description": ""
+        },
+        {
+          "name": "RequireChequeReversalReason",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Require reasons for payment reversals",
+          "description": ""
+        },
+        {
+          "name": "RequireDepositCancelJour",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use review process for deposit slip payment cancellations",
+          "description": ""
+        },
+        {
+          "name": "RequireDepositCancelReason",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Require reasons for deposit slip payment cancellations",
+          "description": ""
+        },
+        {
+          "name": "VendPaymentJournalPDC",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Transfer postdated checks to this vendor payment journal",
+          "description": ""
+        },
+        {
+          "name": "WHTClearingPDC",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Withholding tax clearing account",
+          "description": ""
+        },
+        {
+          "name": "BankAccountNameKanaCanUseComma_JBA_JP",
+          "dataType": "BankAccountNameKanaCanUseComma_JBA_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankAccountNameKanaValidation_JBA_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadReconciliationWorksheetExtensible",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Turn off reconciliation worksheet performance enhancements",
+          "description": ""
+        },
+        {
+          "name": "ERModelMappingID",
+          "dataType": "ERModelMappingID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxEnablePDCConditionalTax",
+          "dataType": "TaxEnablePDCConditionalTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowBankCurrencyReval",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable bank revaluation",
+          "description": ""
+        },
+        {
+          "name": "AllowEditBankAccountStatement",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow bank statement edit",
+          "description": ""
+        },
+        {
+          "name": "PSNEnableEscheatment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable escheatment",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankTransType"
+          },
+          "name": "Relationship_BankTransTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_ImportedPaymentJournal_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_IssueClearingPDCRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_LedgerJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_LedgerJournalName_GeneralJournalNamePDCRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_LedgerJournalName_VendPaymentJournalPDCRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_ReceiptClearingPDCRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_WHTClearingPDCRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bank parameters"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankReconciliationMatchingMaxDiffDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AllowPaymentCopies",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankLCExportEnable",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankLCImportChargeEnable_SA",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankLCImportEnable",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankLGEnable",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankLGLedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankStatementShowDrCrAmount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CurrCodeControl_W",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankGiroAccountValidationEnabled_W",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankTransactionType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankAccountNameKanaCanUseComma_JBA_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ERModelMappingID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxEnablePDCConditionalTax",
+      "extendsDataType": "integer"
+    }
+  ]
+}

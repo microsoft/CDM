@@ -8,7 +8,9 @@ from cdm.objectmodel import CdmAttributeContext
 from cdm.resolvedmodel.projections.projection_attribute_context_tree_builder import ProjectionAttributeContextTreeBuilder
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
-from cdm.utilities import AttributeContextParameters, Errors, logger
+from cdm.utilities import AttributeContextParameters, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_operation_base import CdmOperationBase
 
@@ -25,11 +27,9 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmOperationExcludeAttributes.__name__
         self.exclude_attributes = []  # type: List[str]
         self.type = CdmOperationType.EXCLUDE_ATTRIBUTES  # type: CdmOperationType
-
-        # --- internal ---
-        self._TAG = CdmOperationExcludeAttributes.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationExcludeAttributes'] = None) -> 'CdmOperationExcludeAttributes':
         copy = CdmOperationExcludeAttributes(self.ctx)
@@ -50,9 +50,8 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
             missing_fields.append('exclude_attributes')
 
         if len(missing_fields) > 0:
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
-
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
@@ -94,7 +93,11 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
             if current_PAS._current_resolved_attribute.resolved_name not in top_level_exclude_attribute_names:
                 # Create the attribute context parameters and just store it in the builder for now
                 # We will create the attribute contexts at the end
-                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(None, current_PAS, current_PAS._current_resolved_attribute, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
+                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
+                    None, current_PAS, current_PAS._current_resolved_attribute,
+                    CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                    current_PAS._current_resolved_attribute.att_ctx,  # lineage is the included attribute
+                    None)  # don't know who will point here yet
 
                 # Create a projection attribute state for the included attribute by creating a copy of the current state
                 # Copy() sets the current state as the previous state for the new one
@@ -110,7 +113,11 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
 
                 # Create the attribute context parameters and just store it in the builder for now
                 # We will create the attribute contexts at the end
-                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(exclude_attribute_name, current_PAS, current_PAS._current_resolved_attribute, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
+                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
+                    exclude_attribute_name, current_PAS, current_PAS._current_resolved_attribute,
+                    CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                    current_PAS._current_resolved_attribute.att_ctx,  # lineage is the included attribute
+                    None)  # don't know who will point here yet, excluded, so... this could be the end for you.
 
         # Create all the attribute contexts and construct the tree
         attr_ctx_tree_builder._construct_attribute_context_tree(proj_ctx)

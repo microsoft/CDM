@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
@@ -35,22 +35,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             this.ActionsRemove = new List<AttributeResolutionApplier>();
             this.ApplierCaps = null;
 
-            this.ResOpt = CdmObjectBase.CopyResolveOptions(resOpt);
+            this.ResOpt = resOpt.Copy();
 
             if (resGuide != null)
             {
-                
-                    if (this.ApplierCaps == null)
-                        this.ApplierCaps = new AttributeResolutionApplierCapabilities()
-                        {
-                            CanAlterDirectives = false,
-                            CanCreateContext = false,
-                            CanRemove = false,
-                            CanAttributeModify = false,
-                            CanGroupAdd = false,
-                            CanRoundAdd = false,
-                            CanAttributeAdd = false
-                        };
+
+                if (this.ApplierCaps == null)
+                    this.ApplierCaps = new AttributeResolutionApplierCapabilities()
+                    {
+                        CanAlterDirectives = false,
+                        CanCreateContext = false,
+                        CanRemove = false,
+                        CanAttributeModify = false,
+                        CanGroupAdd = false,
+                        CanRoundAdd = false,
+                        CanAttributeAdd = false
+                    };
                 Func<AttributeResolutionApplier, bool> addApplier = (AttributeResolutionApplier apl) =>
                 {
 
@@ -122,6 +122,46 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             }
         }
 
+        /// <summary>
+        /// Returns a RelationshipInfo instance containing information about how the entity attribute relationship should be resolved
+        /// </summary>
+        /// <returns></returns>
+        internal RelationshipInfo GetRelationshipInfo()
+        {
+            bool hasRef = false;
+            bool isByRef = false;
+            bool isArray = false;
+            bool selectsOne = false;
+            bool maxDepthExceeded = this.ResOpt.DepthInfo.MaxDepthExceeded;
+
+            if (this.ResGuide != null)
+            {
+                if (this.ResGuide.entityByReference != null && this.ResGuide.entityByReference.allowReference == true)
+                    hasRef = true;
+                if (this.ResOpt.Directives != null)
+                {
+                    // based on directives
+                    if (hasRef)
+                        isByRef = this.ResOpt.Directives.Has("referenceOnly");
+                    selectsOne = this.ResOpt.Directives.Has("selectOne");
+                    isArray = this.ResOpt.Directives.Has("isArray");
+                }
+
+                if (!selectsOne && maxDepthExceeded)
+                {
+                    // if max depth exceeded, stop and resolve by reference
+                    isByRef = true;
+                }
+            }
+
+            return new RelationshipInfo
+            {
+                IsByRef = isByRef,
+                IsArray = isArray,
+                SelectsOne = selectsOne
+            };
+        }
+
     }
 
     internal class ResolvedAttributeSetBuilder
@@ -138,6 +178,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         {
             if (rasNew != null)
                 this.TakeReference(this.ResolvedAttributeSet.MergeSet(rasNew));
+            if (rasNew.DepthTraveled > this.ResolvedAttributeSet.DepthTraveled)
+                this.ResolvedAttributeSet.DepthTraveled = rasNew.DepthTraveled;
         }
 
         internal void TakeReference(ResolvedAttributeSet rasNew)
@@ -171,7 +213,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             // save the current context
             CdmAttributeContext attCtx = this.ResolvedAttributeSet.AttributeContext;
             this.TakeReference(new ResolvedAttributeSet());
-            this.ResolvedAttributeSet.Merge(ra, ra.AttCtx);
+            this.ResolvedAttributeSet.Merge(ra);
             // reapply the old attribute context
             this.ResolvedAttributeSet.AttributeContext = attCtx;
         }
@@ -179,7 +221,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         public void ApplyTraits(AttributeResolutionContext arc)
         {
             if (this.ResolvedAttributeSet != null && arc != null && arc.TraitsToApply != null)
-                this.TakeReference(ResolvedAttributeSet.ApplyTraits(arc.TraitsToApply, arc.ResOpt, arc.ResGuide, arc.ActionsModify));
+                this.TakeReference(ResolvedAttributeSet.ApplyTraitsResolutionGuidance(arc.TraitsToApply, arc.ResOpt, arc.ResGuide, arc.ActionsModify));
         }
 
         public void GenerateApplierAttributes(AttributeResolutionContext arc, bool applyTraitsToNew)
@@ -260,7 +302,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 ResolvedAttributeSet ras = this.ResolvedAttributeSet;
                 for (int i = 0; i < newAtts.Count; i++)
                 {
-                    ras = ras.Merge(newAtts[i], newAtts[i].AttCtx);
+                    ras = ras.Merge(newAtts[i]);
                 }
                 this.TakeReference(ras);
             }
@@ -422,7 +464,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                     doAdd(appCtx);
 
                     // combine resolution guidence for this set with anything new from the new attribute
-                    appCtx.ResGuideNew = (appCtx.ResGuide as CdmAttributeResolutionGuidance).combineResolutionGuidance(appCtx.ResGuideNew as CdmAttributeResolutionGuidance);
+                    appCtx.ResGuideNew = (appCtx.ResGuide as CdmAttributeResolutionGuidance).CombineResolutionGuidance(appCtx.ResGuideNew as CdmAttributeResolutionGuidance);
                     appCtx.ResAttNew.Arc = new AttributeResolutionContext(arc.ResOpt, appCtx.ResGuideNew as CdmAttributeResolutionGuidance, appCtx.ResAttNew.ResolvedTraits);
 
                     if (applyModifiers)
@@ -443,6 +485,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                         }
                     }
                     appCtx.ResAttNew.CompleteContext(appCtx.ResOpt);
+                    // tie this new resolved att to the source via lineage
+                    if (appCtx.ResAttNew.AttCtx != null && resAttSource != null && resAttSource.AttCtx != null && resAttSource.ApplierState?.Flex_remove != true)
+                    {
+                        if (resAttSource.AttCtx.Lineage?.Count > 0)
+                        {
+                            foreach (var lineage in resAttSource.AttCtx.Lineage)
+                            {
+                                appCtx.ResAttNew.AttCtx.AddLineage(lineage);
+                            }
+                        }
+                        else
+                        {
+                            appCtx.ResAttNew.AttCtx.AddLineage(resAttSource.AttCtx);
+                        }
+                    }
                 }
                 return appCtx;
             };

@@ -21,6 +21,7 @@ export abstract class Model extends DataObject {
     public 'cdm:imports': object[];
     public 'cdm:lastFileStatusCheckTime'? : string;
     public 'cdm:lastChildFileModifiedTime'? : string;
+    public 'cdm:documentVersion'? : string;
 }
 
 export const modelBaseProperties: string[] = [
@@ -34,5 +35,6 @@ export const modelBaseProperties: string[] = [
     'modifiedTime',
     'cdm:imports',
     'cdm:lastFileStatusCheckTime',
-    'cdm:lastChildFileModifiedTime'
+    'cdm:lastChildFileModifiedTime',
+    'cdm:documentVersion'
 ];

@@ -20,20 +20,17 @@ import {
     ResolvedTraitSetBuilder,
     resolveOptions,
     SymbolSet,
-    VisitCallback
+    VisitCallback,
+    CdmTraitReferenceBase
 } from '../internal';
 
-export class CdmTraitReference extends CdmObjectReferenceBase {
+export class CdmTraitReference extends CdmTraitReferenceBase {
     public arguments: CdmArgumentCollection;
     public isFromProperty: boolean;
     /**
      * @internal
      */
     public resolvedArguments: boolean;
-
-    public static get objectType(): cdmObjectType {
-        return cdmObjectType.traitRef;
-    }
 
     constructor(ctx: CdmCorpusContext, trait: string | CdmTraitDefinition, simpleReference: boolean, hasArguments: boolean) {
         super(ctx, trait, simpleReference);
@@ -111,7 +108,23 @@ export class CdmTraitReference extends CdmObjectReferenceBase {
         const finalArgs: Map<string, ArgumentValue> = new Map<string, ArgumentValue>();
         // get resolved traits does all the work, just clean up the answers
         const rts: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
-        if (!rts) {
+        if (!rts || rts.size !== 1) {
+            // well didn't get the traits. maybe imports are missing or maybe things are just not defined yet.
+            // this function will try to fake up some answers then from the arguments that are set on this reference only
+            if (this.arguments && this.arguments.length > 0) {
+                let unNamedCount: number = 0;
+                for (const arg of this.arguments)
+                {
+                    // if no arg name given, use the position in the list.
+                    let argName: string  = arg.name;
+                    if (!argName) {
+                        argName = unNamedCount.toString();
+                    }
+                    finalArgs.set(argName, arg.value);
+                    unNamedCount++;
+                }
+                return finalArgs;
+            }
             return undefined;
         }
         // there is only one resolved trait

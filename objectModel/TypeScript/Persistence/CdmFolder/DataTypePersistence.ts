@@ -6,7 +6,7 @@ import {
     CdmCorpusContext,
     CdmDataTypeDefinition,
     cdmObjectType,
-    CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     resolveOptions
 } from '../../internal';
@@ -14,6 +14,7 @@ import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     DataType,
     DataTypeReference,
+    TraitGroupReference,
     TraitReference
 } from './types';
 import * as utils from './utils';
@@ -25,7 +26,7 @@ export class DataTypePersistence {
         if (object.explanation) {
             dataType.explanation = object.explanation;
         }
-        utils.addArrayToCdmCollection<CdmTraitReference>(
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(
             dataType.exhibitsTraits,
             utils.createTraitReferenceArray(ctx, object.exhibitsTraits)
         );
@@ -39,7 +40,7 @@ export class DataTypePersistence {
             extendsDataType: instance.extendsDataType
                 ? instance.extendsDataType.copyData(resOpt, options) as (string | DataTypeReference)
                 : undefined,
-            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.exhibitsTraits, options)
         };
     }
 }

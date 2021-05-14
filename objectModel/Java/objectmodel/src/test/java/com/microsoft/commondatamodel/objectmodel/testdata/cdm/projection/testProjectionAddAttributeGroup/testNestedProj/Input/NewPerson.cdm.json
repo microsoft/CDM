@@ -1,0 +1,37 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "NewPerson",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "PersonInfo",
+                    "entity": {
+                        "operations": [
+                            {
+                                "$type": "addAttributeGroup",
+                                "attributeGroupName": "OuterAttributeGroup"
+                            }
+                        ],
+                        "source": {
+                            "operations": [
+                                {
+                                    "$type": "addAttributeGroup",
+                                    "attributeGroupName": "InnerAttributeGroup"
+                                }
+                            ],
+                            "source": "Person"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

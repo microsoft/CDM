@@ -30,16 +30,20 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
 
   CdmAttribute copyAtt(final ResolveOptions resOpt, final CdmAttribute copy) {
     copy.setPurpose(
-        this.getPurpose() != null ? (CdmPurposeReference) this.getPurpose().copy(resOpt) : null);
+            this.getPurpose() != null ?
+                    (CdmPurposeReference) this.getPurpose().copy(resOpt) : null);
     copy.setResolutionGuidance(
-        this.getResolutionGuidance() != null ? (CdmAttributeResolutionGuidance) this
-            .getResolutionGuidance().copy(resOpt) : null);
+        this.getResolutionGuidance() != null ?
+                (CdmAttributeResolutionGuidance) this.getResolutionGuidance().copy(resOpt) : null);
 
     copy.getAppliedTraits().clear();
-    for (final CdmTraitReference appliedTrait : this.getAppliedTraits()) {
-      copy.getAppliedTraits().add(appliedTrait);
+
+    for (final CdmTraitReferenceBase trait : this.getAppliedTraits()) {
+      copy.getAppliedTraits().add(trait);
     }
+
     this.copyDef(resOpt, copy);
+
     return copy;
   }
 
@@ -98,6 +102,9 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
   }
 
   boolean visitAtt(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
+    if (this.getPurpose() != null) {
+      this.getPurpose().setOwner(this);
+    }
     if (this.getPurpose() != null && this.getPurpose()
         .visit(pathFrom + "/purpose/", preChildren, postChildren)) {
       return true;
@@ -106,19 +113,19 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
         .visitList(pathFrom + "/appliedTraits/", preChildren, postChildren)) {
       return true;
     }
-    if (this.getResolutionGuidance() != null && this.getResolutionGuidance()
+    if (this.getResolutionGuidance() != null) {
+      this.getResolutionGuidance().setOwner(this);
+      if (this.getResolutionGuidance()
         .visit(pathFrom + "/resolutionGuidance/", preChildren, postChildren)) {
-      return true;
+       return true;
+      }
     }
 
     return this.visitDef(pathFrom, preChildren, postChildren);
   }
 
-  ResolvedTraitSet addResolvedTraitsApplied(
-      final ResolvedTraitSetBuilder rtsb,
-      final ResolveOptions resOpt) {
-    this.getAppliedTraits()
-        .forEach(appliedTraits -> rtsb.mergeTraits(appliedTraits.fetchResolvedTraits(resOpt)));
+  ResolvedTraitSet addResolvedTraitsApplied(final ResolvedTraitSetBuilder rtsb, final ResolveOptions resOpt) {
+    getAppliedTraits().forEach(item -> rtsb.mergeTraits(item.fetchResolvedTraits(resOpt)));
     // dynamic applied on use
     return rtsb.getResolvedTraitSet();
   }

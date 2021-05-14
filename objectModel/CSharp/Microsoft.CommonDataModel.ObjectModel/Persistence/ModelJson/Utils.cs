@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
@@ -17,6 +17,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     /// </summary>
     public static class Utils
     {
+        private static readonly string Tag = nameof(Utils);
+
         private static readonly Dictionary<string, string> annotationToTraitMap = new Dictionary<string, string>
         {
             { "version", "is.CDM.entityVersion" }
@@ -45,15 +47,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
         internal static async Task ProcessAnnotationsFromData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
         {
-            var multiTraitAnnotations = new List<Annotation>();
-
+            var multiTraitAnnotations = new List<NameValuePair>();
+            
             if (obj.Annotations != null)
             {
                 foreach (var element in obj.Annotations)
                 {
                     if (!ShouldAnnotationGoIntoASingleTrait(element.Name))
                     {
-                        multiTraitAnnotations.Add(element);
+                        NameValuePair cdmElement = new NameValuePair()
+                        {
+                            Name = element.Name,
+                            Value = element.Value
+                        };
+                        multiTraitAnnotations.Add(cdmElement);
                     }
                     else
                     {
@@ -80,8 +87,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             {
                 foreach (var trait in obj.Traits)
                 {
-                    var traitInstance = CdmFolder.TraitReferencePersistence.FromData(ctx, JToken.FromObject(trait));
-                    traits.Add(traitInstance);
+                    var trToken = JToken.FromObject(trait);
+
+                    if (!(trToken is JValue) && trToken["traitGroupReference"] != null)
+                    {
+                        traits.Add(CdmFolder.TraitGroupReferencePersistence.FromData(ctx, trToken));
+                    }
+                    else
+                    {
+                        traits.Add(CdmFolder.TraitReferencePersistence.FromData(ctx, trToken));
+                    }
                 }
             }
         }
@@ -100,26 +115,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             {
                 if (ExtensionHelper.TraitRefIsExtension(trait))
                 {
-                    ExtensionHelper.ProcessExtensionTraitToObject(trait, obj);
-
+                    // Safe to cast since extensions can only be trait refs, not trait group refs
+                    ExtensionHelper.ProcessExtensionTraitToObject(trait as CdmTraitReference, obj);
                     continue;
                 }
+
                 if (trait.NamedReference == "is.modelConversion.otherAnnotations")
                 {
-                    foreach (var annotation in trait.Arguments[0].Value)
+                    // Safe to cast since "is.modelConversion.otherAnnotations" is a trait, not trait group
+                    foreach (var annotation in (trait as CdmTraitReference).Arguments[0].Value)
                     {
 
                         if (annotation is JObject jAnnotation)
                         {
                             annotations.Add(jAnnotation.ToObject<Annotation>());
                         }
-                        else if (annotation is Annotation)
+                        else if (annotation is NameValuePair)
                         {
-                            annotations.Add(annotation);
+                            Annotation element = new Annotation()
+                            {
+                                Name = annotation.Name,
+                                Value = annotation.Value
+                            };
+                            annotations.Add(element);
                         }
                         else
                         {
-                            Logger.Warning(nameof(Utils), ctx, "Unsupported annotation type.");
+                            Logger.Warning(ctx, Tag, nameof(ProcessTraitsAndAnnotationsToData), null, CdmLogCode.WarnAnnotationTypeNotSupported);
                         }
 
                     }
@@ -127,9 +149,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 else if (
                     !ignoredTraits.Contains(trait.NamedReference)
                     && !trait.NamedReference.StartsWith("is.dataFormat")
-                    && !(modelJsonPropertyTraits.Contains(trait.NamedReference) && trait.IsFromProperty))
+                    && !(modelJsonPropertyTraits.Contains(trait.NamedReference) && trait is CdmTraitReference && (trait as CdmTraitReference).IsFromProperty))
                 {
-                    var extension = CdmFolder.TraitReferencePersistence.ToData(trait, null, null);
+                    var extension = trait is CdmTraitGroupReference ?
+                        CdmFolder.TraitGroupReferencePersistence.ToData(trait as CdmTraitGroupReference, null, null) :
+                        CdmFolder.TraitReferencePersistence.ToData(trait as CdmTraitReference, null, null);
                     extensions.Add(JToken.FromObject(extension, JsonSerializationUtil.JsonSerializer));
                 }
             }

@@ -13,6 +13,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         [JsonProperty("$type", Order = -2)]
         public string Type { get; internal set; }
 
+        public string Condition { get; set; }
+
         public string Explanation { get; set; }
+
+        public bool? SourceInput { get; set; }
     }
 }

@@ -14,7 +14,10 @@ class CdmObjectSimple(CdmObject):
     def create_simple_reference(self, res_opt: 'ResolveOptions') -> Optional['CdmObjectReference']:
         return None
 
-    def fetch_object_definition(self, res_opt: 'ResolveOptions') -> Optional['CdmObjectDefinition']:
+    def _create_portable_reference(self, res_opt: 'ResolveOptions') -> Optional['CdmObjectReference']:
+        return None
+
+    def fetch_object_definition(self, res_opt: Optional['ResolveOptions'] = None) -> Optional['CdmObjectDefinition']:
         """Returns the resolved object reference."""
         return None
 

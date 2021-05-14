@@ -6,27 +6,31 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityAttributeDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
-import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projections.ProjectionPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.EntityAttribute;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class EntityAttributePersistence {
 
+  private static final String TAG = EntityAttributePersistence.class.getSimpleName();
+
   public static CdmEntityAttributeDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
     final CdmEntityAttributeDefinition entityAttribute =
         ctx.getCorpus().makeObject(CdmObjectType.EntityAttributeDef,
             obj.get("name").asText());
+
+
+    entityAttribute.setExplanation(Utils.propertyFromDataToString(obj.get("explanation")));
+    entityAttribute.updateDescription(Utils.propertyFromDataToString(obj.get("description")));
+    entityAttribute.updateDisplayName(Utils.propertyFromDataToString(obj.get("displayName")));
 
     if (obj.get("cardinality") != null) {
       String minCardinality = null;
@@ -40,15 +44,15 @@ public class EntityAttributePersistence {
       }
 
       if (StringUtils.isNullOrTrimEmpty(minCardinality) || StringUtils.isNullOrTrimEmpty(maxCardinality)) {
-        Logger.error(EntityAttributePersistence.class.getSimpleName(), ctx, "Both minimum and maximum are required for the Cardinality property.", "fromData");
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistCardinalityPropMissing);
       }
 
       if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-        Logger.error(EntityAttributePersistence.class.getSimpleName(), ctx, Logger.format("Invalid minimum cardinality {0}.", minCardinality), "fromData");
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistInvalidMinCardinality, minCardinality);
       }
 
       if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-        Logger.error(EntityAttributePersistence.class.getSimpleName(), ctx, Logger.format("Invalid maximum cardinality {0}.", maxCardinality), "fromData");
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistInvalidMaxCardinality, maxCardinality);
       }
 
       if (!StringUtils.isNullOrTrimEmpty(minCardinality) &&
@@ -61,13 +65,6 @@ public class EntityAttributePersistence {
       }
     }
 
-    if (obj.has("explanation")) {
-      entityAttribute.setExplanation(obj.get("explanation").asText());
-    }
-
-    entityAttribute.updateDescription(Utils.propertyFromDataToString(obj.get("description")));
-    entityAttribute.updateDisplayName(Utils.propertyFromDataToString(obj.get("displayName")));
-
     if (obj.has("isPolymorphicSource")) {
       entityAttribute.setIsPolymorphicSource(obj.get("isPolymorphicSource").asBoolean());
     }
@@ -75,11 +72,8 @@ public class EntityAttributePersistence {
     boolean isProjection = obj.get("entity") != null && !(obj.get("entity").isValueNode()) && obj.get("entity").get("source") != null;
 
     if (isProjection) {
-      CdmProjection projection = ProjectionPersistence.fromData(ctx, obj.get("entity"));
-      projection.setOwner(entityAttribute);
-
       CdmEntityReference inlineEntityRef = ctx.getCorpus().makeObject(CdmObjectType.EntityRef, null);
-      inlineEntityRef.setExplicitReference(projection);
+      inlineEntityRef.setExplicitReference(ProjectionPersistence.fromData(ctx, obj.get("entity")));
       entityAttribute.setEntity(inlineEntityRef);
     } else {
       entityAttribute.setEntity(EntityReferencePersistence.fromData(ctx, obj.get("entity")));
@@ -90,11 +84,7 @@ public class EntityAttributePersistence {
         Utils.createTraitReferenceList(ctx, obj.get("appliedTraits")));
     // Ignore resolution guidance if the entity is a projection
     if (obj.get("resolutionGuidance") != null && isProjection) {
-      Logger.error(
-          EntityAttributePersistence.class.getSimpleName(),
-          ctx,
-          Logger.format("The EntityAttribute {0} is projection based. Resolution guidance is not supported with a projection.", entityAttribute.getName())
-      );
+      Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistEntityAttrUnsupported,  entityAttribute.getName());
     } else {
       entityAttribute.setResolutionGuidance(AttributeResolutionGuidancePersistence.fromData(ctx, obj.get("resolutionGuidance")));
     }
@@ -115,12 +105,11 @@ public class EntityAttributePersistence {
     result.setAppliedTraits(Utils.listCopyDataAsArrayNode(
       instance.getAppliedTraits().getAllItems()
           .stream()
-          .filter(trait -> !trait.isFromProperty())
+          .filter(trait -> trait instanceof CdmTraitGroupReference || !((CdmTraitReference)trait).isFromProperty())
           .collect(Collectors.toList()),
       resOpt,
       options));
-    result.setResolutionGuidance(
-            JMapper.MAP.valueToTree(Utils.jsonForm(instance.getResolutionGuidance(), resOpt, options)));
+    result.setResolutionGuidance(Utils.jsonForm(instance.getResolutionGuidance(), resOpt, options));
     return result;
   }
 }

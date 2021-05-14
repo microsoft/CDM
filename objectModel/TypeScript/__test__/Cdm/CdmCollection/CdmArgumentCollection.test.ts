@@ -5,7 +5,8 @@ import { CdmLocalEntityDeclarationDefinition } from '../../../Cdm/CdmLocalEntity
 import {
     CdmArgumentDefinition,
     CdmManifestDefinition,
-    CdmTraitReference
+    CdmTraitReference,
+    CdmTraitReferenceBase
 } from '../../../internal';
 import { generateManifest } from './CdmCollectionHelperFunctions';
 
@@ -155,8 +156,8 @@ describe('Cdm/CdmCollection/CdmArgumentCollection', () => {
     it('TestCdmCollectionAddPopulatesInDocumentWithVisit', () => {
         const manifest: CdmManifestDefinition = generateManifest('C:/nothing');
         const entityReference: CdmLocalEntityDeclarationDefinition = new CdmLocalEntityDeclarationDefinition(manifest.ctx, 'entityName');
-        const trait: CdmTraitReference = entityReference.exhibitsTraits.push('theTrait');
-        const argument: CdmArgumentDefinition = trait.arguments.push('GreatArgumentName', 'GreatValue');
+        const trait: CdmTraitReferenceBase = entityReference.exhibitsTraits.push('theTrait');
+        const argument: CdmArgumentDefinition = (trait as CdmTraitReference).arguments.push('GreatArgumentName', 'GreatValue');
         manifest.entities.push(entityReference);
 
         expect(manifest)

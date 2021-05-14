@@ -1,0 +1,85 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PCExpressionConstraint.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "PCSubComponentControl.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PCSubComponentControlConstraint",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExpressionConstraint",
+          "dataType": "PCExpressionConstraintRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SubComponentControl",
+          "dataType": "PCSubComponentControlRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PCExpressionConstraint"
+          },
+          "name": "Relationship_PCExpressionConstraintRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PCSubComponentControl"
+          },
+          "name": "Relationship_PCSubComponentControlRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Subcomponent modifier condition"
+    },
+    {
+      "dataTypeName": "PCExpressionConstraintRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PCSubComponentControlRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

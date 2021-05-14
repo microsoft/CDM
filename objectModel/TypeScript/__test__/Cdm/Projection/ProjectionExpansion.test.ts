@@ -47,7 +47,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
      * Test for creating a projection with an ArrayExpansion operation on an entity attribute using the object model
      */
     it('TestEntityAttributeProjUsingObjectModel', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestEntityAttributeProjUsingObjectModel');
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, 'TestEntityAttributeProjUsingObjectModel');
         corpus.storage.mount('local', new LocalAdapter(testHelper.getActualOutputFolderPath(testsSubpath, 'TestEntityAttributeProjUsingObjectModel')));
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
@@ -115,7 +115,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
      * Test for creating a projection with an ArrayExpansion operation on an entity definition using the object model
      */
     it('TestEntityProjUsingObjectModel', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestEntityProjUsingObjectModel');
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, 'TestEntityProjUsingObjectModel');
         corpus.storage.mount('local', new LocalAdapter(testHelper.getActualOutputFolderPath(testsSubpath, 'TestEntityProjUsingObjectModel')));
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
@@ -181,7 +181,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
      * Test for creating a projection with an ArrayExpansion operation and a condition using the object model
      */
     it('TestConditionalProjUsingObjectModel', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestConditionalProjUsingObjectModel');
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, 'TestConditionalProjUsingObjectModel');
         corpus.storage.mount('local', new LocalAdapter(testHelper.getActualOutputFolderPath(testsSubpath, 'TestConditionalProjUsingObjectModel')));
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
@@ -274,7 +274,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestExpansion', async () => {
         const testName: string = 'TestExpansion';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -312,10 +312,10 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     /**
      * ArrayExpansion on an entity attribute
      */
-    it('TestProj', async () => {
-        const testName: string = 'TestProj';
+    it('TestEntityAttribute', async () => {
+        const testName: string = 'TestEntityAttribute';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -354,7 +354,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestProjNoRename', async () => {
         const testName: string = 'TestProjNoRename';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -383,7 +383,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestExtendsEntity', async () => {
         const testName: string = 'TestExtendsEntity';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -407,7 +407,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestExtendsEntityProj', async () => {
         const testName: string = 'TestExtendsEntityProj';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -446,7 +446,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestNestedProj', async () => {
         const testName: string = 'TestNestedProj';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -498,51 +498,12 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     });
 
     /**
-     * Multiple ArrayExpansion operations in a single projection
-     */
-    it('TestMultipleOps', async () => {
-        const testName: string = 'TestMultipleOps';
-        const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
-
-        for (const resOpt of resOptsCombinations) {
-            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
-        }
-
-        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
-
-        // Original set of attributes: ["name", "age", "address"]
-        // Expand 1...2 and 1...3, renameFormat = {m}{o}
-        expect(resolvedEntity.attributes.length)
-            .toEqual(9);
-        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
-            .toEqual('name1');
-        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
-            .toEqual('age1');
-        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
-            .toEqual('address1');
-        expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
-            .toEqual('name2');
-        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
-            .toEqual('age2');
-        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
-            .toEqual('address2');
-        expect((resolvedEntity.attributes.allItems[6] as CdmTypeAttributeDefinition).name)
-            .toEqual('name3');
-        expect((resolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition).name)
-            .toEqual('age3');
-        expect((resolvedEntity.attributes.allItems[8] as CdmTypeAttributeDefinition).name)
-            .toEqual('address3');
-    });
-
-    /**
      * Start and end ordinals of -2...2
      */
     it('TestNegativeStartOrdinal', async () => {
         const testName: string = 'TestNegativeStartOrdinal';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -582,7 +543,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestStartGTEndOrdinal', async () => {
         const testName: string = 'TestStartGTEndOrdinal';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         // A warning should be logged when startOrdinal > endOrdinal
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
@@ -617,7 +578,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestSameStartEndOrdinals', async () => {
         const testName: string = 'TestSameStartEndOrdinals';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -644,7 +605,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestCombineOps', async () => {
         const testName: string = 'TestCombineOps';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -673,7 +634,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestPolymorphic', async () => {
         const testName: string = 'TestPolymorphic';
         const entityName: string = 'BusinessPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -716,9 +677,13 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestPolymorphicProj', async () => {
         const testName: string = 'TestPolymorphicProj';
         const entityName: string = 'BusinessPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
+            if (resOpt.includes('structured')) {
+                // Array expansion is not supported on an attribute group yet.
+                continue;
+            }
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
@@ -760,7 +725,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestArraySource', async () => {
         const testName: string = 'TestArraySource';
         const entityName: string = 'FriendGroup';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -801,7 +766,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestArraySourceProj', async () => {
         const testName: string = 'TestArraySourceProj';
         const entityName: string = 'FriendGroup';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -850,7 +815,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestGroup', async () => {
         const testName: string = 'TestGroup';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -891,7 +856,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestGroupProj', async () => {
         const testName: string = 'TestGroupProj';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -930,7 +895,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     it('TestConditionalProj', async () => {
         const testName: string = 'TestConditionalProj';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);

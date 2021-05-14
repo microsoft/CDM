@@ -5,17 +5,20 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmArgumentDefinition extends CdmObjectSimple {
+  private static final String TAG = CdmArgumentDefinition.class.getSimpleName();
+
   private CdmParameterDefinition resolvedParameter;
   private String explanation;
   private String name;
@@ -158,7 +161,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
       } else if (this.getValue() instanceof String){
         copy.setValue(this.getValue());
       } else {
-        Logger.error(CdmArgumentDefinition.class.getSimpleName(), this.getCtx(), "Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
+        Logger.error(this.getCtx(), TAG, "copy", this.getAtCorpusPath(), CdmLogCode.ErrUnrecognizedType);
         throw new RuntimeException("Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
       }
     }
@@ -170,7 +173,8 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
   @Override
   public boolean validate() {
     if (this.getValue() == null) {
-      Logger.error(CdmArgumentDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("value"))));
+      ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("value"));
+      Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
       return false;
     }
     return true;

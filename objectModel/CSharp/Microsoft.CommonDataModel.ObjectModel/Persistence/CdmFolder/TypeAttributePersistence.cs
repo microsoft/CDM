@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -15,6 +15,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     class TypeAttributePersistence
     {
+        private static readonly string Tag = nameof(TypeAttributePersistence);
+
         public static CdmTypeAttributeDefinition FromData(CdmCorpusContext ctx, JToken obj, string entityName = null)
         {
             if (obj == null)
@@ -37,13 +39,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     maxCardinality = (string)obj["cardinality"]["maximum"];
 
                 if (string.IsNullOrWhiteSpace(minCardinality) || string.IsNullOrWhiteSpace(maxCardinality))
-                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Both minimum and maximum are required for the Cardinality property.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistCardinalityPropMissing);
 
                 if (!CardinalitySettings.IsMinimumValid(minCardinality))
-                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Invalid minimum cardinality {minCardinality}.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrValdnInvalidMinCardinality, minCardinality);
 
                 if (!CardinalitySettings.IsMaximumValid(maxCardinality))
-                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Invalid maximum cardinality {maxCardinality}.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrValdnInvalidMaxCardinality, maxCardinality);
 
                 if (!string.IsNullOrWhiteSpace(minCardinality) &&
                     !string.IsNullOrWhiteSpace(maxCardinality) &&
@@ -79,6 +81,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             typeAttribute.MaximumValue = Utils.PropertyFromDataToString(obj["maximumValue"]);
             typeAttribute.MinimumValue = Utils.PropertyFromDataToString(obj["minimumValue"]);
             typeAttribute.DefaultValue = obj["defaultValue"];
+            typeAttribute.Projection = ProjectionPersistence.FromData(ctx, obj["projection"]);
 
             var dataFormat = Utils.PropertyFromDataToString(obj["dataFormat"]);
             if (dataFormat != null)
@@ -90,7 +93,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 }
                 else
                 {
-                    Logger.Warning(nameof(TypeAttributePersistence), ctx, $"Couldn't find an enum value for {dataFormat}.", nameof(FromData));
+                    Logger.Warning(ctx, Tag, nameof(FromData), null, CdmLogCode.WarnPersistEnumNotFound, dataFormat);
                 }
             }
 
@@ -99,6 +102,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
         public static TypeAttribute ToData(CdmTypeAttributeDefinition instance, ResolveOptions resOpt, CopyOptions options)
         {
+            if (instance == null)
+            {
+                return null;
+            }
+
             TypeAttribute obj = new TypeAttribute
             {
                 Explanation = instance.Explanation,
@@ -106,10 +114,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Name = instance.Name,
                 Purpose = Utils.JsonForm(instance.Purpose, resOpt, options),
                 DataType = Utils.JsonForm(instance.DataType, resOpt, options),
-                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?.Where(trait => !trait.IsFromProperty), options),
+                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?
+                    .Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty), options),
                 AttributeContext = Utils.JsonForm(instance.AttributeContext, resOpt, options),
                 ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options)
             };
+
+            obj.Projection = ProjectionPersistence.ToData(instance.Projection, resOpt, options);
 
             var isReadOnly = instance.GetProperty("isReadOnly");
             obj.IsReadOnly = isReadOnly ? isReadOnly : null;

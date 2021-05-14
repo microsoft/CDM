@@ -1,0 +1,129 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "OMTeamV2Entity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "DirPersonEntity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyRelationship.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "OMTeamMemberV2Entity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ChildParty",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParentParty",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TeamName",
+          "dataType": "string",
+          "displayName": "Team name",
+          "description": ""
+        },
+        {
+          "name": "TeamMemberName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Team member name",
+          "description": ""
+        },
+        {
+          "name": "TeamMemberPartyNumber",
+          "dataType": "string",
+          "displayName": "Team member party ID",
+          "description": ""
+        },
+        {
+          "name": "IsTeamLead",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Team leader",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "OMTeamV2Entity"
+          },
+          "name": "Relationship_TeamRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPersonEntity"
+          },
+          "name": "Relationship_PersonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyRelationship"
+          },
+          "name": "BackingTable_DirPartyRelationshipRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Team members V2"
+    }
+  ]
+}

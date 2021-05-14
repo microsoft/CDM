@@ -11,12 +11,13 @@ import {
     CdmObjectDefinition,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     ResolvedAttributeSet,
     ResolvedTraitSet,
     resolveOptions,
     StorageAdapter,
+    StringUtils,
     VisitCallback
 } from '../internal';
 
@@ -24,6 +25,8 @@ import {
  * The object model implementation for Folder object.
  */
 export class CdmFolderDefinition extends CdmObjectDefinitionBase {
+    private TAG: string = CdmFolderDefinition.name;
+
     /**
      * @inheritdoc
      */
@@ -99,13 +102,8 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      */
     public validate(): boolean {
         if (!this.name) {
-            Logger.error(
-                CdmFolderDefinition.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, ['name']),
-                this.validate.name
-            );
-
+            let missingFields: string[] = ['name'];
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, missingFields.map((s: string) => `'${s}'`).join(', '), this.atCorpusPath);
             return false;
         }
 
@@ -132,66 +130,58 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      * @internal
      * @inheritdoc
      */
-    public async fetchChildFolderFromPathAsync(path: string, makeFolder: boolean = true): Promise<CdmFolderDefinition> {
+    public fetchChildFolderFromPath(path: string, makeFolder: boolean = true): CdmFolderDefinition {
         let name: string;
-        let remainingPath: string;
-        let first: number = path.indexOf('/', 0);
-        if (first < 0) {
-            name = path.slice(0);
-            remainingPath = '';
-        } else {
-            name = path.slice(0, first);
-            remainingPath = path.slice(first + 1);
-        }
-        if (name.toLowerCase() === this.name.toLowerCase()) {
+        let remainingPath: string = path;
+        let childFolder: CdmFolderDefinition = this;
+
+        while (childFolder && remainingPath.indexOf('/') != -1) {
+            let first: number = remainingPath.indexOf('/');
+            name = remainingPath.slice(0, first);
+            remainingPath = remainingPath.slice(first + 1);
+
+            if (name.toLowerCase() !== childFolder.name.toLowerCase()) {
+                Logger.error(this.ctx, this.TAG, this.fetchChildFolderFromPath.name, null, cdmLogCode.ErrInvalidPath);
+                return undefined;
+            }
+
             // the end?
             if (remainingPath === '') {
-                return this;
+                return childFolder;
             }
+
+            first = remainingPath.indexOf('/')
+            let childFolderName: string = remainingPath
+            if (first != -1) {
+                childFolderName = remainingPath.slice(0, first);
+            } else {
+                // the last part of the path will be considered part of the part depending on the make_folder flag.
+                break
+            }
+
             // check children folders
             let result: CdmFolderDefinition;
-            if (this.childFolders) {
-                for (const f of this.childFolders) {
-                    result = await f.fetchChildFolderFromPathAsync(remainingPath, makeFolder);
-                    if (result) {
+            if (childFolder.childFolders) {
+                for (const folder of childFolder.childFolders) {
+                    if (childFolderName.toLowerCase() == folder.name.toLowerCase()) {
+                        result = folder;
                         break;
                     }
                 }
             }
-            if (result) {
-                return result;
+
+            if (!result) {
+                result = childFolder.childFolders.push(childFolderName);
             }
 
-            // get the next folder
-            first = remainingPath.indexOf('/', 0);
-            name = first > 0 ? remainingPath.slice(0, first) : remainingPath;
-
-            if (first !== -1) {
-                const childPath: CdmFolderDefinition = await this.childFolders.push(name)
-                    .fetchChildFolderFromPathAsync(remainingPath, makeFolder);
-                if (!childPath) {
-                    Logger.error(
-                        CdmFolderDefinition.name,
-                        this.ctx,
-                        `Invalid path '${path}'`,
-                        this.fetchChildFolderFromPathAsync.name
-                    );
-                }
-
-                return childPath;
-            }
-
-            if (makeFolder) {
-                // huh, well need to make the fold here
-                return (this.childFolders.push(name))
-                    .fetchChildFolderFromPathAsync(remainingPath, makeFolder);
-            } else {
-                // good enough, return where we got to
-                return this;
-            }
+            childFolder = result;
         }
 
-        return undefined;
+        if (makeFolder) {
+            childFolder = childFolder.childFolders.push(remainingPath);
+        }
+
+        return childFolder;
     }
 
     /**
@@ -224,7 +214,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
             // remove them from the caches since they will be back in a moment
             if (doc.isDirty) {
-                Logger.warning('CdmFolderDefinition', this.ctx, `discarding changes in document: ${doc.name}`);
+                Logger.warning(this.ctx, this.TAG, this.fetchDocumentFromFolderPathAsync.name, null, cdmLogCode.WarnDocChangesDiscarded, doc.name);
             }
             this.documents.remove(docName);
         }

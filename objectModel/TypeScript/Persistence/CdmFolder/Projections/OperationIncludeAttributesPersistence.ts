@@ -5,14 +5,11 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationIncludeAttributes,
-    cdmOperationType,
     copyOptions,
-    Logger,
-    OperationTypeConvertor,
-    resolveOptions,
-    StringUtils
+    resolveOptions
 } from '../../../internal';
 import { OperationIncludeAttributes } from '../types';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation IncludeAttributes persistence
@@ -22,18 +19,8 @@ export class OperationIncludeAttributesPersistence {
         if (!object) {
             return undefined;
         }
-        const includeAttributesOp: CdmOperationIncludeAttributes = ctx.corpus.MakeObject<CdmOperationIncludeAttributes>(cdmObjectType.operationIncludeAttributesDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.includeAttributes))) {
-            Logger.error(OperationIncludeAttributesPersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            includeAttributesOp.type = cdmOperationType.includeAttributes;
-        }
-
-        if (object.explanation) {
-            includeAttributesOp.explanation = object.explanation;
-        }
-
+        const includeAttributesOp: CdmOperationIncludeAttributes = OperationBasePersistence.fromData(ctx, cdmObjectType.operationIncludeAttributesDef, object);
         includeAttributesOp.includeAttributes = object.includeAttributes;
 
         return includeAttributesOp;
@@ -44,10 +31,9 @@ export class OperationIncludeAttributesPersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.includeAttributes),
-            explanation: instance.explanation,
-            includeAttributes: instance.includeAttributes
-        };
+        const data: OperationIncludeAttributes = OperationBasePersistence.toData(instance, resOpt, options);
+        data.includeAttributes = instance.includeAttributes;
+
+        return data;
     }
 }

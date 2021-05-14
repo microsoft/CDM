@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -107,6 +107,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return PurposeReferencePersistence.FromData(ctx, obj);
                 else if (obj["traitReference"] != null)
                     return TraitReferencePersistence.FromData(ctx, obj);
+                else if (obj["traitGroupReference"] != null)
+                    return TraitGroupReferencePersistence.FromData(ctx, obj);
                 else if (obj["dataTypeReference"] != null)
                     return DataTypeReferencePersistence.FromData(ctx, obj);
                 else if (obj["entityReference"] != null)
@@ -123,16 +125,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         }
 
         /// <summary>
-        /// Converts a JSON object to a CdmCollection of TraitReferences
+        /// Converts a JSON object to a CdmCollection of TraitReferences and TraitGroupReferences
         /// </summary>
-        public static List<CdmTraitReference> CreateTraitReferenceList(CdmCorpusContext ctx, dynamic obj)
+        public static List<CdmTraitReferenceBase> CreateTraitReferenceList(CdmCorpusContext ctx, dynamic obj)
         {
             if (obj == null)
                 return null;
 
-            List<CdmTraitReference> result = new List<CdmTraitReference>();
+            List<CdmTraitReferenceBase> result = new List<CdmTraitReferenceBase>();
             JArray traitRefObj = null;
-            if (obj.GetType() != typeof(JArray) && obj["value"] != null && obj["value"].GetType() == typeof(JArray))
+            if (obj.GetType() == typeof(List<JToken>))
+            {
+                traitRefObj = JArray.FromObject(obj);
+            } 
+            else if (obj.GetType() != typeof(JArray) && obj["value"] != null && obj["value"].GetType() == typeof(JArray))
             {
                 traitRefObj = obj["value"];
             }
@@ -146,7 +152,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 for (int i = 0; i < traitRefObj.Count; i++)
                 {
                     dynamic tr = traitRefObj[i];
-                    result.Add(TraitReferencePersistence.FromData(ctx, tr));
+
+                    if (!(tr is JValue) && tr["traitGroupReference"] != null)
+                    {
+                        result.Add(TraitGroupReferencePersistence.FromData(ctx, tr));
+                    }
+                    else
+                    {
+                        result.Add(TraitReferencePersistence.FromData(ctx, tr));
+                    }
                 }
             }
 

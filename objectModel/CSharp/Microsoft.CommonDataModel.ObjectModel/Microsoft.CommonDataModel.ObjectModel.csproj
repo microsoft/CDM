@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45;net462</TargetFrameworks>
-    <version>1.0.12</version>
+    <version>1.2.0</version>
     <Description>The CSharp implementation of the Microsoft Common Data Model Object Model.</Description>
 
-    <Authors>Microsoft Corporation</Authors>
-    <Copyright>Copyright (c) Microsoft Corporation. All rights reserved.</Copyright>
+    <Authors>Microsoft</Authors>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
     <Platforms>AnyCPU;x64</Platforms>
     <RepositoryUrl>https://commondatamodel.visualstudio.com/CDM/_git/CDM.ObjectModel</RepositoryUrl>
     <PackageProjectUrl>https://commondatamodel.visualstudio.com/CDM</PackageProjectUrl>
@@ -42,14 +42,33 @@
       <Link>Resources\extensions\%(FileName).json</Link>
     </EmbeddedResource>
 
+    <EmbeddedResource Include="..\..\..\schemaDocuments\cdmfoundation\*.cdm.json">
+        <Link>Resources\cdmfoundation\%(FileName).json</Link>
+    </EmbeddedResource>
+
     <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.6.cdm.json" />
     <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.7.cdm.json" />
     <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.8.cdm.json" />
     <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.8.1.cdm.json" />
     <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.9.cdm.json" />
-    <EmbeddedResource Remove="..\..\..\schemaDocuments\*.1.0.cdm.json" />
     <EmbeddedResource Remove="..\..\..\schemaDocuments\*.manifest.cdm.json" />
+    <EmbeddedResource Remove="..\..\..\schemaDocuments\cdmfoundation\*.manifest.cdm.json" />
 
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <Compile Update="Resx\LogMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LogMessages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="Resx\LogMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  
 </Project>

@@ -1,8 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 {
+    using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
@@ -16,6 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
     /// </summary>
     public class CdmHttpClient : IDisposable
     {
+        private static readonly string Tag = nameof(CdmHttpClient);
         /// <summary>
         /// The callback function that gets called after the request is finished in CDM Http client.
         /// </summary>
@@ -63,7 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
         /// <param name="cdmRequest">The CDM Http request.</param>
         /// <param name="callback">The callback that gets executed after the request finishes.</param>
         /// <returns>The <see cref="Task"/>, representing CDM Http response.</returns>
-        internal async Task<CdmHttpResponse> SendAsync(CdmHttpRequest cdmRequest, Callback callback = null)
+        internal async Task<CdmHttpResponse> SendAsync(CdmHttpRequest cdmRequest, Callback callback = null, CdmCorpusContext ctx = null)
         {
             // Merge headers first.
             foreach (var item in this.Headers)
@@ -73,10 +77,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 
             try
             {
-                var task = Task.Run(async () => await SendAsyncHelper(cdmRequest, callback));
+                TimeSpan timeout = (TimeSpan)cdmRequest.MaximumTimeout;
+                int timeoutMilliseconds = (int)(timeout.TotalMilliseconds);
+                var task = SendAsyncHelper(cdmRequest, callback, ctx);
 
                 // Wait for all the requests to finish, if the time exceedes maximum timeout throw the CDM timed out exception.
-                if (task.Wait((TimeSpan)cdmRequest.MaximumTimeout))
+                if (await Task.WhenAny(task, Task.Delay(timeoutMilliseconds)) == task)
                 {
                     return task.Result;
                 }
@@ -97,7 +103,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
         /// <param name="cdmRequest">The CDM Http request.</param>
         /// <param name="callback">The callback that gets executed after the request finishes.</param>
         /// <returns>The <see cref="Task"/>, representing CDM Http response.</returns>
-        private async Task<CdmHttpResponse> SendAsyncHelper(CdmHttpRequest cdmRequest, Callback callback = null)
+        private async Task<CdmHttpResponse> SendAsyncHelper(CdmHttpRequest cdmRequest, Callback callback = null, CdmCorpusContext ctx = null)
         {
             string fullUrl;
             if (isApiEndpointSet)
@@ -131,23 +137,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                 {
                     Task<HttpResponseMessage> request;
 
+                    DateTimeOffset startTime = DateTimeOffset.UtcNow;
+
+                    if (ctx != null)
+                    {
+                        Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, request url: {cdmRequest.StripSasSig()}, retry number: {retryNumber}.");
+                    }
+
                     // The check is added to fix a known issue in .net http client when reading HEAD request > 2GB.
                     // .net http client tries to write content even when the request is HEAD request.
                     if (cdmRequest.Method.Equals(HttpMethod.Head))
                     {
-                        request = Task.Run(async () => await this.client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead));
+                        request = this.client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
                     }
                     else
                     {
-                        request = Task.Run(async () => await this.client.SendAsync(requestMessage));
+                        request = this.client.SendAsync(requestMessage);
                     }
-
-                    if (!request.Wait((TimeSpan)cdmRequest.Timeout))
+                    TimeSpan timeout = (TimeSpan)cdmRequest.Timeout;
+                    int timeoutMilliseconds = (int)(timeout.TotalMilliseconds);
+                    if (await Task.WhenAny(request, Task.Delay(timeoutMilliseconds)) != request)
                     {
+                        if (ctx != null && cdmRequest.Timeout != null)
+                        {
+                            Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Request {cdmRequest.RequestId} timeout after {cdmRequest.Timeout?.Seconds} s.");
+                        }
+
                         throw new CdmTimedOutException("Request timeout.");
                     }
-
                     HttpResponseMessage response = request.Result;
+
+                    if (ctx != null)
+                    {
+                        DateTimeOffset endTime = DateTimeOffset.UtcNow;
+                        Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Response for request {cdmRequest.RequestId} received, elapsed time: {endTime.Subtract(startTime).TotalMilliseconds} ms.");
+                    }
 
                     if (response != null)
                     {

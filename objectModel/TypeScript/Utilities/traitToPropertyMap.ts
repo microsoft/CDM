@@ -13,8 +13,10 @@ import {
     CdmObjectDefinition,
     CdmObjectReference,
     cdmObjectType,
+    cdmLogCode,
     CdmTraitCollection,
     CdmTraitReference,
+    CdmTraitGroupReference,
     CdmTypeAttributeDefinition,
     Logger,
     ResolvedTrait
@@ -58,6 +60,8 @@ const dataFormatTraitNames: string[] = [
  * however, it does make it easier to work with the consumption object model so ... i will hold my nose.
  */
 export class traitToPropertyMap {
+    private TAG: string = traitToPropertyMap.name;
+    
     private host: CdmObject;
 
     private get ctx(): CdmCorpusContext {
@@ -201,7 +205,7 @@ export class traitToPropertyMap {
     public fetchTraitReference(traitName: string, fromProperty: boolean = false): CdmTraitReference {
         const traitIndex: number = this.traits === undefined ? -1 : this.traits.indexOf(traitName, fromProperty);
 
-        return traitIndex !== -1 ? this.traits.allItems[traitIndex] : undefined;
+        return traitIndex !== -1 ? this.traits.allItems[traitIndex] as CdmTraitReference : undefined;
     }
 
     /**
@@ -335,7 +339,7 @@ export class traitToPropertyMap {
     /**
      * @internal
      */
-    public traitsToDataFormat(fromProperty: boolean = false): cdmDataFormat {
+    public traitsToDataFormat(onlyFromProperty: boolean = false): cdmDataFormat {
         let isArray: boolean = false;
         let isBig: boolean = false;
         let isSmall: boolean = false;
@@ -347,7 +351,10 @@ export class traitToPropertyMap {
 
         let baseType: cdmDataFormat = 0;
         for (const trait of this.traits) {
-            if (fromProperty && !trait.isFromProperty) { continue; }
+            if (onlyFromProperty && 
+                (trait instanceof CdmTraitGroupReference || !(trait as CdmTraitReference).isFromProperty)) {
+                continue;
+            }
             const traitName: string = trait.fetchObjectDefinitionName();
             // tslint:disable:switch-default
             switch (traitName) {
@@ -503,7 +510,7 @@ export class traitToPropertyMap {
     public fetchTraitTable(traitName: string, argName: string, fromProperty: boolean): CdmConstantEntityDefinition {
         let trait: CdmTraitReference;
         const traitIndex: number = this.traits.indexOf(traitName, fromProperty);
-        trait = traitIndex !== -1 ? this.traits.allItems[traitIndex] : undefined;
+        trait = traitIndex !== -1 ? this.traits.allItems[traitIndex] as CdmTraitReference : undefined;
 
         const locEntRef: CdmObject = this.fetchTraitReferenceArgumentValue(trait, argName) as CdmObject;
         if (locEntRef) {
@@ -671,10 +678,10 @@ export class traitToPropertyMap {
                 newDefault = this.ctx.corpus.MakeRef(cdmObjectType.entityRef, cEnt, false);
                 this.updateTraitArgument('does.haveDefault', 'default', newDefault);
             } else {
-                Logger.error(traitToPropertyMap.name, this.host.ctx, 'Default value missing languageTag or displayText.');
+                Logger.error(this.host.ctx, this.TAG, this.updateDefaultValue.name, null, cdmLogCode.ErrValdnMissingLanguageTag);
             }
         } else {
-            Logger.error(traitToPropertyMap.name, this.host.ctx, 'Default value type not supported. Please use Array.');
+            Logger.error(this.host.ctx, this.TAG, this.updateDefaultValue.name, null, cdmLogCode.ErrUnsupportedType);
         }
     }
 

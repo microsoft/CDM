@@ -8,6 +8,8 @@ export enum cdmObjectType {
     parameterDef,
     traitDef,
     traitRef,
+    traitGroupDef,
+    traitGroupRef,
     purposeDef,
     purposeRef,
     dataTypeDef,

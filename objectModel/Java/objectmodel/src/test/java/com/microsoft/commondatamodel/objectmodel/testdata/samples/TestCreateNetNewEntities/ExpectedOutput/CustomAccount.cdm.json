@@ -1,0 +1,85 @@
+{
+  "jsonSchemaSemanticVersion" : "1.2.0",
+  "imports" : [
+    {
+      "corpusPath" : "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath" : "CustomPerson.cdm.json"
+    }
+  ],
+  "definitions" : [
+    {
+      "entityName" : "CustomAccount",
+      "displayName" : "CustomAccount",
+      "description" : "This is a custom entity created for the sample.",
+      "version" : "0.0.1",
+      "hasAttributes" : [
+        {
+          "name" : "CustomAccountId",
+          "purpose" : "identifiedBy",
+          "dataType" : "entityId"
+        },
+        {
+          "name" : "CustomAccountName",
+          "purpose" : "hasA",
+          "dataType" : "name"
+        },
+        {
+          "explanation" : "The owner of the account, which is a person.",
+          "purpose" : {
+            "purposeReference" : "meaningOfRelationshipVerbPhrases",
+            "appliedTraits" : [
+              {
+                "traitReference" : "means.relationship.verbPhrase",
+                "arguments" : [
+                  {
+                    "entityReference" : {
+                      "entityShape" : "localizedTable",
+                      "constantValues" : [
+                        [
+                          "en",
+                          "Simple resolution guidance sample - Forwards"
+                        ],
+                        [
+                          "cn",
+                          "正向"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "entity" : {
+            "entityReference" : "CustomPerson",
+            "appliedTraits" : [
+              {
+                "traitReference" : "is.identifiedBy",
+                "arguments" : [
+                  "CustomPerson/(resolvedAttributes)/CustomPersonId"
+                ]
+              }
+            ]
+          },
+          "name" : "accountOwner",
+          "resolutionGuidance" : {
+            "renameFormat" : "{m}",
+            "entityByReference" : {
+              "allowReference" : true,
+              "foreignKeyAttribute" : {
+                "name" : "accountOwnerId",
+                "purpose" : "identifiedBy",
+                "dataType" : "entityId",
+                "appliedTraits" : [
+                  "is.linkedEntity.identifier"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

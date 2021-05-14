@@ -112,7 +112,7 @@ describe('Persistence.PersistenceLayerTest', () => {
     });
 
     /**
-     * Test that loading a model.json or odi.json that isn't named exactly as such fails to load.
+     * Test that loading a model.json that isn't named exactly as such fails to load.
      */
     it('TestLoadingInvalidModelJsonName', async (done) => {
         const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestLoadingInvalidModelJsonName');
@@ -127,8 +127,6 @@ describe('Persistence.PersistenceLayerTest', () => {
         expect(invalidModelJson)
             .toBeUndefined();
         done();
-
-        // TODO: Do the same check for ODI.json files here once ODI is ported.
     });
 
     /**

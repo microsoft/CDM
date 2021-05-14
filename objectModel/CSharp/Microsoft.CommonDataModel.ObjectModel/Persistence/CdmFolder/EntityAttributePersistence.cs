@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -10,10 +10,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
     using System.Linq;
-    using System.Runtime.CompilerServices;
 
     class EntityAttributePersistence
     {
+        private static readonly string Tag = nameof(EntityAttributePersistence);
+
         public static CdmEntityAttributeDefinition FromData(CdmCorpusContext ctx, JToken obj)
         {
             var entityAttribute = ctx.Corpus.MakeObject<CdmEntityAttributeDefinition>(CdmObjectType.EntityAttributeDef, (string)obj["name"]);
@@ -33,13 +34,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     maxCardinality = (string)obj["cardinality"]["maximum"];
 
                 if (string.IsNullOrWhiteSpace(minCardinality) || string.IsNullOrWhiteSpace(maxCardinality))
-                    Logger.Error(nameof(EntityAttributePersistence), ctx, $"Both minimum and maximum are required for the Cardinality property.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistCardinalityPropMissing);
 
                 if (!CardinalitySettings.IsMinimumValid(minCardinality))
-                    Logger.Error(nameof(EntityAttributePersistence), ctx, $"Invalid minimum cardinality {minCardinality}.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistInvalidMinCardinality, minCardinality);
 
                 if (!CardinalitySettings.IsMaximumValid(maxCardinality))
-                    Logger.Error(nameof(EntityAttributePersistence), ctx, $"Invalid maximum cardinality {maxCardinality}.", nameof(FromData));
+                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistInvalidMaxCardinality, maxCardinality);
 
                 if (!string.IsNullOrWhiteSpace(minCardinality) &&
                     !string.IsNullOrWhiteSpace(maxCardinality) &&
@@ -61,11 +62,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 obj["entity"]["source"] != null;
             if (isProjection)
             {
-                CdmProjection projection = ProjectionPersistence.FromData(ctx, obj["entity"]);
-                projection.Owner = entityAttribute;
-
                 CdmEntityReference inlineEntityRef = ctx.Corpus.MakeObject<CdmEntityReference>(CdmObjectType.EntityRef, null);
-                inlineEntityRef.ExplicitReference = projection;
+                inlineEntityRef.ExplicitReference = ProjectionPersistence.FromData(ctx, obj["entity"]);
                 entityAttribute.Entity = inlineEntityRef;
             }
             else
@@ -78,7 +76,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             // ignore resolution guidance if the entity is a projection
             if (obj["resolutionGuidance"] != null && isProjection)
             {
-                Logger.Error(nameof(EntityAttributePersistence), ctx, $"The EntityAttribute {entityAttribute.Name} is projection based. Resolution guidance is not supported with a projection.");
+                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistEntityAttrUnsupported, entityAttribute.Name);
             }
             else
             {
@@ -96,7 +94,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 IsPolymorphicSource = instance.IsPolymorphicSource,
                 Entity = Utils.JsonForm(instance.Entity, resOpt, options),
                 Purpose = Utils.JsonForm(instance.Purpose, resOpt, options),
-                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?.Where(trait => !trait.IsFromProperty), options),
+                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?
+                    .Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty), options),
                 ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options),
                 DisplayName = instance.GetProperty("displayName"),
                 Description = instance.GetProperty("description")

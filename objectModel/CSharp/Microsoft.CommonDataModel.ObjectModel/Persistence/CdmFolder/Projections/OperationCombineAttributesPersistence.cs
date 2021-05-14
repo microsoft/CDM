@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -7,9 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
-    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -24,21 +22,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            CdmOperationCombineAttributes combineAttributesOp = ctx.Corpus.MakeObject<CdmOperationCombineAttributes>(CdmObjectType.OperationCombineAttributesDef);
-
-            if (obj["$type"] != null && !StringUtils.EqualsWithIgnoreCase(obj["$type"].ToString(), OperationTypeConvertor.OperationTypeToString(CdmOperationType.CombineAttributes)))
-            {
-                Logger.Error(nameof(OperationCombineAttributesPersistence), ctx, $"$type {(string)obj["$type"]} is invalid for this operation.");
-            }
-            else
-            {
-                combineAttributesOp.Type = CdmOperationType.CombineAttributes;
-            }
-            if (obj["explanation"] != null)
-            {
-                combineAttributesOp.Explanation = (string)obj["explanation"];
-            }
-            combineAttributesOp.Take = obj["take"]?.ToObject<List<string>>();
+            CdmOperationCombineAttributes combineAttributesOp = OperationBasePersistence.FromData<CdmOperationCombineAttributes>(ctx, CdmObjectType.OperationCombineAttributesDef, obj);
+            combineAttributesOp.Select = obj["select"]?.ToObject<List<string>>();
             combineAttributesOp.MergeInto = Utils.CreateAttribute(ctx, obj["mergeInto"]) as CdmTypeAttributeDefinition;
 
             return combineAttributesOp;
@@ -51,13 +36,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            return new OperationCombineAttributes
-            {
-                Type = OperationTypeConvertor.OperationTypeToString(CdmOperationType.CombineAttributes),
-                Explanation = instance.Explanation,
-                Take = instance.Take,
-                MergeInto = Utils.JsonForm(instance.MergeInto, resOpt, options)
-            };
+            OperationCombineAttributes obj = OperationBasePersistence.ToData<OperationCombineAttributes>(instance, resOpt, options);
+            obj.Select = instance.Select;
+            obj.MergeInto = Utils.JsonForm(instance.MergeInto, resOpt, options);
+
+            return obj;
         }
     }
 }

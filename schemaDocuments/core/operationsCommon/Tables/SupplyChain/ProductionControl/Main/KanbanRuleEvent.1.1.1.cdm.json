@@ -1,0 +1,138 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "KanbanRuleVariable.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "KanbanRuleEvent",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BOMLineReservationMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CancelUnusedEventsOnSourceReqReg",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Delete unused event kanbans",
+          "description": ""
+        },
+        {
+          "name": "DependentPeggedRequirementStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventoryReservationPolicy",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "KanbanLineEvent",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinimumEventQuantity",
+          "dataType": "KanbanQuantity",
+          "isNullable": true,
+          "displayName": "Minimum event quantity",
+          "description": ""
+        },
+        {
+          "name": "ParentRecId",
+          "dataType": "KanbanRuleVariableRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ProdBOMLineEvent",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesLineEvent",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesLineReservationMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRequirementReservation",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Source requirement reservation",
+          "description": ""
+        },
+        {
+          "name": "StockReplenishmentEvent",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "KanbanRuleVariable"
+          },
+          "name": "Relationship_ParentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Kanban event rules"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "KanbanQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "KanbanRuleVariableRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

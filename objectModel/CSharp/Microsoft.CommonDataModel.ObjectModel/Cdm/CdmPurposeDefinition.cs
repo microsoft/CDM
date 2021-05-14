@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,9 +9,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class CdmPurposeDefinition : CdmObjectDefinitionBase
     {
+        private static readonly string Tag = nameof(CdmPurposeDefinition);
+
         /// <summary>
         /// Gets or sets the purpose name.
         /// </summary>
@@ -106,7 +109,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (string.IsNullOrWhiteSpace(this.PurposeName))
             {
-                Logger.Error(nameof(CdmPurposeDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "PurposeName" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "PurposeName" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -130,8 +134,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (preChildren?.Invoke(this, path) == true)
                 return false;
             if (this.ExtendsPurpose != null)
+            {
+                this.ExtendsPurpose.Owner = this;
                 if (this.ExtendsPurpose.Visit(path + "/extendsPurpose/", preChildren, postChildren))
                     return true;
+            }
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
             if (postChildren != null && postChildren.Invoke(this, path))

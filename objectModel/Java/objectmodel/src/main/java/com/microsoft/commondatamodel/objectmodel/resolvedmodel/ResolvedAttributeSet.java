@@ -6,14 +6,19 @@ package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttribute;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeResolutionGuidance;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.utilities.ApplierContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionApplier;
+import com.microsoft.commondatamodel.objectmodel.utilities.ApplierState;
+import com.microsoft.commondatamodel.objectmodel.utilities.PrimitiveAppliers;
 import com.microsoft.commondatamodel.objectmodel.utilities.RefCounted;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,21 +38,24 @@ public class ResolvedAttributeSet extends RefCounted {
 
   private Map<String, ResolvedAttribute> resolvedName2resolvedAttribute;
   private Map<String, Set<ResolvedAttribute>> baseTrait2Attributes;
-  private Map<ResolvedAttribute, Set<CdmAttributeContext>> ra2attCtxSet;
-  private Map<CdmAttributeContext, ResolvedAttribute> attCtx2ra;
+  // this maps the the name of an owner (an entity attribute) to a set of the attributes names that were added because of that entAtt
+  // used in the entity attribute code to decide when previous (inherit) attributes from an entAtt with the same name might need to be removed
+  private Map<String, Set<String>> attributeOwnershipMap;
   private List<ResolvedAttribute> set;
   private CdmAttributeContext attributeContext;
   private int insertOrder;
   private int resolvedAttributeCount;
+  // indicates the depth level that this set was resolved at.
+  // resulting set can vary depending on the maxDepth value
+  private int depthTraveled;
 
   public ResolvedAttributeSet() {
     super();
 
     resolvedName2resolvedAttribute = new LinkedHashMap<>();
-    ra2attCtxSet = new LinkedHashMap<>();
-    attCtx2ra = new LinkedHashMap<>();
     set = new ArrayList<>();
     resolvedAttributeCount = 0;
+    depthTraveled = 0;
   }
 
   public CdmAttributeContext createAttributeContext(
@@ -62,44 +70,6 @@ public class ResolvedAttributeSet extends RefCounted {
     return attributeContext;
   }
 
-  /**
-   *
-   * @param attCtx CdmAttributeContext
-   * @param ra ResolvedAttribute
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Deprecated
-  public void cacheAttributeContext(final CdmAttributeContext attCtx, final ResolvedAttribute ra) {
-    if (attCtx != null && ra != null) {
-      attCtx2ra.put(attCtx, ra);
-      // set collection will take care of adding context to set
-      if (!ra2attCtxSet.containsKey(ra)) {
-        ra2attCtxSet.put(ra, new LinkedHashSet<>());
-      }
-      ra2attCtxSet.get(ra).add(attCtx);
-    }
-  }
-
-  /**
-   *
-   * @param attCtx CdmAttributeContext
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Deprecated
-  public void removeCachedAttributeContext(final CdmAttributeContext attCtx) {
-    if (attCtx != null) {
-      final ResolvedAttribute oldRa = this.attCtx2ra.get(attCtx);
-      if (oldRa != null && this.ra2attCtxSet.containsKey(oldRa)) {
-        this.attCtx2ra.remove(attCtx);
-        this.ra2attCtxSet.get(oldRa).remove(attCtx);
-        if (this.ra2attCtxSet.get(oldRa).size() == 0) {
-          this.ra2attCtxSet.remove(oldRa);
-        }
-      }
-    }
-  }
 
   /**
    *
@@ -110,62 +80,52 @@ public class ResolvedAttributeSet extends RefCounted {
    */
   @Deprecated
   public ResolvedAttributeSet merge(final ResolvedAttribute toMerge) {
-    return merge(toMerge, null);
-  }
-
-  /**
-   *
-   * @param toMerge ResolvedAttribute
-   * @param attCtx CdmAttributeContext
-   * @return ResolvedAttributeSet
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Deprecated
-  public ResolvedAttributeSet merge(
-      final ResolvedAttribute toMerge,
-      final CdmAttributeContext attCtx) {
     ResolvedAttributeSet rasResult = this;
 
     if (toMerge != null) {
       // if there is already a resolve attribute present, remove it before adding the new attribute
       if (rasResult.getResolvedName2resolvedAttribute().containsKey(toMerge.getResolvedName())) {
         ResolvedAttribute existing = rasResult.getResolvedName2resolvedAttribute()
-            .get(toMerge.getResolvedName());
+                .get(toMerge.getResolvedName());
+        if (existing != toMerge) {
+          if (refCnt > 1 && existing.getTarget() != toMerge.getTarget()) {
+            rasResult = rasResult.copy(); // copy on write
+            existing = rasResult.getResolvedName2resolvedAttribute().get(toMerge.getResolvedName());
+          } else {
+            rasResult = this;
+          }
 
-        if (refCnt > 1 && existing.getTarget() != toMerge.getTarget()) {
-          rasResult = rasResult.copy(); // copy on write
-          existing = rasResult.getResolvedName2resolvedAttribute().get(toMerge.getResolvedName());
-        } else {
-          rasResult = this;
-        }
+          if (existing.getTarget() instanceof CdmAttribute) {
+            rasResult.resolvedAttributeCount -= ((CdmAttribute) existing.getTarget()).getAttributeCount();
+          } else if (existing.getTarget() instanceof ResolvedAttributeSet) {
+            rasResult.resolvedAttributeCount -= ((ResolvedAttributeSet) existing.getTarget()).resolvedAttributeCount;
+          }
+          if (toMerge.getTarget() instanceof CdmAttribute) {
+            rasResult.resolvedAttributeCount += ((CdmAttribute) toMerge.getTarget()).getAttributeCount();
+          } else if (toMerge.getTarget() instanceof ResolvedAttributeSet) {
+            rasResult.resolvedAttributeCount += ((ResolvedAttributeSet) toMerge.getTarget()).resolvedAttributeCount;
+          }
 
-        if (existing.getTarget() instanceof CdmAttribute) {
-          rasResult.resolvedAttributeCount -= ((CdmAttribute)existing.getTarget()).getAttributeCount();
-        } else if (existing.getTarget() instanceof ResolvedAttributeSet) {
-          rasResult.resolvedAttributeCount -= ((ResolvedAttributeSet)existing.getTarget()).resolvedAttributeCount;
-        }
+          existing.setTarget(toMerge.getTarget()); // replace with newest version
+          existing.setArc(toMerge.getArc());
+          // merge a new ra into one with the same name, so make a lineage
+          // the existing attCtx becomes the new lineage. but the old one needs to stay too... so you get both. it came from both places.
+          // we need ONE place where this RA can point, so that will be the most recent place with a fixed lineage
+          // A->C1->C0 gets merged with A'->C2->C3 that turns into A->C2->[(c3), (C1->C0)]. in the more simple case this is just A->C2->C1
+          if (toMerge.getAttCtx() != null) {
+            if (existing.getAttCtx() != null) {
+              toMerge.getAttCtx().addLineage(existing.getAttCtx());
+            }
+            existing.setAttCtx(toMerge.getAttCtx());
+          }
+          final ResolvedTraitSet rtsMerge = existing.getResolvedTraits()
+                  .mergeSet(toMerge.getResolvedTraits()); // newest one may replace
 
-        if (toMerge.getTarget() instanceof CdmAttribute) {
-          rasResult.resolvedAttributeCount += ((CdmAttribute)toMerge.getTarget()).getAttributeCount();
-        } else if (toMerge.getTarget() instanceof ResolvedAttributeSet) {
-          rasResult.resolvedAttributeCount += ((ResolvedAttributeSet)toMerge.getTarget()).resolvedAttributeCount;
-        }
-
-        existing.setTarget(toMerge.getTarget()); // replace with newest version
-        existing.setArc(toMerge.getArc());
-
-        // Replace old context mappings with mappings to new attribute
-        rasResult.removeCachedAttributeContext(existing.getAttCtx());
-        rasResult.cacheAttributeContext(attCtx, existing);
-
-        final ResolvedTraitSet rtsMerge = existing.fetchResolvedTraits()
-            .mergeSet(toMerge.fetchResolvedTraits()); // newest one may replace
-
-        if (rtsMerge != existing.fetchResolvedTraits()) {
-          rasResult = rasResult.copy(); // copy on write
-          existing = rasResult.getResolvedName2resolvedAttribute().get(toMerge.getResolvedName());
-          existing.setResolvedTraits(rtsMerge);
+          if (rtsMerge != existing.getResolvedTraits()) {
+            rasResult = rasResult.copy(); // copy on write
+            existing = rasResult.getResolvedName2resolvedAttribute().get(toMerge.getResolvedName());
+            existing.setResolvedTraits(rtsMerge);
+          }
         }
       } else {
         if (refCnt > 1) {
@@ -175,18 +135,12 @@ public class ResolvedAttributeSet extends RefCounted {
           rasResult = this;
         }
         rasResult.getResolvedName2resolvedAttribute().put(toMerge.getResolvedName(), toMerge);
-        // don't use the attCtx on the actual attribute, that's only for doing appliers
-        if (attCtx != null) {
-          rasResult.cacheAttributeContext(attCtx, toMerge);
-        }
         //toMerge.InsertOrder = rasResult.Set.Count;
         rasResult.getSet().add(toMerge);
         rasResult.resolvedAttributeCount += toMerge.getResolvedAttributeCount();
       }
-
       baseTrait2Attributes = null;
     }
-
     return rasResult;
   }
 
@@ -200,51 +154,6 @@ public class ResolvedAttributeSet extends RefCounted {
     for (ResolvedAttribute ra : newSet) {
       if (!resolvedName2resolvedAttribute.containsKey(ra.getResolvedName())) {
         resolvedName2resolvedAttribute.put(ra.getResolvedName(), ra);
-      }
-    }
-  }
-
-  private void copyAttCtxMappingsInto(
-      final Map<ResolvedAttribute,
-          Set<CdmAttributeContext>> ra2attCtxSet,
-      final Map<CdmAttributeContext,
-          ResolvedAttribute> attCtx2ra,
-      final ResolvedAttribute sourceRa) {
-    copyAttCtxMappingsInto(ra2attCtxSet, attCtx2ra, sourceRa, null);
-  }
-
-  private void copyAttCtxMappingsInto(
-      final Map<ResolvedAttribute,
-          Set<CdmAttributeContext>> ra2attCtxSet,
-      final Map<CdmAttributeContext, ResolvedAttribute> attCtx2ra,
-      final ResolvedAttribute sourceRa,
-      ResolvedAttribute newRa) {
-    if (this.ra2attCtxSet.size() > 0) {
-      Set<CdmAttributeContext> attCtxSet = null;
-
-      if (newRa == null) {
-        newRa = sourceRa;
-      }
-
-      // get the set of attribute contexts for the old resolved attribute
-      if (this.ra2attCtxSet.containsKey(sourceRa)) {
-        attCtxSet = this.ra2attCtxSet.get(sourceRa);
-      }
-
-      if (attCtxSet != null) {
-        // map the new resolved attribute to the old context set
-        if (ra2attCtxSet.containsKey(newRa)) {
-          final Set<CdmAttributeContext> currentSet = ra2attCtxSet.get(newRa);
-          currentSet.addAll(attCtxSet);
-        } else {
-          ra2attCtxSet.put(newRa, attCtxSet);
-        }
-        // map the old contexts to the new resolved attribute
-        if (attCtxSet.size() > 0) {
-          for (final CdmAttributeContext attCtx : attCtxSet) {
-            attCtx2ra.put(attCtx, newRa);
-          }
-        }
       }
     }
   }
@@ -263,18 +172,60 @@ public class ResolvedAttributeSet extends RefCounted {
 
         // get the attribute from the merged set, attributes that were already present were merged, not replaced
         final ResolvedAttribute currentRa = rasResult.resolvedName2resolvedAttribute.get(ra.getResolvedName());
-        // copy context here
-        toMerge.copyAttCtxMappingsInto(rasResult.getRa2attCtxSet(), rasResult.getAttCtx2ra(), ra, currentRa);
+      }
+      // merge the ownership map.
+      if (toMerge.getAttributeOwnershipMap() != null)
+      {
+        if (this.getAttributeOwnershipMap() == null)
+        {
+          this.setAttributeOwnershipMap(new LinkedHashMap<>());
+        }
+
+        for (final Map.Entry<String, Set<String>> entry : toMerge.getAttributeOwnershipMap().entrySet()) {
+          // always take the new one as the right list, not sure if the constructor for dictionary uses this logic or fails
+          this.getAttributeOwnershipMap().put(entry.getKey(), entry.getValue());
+        }
       }
     }
 
     return rasResult;
   }
 
+  /**
+   * Recursively sets the target owner's to be the provided entity.
+   *
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  public void setTargetOwner(CdmEntityDefinition entity) {
+    for (ResolvedAttribute ra : this.set) {
+      ra.setOwner(entity);
+      if (ra.getTarget() instanceof ResolvedAttributeSet) {
+        ResolvedAttributeSet ras = (ResolvedAttributeSet) ra.getTarget();
+        ras.setTargetOwner(entity);
+      }
+    }
+  }
+
+  /**
+   * Apply a set of resolved traits to this resolved attribute set.
+   * @param traits
+   * @deprecated
+   */
+  public void applyTraits(final ResolvedTraitSet traits) {
+    for (ResolvedAttribute resAtt : this.set) {
+      if (resAtt.getTarget() instanceof ResolvedAttributeSet) {
+        ((ResolvedAttributeSet) resAtt.getTarget()).applyTraits(traits);
+      } else {
+        resAtt.setResolvedTraits(resAtt.getResolvedTraits().mergeSet(traits));
+      }
+    }
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   //  traits that change attributes
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-  ResolvedAttributeSet applyTraits(
+  ResolvedAttributeSet applyTraitsResolutionGuidance(
       final ResolvedTraitSet traits,
       final ResolveOptions resOpt,
       final CdmAttributeResolutionGuidance resGuide,
@@ -292,8 +243,6 @@ public class ResolvedAttributeSet extends RefCounted {
     rasResult.setResolvedName2resolvedAttribute(rasApplied.getResolvedName2resolvedAttribute());
     rasResult.setBaseTrait2Attributes(null);
     rasResult.setSet(rasApplied.getSet());
-    rasResult.setRa2attCtxSet(rasApplied.getRa2attCtxSet());
-    rasResult.setAttCtx2ra(rasApplied.getAttCtx2ra());
 
     return rasResult;
   }
@@ -361,7 +310,7 @@ public class ResolvedAttributeSet extends RefCounted {
       AttributeContextParameters acp = new AttributeContextParameters();
       acp.setUnder(appliedAttSet.getAttributeContext());
       acp.setType(CdmAttributeContextType.GeneratedSet);
-      acp.setName("_generatedAttributeSet");
+      acp.setName("_generatedAttributeSet_template");
 
       appliedAttSet.setAttributeContext(CdmAttributeContext.createChildUnder(traits.getResOpt(), acp));
 
@@ -374,7 +323,7 @@ public class ResolvedAttributeSet extends RefCounted {
     }
 
     for (ResolvedAttribute resAtt : this.set) {
-      CdmAttributeContext attCtxToMerge = null;
+      CdmAttributeContext attCtxToMerge = resAtt.getAttCtx(); // start with the current context for the resolved att, if a copy happens this will change
       if (resAtt.getTarget() instanceof ResolvedAttributeSet) {
         if (makingCopy) {
           resAtt = resAtt.copy();
@@ -387,7 +336,7 @@ public class ResolvedAttributeSet extends RefCounted {
             ((ResolvedAttributeSet) resAtt.getTarget()).apply(traits, resOpt, resGuide, actions)
         );
       } else {
-        final ResolvedTraitSet rtsMerge = resAtt.fetchResolvedTraits().mergeSet(traits);
+        final ResolvedTraitSet rtsMerge = resAtt.getResolvedTraits().mergeSet(traits);
         resAtt.setResolvedTraits(rtsMerge);
         if (actions != null) {
           for (final AttributeResolutionApplier traitAction : actions) {
@@ -412,6 +361,8 @@ public class ResolvedAttributeSet extends RefCounted {
               // Make a copy of the resolved att.
               if (makingCopy) {
                 resAtt = resAtt.copy();
+                attCtxToMerge.addLineage(resAtt.getAttCtx());
+                resAtt.setAttCtx(attCtxToMerge);
               }
 
               ctx.resAttSource = resAtt;
@@ -422,16 +373,10 @@ public class ResolvedAttributeSet extends RefCounted {
           }
         }
       }
-      appliedAttSet.merge(resAtt, attCtxToMerge);
+      appliedAttSet.merge(resAtt);
     }
 
     appliedAttSet.setAttributeContext(this.attributeContext);
-
-    if (!makingCopy) {
-      // didn't copy the attributes or make any new context, so just take the old ones
-      appliedAttSet.setRa2attCtxSet(ra2attCtxSet);
-      appliedAttSet.setAttCtx2ra(attCtx2ra);
-    }
 
     return appliedAttSet;
   }
@@ -492,8 +437,6 @@ public class ResolvedAttributeSet extends RefCounted {
         // attribute remains
         // are we building a new set?
         if (appliedAttSet != null) {
-          copyAttCtxMappingsInto(appliedAttSet.getRa2attCtxSet(), appliedAttSet.getAttCtx2ra(),
-              resAtt);
           appliedAttSet.merge(resAtt);
         }
 
@@ -506,8 +449,6 @@ public class ResolvedAttributeSet extends RefCounted {
           appliedAttSet = new ResolvedAttributeSet();
 
           for (int iCopy = 0; iCopy < iAtt; iCopy++) {
-            copyAttCtxMappingsInto(appliedAttSet.getRa2attCtxSet(), appliedAttSet.getAttCtx2ra(),
-                set.get(iCopy));
             appliedAttSet.merge(set.get(iCopy));
           }
         }
@@ -583,21 +524,17 @@ public class ResolvedAttributeSet extends RefCounted {
     final ResolvedAttributeSet copy = new ResolvedAttributeSet();
     copy.setAttributeContext(attributeContext);
 
-    // save the mappings to overwrite
-    // maps from merge may not be correct
-    final Map<ResolvedAttribute, Set<CdmAttributeContext>> newRa2attCtxSet = new LinkedHashMap<>();
-    final Map<CdmAttributeContext, ResolvedAttribute> newAttCtx2ra = new LinkedHashMap<>();
-
     for (final ResolvedAttribute sourceRa : set) {
       final ResolvedAttribute copyRa = sourceRa.copy();
-
-      copyAttCtxMappingsInto(newRa2attCtxSet, newAttCtx2ra, sourceRa, copyRa);
       copy.merge(copyRa);
     }
 
-    // reset mappings to the correct one
-    copy.setRa2attCtxSet(newRa2attCtxSet);
-    copy.setAttCtx2ra(newAttCtx2ra);
+    // copy the ownership map. new map will point at old att lists, but we never update these lists, only make new ones, so all is well
+    if (this.getAttributeOwnershipMap() != null) {
+      copy.setAttributeOwnershipMap(new LinkedHashMap<>(this.getAttributeOwnershipMap()));
+    }
+
+    copy.setDepthTraveled(this.depthTraveled);
 
     return copy;
   }
@@ -651,7 +588,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
       for (final ResolvedAttribute resAtt : set) {
         // create a map from the name of every trait found in this whole set of attributes to the attributes that have the trait (included base classes of traits)
-        final Set<String> traitNames = resAtt.fetchResolvedTraits().collectTraitNames();
+        final Set<String> traitNames = resAtt.getResolvedTraits().collectTraitNames();
         for (final String tName : traitNames) {
           if (!baseTrait2Attributes.containsKey(tName)) {
             baseTrait2Attributes.put(tName, new LinkedHashSet<>());
@@ -674,7 +611,7 @@ public class ResolvedAttributeSet extends RefCounted {
           final Set<ResolvedAttribute> filteredSubSet = new LinkedHashSet<>();
 
           for (final ResolvedAttribute ra : subSet) {
-            final ResolvedTrait traitObj = ra.fetchResolvedTraits().find(resOpt, q.getTraitBaseName());
+            final ResolvedTrait traitObj = ra.getResolvedTraits().find(resOpt, q.getTraitBaseName());
             if (traitObj != null) {
               final ParameterValueSet pvals = traitObj.getParameterValues();
 
@@ -734,48 +671,108 @@ public class ResolvedAttributeSet extends RefCounted {
     return null;
   }
 
+  @Deprecated
+  public int getDepthTraveled() {
+    return depthTraveled;
+  }
+
+  @Deprecated
+  public void setDepthTraveled(int depth) {
+    this.depthTraveled = depth;
+  }
+
   /**
-   *
-   * @return Map of ResolvedAttribute and Set of CdmAttributeContext
+   * Everything in this set now 'belongs' to the specified owner
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * @param ownerName String
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public void setAttributeOwnership(String ownerName) {
+    if (this.getSet() != null && this.getSet().size() > 0)
+    {
+      this.setAttributeOwnershipMap(new LinkedHashMap<>());
+      final Set<String> nameSet = new LinkedHashSet<>(this.getResolvedName2resolvedAttribute().keySet()); // this map should always be up to date, so fair to use as a source of all names
+      this.getAttributeOwnershipMap().put(ownerName, nameSet);
+    }
+  }
+
+  /**
+   * @param ownerName String
+   * @param rasNewOnes ResolvedAttributeSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  public Map<ResolvedAttribute, Set<CdmAttributeContext>> getRa2attCtxSet() {
-    return ra2attCtxSet;
+  public void markOrphansForRemoval(String ownerName, ResolvedAttributeSet rasNewOnes) {
+    if (this.getAttributeOwnershipMap() == null) {
+      return;
+    }
+    if (!this.getAttributeOwnershipMap().containsKey(ownerName)) {
+      return;
+    }
+
+    final Set<String> lastSet = this.getAttributeOwnershipMap().get(ownerName);
+
+    // make a list of all atts from last time with this owner, remove the ones that show up now
+    final Set<String> thoseNotRepeated = new LinkedHashSet<>(lastSet);
+    // of course, if none show up, all must go
+    if (rasNewOnes != null && rasNewOnes.getSet() != null && rasNewOnes.getSet().size() > 0) {
+
+      for (final ResolvedAttribute newOne : rasNewOnes.getSet()) {
+        if (lastSet.contains(newOne.getResolvedName())) {
+          // congrats, you are not doomed
+          thoseNotRepeated.remove(newOne.getResolvedName());
+        }
+      }
+    }
+    // anyone left must be marked for remove
+    final Set<AttributeResolutionContext> fixedArcs = new LinkedHashSet<>(); // to avoid checking if we need to fix the same thing many times
+    for (final String toRemove : thoseNotRepeated) {
+      final ResolvedAttribute raDoomed = this.getResolvedName2resolvedAttribute().get(toRemove);
+
+      if (raDoomed.getArc() != null) {
+        // to remove these, need to have our special remover thing in the set of actions
+        if (!fixedArcs.contains(raDoomed.getArc())) {
+          fixedArcs.add(raDoomed.getArc()); // not again
+          if (raDoomed.getArc().getApplierCaps().canRemove) {
+            // don't add more than once.
+            if (!raDoomed.getArc().getActionsRemove().contains(PrimitiveAppliers.isRemovedInternal)) {
+              raDoomed.getArc().getActionsRemove().add(PrimitiveAppliers.isRemovedInternal);
+            }
+          } else {
+            raDoomed.getArc().getActionsRemove().add(PrimitiveAppliers.isRemovedInternal);
+            raDoomed.getArc().getApplierCaps().canRemove = true;
+          }
+        }
+        // mark the att in the state
+        if (raDoomed.getApplierState() == null) {
+          raDoomed.setApplierState(new ApplierState());
+        }
+        raDoomed.getApplierState().setFlexRemove(true);
+      }
+    }
+  }
+  /**
+   *
+   * @return Map of the name of an owner (an entity attribute) to a set of the attributes names that were added
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public Map<String, Set<String>> getAttributeOwnershipMap() {
+    return attributeOwnershipMap;
   }
 
   /**
    *
-   * @param ra2attCtxSet Map of ResolvedAttribute and Set of CdmAttributeContext
+   * @param attributeOwnershipMap Map of the name of an owner (an entity attribute) to a set of the attributes names that were added
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  public void setRa2attCtxSet(final Map<ResolvedAttribute, Set<CdmAttributeContext>> ra2attCtxSet) {
-    this.ra2attCtxSet = ra2attCtxSet;
-  }
-
-  /**
-   *
-   * @return Map of CdmAttributeContext and ResolvedAttribute
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Deprecated
-  public Map<CdmAttributeContext, ResolvedAttribute> getAttCtx2ra() {
-    return attCtx2ra;
-  }
-
-  /**
-   *
-   * @param attCtx2ra Map of CdmAttributeContext and ResolvedAttribute
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Deprecated
-  public void setAttCtx2ra(final Map<CdmAttributeContext, ResolvedAttribute> attCtx2ra) {
-    this.attCtx2ra = attCtx2ra;
+  public void setAttributeOwnershipMap(final Map<String, Set<String>> attributeOwnershipMap) {
+    this.attributeOwnershipMap = attributeOwnershipMap;
   }
 
   /**

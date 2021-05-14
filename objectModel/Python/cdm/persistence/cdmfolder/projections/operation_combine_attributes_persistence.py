@@ -4,12 +4,10 @@
 from typing import TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.enums.cdm_operation_type import OperationTypeConvertor, CdmOperationType
-
 from cdm.persistence.cdmfolder import utils
 from cdm.persistence.cdmfolder.types import OperationCombineAttributes
-from cdm.utilities.logging import logger
-from cdm.utilities.string_utils import StringUtils
+
+from .operation_base_persistence import OperationBasePersistence
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmOperationCombineAttributes
@@ -25,18 +23,10 @@ class OperationCombineAttributesPersistence:
     def from_data(ctx: 'CdmCorpusContext', data: 'OperationCombineAttributes') -> 'CdmOperationCombineAttributes':
         if not data:
             return None
-
-        combine_attributes_op = ctx.corpus.make_object(CdmObjectType.OPERATION_COMBINE_ATTRIBUTES_DEF)
-
-        if data.type and not StringUtils.equals_with_ignore_case(data.type, OperationTypeConvertor._operation_type_to_string(CdmOperationType.COMBINE_ATTRIBUTES)):
-            logger.error(_TAG, ctx, '$type {} is invalid for this operation.'.format(data.type))
-        else:
-            combine_attributes_op.type = CdmOperationType.COMBINE_ATTRIBUTES
-
-        if data.explanation:
-            combine_attributes_op.explanation = data.explanation
-
-        combine_attributes_op.take = data.take
+        
+        combine_attributes_op = OperationBasePersistence.from_data(ctx,
+            CdmObjectType.OPERATION_COMBINE_ATTRIBUTES_DEF, data)  # type: CdmOperationCombineAttributes
+        combine_attributes_op.select = data.select
         combine_attributes_op.merge_into = utils.create_attribute(ctx, data.mergeInto)
 
         return combine_attributes_op
@@ -48,10 +38,8 @@ class OperationCombineAttributesPersistence:
         if not instance:
             return None
 
-        obj = OperationCombineAttributes()
-        obj.type = OperationTypeConvertor._operation_type_to_string(CdmOperationType.COMBINE_ATTRIBUTES)
-        obj.explanation = instance.explanation
-        obj.take = instance.take
+        obj = OperationBasePersistence.to_data(instance, res_opt, options)  # type: OperationCombineAttributes
+        obj.select = instance.select
         obj.mergeInto = TypeAttributePersistence.to_data(instance.merge_into, res_opt, options)
 
         return obj

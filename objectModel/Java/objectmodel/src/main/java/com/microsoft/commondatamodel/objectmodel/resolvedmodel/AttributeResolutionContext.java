@@ -4,9 +4,9 @@
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeResolutionGuidance;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionApplier;
-import com.microsoft.commondatamodel.objectmodel.utilities.PrimitiveAppliers;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.cdm.EntityByReference;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -130,6 +130,46 @@ public class AttributeResolutionContext {
     return true;
   }
 
+  /**
+   * Returns a RelationshipInfo instance containing information about how the entity attribute relationship should be resolved
+   * @deprecated
+   */
+  public RelationshipInfo getRelationshipInfo() {
+    boolean hasRef = false;
+    boolean isByRef = false;
+    boolean isArray = false;
+    boolean selectsOne = false;
+    boolean maxDepthExceeded = resOpt.depthInfo.getMaxDepthExceeded();
+
+    if (this.getResGuide() != null) {
+      final EntityByReference resGuide = this.getResGuide()
+              .getEntityByReference();
+      if (resGuide != null && resGuide.doesAllowReference()) {
+        hasRef = true;
+      }
+
+      final AttributeResolutionDirectiveSet resDirectives = this.getResOpt().getDirectives();
+      if (resDirectives != null) {
+        // based on directives
+        if (hasRef) {
+          isByRef = resDirectives.has("referenceOnly");
+        }
+        selectsOne = resDirectives.has("selectOne");
+        isArray = resDirectives.has("isArray");
+      }
+
+      if (!selectsOne && maxDepthExceeded) {
+        isByRef = true;
+      }
+    }
+
+    final RelationshipInfo relationshipInfo = new RelationshipInfo();
+    relationshipInfo.setByRef(isByRef);
+    relationshipInfo.setArray(isArray);
+    relationshipInfo.setSelectsOne(selectsOne);
+    return relationshipInfo;
+  }
+
   public List<AttributeResolutionApplier> getActionsModify() {
     return actionsModify;
   }
@@ -170,7 +210,12 @@ public class AttributeResolutionContext {
     this.actionsRemove = actionsRemove;
   }
 
-  ResolvedTraitSet getTraitsToApply() {
+  /**
+   * @deprecated Only for internal use.
+   * @return ResolvedTraitSet
+   */
+  @Deprecated
+  public ResolvedTraitSet getTraitsToApply() {
     return traitsToApply;
   }
 

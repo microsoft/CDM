@@ -5,6 +5,7 @@ import {
     AttributeResolutionContext,
     CdmAttribute,
     CdmAttributeContext,
+    CdmEntityDefinition,
     CdmObject,
     ResolvedAttributeSet,
     ResolvedTraitSet,
@@ -90,6 +91,10 @@ export class ResolvedAttribute {
      * @internal
      */
     public resolvedAttributeCount: number;
+    /**
+     * @internal
+     */
+    public owner: CdmEntityDefinition;
     public insertOrder: number = 0;
     public attCtx: CdmAttributeContext;
     public applierState?: any;
@@ -106,6 +111,17 @@ export class ResolvedAttribute {
             this.resolvedName = defaultName;
             this.previousResolvedName = defaultName;
             this.attCtx = attCtx;
+            // if the target is a resolved attribute set, then we are wrapping it. update the lineage of this new ra to point at all members of the set
+            if (target instanceof ResolvedAttributeSet && attCtx) {
+                const rasSub: ResolvedAttributeSet = target as ResolvedAttributeSet;
+                if (rasSub.set && rasSub.set.length > 0) {
+                    for (const raSub of rasSub.set) {
+                        if (raSub.attCtx) {
+                            attCtx.addLineage(raSub.attCtx);
+                        }
+                    }
+                }
+            }
         }
         // return p.measure(bodyCode);
     }
@@ -135,14 +151,18 @@ export class ResolvedAttribute {
         // let bodyCode = () =>
         {
             const resOpt: resolveOptions = this.resolvedTraits.resOpt; // use the options from the traits
-            const copy: ResolvedAttribute = new ResolvedAttribute(resOpt, this.target, this._resolvedName, this.attCtx);
+            const copy: ResolvedAttribute = new ResolvedAttribute(resOpt, this.target, this._resolvedName, undefined);
+            copy.previousResolvedName = this.previousResolvedName;
+            copy.resolvedName = this.resolvedName;
             copy.resolvedTraits = this.resolvedTraits.shallowCopy();
             copy.insertOrder = this.insertOrder;
             copy.arc = this.arc;
+            copy.attCtx = this.attCtx // set here instead of constructor to avoid setting lineage for this copy
+            copy.owner = this.owner;
 
-            if ((copy.target as CdmAttribute).createSimpleReference === undefined && typeof(copy.target) !== 'string') {
+            if (copy.target instanceof ResolvedAttributeSet) {
                 // deep copy when set contains sets. this copies the resolved att set and the context, etc.
-                copy.target = copy.target.copy(resOpt) as ResolvedAttributeSet;
+                copy.target = copy.target.copy() as ResolvedAttributeSet;
             }
 
             if (this.applierState) {
@@ -164,13 +184,14 @@ export class ResolvedAttribute {
     }
 
     public completeContext(resOpt: resolveOptions): void {
-        if (this.attCtx && !this.attCtx.name) {
-            this.attCtx.name = this._resolvedName;
-            // type guard later
-            if ((this.target as CdmAttribute).createSimpleReference) {
-                this.attCtx.definition = (this.target as CdmAttribute).createSimpleReference(resOpt);
+        if (this.attCtx) {
+            if (this.attCtx.name == null) {
+                this.attCtx.name = this._resolvedName;
+                this.attCtx.atCorpusPath = `${this.attCtx.parent.fetchObjectDefinition<CdmAttributeContext>(resOpt).atCorpusPath}/${this._resolvedName}`;
             }
-            this.attCtx.atCorpusPath = `${this.attCtx.parent.fetchObjectDefinition(resOpt).atCorpusPath}/${this._resolvedName}`;
+
+            if (!this.attCtx.definition && this.target instanceof CdmAttribute)
+            this.attCtx.definition = (this.target as CdmAttribute).createPortableReference(resOpt);
         }
     }
 }

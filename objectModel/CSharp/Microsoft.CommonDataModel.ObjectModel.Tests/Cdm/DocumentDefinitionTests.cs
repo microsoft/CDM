@@ -83,6 +83,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             await docA.IndexIfNeeded(new ResolveOptions(), true);
 
             Assert.AreEqual(4, docA.ImportPriorities.ImportPriority.Count);
+            AssertImportInfo(docA.ImportPriorities.ImportPriority[docA], 0, false);
+            AssertImportInfo(docA.ImportPriorities.ImportPriority[docB], 1, false);
+            AssertImportInfo(docA.ImportPriorities.ImportPriority[docD], 2, false);
+            AssertImportInfo(docA.ImportPriorities.ImportPriority[docC], 3, false);
 
             // reset the importsPriorities.
             MarkDocumentsToIndex(folder.Documents);
@@ -104,11 +108,52 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
-        /// Test if monikered imports are not being added to the priorityList.
+        /// Test when A -> B -> C/M -> D.
+        /// Index docB first then docA. Make sure that C does not appear in docA priority list.
+        /// </summary>
+        [TestMethod]
+        public async Task TestReadingCachedImportPriority()
+        {
+            var corpus = TestHelper.GetLocalCorpus("", "");
+            var folder = corpus.Storage.FetchRootFolder("local");
+
+            var docA = new CdmDocumentDefinition(corpus.Ctx, "A.cdm.json");
+            folder.Documents.Add(docA);
+            docA.Imports.Add("B.cdm.json");
+
+            var docB = new CdmDocumentDefinition(corpus.Ctx, "B.cdm.json");
+            folder.Documents.Add(docB);
+            docB.Imports.Add("C.cdm.json", "moniker");
+
+            var docC = new CdmDocumentDefinition(corpus.Ctx, "C.cdm.json");
+            folder.Documents.Add(docC);
+            docC.Imports.Add("D.cdm.json");
+
+            var docD = new CdmDocumentDefinition(corpus.Ctx, "D.cdm.json");
+            folder.Documents.Add(docD);
+
+            // index docB first and check its import priorities.
+            await docB.IndexIfNeeded(new ResolveOptions(), true);
+
+            Assert.AreEqual(3, docB.ImportPriorities.ImportPriority.Count);
+            AssertImportInfo(docB.ImportPriorities.ImportPriority[docB], 0, false);
+            AssertImportInfo(docB.ImportPriorities.ImportPriority[docD], 1, false);
+            AssertImportInfo(docB.ImportPriorities.ImportPriority[docC], 2, true);
+
+            // now index docA, which should read docB's priority list from the cache.
+            await docA.IndexIfNeeded(new ResolveOptions(), true);
+            Assert.AreEqual(3, docA.ImportPriorities.ImportPriority.Count);
+            AssertImportInfo(docA.ImportPriorities.ImportPriority[docA], 0, false);
+            AssertImportInfo(docA.ImportPriorities.ImportPriority[docB], 1, false);
+            AssertImportInfo(docA.ImportPriorities.ImportPriority[docD], 2, false);
+        }
+
+        /// <summary>
+        /// Test if monikered imports are added to the end of the priority list.
         /// A -> B/M -> C
         /// </summary>
         [TestMethod]
-        public async Task TestMonikeredImportIsNotAdded()
+        public async Task TestMonikeredImportIsAddedToEnd()
         {
             var corpus = TestHelper.GetLocalCorpus("", "");
             var folder = corpus.Storage.FetchRootFolder("local");
@@ -128,9 +173,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             await docB.IndexIfNeeded(new ResolveOptions(docB), true);
             await docA.IndexIfNeeded(new ResolveOptions(docA), true);
 
-            // should only contain docA and docC, docB should be excluded.
-            Assert.AreEqual(2, docA.ImportPriorities.ImportPriority.Count);
+            // should contain all three documents.
+            Assert.AreEqual(3, docA.ImportPriorities.ImportPriority.Count);
+            AssertImportInfo(docA.ImportPriorities.ImportPriority[docA], 0, false);
+            AssertImportInfo(docA.ImportPriorities.ImportPriority[docC], 1, false);
+            // docB is monikered so it should appear at the end of the list.
+            AssertImportInfo(docA.ImportPriorities.ImportPriority[docB], 2, true);
 
+            // make sure that the has circular import is set to false.
             Assert.IsFalse(docA.ImportPriorities.hasCircularImport);
             Assert.IsFalse(docB.ImportPriorities.hasCircularImport);
             Assert.IsFalse(docC.ImportPriorities.hasCircularImport);
@@ -155,6 +205,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
+        /// Tests if the DocumentVersion is set on the resolved document
+        /// </summary>
+        [TestMethod]
+        public async Task TestDocumentVersionSetOnResolution()
+        {
+            var testName = "TestDocumentVersionSetOnResolution";
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
+            var document = await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/Person.cdm.json");
+
+            Assert.AreEqual("2.1.3", manifest.DocumentVersion);
+            Assert.AreEqual("1.5", document.DocumentVersion);
+
+            var resManifest = await manifest.CreateResolvedManifestAsync($"res-{manifest.Name}", null);
+            var resEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>(resManifest.Entities[0].EntityPath, resManifest);
+            var resDocument = resEntity.InDocument;
+
+            Assert.AreEqual("2.1.3", resManifest.DocumentVersion);
+            Assert.AreEqual("1.5", resDocument.DocumentVersion);
+        }
+
+        /// <summary>
         /// Sets the document's isDirty flag to true and reset the importPriority.
         /// </summary>
         /// <param name="documents"></param>
@@ -165,6 +238,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 document.NeedsIndexing = true;
                 document.ImportPriorities = null;
             }
+        }
+
+        /// <summary>
+        /// Helper function to assert the ImportInfo class.
+        /// </summary>
+        /// <param name="importInfo"></param>
+        /// <param name="expectedPriority"></param>
+        /// <param name="expectedIsMoniker"></param>
+        private void AssertImportInfo(ImportInfo importInfo, int expectedPriority, bool expectedIsMoniker)
+        {
+            Assert.AreEqual(expectedPriority, importInfo.Priority);
+            Assert.AreEqual(expectedIsMoniker, importInfo.IsMoniker);
         }
     }
 }

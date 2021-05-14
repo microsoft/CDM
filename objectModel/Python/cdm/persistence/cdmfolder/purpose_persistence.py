@@ -16,11 +16,12 @@ class PurposePersistence:
 
         purpose = ctx.corpus.make_object(CdmObjectType.PURPOSE_DEF, data.purposeName)
         purpose.extends_purpose = PurposeReferencePersistence.from_data(ctx, data.get('extendsPurpose'))
+
         if data.get('explanation'):
             purpose.explanation = data.explanation
 
-        exhibits_traits = utils.create_trait_reference_array(ctx, data.get('exhibitsTraits'))
-        purpose.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(purpose.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.get('exhibitsTraits')))
 
         return purpose
 

@@ -5,12 +5,9 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.AttributeContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -23,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AttributeContextPersistence {
+  private static final String TAG = AttributeContextPersistence.class.getSimpleName();
+
   public static CdmAttributeContext fromData(final CdmCorpusContext ctx, final AttributeContext obj) {
     if (obj == null)
       return null;
@@ -68,13 +67,15 @@ public class AttributeContextPersistence {
           try {
             attributeContext.getContents().add(fromData(ctx, JMapper.MAP.treeToValue(node, AttributeContext.class)));
           } catch (final IOException ex) {
-            Logger.error(
-                AttributeContextPersistence.class.getSimpleName(),
-                ctx,
-                Logger.format("There was an error while trying to convert from JSON to CdmAttributeContext. Reason: '{0}'", ex.getLocalizedMessage()),
-                "fromData"
-            );
+            Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistJsonAttrContextConversionError, ex.getLocalizedMessage());
           }
+      }
+    }
+
+    if (obj.getLineage() != null) {
+      attributeContext.setLineage(new CdmCollection<CdmAttributeContextReference>(ctx, attributeContext, CdmObjectType.AttributeContextRef));
+      for (final JsonNode node : obj.getLineage()) {
+        attributeContext.getLineage().add(AttributeContextReferencePersistence.fromData(ctx, node));
       }
     }
 
@@ -91,7 +92,7 @@ public class AttributeContextPersistence {
     final CdmObjectReference definition = instance.getDefinition();
     if (definition != null) {
       final Object resolvedDefinition = definition.copyData(resOpt, options);
-      if (resolvedDefinition != null) {
+      if (resolvedDefinition instanceof String) {
         result.setDefinition(resolvedDefinition.toString());
       }
     } else {
@@ -101,8 +102,8 @@ public class AttributeContextPersistence {
     // i know the trait collection names look wrong. but I wanted to use the def baseclass
     if (instance.getExhibitsTraits() != null) {
       final List<CdmObject> traits = new ArrayList<>();
-      instance.getExhibitsTraits().forEach((CdmTraitReference trait) -> {
-        if (!trait.isFromProperty())
+      instance.getExhibitsTraits().forEach((CdmTraitReferenceBase trait) -> {
+        if (trait instanceof CdmTraitGroupReference || !((CdmTraitReference)trait).isFromProperty())
           traits.add(trait);
       });
       result.setAppliedTraits(Utils.listCopyDataAsArrayNode(traits, resOpt, options));
@@ -110,6 +111,10 @@ public class AttributeContextPersistence {
 
     if (instance.getContents() != null) {
       result.setContents(Utils.listCopyDataAsArrayNode(instance.getContents(), resOpt, options));
+    }
+
+    if (instance.getLineage() != null) {
+      result.setLineage(Utils.listCopyDataAsArrayNode(instance.getLineage(), resOpt, options));
     }
 
     return result;
@@ -164,7 +169,7 @@ public class AttributeContextPersistence {
       case "operationAddAttributeGroup":
         return CdmAttributeContextType.OperationAddAttributeGroup;
       default:
-        return null;
+        return CdmAttributeContextType.Unknown;
     }
   }
 

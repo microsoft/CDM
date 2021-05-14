@@ -6,13 +6,16 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
-    Errors,
+    cdmLogCode,
     Logger,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../internal';
 
 export class CdmE2ERelationship extends CdmObjectDefinitionBase {
+    private TAG: string = CdmE2ERelationship.name;
+
     public fromEntity: string;
     public fromEntityAttribute: string;
     public toEntity: string;
@@ -72,13 +75,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
         }
 
         if (missingFields.length > 0) {
-            Logger.error(
-                CdmE2ERelationship.name,
-                this.ctx,
-                Errors.validateErrorString(this.atCorpusPath, missingFields),
-                this.validate.name
-            );
-
+            Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
             return false;
         }
 

@@ -1,0 +1,90 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PurchRFQVendPostedQuestionAnswer.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchRFQVendPendingQuestionAnswer",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustomerAnswer",
+          "dataType": "PurchRFQCustomerAnswer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostedQuestionAnswer",
+          "dataType": "PurchRFQVendPostedQuestionAnswerRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQVendPostedQuestionAnswer"
+          },
+          "name": "Relationship_PurchRFQVendPostedQuestionAnswerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Pending answers to vendor questions"
+    },
+    {
+      "dataTypeName": "PurchRFQCustomerAnswer",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQVendPostedQuestionAnswerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

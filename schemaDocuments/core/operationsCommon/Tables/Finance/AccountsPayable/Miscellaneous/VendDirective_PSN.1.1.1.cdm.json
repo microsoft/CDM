@@ -1,0 +1,139 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "VendRoutingSlip_PSN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Miscellaneous/CustVendDirective_PSN.1.1.1.cdm.json",
+      "moniker": "base_CustVendDirective_PSN"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendDirective_PSN",
+      "extendsEntity": "base_CustVendDirective_PSN/CustVendDirective_PSN",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DeductAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Deduction amount",
+          "description": ""
+        },
+        {
+          "name": "DeductCode",
+          "dataType": "CustVendWithholdDeductCode_PSN",
+          "isNullable": true,
+          "displayName": "Deduction codes",
+          "description": ""
+        },
+        {
+          "name": "RequisitionOrder",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Requisition order",
+          "description": ""
+        },
+        {
+          "name": "VendDirectiveId",
+          "dataType": "VendDirectiveId_PSN",
+          "isNullable": true,
+          "displayName": "Mandat",
+          "description": ""
+        },
+        {
+          "name": "VendRoutingSlip_PSN",
+          "dataType": "CustVendRoutingSlipRecId_PSN",
+          "isNullable": true,
+          "displayName": "Bordereau de mandat",
+          "description": ""
+        },
+        {
+          "name": "WithholdAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "displayName": "Withholding amount",
+          "description": ""
+        },
+        {
+          "name": "WithholdCode",
+          "dataType": "CustVendWithholdDeductCode_PSN",
+          "isNullable": true,
+          "displayName": "Withholding codes",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "VendRoutingSlip_PSN"
+          },
+          "name": "Relationship_VendRoutingSlip_PSNRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Mandat"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustVendWithholdDeductCode_PSN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendDirectiveId_PSN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendRoutingSlipRecId_PSN",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -63,14 +63,18 @@ class CdmAttribute(CdmObjectDefinition, CdmAttributeItem):
         return self.name
 
     def _visit_att(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        if self.purpose and self.purpose.visit('{}/purpose/'.format(path_from), pre_children, post_children):
-            return True
+        if self.purpose:
+            self.purpose.owner = self
+            if self.purpose.visit('{}/purpose/'.format(path_from), pre_children, post_children):
+                return True
 
         if self.applied_traits and self.applied_traits._visit_array('{}/appliedTraits/'.format(path_from), pre_children, post_children):
             return True
 
-        if self.resolution_guidance and self.resolution_guidance.visit('{}/resolutionGuidance/'.format(path_from), pre_children, post_children):
-            return True
+        if self.resolution_guidance:
+            self.resolution_guidance.owner = self
+            if self.resolution_guidance.visit('{}/resolutionGuidance/'.format(path_from), pre_children, post_children):
+                return True
 
         if self._visit_def(path_from, pre_children, post_children):
             return True

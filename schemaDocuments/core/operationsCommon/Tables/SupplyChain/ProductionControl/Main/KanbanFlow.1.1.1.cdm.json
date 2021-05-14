@@ -1,0 +1,115 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/PlanPlanActivity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "KanbanFlow",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FirstPlanPlanActivity",
+          "dataType": "PlanPlanActivityRefRecId",
+          "isReadOnly": true,
+          "displayName": "First plan activity",
+          "description": ""
+        },
+        {
+          "name": "IsBridge",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Bridge kanban flow",
+          "description": ""
+        },
+        {
+          "name": "LastPlanPlanActivity",
+          "dataType": "PlanPlanActivityRefRecId",
+          "isReadOnly": true,
+          "displayName": "Last plan activity",
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "LegalEntity",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PlanPlanActivity"
+          },
+          "name": "Relationship_FirstPlanPlanActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlanPlanActivity"
+          },
+          "name": "Relationship_LastPlanPlanActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_LegalEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Kanban flows"
+    },
+    {
+      "dataTypeName": "PlanPlanActivityRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LegalEntity",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

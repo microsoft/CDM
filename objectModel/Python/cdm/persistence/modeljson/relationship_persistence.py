@@ -3,7 +3,7 @@
 
 from typing import Dict, Optional, TYPE_CHECKING
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import logger
 
 from . import utils
@@ -24,7 +24,7 @@ class RelationshipPersistence:
             return None
 
         if obj.fromAttribute.entityName not in entity_schema_by_name or obj.toAttribute.entityName not in entity_schema_by_name:
-            logger.error(_TAG, ctx, 'Trying to create relationship to an entity not defined.')
+            logger.error(_TAG, ctx, 'from_data', None, CdmLogCode.ERR_TRAIT_RESOLUTION_FAILURE)
             return None
 
         relationship = ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, obj.get('name'))

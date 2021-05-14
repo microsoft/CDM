@@ -16,6 +16,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 
@@ -345,26 +346,28 @@ public class Program {
     }
   }
 
-  static void printTrait(CdmTraitReference trait) {
+  static void printTrait(CdmTraitReferenceBase trait) {
     if (!Strings.isNullOrEmpty(trait.fetchObjectDefinitionName())) {
       System.out.println("      " + trait.fetchObjectDefinitionName());
 
-      for (CdmArgumentDefinition argDef : trait.getArguments()) {
-        if (argDef.getValue() instanceof CdmEntityReference) {
-          System.out.println("         Constant: [");
+      if (trait instanceof CdmTraitReference) {
+        for (CdmArgumentDefinition argDef : ((CdmTraitReference) trait).getArguments()) {
+          if (argDef.getValue() instanceof CdmEntityReference) {
+            System.out.println("         Constant: [");
 
-          CdmConstantEntityDefinition contEntDef = 
-            ((CdmEntityReference)argDef.getValue()).fetchObjectDefinition();
+            CdmConstantEntityDefinition contEntDef = 
+              ((CdmEntityReference)argDef.getValue()).fetchObjectDefinition();
 
-          for (List<String> constantValueList : contEntDef.getConstantValues()) {
-              System.out.println("             " + constantValueList);
+            for (List<String> constantValueList : contEntDef.getConstantValues()) {
+                System.out.println("             " + constantValueList);
+            }
+            System.out.println("         ]");
           }
-          System.out.println("         ]");
-        }
-        else
-        {
-          // Default output, nothing fancy for now
-          System.out.println("         " + argDef.getValue());
+          else
+          {
+            // Default output, nothing fancy for now
+            System.out.println("         " + argDef.getValue());
+          }
         }
       }
     }

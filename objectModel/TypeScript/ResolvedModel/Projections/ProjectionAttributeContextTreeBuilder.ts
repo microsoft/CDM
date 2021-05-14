@@ -65,12 +65,24 @@ export class ProjectionAttributeContextTreeBuilder {
      */
     private actionAttrCtxParamToResAttr: Map<AttributeContextParameters, ResolvedAttribute>;
 
+    /**
+     * Mapping between an "action" attribute context parameter to the context to consider 'where from' lineage
+     */
+    private actionAttrCtxParamToLineageOut: Map<AttributeContextParameters, CdmAttributeContext>;
+
+    /**
+     * Mapping between an "action" attribute context parameter to the context that wants to point here for lineage
+     */
+    private actionAttrCtxParamToLineageIn: Map<AttributeContextParameters, CdmAttributeContext>;
+
     constructor(root: CdmAttributeContext) {
         this.root = root;
         this.searchForToSearchForAttrCtxParam = new Map<string, AttributeContextParameters>();
         this.searchForAttrCtxParamToFoundAttrCtxParam = new Map<AttributeContextParameters, AttributeContextParameters[]>();
         this.foundAttrCtxParamToActionAttrCtxParam = new Map<AttributeContextParameters, AttributeContextParameters>();
         this.actionAttrCtxParamToResAttr = new Map<AttributeContextParameters, ResolvedAttribute>();
+        this.actionAttrCtxParamToLineageOut = new Map<AttributeContextParameters, CdmAttributeContext>();
+        this.actionAttrCtxParamToLineageIn = new Map<AttributeContextParameters, CdmAttributeContext>();
     }
 
     /**
@@ -83,7 +95,13 @@ export class ProjectionAttributeContextTreeBuilder {
      *
      * @internal
      */
-    public createAndStoreAttributeContextParameters(searchFor: string, found: ProjectionAttributeState, resAttrFromAction: ResolvedAttribute, attrCtxType: cdmAttributeContextType): void {
+    public createAndStoreAttributeContextParameters(
+        searchFor: string,
+        found: ProjectionAttributeState,
+        resAttrFromAction: ResolvedAttribute,
+        attrCtxType: cdmAttributeContextType,
+        lineageOut: CdmAttributeContext,
+        lineageIn: CdmAttributeContext): void {
         // searchFor is null when we have to construct attribute contexts for the excluded attributes in Include or the included attributes in Exclude,
         // as these attributes weren't searched for with a searchFor name.
         // If searchFor is null, just set it to have the same name as found so that it'll collapse in the final tree.
@@ -136,17 +154,27 @@ export class ProjectionAttributeContextTreeBuilder {
         // Store the action attribute context parameter with the resolved attribute resulting out of the action.
         // This is so that we can point the action attribute context to the correct resolved attribute once the attribute context is created.
         this.actionAttrCtxParamToResAttr.set(actionAttrCtxParam, resAttrFromAction);
+
+        // store the current resAtt as the lineage of the new one
+        // of note, if no lineage is stored AND the resolved Att associated above holds an existing context? we will
+        // flip the lineage when we make a new context and point 'back' to this new node. this means this new node should
+        // point 'back' to the context of the source attribute
+        if (lineageOut) {
+            this.actionAttrCtxParamToLineageOut.set(actionAttrCtxParam, lineageOut);
+        }
+        if (lineageIn) {
+            this.actionAttrCtxParamToLineageIn.set(actionAttrCtxParam, lineageIn);
+        }
     }
 
     /**
      * Takes all the stored attribute context parameters, creates attribute contexts from them, and then constructs the tree.
      *
      * @param projCtx The projection context
-     * @param setAttrCtx Whether to set the created attribute context on the associated resolved attribute
      *
      * @internal
      */
-    public constructAttributeContextTree(projCtx: ProjectionContext, setAttrCtx: boolean = false): void {
+    public constructAttributeContextTree(projCtx: ProjectionContext): void {
         // Iterate over all the searchFor attribute context parameters
         for (const searchForAttrCtxParam of this.searchForToSearchForAttrCtxParam.values()) {
             let searchForAttrCtx: CdmAttributeContext;
@@ -181,11 +209,22 @@ export class ProjectionAttributeContextTreeBuilder {
                 // Fetch the resolved attribute that should now point at this action attribute context
                 const resAttrFromAction: ResolvedAttribute = this.actionAttrCtxParamToResAttr.get(actionAttrCtxParam);
 
-                // TODO (jibyun): For now, only set the created attribute context on the resolved attribute when specified to,
-                // as pointing the resolved attribute at this attribute context won't work currently for certain operations (Include/Exclude).
-                // This will be changed to always run once we work on the attribute context fix.
-                if (setAttrCtx) {
-                    resAttrFromAction.attCtx = actionAttrCtx;
+                // make sure the lineage of the attribute stays linked up
+                // there can be either (or both) a lineageOut and a lineageIn.
+                // out lineage is where this attribute came from
+                // in lineage should be pointing back at this context as a source
+                if (this.actionAttrCtxParamToLineageOut.has(actionAttrCtxParam)) {
+                    if (actionAttrCtx) {
+                        actionAttrCtx.addLineage(this.actionAttrCtxParamToLineageOut.get(actionAttrCtxParam));
+                    }
+                    resAttrFromAction.attCtx = actionAttrCtx; // probably the right context for this resAtt, unless ...
+                }
+                if (this.actionAttrCtxParamToLineageIn.has(actionAttrCtxParam)) {
+                    const lineageIn: CdmAttributeContext = this.actionAttrCtxParamToLineageIn.get(actionAttrCtxParam);
+                    if (actionAttrCtx) {
+                        lineageIn.addLineage(actionAttrCtx);
+                    }
+                    resAttrFromAction.attCtx = lineageIn; // if there is a lineageIn. it points to us as lineage, so it is best
                 }
             }
         }

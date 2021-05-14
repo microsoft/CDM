@@ -7,7 +7,7 @@
  * including to entities and attributes. Producers can add a prefix, such as “contonso.com:MappingDisplayHint”
  * where “contonso.com:” is the prefix, when annotations are not necessarily relevant to other consumers.
  */
-export abstract class Annotation {
+export class Annotation {
     public name : string;
     public value : string;
 }

@@ -13,15 +13,17 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetB
 import com.microsoft.commondatamodel.objectmodel.utilities.CdmException;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class CdmTraitReference extends CdmObjectReferenceBase {
+public class CdmTraitReference extends CdmTraitReferenceBase {
 
   protected boolean resolvedArguments;
-  private CdmArgumentCollection arguments;
+  private final CdmArgumentCollection arguments;
   private boolean fromProperty;
 
   public CdmTraitReference(final CdmCorpusContext ctx, final Object trait, final boolean simpleReference,
@@ -91,7 +93,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
     for (int iArgSet = 0; iArgSet < lArgSet; iArgSet++) {
       final CdmArgumentDefinition arg = this.getArguments().get(iArgSet);
       final String argName = arg.getName();
-      if (argName == name) {
+      if (argName != null && argName.equals(name)) {
         return arg.getValue();
       }
       // Special case with only one argument and no name give, make a big assumption that this
@@ -139,40 +141,38 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
     // Get referenced trait.
     final CdmTraitDefinition trait = this.fetchObjectDefinition(resOpt);
     ResolvedTraitSet rtsTrait = null;
-    if (null == trait) {
+    if (trait == null) {
       return this.createEmptyResolvedTraitSet(ctx.getCorpus(), resOpt);
     }
 
     // See if one is already cached getCache() by name unless there are parameter.
-    if (null == trait.thisIsKnownToHaveParameters) {
+    if (trait.thisIsKnownToHaveParameters == null) {
       // Never been resolved, it will happen soon, so why not now?
       rtsTrait = trait.fetchResolvedTraits(resOpt);
     }
 
-    final boolean cacheByPath = trait.thisIsKnownToHaveParameters == null
-        ? true
-        : !trait.thisIsKnownToHaveParameters;
+    final boolean cacheByPath = trait.thisIsKnownToHaveParameters == null || !trait.thisIsKnownToHaveParameters;
     String cacheTag = ctx.getCorpus()
         .createDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.getAtCorpusPath());
     Object rtsResult = null;
 
-    if (null != cacheTag) {
+    if (cacheTag != null) {
       rtsResult = ctx.getCache().get(cacheTag);
     }
 
     // Store the previous reference symbol set, we will need to add it with
     // children found from the constructResolvedTraits call.
     SymbolSet currSymRefSet = resOpt.getSymbolRefSet();
-    if (null == currSymRefSet) {
+    if (currSymRefSet == null) {
       currSymRefSet = new SymbolSet();
     }
 
     resOpt.setSymbolRefSet(new SymbolSet());
 
     // If not, then make one and save it.
-    if (null == rtsResult) {
+    if (rtsResult == null) {
       // Get the set of resolutions, should just be this one trait.
-      if (null == rtsTrait) {
+      if (rtsTrait == null) {
         // Store current symbol ref set.
         final SymbolSet newSymbolRefSet = resOpt.getSymbolRefSet();
         resOpt.setSymbolRefSet(new SymbolSet());
@@ -180,19 +180,19 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
         rtsTrait = trait.fetchResolvedTraits(resOpt);
 
         // Bubble up symbol reference set from children.
-        if (null != newSymbolRefSet) {
+        if (newSymbolRefSet != null) {
           newSymbolRefSet.merge(resOpt.getSymbolRefSet());
         }
 
         resOpt.setSymbolRefSet(newSymbolRefSet);
       }
 
-      if (null != rtsTrait) {
+      if (rtsTrait != null) {
         rtsResult = rtsTrait.deepCopy();
       }
 
       // Now if there are argument for this application, set the values in the array.
-      if (null != this.getArguments() && null != rtsResult) {
+      if (this.getArguments() != null && rtsResult != null) {
         // If never tried to line up arguments with parameters, do that.
         if (!this.resolvedArguments) {
           this.resolvedArguments = true;
@@ -201,7 +201,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
           Object aValue;
 
           int iArg = 0;
-          if (null != this.getArguments()) {
+          if (this.getArguments() != null) {
             for (final CdmArgumentDefinition argumentDef : this.getArguments()) {
               try {
                 paramFound = param.resolveParameter(iArg, argumentDef.getName());
@@ -217,7 +217,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
             }
           }
         }
-        if (null != this.getArguments()) {
+        if (this.getArguments() != null) {
           for (final CdmArgumentDefinition argumentDef : this.getArguments()) {
             ((ResolvedTraitSet) rtsResult).setParameterValueFromArgument(trait, argumentDef);
           }
@@ -232,7 +232,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
       // Get the new getCache() tag now that we have the list of symbols.
       cacheTag = ctx.getCorpus()
           .createDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.getAtCorpusPath());
-      if (null != cacheTag && cacheTag.trim().length() > 0) {
+      if (cacheTag != null && cacheTag.trim().length() > 0) {
         ctx.getCache().put(cacheTag, rtsResult);
       }
     } else {
@@ -354,7 +354,22 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
     Map<String, Object> finalArgs = new LinkedHashMap<>();
     // get resolved traits does all the work, just clean up the answers
     ResolvedTraitSet rts = this.fetchResolvedTraits(resOpt);
-    if (rts == null) {
+    if (rts == null || rts.getSize() != 1) {
+        // well didn't get the traits. maybe imports are missing or maybe things are just not defined yet.
+        // this function will try to fake up some answers then from the arguments that are set on this reference only
+        if (this.getArguments() != null && this.getArguments().size() > 0) {
+          int unNamedCount = 0;
+          for (final CdmArgumentDefinition arg : this.getArguments()) {
+            // if no arg name given, use the position in the list.
+            String argName = arg.getName();
+            if (StringUtils.isNullOrTrimEmpty(argName)) {
+              argName = String.valueOf(unNamedCount);
+            }
+            finalArgs.put(argName, arg.getValue());
+            unNamedCount++;
+          }
+          return finalArgs;
+        }
       return null;
     }
     // there is only one resolved trait

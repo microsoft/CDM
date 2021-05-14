@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -9,9 +9,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class CdmConstantEntityDefinition : CdmObjectDefinitionBase
     {
+        private static readonly string Tag = nameof(CdmConstantEntityDefinition);
+
         /// <summary>
         /// Gets or sets the constant entity name.
         /// </summary>
@@ -65,7 +68,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             copy.EntityShape = (CdmEntityReference)this.EntityShape.Copy(resOpt);
-            copy.ConstantValues = this.ConstantValues; // is a deep copy needed? 
+            if (this.ConstantValues != null)
+            {
+                // deep copy the content
+                copy.ConstantValues = new List<List<string>>();
+                foreach(var row in this.ConstantValues)
+                {
+                    copy.ConstantValues.Add(new List<string>(row));
+                }
+            }
             this.CopyDef(resOpt, copy);
             return copy;
         }
@@ -77,11 +88,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 string[] pathSplit = this.DeclaredPath.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
                 string entityName = (pathSplit.Length > 0) ? pathSplit[0].ToString() : string.Empty;
-                Logger.Warning(nameof(CdmConstantEntityDefinition), this.Ctx, $"constant entity '{entityName}' defined without a constant value.");
+                Logger.Warning(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.WarnValdnEntityNotDefined, entityName);
             }
             if (this.EntityShape == null)
             {
-                Logger.Error(nameof(CdmConstantEntityDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "EntityShape" }), nameof(Validate));
+                IEnumerable<string> missingFields = new List<string> { "EntityShape" };
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
                 return false;
             }
             return true;
@@ -153,8 +165,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
             if (this.EntityShape != null)
+            {
+                this.EntityShape.Owner = this;
                 if (this.EntityShape.Visit(path + "/entityShape/", preChildren, postChildren))
                     return true;
+            }
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;

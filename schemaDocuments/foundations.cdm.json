@@ -1,12 +1,13 @@
 {
+  "documentVersion": "4.2",
   "$schema": "./schema.cdm.json",
   "jsonSchemaSemanticVersion": "1.0.0",
   "imports": [
     {
-      "uri": "/primitives.cdm.json"
+      "corpusPath": "/primitives.cdm.json"
     },
     {
-      "uri": "/meanings.cdm.json"
+      "corpusPath": "/meanings.cdm.json"
     }
   ],
   "definitions": [
@@ -82,7 +83,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "4.2"
             }
           ]
         }
@@ -105,7 +106,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "4.2"
             }
           ]
         }
@@ -114,14 +115,49 @@
     {
       "entityName": "entityGroupSet",
       "explanation": "The 'old' name for this entity before it was fixed to make it type specific",
-      "extendsEntity": "entitySet",
+      "extendsEntity": "reference",
+      "hasAttributes": [
+        {
+          "name": "entityReference",
+          "dataType": "entityName",
+          "purpose": "hasA"
+        },
+        {
+          "name": "attributeReference",
+          "dataType": "attributeName",
+          "purpose": "hasA"
+        }
+      ],
       "exhibitsTraits": [
         {
           "traitReference": "is.CDM.entityVersion",
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "4.2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entityName": "entitySet",
+      "explanation": "holds a list of entity references",
+      "extendsEntity": "entityGroupSet",
+      "hasAttributes": [
+        {
+          "name": "relationshipName",
+          "dataType": "name",
+          "purpose": "hasA"
+        }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "4.2"
             }
           ]
         }
@@ -135,7 +171,6 @@
         {
           "name": "languageTag",
           "dataType": "languageTag",
-          "purpose": "identifiedBy",
           "explanation": "A BCP 47 language tag describing the associated display text"
         },
         {
@@ -150,11 +185,16 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "4.2"
             }
           ]
         }
       ]
+    },
+    {
+      "traitName": "is.virtual.attribute",
+      "extendsTrait": "is",
+      "explanation": "Marks an attribute added to an entity to document or represent a concept, often regarding other attributes. When working with data, be aware that virtual attributes might never have corresponding data values in an entity's partition or might only have data values if special measures are taken to manifest them."
     },
     {
       "traitName": "is.localized",
@@ -202,7 +242,6 @@
         {
           "name": "attributeValue",
           "dataType": "integer",
-          "purpose": "identifiedBy",
           "explanation": "One of the enumerated values for this attribute"
         },
         {
@@ -218,7 +257,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "4.2"
             }
           ]
         }
@@ -232,7 +271,6 @@
         {
           "name": "correlatedValue",
           "dataType": "integer",
-          "purpose": "identifiedBy",
           "explanation": "value for the correlated attribute that corresponds to the associated attributeValue"
         }
       ],
@@ -242,7 +280,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "4.2"
             }
           ]
         }
@@ -250,13 +288,12 @@
     },
     {
       "entityName": "listLookupStringValues",
-      "explanation": "a localized list of descriptions for possible values in a listLookup type attribute",
+      "explanation": "a localized list of descriptions for possible values in a listLookupString type attribute",
       "extendsEntity": "localizedTable",
       "hasAttributes": [
         {
           "name": "attributeValue",
           "dataType": "string",
-          "purpose": "identifiedBy",
           "explanation": "One of the enumerated values for this attribute"
         },
         {
@@ -272,7 +309,36 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "4.2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entityName": "listLookupWellKnownValues",
+      "explanation": "a localized list of descriptions for possible values in a listLookupWellKnown type attribute",
+      "extendsEntity": "listLookupStringValues",
+      "hasAttributes": [
+        {
+          "name": "description",
+          "dataType": "string",
+          "explanation": "A description of the meaning of the look up value."
+        },
+        {
+          "purpose": "identifiedBy",
+          "name": "uniqueIdentifier",
+          "dataType": "string",
+          "explanation": "A domain specific unique identifier such as a URI or GUID for the well known value."
+        }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "4.2"
             }
           ]
         }
@@ -419,6 +485,27 @@
       ]
     },
     {
+      "traitName": "is.constrainedList.wellKnown",
+      "extendsTrait": "is",
+      "explanation": "The values of an attribute are taken from or looked up from a fixed list of possibilities which are defined in an identified public location.",
+      "hasParameters": [
+        {
+          "name": "uniqueIdentifier",
+          "explanation": "The identified public location for the complete set of possible values",
+          "dataType": "string"
+        },
+        {
+          "name": "defaultList",
+          "dataType": {
+            "dataTypeReference": "entity"
+          }
+        }
+      ],
+      "associatedProperties": [
+        "valueConstrainedToList"
+      ]
+    },
+    {
       "traitName": "means.entityState",
       "extendsTrait": "does.elevateAttribute",
       "explanation": "the attribute represents the current state of the entity."
@@ -485,6 +572,14 @@
       "explanation": "One string value from a defined list of possibilities",
       "exhibitsTraits": [
         "is.constrainedList.string"
+      ]
+    },
+    {
+      "dataTypeName": "listLookupWellKnown",
+      "extendsDataType": "string",
+      "explanation": "One string value from a defined list of possibilities which are defined in an identified public location.",
+      "exhibitsTraits": [
+        "is.constrainedList.wellKnown"
       ]
     },
     {
@@ -557,6 +652,13 @@
           "dataType": "integer",
           "defaultValue": "0",
           "explanation": "The number of lines to skip over at the start of the .csv file."
+        },
+        {
+          "name": "raggedRight",
+          "dataType": "boolean",
+          "defaultValue": "false",
+          "required": false,
+          "explanation": "Individual records of data in the csv file might be missing column values at the end of the record."
         }
       ]
     },
@@ -564,6 +666,36 @@
       "traitName": "is.partition.format.parquet",
       "extendsTrait": "is.partition.format",
       "explanation": "The value is the file format settings of a partition parquet file."
+    },
+    {
+      "traitName": "is.partition.format.deltaLake",
+      "extendsTrait": "is.partition.format",
+      "explanation": "The partition path points to one complete folder of Spark Delta Lake data. Options allow for time travel access to the data.",
+      "hasParameters": [
+        {
+          "name": "versionAsOf",
+          "dataType": "integer",
+          "explanation": "the optional time travel version of data to read. If both versionAsOf and timestampAsOf are set, then version takes precedence"
+        },
+        {
+          "name": "timestampAsOf",
+          "dataType": "dateTime",
+          "explanation": "the optional time travel timestamp of data to read. If both versionAsOf and timestampAsOf are set, then version takes precedence"
+        }
+      ]
+    },
+    {
+      "traitName": "is.partition.compressed",
+      "extendsTrait": "is.partition",
+      "explanation": "The value is the compression format represented.",
+      "hasParameters": [
+        {
+          "name": "compressionFormatName",
+          "dataType": "string",
+          "explanation": "the name of the compression format: gzip; Snappy; lto",
+          "required": true
+        }
+      ]
     },
     {
       "traitName": "is.partition.culture",
@@ -624,6 +756,365 @@
           "name": "application",
           "dataType": "string",
           "explanation": "The name of the managing entity or service."
+        }
+      ]
+    },
+    {
+      "traitName": "has.entitySchemaAbstractionLevel",
+      "extendsTrait": "has",
+      "explanation": "A level of abstraction assigned to an Entity schema. Logical schema descriptions use complex dataTypes, inheritance, and entities as attributes. Resolved descriptions contain none of those things, only final trait and attribute sets are shown. A composition schema manipulates, guides or re-states parts of logical schemas to produce one resolved schema.",
+      "hasParameters": [
+        {
+          "name": "level",
+          "dataType": "string",
+          "defaultValue": "logical",
+          "explanation": "Possible values: logical, composition, resolved"
+        }
+      ]
+    },
+    {
+      "traitName": "has.schemaObjectIdentifier",
+      "extendsTrait": "has",
+      "explanation": "The schema object has an identifier, which is a string, specified as the parameter of the trait. This allows writers to define additional identification values.",
+      "hasParameters": [
+        {
+          "name": "identifier",
+          "dataType": "string",
+          "explanation": "The identifier for the schema object. There is no uniqueness guarantee enforced by CDM. It is a contract between reader and writer of the schema.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "has.description",
+      "extendsTrait": "has",
+      "explanation": "Defines a list of localizable text descriptions",
+      "hasParameters": [
+        {
+          "name": "description",
+          "explanation": "The localized display text of the object.",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "traitName": "has.displayName",
+      "extendsTrait": "has",
+      "explanation": "Defines a localized string defining display text for an object.",
+      "hasParameters": [
+        {
+          "name": "displayText",
+          "explanation": "The localized display text of the object.",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "traitName": "has.displayFolder",
+      "extendsTrait": "has",
+      "explanation": "Defines a localized string representing an arbitrary folder structure for display purposes.",
+      "hasParameters": [
+        {
+          "name": "displayFolder",
+          "explanation": "The localized display text of the object.",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "traitName": "has.origin",
+      "extendsTrait": "has",
+      "explanation": "The root trait for the hierarchy related to the origin of schema."
+    },
+    {
+      "traitName": "has.origin.domain",
+      "extendsTrait": "has.origin",
+      "explanation": "A trait defining the domain from which the schema originated.",
+      "hasParameters": [
+        {
+          "name": "domainName",
+          "dataType": "string",
+          "explanation": "the name of the domain",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "has.origin.dataSource",
+      "extendsTrait": "has.origin",
+      "explanation": "A trait defining the origination of the datasource for the schema.",
+      "hasParameters": [
+        {
+          "name": "dataSourceName",
+          "dataType": "string",
+          "explanation": "the name of the data source",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "has.relational",
+      "extendsTrait": "has",
+      "explanation": "The root trait for all traits related specifically to Relational activity."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation",
+      "extendsTrait": "has.relational",
+      "explanation": "Base trait for default relational aggregations associated with an Attributes.",
+      "hasParameters": [
+        {
+          "name": "aggregationName",
+          "dataType": "string",
+          "explanation": "the name of the relational aggregation",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.sum",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "sum"
+        ]
+      },
+      "explanation": "Specifies sum as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.average",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "average"
+        ]
+      },
+      "explanation": "Specifies average as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.minimum",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "minimum"
+        ]
+      },
+      "explanation": "Specifies minimum as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.maximum",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "maximum"
+        ]
+      },
+      "explanation": "Specifies maximum as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.count",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "count"
+        ]
+      },
+      "explanation": "Specifies count as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.defaultAggregation.countDistinct",
+      "extendsTrait": {
+        "traitReference": "has.relational.defaultAggregation",
+        "arguments": [
+          "countDistinct"
+        ]
+      },
+      "explanation": "Specifies count distinct as the default relational aggregation associated with an Attribute."
+    },
+    {
+      "traitName": "has.relational.joinType",
+      "extendsTrait": "has.relational",
+      "explanation": "Base trait for relational join types associated with a Relationship.",
+      "hasParameters": [
+        {
+          "name": "joinType",
+          "dataType": "string",
+          "explanation": "the name of the relational join Type",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "has.relational.joinType.inner",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "inner"
+        ]
+      },
+      "explanation": "Specifies INNER JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "has.relational.joinType.leftOuter",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "leftOuter"
+        ]
+      },
+      "explanation": "Specifies LEFT OUTER JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "has.relational.joinType.rightOuter",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "rightOuter"
+        ]
+      },
+      "explanation": "Specifies RIGHT OUTER JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "has.relational.joinType.fullOuter",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "fullOuter"
+        ]
+      },
+      "explanation": "Specifies FULL OUTER JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "has.relational.joinType.leftAnti",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "leftAnti"
+        ]
+      },
+      "explanation": "Specifies LEFT ANTI JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "has.relational.joinType.rightAnti",
+      "extendsTrait": {
+        "traitReference": "has.relational.joinType",
+        "arguments": [
+          "rightAnti"
+        ]
+      },
+      "explanation": "Specifies RIGHT ANTI JOIN as the default relational join type associated with this Relationship."
+    },
+    {
+      "traitName": "means.relationship",
+      "extendsTrait": "means",
+      "explanation": "root trait for semantic traits relevant to relationships"
+    },
+    {
+      "traitName": "means.relationship.verbPhrase",
+      "extendsTrait": "means.relationship",
+      "explanation": "The Verb Phrase used to model the relationship between the FROM entity and the TO entity.",
+      "hasParameters": [
+        {
+          "name": "verbPhrase",
+          "explanation": "the localized Verb Phrase",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "traitName": "means.relationship.inverseVerbPhrase",
+      "extendsTrait": "means.relationship",
+      "explanation": "The Verb Phrase used to model the relationship between the TO entity and the FROM entity.",
+      "hasParameters": [
+        {
+          "name": "verbPhrase",
+          "explanation": "the localized Verb Phrase",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "purposeName": "meaningOfRelationshipVerbPhrases",
+      "extendsPurpose": "hasA",
+      "explanation": "describes the standard Verb Phrases associated with a relationship",
+      "exhibitsTraits": [
+        "means.relationship.verbPhrase",
+        "means.relationship.inverseVerbPhrase"
+      ]
+    },
+    {
+      "traitName": "is.relationship",
+      "extendsTrait": "is",
+      "explanation": "root trait for structural traits relevant to relationships"
+    },
+    {
+      "traitName": "is.relationship.default",
+      "extendsTrait": "is",
+      "explanation": "The default relationship when there are multiple relationships between two entities."
+    },
+    {
+      "traitName": "has.relationship",
+      "extendsTrait": "has",
+      "explanation": "The root trait for annotative traits relevant to relationships"
+    },
+    {
+      "traitName": "has.relationship.constraint",
+      "extendsTrait": "has.relationship",
+      "explanation": "String value is a clause representing a constraint on the relationship in chosen syntax",
+      "hasParameters": [
+        {
+          "name": "constraintClause",
+          "explanation": "relationship constraint in the chosen syntax",
+          "dataType": "string"
         }
       ]
     }

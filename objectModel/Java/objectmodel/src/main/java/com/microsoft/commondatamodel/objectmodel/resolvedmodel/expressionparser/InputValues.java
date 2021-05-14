@@ -3,6 +3,8 @@
 
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel.expressionparser;
 
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionDirective;
+
 /**
  * A structure to carry all the input values during evaluation/resolution of an expression tree
  *
@@ -22,6 +24,22 @@ public class InputValues {
     private Boolean referenceOnly;
     private Boolean normalized;
     private Boolean structured;
+    private Boolean isVirtual;
+
+    public InputValues() { }
+
+    public InputValues(ProjectionDirective projDirective) {
+        this.setNoMaxDepth(projDirective.getHasNoMaximumDepth());
+        this.setIsArray(projDirective.getIsArray());
+        this.setReferenceOnly(projDirective.getIsReferenceOnly());
+        this.setNormalized(projDirective.getIsNormalized());
+        this.setStructured(projDirective.getIsStructured());
+        this.setIsVirtual(projDirective.getIsVirtual());
+        this.setNextDepth(projDirective.getResOpt().depthInfo.getCurrentDepth());
+        this.setMaxDepth(projDirective.getMaximumDepth());
+        this.setMinCardinality(projDirective.getCardinality() != null ? projDirective.getCardinality().getMinimumNumber() : null);
+        this.setMaxCardinality(projDirective.getCardinality() != null ? projDirective.getCardinality().getMaximumNumber() : null);
+    }
 
 
     public Integer getNextDepth() {
@@ -94,5 +112,13 @@ public class InputValues {
 
     public void setStructured(final Boolean structured) {
         this.structured = structured;
+    }
+
+    public Boolean getIsVirtual() {
+        return isVirtual;
+    }
+
+    public void setIsVirtual(final Boolean isVirtual) {
+        this.isVirtual = isVirtual;
     }
 }

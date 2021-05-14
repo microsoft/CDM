@@ -5,7 +5,6 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projecti
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
-import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -16,7 +15,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.List;
 
 public class ProjectionPersistenceTest {
     /**

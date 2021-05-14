@@ -6,9 +6,10 @@ import {
     CdmCorpusContext,
     CdmLocalEntityDeclarationDefinition,
     cdmObjectType,
-    CdmTraitReference,
+    cdmLogCode,
     copyOptions,
-    resolveOptions
+    resolveOptions,
+    CdmTraitReferenceBase
 } from '../../internal';
 import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import { Logger } from '../../Utilities/Logging/Logger';
@@ -18,11 +19,14 @@ import {
     DataPartitionPattern,
     EntityDeclarationDefinition,
     entityDeclarationDefinitionType,
+    TraitGroupReference,
     TraitReference
 } from './types';
 import * as utils from './utils';
 
 export class LocalEntityDeclarationPersistence {
+    private static TAG: string = LocalEntityDeclarationPersistence.name;
+
     /**
      * Creates an instance of the local entity declaration from data.
      * @param ctx The context.
@@ -37,12 +41,7 @@ export class LocalEntityDeclarationPersistence {
         if (!entityPath) {
             entityPath = dataObj.entitySchema;
             if (!entityPath) {
-                Logger.error(
-                    LocalEntityDeclarationPersistence.name,
-                    ctx,
-                    'Couldn\'t find entity path or similar.',
-                    this.fromData.name
-                );
+                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistEntityPathNotFound);
             }
         }
 
@@ -63,9 +62,9 @@ export class LocalEntityDeclarationPersistence {
         if (dataObj.explanation) {
             localDec.explanation = dataObj.explanation;
         }
-        if (dataObj.exhibitsTraits) {
-            utils.addArrayToCdmCollection<CdmTraitReference>(localDec.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
-        }
+        
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(localDec.exhibitsTraits, utils.createTraitReferenceArray(ctx, dataObj.exhibitsTraits));
+        
         if (dataObj.dataPartitions) {
             for (const dataPartition of dataObj.dataPartitions) {
                 localDec.dataPartitions.push(CdmFolder.DataPartitionPersistence.fromData(ctx, dataPartition));
@@ -91,7 +90,7 @@ export class LocalEntityDeclarationPersistence {
             lastFileStatusCheckTime: timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime),
             lastFileModifiedTime: timeUtils.getFormattedDateString(instance.lastFileModifiedTime),
             lastChildFileModifiedTime: timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime),
-            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options),
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, instance.exhibitsTraits, options),
             entityPath: instance.entityPath,
             dataPartitions: copyDataUtils.arrayCopyData<DataPartition>(resOpt, instance.dataPartitions, options),
             dataPartitionPatterns: copyDataUtils.arrayCopyData<DataPartitionPattern>(resOpt, instance.dataPartitionPatterns, options)

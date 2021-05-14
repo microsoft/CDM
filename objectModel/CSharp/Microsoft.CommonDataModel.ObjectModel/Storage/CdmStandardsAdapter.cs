@@ -6,8 +6,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using System;
-    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
 
@@ -34,7 +32,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public CdmStandardsAdapter() : this("/logical")
         {
-            this.httpClient = new CdmHttpClient(STANDARDS_ENDPOINT);
         }
 
         /// <summary>
@@ -45,7 +42,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </param>
         public CdmStandardsAdapter(string root)
         {
-            Root = root;
+            this.Root = root;
+            this.httpClient = new CdmHttpClient(STANDARDS_ENDPOINT);
         }
 
         /// <inheritdoc />

@@ -1,6 +1,11 @@
 {
     "$schema": "./schema.cdm.json",
     "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "uri": "/foundations.cdm.json"
+        }
+    ],
     "definitions": [
         {
             "traitName": "is",
@@ -17,11 +22,14 @@
             "explanation": "a root with a more meaningful base name for certain semantic meaning traits"
         },
         {
+            "traitName": "has",
+            "extendsTrait": "is",
+            "explanation": "a root for traits that describe properties of an object"
+        },
+        {
             "dataTypeName": "any",
             "explanation": "the root dataType"
         },
-
-
         {
             "traitName": "is.dataFormat",
             "extendsTrait": "is",
@@ -35,6 +43,7 @@
         },
         {
             "traitName": "is.dataFormat.big",
+            "explanation": "indicates an atomic but multi-unit version of a fundamental type such as a multi byte encoded character, a double precision float, a long integer.",
             "extendsTrait": "is.dataFormat"
         },
         {
@@ -47,6 +56,7 @@
         },
         {
             "traitName": "is.dataFormat.array",
+            "explanation": "indicates a contiguous sequence of fundamental units that shoud be taken as a whole and considered one value. Array of Character is a String, Array of Byte is a Binary Object",
             "extendsTrait": "is.dataFormat"
         },
         {
@@ -77,12 +87,18 @@
             "traitName": "is.dataFormat.guid",
             "extendsTrait": "is.dataFormat"
         },
-		{
+        {
             "traitName": "is.dataFormat.timeOffset",
             "extendsTrait": "is.dataFormat"
         },
         {
+            "traitName": "is.dataFormat.JSInteger",
+            "extendsTrait": "is.dataFormat",
+            "explanation": "represents the 54 bit integer numbers compatible with javascript"
+        },
+        {
             "dataTypeName": "integer",
+            "explanation": "Whole numbers, assumed to correspond with a 32 bit signed int",
             "extendsDataType": "any",
             "exhibitsTraits": [
                 "is.dataFormat.integer"
@@ -91,6 +107,7 @@
         {
             "dataTypeName": "float",
             "extendsDataType": "any",
+            "explanation": "Fractional numbers, assumed to correspond with a 32 bit float IEEE approximation.",
             "exhibitsTraits": [
                 "is.dataFormat.floatingPoint"
             ]
@@ -103,19 +120,18 @@
                 {
                     "name": "precision",
                     "explanation": "the total number of significant digits",
-                    "dataType": "integer",
-                    "direction": "both"
+                    "dataType": "integer"
                 },
                 {
                     "name": "scale",
                     "explanation": "the number of digits to the right of the decimal place",
-                    "dataType": "integer",
-                    "direction": "both"
+                    "dataType": "integer"
                 }
             ]
         },
         {
             "dataTypeName": "decimal",
+            "explanation": "A precice fractional number with a specific precision and scale",
             "extendsDataType": "any",
             "exhibitsTraits": [
                 "is.dataFormat.numeric.shaped"
@@ -134,6 +150,13 @@
             "exhibitsTraits": [
                 "is.dataFormat.character",
                 "is.dataFormat.big"
+            ]
+        },
+        {
+            "dataTypeName": "sChar",
+            "extendsDataType": "any",
+            "exhibitsTraits": [
+                "is.dataFormat.character"
             ]
         },
         {
@@ -185,7 +208,74 @@
                 "is.dataFormat.guid"
             ]
         },
-
+        {
+            "dataTypeName": "fixedDecimal",
+            "explanation": "the 64 bit fixed (4) scale numbers used by PBI",
+            "extendsDataType": {
+                "dataTypeReference": "decimal",
+                "appliedTraits": [
+                    {
+                        "traitReference": "is.dataFormat.numeric.shaped",
+                        "arguments": [
+                            {
+                                "name": "precision",
+                                "value": "19"
+                            },
+                            {
+                                "name": "scale",
+                                "value": "4"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "dataTypeName": "variableDecimal",
+            "explanation": "15 digit precision numbers with no fixed scale",
+            "extendsDataType": {
+                "dataTypeReference": "decimal",
+                "appliedTraits": [
+                    {
+                        "traitReference": "is.dataFormat.numeric.shaped",
+                        "arguments": [
+                            {
+                                "name": "precision",
+                                "value": "15"
+                            },
+                            {
+                                "name": "scale",
+                                "value": "-1"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "dataTypeName": "JSInteger",
+            "extendsDataType": {
+                "dataTypeReference": "decimal",
+                "appliedTraits": [
+                    {
+                        "traitReference": "is.dataFormat.numeric.shaped",
+                        "arguments": [
+                            {
+                                "name": "precision",
+                                "value": "16"
+                            },
+                            {
+                                "name": "scale",
+                                "value": "0"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "exhibitsTraits": [
+                "is.dataFormat.JSInteger"
+            ]
+        },
         {
             "traitName": "means.identity",
             "extendsTrait": "means"
@@ -197,9 +287,21 @@
         {
             "dataTypeName": "entityId",
             "extendsDataType": "guid",
-            "explanation": "a unique identier for entity instances",
+            "explanation": "a unique identifier for entity instances",
             "exhibitsTraits": [
                 "means.identity.entityId"
+            ]
+        },
+        {
+            "traitName": "means.fileName",
+            "extendsTrait": "means"
+        },
+        {
+            "dataTypeName": "fileName",
+            "extendsDataType": "string",
+            "explanation": "a string value representing the name of a file.",
+            "exhibitsTraits": [
+                "means.fileName"
             ]
         },
         {
@@ -228,21 +330,44 @@
             "explanation": "types for trait parameters that take objects as values"
         },
         {
-            "dataTypeName": "entity",
-            "extendsDataType": "cdmObject",
-            "explanation": "types for trait parameters that take objects as values"
+            "traitName": "means.entityName",
+            "extendsTrait": "means",
+            "explanation": "a string value is the name of a CDM entity."
         },
         {
             "dataTypeName": "entityName",
             "extendsDataType": "string",
-            "explanation": "type for trait parameters that take attribute names as values",
+            "explanation": "type for trait parameters that take entity names as values",
             "exhibitsTraits": [
                 {
                     "traitReference": {
                         "traitName": "means.entityName",
-                        "extendsTrait": "means"
+                        "extendsTrait": "means",
+                        "explanation": "[deprecated] use the standalone 'means.entityName' trait instead.",
+                        "ugly": true
                     }
+                },
+                "means.entityName"
+            ]
+        },
+        {
+            "traitName": "means.entityName.specific",
+            "extendsTrait": "means.entityName",
+            "explanation": "holds the name of specific CDM entity as a parameter of the trait.",
+            "hasParameters": [
+                {
+                    "name": "entity",
+                    "dataType": "entityName",
+                    "explanation": "the name of a specific CDM entity."
                 }
+            ]
+        },
+        {
+            "dataTypeName": "entity",
+            "extendsDataType": "cdmObject",
+            "explanation": "types for trait parameters that take objects as values",
+            "exhibitsTraits": [
+                "means.entityName.specific"
             ]
         },
         {
@@ -268,9 +393,6 @@
                 }
             ]
         },
-
-
-
         {
             "traitName": "means.content",
             "extendsTrait": "means"
@@ -355,8 +477,6 @@
             "traitName": "is.sensitive",
             "extendsTrait": "is"
         },
-
-
         {
             "traitName": "does.elevateAttribute",
             "explanation": "elevates (up to a entity) a trait that describes a specific attribute",
@@ -367,8 +487,7 @@
                     "name": "attribute",
                     "dataType": "attribute",
                     "defaultValue": "this.attribute",
-                    "required": true,
-                    "direction": "both"
+                    "required": true
                 }
             ]
         },
@@ -448,7 +567,17 @@
             "hasParameters": [
                 {
                     "name": "entityReferences",
-                    "dataType": "entity",
+                    "dataType": {
+                        "dataTypeReference": "entity",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "means.entityName.specific",
+                                "arguments": [
+                                    "entitySet"
+                                ]
+                            }
+                        ]
+                    },
                     "explanation": "a reference to the constant entity holding the list of entity references"
                 }
             ]
@@ -465,7 +594,34 @@
         {
             "traitName": "is.linkedEntity.array.count",
             "explanation": "Marks an attribute that contains the count of items in the array of linked (used as an attribute) entities"
+        },
+        {
+            "entityName": "defaultArtifacts",
+            "explanation": "default definitions for attributes that are generated and added during resolution",
+            "extendsEntity": "reference",
+            "hasAttributes": [
+                {
+                    "name": "id",
+                    "dataType": "entityId",
+                    "appliedTraits": [
+                        "is.linkedEntity.identifier"
+                    ]
+                },
+                {
+                    "name": "count",
+                    "dataType": "integer",
+                    "appliedTraits": [
+                        "is.linkedEntity.array.count"
+                    ]
+                },
+                {
+                    "name": "type",
+                    "dataType": "entityName",
+                    "appliedTraits": [
+                        "is.linkedEntity.name"
+                    ]
+                }
+            ]
         }
-
     ]
 }

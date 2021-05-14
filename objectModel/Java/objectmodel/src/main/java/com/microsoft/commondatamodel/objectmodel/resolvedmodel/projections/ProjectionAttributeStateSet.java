@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 
 import java.util.*;
 
@@ -17,6 +18,8 @@ import java.util.*;
  */
 @Deprecated
 public final class ProjectionAttributeStateSet {
+    private static final String TAG = ProjectionAttributeStateSet.class.getSimpleName();
+
     /**
      * A list containing all the ProjectionAttributeStates
      */
@@ -29,11 +32,12 @@ public final class ProjectionAttributeStateSet {
      * @param ctx CdmCorpusContext
      */
     public ProjectionAttributeStateSet(CdmCorpusContext ctx) {
-        this.ctx = ctx;
+        this.setCtx(ctx);
         this.states = new ArrayList<>();
     }
 
     /**
+     * @return List of ProjectionAttributeState
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      */
@@ -68,32 +72,30 @@ public final class ProjectionAttributeStateSet {
         if (pas == null ||
                 pas.getCurrentResolvedAttribute() == null ||
                 StringUtils.isNullOrTrimEmpty(pas.getCurrentResolvedAttribute().getResolvedName())) {
-            Logger.error(ProjectionAttributeStateSet.class.getSimpleName(), this.ctx, "Invalid ProjectionAttributeState provided for addition to the Set. Add operation failed.", "add");
+                    Logger.error(this.ctx, TAG, "add", null, CdmLogCode.ErrProjInvalidAttrState);
         } else {
             states.add(pas);
         }
     }
 
     /**
-     * Remove from collection
+     * Creates a copy of this projection attribute state set
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      */
     @Deprecated
-    public boolean remove(ProjectionAttributeState pas) {
-        if (pas != null && contains(pas)) {
-            states.remove(pas);
-            return true;
-        } else {
-            Logger.warning(ProjectionAttributeStateSet.class.getSimpleName(), this.ctx, "Invalid ProjectionAttributeState provided for removal from the Set. Remove operation failed.", "remove");
-            return false;
-        }
+    public ProjectionAttributeStateSet copy() {
+        ProjectionAttributeStateSet copy = new ProjectionAttributeStateSet(this.getCtx());
+        copy.getStates().addAll(this.getStates());
+
+        return copy;
     }
 
     /**
      * Check if exists in collection
-     *
+     * @param pas ProjectionAttributeState
+     * @return boolean
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      */

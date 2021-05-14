@@ -2,11 +2,14 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from datetime import datetime
-from typing import Dict, Optional, Set, Tuple, TYPE_CHECKING
+from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 import warnings
 
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
+
 from cdm.enums import CdmObjectType, ImportsLoadStrategy
-from cdm.utilities import CopyOptions, logger, ResolveOptions, Errors
+from cdm.utilities import CopyOptions, ImportInfo, logger, ResolveOptions
 
 from .cdm_container_def import CdmContainerDefinition
 from .cdm_definition_collection import CdmDefinitionCollection
@@ -14,14 +17,14 @@ from .cdm_import_collection import CdmImportCollection
 from .cdm_object_simple import CdmObjectSimple
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDataTypeDefinition, CdmFolderDefinition, CdmObject, \
+    from cdm.objectmodel import CdmCorpusContext, CdmDataTypeDefinition, CdmImport, CdmFolderDefinition, CdmObject, \
         CdmObjectDefinition, CdmTraitDefinition
     from cdm.utilities import FriendlyFormatNode, VisitCallback
 
 
 class ImportPriorities:
     def __init__(self):
-        self.import_priority = {}  # type: Dict[CdmDocumentDefinition, int]
+        self.import_priority = {}  # type: Dict[CdmDocumentDefinition, ImportInfo]
         self.moniker_priority_map = {}  # type: Dict[str, CdmDocumentDefinition]
 
         # True if one of the document's imports import this document back.
@@ -40,8 +43,13 @@ class ImportPriorities:
 
 
 class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
+    # The maximum json semantic version supported by this ObjectModel version.
+    current_json_schema_semantic_version = '1.2.0'
+
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
+
+        self._TAG = CdmDocumentDefinition.__name__
 
         # the document name.
         self.name = name  # type: str
@@ -52,7 +60,10 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         self.schema = None  # type: Optional[str]
 
         # the document json schema semantic version.
-        self.json_schema_semantic_version = '1.0.0'  # type: str
+        self.json_schema_semantic_version = self.current_json_schema_semantic_version  # type: str
+        
+        # the document version.
+        self.document_version = None  # type: Optional[str]
 
         # the document folder.
         self.folder = None  # type: Optional[CdmFolderDefinition]
@@ -74,7 +85,6 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         self._imports = CdmImportCollection(self.ctx, self)
         self._definitions = CdmDefinitionCollection(self.ctx, self)
         self._is_valid = True  # types: bool
-        self._TAG = CdmDocumentDefinition.__name__
 
         self._clear_caches()
 
@@ -131,6 +141,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         copy.folder_path = self.folder_path
         copy.schema = self.schema
         copy.json_schema_semantic_version = self.json_schema_semantic_version
+        copy.document_version = self.document_version
 
         for definition in self.definitions:
             copy.definitions.append(definition)
@@ -145,7 +156,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             return True
 
         if not self.folder:
-            logger.error(self._TAG, self.ctx, 'Document \'{}\' is not in a folder'.format(self.name), self._index_if_needed.__name__)
+            logger.error(self.ctx, self._TAG, self._index_if_needed.__name__, self.at_corpus_path, CdmLogCode.ERR_VALDN_MISSING_DOC, self.name)
             return False
 
         corpus = self.folder._corpus
@@ -167,7 +178,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     def _get_import_priorities(self) -> 'ImportPriorities':
         if not self._import_priorities:
             import_priorities = ImportPriorities()
-            import_priorities.import_priority[self] = 0
+            import_priorities.import_priority[self] = ImportInfo(0, False)
             self._prioritize_imports(set(), import_priorities, 1, False)
             self._import_priorities = import_priorities
 
@@ -217,7 +228,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         was_blocking = self.ctx.corpus._block_declared_path_changes
         self.ctx.corpus._block_declared_path_changes = True
 
-        logger.info(self._TAG, self.ctx, 'Localizing corpus paths in document \'{}\''.format(self.name), self._localize_corpus_paths.__name__)
+        logger.info(self.ctx, self._TAG, self._localize_corpus_paths.__name__, new_folder.at_corpus_path,
+                    'Localizing corpus paths in document \'{}\''.format(self.name))
 
         def import_callback(obj: 'CdmObject', path: str) -> bool:
             nonlocal all_went_well
@@ -341,7 +353,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
         # maps document to priority.
-        priority_map = import_priorities.import_priority  # type: Dict[CdmDocumentDefinition, int]
+        priority_map = import_priorities.import_priority  # type: Dict[CdmDocumentDefinition, ImportInfo]
 
         # maps moniker to document.
         moniker_map = import_priorities.moniker_priority_map  # type: Dict[str, CdmDocumentDefinition]
@@ -349,8 +361,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # if already in list, don't do this again
         if self in processed_set:
             # if the first document in the priority map is this then the document was the starting point of the recursion.
-            # and if this document is present in the processedSet we know that there is a cicular list of imports.
-            if self in priority_map and priority_map[self] == 0:
+            # and if this document is present in the processedSet we know that there is a circular list of imports.
+            if self in priority_map and priority_map[self].priority == 0:
                 import_priorities.has_circular_import = True
             return sequence
 
@@ -359,19 +371,34 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         if self.imports:
             # reverse order.
             # first add the imports done at this level only.
-            reversed_imports = self.imports[::-1]  # reverse the list
+            # reverse the list
+            reversed_imports = self.imports[::-1]  # type: List[CdmImport]
+            moniker_imports = []  # type: List[CdmDocumentDefinition]
+
             for imp in reversed_imports:
                 imp_doc = imp._document  # type: CdmDocumentDefinition
-                # don't add the moniker imports to the priority list
-                if imp._document and not imp.moniker and imp_doc not in priority_map:
-                    # add doc
-                    priority_map[imp_doc] = sequence
-                    sequence += 1
+
+                # moniker imports will be added to the end of the priority list later.
+                if imp_doc:
+                    if not imp.moniker and imp_doc not in priority_map:
+                        # add doc
+                        priority_map[imp_doc] = ImportInfo(sequence, False)
+                        sequence += 1
+                    else:
+                        moniker_imports.append(imp_doc)
+                else:
+                    logger.warning(self.ctx, self._TAG, CdmDocumentDefinition._prioritize_imports.__name__, self.at_corpus_path,
+                                   CdmLogCode.WARN_DOC_IMPORT_NOT_LOADED ,imp.corpus_path)
 
             # now add the imports of the imports.
             for imp in reversed_imports:
                 imp_doc = imp._document  # type: CdmDocumentDefinition
                 is_moniker = bool(imp.moniker)
+
+                if not imp_doc:
+                    logger.warning(self.ctx, self._TAG, CdmDocumentDefinition._prioritize_imports.__name__, self.at_corpus_path,
+                                   CdmLogCode.WARN_DOC_IMPORT_NOT_LOADED ,imp.corpus_path)
+
                 # if the document has circular imports its order on the impDoc.ImportPriorities list is not correct
                 # since the document itself will always be the first one on the list.
                 if imp_doc and imp_doc._import_priorities and not imp_doc._import_priorities.has_circular_import:
@@ -379,11 +406,13 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                     imp_pri_sub = imp_doc._get_import_priorities()
                     imp_pri_sub.import_priority.pop(imp_doc)  # because already added above
                     imports = list(imp_pri_sub.import_priority.keys())
-                    imports.sort(key=lambda i: imp_pri_sub.import_priority[i])
+                    imports.sort(key=lambda doc: imp_pri_sub.import_priority[doc].priority)
                     for key in imports:
-                        if key not in priority_map:
+                        # if the document is imported with moniker in another document do not include it in the priority list of this one.
+                        # moniker imports are only added to the priority list of the document that directly imports them.
+                        if key not in priority_map and not imp_pri_sub.import_priority[key].is_moniker:
                             # add doc
-                            priority_map[key] = sequence
+                            priority_map[key] = ImportInfo(sequence, False)
                             sequence += 1
 
                     # if the import is not monikered then merge its monikerMap to this one.
@@ -401,6 +430,14 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                     if imp._document and imp.moniker:
                         moniker_map[imp.moniker] = imp._document
 
+                # if the document index is zero, the document being processed is the root of the imports chain.
+                # in this case add the monikered imports to the end of the priorityMap.
+                if self in priority_map and priority_map[self].priority == 0:
+                    for doc in moniker_imports:
+                        if doc not in priority_map:
+                            priority_map[doc] = ImportInfo(sequence, True)
+                            sequence += 1
+
         return sequence
 
     async def refresh_async(self, res_opt: Optional['ResolveOptions'] = None) -> bool:
@@ -408,14 +445,12 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         self._declarations_indexed = False
-        self._imports_indexed = False
-        self._import_priorities = None
         self._needs_indexing = True
         self._is_valid = True
         return await self._index_if_needed(res_opt, True)
 
     async def _reload_async(self) -> None:
-        await self.ctx.corpus.fetch_object_async(self.corpus_path, force_reload=True)
+        await self.ctx.corpus.fetch_object_async(self.at_corpus_path, force_reload=True)
 
     async def save_as_async(self, new_name: str, save_referenced: bool = False, options: Optional['CopyOptions'] = None) -> bool:
         """saves the document back through the adapter in the requested format
@@ -423,17 +458,18 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         'model.json' for back compat model, '*.manifest.json' for manifest, '*.json' for cdm defs
         save_referenced (default False) when true will also save any schema defintion documents that are
         linked from the source doc and that have been modified. existing document names are used for those."""
-        options = options if options is not None else CopyOptions()
+        with logger._enter_scope(self._TAG, self.ctx, self.save_as_async.__name__):
+            options = options if options is not None else CopyOptions()
 
-        index_if_needed = await self._index_if_needed(ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives))
-        if not index_if_needed:
-            logger.error(self._TAG, self.ctx, 'Failed to index document prior to save {}.'.format(self.name), self.save_as_async.__name__)
-            return False
+            index_if_needed = await self._index_if_needed(ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives))
+            if not index_if_needed:
+                logger.error(self.ctx, self._TAG, self.save_as_async.__name__, self.at_corpus_path, CdmLogCode.ERR_INDEX_FAILED, self.name)
+                return False
 
-        if new_name == self.name:
-            self._is_dirty = False
+            if new_name == self.name:
+                self._is_dirty = False
 
-        return await self.ctx.corpus.persistence._save_document_as_async(self, options, new_name, save_referenced)
+            return await self.ctx.corpus.persistence._save_document_as_async(self, options, new_name, save_referenced)
 
     async def _save_linked_documents_async(self, options: 'CopyOptions') -> bool:
         # the only linked documents would be the imports
@@ -444,13 +480,22 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                 if doc_imp and doc_imp._is_dirty:
                     # save it with the same name
                     if not await doc_imp.save_as_async(doc_imp.name, True, options):
-                        logger.error(self._TAG, self.ctx, 'Failed to save import {}'.format(doc_imp.name), self._save_linked_documents_async.__name__)
+                        logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IMPORT_SAVING_FAILURE, doc_imp.name)
                         return False
         return True
 
+    def fetch_object_definition(self, res_opt: Optional['ResolveOptions'] = None) -> Optional['CdmObjectDefinition']:
+        if res_opt is None:
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
+        return self
+
+    def fetch_object_definition_name(self) -> Optional[str]:
+        return self.name
+
     def validate(self) -> bool:
         if not bool(self.name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            missing_fields = ['name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 
@@ -474,3 +519,42 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             return False
 
         self.visit('', None, post_visit)
+
+    def _import_path_to_doc(self, doc_dest: 'CdmDocumentDefinition') -> str:
+        avoid_loop = set()
+
+        def _internal_import_path_to_doc(doc_check: 'CdmDocumentDefinition', path: str) -> str:
+            if doc_check == doc_dest:
+                return ''
+            if doc_check in avoid_loop:
+                return None
+            avoid_loop.add(doc_check)
+            # if the docDest is one of the monikered imports of docCheck, then add the moniker and we are cool
+            if doc_check._import_priorities and doc_check._import_priorities.moniker_priority_map:
+                for key, value in doc_check._import_priorities.moniker_priority_map.items():
+                    if value == doc_dest:
+                        return '{}{}/'.format(path, key)
+            # ok, what if the document can be reached directly from the imports here
+            imp_info =  doc_check._import_priorities.import_priority[doc_check] \
+                if doc_check._import_priorities and doc_check._import_priorities.import_priority else None
+            if imp_info and imp_info.is_moniker is False:
+                # good enough
+                return path
+
+            # still nothing, now we need to check those docs deeper
+            if doc_check._import_priorities and doc_check._import_priorities.moniker_priority_map:
+                for key, value in doc_check._import_priorities.moniker_priority_map:
+                    path_found = _internal_import_path_to_doc(value, '{}{}/'.format(path, key))
+                    if path_found:
+                        return path_found
+
+            if doc_check._import_priorities and doc_check._import_priorities.import_priority:
+                for key, value in doc_check._import_priorities.import_priority:
+                    if not value.is_moniker:
+                        path_found = _internal_import_path_to_doc(key, path)
+                        if path_found:
+                            return path_found
+
+            return None
+
+        return _internal_import_path_to_doc(self, '')

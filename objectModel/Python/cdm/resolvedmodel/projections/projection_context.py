@@ -15,9 +15,6 @@ class ProjectionContext:
         # Directive passed to the root projection
         self._projection_directive = proj_directive
 
-        # The collection of original source entities's resolved attributes
-        self._original_source_resolved_attribute_set = None
-
         # The attribute context of the current resolve attribute
         self._current_attribute_context = attr_ctx
 

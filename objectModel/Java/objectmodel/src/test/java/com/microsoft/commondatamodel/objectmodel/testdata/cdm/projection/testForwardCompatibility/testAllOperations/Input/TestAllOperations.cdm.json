@@ -1,5 +1,5 @@
 {
-    "$schema": "../../../../../../../schemaDocuments/schema.cdm.json",
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
     "jsonSchemaSemanticVersion": "1.0.7",
     "imports": [
         {
@@ -14,7 +14,8 @@
                 "source": "TestSource",
                 "operations": [
                     {
-                        "$type": "addAttributeGroup"
+                        "$type": "addAttributeGroup",
+                        "attributeGroupName": "TestAttributeGroup"
                     },
                     {
                         "$type": "addCountAttribute",
@@ -45,7 +46,7 @@
                     },
                     {
                         "$type": "combineAttributes",
-                        "take": [ "A", "A", "A" ],
+                        "select": [ "A", "A", "A" ],
                         "mergeInto": {
                             "name": "combined"
                         }
@@ -56,13 +57,6 @@
                         "applyTo": "A"
                     },
                     {
-                        "$type": "replaceAsForeignKey",
-                        "reference": "A",
-                        "replaceWith": {
-                            "name": "A_FK"
-                        }
-                    },
-                    {
                         "$type": "includeAttributes",
                         "includeAttributes": [
                             "A"
@@ -71,6 +65,21 @@
                 ]
             },
             "hasAttributes": [
+                {
+                    "name": "replaceFK",
+                    "entity": {
+                        "source": "TestSource",
+                        "operations": [
+                            {
+                                "$type": "replaceAsForeignKey",
+                                "reference": "A",
+                                "replaceWith": {
+                                    "name": "A_FK"
+                                }
+                            }
+                        ]
+                    }
+                }
             ]
         }
     ]

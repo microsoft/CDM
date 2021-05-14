@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
@@ -19,6 +19,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             WillRemove = (ApplierContext onStep) =>
             {
                 return true;
+            }
+        };
+        internal static AttributeResolutionApplier isRemovedInternal = new AttributeResolutionApplier
+        {
+            MatchName = "is.removed.internal",
+            Priority = 10,
+            OverridesBase = false,
+            WillRemove = (ApplierContext appCtx) =>
+            {
+                return appCtx.ResAttSource.ApplierState?.Flex_remove == true;
             }
         };
 

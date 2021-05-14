@@ -125,6 +125,8 @@ describe('Persistence.CdmFolder.Manifest', () => {
             .toBe('CdmManifestDefinition.cdm.json');
         expect(manifestObject.jsonSchemaSemanticVersion)
             .toBe('1.0.0');
+        expect(manifestObject.documentVersion)
+            .toBe('2.0.0');
         expect(manifestObject.manifestName)
             .toBe('cdmTest');
         expect(manifestObject.explanation)
@@ -255,7 +257,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         obj.namespace = 'cdm';
 
         const callback: EventCallback & { mock: { calls: object[][] } } = jest.fn();
-        corpus.setEventCallback(callback);
+        corpus.setEventCallback(callback, cdmStatusLevel.warning);
 
         const absolutePath: string = corpus.storage.createAbsoluteCorpusPath('Abc', obj);
         expect(absolutePath)
@@ -274,7 +276,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
     it('TestPathRootInvalidObjectPath', () => {
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         const callback: EventCallback & { mock: { calls: object[][] } } = jest.fn();
-        corpus.setEventCallback(callback);
+        corpus.setEventCallback(callback, cdmStatusLevel.warning);
 
         let absolutePath: string = corpus.storage.createAbsoluteCorpusPath('./Abc');
         expect(callback.mock.calls.length)
@@ -282,7 +284,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(callback.mock.calls[0][0])
             .toEqual(cdmStatusLevel.error);
         expect(callback.mock.calls[0][1])
-            .toContain('The path should not start with ./');
+            .toContain('The path starts with ./');
 
         absolutePath = corpus.storage.createAbsoluteCorpusPath('/./Abc');
         expect(callback.mock.calls.length)
@@ -290,7 +292,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(callback.mock.calls[1][0])
             .toEqual(cdmStatusLevel.error);
         expect(callback.mock.calls[1][1])
-            .toContain('The path should not contain /./');
+            .toContain('The path contains /./');
 
         absolutePath = corpus.storage.createAbsoluteCorpusPath('../Abc');
         expect(callback.mock.calls.length)
@@ -298,7 +300,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(callback.mock.calls[2][0])
             .toEqual(cdmStatusLevel.error);
         expect(callback.mock.calls[2][1])
-            .toContain('The path should not contain ../');
+            .toContain('The path contains ../');
 
         absolutePath = corpus.storage.createAbsoluteCorpusPath('Abc/../Def');
         expect(callback.mock.calls.length)
@@ -306,7 +308,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(callback.mock.calls[3][0])
             .toEqual(cdmStatusLevel.error);
         expect(callback.mock.calls[3][1])
-            .toContain('The path should not contain ../');
+            .toContain('The path contains ../');
     });
 
     /**
@@ -316,7 +318,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
     it('TestPathRootInvalidFolderPath', () => {
         const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         const callback: EventCallback & { mock: { calls: object[][] } } = jest.fn();
-        corpus.setEventCallback(callback);
+        corpus.setEventCallback(callback, cdmStatusLevel.warning);
 
         const obj: CdmManifestDefinition = new CdmManifestDefinition(undefined, undefined);
         obj.namespace = 'cdm';
@@ -327,7 +329,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(callback.mock.calls[0][0])
             .toEqual(cdmStatusLevel.error);
         expect(callback.mock.calls[0][1])
-            .toContain('The path should not start with ./');
+            .toContain('The path starts with ./');
 
         obj.namespace = 'cdm';
         obj.folderPath = '/./Mnp';
@@ -337,7 +339,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(callback.mock.calls[1][0])
             .toEqual(cdmStatusLevel.error);
         expect(callback.mock.calls[1][1])
-            .toContain('The path should not contain /./');
+            .toContain('The path contains /./');
 
         obj.namespace = 'cdm';
         obj.folderPath = '../Mnp';
@@ -347,7 +349,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(callback.mock.calls[2][0])
             .toEqual(cdmStatusLevel.error);
         expect(callback.mock.calls[2][1])
-            .toContain('The path should not contain ../');
+            .toContain('The path contains ../');
 
         obj.namespace = 'cdm';
         obj.folderPath = 'Mnp/./Qrs';
@@ -357,7 +359,7 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(callback.mock.calls[3][0])
             .toEqual(cdmStatusLevel.error);
         expect(callback.mock.calls[3][1])
-            .toContain('The path should not contain /./');
+            .toContain('The path contains /./');
 
         obj.namespace = 'cdm';
         obj.folderPath = 'Mnp/../Qrs';
@@ -367,6 +369,6 @@ describe('Persistence.CdmFolder.Manifest', () => {
         expect(callback.mock.calls[4][0])
             .toEqual(cdmStatusLevel.error);
         expect(callback.mock.calls[4][1])
-            .toContain('The path should not contain ../');
+            .toContain('The path contains ../');
     });
 });

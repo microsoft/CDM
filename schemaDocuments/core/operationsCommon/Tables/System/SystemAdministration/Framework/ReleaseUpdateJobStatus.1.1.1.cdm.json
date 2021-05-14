@@ -1,0 +1,204 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Transaction/Batch.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "ReleaseUpdateScripts.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReleaseUpdateJobStatus",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BatchId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Batch ID",
+          "description": ""
+        },
+        {
+          "name": "Changed",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "The job has been changed",
+          "description": ""
+        },
+        {
+          "name": "Company",
+          "dataType": "SelectableDataArea",
+          "displayName": "Company accounts",
+          "description": ""
+        },
+        {
+          "name": "DataPartition",
+          "dataType": "PartitionKey",
+          "description": ""
+        },
+        {
+          "name": "EndDateTime",
+          "dataType": "EndDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobID",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Task ID",
+          "description": ""
+        },
+        {
+          "name": "Mode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Restarted",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "This job has been restarted",
+          "description": ""
+        },
+        {
+          "name": "ScriptID",
+          "dataType": "ReleaseUpdateScriptId",
+          "description": ""
+        },
+        {
+          "name": "ScriptStage",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "scriptVersion",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDateTime",
+          "dataType": "StartDateTime",
+          "isNullable": true,
+          "displayName": "Start time",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Status",
+          "description": ""
+        },
+        {
+          "name": "TimeRunning",
+          "dataType": "RealBase",
+          "isNullable": true,
+          "displayName": "Duration",
+          "description": ""
+        },
+        {
+          "name": "WhenToRun",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Task type",
+          "description": ""
+        },
+        {
+          "name": "WhenToRunEx",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Task type",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Batch"
+          },
+          "name": "Relationship_BatchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReleaseUpdateScripts"
+          },
+          "name": "Relationship_ReleaseUpdateScriptsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Release update job status"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PartitionKey",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EndDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReleaseUpdateScriptId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "StartDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RealBase",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

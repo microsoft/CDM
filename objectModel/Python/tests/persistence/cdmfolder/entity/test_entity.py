@@ -6,11 +6,12 @@ import unittest
 
 from cdm.enums import CdmStatusLevel
 from cdm.storage import LocalAdapter
-from cdm.objectmodel import CdmCorpusDefinition, CdmTypeAttributeDefinition
+from cdm.objectmodel import CdmAttributeGroupDefinition, CdmCorpusDefinition, CdmTypeAttributeDefinition
 from cdm.persistence import PersistenceLayer
 from cdm.utilities import CopyOptions, ResolveOptions
 
 from tests.common import async_test, TestHelper
+from cdm.persistence.cdmfolder import AttributeGroupPersistence
 
 
 class TestEntity(unittest.TestCase):
@@ -82,3 +83,9 @@ class TestEntity(unittest.TestCase):
         await corpus.fetch_object_async('local:/Entity.cdm.json/Entity')
         # load resolved entity with shallow_validation = false.
         await corpus.fetch_object_async('local:/ResolvedEntity.cdm.json/ResolvedEntity')
+
+    def test_persist_attribute_group_definition(self):
+        corpus = CdmCorpusDefinition()
+        att_group = CdmAttributeGroupDefinition(corpus.ctx, 'attGroup')
+        persisted_group = AttributeGroupPersistence.to_data(att_group, ResolveOptions(att_group.in_document), CopyOptions())
+        self.assertIsNotNone(persisted_group.members)

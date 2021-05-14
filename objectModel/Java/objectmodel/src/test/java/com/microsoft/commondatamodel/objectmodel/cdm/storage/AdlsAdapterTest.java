@@ -3,31 +3,24 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.storage;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.fail;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.microsoft.commondatamodel.objectmodel.AdlsTestHelper;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.storage.AdlsAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase.CacheContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+
+import static org.testng.Assert.*;
 
 public class AdlsAdapterTest {
 
@@ -37,62 +30,6 @@ public class AdlsAdapterTest {
     public String getToken() {
       return "TOKEN";
     }
-  }
-
-  private static AdlsAdapter createAdapterWithSharedKey() {
-    return createAdapterWithSharedKey("");
-  }
-
-  private static AdlsAdapter createAdapterWithSharedKey(String rootRelativePath) {
-    String hostname = System.getenv("ADLS_HOSTNAME");
-    String rootPath = System.getenv("ADLS_ROOTPATH");
-    String sharedKey = System.getenv("ADLS_SHAREDKEY");
-
-    assertFalse(StringUtils.isNullOrEmpty(hostname));
-    assertFalse(StringUtils.isNullOrEmpty(rootPath));
-    assertFalse(StringUtils.isNullOrEmpty(sharedKey));
-
-    return new AdlsAdapter(hostname, combinePath(rootPath, rootRelativePath), sharedKey);
-  }
-
-  private static AdlsAdapter createAdapterWithClientId() {
-    return createAdapterWithClientId("");
-  }
-
-  private static AdlsAdapter createAdapterWithClientId(String rootRelativePath) {
-    String hostname = System.getenv("ADLS_HOSTNAME");
-    String rootPath = System.getenv("ADLS_ROOTPATH");
-    String tenant = System.getenv("ADLS_TENANT");
-    String clientId = System.getenv("ADLS_CLIENTID");
-    String clientSecret = System.getenv("ADLS_CLIENTSECRET");
-
-    assertFalse(StringUtils.isNullOrEmpty(hostname));
-    assertFalse(StringUtils.isNullOrEmpty(rootPath));
-    assertFalse(StringUtils.isNullOrEmpty(tenant));
-    assertFalse(StringUtils.isNullOrEmpty(clientId));
-    assertFalse(StringUtils.isNullOrEmpty(clientSecret));
-
-    return new AdlsAdapter(hostname, combinePath(rootPath, rootRelativePath), tenant, clientId, clientSecret);
-  }
-
-  private static String combinePath(String first, String second)
-  {
-    if (second == null || second.isEmpty())
-    {
-      return first;
-    }
-
-    if (first.endsWith("/"))
-    {
-      first = first.substring(0, first.length() - 1);
-    }
-
-    if (second.startsWith("/"))
-    {
-      second = second.substring(1);
-    }
-
-    return first + "/" + second;
   }
 
   private static void runWriteReadTest(AdlsAdapter adapter) {
@@ -170,38 +107,45 @@ public class AdlsAdapterTest {
 
   @Test
   public void adlsWriteReadSharedKey() {
-    runWriteReadTest(createAdapterWithSharedKey());
+    AdlsTestHelper.checkADLSEnvironment();
+    runWriteReadTest(AdlsTestHelper.createAdapterWithSharedKey());
   }
 
   @Test
   public void adlsWriteReadClientId() {
-    runWriteReadTest(createAdapterWithClientId());
+    AdlsTestHelper.checkADLSEnvironment();
+    runWriteReadTest(AdlsTestHelper.createAdapterWithClientId());
   }
 
   @Test
   public void adlsCheckFileTimeSharedKey() {
-    runCheckFileTimeTest(createAdapterWithSharedKey());
+    AdlsTestHelper.checkADLSEnvironment();
+    runCheckFileTimeTest(AdlsTestHelper.createAdapterWithSharedKey());
   }
 
   @Test
   public void adlsCheckFileTimeClientId() {
-    runCheckFileTimeTest(createAdapterWithClientId());
+    AdlsTestHelper.checkADLSEnvironment();
+    runCheckFileTimeTest(AdlsTestHelper.createAdapterWithClientId());
   }
 
   @Test
   public void adlsFileEnumSharedKey() {
-    runFileEnumTest(createAdapterWithSharedKey());
+    AdlsTestHelper.checkADLSEnvironment();
+    runFileEnumTest(AdlsTestHelper.createAdapterWithSharedKey());
   }
 
   @Test
   public void adlsFileEnumClientId() {
-    runFileEnumTest(createAdapterWithClientId());
+    AdlsTestHelper.checkADLSEnvironment();
+    runFileEnumTest(AdlsTestHelper.createAdapterWithClientId());
   }
 
   @Test
   public void adlsSpecialCharactersTest()
   {
-    runSpecialCharactersTest(createAdapterWithClientId("PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:"));
+    AdlsTestHelper.checkADLSEnvironment();
+    runSpecialCharactersTest(AdlsTestHelper.createAdapterWithClientId("PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:"));
   }
 
   @Test
@@ -273,10 +217,10 @@ public class AdlsAdapterTest {
           "fake.dfs.core.windows.net",
           "fakeRoot",
           new FakeTokenProvider()
-      );
+    );
 
     try {
-      String resultConfig = adlsAdapter.fetchConfig();      
+      String resultConfig = adlsAdapter.fetchConfig();
       JsonNode adapterConfigJson = JMapper.MAP.readTree(resultConfig);
       adlsAdapter.updateConfig(adapterConfigJson.get("config").toString());
     } catch (final Exception ex) {
@@ -291,18 +235,31 @@ public class AdlsAdapterTest {
    */
   @Test
   public void fetchConfigAndUpdateConfigWithoutSecret() {
-    final AdlsAdapter adlsAdapter = new AdlsAdapter();
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode config = mapper.createObjectNode();
+    config.put("root", "root");
+    config.put("hostname", "hostname");
+    config.put("tenant", "tenant");
+    config.put("clientId", "clientId");
 
     try {
-      ObjectMapper mapper = new ObjectMapper();
-      ObjectNode config = mapper.createObjectNode();
-      config.put("root", "root");
-      config.put("hostname", "hostname");
-      config.put("tenant", "tenant");
-      config.put("clientId", "clientId");
-      adlsAdapter.updateConfig(config.toString());
-      adlsAdapter.setClientId("clientId");
-      adlsAdapter.setSharedKey("sharedKey");
+      final AdlsAdapter adlsAdapter1 = new AdlsAdapter();
+      adlsAdapter1.updateConfig(config.toString());
+      adlsAdapter1.setClientId("clientId");
+      adlsAdapter1.setSecret("secret");
+      adlsAdapter1.setSharedKey("sharedKey");
+      adlsAdapter1.setTokenProvider(new FakeTokenProvider());
+    } catch (final Exception ex) {
+      fail("AdlsAdapter initialized without secret shouldn't throw exception when updating config.");
+    }
+
+    try {
+      final AdlsAdapter adlsAdapter2 = new AdlsAdapter();
+      adlsAdapter2.setClientId("clientId");
+      adlsAdapter2.setSecret("secret");
+      adlsAdapter2.setSharedKey("sharedKey");
+      adlsAdapter2.setTokenProvider(new FakeTokenProvider());
+      adlsAdapter2.updateConfig(config.toString());
     } catch (final Exception ex) {
       fail("AdlsAdapter initialized without secret shouldn't throw exception when updating config.");
     }

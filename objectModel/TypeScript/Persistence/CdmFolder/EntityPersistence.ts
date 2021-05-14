@@ -7,7 +7,9 @@ import {
     CdmCorpusContext,
     CdmEntityDefinition,
     cdmObjectType,
+    CdmTraitGroupReference,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     copyOptions,
     resolveOptions
 } from '../../internal';
@@ -19,6 +21,7 @@ import {
     Entity,
     EntityAttribute,
     EntityReferenceDefinition,
+    TraitGroupReference,
     TraitReference,
     TypeAttribute
 } from './types';
@@ -37,7 +40,7 @@ export class EntityPersistence {
 
         entity.explanation = utils.propertyFromDataToString(object.explanation);
 
-        utils.addArrayToCdmCollection<CdmTraitReference>(
+        utils.addArrayToCdmCollection<CdmTraitReferenceBase>(
             entity.exhibitsTraits,
             utils.createTraitReferenceArray(ctx, object.exhibitsTraits)
         );
@@ -58,8 +61,9 @@ export class EntityPersistence {
     }
 
     public static toData(instance: CdmEntityDefinition, resOpt: resolveOptions, options: copyOptions): Entity {
-        const exhibitsTraits: CdmTraitReference[] = instance.exhibitsTraits ?
-            instance.exhibitsTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty) : undefined;
+        const exhibitsTraits: CdmTraitReferenceBase[] = instance.exhibitsTraits ?
+            instance.exhibitsTraits.allItems.filter(
+                (trait: CdmTraitReferenceBase) => trait instanceof CdmTraitGroupReference || !(trait as CdmTraitReference).isFromProperty) : undefined;
         const object: Entity = {
             explanation: instance.explanation,
             entityName: instance.entityName,
@@ -67,7 +71,7 @@ export class EntityPersistence {
                 instance.extendsEntity.copyData(resOpt, options) as (string | EntityReferenceDefinition) : undefined,
             extendsEntityResolutionGuidance: instance.extendsEntityResolutionGuidance ?
                 instance.extendsEntityResolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
-            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, exhibitsTraits, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, exhibitsTraits, options)
         };
 
         if (instance.sourceName) {

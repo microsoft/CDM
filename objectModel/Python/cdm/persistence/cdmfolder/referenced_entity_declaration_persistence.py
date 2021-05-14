@@ -6,6 +6,7 @@ import dateutil.parser
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmReferencedEntityDeclarationDefinition
 from cdm.utilities import CopyOptions, logger, ResolveOptions, time_utils, copy_data_utils
+from cdm.enums import CdmLogCode
 
 from . import utils
 from .types import ReferencedEntityDeclaration
@@ -21,7 +22,7 @@ class ReferencedEntityDeclarationPersistence:
         entity_path = data.get('entityPath') or data.get('entityDeclaration')
 
         if not entity_path:
-            logger.error(_TAG, ctx, 'Couldn\'t find entity path or similar.', ReferencedEntityDeclarationPersistence.from_data.__name__)
+            logger.error(ctx, _TAG, ReferencedEntityDeclarationPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_PATH_NOT_FOUND)
 
         # The entity path has to be absolute.
         # If the namespace is not present then add the "prefixPath" which has the absolute folder path.
@@ -37,9 +38,8 @@ class ReferencedEntityDeclarationPersistence:
         if data.get('lastFileModifiedTime'):
             referenced_entity.last_file_modified_time = dateutil.parser.parse(data.lastFileModifiedTime)
 
-        if data.get('exhibitsTraits'):
-            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
-            referenced_entity.exhibits_traits.extend(exhibits_traits)
+        utils.add_list_to_cdm_collection(referenced_entity.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.exhibitsTraits))
 
         return referenced_entity
 

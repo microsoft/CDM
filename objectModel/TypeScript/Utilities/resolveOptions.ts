@@ -3,9 +3,12 @@
 
 import {
     AttributeResolutionDirectiveSet,
+    CdmAttributeContext,
     CdmDocumentDefinition,
+    CdmEntityDefinition,
     CdmObject,
     CdmObjectBase,
+    DepthInfo,
     importsLoadStrategy,
     SymbolSet
 } from '../internal';
@@ -15,13 +18,15 @@ export class resolveOptions {
     public directives?: AttributeResolutionDirectiveSet; // a set of string flags that direct how attribute resolving traits behave
     public shallowValidation?: boolean; // when enabled, errors regarding references that are unable to be resolved or loaded are logged as warnings instead
     public importsLoadStrategy: importsLoadStrategy = importsLoadStrategy.lazyLoad; // defines at which point the Object Model will try to load the imported documents.
-    public resolvedAttributeLimit?: number = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail 
+    public resolvedAttributeLimit?: number = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail
     public maxOrdinalForArrayExpansion: number = 20; // the maximum value for the end ordinal in an ArrayExpansion operation
+    public maxDepth: number = 2; // the maximum depth that entity attributes will be resolved before giving up
 
     /**
      * @internal
+     * Contains information about the depth that we are resolving at
      */
-    public relationshipDepth?: number; // tracks the number of entity attributes that have been traversed
+    public depthInfo: DepthInfo;
 
     /**
      * @internal
@@ -39,7 +44,7 @@ export class resolveOptions {
 
     /**
      * @internal
-     * forces symbolic references to be re-written to be the precisely located reference based on the wrtDoc 
+     * forces symbolic references to be re-written to be the precisely located reference based on the wrtDoc
      */
     public localizeReferencesFor?: CdmDocumentDefinition;
 
@@ -55,6 +60,16 @@ export class resolveOptions {
     public fromMoniker?: string; // moniker that was found on the ref
 
     /**
+     * @internal
+     */
+    public mapOldCtxToNewCtx?: Map<CdmAttributeContext, CdmAttributeContext>; // moniker that was found on the ref
+
+    /**
+     * @internal
+     */
+    public currentlyResolvingEntities: Set<CdmEntityDefinition>; // moniker that was found on the ref
+
+    /**
      * @deprecated please use importsLoadStrategy instead.
      * when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
      */
@@ -62,7 +77,8 @@ export class resolveOptions {
         if (this.importsLoadStrategy === importsLoadStrategy.lazyLoad) {
             return undefined;
         }
-        return this.importsLoadStrategy == importsLoadStrategy.load;
+
+        return this.importsLoadStrategy === importsLoadStrategy.load;
     }
 
     /**
@@ -79,7 +95,18 @@ export class resolveOptions {
         }
     }
 
+    /**
+     * @internal
+     * Indicates whether we are resolving inside of a circular reference, resolution is different in that case
+     */
+    public inCircularReference: boolean;
+
     public constructor(parameter?: CdmDocumentDefinition | CdmObject, directives?: AttributeResolutionDirectiveSet) {
+        this.symbolRefSet = new SymbolSet();
+        this.depthInfo = new DepthInfo();
+        this.inCircularReference = false;
+        this.currentlyResolvingEntities = new Set();
+
         if (!parameter) {
             return;
         }
@@ -102,7 +129,6 @@ export class resolveOptions {
             directivesSet.add('referenceOnly');
             this.directives = new AttributeResolutionDirectiveSet(directivesSet);
         }
-        this.symbolRefSet = new SymbolSet();
     }
 
     /**
@@ -116,5 +142,32 @@ export class resolveOptions {
         }
 
         return true;
+    }
+
+    /**
+     * @internal
+     * Creates a copy of the resolve options object
+     */
+    public copy(): resolveOptions {
+        const resOptCopy: resolveOptions = new resolveOptions();
+        resOptCopy.wrtDoc = this.wrtDoc;
+        if (this.depthInfo) {
+            resOptCopy.depthInfo = this.depthInfo.copy();
+        }
+        if (this.directives) {
+            resOptCopy.directives = this.directives.copy();
+        }
+        resOptCopy.depthInfo = this.depthInfo.copy();
+        resOptCopy.inCircularReference = this.inCircularReference;
+        resOptCopy.localizeReferencesFor = this.localizeReferencesFor;
+        resOptCopy.indexingDoc = this.indexingDoc;
+        resOptCopy.shallowValidation = this.shallowValidation;
+        resOptCopy.resolvedAttributeLimit = this.resolvedAttributeLimit;
+        resOptCopy.mapOldCtxToNewCtx = this.mapOldCtxToNewCtx; // ok to share this map
+        resOptCopy.importsLoadStrategy = this.importsLoadStrategy;
+        resOptCopy.saveResolutionsOnCopy = this.saveResolutionsOnCopy;
+        resOptCopy.currentlyResolvingEntities = new Set(this.currentlyResolvingEntities);
+
+        return resOptCopy;
     }
 }

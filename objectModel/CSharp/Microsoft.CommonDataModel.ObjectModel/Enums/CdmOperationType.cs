@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Enums
@@ -52,6 +52,40 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
                 case CdmOperationType.Error:
                 default:
                     throw new InvalidOperationException();
+            }
+        }
+
+        /// <summary>
+        /// Gets the operation type from the object type.
+        /// </summary>
+        /// <param name="objectType"></param>
+        /// <returns></returns>
+        internal static CdmOperationType FromObjectType(CdmObjectType objectType)
+        {
+            switch (objectType)
+            {
+                case CdmObjectType.OperationAddAttributeGroupDef:
+                    return CdmOperationType.AddAttributeGroup;
+                case CdmObjectType.OperationAddCountAttributeDef:
+                    return CdmOperationType.AddCountAttribute;
+                case CdmObjectType.OperationAddSupportingAttributeDef:
+                    return CdmOperationType.AddSupportingAttribute;
+                case CdmObjectType.OperationAddTypeAttributeDef:
+                    return CdmOperationType.AddTypeAttribute;
+                case CdmObjectType.OperationArrayExpansionDef:
+                    return CdmOperationType.ArrayExpansion;
+                case CdmObjectType.OperationCombineAttributesDef:
+                    return CdmOperationType.CombineAttributes;
+                case CdmObjectType.OperationExcludeAttributesDef:
+                    return CdmOperationType.ExcludeAttributes;
+                case CdmObjectType.OperationIncludeAttributesDef:
+                    return CdmOperationType.IncludeAttributes;
+                case CdmObjectType.OperationRenameAttributesDef:
+                    return CdmOperationType.RenameAttributes;
+                case CdmObjectType.OperationReplaceAsForeignKeyDef:
+                    return CdmOperationType.ReplaceAsForeignKey;
+                default:
+                    return CdmOperationType.Error;
             }
         }
     }

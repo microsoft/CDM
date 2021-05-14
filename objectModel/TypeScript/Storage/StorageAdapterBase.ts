@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { CdmCorpusContext } from '../Cdm/CdmCorpusContext';
 import { configObjectType, StorageAdapter } from './StorageAdapter';
 
 /**
@@ -10,6 +11,11 @@ import { configObjectType, StorageAdapter } from './StorageAdapter';
   * this class, users can to create their own adapter if needed.
  */
 export abstract class StorageAdapterBase implements StorageAdapter {
+    /**
+     * The CDM corpus context, gives information for the logger.
+     */
+    public ctx: CdmCorpusContext;
+
     /**
      * The location hint, gives a hint to the reader app about the
      * location where the adapter implementation (Nuget, NPM...) can be obtained.

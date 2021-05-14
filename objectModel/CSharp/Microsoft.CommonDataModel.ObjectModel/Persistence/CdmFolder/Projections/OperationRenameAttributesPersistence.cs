@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -9,7 +9,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
-    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -17,6 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     /// </summary>
     public class OperationRenameAttributesPersistence
     {
+        private static readonly string Tag = nameof(OperationRenameAttributesPersistence);
         public static CdmOperationRenameAttributes FromData(CdmCorpusContext ctx, JToken obj)
         {
             if (obj == null)
@@ -24,21 +24,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            CdmOperationRenameAttributes renameAttributesOp = ctx.Corpus.MakeObject<CdmOperationRenameAttributes>(CdmObjectType.OperationRenameAttributesDef);
-
-
-            if (obj["$type"] != null && !StringUtils.EqualsWithIgnoreCase(obj["$type"].ToString(), OperationTypeConvertor.OperationTypeToString(CdmOperationType.RenameAttributes)))
-            {
-                Logger.Error(nameof(OperationRenameAttributesPersistence), ctx, $"$type {obj["$type"].ToString()} is invalid for this operation.");
-            }
-            else
-            {
-                renameAttributesOp.Type = CdmOperationType.RenameAttributes;
-            }
-            if (obj["explanation"] != null)
-            {
-                renameAttributesOp.Explanation = (string)obj["explanation"];
-            }
+            CdmOperationRenameAttributes renameAttributesOp = OperationBasePersistence.FromData<CdmOperationRenameAttributes>(ctx, CdmObjectType.OperationRenameAttributesDef, obj);
             renameAttributesOp.RenameFormat = obj["renameFormat"]?.ToString();
 
             if (obj["applyTo"] is JValue)
@@ -54,7 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
             else if (obj["applyTo"] != null)
             {
-                Logger.Error(nameof(OperationRenameAttributesPersistence), ctx, "Unsupported: applyTo property type should be string or List<string>.");
+                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistProjUnsupportedProp);
                 return null;
             }
 
@@ -68,13 +54,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            return new OperationRenameAttributes
-            {
-                Type = OperationTypeConvertor.OperationTypeToString(CdmOperationType.RenameAttributes),
-                Explanation = instance.Explanation,
-                RenameFormat = instance.RenameFormat,
-                ApplyTo = instance.ApplyTo
-            };
+            OperationRenameAttributes obj = OperationBasePersistence.ToData<OperationRenameAttributes>(instance, resOpt, options);
+            obj.RenameFormat = instance.RenameFormat;
+            obj.ApplyTo = instance.ApplyTo;
+
+            return obj;
         }
     }
 }

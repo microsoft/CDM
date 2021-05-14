@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
@@ -14,6 +14,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     class LocalEntityDeclarationPersistence
     {
+        private static readonly string Tag = nameof(LocalEntityDeclarationPersistence);
+
         public static CdmLocalEntityDeclarationDefinition FromData(CdmCorpusContext ctx, string prefixPath, JToken obj)
         {
             var localDec = ctx.Corpus.MakeObject<CdmLocalEntityDeclarationDefinition>(
@@ -29,7 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
                 if (entityPath == null)
                 {
-                    Logger.Error(nameof(LocalEntityDeclarationPersistence), ctx, "Couldn't find entity path or similar.", nameof(FromData));
+                    Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistEntityPathNotFound);
                 }
 
             }
@@ -38,17 +40,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (!string.IsNullOrWhiteSpace(obj.Value<string>("lastChildFileModifiedTime")))
             {
-                localDec.LastChildFileModifiedTime = DateTimeOffset.Parse(obj.Value<string>("lastChildFileModifiedTime"));
+                localDec.LastChildFileModifiedTime = DateTimeOffset.Parse(obj["lastChildFileModifiedTime"].ToString());
             }
 
             if (!string.IsNullOrWhiteSpace(obj.Value<string>("lastFileModifiedTime")))
             {
-                localDec.LastFileModifiedTime = DateTimeOffset.Parse(obj.Value<string>("lastFileModifiedTime"));
+                localDec.LastFileModifiedTime = DateTimeOffset.Parse(obj["lastFileModifiedTime"].ToString());
             }
 
             if (!string.IsNullOrWhiteSpace(obj.Value<string>("lastFileStatusCheckTime")))
             {
-                localDec.LastFileStatusCheckTime = DateTimeOffset.Parse(obj.Value<string>("lastFileStatusCheckTime"));
+                localDec.LastFileStatusCheckTime = DateTimeOffset.Parse(obj["lastFileStatusCheckTime"].ToString());
             }
 
             if (obj["explanation"] != null)
@@ -56,8 +58,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 localDec.Explanation = (string)obj["explanation"];
             }
 
-            if (obj["exhibitsTraits"] != null)
-                Utils.AddListToCdmCollection(localDec.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
+            Utils.AddListToCdmCollection(localDec.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
 
             if (obj["dataPartitions"] != null)
             {

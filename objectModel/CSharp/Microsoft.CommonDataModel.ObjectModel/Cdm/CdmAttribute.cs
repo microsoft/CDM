@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -74,11 +74,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal bool VisitAtt(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
+            if (this.Purpose != null) this.Purpose.Owner = this;
             if (this.Purpose?.Visit(pathFrom + "/purpose/", preChildren, postChildren) == true)
                 return true;
             if (this.AppliedTraits != null)
                 if (this.AppliedTraits.VisitList(pathFrom + "/appliedTraits/", preChildren, postChildren))
                     return true;
+            if (this.ResolutionGuidance != null) this.ResolutionGuidance.Owner = this;
             if (this.ResolutionGuidance != null)
                 if (this.ResolutionGuidance.Visit(pathFrom + "/resolutionGuidance/", preChildren, postChildren))
                     return true;
@@ -95,11 +97,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal ResolvedTraitSet AddResolvedTraitsApplied(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)
         {
-            int l = this.AppliedTraits.Count;
-            for (int i = 0; i < l; i++)
-            {
-                rtsb.MergeTraits(this.AppliedTraits[i].FetchResolvedTraits(resOpt));
-            }
+            AppliedTraits.AllItems.ForEach(item => rtsb.MergeTraits(item.FetchResolvedTraits(resOpt)));
 
             // dynamic applied on use
             return rtsb.ResolvedTraitSet;

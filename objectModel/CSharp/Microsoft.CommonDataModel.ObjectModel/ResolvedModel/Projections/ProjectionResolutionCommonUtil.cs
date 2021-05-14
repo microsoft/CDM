@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
@@ -16,6 +16,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     /// </summary>
     internal sealed class ProjectionResolutionCommonUtil
     {
+        const string TAG = nameof(ProjectionResolutionCommonUtil);
+
         /// <summary>
         /// Function to initialize the input projection attribute state Set for a projection
         /// </summary>
@@ -39,9 +41,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 List<ProjectionAttributeState> prevSet = null;
                 if (isSourcePolymorphic && polymorphicSet != null)
                 {
-                    List<ProjectionAttributeState> polyList = null;
-                    polymorphicSet.TryGetValue(resAttr.ResolvedName, out polyList);
-                    prevSet = polyList;
+                    polymorphicSet.TryGetValue(resAttr.ResolvedName, out prevSet);
                 }
 
                 ProjectionAttributeState projAttrState = new ProjectionAttributeState(ctx)
@@ -67,7 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             ProjectionDirective projDir,
             CdmCorpusContext ctx,
             CdmEntityReference source,
-            AttributeContextParameters attrCtxParam)
+            ResolvedAttributeSet rasSource)
         {
             Dictionary<string, List<ProjectionAttributeState>> polySources = new Dictionary<string, List<ProjectionAttributeState>>();
 
@@ -78,28 +78,38 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 if (attr.ObjectType == CdmObjectType.EntityAttributeDef)
                 {
-                    ResolvedAttributeSet raSet = ((CdmEntityAttributeDefinition)attr).FetchResolvedAttributes(projDir.ResOpt, null);
+                    // the attribute context for this entity typed attribute was already created by the `FetchResolvedAttributes` that happens before this function call.
+                    // we are only interested in linking the attributes to the entity that they came from and the attribute context nodes should not be taken into account.
+                    // create this dummy attribute context so the resolution code works properly and discard it after.
+                    AttributeContextParameters attrCtxParam = new AttributeContextParameters
+                    {
+                        Regarding = attr,
+                        type = CdmAttributeContextType.PassThrough,
+                        under = new CdmAttributeContext(ctx, "discard")
+                    };
+                    ResolvedAttributeSet raSet = ((CdmEntityAttributeDefinition)attr).FetchResolvedAttributes(projDir.ResOpt, attrCtxParam);
                     foreach (ResolvedAttribute resAttr in raSet.Set)
                     {
+                        // we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
+                        // so steal them based on name
+                        var resAttSrc = rasSource.Get(resAttr.ResolvedName);
+                        if (resAttSrc != null)
+                        {
+                            resAttr.AttCtx = resAttSrc.AttCtx;
+                        }
+
                         ProjectionAttributeState projAttrState = new ProjectionAttributeState(ctx)
                         {
                             CurrentResolvedAttribute = resAttr,
                             PreviousStateList = null
                         };
 
-                        // the key already exists, just add to the existing list
-                        if (polySources.ContainsKey(resAttr.ResolvedName))
+                        // the key doesn't exist, initialize with an empty list first
+                        if (!polySources.ContainsKey(resAttr.ResolvedName))
                         {
-                            List<ProjectionAttributeState> exisitingSet = polySources[resAttr.ResolvedName];
-                            exisitingSet.Add(projAttrState);
-                            polySources[resAttr.ResolvedName] = exisitingSet;
+                            polySources[resAttr.ResolvedName] = new List<ProjectionAttributeState>();
                         }
-                        else
-                        {
-                            List<ProjectionAttributeState> pasList = new List<ProjectionAttributeState>();
-                            pasList.Add(projAttrState);
-                            polySources.Add(resAttr.ResolvedName, pasList);
-                        }
+                        polySources[resAttr.ResolvedName].Add(projAttrState);
                     }
                 }
             }
@@ -161,22 +171,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         }
 
         /// <summary>
-        /// Convert a single value to a list
-        /// </summary>
-        /// <param name="top"></param>
-        /// <returns></returns>
-        internal static List<ProjectionAttributeState> ConvertToList(ProjectionAttributeState top)
-        {
-            List<ProjectionAttributeState> topList = null;
-            if (top != null)
-            {
-                topList = new List<ProjectionAttributeState>();
-                topList.Add(top);
-            }
-            return topList;
-        }
-
-        /// <summary>
         /// Create a constant entity that contains the source mapping to a foreign key.
         /// e.g.
         /// an fk created to entity "Customer" based on the "customerName", would add a parameter to the "is.linkedEntity.identifier" trait as follows:
@@ -186,8 +180,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         ///   ]
         /// In the case of polymorphic source, there will be a collection of such entries.
         /// </summary>
+        /// <param name="projDir"></param>
         /// <param name="corpus"></param>
-        /// <param name="foundResAttrList"></param>
+        /// <param name="refFoundList"></param>
         /// <returns></returns>
         internal static CdmEntityReference CreateForeignKeyLinkedEntityIdentifierTraitParameter(ProjectionDirective projDir, CdmCorpusDefinition corpus, List<ProjectionAttributeState> refFoundList)
         {
@@ -199,23 +194,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 ResolvedAttribute resAttr = refFound.CurrentResolvedAttribute;
 
-                if (resAttr?.Target?.Owner != null &&
-                    (resAttr.Target.ObjectType == CdmObjectType.TypeAttributeDef || resAttr.Target.ObjectType == CdmObjectType.EntityAttributeDef))
+                if (resAttr.Owner == null)
                 {
-                    var owner = resAttr.Target.Owner;
+                    var atCorpusPath = resAttr.Target is CdmObjectBase target ? target.AtCorpusPath : resAttr.ResolvedName;
+                    Logger.Warning(corpus.Ctx, TAG, nameof(CreateForeignKeyLinkedEntityIdentifierTraitParameter), atCorpusPath, CdmLogCode.WarnProjCreateForeignKeyTraits, resAttr.ResolvedName);
+                }
+                else if (resAttr.Target.ObjectType == CdmObjectType.TypeAttributeDef || resAttr.Target.ObjectType == CdmObjectType.EntityAttributeDef)
+                {
+                    // find the linked entity
+                    var owner = resAttr.Owner;
 
-                    while (owner != null && owner.ObjectType != CdmObjectType.EntityDef)
-                    {
-                        owner = owner.Owner;
-                    }
+                    // find where the projection is defined
+                    var projectionDoc = projDir.Owner?.InDocument;
 
-                    if (owner != null && owner.ObjectType == CdmObjectType.EntityDef)
+                    if (owner?.ObjectType == CdmObjectType.EntityDef && projectionDoc != null)
                     {
                         CdmEntityDefinition entDef = owner.FetchObjectDefinition<CdmEntityDefinition>(projDir.ResOpt);
                         if (entDef != null)
                         {
                             // should contain relative path without the namespace
-                            string relativeEntPath = entDef.Ctx.Corpus.Storage.CreateRelativeCorpusPath(entDef.AtCorpusPath, entDef.InDocument);
+                            string relativeEntPath = entDef.Ctx.Corpus.Storage.CreateRelativeCorpusPath(entDef.AtCorpusPath, projectionDoc);
                             entRefAndAttrNameList.Add(new Tuple<string, string>(relativeEntPath, resAttr.ResolvedName));
                         }
                     }
@@ -225,7 +223,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             if (entRefAndAttrNameList.Count > 0)
             {
                 CdmConstantEntityDefinition constantEntity = corpus.MakeObject<CdmConstantEntityDefinition>(CdmObjectType.ConstantEntityDef);
-                constantEntity.EntityShape = corpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, "entityGroupSet", true);
+                constantEntity.EntityShape = corpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, "entitySet", true);
                 string originalSourceEntityAttributeName = projDir.OriginalSourceEntityAttributeName;
                 if (originalSourceEntityAttributeName == null)
                 {

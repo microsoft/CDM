@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { cdmDataFormat } from '../Enums/cdmDataFormat';
 import {
     AttributeResolutionContext,
     CardinalitySettings,
@@ -11,12 +10,19 @@ import {
     CdmAttributeReference,
     CdmAttributeResolutionGuidance,
     CdmCorpusContext,
+    cdmDataFormat,
     CdmDataTypeReference,
+    CdmEntityDefinition,
     CdmObject,
+    CdmObjectDefinition,
     cdmObjectType,
-    Errors,
+    CdmProjection,
+    cdmLogCode,
     Logger,
+    ProjectionContext,
+    ProjectionDirective,
     ResolvedAttribute,
+    ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
     ResolvedEntityReferenceSet,
     ResolvedTraitSet,
@@ -27,6 +33,8 @@ import {
 } from '../internal';
 
 export class CdmTypeAttributeDefinition extends CdmAttribute {
+    private TAG: string = CdmTypeAttributeDefinition.name;
+
     public static get objectType(): cdmObjectType {
         return cdmObjectType.typeAttributeDef;
     }
@@ -108,6 +116,16 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
 
     public dataType: CdmDataTypeReference;
     public attributeContext?: CdmAttributeContextReference;
+    private _projection: CdmProjection;
+    get projection(): CdmProjection {
+        return this._projection;
+    }
+    set projection(value: CdmProjection) {
+        if (value) {
+            value.owner = this;
+        }
+        this._projection = value;
+    }
 
     private readonly traitToPropertyMap: traitToPropertyMap;
 
@@ -178,19 +196,18 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             }
 
             if (missingFields.length > 0) {
-                Logger.error(CdmTypeAttributeDefinition.name, this.ctx, Errors.validateErrorString(this.atCorpusPath, missingFields), this.validate.name);
-
+                Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnIntegrityCheckFailure, this.atCorpusPath, missingFields.map((s: string) => `'${s}'`).join(', '));
                 return false;
             }
 
             if (this.cardinality) {
                 if (!CardinalitySettings.isMinimumValid(this.cardinality.minimum)) {
-                    Logger.error(CdmTypeAttributeDefinition.name, this.ctx, `Invalid minimum cardinality ${this.cardinality.minimum}`, this.validate.name);
+                    Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidMinCardinality, this.cardinality.minimum);
 
                     return false;
                 }
                 if (!CardinalitySettings.isMaximumValid(this.cardinality.maximum)) {
-                    Logger.error(CdmTypeAttributeDefinition.name, this.ctx, `Invalid maximum cardinality ${this.cardinality.maximum}`, this.validate.name);
+                    Logger.error(this.ctx, this.TAG, this.validate.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidMaxCardinality, this.cardinality.maximum);
 
                     return false;
                 }
@@ -258,6 +275,11 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
                     return true;
                 }
             }
+            if (this.projection) {
+                if (this.projection.visit(`${path}/projection/`, preChildren, postChildren)) {
+                    return true;
+                }
+            }
             if (this.visitAtt(path, preChildren, postChildren)) {
                 return true;
             }
@@ -276,12 +298,12 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public constructResolvedTraits(rtsb: ResolvedTraitSetBuilder, resOpt: resolveOptions): void {
         // let bodyCode = () =>
         {
-            // // get from datatype
+            // get from datatype
             if (this.dataType) {
                 rtsb.takeReference(this.dataType
                     .fetchResolvedTraits(resOpt));
             }
-            // // get from purpose
+            // get from purpose
             if (this.purpose) {
                 rtsb.mergeTraits(this.purpose
                     .fetchResolvedTraits(resOpt));
@@ -293,7 +315,9 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             if (rtsb.rts && rtsb.rts.hasElevated) {
                 const replacement: CdmAttributeReference = new CdmAttributeReference(this.ctx, this.name, true);
                 replacement.ctx = this.ctx;
-                replacement.explicitReference = this;
+                replacement.explicitReference = this.copy() as CdmObjectDefinition;
+                replacement.inDocument = this.inDocument;
+                replacement.owner = this;
                 rtsb.replaceTraitParameterValue(resOpt, 'does.elevateAttribute', 'attribute', 'this.attribute', replacement);
             }
 
@@ -321,26 +345,42 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             rasb.ownOne(newAtt);
             const rts: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
 
-            // this context object holds all of the info about what needs to happen to resolve these attributes.
-            // make a copy and add defaults if missing
-            let resGuideWithDefault: CdmAttributeResolutionGuidance;
-            if (this.resolutionGuidance !== undefined) {
-                resGuideWithDefault = this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
-            } else {
-                resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
+            if (this.owner && this.owner.objectType == cdmObjectType.entityDef) {
+                rasb.ras.setTargetOwner(this.owner as CdmEntityDefinition);
             }
 
-            // renameFormat is not currently supported for type attributes
-            resGuideWithDefault.renameFormat = undefined;
+            if (this.projection) {
+                rasb.ras.applyTraits(rts);
 
-            resGuideWithDefault.updateAttributeDefaults(undefined);
-            const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
+                const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this);
+                const projCtx: ProjectionContext = this.projection.constructProjectionContext(projDirective, under, rasb.ras);
 
-            // from the traits of the datatype, purpose and applied here, see if new attributes get generated
-            rasb.applyTraits(arc);
-            rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
-            // this may have added symbols to the dependencies, so merge them
-            resOpt.symbolRefSet.merge(arc.resOpt.symbolRefSet);
+                const ras: ResolvedAttributeSet = this.projection.extractResolvedAttributes(projCtx, under);
+                rasb.ras = ras;
+            } else {
+                // using resolution guidance
+
+                // this context object holds all of the info about what needs to happen to resolve these attributes.
+                // make a copy and add defaults if missing
+                let resGuideWithDefault: CdmAttributeResolutionGuidance;
+                if (this.resolutionGuidance !== undefined) {
+                    resGuideWithDefault = this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
+                } else {
+                    resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
+                }
+
+                // renameFormat is not currently supported for type attributes
+                resGuideWithDefault.renameFormat = undefined;
+
+                resGuideWithDefault.updateAttributeDefaults(undefined, this);
+                const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
+
+                // from the traits of the datatype, purpose and applied here, see if new attributes get generated
+                rasb.applyTraits(arc);
+                rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
+                // this may have added symbols to the dependencies, so merge them
+                resOpt.symbolRefSet.merge(arc.resOpt.symbolRefSet);
+            }
 
             return rasb;
         }

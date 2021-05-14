@@ -38,8 +38,23 @@ export abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
             for (const trait of this.exhibitsTraits) {
                 copy.exhibitsTraits.push(trait);
             }
+            copy.inDocument = this.inDocument; // if gets put into a new document, this will change. until, use the source
         }
         // return p.measure(bodyCode);
+    }
+
+    /**
+     * @internal
+     * Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
+     * into some final document. 
+     */
+    public createPortableReference(resOpt: resolveOptions): CdmObjectReference {
+        const cdmObjectRef: CdmObjectReferenceBase = this.ctx.corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.mapReferenceType(this.objectType), 'portable', true) as CdmObjectReferenceBase;
+        cdmObjectRef.portableReference = this;
+        cdmObjectRef.inDocument = this.inDocument; // where it started life
+        cdmObjectRef.owner = this.owner;
+
+        return cdmObjectRef;
     }
 
     public fetchObjectDefinitionName(): string {

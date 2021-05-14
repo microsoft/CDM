@@ -34,6 +34,7 @@ export class PredefinedTokens {
         [PredefinedTokenEnum.REFERENCEONLY, 'referenceOnly', PredefinedType.token],
         [PredefinedTokenEnum.NORMALIZED, 'normalized', PredefinedType.token],
         [PredefinedTokenEnum.STRUCTURED, 'structured', PredefinedType.token],
+        [PredefinedTokenEnum.VIRTUAL, 'virtual', PredefinedType.token],
         [PredefinedTokenEnum.OPENPAREN, '(', PredefinedType.openParenthesis],
         [PredefinedTokenEnum.CLOSEPAREN, ')', PredefinedType.closeParenthesis],
     ];

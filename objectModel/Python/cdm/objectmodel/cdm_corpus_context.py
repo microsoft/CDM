@@ -5,16 +5,21 @@ from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmStatusLevel
 from cdm.utilities import EventCallback, ResolveContextScope
+from cdm.utilities.logging.event_list import EventList
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusDefinition, CdmDocumentDefinition
 
 
 class CdmCorpusContext:
-    def __init__(self, corpus: 'CdmCorpusDefinition', status_event: 'EventCallback', report_at_level: Optional['CdmStatusLevel'] = None) -> None:
+    def __init__(self, corpus: 'CdmCorpusDefinition', status_event: 'EventCallback', \
+                    report_at_level: Optional['CdmStatusLevel'] = None, \
+                    correlation_id: Optional[str] = None) -> None:
         self.corpus = corpus  # type: CdmCorpusDefinition
         self.report_at_level = report_at_level or CdmStatusLevel.INFO  # type: CdmStatusLevel
         self.status_event = status_event  # type: EventCallback
+        self.events = EventList() # type: EventList
+        self.correlation_id = correlation_id or None # type: Optional[str]
 
         # --- internal ---
         self._cache = {}  # type: Dict[str, Any]

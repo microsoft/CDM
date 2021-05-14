@@ -6,13 +6,22 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class AttributeGroupReferenceDefinition {
-    private JsonNode AttributeGroupReference;
+    private JsonNode attributeGroupReference;
+    private Boolean optional;
 
     public JsonNode getAttributeGroupReference() {
-        return this.AttributeGroupReference;
+        return this.attributeGroupReference;
     }
 
     public void setAttributeGroupReference(final JsonNode AttributeGroupReference) {
-        this.AttributeGroupReference = AttributeGroupReference;
+        this.attributeGroupReference = AttributeGroupReference;
+    }
+
+    public Boolean getOptional() {
+        return optional;
+    }
+
+    public void setOptional(Boolean optional) {
+        this.optional = optional;
     }
 }

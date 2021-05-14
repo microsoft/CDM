@@ -3,7 +3,8 @@
 
 from typing import Union, List, Optional, TYPE_CHECKING
 
-from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmAttributeItem, CdmObjectReference, CdmTraitReference
+from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmAttributeItem, CdmObjectReference, \
+    CdmTraitReference, CdmTraitGroupReference, CdmCollection
 from cdm.utilities import JObject, IdentifierRef, ResolveOptions, CopyOptions
 
 from .attribute_group_reference_persistence import AttributeGroupReferencePersistence
@@ -12,15 +13,18 @@ from .entity_attribute_persistence import EntityAttributePersistence
 from .entity_reference_persistence import EntityReferencePersistence
 from .purpose_reference_persistence import PurposeReferencePersistence
 from .trait_reference_persistence import TraitReferencePersistence
+from .trait_group_reference_persistence import TraitGroupReferencePersistence
 from .type_attribute_persistence import TypeAttributePersistence
-from .types import AttributeGroupReference, CdmJsonType, EntityAttribute, TypeAttribute
-
+from .types import AttributeGroupReference, CdmJsonType, EntityAttribute, TypeAttribute, TraitGroupReference, \
+    TraitReference
 
 if TYPE_CHECKING:
     pass
 
 
-def create_trait_reference_array(ctx: CdmCorpusContext, obj: Optional[List[Union[str, CdmTraitReference]]]) -> Optional[List[CdmTraitReference]]:
+def create_trait_reference_array(ctx: CdmCorpusContext,
+                                 obj: Optional[List[Union[str, TraitReference, TraitGroupReference]]]) \
+        -> Optional[List[Union[CdmTraitReference, CdmTraitGroupReference]]]:
     """
     Converts a JSON object to a CdmCollection of TraitReferences.
     If object is not a list, returns None.
@@ -33,9 +37,19 @@ def create_trait_reference_array(ctx: CdmCorpusContext, obj: Optional[List[Union
     result = []
 
     for elem in obj:
-        result.append(TraitReferencePersistence.from_data(ctx, elem))
+        if not isinstance(elem, str) and elem.traitGroupReference is not None:
+            result.append(TraitGroupReferencePersistence.from_data(ctx, elem))
+        else:
+            result.append(TraitReferencePersistence.from_data(ctx, elem))
 
     return result
+
+
+def add_list_to_cdm_collection(cdm_collection: CdmCollection, the_list: List) -> None:
+    """Adds all elements of a list to a CdmCollection"""
+    if cdm_collection is not None and the_list is not None:
+        for element in the_list:
+            cdm_collection.append(element)
 
 
 def create_constant(ctx: CdmCorpusContext, obj: CdmJsonType) -> Optional[CdmArgumentValue]:
@@ -56,6 +70,8 @@ def create_constant(ctx: CdmCorpusContext, obj: CdmJsonType) -> Optional[CdmArgu
         return PurposeReferencePersistence.from_data(ctx, obj)
     elif obj.get('traitReference'):
         return TraitReferencePersistence.from_data(ctx, obj)
+    elif obj.get('traitGroupReference'):
+        return TraitGroupReferencePersistence.from_data(ctx, obj)
     elif obj.get('dataTypeReference'):
         return DataTypeReferencePersistence.from_data(ctx, obj)
     elif obj.get('entityReference'):

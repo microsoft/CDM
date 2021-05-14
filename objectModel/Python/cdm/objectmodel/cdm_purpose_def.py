@@ -4,7 +4,9 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, logger, Errors
+from cdm.utilities import ResolveOptions, logger
+from cdm.enums import CdmLogCode
+from cdm.utilities.string_utils import StringUtils
 
 from .cdm_object_def import CdmObjectDefinition
 
@@ -19,13 +21,13 @@ class CdmPurposeDefinition(CdmObjectDefinition):
     def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_purpose: Optional['CdmPurposeReference']) -> None:
         super().__init__(ctx)
 
+        self._TAG = CdmPurposeDefinition.__name__
+
         # the purpose name.
         self.purpose_name = name  # type: str
 
         # the reference to the purpose extended by this.
         self.extends_purpose = extends_purpose  # type: Optional[CdmPurposeReference]
-
-        self._TAG = CdmPurposeDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -64,7 +66,8 @@ class CdmPurposeDefinition(CdmObjectDefinition):
 
     def validate(self) -> bool:
         if not bool(self.purpose_name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['purpose_name']))
+            missing_fields = ['purpose_name']
+            logger.error(self.ctx, self._TAG, 'validate', self.at_corpus_path, CdmLogCode.ERR_VALDN_INTEGRITY_CHECK_FAILURE, self.at_corpus_path, ', '.join(map(lambda s: '\'' + s + '\'', missing_fields)))
             return False
         return True
 
@@ -79,8 +82,10 @@ class CdmPurposeDefinition(CdmObjectDefinition):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.extends_purpose and self.extends_purpose.visit('{}/extendsPurpose/'.format(path), pre_children, post_children):
-            return True
+        if self.extends_purpose:
+            self.extends_purpose.owner = self
+            if self.extends_purpose.visit('{}/extendsPurpose/'.format(path), pre_children, post_children):
+                return True
 
         if self._visit_def(path, pre_children, post_children):
             return True

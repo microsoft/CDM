@@ -3,13 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinitionBase;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
@@ -23,16 +19,17 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Class for Projection
  */
 public class CdmProjection extends CdmObjectDefinitionBase {
-    private String TAG = CdmProjection.class.getSimpleName();
+    private static final String TAG = CdmProjection.class.getSimpleName();
     private String condition;
-    private Node conditionExpressionTreeRoot;
     private CdmOperationCollection operations;
     private CdmEntityReference source;
+    private Boolean runSequentially;
 
     /**
      * Projection constructor
@@ -57,25 +54,15 @@ public class CdmProjection extends CdmObjectDefinitionBase {
     }
 
     /**
-     * Condition expression tree that is built out of a condition expression string
-     *
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     * @return Node
+     * If true, runs the operations sequentially so each operation receives the result of the previous one
+     * @return Boolean
      */
-    @Deprecated
-    public Node getConditionExpressionTreeRoot() {
-        return conditionExpressionTreeRoot;
+    public Boolean getRunSequentially() {
+        return runSequentially;
     }
 
-    /**
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     * @param conditionExpressionTreeRoot Node
-     */
-    @Deprecated
-    public void setConditionExpressionTreeRoot(final Node conditionExpressionTreeRoot) {
-        this.conditionExpressionTreeRoot = conditionExpressionTreeRoot;
+    public void setRunSequentially(Boolean runSequentially) {
+        this.runSequentially = runSequentially;
     }
 
     /**
@@ -95,13 +82,35 @@ public class CdmProjection extends CdmObjectDefinitionBase {
     }
 
     public void setSource(final CdmEntityReference source) {
+        if (source != null) {
+            source.setOwner(this);
+        }
         this.source = source;
     }
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "copy");
-        return new CdmProjection(this.getCtx());
+        CdmProjection copy;
+
+        if (host == null) {
+            copy = new CdmProjection(this.getCtx());
+        } else {
+            copy = (CdmProjection) host;
+            copy.setCtx(this.getCtx());
+            copy.operations.clear();
+        }
+
+        copy.setCondition(this.getCondition());
+        copy.setSource(this.getSource() != null ? (CdmEntityReference) this.getSource().copy() : null);
+
+        for (final CdmOperationBase operation : this.getOperations()) {
+            copy.getOperations().add((CdmOperationBase) operation.copy());
+        }
+
+        // Don't do anything else after this, as it may cause InDocument to become dirty
+        copy.setInDocument(this.getInDocument());
+
+        return copy;
     }
 
     /**
@@ -140,10 +149,24 @@ public class CdmProjection extends CdmObjectDefinitionBase {
         ArrayList<String> missingFields = new ArrayList<>();
 
         if (this.source == null) {
-            missingFields.add("source");
+            CdmObject rootOwner = getRootOwner();
+            if (rootOwner.getObjectType() != CdmObjectType.TypeAttributeDef) {
+                // If the projection is used in an entity attribute or an extends entity
+                missingFields.add("source");
+            }
         }
+        else if (this.source.getExplicitReference() == null ||
+                this.source.getExplicitReference().getObjectType() != CdmObjectType.ProjectionDef) {
+            // If reached the inner most projection
+            CdmObject rootOwner = getRootOwner();
+            if (rootOwner.getObjectType() == CdmObjectType.TypeAttributeDef) {
+                // If the projection is used in a type attribute
+                Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrProjSourceError);
+            }
+        }
+
         if (missingFields.size() > 0) {
-            Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+            Logger.error(this.getCtx(), TAG, "validate", this.getAtCorpusPath(), CdmLogCode.ErrValdnIntegrityCheckFailure, this.getAtCorpusPath(), String.join(", ", missingFields.parallelStream().map((s) -> { return String.format("'%s'", s);}).collect(Collectors.toList())));
             return false;
         }
         return true;
@@ -216,6 +239,15 @@ public class CdmProjection extends CdmObjectDefinitionBase {
     }
 
     /**
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     */
+    @Deprecated
+    public ProjectionContext constructProjectionContext(ProjectionDirective projDirective, CdmAttributeContext attrCtx) {
+        return constructProjectionContext(projDirective, attrCtx, null);
+    }
+
+    /**
      * A function to construct projection context and populate the resolved attribute set that ExtractResolvedAttributes method can then extract
      * This function is the entry point for projection resolution.
      * This function is expected to do the following 3 things:
@@ -230,42 +262,39 @@ public class CdmProjection extends CdmObjectDefinitionBase {
      * @return ProjectionContext
      */
     @Deprecated
-    public ProjectionContext constructProjectionContext(ProjectionDirective projDirective, CdmAttributeContext attrCtx) {
+    public ProjectionContext constructProjectionContext(ProjectionDirective projDirective, CdmAttributeContext attrCtx, ResolvedAttributeSet ras) {
+        if (attrCtx == null) {
+            return null;
+        }
+
         ProjectionContext projContext = null;
 
-        if (StringUtils.isNullOrTrimEmpty(this.condition)) {
-            // if no condition is provided, get default condition and persist
-            this.condition = ConditionExpression.getDefaultConditionExpression(this.operations, this.getOwner());
-        }
-        // create an expression tree based on the condition
-        ExpressionTree tree = new ExpressionTree();
-        this.conditionExpressionTreeRoot = tree.constructExpressionTree(this.condition);
-        if (this.conditionExpressionTreeRoot == null) {
-            Logger.info(TAG, this.getCtx(), "Optional expression missing. Implicit expression will automatically apply.", "constructProjectionContext");
-        }
+        // Add projection to context tree
+        AttributeContextParameters acpProj = new AttributeContextParameters();
+        acpProj.setUnder(attrCtx);
+        acpProj.setType(CdmAttributeContextType.Projection);
+        acpProj.setName(this.fetchObjectDefinitionName());
+        acpProj.setRegarding(projDirective.getOwnerRef());
+        acpProj.setIncludeTraits(false);
+        CdmAttributeContext acProj = CdmAttributeContext.createChildUnder(projDirective.getResOpt(), acpProj);
 
-        if (attrCtx != null) {
-            // Add projection to context tree
-            AttributeContextParameters acpProj = new AttributeContextParameters();
-            acpProj.setUnder(attrCtx);
-            acpProj.setType(CdmAttributeContextType.Projection);
-            acpProj.setName(this.fetchObjectDefinitionName());
-            acpProj.setRegarding(projDirective.getOwnerRef());
-            acpProj.setIncludeTraits(false);
-            CdmAttributeContext acProj = CdmAttributeContext.createChildUnder(projDirective.getResOpt(), acpProj);
+        AttributeContextParameters acpSource = new AttributeContextParameters();
+        acpSource.setUnder(acProj);
+        acpSource.setType(CdmAttributeContextType.Source);
+        acpSource.setName("source");
+        acpSource.setRegarding(null);
+        acpSource.setIncludeTraits(false);
+        CdmAttributeContext acSource = CdmAttributeContext.createChildUnder(projDirective.getResOpt(), acpSource);
 
-            AttributeContextParameters acpSource = new AttributeContextParameters();
-            acpSource.setUnder(acProj);
-            acpSource.setType(CdmAttributeContextType.Source);
-            acpSource.setName("source");
-            acpSource.setRegarding(null);
-            acpSource.setIncludeTraits(false);
-            CdmAttributeContext acSource = CdmAttributeContext.createChildUnder(projDirective.getResOpt(), acpSource);
+        // Initialize the projection context
+        CdmCorpusContext ctx = (projDirective.getOwner() != null ? projDirective.getOwner().getCtx() : null);
 
-            if (this.source.fetchObjectDefinition(projDirective.getResOpt()).getObjectType() == CdmObjectType.ProjectionDef) {
+        if (this.source != null) {
+            CdmObjectDefinition source = this.source.fetchObjectDefinition(projDirective.getResOpt());
+            if (source.getObjectType() == CdmObjectType.ProjectionDef) {
                 // A Projection
 
-                projContext = ((CdmProjection)this.source.getExplicitReference()).constructProjectionContext(projDirective, acSource);
+                projContext = ((CdmProjection) this.source.getExplicitReference()).constructProjectionContext(projDirective, acSource, ras);
             } else {
                 // An Entity Reference
 
@@ -275,79 +304,103 @@ public class CdmProjection extends CdmObjectDefinitionBase {
                 acpSourceProjection.setName(this.source.getNamedReference() != null ? this.source.getNamedReference() : this.source.getExplicitReference().getName());
                 acpSourceProjection.setRegarding(this.source);
                 acpSourceProjection.setIncludeTraits(false);
-                ResolvedAttributeSet ras = this.source.fetchResolvedAttributes(projDirective.getResOpt(), acpSourceProjection);
+                ras = this.source.fetchResolvedAttributes(projDirective.getResOpt(), acpSourceProjection);
 
-                // Initialize the projection context
+                // Clean up the context tree, it was left in a bad state on purpose in this call
+                ras.getAttributeContext().finalizeAttributeContext(projDirective.getResOpt(), acSource.getAtCorpusPath(), this.getInDocument(), this.getInDocument(), null, false);
 
-                CdmCorpusContext ctx = (projDirective.getOwner() != null ? projDirective.getOwner().getCtx() : null);
-
-                ProjectionAttributeStateSet pasSet = null;
-
-                // if polymorphic keep original source as previous state
+                // If polymorphic keep original source as previous state
                 Map<String, List<ProjectionAttributeState>> polySourceSet = null;
                 if (projDirective.getIsSourcePolymorphic()) {
-                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, acpSourceProjection);
+                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, ras);
                 }
 
-                // now initialize projection attribute state
-                pasSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras, projDirective.getIsSourcePolymorphic(), polySourceSet);
+                // Now initialize projection attribute state
+                ProjectionAttributeStateSet pasSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras, projDirective.getIsSourcePolymorphic(), polySourceSet);
 
                 projContext = new ProjectionContext(projDirective, ras.getAttributeContext());
                 projContext.setCurrentAttributeStateSet(pasSet);
             }
+        } else {
+            // A type attribute
 
-            boolean isConditionValid = false;
-            if (this.conditionExpressionTreeRoot != null) {
-                InputValues input = new InputValues();
-                input.setNoMaxDepth(projDirective.getHasNoMaximumDepth());
-                input.setIsArray(projDirective.getIsArray());
-                input.setReferenceOnly(projDirective.getIsReferenceOnly());
-                input.setNormalized(projDirective.getIsNormalized());
-                input.setStructured(projDirective.getIsStructured());
+            // Initialize projection attribute state
+            ProjectionAttributeStateSet pasSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras, false, null);
 
-                int currentDepth = projDirective.getCurrentDepth();
-                input.setNextDepth(++currentDepth);
-                projDirective.setCurrentDepth(currentDepth);
+            projContext = new ProjectionContext(projDirective, ras.getAttributeContext());
+            projContext.setCurrentAttributeStateSet(pasSet);
+        }
 
-                input.setMaxDepth(projDirective.getMaximumDepth());
-                input.setMinCardinality(projDirective.getCardinality() != null ? projDirective.getCardinality().getMinimumNumber() : null);
-                input.setMaxCardinality(projDirective.getCardinality() != null ? projDirective.getCardinality().getMaximumNumber() : null);
+        InputValues inputValues = new InputValues(projDirective);
+        boolean isConditionValid = ExpressionTree.evaluateCondition(this.condition, inputValues);
 
-                isConditionValid = (boolean) ExpressionTree.evaluateExpressionTree(this.conditionExpressionTreeRoot, input);
+        if (isConditionValid && this.operations != null && this.operations.size() > 0) {
+            // Just in case new operations were added programmatically, reindex operations
+            for (int i = 0; i < this.operations.size(); i++) {
+                this.operations.get(i).setIndex(i + 1);
             }
 
-            if (isConditionValid && this.operations != null && this.operations.size() > 0) {
-                // Just in case new operations were added programmatically, reindex operations
-                for (int i = 0; i < this.operations.size(); i++) {
-                    this.operations.get(i).setIndex(i + 1);
+            // Operation
+
+            AttributeContextParameters acpGenAttrSet = new AttributeContextParameters();
+            acpGenAttrSet.setUnder(attrCtx);
+            acpGenAttrSet.setType(CdmAttributeContextType.GeneratedSet);
+            acpGenAttrSet.setName("_generatedAttributeSet");
+            CdmAttributeContext acGenAttrSet = CdmAttributeContext.createChildUnder(projDirective.getResOpt(), acpGenAttrSet);
+
+            // Start with an empty list for each projection
+            ProjectionAttributeStateSet pasOperations = new ProjectionAttributeStateSet(projContext.getCurrentAttributeStateSet().getCtx());
+
+            // The attribute set that the operation will execute on
+            ProjectionAttributeStateSet operationWorkingAttributeSet;
+
+            // The attribute set containing the attributes from the source
+            ProjectionAttributeStateSet sourceAttributeSet = projContext.getCurrentAttributeStateSet();
+
+            // Specifies if the operation is the first on the list to run
+            boolean firstOperationToRun = true;
+            for (CdmOperationBase operation : this.operations) {
+                boolean operationCondition = ExpressionTree.evaluateCondition(operation.getCondition(), inputValues);
+
+                if (!operationCondition) {
+                    // Skip this operation if the condition does not evaluate to true
+                    continue;
                 }
 
-                // Operation
+                // If RunSequentially is not true then all the operations will receive the source input
+                // Unless the operation overwrites this behavior using the SourceInput property
+                boolean sourceInput = operation.getSourceInput() != null ?
+                        (boolean) operation.getSourceInput() :
+                        this.getRunSequentially() == null || !this.getRunSequentially();
 
-                AttributeContextParameters acpGenAttrSet = new AttributeContextParameters();
-                acpGenAttrSet.setUnder(attrCtx);
-                acpGenAttrSet.setType(CdmAttributeContextType.GeneratedSet);
-                acpGenAttrSet.setName("_generatedAttributeSet");
-                CdmAttributeContext acGenAttrSet = CdmAttributeContext.createChildUnder(projDirective.getResOpt(), acpGenAttrSet);
-
-                // Start with an empty list for each projection
-                ProjectionAttributeStateSet pasOperations = new ProjectionAttributeStateSet(projContext.getCurrentAttributeStateSet().getCtx());
-                for (CdmOperationBase operation : this.operations) {
-                    // Evaluate projections and apply to empty state
-                    ProjectionAttributeStateSet newPasOperations = operation.appendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
-
-                    // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
-                    if (newPasOperations != null)
-                    {
-                        pasOperations = newPasOperations;
-                    }
+                // If this is the first operation to run it will get the source attribute set since the operations attribute set starts empty
+                if (sourceInput || firstOperationToRun) {
+                    projContext.setCurrentAttributeStateSet(sourceAttributeSet);
+                    operationWorkingAttributeSet = pasOperations;
+                } else {
+                    // Needs to create a copy since this set can be modified by the operation
+                    projContext.setCurrentAttributeStateSet(pasOperations.copy());
+                    operationWorkingAttributeSet = new ProjectionAttributeStateSet(projContext.getCurrentAttributeStateSet().getCtx());
                 }
 
+                // Evaluate projections and apply to empty state
+                ProjectionAttributeStateSet newPasOperations = operation.appendProjectionAttributeState(projContext, operationWorkingAttributeSet, acGenAttrSet);
+
+                // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
+                if (newPasOperations != null)
+                {
+                    firstOperationToRun = false;
+                    pasOperations = newPasOperations;
+                }
+            }
+
+            // If no operation ran successfully pasOperations will be empty
+            if (!firstOperationToRun) {
                 // Finally update the current state to the projection context
                 projContext.setCurrentAttributeStateSet(pasOperations);
-            } else {
-                // Pass Through - no operations to process
             }
+        } else {
+            // Pass Through - no operations to process
         }
 
         return projContext;
@@ -359,17 +412,37 @@ public class CdmProjection extends CdmObjectDefinitionBase {
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      * @param projCtx ProjectionContext
+     * @param attCtxUnder CdmAttributeContext
      * @return ResolvedAttributeSet
      */
     @Deprecated
-    public ResolvedAttributeSet extractResolvedAttributes(ProjectionContext projCtx) {
+    public ResolvedAttributeSet extractResolvedAttributes(ProjectionContext projCtx, CdmAttributeContext attCtxUnder) {
         ResolvedAttributeSet resolvedAttributeSet = new ResolvedAttributeSet();
-        resolvedAttributeSet.setAttributeContext(projCtx.getCurrentAttributeContext());
+        resolvedAttributeSet.setAttributeContext(attCtxUnder);
+
+        if (projCtx == null) {
+            Logger.error(this.getCtx(), TAG, "extractResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrProjFailedToResolve, this.getAtCorpusPath());
+            return resolvedAttributeSet;
+        }
 
         for (ProjectionAttributeState pas : projCtx.getCurrentAttributeStateSet().getStates()) {
-            resolvedAttributeSet.merge(pas.getCurrentResolvedAttribute(), pas.getCurrentResolvedAttribute().getAttCtx());
+            resolvedAttributeSet.merge(pas.getCurrentResolvedAttribute());
         }
 
         return resolvedAttributeSet;
+    }
+
+    private CdmObject getRootOwner() {
+        CdmObject rootOwner = this;
+        do {
+            rootOwner = rootOwner.getOwner();
+            // A projection can be inside an entity reference, so take the owner again to get the projection.
+            if (rootOwner != null && rootOwner.getOwner() != null
+                    && rootOwner.getOwner().getObjectType() == CdmObjectType.ProjectionDef) {
+                rootOwner = rootOwner.getOwner();
+            }
+        } while (rootOwner != null && rootOwner.getObjectType() == CdmObjectType.ProjectionDef);
+
+        return rootOwner;
     }
 }

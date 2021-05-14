@@ -69,9 +69,11 @@ class ManifestPersistence:
             # TODO: validate that this is a version we can understand with the OM
             pass
 
-        if data.get('exhibitsTraits'):
-            exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
-            manifest.exhibits_traits.extend(exhibits_traits)
+        if data.get('documentVersion'):
+            manifest.document_version = data.documentVersion
+
+        utils.add_list_to_cdm_collection(manifest.exhibits_traits,
+                                         utils.create_trait_reference_array(ctx, data.exhibitsTraits))
 
         if data.get('imports'):
             for import_obj in data.imports:
@@ -109,7 +111,7 @@ class ManifestPersistence:
                 elif entity_obj.get('type') == 'ReferencedEntity' or 'entityDeclaration' in entity_obj:
                     manifest.entities.append(ReferencedEntityDeclarationPersistence.from_data(ctx, full_path, entity_obj))
                 else:
-                    logger.error(_TAG, ctx, 'Couldn\'t find the type for entity declaration',  ManifestPersistence.from_object.__name__)
+                    logger.error(ctx, _TAG, ManifestPersistence.from_object.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_DECLARATION_MISSING)
                     return None
 
         if data.get('relationships'):
@@ -135,6 +137,7 @@ class ManifestPersistence:
         manifest.manifestName = instance.manifest_name
         manifest.schema = instance.schema
         manifest.jsonSchemaSemanticVersion = instance.json_schema_semantic_version
+        manifest.documentVersion = instance.document_version
         manifest.lastFileStatusCheckTime = time_utils._get_formatted_date_string(instance.last_file_status_check_time)
         manifest.lastFileModifiedTime = time_utils._get_formatted_date_string(instance.last_file_modified_time)
         manifest.lastChildFileModifiedTime = time_utils._get_formatted_date_string(instance.last_child_file_modified_time)

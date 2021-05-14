@@ -6,6 +6,7 @@ import {
     CdmEntityAttributeDefinition,
     CdmObjectDefinitionBase,
     CdmObjectReference,
+    DepthInfo,
     cdmObjectType,
     resolveOptions
 } from '../../internal';
@@ -19,16 +20,6 @@ import {
  */
 // tslint:disable:variable-name
 export class ProjectionDirective {
-    /**
-     * Max Depth default
-     */
-    private readonly maxDepthDefault: number = 2;
-
-    /**
-     * Max Depth if 'noMaxDepth' is defined
-     */
-    private readonly maxDepthHasNoMax: number = 32;
-
     /**
      * Resolution option used
      * @internal
@@ -76,12 +67,6 @@ export class ProjectionDirective {
     public isSourcePolymorphic: boolean;
 
     /**
-     * Current depth of reference
-     * @internal
-     */
-    public currentDepth?: number;
-
-    /**
      * Has maximum depth override flag
      * @internal
      */
@@ -117,6 +102,12 @@ export class ProjectionDirective {
      */
     public isStructured: boolean;
 
+    /**
+     * Is virtual
+     * @internal
+     */
+    public isVirtual: boolean;
+
     constructor(resOpt: resolveOptions, owner: CdmObjectDefinitionBase, ownerRef: CdmObjectReference = null) {
         this.resOpt = resOpt;
 
@@ -141,15 +132,13 @@ export class ProjectionDirective {
         this.isReferenceOnly = (resOpt.directives?.has('referenceOnly') === true);
         this.isNormalized = (resOpt.directives?.has('normalized') === true);
         this.isStructured = (resOpt.directives?.has('structured') === true);
+        this.isVirtual = (resOpt.directives?.has('virtual') === true);
         this.hasNoMaximumDepth = (resOpt.directives?.has('noMaxDepth') === true);
         this.isArray = (resOpt.directives?.has('isArray') === true);
 
-        this.currentDepth = resOpt?.relationshipDepth ? 1 : resOpt.relationshipDepth + 1;
-        resOpt.relationshipDepth = this.currentDepth;
-
-        // if noMaxDepth directive the max depth is 32 else defaults to 2
+        // if noMaxDepth directive the max depth is 32 else defaults to what was set by the user
         // these depths were arbitrary and were set for the resolution guidance
         // re-using the same for projections as well
-        this.maximumDepth = this.hasNoMaximumDepth ? this.maxDepthHasNoMax : this.maxDepthDefault;
+        this.maximumDepth = this.hasNoMaximumDepth ? DepthInfo.maxDepthLimit : resOpt.maxDepth;
     }
 }

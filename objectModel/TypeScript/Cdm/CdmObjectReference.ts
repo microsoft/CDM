@@ -30,6 +30,11 @@ export interface CdmObjectReference extends CdmObject {
     simpleNamedReference?: boolean;
 
     /**
+     * Indicates the SDK to not error out in case the definition could not be resolved.
+     */
+    optional?: boolean;
+
+    /**
      * @deprecated Only for internal use.
      */
     fetchResolvedReference(resOpt?: resolveOptions): CdmObject;

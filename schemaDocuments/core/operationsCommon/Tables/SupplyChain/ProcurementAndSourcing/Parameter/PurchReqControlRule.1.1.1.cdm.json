@@ -1,0 +1,89 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/Workflow/Main/SysPolicyRule.1.1.1.cdm.json",
+      "moniker": "base_SysPolicyRule"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchReqControlRule",
+      "extendsEntity": "base_SysPolicyRule/SysPolicyRule",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AlternateAddress",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow new delivery address",
+          "description": ""
+        },
+        {
+          "name": "IsFixedMaximumOrderQuantity",
+          "dataType": "PurchReqLockMaxQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsFixedMinimumOrderQuantity",
+          "dataType": "PurchReqLockMinQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsFixedMultipleOrderQuantity",
+          "dataType": "PurchReqLockMultiples",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsReqDateTransDate",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Use requested date as accounting date:",
+          "description": ""
+        }
+      ],
+      "displayName": "Purchase requisition rules"
+    },
+    {
+      "dataTypeName": "PurchReqLockMaxQty",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchReqLockMinQty",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchReqLockMultiples",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

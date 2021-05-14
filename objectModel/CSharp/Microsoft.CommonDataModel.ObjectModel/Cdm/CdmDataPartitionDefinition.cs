@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
@@ -8,6 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     /// <summary>
     /// The object model implementation for Data Partition.
@@ -155,17 +156,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             if (preChildren != null && preChildren.Invoke(this, path))
-            {
                 return false;
-            }
 
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
 
             if (postChildren != null && postChildren.Invoke(this, path))
-            {
-                return false;
-            }
+                return true;
             return false;
         }
 
@@ -178,14 +175,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Location, this.InDocument);
-            DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromPartitionPath(fullPath);
+            using (Logger.EnterScope(nameof(CdmDataPartitionDefinition), Ctx, nameof(FileStatusCheckAsync)))
+            {
+                string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Location, this.InDocument);
+                DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromPartitionPath(fullPath);
 
-            // update modified times
-            this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
-            this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
+                // update modified times
+                this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
+                this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
 
-            await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
+                await this.ReportMostRecentTimeAsync(this.LastFileModifiedTime);
+            }
         }
 
         /// <inheritdoc />

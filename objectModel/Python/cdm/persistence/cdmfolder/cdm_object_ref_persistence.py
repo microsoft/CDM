@@ -9,9 +9,8 @@ from cdm.persistence import PersistenceLayer
 from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils
 
 from . import utils
-from .projections.projection_persistence import ProjectionPersistence
 from .types import AttributeGroupReference, CdmJsonType, \
-    DataTypeReference, EntityReference, PurposeReference, TraitReference
+    DataTypeReference, EntityReference, PurposeReference, TraitReference, TraitGroupReference
 
 
 class CdmObjectRefPersistence:
@@ -37,6 +36,9 @@ class CdmObjectRefPersistence:
 
             if replace:
                 copy = replace
+
+        if instance.optional is not None:
+            copy.optional = instance.optional
 
         if instance.applied_traits:
             # We don't know if the object we are copying has applied traits or not and hence use any
@@ -69,6 +71,10 @@ class CdmObjectRefPersistence:
             copy = TraitReference()
             copy.traitReference = ref_to
             copy.arguments = copy_data_utils._array_copy_data(res_opt, instance.arguments, options)
+            return copy
+        elif instance.object_type == CdmObjectType.TRAIT_GROUP_REF:
+            copy = TraitGroupReference()
+            copy.traitGroupReference = ref_to
             return copy
         else:
             return None

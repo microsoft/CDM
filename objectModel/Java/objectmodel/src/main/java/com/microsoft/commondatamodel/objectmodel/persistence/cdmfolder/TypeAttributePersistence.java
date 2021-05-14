@@ -4,15 +4,16 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitGroupReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projections.ProjectionPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.TypeAttribute;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
@@ -22,6 +23,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class TypeAttributePersistence {
+  private static final String TAG = TypeAttributePersistence.class.getSimpleName();
+
   public static CdmTypeAttributeDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
     return fromData(ctx, obj, null);
   }
@@ -49,15 +52,15 @@ public class TypeAttributePersistence {
       }
 
       if (StringUtils.isNullOrTrimEmpty(minCardinality) || StringUtils.isNullOrTrimEmpty(maxCardinality)) {
-        Logger.error(TypeAttributePersistence.class.getSimpleName(), ctx, "Both minimum and maximum are required for the Cardinality property.", "fromData");
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistCardinalityPropMissing);
       }
 
       if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-        Logger.error(TypeAttributePersistence.class.getSimpleName(), ctx, Logger.format("Invalid minimum cardinality {0}.", minCardinality), "fromData");
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrValdnInvalidMinCardinality, minCardinality);
       }
 
       if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-        Logger.error(TypeAttributePersistence.class.getSimpleName(), ctx, Logger.format("Invalid maximum cardinality {0}.", maxCardinality), "fromData");
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrValdnInvalidMaxCardinality, maxCardinality);
       }
 
       if (!StringUtils.isNullOrTrimEmpty(minCardinality) &&
@@ -91,6 +94,7 @@ public class TypeAttributePersistence {
     typeAttribute.updateMaximumValue(Utils.propertyFromDataToString(obj.get("maximumValue")));
     typeAttribute.updateMinimumValue(Utils.propertyFromDataToString(obj.get("minimumValue")));
     typeAttribute.updateDefaultValue(obj.get("defaultValue"));
+    typeAttribute.setProjection(ProjectionPersistence.fromData(ctx, obj.get("projection")));
 
     final String dataFormat = obj.has("dataFormat") ? obj.get("dataFormat").asText() : null;
     if (dataFormat != null) {
@@ -98,12 +102,7 @@ public class TypeAttributePersistence {
       if (cdmDataFormat != CdmDataFormat.Unknown) {
         typeAttribute.updateDataFormat(cdmDataFormat);
       } else {
-        Logger.warning(
-            TypeAttributePersistence.class.getSimpleName(),
-            ctx,
-            Logger.format("Couldn't find an enum value for {0}.", dataFormat),
-            "fromData"
-        );
+        Logger.warning(ctx, TAG, "fromData", null, CdmLogCode.WarnPersistEnumNotFound, dataFormat);
       }
     }
 
@@ -111,6 +110,10 @@ public class TypeAttributePersistence {
   }
 
   public static TypeAttribute toData(final CdmTypeAttributeDefinition instance, final ResolveOptions resOpt, final CopyOptions options) {
+    if (instance == null) {
+      return null;
+    }
+
     final TypeAttribute obj = new TypeAttribute();
     obj.setExplanation(instance.getExplanation());
     obj.setDescription((String) instance.fetchProperty(CdmPropertyName.DESCRIPTION));
@@ -120,10 +123,12 @@ public class TypeAttributePersistence {
     obj.setAppliedTraits(Utils.listCopyDataAsArrayNode(
         instance.getAppliedTraits().getAllItems()
             .stream()
-            .filter(trait -> !trait.isFromProperty())
+            .filter(trait -> trait instanceof CdmTraitGroupReference || !((CdmTraitReference)trait).isFromProperty())
             .collect(Collectors.toList()),
         resOpt,
         options));
+
+    obj.setProjection(Utils.jsonForm(instance.getProjection(), resOpt, options));
 
     final JsonNode attributeContext = Utils.jsonForm(instance.getAttributeContext(), resOpt, options);
     obj.setAttributeContext(attributeContext != null ? attributeContext : null);
@@ -145,7 +150,7 @@ public class TypeAttributePersistence {
         && (Boolean) instance.fetchProperty(CdmPropertyName.IS_PRIMARY_KEY)) {
       obj.setIsPrimaryKey((Boolean) instance.fetchProperty(CdmPropertyName.IS_PRIMARY_KEY));
     }
-
+    
     final Integer sourceOrdering = instance.fetchProperty(CdmPropertyName.SOURCE_ORDERING) == null
         ? null
         : Integer.parseInt((String) instance.fetchProperty(CdmPropertyName.SOURCE_ORDERING));
@@ -169,6 +174,7 @@ public class TypeAttributePersistence {
     } else if (defaultValue instanceof JsonNode) {
       obj.setDefaultValue((JsonNode) defaultValue);
     }
+
 
     return obj;
   }

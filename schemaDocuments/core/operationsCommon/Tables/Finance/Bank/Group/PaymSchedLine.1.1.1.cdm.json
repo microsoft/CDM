@@ -1,0 +1,144 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PaymSched.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PaymSchedLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRShipping",
+          "dataType": "MCRPaymSchedShipping",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PaymSchedId",
+          "description": ""
+        },
+        {
+          "name": "PercentAmount",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Percent or amount",
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "PositiveDays",
+          "isNullable": true,
+          "displayName": "Number of periods after due date",
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Percent or amount value",
+          "description": ""
+        },
+        {
+          "name": "PaymentType_ES",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFMPrepayment",
+          "dataType": "CFMPrepayment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PaymSched"
+          },
+          "name": "Relationship_PaymentSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payment schedule lines"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRPaymSchedShipping",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PaymSchedId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PositiveDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CFMPrepayment",
+      "extendsDataType": "integer"
+    }
+  ]
+}
