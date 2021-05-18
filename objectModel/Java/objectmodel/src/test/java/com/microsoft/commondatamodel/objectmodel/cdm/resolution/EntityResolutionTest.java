@@ -14,16 +14,7 @@ import java.util.concurrent.ExecutionException;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeItem;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
@@ -75,6 +66,23 @@ public class EntityResolutionTest {
 
     Assert.assertEquals(document, entity.getOwner());
     Assert.assertEquals(entity, entity.getAttributes().get(0).getOwner(), "Entity's attribute's owner should have remained unchanged (same as the owning entity)");
+  }
+
+  /**
+   * Tests that resolution runs correctly when resolving a resolved entity
+   */
+  @Test
+  public void testResolvingResolvedEntity() throws InterruptedException
+  {
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvingResolvedEntity", null);
+    CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").join();
+    CdmEntityDefinition resEntity = entity.createResolvedEntityAsync("resEntity").join();
+    CdmEntityDefinition resResEntity = resEntity.createResolvedEntityAsync("resResEntity").join();
+    Assert.assertNotNull(resResEntity);
+    Assert.assertEquals(1, resResEntity.getExhibitsTraits().size());
+    Assert.assertEquals("has.entitySchemaAbstractionLevel", resResEntity.getExhibitsTraits().get(0).getNamedReference());
+    Assert.assertEquals(1, ((CdmTraitReference)resResEntity.getExhibitsTraits().get(0)).getArguments().size());
+    Assert.assertEquals("resolved", ((CdmTraitReference)resResEntity.getExhibitsTraits().get(0)).getArguments().get(0).getValue());
   }
 
   /**

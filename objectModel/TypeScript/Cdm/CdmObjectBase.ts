@@ -154,6 +154,9 @@ export abstract class CdmObjectBase implements CdmObject {
     public abstract fetchObjectDefinitionName(): string;
     public abstract fetchObjectDefinition<T extends CdmObjectDefinition>(resOpt: resolveOptions): T;
     public abstract createSimpleReference(resOpt: resolveOptions): CdmObjectReference;
+    /**
+     * @internal
+     */
     public abstract createPortableReference(resOpt: resolveOptions): CdmObjectReference;
 
     /**
