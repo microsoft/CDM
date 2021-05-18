@@ -49,7 +49,6 @@ public class ProjectionCombineTest {
     /**
      * Test Entity Extends with a Resolution Guidance that selects 'one'
      */
-    @Ignore("Please refer to bug https://powerbi.visualstudio.com/Power%20Query/_workitems/edit/446164")
     @Test
     public void TestExtends() throws InterruptedException {
         String testName = "TestExtends";

@@ -22,7 +22,7 @@ class EntityResolution(unittest.TestCase):
 
         corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'TestOwnerNotChanged')
 
-        entity = await corpus.fetch_object_async('local:/Entity.cdm.json/Entity') # type: CdmEntityDefinition
+        entity = await corpus.fetch_object_async('local:/Entity.cdm.json/Entity')  # type: CdmEntityDefinition
         document = await corpus.fetch_object_async('local:/Entity.cdm.json')
 
         self.assertEqual(document, entity.owner)
@@ -32,6 +32,20 @@ class EntityResolution(unittest.TestCase):
         self.assertEqual(document, entity.owner)
         self.assertEqual(entity, entity.attributes[0].owner,
                          'Entity\'s attribute\'s owner should have remained unchanged (same as the owning entity)')
+
+    @async_test
+    async def test_resolving_resolved_entity(self):
+        """Tests that resolution runs correctly when resolving a resolved entity"""
+
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'TestResolvingResolvedEntity')
+        entity = await corpus.fetch_object_async('local:/Entity.cdm.json/Entity')  # type: CdmEntityDefinition
+        res_entity = await entity.create_resolved_entity_async('resEntity')
+        res_res_entity = await res_entity.create_resolved_entity_async('resResEntity')
+        self.assertIsNotNone(res_res_entity)  # type: CdmEntityDefinition
+        self.assertEqual(1, len(res_res_entity.exhibits_traits))
+        self.assertEqual("has.entitySchemaAbstractionLevel", res_res_entity.exhibits_traits[0].named_reference)
+        self.assertEqual(1, len(res_res_entity.exhibits_traits[0].arguments))
+        self.assertEqual("resolved", res_res_entity.exhibits_traits[0].arguments[0].value)
 
     @async_test
     async def test_resolve_test_corpus(self):

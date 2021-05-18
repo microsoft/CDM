@@ -12,6 +12,8 @@ from cdm.utilities import time_utils
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext
 
+ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
+
 default_logger = logging.getLogger('cdm-python')
 
 # Log to console by default if handler is not specified.
@@ -22,9 +24,10 @@ handler.setFormatter(
 
 default_logger.handlers = [handler]  # Overwrite existing handler.
 
-with open(os.path.join(os.path.dirname((os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))),
-                       'resx','logmessages.txt'), "r") as resource_file:
-    logmessages = dict(line.strip().split(': ') for line in resource_file)
+resource_file_path = os.path.abspath(os.path.join(ROOT_PATH, '..', '..', 'resx','logmessages.txt'))
+
+with open(resource_file_path, 'r') as resource_file:
+    log_messages = dict(line.strip().split(': ') for line in resource_file)
 
 def debug(ctx: 'CdmCorpusContext', class_name: str, method: str, corpus_path: str, message: str) -> None:
     if CdmStatusLevel.PROGRESS >= ctx.report_at_level:
@@ -88,7 +91,7 @@ def _get_message_from_resource_file(code: 'CdmLogCode', args) -> str:
         """
         Loads the string from resource file for particular enum and inserts arguments in it.
         """
-        message = logmessages[code.name]
+        message = log_messages[code.name]
         i = 0;
         for x in args:
             string = '{' + str(i) + '}'

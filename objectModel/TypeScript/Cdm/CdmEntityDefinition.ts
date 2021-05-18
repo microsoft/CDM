@@ -1199,7 +1199,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
         // get or add the one argument
         let argDef: CdmArgumentDefinition;
         if (traitRef.arguments && traitRef.arguments.length === 1) {
-            argDef = traitRef.arguments[0];
+            argDef = traitRef.arguments.allItems[0];
         }
         else {
             argDef = new CdmArgumentDefinition(this.ctx, 'level');
