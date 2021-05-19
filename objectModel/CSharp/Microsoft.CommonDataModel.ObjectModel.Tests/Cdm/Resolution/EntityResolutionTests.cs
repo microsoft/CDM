@@ -50,6 +50,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
+        /// Tests that resolution runs correctly when resolving a resolved entity
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestResolvingResolvedEntity()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestResolvingResolvedEntity");
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/Entity.cdm.json/Entity");
+
+            var resEntity = await entity.CreateResolvedEntityAsync("resEntity");
+            var resResEntity = await resEntity.CreateResolvedEntityAsync("resResEntity");
+            Assert.IsNotNull(resResEntity);
+            Assert.AreEqual(1, resResEntity.ExhibitsTraits.Count);
+            Assert.AreEqual("has.entitySchemaAbstractionLevel", resResEntity.ExhibitsTraits[0].NamedReference);
+            Assert.AreEqual(1, ((CdmTraitReference)resResEntity.ExhibitsTraits[0]).Arguments.Count);
+            Assert.AreEqual("resolved", ((CdmTraitReference)resResEntity.ExhibitsTraits[0]).Arguments[0].Value);
+        }
+
+        /// <summary>
         /// Test whether or not the test corpus can be resolved
         /// The input of this test is a manifest from SchemaDocs, so this test does not need any individual input files.
         /// This test does not check the output. Possibly because the schema docs change often.
@@ -141,11 +160,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             CdmCorpusDefinition cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestResolveWithExtended");
 
-            cdmCorpus.SetEventCallback(new EventCallback { Invoke = (CdmStatusLevel statusLevel, string message) =>
+            cdmCorpus.SetEventCallback(new EventCallback
             {
-                if (message.Contains("unable to resolve the reference"))
-                    Assert.Fail();
-            }
+                Invoke = (CdmStatusLevel statusLevel, string message) =>
+                {
+                    if (message.Contains("unable to resolve the reference"))
+                        Assert.Fail();
+                }
             }, CdmStatusLevel.Warning);
 
             CdmEntityDefinition ent = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>("local:/sub/Account.cdm.json/Account");

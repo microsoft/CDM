@@ -14,6 +14,7 @@ import {
     CdmEntityDefinition,
     CdmManifestDefinition,
     cdmStatusLevel,
+    CdmTraitReference,
     resolveOptions,
     stringSpewCatcher
 } from '../../../internal';
@@ -52,6 +53,26 @@ describe('Cdm/Resolution/EntityResolution', () => {
         expect(entity.attributes.allItems[0].owner)
             .toBe(entity);
         done();
+    });
+
+    /**
+     * Tests that resolution runs correctly when resolving a resolved entity
+     */
+    it('TestResolvingResolvedEntity', async () => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolvingResolvedEntity');
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Entity.cdm.json/Entity');
+        const resEntity = await entity.createResolvedEntityAsync('resEntity');
+        const resResEntity = await resEntity.createResolvedEntityAsync('resResEntity');
+        expect(resResEntity)
+            .not.toBeUndefined();
+        expect(resResEntity.exhibitsTraits.length)
+            .toBe(1);
+        expect(resResEntity.exhibitsTraits.allItems[0].namedReference)
+            .toBe('has.entitySchemaAbstractionLevel');
+        expect((resResEntity.exhibitsTraits.allItems[0] as CdmTraitReference).arguments.length)
+            .toBe(1);
+        expect((resResEntity.exhibitsTraits.allItems[0] as CdmTraitReference).arguments.allItems[0].value)
+            .toBe('resolved');
     });
 
     /**

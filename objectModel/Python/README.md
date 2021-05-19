@@ -11,7 +11,9 @@ Note: These instructions were verified on Windows. For Mac, the steps might chan
 1. Open command prompt, change to the cloned repository folder and type `python -m venv env` to create a virtual Python environment.
 1. Make sure that you have Visual Studio Code installed. Type `code .` to open the folder in Visual Studio Code.
 1. In Visual Studio Code, install the [Python extension for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-python.python).
-1. Select `Python: Create Terminal` command from the Command Palette (Ctrl+Shift+P). From the terminal, type `pip3 install -r requirements.txt` to install project dependencies.
+1. Select `Python: Create Terminal` command from the Command Palette (Ctrl+Shift+P). From the terminal, type:
+   * `pip3 install -r requirements.txt` to install project runtime dependencies.
+   * `pip3 install -r dev-requirements.txt` to install project development dependencies.
 1. The project requires some base files that are present in the schemaDocuments folder. Run `python .\setup.py copy_resources` to copy the necessary files to the project.
 1. To enable debugging of sample code in VSCode, please update your launch.json file with following settings:
    "cwd": "${workspaceFolder}",
