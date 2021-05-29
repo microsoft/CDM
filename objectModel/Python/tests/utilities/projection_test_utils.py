@@ -4,7 +4,7 @@
 import os
 from typing import List, Optional
 
-from cdm.enums import CdmStatusLevel, CdmObjectType
+from cdm.enums import CdmLogCode, CdmObjectType, CdmStatusLevel
 from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
 from tests.cdm.projection.attribute_context_util import AttributeContextUtil
 from tests.common import TestHelper
@@ -19,6 +19,11 @@ class ProjectionTestUtils:
 
     # Path to foundations
     foundation_json_path = 'cdm:/foundations.cdm.json'
+
+    # The log codes that are allowed to be logged without failing the test
+    allowed_logs = set([
+        CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE.name
+    ])
 
     @staticmethod
     async def get_resolved_entity(corpus: 'CdmCorpusDefinition', input_entity: 'CdmEntityDefinition', directives: List[str]) -> 'CdmEntityDefinition':
@@ -51,7 +56,8 @@ class ProjectionTestUtils:
         return file_name_prefix
 
     @staticmethod
-    async def load_entity_for_resolution_option_and_save(test: 'TestCase', corpus: 'CdmCorpusDefinition', test_name: str, tests_subpath: str, entity_name: str, directives: List[str]) -> 'CdmEntityDefinition':
+    async def load_entity_for_resolution_option_and_save(test: 'TestCase', corpus: 'CdmCorpusDefinition', test_name: str, tests_subpath: str, entity_name: str, \
+                                                         directives: List[str], update_expected_output: bool = False) -> 'CdmEntityDefinition':
         """Loads an entity, resolves it, and then validates the generated attribute contexts"""
         expected_output_path = TestHelper.get_expected_output_folder_path(tests_subpath, test_name)
 
@@ -60,7 +66,7 @@ class ProjectionTestUtils:
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, directives)
         test.assertIsNotNone(resolved_entity)
 
-        await ProjectionTestUtils.validate_attribute_context(test, directives, expected_output_path, entity_name, resolved_entity)
+        await ProjectionTestUtils.validate_attribute_context(test, directives, expected_output_path, entity_name, resolved_entity, update_expected_output)
 
         return resolved_entity
 
@@ -70,7 +76,9 @@ class ProjectionTestUtils:
         corpus = TestHelper.get_local_corpus(tests_subpath, test_name)
 
         def callback(level: CdmStatusLevel, message: str):
-            raise Exception(message)
+            last_event = corpus.ctx.events[-1]
+            if not last_event.get('code') or last_event['code'] not in ProjectionTestUtils.allowed_logs:
+                raise Exception(message)
         corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
 
         return corpus

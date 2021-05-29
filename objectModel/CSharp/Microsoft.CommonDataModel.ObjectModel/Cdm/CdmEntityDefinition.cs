@@ -37,6 +37,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets or sets the resolution guidance for attributes taken from the entity extended by this entity.
         /// </summary>
+        [Obsolete("Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview")]
         public CdmAttributeResolutionGuidance ExtendsEntityResolutionGuidance { get; set; }
 
         /// <summary>
@@ -249,6 +250,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectType.EntityDef;
         }
 
+        [Obsolete("For internal use only.")]
         public ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null)
         {
             bool wasPreviouslyResolving = this.Ctx.Corpus.isCurrentlyResolving;
@@ -297,7 +299,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         for (int i = 0; i < this.Attributes.Count; i++)
                         {
                             // if dynamic refs come back from attributes, they don't know who we are, so they don't set the entity
-                            dynamic sub = this.Attributes.AllItems[i].FetchResolvedEntityReferences(resOpt);
+                            dynamic sub = this.Attributes[i].FetchResolvedEntityReferences(resOpt);
                             if (sub != null)
                             {
                                 foreach (var res in sub.Set)
@@ -412,6 +414,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal override ResolvedAttributeSetBuilder ConstructResolvedAttributes(ResolveOptions resOpt, CdmAttributeContext under = null)
         {
+            //System.Diagnostics.Debug.WriteLine($"{this.EntityName}({resOpt.DepthInfo.CurrentDepth}/{resOpt.DepthInfo.MaxDepth})");
+
             // find and cache the complete set of attributes
             // attributes definitions originate from and then get modified by subsequent re-definitions from (in this order):
             // an extended entity, traits applied to extended entity, exhibited traits of main entity, the (datatype or entity) used as an attribute, traits applied to that datatype or entity,
@@ -490,6 +494,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     if (this.ExtendsEntityResolutionGuidance != null)
                     {
+                        resOpt.UsedResolutionGuidance = true;
+
                         // some guidance was given on how to integrate the base attributes into the set. apply that guidance
                         ResolvedTraitSet rtsBase = this.FetchResolvedTraits(resOpt);
 
@@ -661,6 +667,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // points to the level of the context where it was last modified, merged, created
                 var ras = this.FetchResolvedAttributes(resOptCopy, acpEnt);
 
+                if (resOptCopy.UsedResolutionGuidance)
+                {
+                    Logger.Warning(ctx, Tag, nameof(CreateResolvedEntityAsync), this.AtCorpusPath, CdmLogCode.WarnDeprecatedResolutionGuidance);
+                }
+
                 if (ras == null)
                 {
                     return null;
@@ -696,11 +707,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     //Action<ResolvedAttributeSet> testResolveAttributeCtx = null;
                     //testResolveAttributeCtx = (rasSub) =>
                     //{
-                    //    if (rasSub.Set.Count != 0 && rasSub.AttributeContext.AtCoprusPath.StartsWith("cacheHolder"))
+                    //    if (rasSub.Set.Count != 0 && rasSub.AttributeContext.AtCorpusPath.StartsWith("cacheHolder"))
                     //        System.Diagnostics.Debug.WriteLine("Bad");
                     //    rasSub.Set.ForEach(ra =>
                     //    {
-                    //        if (ra.AttCtx.AtCoprusPath.StartsWith("cacheHolder"))
+                    //        if (ra.AttCtx.AtCorpusPath.StartsWith("cacheHolder"))
                     //            System.Diagnostics.Debug.WriteLine("Bad");
 
                     //        // the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
@@ -781,126 +792,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // our goal now is to prune that tree to just have the stuff one may need
                     // do this by keeping the leafs and all of the lineage nodes for the attributes that end up in the resolved entity
                     // along with some special nodes that explain entity structure and inherit
-
-                    // run over the whole tree and make a set of the nodes that should be saved for sure. This is anything NOT under a generated set 
-                    // (so base entity chains, entity attributes entity definitions)
-                    HashSet<CdmAttributeContext> nodesToSave = new HashSet<CdmAttributeContext>();
-                    Func<CdmObject, bool> SaveStructureNodes = null;
-                    SaveStructureNodes = (subItem) =>
+                    //System.Diagnostics.Debug.Write($"res ent {entName}");
+                    if (!attCtx.PruneToScope(allPrimaryCtx))
                     {
-                        CdmAttributeContext ac = subItem as CdmAttributeContext;
-                        if (ac == null || ac.Type == CdmAttributeContextType.GeneratedSet)
-                        {
-                            return true;
-                        }
-                        nodesToSave.Add(ac);
-                        if (ac.Contents == null || ac.Contents.Count == 0)
-                        {
-                            return true;
-                        }
-                        // look at all children
-                        foreach (var subSub in ac.Contents)
-                        {
-                            if (SaveStructureNodes(subSub) == false)
-                            {
-                                return false;
-                            }
-                        }
-                        return true;
-                    };
-                    if (SaveStructureNodes(attCtx) == false)
+                        // TODO: log error
                         return null;
-
-                    // next, look at the attCtx for every resolved attribute. follow the lineage chain and mark all of those nodes as ones to save
-                    // also mark any parents of those as savers
-
-                    // helper that save the passed node and anything up the parent chain 
-                    Func<CdmAttributeContext, bool> SaveParentNodes = null;
-                    SaveParentNodes = (currNode) =>
-                    {
-                        if (nodesToSave.Contains(currNode))
-                        {
-                            return true;
-                        }
-                        nodesToSave.Add(currNode);
-                        // get the parent 
-                        if (currNode.Parent != null && currNode.Parent.ExplicitReference != null)
-                        {
-                            return SaveParentNodes(currNode.Parent.ExplicitReference as CdmAttributeContext);
-                        }
-                        return true;
-                    };
-
-                    // helper that saves the current node (and parents) plus anything in the lineage (with their parents)
-                    Func<CdmAttributeContext, bool> SaveLineageNodes = null;
-                    SaveLineageNodes = (currNode) =>
-                    {
-                        if (SaveParentNodes(currNode) == false)
-                        {
-                            return false;
-                        }
-                        if (currNode.Lineage != null && currNode.Lineage.Count > 0)
-                        {
-                            foreach (var lin in currNode.Lineage)
-                            {
-                                if (lin.ExplicitReference != null)
-                                {
-                                    if (SaveLineageNodes(lin.ExplicitReference as CdmAttributeContext) == false)
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                        return true;
-                    };
-
-                    // so, do that ^^^ for every primary context found earlier
-                    foreach (var primCtx in allPrimaryCtx)
-                    {
-                        if (SaveLineageNodes(primCtx) == false)
-                        {
-                            return null;
-                        }
                     }
-
-                    // now the cleanup, we have a set of the nodes that should be saved
-                    // run over the tree and re-build the contents collection with only the things to save
-                    Func<CdmObject, bool> CleanSubGroup = null;
-                    CleanSubGroup = (subItem) =>
-                    {
-                        if (subItem.ObjectType == CdmObjectType.AttributeRef)
-                        {
-                            return true; // not empty
-                        }
-
-                        CdmAttributeContext ac = subItem as CdmAttributeContext;
-
-                        if (nodesToSave.Contains(ac) == false)
-                        {
-                            return false; // don't even look at content, this all goes away
-                        }
-
-                        if (ac.Contents != null && ac.Contents.Count > 0)
-                        {
-                            // need to clean up the content array without triggering the code that fixes in document or paths
-                            var newContent = new List<CdmObject>();
-                            foreach (var sub in ac.Contents)
-                            {
-                                // true means keep this as a child
-                                if (CleanSubGroup(sub) == true)
-                                {
-                                    newContent.Add(sub);
-                                }
-                            }
-                            // clear the old content and replace
-                            ac.Contents.AllItems.Clear();
-                            ac.Contents.AllItems.AddRange(newContent);
-                        }
-
-                        return true;
-                    };
-                    CleanSubGroup(attCtx);
 
                     // create an all-up ordering of attributes at the leaves of this tree based on insert order
                     // sort the attributes in each context by their creation order and mix that with the other sub-contexts that have been sorted

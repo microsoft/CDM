@@ -122,8 +122,12 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                     proj_directive = ProjectionDirective(res_opt, self, self.entity)
                     proj_ctx = proj_def._construct_projection_context(proj_directive, under)
                     rasb._resolved_attribute_set = proj_def._extract_resolved_attributes(proj_ctx, under)
+                    # from the traits of purpose and applied here
+                    rasb._resolved_attribute_set.apply_traits(self._fetch_resolved_traits(res_opt))
             else:
-                # An Entity Reference
+                # Resolution guidance
+
+                res_opt._used_resolution_guidance = True
 
                 arc = self._fetch_att_res_context(res_opt)
                 rel_info = arc._get_relationship_info()
@@ -287,6 +291,8 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         return self.name
 
     def fetch_resolved_entity_references(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedEntityReferenceSet':
+        """Deprecated: for internal use only"""
+
         # need to copy so that relationship depth of parent is not overwritten
         res_opt = res_opt.copy() if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 

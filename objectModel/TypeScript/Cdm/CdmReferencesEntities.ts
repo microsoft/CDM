@@ -4,5 +4,9 @@
 import { ResolvedEntityReferenceSet , resolveOptions } from '../internal';
 
 export interface CdmReferencesEntities {
+    /**
+     * @deprecated
+     * For internal use only.
+     */
     fetchResolvedEntityReference(resOpt: resolveOptions): ResolvedEntityReferenceSet;
 }

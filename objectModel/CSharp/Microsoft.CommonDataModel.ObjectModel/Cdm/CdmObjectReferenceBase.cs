@@ -286,16 +286,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            dynamic def = this.FetchResolvedReference(resOpt) as dynamic;
-            if (def != null)
+            CdmObject def = this.FetchResolvedReference(resOpt);
+            if (def != null && def is CdmObjectReferenceBase reference)
             {
-                if (def is CdmObjectReferenceBase)
-                {
-                    def = def.FetchResolvedReference(resOpt) as dynamic;
-                }
+                def = reference.FetchResolvedReference(resOpt);
             }
             if (def != null && !(def is CdmObjectReference))
-                return def;
+            {
+                return (T)def;
+            }
             return default(T);
         }
 

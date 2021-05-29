@@ -144,7 +144,7 @@ export class AttributeContextUtil {
      * A function to validate if the attribute context tree & traits generated for a resolved entity is the same as the expected and
      * saved attribute context tree & traits for a test case
      */
-    public static async validateAttributeContext(corpus: CdmCorpusDefinition, expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition): Promise<void> {
+    public static async validateAttributeContext(expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition, updateExpectedOutput: boolean = false): Promise<void> {
         if (resolvedEntity.attributeContext) {
             // Actual
             const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', 'ActualOutput')}/AttrCtx_${entityName}.txt`;
@@ -157,6 +157,9 @@ export class AttributeContextUtil {
 
             // Expected
             const expectedStringFilePath: string = `${expectedOutputPath}/AttrCtx_${entityName}.txt`;
+            if (updateExpectedOutput) {
+                fs.writeFileSync(expectedStringFilePath, actualText);
+            }
             const expectedText: string = fs.readFileSync(expectedStringFilePath).toString();
 
             // Test if Actual is Equal to Expected

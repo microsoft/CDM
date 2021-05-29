@@ -7,5 +7,8 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityRef
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
 public interface CdmReferencesEntities {
+  /**
+   * @deprecated for internal use only.
+   */
   ResolvedEntityReferenceSet fetchResolvedEntityReferences(ResolveOptions resOpt);
 }

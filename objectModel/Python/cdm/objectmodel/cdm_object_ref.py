@@ -246,9 +246,8 @@ class CdmObjectReference(CdmObject):
         if res_opt is None:
             res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         definition = self._fetch_resolved_reference(res_opt)
-        if definition is not None:
-            if isinstance(definition, CdmObjectReference):
-                definition = definition.fetch_resolved_reference()
+        if definition is not None and isinstance(definition, CdmObjectReference):
+            definition = definition.fetch_resolved_reference()
         if definition is not None and not isinstance(definition, CdmObjectReference):
             return definition
         return None

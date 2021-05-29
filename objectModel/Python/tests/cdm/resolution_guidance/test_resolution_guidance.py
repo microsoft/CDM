@@ -5,7 +5,7 @@ import json
 import os
 import unittest
 
-from cdm.enums import CdmStatusLevel
+from cdm.enums import CdmLogCode, CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition, CdmEntityDefinition, CdmFolderDefinition
 from cdm.storage import LocalAdapter
 from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
@@ -15,6 +15,25 @@ from tests.common import async_test, TestHelper
 
 class ResolutionGuidanceTest(unittest.TestCase):
     tests_subpath = os.path.join('Cdm', 'ResolutionGuidance')
+
+    @async_test
+    async def test_resolution_guidance_deprecation(self):
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_resolution_guidance_deprecation')
+
+        # Tests warning log when resolution guidance is used on a data typed attribute.
+        entity = await corpus.fetch_object_async('local:/TypeAttribute.cdm.json/Entity')  # type: CdmEntityDefinition
+        await entity.create_resolved_entity_async('res-entity')
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE, self)
+
+        # Tests warning log when resolution guidance is used on a entity typed attribute.
+        entity = await corpus.fetch_object_async('local:/EntityAttribute.cdm.json/Entity')  # type: CdmEntityDefinition
+        await entity.create_resolved_entity_async('res-entity')
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE, self)
+
+        # Tests warning log when resolution guidance is used when extending an entity.
+        entity = await corpus.fetch_object_async('local:/ExtendsEntity.cdm.json/Entity')  # type: CdmEntityDefinition
+        await entity.create_resolved_entity_async('res-entity')
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE, self)
 
     @async_test
     async def test_by_entity_name(self):

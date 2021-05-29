@@ -424,9 +424,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // make a copy and add defaults if missing
                 CdmAttributeResolutionGuidance resGuideWithDefault;
                 if (this.ResolutionGuidance != null)
+                {
+                    resOpt.UsedResolutionGuidance = true;
                     resGuideWithDefault = (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt);
+                }
                 else
+                {
                     resGuideWithDefault = new CdmAttributeResolutionGuidance(this.Ctx);
+                }
 
                 // renameFormat is not currently supported for type attributes
                 resGuideWithDefault.renameFormat = null;
@@ -444,6 +449,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return rasb;
         }
 
+        [Obsolete("For internal use only.")]
         public override ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null)
         {
             return null;

@@ -7,6 +7,8 @@ import java.util.List;
 
 /**
  * used to indicate that this attribute select either 'one' or 'all' of the sub-attributes from an entity. If the 'structured' directive is set, this trait causes resolved attributes to end up in groups rather than a flattend list.
+ * @deprecated
+ * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
  */
 public class SelectsSubAttribute {
   private String selects;

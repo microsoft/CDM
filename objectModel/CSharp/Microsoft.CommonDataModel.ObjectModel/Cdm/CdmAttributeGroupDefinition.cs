@@ -110,6 +110,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return attributeDef;
         }
 
+        [Obsolete("For internal use only.")]
         public ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null)
         {
             if (resOpt == null)

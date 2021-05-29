@@ -21,6 +21,8 @@ import {
 import { ResolvedAttributeSet } from '../../../ResolvedModel/ResolvedAttributeSet';
 import { LocalAdapter } from '../../../Storage';
 import { AttributeResolutionDirectiveSet } from '../../../Utilities/AttributeResolutionDirectiveSet';
+import { AttributeContextUtil } from '../Projection/AttributeContextUtil';
+import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 import { testHelper } from '../../testHelper';
 import { resolutionTestUtils } from './ResolutionTestUtils';
 
@@ -31,7 +33,6 @@ import { resolutionTestUtils } from './ResolutionTestUtils';
 describe('Cdm/Resolution/EntityResolution', () => {
     const testsSubpath: string = 'Cdm/Resolution/EntityResolution';
     const schemaDocsRoot: string = testHelper.schemaDocumentsPath;
-    const doesWriteDebuggingFiles: boolean = false;
 
     /**
      * Tests if the owner of the entity is not changed when calling CreatedResolvedEntityAsync
@@ -182,7 +183,6 @@ describe('Cdm/Resolution/EntityResolution', () => {
      */
     it('TestAttributesThatAreReplaced', async (done) => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestAttributesThatAreReplaced');
-        corpus.storage.mount('cdm', new LocalAdapter(testHelper.schemaDocumentsPath));
 
         const extendedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/extended.cdm.json/extended');
         const resExtendedEnt: CdmEntityDefinition = await extendedEntity.createResolvedEntityAsync('resExtended');
@@ -290,7 +290,6 @@ describe('Cdm/Resolution/EntityResolution', () => {
      */
     it('TestSettingTraitsForResolutionGuidanceAttributes', async (done) => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSettingTraitsForResolutionGuidanceAttributes');
-        corpus.storage.mount('cdm', new LocalAdapter(testHelper.schemaDocumentsPath));
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Customer.cdm.json/Customer');
 
         // Resolve with default directives to get "is.linkedEntity.name" trait.
@@ -311,4 +310,17 @@ describe('Cdm/Resolution/EntityResolution', () => {
 
         done();
     });
+
+    /**
+     * Test that traits(including the ones inside of dataTypeRefence and PurposeReference) are applied to an entity attribute and type attribute.
+     */
+         it('TestAppliedTraitsInAttributes', async (done) => {
+            const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestAppliedTraitsInAttributes');
+            const expectedOutputFolder: string = testHelper.getExpectedOutputFolderPath(testsSubpath, 'TestAppliedTraitsInAttributes');
+            const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Sales.cdm.json/Sales');
+            const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
+            await AttributeContextUtil.validateAttributeContext(expectedOutputFolder, 'Sales', resolvedEntity);
+    
+            done();
+        });
 });

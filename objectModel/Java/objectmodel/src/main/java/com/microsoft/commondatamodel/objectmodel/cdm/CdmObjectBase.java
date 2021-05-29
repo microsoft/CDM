@@ -19,6 +19,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -456,6 +457,18 @@ public abstract class CdmObjectBase implements CdmObject {
         if (oDef != null) {
           ctx.getCorpus()
                   .registerDefinitionReferenceSymbols(oDef, kind, resOpt.getSymbolRefSet());
+
+          if (this.objectType == CdmObjectType.EntityDef) {
+            // if we just got attributes for an entity, take the time now to clean up this cached tree and prune out
+            // things that don't help explain where the final set of attributes came from
+            if (underCtx != null) {
+              HashSet<CdmAttributeContext> scopesForAttributes = new HashSet<CdmAttributeContext>();
+              underCtx.collectContextFromAtts(rasbCache.getResolvedAttributeSet(), scopesForAttributes); // the context node for every final attribute
+              if (!underCtx.pruneToScope(scopesForAttributes)) { 
+                return null;
+              }
+            }
+          }
 
           // get the new cache tag now that we have the list of docs
           String cacheTag = ctx.getCorpus()

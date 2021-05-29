@@ -31,7 +31,8 @@ class EntityResolutionTraitGroup(unittest.TestCase):
         corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'TestResolvedTraitGroup')
 
         def callback(status_level: 'CdmStatusLevel', message: str):
-            self.fail('Received {} message: {}'.format(status_level, message))
+            if 'Resolution guidance is being deprecated in favor of Projections.' not in message:
+                self.fail('Received {} message: {}'.format(status_level, message))
         corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
 
         ent = await corpus.fetch_object_async('local:/E2EResolution/Contact.cdm.json/Contact')  # type: CdmEntityDefinition

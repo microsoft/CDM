@@ -27,6 +27,10 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
      * @internal
      */
     public attributeCount: number;
+    /**
+     * @deprecated
+     * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
+     */
     public resolutionGuidance: CdmAttributeResolutionGuidance;
 
     /**
@@ -153,6 +157,11 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
         }
         // return p.measure(bodyCode);
     }
+
+    /**
+     * @deprecated
+     * For internal use only.
+     */
     public abstract fetchResolvedEntityReference(resOpt: resolveOptions): ResolvedEntityReferenceSet;
 
 }

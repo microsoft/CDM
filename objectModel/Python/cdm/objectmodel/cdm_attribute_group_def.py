@@ -126,6 +126,8 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
         return self.attribute_group_name
 
     def fetch_resolved_entity_references(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedEntityReferenceSet':
+        """Deprecated: for internal use only"""
+
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
 
         from cdm.resolvedmodel import ResolvedEntityReferenceSet

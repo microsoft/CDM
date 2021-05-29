@@ -1042,6 +1042,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview..
+        /// </summary>
+        internal static string WarnDeprecatedResolutionGuidance {
+            get {
+                return ResourceManager.GetString("WarnDeprecatedResolutionGuidance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to discarding changes in document: {0}.
         /// </summary>
         internal static string WarnDocChangesDiscarded {

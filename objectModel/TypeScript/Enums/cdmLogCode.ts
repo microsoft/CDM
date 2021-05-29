@@ -113,6 +113,7 @@ export enum cdmLogCode {
     ErrUnrecognizedType,
     // Warnings
     WarnPartitionGlobAndRegexPresent,
+    WarnDeprecatedResolutionGuidance,
     WarnDocChangesDiscarded,
     WarnDocImportNotLoaded,
     WarnPartitionFileFetchFailed,

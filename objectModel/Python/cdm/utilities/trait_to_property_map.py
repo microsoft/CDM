@@ -4,7 +4,6 @@
 from typing import Any, Callable, List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmDataFormat, CdmObjectType, CdmLogCode
-from cdm.resolvedmodel.resolved_trait import ResolvedTrait
 from .logging import logger
 
 if TYPE_CHECKING:
@@ -44,6 +43,8 @@ data_format_trait_names = [
 
 
 def _fetch_trait_ref_argument_value(trait_ref_or_def: 'CdmTraitDefOrRef', arg_name: str) -> Any:
+    from cdm.resolvedmodel.resolved_trait import ResolvedTrait
+
     if trait_ref_or_def is None:
         return None
 
@@ -428,7 +429,7 @@ class TraitToPropertyMap:
                 return def_val
 
             if def_val.object_type == CdmObjectType.ENTITY_REF:
-                c_ent = def_val.fetch_object_definition(None)
+                c_ent = def_val.fetch_object_definition()
                 if c_ent is not None:
                     es_name = c_ent.entity_shape.fetch_object_definition_name()
                     corr = es_name == 'listLookupCorrelatedValues'

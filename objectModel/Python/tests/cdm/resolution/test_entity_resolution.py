@@ -4,6 +4,10 @@
 import os
 import unittest
 
+from tests.cdm.projection.attribute_context_util import AttributeContextUtil
+
+from tests.utilities.projection_test_utils import ProjectionTestUtils
+
 from cdm.enums import CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition, CdmEntityDefinition
 from cdm.storage import LocalAdapter
@@ -200,3 +204,16 @@ class EntityResolution(unittest.TestCase):
         resolved_entity = await entity.create_resolved_entity_async('resolved2', res_opt)
 
         self.assertIsNotNone(resolved_entity.attributes[0].applied_traits.item('is.linkedEntity.identifier'))
+
+    @async_test
+    async def test_applied_traits_in_attributes(self):
+        """
+        Test that traits(including the ones inside of dataTypeRefence and PurposeReference) are applied to an entity attribute and type attribute.
+        """
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'test_applied_traits_in_attributes')  # type: CdmCorpusDefinition
+        expected_output_folder = TestHelper.get_expected_output_folder_path(self.tests_sub_path, 'test_applied_traits_in_attributes')
+        entity = await corpus.fetch_object_async('local:/Sales.cdm.json/Sales')  # type: CdmEntityDefinition
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])
+
+        await AttributeContextUtil.validate_attribute_context(self, expected_output_folder, 'Sales', resolved_entity)
+

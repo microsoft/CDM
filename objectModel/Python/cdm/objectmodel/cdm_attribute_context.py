@@ -1,7 +1,7 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import cast, List, Optional, Union, TYPE_CHECKING
+from typing import cast, List, Optional, Set, Union, TYPE_CHECKING
 from collections import OrderedDict
 
 from cdm.enums import CdmLogCode
@@ -174,14 +174,12 @@ class CdmAttributeContext(CdmObjectDefinition):
             return None
         self.lineage.append(ref_lineage)
 
-        # debugging. get the parent of the context tree and validate that this node is in that tree (Ported from C# written by Jeff)
-        # if (validate == true)
-        # {
-        #     CdmAttributeContext trace = refLineage.ExplicitReference as CdmAttributeContext;
-        #     while (trace.Parent != null)
-        #         trace = trace.Parent.ExplicitReference as CdmAttributeContext;
-        #     trace.ValidateLineage(null);
-        # }
+        # debugging. get the parent of the context tree and validate that this node is in that tree
+        # if validate:
+        #     trace = refLineage.explicit_reference  # type: CdmAttributeContext
+        #     while trace.parent:
+        #         trace = trace.parent.explicit_reference  # type: CdmAttributeContext
+        #     trace.validate_lineage(null)
 
         return ref_lineage
 
@@ -190,11 +188,9 @@ class CdmAttributeContext(CdmObjectDefinition):
         res_opt_copy = res_opt_source.copy()
         # use this whenever we need to keep references pointing at things that were already found. used when 'fixing' references by localizing to a new document
         res_opt_copy._save_resolutions_on_copy = True
-        # for debugging help (Ported from C# written by Jeff)
-        # if (resOptCopy.MapOldCtxToNewCtx != null)
-        # {
-        #     return null;
-        # }
+        # for debugging help
+        # if resOptCopy.map_old_ctx_to_new_ctx:
+        #     return None
         res_opt_copy._map_old_ctx_to_new_ctx = OrderedDict()  # Type: Dict['CdmAttributeContext', 'CdmAttributeContext']
         return res_opt_copy
 
@@ -360,6 +356,149 @@ class CdmAttributeContext(CdmObjectDefinition):
 
         return True
 
+    def _collect_context_from_atts(self, ras_sub: ResolvedAttributeSet, collected: Set['CdmAttributeContext']) -> None:
+        for ra in ras_sub._set:
+            ra_ctx = ra.att_ctx
+            collected.add(ra_ctx)
+
+            # the target for a resolved att can be a TypeAttribute OR it can be another ResolvedAttributeSet (meaning a group)
+            if isinstance(ra.target, ResolvedAttributeSet):
+                # a group 
+                self._collect_context_from_atts(ra.target, collected)
+
+    def _prune_to_scope(self, scope_set: Set['CdmAttributeContext']) -> bool:
+        # run over the whole tree and make a set of the nodes that should be saved for sure. This is anything NOT under a generated set 
+        # (so base entity chains, entity attributes entity definitions)
+
+        # for testing, don't delete this
+        # def count_nodes(sub_item) -> int:
+        #    if not isinstance(sub_item, CdmAttributeContext):
+        #        return 1
+        #    ac = sub_item  # type: CdmAttributeContext
+        #    if not ac.contents:
+        #        return 1
+        #    # look at all children
+        #    total = 0
+        #    for sub_sub in ac.contents:
+        #        total += count_nodes(sub_sub)
+        #    return 1 + total
+        # print('Pre Prune', count_nodes(self))
+
+
+        # so ... the change from the old behavior is to depend on the lineage pointers to save the attribute defs
+        # in the 'structure' part of the tree that might matter. keep all of the other structure info and keep some 
+        # special nodes (like the ones that have removed attributes) that won't get found from lineage trace but that are
+        # needed to understand what took place in resolution
+        nodes_to_save = set()
+
+        # helper that save the passed node and anything up the parent chain 
+        def save_parent_nodes(curr_node) -> bool:
+            if curr_node in nodes_to_save:
+                return True
+            nodes_to_save.add(curr_node)
+            # get the parent 
+            if curr_node.parent and curr_node.parent.explicit_reference:
+                return save_parent_nodes(curr_node.parent.explicit_reference)
+            return True
+
+        # helper that saves the current node (and parents) plus anything in the lineage (with their parents)
+        def save_lineage_nodes(curr_node) -> bool:
+            if not save_parent_nodes(curr_node):
+                return False
+
+            if curr_node.lineage:
+                for lin in curr_node.lineage:
+                    if lin.explicit_reference:
+                        if not save_lineage_nodes(lin.explicit_reference):
+                            return False
+            return True
+
+        def save_structure_nodes(sub_item, in_generated, in_projection, in_remove) -> bool:
+            if not isinstance(sub_item, CdmAttributeContext):
+                return True
+
+            ac = sub_item  # type: CdmAttributeContext
+            if ac.type == CdmAttributeContextType.GENERATED_SET:
+                in_generated = True # special mode where we hate everything except the removed att notes
+
+            if in_generated and (ac.type == CdmAttributeContextType.OPERATION_EXCLUDE_ATTRIBUTES or ac.type == CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES):
+                in_remove = True # triggers us to know what to do in the next code block.
+            removed_attribute = False
+            if ac.type == CdmAttributeContextType.ATTRIBUTE_DEFINITION:
+                # empty attribute nodes are descriptions of source attributes that may or may not be needed. lineage will sort it out.
+                # the exception is for attribute descriptions under a remove attributes operation. they are gone from the resolved att set, so
+                # no history would remain 
+                if in_remove:
+                    removed_attribute = True
+                else:
+                    if ac.contents is None or len(ac.contents) == 0:
+                        return True
+
+            if not in_generated or removed_attribute:
+                # mark this as something worth saving, sometimes 
+                # these get discovered at the leaf of a tree that we want to mostly ignore, so can cause a
+                # discontinuity in the 'save' chains, so fix that
+                save_lineage_nodes(ac)
+
+            if ac.type == CdmAttributeContextType.PROJECTION:
+                in_projection = True # track this so we can do the next thing ...
+
+            if ac.type == CdmAttributeContextType.ENTITY and in_projection:
+                # this is far enough, the entity that is somewhere under a projection chain
+                # things under this might get saved through lineage, but down to this point will get in for sure
+                return True
+
+            if ac.contents is None or len(ac.contents) == 0:
+                return True
+
+            # look at all children
+            for sub_sub in ac.contents:
+                if not save_structure_nodes(sub_sub, in_generated, in_projection, in_remove):
+                    return False
+            return True
+
+        if not save_structure_nodes(self, False, False, False):
+            return False
+
+        # next, look at the attCtx for every resolved attribute. follow the lineage chain and mark all of those nodes as ones to save
+        # also mark any parents of those as savers
+
+
+        # so, do that ^^^ for every primary context found earlier
+        for prim_ctx in scope_set:
+            if not save_lineage_nodes(prim_ctx):
+                return False
+
+        # now the cleanup, we have a set of the nodes that should be saved
+        # run over the tree and re-build the contents collection with only the things to save
+        def clean_sub_group(sub_item) -> bool:
+            if sub_item.object_type == CdmObjectType.ATTRIBUTE_REF:
+                return True # not empty
+
+            ac = sub_item  # type: CdmAttributeContext
+
+            if ac not in nodes_to_save:
+                return False # don't even look at content, this all goes away
+
+            if ac.contents:
+                # need to clean up the content array without triggering the code that fixes in document or paths
+                new_content = []  # type: List[CdmObject]
+                for sub in ac.contents:
+                    # true means keep this as a child
+                    if clean_sub_group(sub):
+                        new_content.append(sub)
+                # clear the old content and replace
+                ac.contents.clear()
+                ac.contents.extend(new_content)
+
+            return True
+
+        clean_sub_group(self)
+
+        # print('Post Prune', count_nodes(self))
+
+        return True
+
     @staticmethod
     def _create_child_under(res_opt: 'ResolveOptions', acp: 'AttributeContextParameters') -> 'CdmAttributeContext':
         if not acp:
@@ -508,7 +647,3 @@ class CdmAttributeContext(CdmObjectDefinition):
         _check_lineage(self)
 
         return True
-
-
-    
-

@@ -329,10 +329,8 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             }
 
             let def: T = this.fetchResolvedReference(resOpt) as unknown as T;
-            if (def !== undefined) {
-                if (isCdmObjectReference(def)) {
-                    def = def.fetchResolvedReference() as unknown as T;
-                }
+            if (def !== undefined && isCdmObjectReference(def)) {
+                def = def.fetchResolvedReference() as unknown as T;
             }
             if (def !== undefined && !isCdmObjectReference(def)) {
                 return def;

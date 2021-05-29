@@ -88,7 +88,7 @@ class CalculateRelationshipTest(unittest.TestCase):
 
         await self._test_run(test_name, entity_name, True)
 
-    async def _test_run(self, test_name: str, entity_name: str, is_entity_set: bool) -> None:
+    async def _test_run(self, test_name: str, entity_name: str, is_entity_set: bool, update_expected_output: bool = False) -> None:
         """Common test code for these test cases"""
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         expected_output_folder = TestHelper.get_expected_output_folder_path(self.tests_subpath, test_name)
@@ -103,11 +103,8 @@ class CalculateRelationshipTest(unittest.TestCase):
         self.assertIsNotNone(entity)
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])
         self._assert_entity_shape_in_resolved_entity(resolved_entity, is_entity_set)
-        actual_attr_ctx = self._get_attribute_context_string(resolved_entity, entity_name, actual_output_folder)
 
-        with open(os.path.join(expected_output_folder, 'AttrCtx_{}.txt'.format(entity_name))) as expected_file:
-            expected_attr_ctx = expected_file.read()
-        self.assertEqual(expected_attr_ctx, actual_attr_ctx)
+        await AttributeContextUtil.validate_attribute_context(self, expected_output_folder, entity_name, resolved_entity, update_expected_output)
 
         await corpus.calculate_entity_graph_async(manifest)
         await manifest.populate_manifest_relationships_async()

@@ -4,6 +4,8 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.relationship;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.AttributeContext;
+import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Attribute;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projection.AttributeContextUtil;
@@ -139,7 +141,14 @@ public class CalculateRelationshipTest {
     /**
      * Common test code for these test cases
      */
-    private void testRun(String testName, String entityName, boolean isEntitySet) throws InterruptedException, IOException {
+    private void testRun(String testName, String entityName, boolean isEntitySet) throws IOException, InterruptedException {
+        testRun(testName, entityName, isEntitySet, false);
+    }
+
+    /**
+     * Common test code for these test cases
+     */
+    private void testRun(String testName, String entityName, boolean isEntitySet, boolean updateExpectedOutput) throws InterruptedException, IOException {
         CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
         String inputFolder = TestHelper.getInputFolderPath(TESTS_SUBPATH, testName);
         String expectedOutputFolder = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
@@ -156,16 +165,8 @@ public class CalculateRelationshipTest {
         Assert.assertNotNull(entity);
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
         assertEntityShapeInResolvedEntity(resolvedEntity, isEntitySet);
-        String actualAttrCtx = getAttributeContextString(resolvedEntity, entityName, actualOutputFolder);
 
-        try {
-            final String expectedAttrCtx = new String(Files.readAllBytes(
-                new File(expectedOutputFolder, "AttrCtx_" + entityName + ".txt").toPath()),
-                StandardCharsets.UTF_8);
-            Assert.assertEquals(actualAttrCtx, expectedAttrCtx);
-        } catch (Exception e) {
-            Assert.fail(e.getMessage());
-        }
+        AttributeContextUtil.validateAttributeContext(expectedOutputFolder, entityName, resolvedEntity, updateExpectedOutput);
 
         corpus.calculateEntityGraphAsync(manifest).join();
         manifest.populateManifestRelationshipsAsync().join();

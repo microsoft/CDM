@@ -98,7 +98,7 @@ class AttributeContextUtil:
                     self._bldr += '\n'
 
     @staticmethod
-    async def validate_attribute_context(test: 'TestCase', corpus: 'CdmCorpusDefinition', expected_output_path: str, entity_name: str, resolved_entity: 'CdmEntityDefinition') -> None:
+    async def validate_attribute_context(test: 'TestCase', expected_output_path: str, entity_name: str, resolved_entity: 'CdmEntityDefinition', update_expected_output: bool = False) -> None:
         """A function to validate if the attribute context tree & traits generated for a resolved entity is the same
         as the expected and saved attribute context tree & traits for a test case"""
         if resolved_entity.attribute_context:
@@ -109,13 +109,16 @@ class AttributeContextUtil:
 
             # Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
             actual_text = attr_ctx_util.get_attribute_context_strings(resolved_entity)
-            actual_attr_ctx_file = open(actual_file_path, "w")
-            actual_attr_ctx_file.write(actual_text)
-            actual_attr_ctx_file.close()
+            with open(actual_file_path, 'w') as actual_attr_ctx_file:
+                actual_attr_ctx_file.write(actual_text)
             await resolved_entity.in_document.save_as_async('Resolved_{}.cdm.json'.format(entity_name), False)
 
             # Expected
             expected_file_path = os.path.join(expected_output_path, 'AttrCtx_{}.txt'.format(entity_name))
+            if update_expected_output:
+                with open(expected_file_path, 'w') as expected_attr_ctx_file:
+                    expected_attr_ctx_file.write(actual_text)
+
             with open(expected_file_path) as expected_file:
                 expected_text = expected_file.read()
 

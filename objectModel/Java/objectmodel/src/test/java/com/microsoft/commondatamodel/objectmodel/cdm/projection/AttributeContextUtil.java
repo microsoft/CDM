@@ -137,11 +137,15 @@ public final class AttributeContextUtil {
         }
     }
 
+    public static void validateAttributeContext(String expectedOutputPath, String entityName, CdmEntityDefinition resolvedEntity) {
+        AttributeContextUtil.validateAttributeContext(expectedOutputPath, entityName, resolvedEntity, false);
+    }
+
     /**
      * A function to validate if the attribute context tree & traits generated for a resolved entity is the same as
      * the expected and saved attribute context tree & traits for a test case
      */
-    public static void validateAttributeContext(CdmCorpusDefinition corpus, String expectedOutputPath, String entityName, CdmEntityDefinition resolvedEntity) {
+    public static void validateAttributeContext(String expectedOutputPath, String entityName, CdmEntityDefinition resolvedEntity, boolean updateExpectedOutput) {
         if (resolvedEntity.getAttributeContext() != null) {
             AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
 
@@ -159,6 +163,12 @@ public final class AttributeContextUtil {
 
                 // Expected
                 Path expectedStringFilePath = new File(expectedOutputPath, "AttrCtx_" + entityName + ".txt").toPath();
+                if (updateExpectedOutput) {
+                    try (final BufferedWriter expectedFileWriter = Files.newBufferedWriter(expectedStringFilePath, StandardCharsets.UTF_8, StandardOpenOption.CREATE);) {
+                        expectedFileWriter.write(actualText);
+                        expectedFileWriter.flush();
+                    }
+                }
                 final String expectedText = new String(Files.readAllBytes(expectedStringFilePath), StandardCharsets.UTF_8);
 
                 // Test if Actual is Equal to Expected

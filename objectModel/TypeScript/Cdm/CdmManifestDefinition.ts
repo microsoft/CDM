@@ -20,6 +20,7 @@ import {
     cdmObjectType,
     cdmRelationshipDiscoveryStyle,
     CdmTraitCollection,
+    CdmTraitReferenceBase,
     copyOptions,
     importsLoadStrategy,
     Logger,
@@ -134,19 +135,19 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
         copy.entities.clear();
         for (const ent of this.entities) {
-            copy.entities.push(ent);
+            copy.entities.push(ent.copy(resOpt) as CdmEntityDeclarationDefinition);
         }
         copy.relationships.clear();
         for (const rel of this.relationships) {
-            copy.relationships.push(rel);
+            copy.relationships.push(rel.copy(resOpt) as CdmE2ERelationship);
         }
         copy.subManifests.clear();
         for (const man of this.subManifests) {
-            copy.subManifests.push(man);
+            copy.subManifests.push(man.copy(resOpt) as CdmManifestDeclarationDefinition);
         }
         copy.exhibitsTraits.clear();
         for (const et of this.exhibitsTraits) {
-            copy.exhibitsTraits.push(et);
+            copy.exhibitsTraits.push(et.copy(resOpt) as CdmTraitReferenceBase);
         }
 
         return copy;

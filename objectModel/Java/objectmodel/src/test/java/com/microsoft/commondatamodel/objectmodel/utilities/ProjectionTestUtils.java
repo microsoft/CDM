@@ -7,8 +7,11 @@ import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projection.AttributeContextUtil;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.EventList;
+
 import org.testng.Assert;
 
 import java.io.BufferedWriter;
@@ -19,8 +22,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -34,6 +39,13 @@ public class ProjectionTestUtils {
      * Path to foundations
      */
     private static final String foundationJsonPath = "cdm:/foundations.cdm.json";
+
+    /**
+     * The log codes that are allowed to be logged without failing the test
+     */
+    private static HashSet<String> allowedLogs = new HashSet<>(
+        Arrays.asList(CdmLogCode.WarnDeprecatedResolutionGuidance.name())
+    );
 
     /**
      * Resolves an entity
@@ -184,7 +196,11 @@ public class ProjectionTestUtils {
         CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, testName, null);
 
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
-            Assert.fail(message);
+            EventList events = corpus.getCtx().getEvents();
+            Map<String, String> lastEvent = events.get(events.size() - 1);
+            if (!lastEvent.containsKey("code") || !allowedLogs.contains(lastEvent.get("code"))) {
+                Assert.fail(message);
+            }
         }, CdmStatusLevel.Warning);
 
         return corpus;

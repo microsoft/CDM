@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -721,6 +722,195 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     for (final CdmObject subSub : ac.getContents()) {
         fixAndFinalizeAttCtxNodeLineage(subSub);
     }
+  }
+
+  /**
+   * @deprecated
+   */
+  void collectContextFromAtts(ResolvedAttributeSet rasSub, HashSet<CdmAttributeContext> collected) {
+    rasSub.getSet().forEach(ra -> {
+        CdmAttributeContext raCtx = ra.getAttCtx();
+        CdmCollection<CdmObject> refs = raCtx.getContents();
+        collected.add(raCtx);
+
+        // the target for a resolved att can be a TypeAttribute OR it can be another ResolvedAttributeSet (meaning a group)
+        if (ra.getTarget() instanceof ResolvedAttributeSet) {
+            // a group
+            collectContextFromAtts((ResolvedAttributeSet) ra.getTarget(), collected);
+        }
+    });
+  }
+
+  /**
+   * Helper that save the passed node and anything up the parent chain 
+   */
+  private boolean saveParentNodes(CdmAttributeContext currNode, HashSet<CdmAttributeContext> nodesToSave) {
+      if (nodesToSave.contains(currNode)) {
+          return true;
+      }
+      nodesToSave.add(currNode);
+      // get the parent 
+      if (currNode.getParent() != null && currNode.getParent().getExplicitReference() != null) {
+          return saveParentNodes((CdmAttributeContext) currNode.getParent().getExplicitReference(), nodesToSave);
+      }
+      return true;
+  };
+
+  /**
+   * Helper that saves the current node (and parents) plus anything in the lineage (with their parents)
+   */
+  private boolean saveLineageNodes(CdmAttributeContext currNode, HashSet<CdmAttributeContext> nodesToSave) {
+      if (!saveParentNodes(currNode, nodesToSave)) {
+        return false;
+      }
+      if (currNode.getLineage() != null && currNode.getLineage().getCount() > 0) {
+        for (CdmAttributeContextReference lin : currNode.getLineage()) {
+          if (lin.getExplicitReference() != null) {
+            if (!saveLineageNodes((CdmAttributeContext) lin.getExplicitReference(), nodesToSave)) {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+  };
+
+  private boolean saveStructureNodes(CdmObject subItem, boolean inGenerated, boolean inProjection, boolean inRemove, HashSet<CdmAttributeContext> nodesToSave) {
+    if (!(subItem instanceof CdmAttributeContext)) {
+        return true;
+    }
+
+    CdmAttributeContext ac = (CdmAttributeContext) subItem;
+    if (ac.getType() == CdmAttributeContextType.GeneratedSet) {
+        inGenerated = true; // special mode where we hate everything except the removed att notes
+    }
+
+    if (inGenerated && (ac.getType() == CdmAttributeContextType.OperationExcludeAttributes || ac.getType() == CdmAttributeContextType.OperationIncludeAttributes)) {
+        inRemove = true; // triggers us to know what to do in the next code block.
+    }
+    boolean removedAttribute = false;
+    if (ac.getType() == CdmAttributeContextType.AttributeDefinition) {
+      // empty attribute nodes are descriptions of source attributes that may or may not be needed. lineage will sort it out.
+      // the exception is for attribute descriptions under a remove attributes operation. they are gone from the resolved att set, so
+      // no history would remain 
+      if (inRemove) {
+        removedAttribute = true;
+      } else if (ac.getContents() == null || ac.getContents().getCount() == 0) {
+        return true;
+      }
+    }
+
+    if (!inGenerated || removedAttribute) {
+      // mark this as something worth saving, sometimes 
+      // these get discovered at the leaf of a tree that we want to mostly ignore, so can cause a
+      // discontinuity in the 'save' chains, so fix that
+      saveLineageNodes(ac, nodesToSave);
+    }
+
+    if (ac.getType() == CdmAttributeContextType.Projection) {
+      inProjection = true; // track this so we can do the next thing ...
+    }
+    if (ac.getType() == CdmAttributeContextType.Entity && inProjection) {
+      // this is far enough, the entity that is somewhere under a projection chain
+      // things under this might get saved through lineage, but down to this point will get in for sure
+      return true;
+    }
+
+    if (ac.getContents() == null || ac.getContents().getCount() == 0) {
+      return true;
+    }
+    // look at all children
+    for (CdmObject subSub : ac.getContents()) {
+      if (!saveStructureNodes(subSub, inGenerated, inProjection, inRemove, nodesToSave)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  private boolean cleanSubGroup(CdmObject subItem, HashSet<CdmAttributeContext> nodesToSave) {
+      if (subItem.getObjectType() == CdmObjectType.AttributeRef) {
+        return true; // not empty
+      }
+
+      CdmAttributeContext ac = (CdmAttributeContext) subItem;
+
+      if (!nodesToSave.contains(ac)) {
+        return false; // don't even look at content, this all goes away
+      }
+
+      if (ac.getContents() != null && ac.getContents().getCount() > 0) {
+        // need to clean up the content array without triggering the code that fixes in document or paths
+        ArrayList<CdmObject> newContent = new ArrayList<CdmObject>();
+        for (CdmObject sub : ac.getContents()) {
+          // true means keep this as a child
+          if (cleanSubGroup(sub, nodesToSave)) {
+            newContent.add(sub);
+          }
+        }
+        // clear the old content and replace
+        ac.getContents().clear();
+        ac.getContents().addAll(newContent);
+      }
+
+      return true;
+  };
+
+  boolean pruneToScope(Set<CdmAttributeContext> scopeSet) {
+    // run over the whole tree and make a set of the nodes that should be saved for sure. This is anything NOT under a generated set 
+    // (so base entity chains, entity attributes entity definitions)
+
+    // for testing, don't delete this
+    //Func<CdmObject, long> CountNodes = null;
+    //CountNodes = (subItem) =>
+    //{
+    //    CdmAttributeContext ac = subItem as CdmAttributeContext;
+    //    if (ac == null)
+    //    {
+    //        return 1;
+    //    }
+    //    if (ac.Contents == null || ac.Contents.Count == 0)
+    //    {
+    //        return 1;
+    //    }
+    //    // look at all children
+    //    long total = 0;
+    //    foreach (var subSub in ac.Contents)
+    //    {
+    //        total += CountNodes(subSub);
+    //    }
+    //    return 1 + total;
+    //};
+    //System.Diagnostics.Debug.WriteLine($"Pre Prune {CountNodes(this)}");
+
+
+    // so ... the change from the old behavior is to depend on the lineage pointers to save the attribute defs
+    // in the 'structure' part of the tree that might matter. keep all of the other structure info and keep some 
+    // special nodes (like the ones that have removed attributes) that won't get found from lineage trace but that are
+    // needed to understand what took place in resolution
+    HashSet<CdmAttributeContext> nodesToSave = new HashSet<CdmAttributeContext>();
+
+    if (!saveStructureNodes(this, false, false, false, nodesToSave)) {
+      return false;
+    }
+
+    // next, look at the attCtx for every resolved attribute. follow the lineage chain and mark all of those nodes as ones to save
+    // also mark any parents of those as savers
+
+    // so, do that ^^^ for every primary context found earlier
+    for (CdmAttributeContext primCtx : scopeSet) {
+      if (!saveLineageNodes(primCtx, nodesToSave)) {
+        return false;
+      }
+    }
+
+    // now the cleanup, we have a set of the nodes that should be saved
+    // run over the tree and re-build the contents collection with only the things to save
+    cleanSubGroup(this, nodesToSave);
+
+    //System.Diagnostics.Debug.WriteLine($"Post Prune {CountNodes(this)}");
+
+    return true;
   }
 
   @Deprecated

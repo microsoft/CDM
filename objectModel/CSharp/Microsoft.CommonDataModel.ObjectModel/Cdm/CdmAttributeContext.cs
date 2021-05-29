@@ -110,7 +110,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (this.Lineage != null)
             {
-                foreach(var lin in this.Lineage)
+                foreach (var lin in this.Lineage)
                 {
                     copy.AddLineage(lin.ExplicitReference, false); // use explicitref to cause new ref to be allocated
                 }
@@ -206,7 +206,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) => $"'{s}'")));
                 return false;
             }
             return true;
@@ -554,7 +554,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             }
                             foundDocPaths[docFrom] = pathBetweenDocs;
                         }
-                        
+
                         (ac.Definition as CdmObjectReferenceBase).LocalizePortableReference($"{monikerForDocFrom}{pathBetweenDocs}");
                     }
                 }
@@ -646,6 +646,229 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             return true;
         }
+
+        internal void CollectContextFromAtts(ResolvedAttributeSet rasSub, HashSet<CdmAttributeContext> collected)
+        {
+            rasSub.Set.ForEach(ra =>
+            {
+                var raCtx = ra.AttCtx;
+                collected.Add(raCtx);
+
+                // the target for a resolved att can be a TypeAttribute OR it can be another ResolvedAttributeSet (meaning a group)
+                if (ra.Target is ResolvedAttributeSet)
+                {
+                    // a group
+                    CollectContextFromAtts(ra.Target as ResolvedAttributeSet, collected);
+                }
+            });
+        }
+
+
+        internal bool PruneToScope(HashSet<CdmAttributeContext> scopeSet)
+        {
+            // run over the whole tree and make a set of the nodes that should be saved for sure. This is anything NOT under a generated set 
+            // (so base entity chains, entity attributes entity definitions)
+
+            // for testing, don't delete this
+            //Func<CdmObject, long> CountNodes = null;
+            //CountNodes = (subItem) =>
+            //{
+            //    if (!(subItem is CdmAttributeContext))
+            //    {
+            //        return 1;
+            //    }
+            //    CdmAttributeContext ac = subItem as CdmAttributeContext;
+            //    if (ac.Contents == null || ac.Contents.Count == 0)
+            //    {
+            //        return 1;
+            //    }
+            //    // look at all children
+            //    long total = 0;
+            //    foreach (var subSub in ac.Contents)
+            //    {
+            //        total += CountNodes(subSub);
+            //    }
+            //    return 1 + total;
+            //};
+            //System.Diagnostics.Debug.WriteLine($"Pre Prune {CountNodes(this)}");
+
+
+            // so ... the change from the old behavior is to depend on the lineage pointers to save the attribute defs
+            // in the 'structure' part of the tree that might matter. keep all of the other structure info and keep some 
+            // special nodes (like the ones that have removed attributes) that won't get found from lineage trace but that are
+            // needed to understand what took place in resolution
+            HashSet<CdmAttributeContext> nodesToSave = new HashSet<CdmAttributeContext>();
+
+            // helper that save the passed node and anything up the parent chain 
+            Func<CdmAttributeContext, bool> SaveParentNodes = null;
+            SaveParentNodes = (currNode) =>
+            {
+                if (nodesToSave.Contains(currNode))
+                {
+                    return true;
+                }
+                nodesToSave.Add(currNode);
+                // get the parent 
+                if (currNode.Parent?.ExplicitReference != null)
+                {
+                    return SaveParentNodes(currNode.Parent.ExplicitReference as CdmAttributeContext);
+                }
+                return true;
+            };
+
+            // helper that saves the current node (and parents) plus anything in the lineage (with their parents)
+            Func<CdmAttributeContext, bool> SaveLineageNodes = null;
+            SaveLineageNodes = (currNode) =>
+            {
+                if (!SaveParentNodes(currNode))
+                {
+                    return false;
+                }
+                if (currNode.Lineage != null && currNode.Lineage.Count > 0)
+                {
+                    foreach (var lin in currNode.Lineage)
+                    {
+                        if (lin.ExplicitReference != null)
+                        {
+                            if (!SaveLineageNodes(lin.ExplicitReference as CdmAttributeContext))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            };
+
+
+            Func<CdmObject, bool, bool, bool, bool> SaveStructureNodes = null;
+            SaveStructureNodes = (subItem, inGenerated, inProjection, inRemove) =>
+            {
+                if (!(subItem is CdmAttributeContext))
+                {
+                    return true;
+                }
+
+                CdmAttributeContext ac = subItem as CdmAttributeContext;
+                if (ac.Type == CdmAttributeContextType.GeneratedSet)
+                {
+                    inGenerated = true; // special mode where we hate everything except the removed att notes
+                }
+
+                if (inGenerated && (ac.Type == CdmAttributeContextType.OperationExcludeAttributes || ac.Type == CdmAttributeContextType.OperationIncludeAttributes))
+                {
+                    inRemove = true; // triggers us to know what to do in the next code block.
+                }
+                bool removedAttribute = false;
+                if (ac.Type == CdmAttributeContextType.AttributeDefinition)
+                {
+                    // empty attribute nodes are descriptions of source attributes that may or may not be needed. lineage will sort it out.
+                    // the exception is for attribute descriptions under a remove attributes operation. they are gone from the resolved att set, so
+                    // no history would remain 
+                    if (inRemove)
+                    {
+                        removedAttribute = true;
+                    }
+                    else if (ac.Contents == null || ac.Contents.Count == 0)
+                    {
+                        return true;
+                    }
+                }
+
+                if (!inGenerated || removedAttribute)
+                {
+                    // mark this as something worth saving, sometimes 
+                    // these get discovered at the leaf of a tree that we want to mostly ignore, so can cause a
+                    // discontinuity in the 'save' chains, so fix that
+                    SaveLineageNodes(ac);
+                }
+
+                if (ac.Type == CdmAttributeContextType.Projection)
+                {
+                    inProjection = true; // track this so we can do the next thing ...
+                }
+                if (ac.Type == CdmAttributeContextType.Entity && inProjection)
+                {
+                    // this is far enough, the entity that is somewhere under a projection chain
+                    // things under this might get saved through lineage, but down to this point will get in for sure
+                    return true;
+                }
+
+                if (ac.Contents == null || ac.Contents.Count == 0)
+                {
+                    return true;
+                }
+                // look at all children
+                foreach (var subSub in ac.Contents)
+                {
+                    if (!SaveStructureNodes(subSub, inGenerated, inProjection, inRemove))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            };
+
+            if (!SaveStructureNodes(this, false, false, false))
+            {
+                return false;
+            }
+
+            // next, look at the attCtx for every resolved attribute. follow the lineage chain and mark all of those nodes as ones to save
+            // also mark any parents of those as savers
+
+            // so, do that ^^^ for every primary context found earlier
+            foreach (var primCtx in scopeSet)
+            {
+                if (!SaveLineageNodes(primCtx))
+                {
+                    return false;
+                }
+            }
+
+            // now the cleanup, we have a set of the nodes that should be saved
+            // run over the tree and re-build the contents collection with only the things to save
+            Func<CdmObject, bool> CleanSubGroup = null;
+            CleanSubGroup = (subItem) =>
+            {
+                if (subItem.ObjectType == CdmObjectType.AttributeRef)
+                {
+                    return true; // not empty
+                }
+
+                CdmAttributeContext ac = subItem as CdmAttributeContext;
+
+                if (!nodesToSave.Contains(ac))
+                {
+                    return false; // don't even look at content, this all goes away
+                }
+
+                if (ac.Contents != null && ac.Contents.Count > 0)
+                {
+                    // need to clean up the content array without triggering the code that fixes in document or paths
+                    var newContent = new List<CdmObject>();
+                    foreach (var sub in ac.Contents)
+                    {
+                        // true means keep this as a child
+                        if (CleanSubGroup(sub))
+                        {
+                            newContent.Add(sub);
+                        }
+                    }
+                    // clear the old content and replace
+                    ac.Contents.Clear();
+                    ac.Contents.AddRange(newContent);
+                }
+
+                return true;
+            };
+            CleanSubGroup(this);
+
+            //System.Diagnostics.Debug.WriteLine($"Post Prune {CountNodes(this)}");
+
+            return true;
+        }
+
         internal bool ValidateLineage(ResolveOptions resOpt)
         {
             // run over the attCtx tree and validate that it is self consistent on lineage
@@ -711,7 +934,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (subSub.ObjectType == CdmObjectType.AttributeContextDef)
                     {
-                        if (CheckLineage(subSub) == false)
+                        if (!CheckLineage(subSub))
                         {
                             return false;
                         }

@@ -38,6 +38,56 @@ public class CommonTest {
      * This method runs the tests with a set expected attributes & attribute context values and validated the actual result.
      */
     protected static CompletableFuture<Void> runTestWithValues(
+            final String testName,
+            final String sourceEntityName,
+
+            final AttributeContextExpectedValue expectedContext_default,
+            final AttributeContextExpectedValue expectedContext_normalized,
+            final AttributeContextExpectedValue expectedContext_referenceOnly,
+            final AttributeContextExpectedValue expectedContext_structured,
+            final AttributeContextExpectedValue expectedContext_normalized_structured,
+            final AttributeContextExpectedValue expectedContext_referenceOnly_normalized,
+            final AttributeContextExpectedValue expectedContext_referenceOnly_structured,
+            final AttributeContextExpectedValue expectedContext_referenceOnly_normalized_structured,
+
+            final List<AttributeExpectedValue> expected_default,
+            final List<AttributeExpectedValue> expected_normalized,
+            final List<AttributeExpectedValue> expected_referenceOnly,
+            final List<AttributeExpectedValue> expected_structured,
+            final List<AttributeExpectedValue> expected_normalized_structured,
+            final List<AttributeExpectedValue> expected_referenceOnly_normalized,
+            final List<AttributeExpectedValue> expected_referenceOnly_structured,
+            final List<AttributeExpectedValue> expected_referenceOnly_normalized_structured
+    ) {
+        return runTestWithValues(
+            testName,
+            sourceEntityName,
+
+            expectedContext_default,
+            expectedContext_normalized,
+            expectedContext_referenceOnly,
+            expectedContext_structured,
+            expectedContext_normalized_structured,
+            expectedContext_referenceOnly_normalized,
+            expectedContext_referenceOnly_structured,
+            expectedContext_referenceOnly_normalized_structured,
+
+            expected_default,
+            expected_normalized,
+            expected_referenceOnly,
+            expected_structured,
+            expected_normalized_structured,
+            expected_referenceOnly_normalized,
+            expected_referenceOnly_structured,
+            expected_referenceOnly_normalized_structured,
+            false
+        );
+    }
+
+    /**
+     * This method runs the tests with a set expected attributes & attribute context values and validated the actual result.
+     */
+    protected static CompletableFuture<Void> runTestWithValues(
         final String testName,
         final String sourceEntityName,
 
@@ -57,7 +107,8 @@ public class CommonTest {
         final List<AttributeExpectedValue> expected_normalized_structured,
         final List<AttributeExpectedValue> expected_referenceOnly_normalized,
         final List<AttributeExpectedValue> expected_referenceOnly_structured,
-        final List<AttributeExpectedValue> expected_referenceOnly_normalized_structured
+        final List<AttributeExpectedValue> expected_referenceOnly_normalized_structured,
+        final boolean updateExpectedOutput
     ) {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -77,7 +128,7 @@ public class CommonTest {
                 CdmFolderDefinition outFolder = (CdmFolderDefinition) corpus.fetchObjectAsync(outFolderPath).join();
 
                 CdmEntityDefinition srcEntityDef = (CdmEntityDefinition)corpus.fetchObjectAsync("local:/Input/"+ sourceEntityName + ".cdm.json/" + sourceEntityName).join();
-                Assert.assertTrue(srcEntityDef != null);
+                Assert.assertNotNull(srcEntityDef);
 
                 ResolveOptions resOpt = new ResolveOptions(srcEntityDef.getInDocument());
 

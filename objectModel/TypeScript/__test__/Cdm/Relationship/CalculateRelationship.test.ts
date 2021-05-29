@@ -128,7 +128,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
     /**
      * Common test code for these test cases
      */
-    async function testRun(testName: string, entityName: string, isEntitySet: boolean): Promise<void> {
+    async function testRun(testName: string, entityName: string, isEntitySet: boolean, updateExpectedOutput: boolean = false): Promise<void> {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         const inputFolder: string = testHelper.getInputFolderPath(testsSubpath, testName);
         const expectedOutputFolder: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
@@ -146,12 +146,8 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
             .toBeTruthy();
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
         assertEntityShapeInReslovedEntity(resolvedEntity, isEntitySet);
-        const actualAttrCtx: string = getAttributeContextString(resolvedEntity, entityName, actualOutputFolder);
-
-        const expectedAttrCtx: string = fs.readFileSync(`${expectedOutputFolder}/AttrCtx_${entityName}.txt`).toString();
-
-        expect(actualAttrCtx)
-            .toEqual(expectedAttrCtx);
+        
+        await AttributeContextUtil.validateAttributeContext(expectedOutputFolder, entityName, resolvedEntity, updateExpectedOutput);
 
         await corpus.calculateEntityGraphAsync(manifest);
         await manifest.populateManifestRelationshipsAsync();

@@ -193,6 +193,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
             # make a copy and add defaults if missing
             res_guide_with_default = None
             if self.resolution_guidance is not None:
+                res_opt._used_resolution_guidance = True
                 res_guide_with_default = self.resolution_guidance.copy(res_opt)
             else:
                 res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx)
@@ -261,6 +262,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         return self._trait_to_property_map._fetch_property_value(property_name, True)
 
     def fetch_resolved_entity_references(self, res_opt: 'ResolveOptions') -> 'ResolvedEntityReferenceSet':
+        """Deprecated: for internal use only"""
         return
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:

@@ -80,6 +80,9 @@ class ResolveOptions:
 
         self._map_old_ctx_to_new_ctx = None  # type: Dict['CdmAttributeContext', 'CdmAttributeContext']
 
+        # Indicates if resolution guidance was used at any point during resolution
+        self._used_resolution_guidance = False  # type: bool
+
     @property
     def strict_validation(self) -> Optional[bool]:
         """When enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required."""
@@ -121,6 +124,7 @@ class ResolveOptions:
         res_opt_copy.imports_load_strategy = self.imports_load_strategy
         res_opt_copy._save_resolutions_on_copy = self._save_resolutions_on_copy
         res_opt_copy._currently_resolving_entities = set(self._currently_resolving_entities)
+        res_opt_copy._used_resolution_guidance = self._used_resolution_guidance
 
         if self.directives:
             res_opt_copy.directives = self.directives.copy()

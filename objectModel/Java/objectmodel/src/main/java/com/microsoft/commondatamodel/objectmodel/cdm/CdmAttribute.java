@@ -64,10 +64,18 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
     this.purpose = value;
   }
 
+  /**
+   * @deprecated
+   * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
+   */
   public CdmAttributeResolutionGuidance getResolutionGuidance() {
     return this.resolutionGuidance;
   }
 
+  /**
+   * @deprecated
+   * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
+   */
   public void setResolutionGuidance(final CdmAttributeResolutionGuidance value) {
     this.resolutionGuidance = value;
   }

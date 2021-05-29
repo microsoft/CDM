@@ -115,6 +115,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         ErrValdnMissingLanguageTag,
         ErrUnrecognizedType,
         WarnPartitionGlobAndRegexPresent,
+        WarnDeprecatedResolutionGuidance,
         WarnDocChangesDiscarded,
         WarnDocImportNotLoaded,
         WarnPartitionFileFetchFailed,

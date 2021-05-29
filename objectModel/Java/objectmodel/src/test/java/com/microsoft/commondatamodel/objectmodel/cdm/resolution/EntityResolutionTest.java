@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -15,11 +16,13 @@ import java.util.concurrent.ExecutionException;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.cdm.projection.AttributeContextUtil;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.InterceptLog;
+import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
 import org.apache.logging.log4j.Level;
@@ -292,5 +295,20 @@ public class EntityResolutionTest {
         new LinkedHashSet<>(Arrays.asList(NORMALIZED, REFERENCE_ONLY)));
     final String allResolved = ResolutionTestUtils.listAllResolved(cdmCorpus, directives, manifest, new StringSpewCatcher());
     assert (!Strings.isNullOrEmpty(allResolved));
+  }
+
+   /**
+   * Test whether or not the test corpus can be resolved The input of this test is
+   * a manifest from SchemaDocs, so this test does not need any individual input
+   * files. This test does not check the output. Possibly because the schema docs
+   * change often.
+   */
+  @Test
+  public void testAppliedTraitsInAttributes() throws Exception {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testAppliedTraitsInAttributes", null);
+    String expectedOutputFolder = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, "testAppliedTraitsInAttributes");
+    CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Sales.cdm.json/Sales").join();
+    CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
+    AttributeContextUtil.validateAttributeContext(expectedOutputFolder, "Sales", resolvedEntity);
   }
 }

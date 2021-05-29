@@ -12,6 +12,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.EntityByReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.Expansion;
 import com.microsoft.commondatamodel.objectmodel.cdm.SelectsSubAttribute;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.storage.GithubAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
@@ -283,6 +284,29 @@ public class ResolutionGuidanceTest {
         } catch (final Exception e) {
             Assert.fail(e.getMessage());
         }
+    }
+
+    /**
+     * Tests if a warning is logged if resolution guidance is used
+     */
+    @Test
+    public void testResolutionGuidanceDeprecation() throws InterruptedException {
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolutionGuidanceDeprecation", null);
+
+        // Tests warning log when resolution guidance is used on a data typed attribute.
+        CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TypeAttribute.cdm.json/Entity").join();
+        entity.createResolvedEntityAsync("res-entity").join();
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+
+        // Tests warning log when resolution guidance is used on a entity typed attribute.
+        entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/EntityAttribute.cdm.json/Entity").join();
+        entity.createResolvedEntityAsync("res-entity").join();
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+
+        // Tests warning log when resolution guidance is used when extending an entity.
+        entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/ExtendsEntity.cdm.json/Entity").join();
+        entity.createResolvedEntityAsync("res-entity").join();
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
     }
 
     @Test
