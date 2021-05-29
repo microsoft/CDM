@@ -27,6 +27,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets or sets the attribute's resolution guidance.
         /// </summary>
+        [Obsolete("Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview")]
         public CdmAttributeResolutionGuidance ResolutionGuidance { get; set; }
 
         /// <summary>
@@ -70,6 +71,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.Name;
         }
 
+        [Obsolete("For internal use only.")]
         public abstract ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null);
 
         internal bool VisitAtt(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)

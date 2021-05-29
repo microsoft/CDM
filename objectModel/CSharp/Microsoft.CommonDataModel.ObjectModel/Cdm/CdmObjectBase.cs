@@ -254,6 +254,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         ctx.Corpus.RegisterDefinitionReferenceSymbols(oDef, kind, resOpt.SymbolRefSet);
 
+                        if (this.ObjectType == CdmObjectType.EntityDef)
+                        {
+                            // if we just got attributes for an entity, take the time now to clean up this cached tree and prune out
+                            // things that don't help explain where the final set of attributes came from
+                            if (underCtx != null)
+                            {
+                                var scopesForAttributes = new HashSet<CdmAttributeContext>();
+                                underCtx.CollectContextFromAtts(rasbCache.ResolvedAttributeSet, scopesForAttributes); // the context node for every final attribute
+                                if (!underCtx.PruneToScope(scopesForAttributes))
+                                {
+                                    return null;
+                                }
+                            }
+                        }
+
                         // get the new cache tag now that we have the list of docs
                         string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
 

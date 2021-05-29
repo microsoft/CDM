@@ -8,6 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection;
     using Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
@@ -284,6 +285,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             resolvedEntity = await entity.CreateResolvedEntityAsync("resolved2", resOpt);
 
             Assert.IsNotNull(resolvedEntity.Attributes[0].AppliedTraits.Item("is.linkedEntity.identifier"));
+        }
+
+        /// <summary>
+        /// Test that traits(including the ones inside of dataTypeRefence and PurposeReference) are applied to an entity attribute and type attribute.
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestAppliedTraitsInAttributes()
+        {
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestAppliedTraitsInAttributes");
+            string expectedOutputFolder = TestHelper.GetExpectedOutputFolderPath(testsSubpath, "TestAppliedTraitsInAttributes");
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/Sales.cdm.json/Sales");
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
+
+            await AttributeContextUtil.ValidateAttributeContext(expectedOutputFolder, "Sales", resolvedEntity);
         }
     }
 }

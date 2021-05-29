@@ -18,6 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestPolymorphism()
         {
+            bool updateResults = false;
             string testName = "TestPolymorphism";
             {
                 string entityName = "Customer";
@@ -62,7 +63,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -73,6 +75,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestPolymorphismWithAttributeGroupRef()
         {
+            bool updateResults = false;
             string testName = "TestPolymorphismWithAttributeGroupRef";
             {
                 string entityName = "Customer";
@@ -117,7 +120,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -128,6 +132,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestPolymorphismWithRenameAsMember()
         {
+            bool updateResults = false;
             string testName = "TestPolymorphismWithRenameAsMember";
             {
                 string entityName = "Customer";
@@ -172,7 +177,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }

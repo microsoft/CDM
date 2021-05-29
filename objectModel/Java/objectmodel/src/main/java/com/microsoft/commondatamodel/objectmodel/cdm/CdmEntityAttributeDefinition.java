@@ -145,6 +145,9 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     isPolymorphicSource = polymorphicSource;
   }
 
+  /**
+   * @deprecated for internal use only.
+   */
   @Override
   public ResolvedEntityReferenceSet fetchResolvedEntityReferences(ResolveOptions resOpt) {
     if (resOpt == null) {
@@ -373,9 +376,13 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
           ProjectionDirective projDirective = new ProjectionDirective(resOpt, this, this.getEntity());
           ProjectionContext projCtx = projDef.constructProjectionContext(projDirective, under);
           rasb.setResolvedAttributeSet(projDef.extractResolvedAttributes(projCtx, under));
+          // from the traits of purpose and applied here
+          rasb.getResolvedAttributeSet().applyTraits(this.fetchResolvedTraits(resOpt));
         }
       } else {
-        // An Entity Reference
+        // Resolution guidance
+
+        resOpt.usedResolutionGuidance = true;
 
         AttributeResolutionContext arc = this.fetchAttResContext(resOpt);
         final RelationshipInfo relInfo = arc.getRelationshipInfo();

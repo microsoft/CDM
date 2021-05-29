@@ -14,7 +14,7 @@ from tests.utilities.projection_test_utils import ProjectionTestUtils
 class ForwardCompatibilityTest(unittest.TestCase):
     """Tests all the projections will not break the OM even if not implemented."""
 
-    # The path between TestDataPath and TestName.
+    # The path between TestDataPath and TestName
     tests_subpath = os.path.join('Cdm', 'Projection', 'TestForwardCompatibility')
 
     @async_test

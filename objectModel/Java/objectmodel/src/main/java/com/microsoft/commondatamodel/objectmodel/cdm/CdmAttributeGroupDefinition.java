@@ -148,7 +148,8 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   }
 
   
-  /** 
+  /**
+   * @deprecated for internal use only.
    * @param resOpt Resolved options
    * @return ResolvedEntityReferenceSet
    */

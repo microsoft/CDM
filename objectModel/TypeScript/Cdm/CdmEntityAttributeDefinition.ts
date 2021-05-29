@@ -266,9 +266,13 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                         const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this, this.entity);
                         const projCtx: ProjectionContext = projDef.constructProjectionContext(projDirective, under);
                         rasb.ras = projDef.extractResolvedAttributes(projCtx, under);
+                        // from the traits of purpose and applied here
+                        rasb.ras.applyTraits(this.fetchResolvedTraits(resOpt));
                     }
                 } else {
-                    // An Entity Reference
+                    // Resolution guidance
+
+                    resOpt.usedResolutionGuidance = true;
 
                     const arc: AttributeResolutionContext = this.fetchAttResContext(resOpt);
                     const relInfo: relationshipInfo = arc.getRelationshipInfo();
@@ -446,6 +450,10 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @deprecated
+     * For internal use only.
+     */
     // the only thing we need this code for is testing!!!
     public fetchResolvedEntityReference(resOpt?: resolveOptions): ResolvedEntityReferenceSet {
         // let bodyCode = () =>

@@ -479,16 +479,16 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     copy.setLastChildFileModifiedTime(this.getLastChildFileModifiedTime());
 
     copy.getEntities().clear();
-    this.getEntities().forEach(copy.getEntities()::add);
+    this.getEntities().forEach(entityDec -> copy.getEntities().add((CdmEntityDeclarationDefinition) entityDec.copy(resOpt)));
 
     copy.getRelationships().clear();
-    this.getRelationships().forEach(copy.getRelationships()::add);
+    this.getRelationships().forEach(relationship -> copy.getRelationships().add((CdmE2ERelationship) relationship.copy(resOpt)));
 
     copy.getSubManifests().clear();
-    this.getSubManifests().forEach(copy.getSubManifests()::add);
+    this.getSubManifests().forEach(subManifest -> copy.getSubManifests().add((CdmManifestDeclarationDefinition) subManifest.copy(resOpt)));
 
     copy.getExhibitsTraits().clear();
-    this.getExhibitsTraits().forEach(copy.getExhibitsTraits()::add);
+    this.getExhibitsTraits().forEach(trait -> copy.getExhibitsTraits().add((CdmTraitReferenceBase) trait.copy(resOpt)));
 
     return copy;
   }

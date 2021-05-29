@@ -12,4 +12,6 @@ if TYPE_CHECKING:
 class CdmReferencesEntities(ABC):
     @abstractmethod
     def fetch_resolved_entity_references(self, res_opt: 'ResolveOptions') -> 'ResolvedEntityReferenceSet':
+        """Deprecated: for internal use only"""
+
         raise NotImplementedError()

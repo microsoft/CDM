@@ -40,7 +40,11 @@ public class EntityResolutionTraitGroupTests {
         CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestResolvedTraitGroup");
 
         cdmCorpus.setEventCallback(
-                (CdmStatusLevel level, String message) -> Assert.fail("Received " + level + " message: " + message),
+                (CdmStatusLevel level, String message) -> {
+                    if (!message.contains("Resolution guidance is being deprecated in favor of Projections.")) {
+                        Assert.fail("Received " + level + " message: " + message);
+                    }
+                },
                 CdmStatusLevel.Warning);
 
         CdmEntityDefinition ent = (CdmEntityDefinition) cdmCorpus.fetchObjectAsync("local:/E2EResolution/Contact.cdm.json/Contact").join();

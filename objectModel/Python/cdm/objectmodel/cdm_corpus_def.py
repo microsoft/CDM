@@ -581,9 +581,18 @@ class CdmCorpusDefinition:
 
         tag_suffix = '-{}-{}'.format(kind, this_id)
         tag_suffix += '-({})'.format(res_opt.directives.get_tag() if res_opt.directives else '')
-        if res_opt._depth_info.max_depth_exceeded:
-            curr_depth_info = res_opt._depth_info
-            tag_suffix += '-{}'.format(curr_depth_info.max_depth - curr_depth_info.current_depth)
+        # only for attributes
+        if kind == 'rasb':
+            # if MaxDepth was not initialized before, initialize it now
+            if res_opt._depth_info.max_depth is None:
+                res_opt._depth_info.max_depth = res_opt.max_depth
+
+            # add to the cache tag either if we reached maximum depth or how many levels we can go down until reaching the maximum depth
+            if res_opt._depth_info.current_depth > res_opt._depth_info.max_depth:
+                tag_suffix += '-overMaxDepth'
+            else:
+                curr_depth_info = res_opt._depth_info
+                tag_suffix += '-{}toMaxDepth'.format(curr_depth_info.max_depth - curr_depth_info.current_depth)
         if res_opt._in_circular_reference:
             tag_suffix += '-pk'
         if extra_tags:
@@ -1227,11 +1236,12 @@ class CdmCorpusDefinition:
 
         wrt_doc = res_opt.wrt_doc
 
-        loop = asyncio.get_event_loop()
-        nest_asyncio.apply(loop)
-        if not loop.run_until_complete(wrt_doc._index_if_needed(res_opt, True)):
-            logger.error(self.ctx, self._TAG, '_resolve_symbol_reference', wrt_doc.at_corpus_path, CdmLogCode.ERR_INDEX_FAILED)
-            return None
+        if wrt_doc._needs_indexing and not wrt_doc._currently_indexing:
+            loop = asyncio.get_event_loop()
+            nest_asyncio.apply(loop)
+            if not loop.run_until_complete(wrt_doc._index_if_needed(res_opt, True)):
+                logger.error(self.ctx, self._TAG, '_resolve_symbol_reference', wrt_doc.at_corpus_path, CdmLogCode.ERR_INDEX_FAILED)
+                return None
 
         if wrt_doc._needs_indexing and res_opt.imports_load_strategy == ImportsLoadStrategy.DO_NOT_LOAD:
             logger.error(self.ctx, self._TAG, '_resolve_symbol_reference', wrt_doc.at_corpus_path, CdmLogCode.ERR_SYMBOL_NOT_FOUND, symbol_def,

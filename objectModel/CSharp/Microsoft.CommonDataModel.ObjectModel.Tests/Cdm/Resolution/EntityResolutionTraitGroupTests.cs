@@ -41,9 +41,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmCorpusDefinition cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestResolvedTraitGroup");
 
             cdmCorpus.SetEventCallback(new EventCallback { Invoke = (CdmStatusLevel statusLevel, string message) =>
-            {
-                Assert.Fail($"Received {statusLevel} message: {message}");
-            }
+                {
+                    if (!message.Contains("Resolution guidance is being deprecated in favor of Projections."))
+                    {
+                        Assert.Fail($"Received {statusLevel} message: {message}");
+                    }
+                }
             }, CdmStatusLevel.Warning);
 
             var ent = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>("local:/E2EResolution/Contact.cdm.json/Contact");

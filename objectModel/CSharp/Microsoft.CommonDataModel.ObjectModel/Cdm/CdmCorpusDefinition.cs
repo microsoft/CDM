@@ -264,15 +264,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 return null; // no way to figure this out
             }
-            CdmDocumentDefinition wrtDoc = resOpt.WrtDoc as CdmDocumentDefinition;
+            CdmDocumentDefinition wrtDoc = resOpt.WrtDoc;
 
-            var indexTask = Task.Run(async () => await wrtDoc.IndexIfNeeded(resOpt, true));
-
-            // if the wrtDoc needs to be indexed (like it was just modified) then do that first
-            if (!indexTask.Result)
+            if (wrtDoc.NeedsIndexing && !wrtDoc.CurrentlyIndexing)
             {
-                Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), wrtDoc.AtCorpusPath, CdmLogCode.ErrIndexFailed);
-                return null;
+                var indexTask = Task.Run(async () => await wrtDoc.IndexIfNeeded(resOpt, true));
+
+                // if the wrtDoc needs to be indexed (like it was just modified) then do that first
+                if (!indexTask.Result)
+                {
+                    Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), wrtDoc.AtCorpusPath, CdmLogCode.ErrIndexFailed);
+                    return null;
+                }
             }
 
             if (wrtDoc.NeedsIndexing && resOpt.ImportsLoadStrategy == ImportsLoadStrategy.DoNotLoad)
@@ -523,10 +526,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             StringBuilder tagSuffix = new StringBuilder();
             tagSuffix.AppendFormat("-{0}-{1}", kind, thisId);
             tagSuffix.AppendFormat("-({0})", resOpt.Directives != null ? resOpt.Directives.GetTag() : string.Empty);
-            if (resOpt.DepthInfo.MaxDepthExceeded)
+            // only for attributes
+            if (kind == "rasb")
             {
-                DepthInfo currDepthInfo = resOpt.DepthInfo;
-                tagSuffix.AppendFormat("-${0}", currDepthInfo.MaxDepth - currDepthInfo.CurrentDepth);
+                // if MaxDepth was not initialized before, initialize it now
+                if (resOpt.DepthInfo.MaxDepth == null)
+                {
+                    resOpt.DepthInfo.MaxDepth = resOpt.MaxDepth;
+                }
+
+                // add to the cache tag either if we reached maximum depth or how many levels we can go down until reaching the maximum depth
+                if (resOpt.DepthInfo.CurrentDepth > resOpt.DepthInfo.MaxDepth)
+                {
+                    tagSuffix.Append("-overMaxDepth");
+                }
+                else
+                {
+                    DepthInfo currDepthInfo = resOpt.DepthInfo;
+                    tagSuffix.AppendFormat("-{0}toMaxDepth", currDepthInfo.MaxDepth - currDepthInfo.CurrentDepth);
+                }
             }
             if (resOpt.InCircularReference)
             {

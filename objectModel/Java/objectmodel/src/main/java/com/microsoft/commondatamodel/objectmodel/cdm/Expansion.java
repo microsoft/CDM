@@ -5,6 +5,8 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 /**
  * Parameters that control array expansion if inline repeating of attributes is needed.
+ * @deprecated
+ * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
  */
 public class Expansion {
   public Integer startingOrdinal;

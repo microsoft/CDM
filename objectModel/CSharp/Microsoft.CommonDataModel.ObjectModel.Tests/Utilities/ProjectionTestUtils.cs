@@ -26,6 +26,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         private const string foundationJsonPath = "cdm:/foundations.cdm.json";
 
         /// <summary>
+        /// The log codes that are allowed to be logged without failing the test
+        /// </summary>
+        private static readonly HashSet<string> allowedLogs = new HashSet<string>() 
+        { 
+            CdmLogCode.WarnDeprecatedResolutionGuidance.ToString()
+        };
+
+        /// <summary>
         /// Resolves an entity
         /// </summary>
         /// <param name="corpus">The corpus</param>
@@ -74,7 +82,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// <summary>
         /// Loads an entity, resolves it, and then validates the generated attribute contexts.
         /// </summary>
-        public static async Task<CdmEntityDefinition> LoadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, string testName, string testsSubpath, string entityName, List<string> directives)
+        public static async Task<CdmEntityDefinition> LoadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, string testName, string testsSubpath, string entityName, List<string> directives, bool updateExpectedOutput = false)
         {
             string expectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, testName);
 
@@ -83,7 +91,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             CdmEntityDefinition resolvedEntity = await GetResolvedEntity(corpus, entity, directives);
             Assert.IsNotNull(resolvedEntity);
 
-            await ValidateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity);
+            await ValidateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity, updateExpectedOutput);
 
             return resolvedEntity;
         }
@@ -99,7 +107,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             {
                 Invoke = (status, message) =>
                 {
-                    Assert.Fail(message);
+                    var events = corpus.Ctx.Events;
+                    var lastLog = events[events.Count - 1];
+                    if (!lastLog.ContainsKey("code") || !allowedLogs.Contains(lastLog["code"]))
+                    {
+                        Assert.Fail(message);
+                    }
                 }
             }, CdmStatusLevel.Warning);
 

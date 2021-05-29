@@ -364,6 +364,7 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
                 // make a copy and add defaults if missing
                 let resGuideWithDefault: CdmAttributeResolutionGuidance;
                 if (this.resolutionGuidance !== undefined) {
+                    resOpt.usedResolutionGuidance = true;
                     resGuideWithDefault = this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
                 } else {
                     resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
@@ -387,6 +388,10 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @deprecated
+     * For internal use only.
+     */
     public fetchResolvedEntityReference(resOpt: resolveOptions): ResolvedEntityReferenceSet {
         // let bodyCode = () =>
         {

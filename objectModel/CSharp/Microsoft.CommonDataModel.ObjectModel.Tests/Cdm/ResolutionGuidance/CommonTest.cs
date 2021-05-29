@@ -57,7 +57,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             List<AttributeExpectedValue> expected_normalized_structured,
             List<AttributeExpectedValue> expected_referenceOnly_normalized,
             List<AttributeExpectedValue> expected_referenceOnly_structured,
-            List<AttributeExpectedValue> expected_referenceOnly_normalized_structured
+            List<AttributeExpectedValue> expected_referenceOnly_normalized_structured,
+            bool updateExpectedOutput = false
             )
         {
             try
@@ -99,7 +100,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
                     resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
-                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef, updateExpectedOutput);
                 }
 
                 if (expectedContext_normalized != null && expected_normalized != null)
@@ -109,7 +110,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
                     resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
-                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef, updateExpectedOutput);
                 }
 
                 if (expectedContext_referenceOnly != null && expected_referenceOnly != null)
@@ -119,7 +120,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
                     resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
-                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef, updateExpectedOutput);
                 }
 
                 if (expectedContext_structured != null && expected_structured != null)
@@ -129,7 +130,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
                     resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
-                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef, updateExpectedOutput);
                 }
 
                 if (expectedContext_normalized_structured != null && expected_normalized_structured != null)
@@ -139,7 +140,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
                     resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
-                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef, updateExpectedOutput);
                 }
 
                 if (expectedContext_referenceOnly_normalized != null && expected_referenceOnly_normalized != null)
@@ -149,7 +150,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
                     resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
-                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef, updateExpectedOutput);
                 }
 
                 if (expectedContext_referenceOnly_structured != null && expected_referenceOnly_structured != null)
@@ -159,7 +160,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
                     resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
-                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef, updateExpectedOutput);
                 }
 
                 if (expectedContext_referenceOnly_normalized_structured != null && expected_referenceOnly_normalized_structured != null)
@@ -169,7 +170,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
                     resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
-                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef, updateExpectedOutput);
                 }
             }
             catch (Exception e)
@@ -181,10 +182,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// <summary>
         /// Runs validation to test actual output vs expected output for attributes collection vs attribute context
         /// </summary>
-        protected static async Task SaveActualEntityAndValidateWithExpected(string expectedPath, CdmEntityDefinition actualResolvedEntityDef)
+        protected static async Task SaveActualEntityAndValidateWithExpected(string expectedPath, CdmEntityDefinition actualResolvedEntityDef, bool updateExpectedOutput)
         {
             await actualResolvedEntityDef.InDocument.SaveAsAsync(actualResolvedEntityDef.InDocument.Name);
             string actualPath = actualResolvedEntityDef.Ctx.Corpus.Storage.CorpusPathToAdapterPath(actualResolvedEntityDef.InDocument.AtCorpusPath);
+            if (updateExpectedOutput)
+            {
+                File.WriteAllText(expectedPath, File.ReadAllText(actualPath));
+            }
 
             Assert.AreEqual( File.ReadAllText(expectedPath),
                             File.ReadAllText(actualPath));

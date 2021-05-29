@@ -535,9 +535,20 @@ export class CdmCorpusDefinition {
 
             let tagSuffix: string = `-${kind}-${thisId}`;
             tagSuffix += `-(${resOpt.directives ? resOpt.directives.getTag() : ''})`;
-            if (resOpt.depthInfo.maxDepthExceeded) {
-                const currDepthInfo: DepthInfo = resOpt.depthInfo;
-                tagSuffix += `-${currDepthInfo.maxDepth - currDepthInfo.currentDepth}`;
+            // only for attributes
+            if (kind === 'rasb') {
+                // if MaxDepth was not initialized before, initialize it now
+                if (resOpt.depthInfo.maxDepth === undefined) {
+                    resOpt.depthInfo.maxDepth = resOpt.maxDepth;
+                }
+
+                // add to the cache tag either if we reached maximum depth or how many levels we can go down until reaching the maximum depth
+                if (resOpt.depthInfo.currentDepth > resOpt.depthInfo.maxDepth) {
+                    tagSuffix += '-overMaxDepth';
+                } else {
+                    const currDepthInfo: DepthInfo = resOpt.depthInfo;
+                    tagSuffix += `-${currDepthInfo.maxDepth - currDepthInfo.currentDepth}toMaxDepth`;
+                }
             }
             if (resOpt.inCircularReference) {
                 tagSuffix += '-pk';

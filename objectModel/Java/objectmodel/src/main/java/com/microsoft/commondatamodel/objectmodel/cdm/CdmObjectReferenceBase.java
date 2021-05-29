@@ -448,10 +448,8 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     }
 
     CdmObject def = this.fetchResolvedReference(resOpt);
-    if (def != null) {
-      if (def instanceof CdmObjectReference) {
-        def = ((CdmObjectReference)def).fetchResolvedReference();
-      }
+    if (def != null && def instanceof CdmObjectReference) {
+      def = ((CdmObjectReference)def).fetchResolvedReference();
     }
     if (def != null && !(def instanceof CdmObjectReference)) {
       return (T) def;

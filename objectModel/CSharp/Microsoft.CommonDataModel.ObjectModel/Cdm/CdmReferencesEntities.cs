@@ -5,9 +5,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using System;
 
     public interface CdmReferencesEntities
     {
+        [Obsolete("For internal use only.")]
         ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null);
     }
 }

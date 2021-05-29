@@ -154,11 +154,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         /// <summary>
         /// A function to validate if the attribute context tree & traits generated for a resolved entity is the same as the expected and saved attribute context tree & traits for a test case
         /// </summary>
-        /// <param name="corpus"></param>
         /// <param name="expectedOutputPath"></param>
         /// <param name="entityName"></param>
         /// <param name="resolvedEntity"></param>
-        public static async Task ValidateAttributeContext(CdmCorpusDefinition corpus, string expectedOutputPath, string entityName, CdmEntityDefinition resolvedEntity)
+        public static async Task ValidateAttributeContext(string expectedOutputPath, string entityName, CdmEntityDefinition resolvedEntity, bool updateExpectedOutput = false)
         {
             if (resolvedEntity.AttributeContext != null)
             {
@@ -174,6 +173,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
                 // Expected
                 string expectedStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, $"AttrCtx_{entityName}.txt"));
+
+                if (updateExpectedOutput)
+                {
+                    File.WriteAllText(expectedStringFilePath, File.ReadAllText(actualStringFilePath));
+                }
+
                 string expectedText = File.ReadAllText(expectedStringFilePath);
 
                 // Test if Actual is Equal to Expected

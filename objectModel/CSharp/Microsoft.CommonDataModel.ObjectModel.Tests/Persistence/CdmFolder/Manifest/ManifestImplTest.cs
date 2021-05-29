@@ -3,11 +3,6 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Threading.Tasks;
-
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
@@ -15,9 +10,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
 
     [TestClass]
     public class ManifestImplTest

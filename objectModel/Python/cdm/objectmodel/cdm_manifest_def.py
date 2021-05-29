@@ -93,19 +93,19 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
         copy.entities.clear()
         for ent in self.entities:
-            copy.entities.append(ent)
+            copy.entities.append(ent.copy(res_opt))
 
         copy.relationships.clear()
         for rel in self.relationships:
-            copy.relationships.append(rel)
+            copy.relationships.append(rel.copy(res_opt))
 
         copy.sub_manifests.clear()
         for man in self.sub_manifests:
-            copy.sub_manifests.append(man)
+            copy.sub_manifests.append(man.copy(res_opt))
 
         copy.exhibits_traits.clear()
         for et in self.exhibits_traits:
-            copy.exhibits_traits.append(et)
+            copy.exhibits_traits.append(et.copy(res_opt))
 
         return copy
 

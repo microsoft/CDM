@@ -161,8 +161,18 @@ class CdmObject(abc.ABC):
                 if o_def is not None:
                     ctx.corpus._register_definition_reference_symbols(o_def, kind, res_opt._symbol_ref_set)
 
+                    if self.object_type == CdmObjectType.ENTITY_DEF:
+                        # if we just got attributes for an entity, take the time now to clean up this cached tree and prune out
+                        # things that don't help explain where the final set of attributes came from
+                        if under_ctx:
+                            scopes_for_attributes = set()  # type: Set[CdmAttributeContext]
+                            under_ctx._collect_context_from_atts(rasb_cache._resolved_attribute_set, scopes_for_attributes)  # the context node for every final attribute
+                            if not under_ctx._prune_to_scope(scopes_for_attributes):
+                                return None
+
                     # get the new cache tag now that we have the list of docs 
                     cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else None)
+
                     # save this as the cached version
                     if cache_tag:
                         ctx._cache[cache_tag] = rasb_cache

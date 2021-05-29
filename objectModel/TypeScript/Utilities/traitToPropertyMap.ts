@@ -597,7 +597,7 @@ export class traitToPropertyMap {
                 }
                 if (defVal.getObjectType() === cdmObjectType.entityRef) {
                     // no doc or directives should work ?
-                    const cEnt: CdmConstantEntityDefinition = defVal.fetchObjectDefinition(undefined) as CdmConstantEntityDefinition;
+                    const cEnt: CdmConstantEntityDefinition = defVal.fetchObjectDefinition() as CdmConstantEntityDefinition;
 
                     if (cEnt) {
                         const esName: string = cEnt.getEntityShape()

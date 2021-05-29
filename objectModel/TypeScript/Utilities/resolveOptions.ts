@@ -70,6 +70,12 @@ export class resolveOptions {
     public currentlyResolvingEntities: Set<CdmEntityDefinition>; // moniker that was found on the ref
 
     /**
+     * Indicates if resolution guidance was used at any point during resolution
+     * @internal
+     */
+    public usedResolutionGuidance: boolean = false;
+
+    /**
      * @deprecated please use importsLoadStrategy instead.
      * when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
      */
@@ -167,6 +173,7 @@ export class resolveOptions {
         resOptCopy.importsLoadStrategy = this.importsLoadStrategy;
         resOptCopy.saveResolutionsOnCopy = this.saveResolutionsOnCopy;
         resOptCopy.currentlyResolvingEntities = new Set(this.currentlyResolvingEntities);
+        resOptCopy.usedResolutionGuidance = this.usedResolutionGuidance;
 
         return resOptCopy;
     }

@@ -333,6 +333,18 @@ export abstract class CdmObjectBase implements CdmObject {
                     if (odef !== undefined) {
                         ctx.corpus.registerDefinitionReferenceSymbols(odef, kind, resOpt.symbolRefSet);
 
+                        if (this.objectType === cdmObjectType.entityDef) {
+                            // if we just got attributes for an entity, take the time now to clean up this cached tree and prune out
+                            // things that don't help explain where the final set of attributes came from
+                            if (underCtx) {
+                                const scopesForAttributes = new Set<CdmAttributeContext>();
+                                underCtx.collectContextFromAtts(rasbCache.ras, scopesForAttributes); // the context node for every final attribute
+                                if (!underCtx.pruneToScope(scopesForAttributes)) {
+                                    return undefined;
+                                }
+                            }
+                        }
+
                         // get the new cache tag now that we have the list of docs
                         const cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : undefined);
                         // save this as the cached version

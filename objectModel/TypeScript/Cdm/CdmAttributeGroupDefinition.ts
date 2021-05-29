@@ -228,6 +228,10 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @deprecated
+     * For internal use only.
+     */
     public fetchResolvedEntityReference(resOpt: resolveOptions): ResolvedEntityReferenceSet {
         // let bodyCode = () =>
         {

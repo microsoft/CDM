@@ -18,6 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestAddInSupportOf()
         {
+            bool updateResults = false;
             string testName = "TestAddInSupportOf";
             {
                 string entityName = "Product";
@@ -60,7 +61,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -71,6 +73,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestAddInSupportOfWithIsCorrelatedWith()
         {
+            bool updateResults = false;
             string testName = "TestAddInSupportOfWithIsCorrelatedWith";
             {
                 string entityName = "Product";
@@ -113,7 +116,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }

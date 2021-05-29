@@ -87,7 +87,8 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
   }
 
   
-  /** 
+  /**
+   * * @deprecated for internal use only.
    * @param resOpt Resolved options
    * @return ResolvedEntityReferenceSet
    */

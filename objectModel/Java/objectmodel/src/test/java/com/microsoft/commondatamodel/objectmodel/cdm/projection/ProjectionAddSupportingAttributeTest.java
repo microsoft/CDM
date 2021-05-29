@@ -25,7 +25,7 @@ public class ProjectionAddSupportingAttributeTest {
       Arrays.asList(
           new ArrayList<>(Arrays.asList()),
           new ArrayList<>(Arrays.asList("referenceOnly")),
-          new ArrayList<>(Arrays.asList("normalized")), new ArrayList<>(Arrays.asList("structured")),
+          new ArrayList<>(Arrays.asList("normalized", "structured")),
           new ArrayList<>(Arrays.asList("referenceOnly", "normalized")),
           new ArrayList<>(Arrays.asList("referenceOnly", "virtual")),
           new ArrayList<>(Arrays.asList("referenceOnly", "structured")),

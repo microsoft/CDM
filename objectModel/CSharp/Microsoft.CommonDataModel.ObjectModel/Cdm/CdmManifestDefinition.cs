@@ -139,16 +139,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             copy.Entities.Clear();
             foreach (var ent in this.Entities)
-                copy.Entities.Add(ent);
+                copy.Entities.Add(ent.Copy(resOpt) as CdmEntityDeclarationDefinition);
             copy.Relationships.Clear();
             foreach (var rel in this.Relationships)
-                copy.Relationships.Add(rel);
+                copy.Relationships.Add(rel.Copy(resOpt) as CdmE2ERelationship);
             copy.SubManifests.Clear();
             foreach (var man in this.SubManifests)
-                copy.SubManifests.Add(man);
+                copy.SubManifests.Add(man.Copy(resOpt) as CdmManifestDeclarationDefinition);
             copy.ExhibitsTraits.Clear();
             foreach (var et in this.ExhibitsTraits)
-                copy.ExhibitsTraits.Add(et);
+                copy.ExhibitsTraits.Add(et.Copy() as CdmTraitReferenceBase);
 
             return copy;
         }

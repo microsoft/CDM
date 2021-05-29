@@ -619,7 +619,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                         return defVal;
                     if ((defVal as CdmObject).ObjectType == CdmObjectType.EntityRef)
                     {
-                        var cEnt = (defVal as CdmObject).FetchObjectDefinition<CdmObjectDefinition>(null) as CdmConstantEntityDefinition;
+                        var cEnt = (defVal as CdmObject).FetchObjectDefinition<CdmObjectDefinition>() as CdmConstantEntityDefinition;
                         if (cEnt != null)
                         {
                             string esName = cEnt.EntityShape.FetchObjectDefinitionName();

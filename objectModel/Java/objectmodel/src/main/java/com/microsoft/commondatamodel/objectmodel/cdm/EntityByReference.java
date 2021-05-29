@@ -5,6 +5,8 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 /**
  * Parameters that control the use of foreign keys to reference entity instances instead of imbedding the entity in a nested way.
+ * @deprecated
+ * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
  */
 public class EntityByReference {
   private Boolean allowReference;

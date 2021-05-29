@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
@@ -25,6 +26,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// The test's data path.
         /// </summary>
         private static readonly string TestsSubpath = Path.Combine("Cdm", "ResolutionGuidance");
+
+        /// <summary>
+        /// Tests if a warning is logged if resolution guidance is used
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestResolutionGuidanceDeprecation()
+        {
+            var corpus = TestHelper.GetLocalCorpus(TestsSubpath, "TestResolutionGuidanceDeprecation");
+
+            // Tests warning log when resolution guidance is used on a data typed attribute.
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TypeAttribute.cdm.json/Entity");
+            await entity.CreateResolvedEntityAsync("res-entity");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+
+            // Tests warning log when resolution guidance is used on a entity typed attribute.
+            entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/EntityAttribute.cdm.json/Entity");
+            await entity.CreateResolvedEntityAsync("res-entity");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+
+            // Tests warning log when resolution guidance is used when extending an entity.
+            entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/ExtendsEntity.cdm.json/Entity");
+            await entity.CreateResolvedEntityAsync("res-entity");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+        }
 
         [TestMethod]
         public void TestResolutionGuidanceCopy()

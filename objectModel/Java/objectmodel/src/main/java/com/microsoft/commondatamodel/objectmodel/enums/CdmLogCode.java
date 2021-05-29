@@ -118,6 +118,7 @@ public enum CdmLogCode
     ErrValdnMissingLanguageTag,
     ErrUnrecognizedType,
     WarnPartitionGlobAndRegexPresent,
+    WarnDeprecatedResolutionGuidance,
     WarnDocChangesDiscarded,
     WarnDocImportNotLoaded,
     WarnPartitionFileFetchFailed,

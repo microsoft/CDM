@@ -29,6 +29,8 @@ class CdmAttributeGroupReference(CdmObjectReference, CdmAttributeItem):
             return host._copy_to_host(self.ctx, ref_to, simple_reference)
 
     def fetch_resolved_entity_references(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedEntityReferenceSet':
+        """Deprecated: for internal use only"""
+
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         ref = self._fetch_resolved_reference(res_opt)

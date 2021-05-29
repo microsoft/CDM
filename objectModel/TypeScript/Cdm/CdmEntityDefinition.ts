@@ -115,6 +115,8 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
 
     /**
      * The resolution guidance for attributes taken from the entity extended by this entity.
+     * @deprecated
+     * Resolution guidance is being deprecated in favor of Projections. https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#projection-overview
      */
     public extendsEntityResolutionGuidance?: CdmAttributeResolutionGuidance;
     private rasb: ResolvedAttributeSetBuilder;
@@ -410,6 +412,8 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                     }
 
                     if (this.extendsEntityResolutionGuidance) {
+                        resOpt.usedResolutionGuidance = true;
+
                         /**
                          * some guidance was given on how to integrate the base attributes into the set. Apply that guidance
                          */
@@ -682,6 +686,10 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 // points to the level of the context where it was last modified, merged, created
                 const ras: ResolvedAttributeSet = this.fetchResolvedAttributes(resOptCopy, acpEnt);
 
+                if (resOptCopy.usedResolutionGuidance) {
+                    Logger.warning(ctx, this.TAG, this.createResolvedEntityAsync.name, this.atCorpusPath, cdmLogCode.WarnDeprecatedResolutionGuidance);
+                }
+
                 if (ras === undefined) {
                     return undefined;
                 }
@@ -795,103 +803,10 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                     // do this by keeping the leafs and all of the lineage nodes for the attributes that end up in the resolved entity
                     // along with some special nodes that explain entity structure and inherit
 
-                    // run over the whole tree and make a set of the nodes that should be saved for sure. This is anything NOT under a generated set 
-                    // (so base entity chains, entity attributes entity definitions)
-                    const nodesToSave: Set<CdmAttributeContext> = new Set<CdmAttributeContext>();
-                    const saveStructureNodes: (subItem: CdmObject) => boolean
-                        = (subItem: CdmObject): boolean => {
-                            const ac: CdmAttributeContext = subItem as CdmAttributeContext;
-                            if (!ac || ac.type === cdmAttributeContextType.generatedSet) {
-                                return true;
-                            }
-                            nodesToSave.add(ac);
-                            if (!ac.contents || ac.contents.length === 0) {
-                                return true;
-                            }
-                            // look at all children
-                            for (const subSub of ac.contents) {
-                                if (!saveStructureNodes(subSub)) {
-                                    return false;
-                                }
-                            }
-                            return true;
-                        };
-                    if (!saveStructureNodes(attCtx)) {
+                    if (!attCtx.pruneToScope(allPrimaryCtx)) {
+                        // TODO: log error
                         return undefined;
                     }
-
-                    // next, look at the attCtx for every resolved attribute. follow the lineage chain and mark all of those nodes as ones to save
-                    // also mark any parents of those as savers
-
-                    // helper that save the passed node and anything up the parent chain 
-                    const saveParentNodes: (currNode: CdmAttributeContext) => boolean
-                        = (currNode: CdmAttributeContext): boolean => {
-                            if (nodesToSave.has(currNode)) {
-                                return true;
-                            }
-                            nodesToSave.add(currNode);
-                            // get the parent 
-                            if (currNode.parent && currNode.parent.explicitReference) {
-                                return saveParentNodes(currNode.parent.explicitReference as CdmAttributeContext);
-                            }
-                            return true;
-                        };
-
-                    // helper that saves the current node (and parents) plus anything in the lineage (with their parents)
-                    const saveLineageNodes: (currNode: CdmAttributeContext) => boolean
-                        = (currNode: CdmAttributeContext): boolean => {
-                            if (!saveParentNodes(currNode)) {
-                                return false;
-                            }
-                            if (currNode.lineage && currNode.lineage.length > 0) {
-                                for (const lin of currNode.lineage) {
-                                    if (lin.explicitReference) {
-                                        if (!saveLineageNodes(lin.explicitReference as CdmAttributeContext)) {
-                                            return false;
-                                        }
-                                    }
-                                }
-                            }
-                            return true;
-                        };
-
-                    // so, do that ^^^ for every primary context found earlier
-                    for (const primCtx of allPrimaryCtx) {
-                        if (!saveLineageNodes(primCtx)) {
-                            return undefined;
-                        }
-                    }
-
-                    // now the cleanup, we have a set of the nodes that should be saved
-                    // run over the tree and re-build the contents collection with only the things to save
-                    const cleanSubGroup: (subItem: CdmObject) => boolean =
-                        (subItem: CdmObject) => {
-                            if (subItem.objectType === cdmObjectType.attributeRef) {
-                                return true; // not empty
-                            }
-
-                            const ac: CdmAttributeContext = subItem as CdmAttributeContext;
-
-                            if (!nodesToSave.has(ac)) {
-                                return false; // don't even look at content, this all goes away
-                            }
-
-                            if (ac.contents && ac.contents.length > 0) {
-                                // need to clean up the content array without triggering the code that fixes in document or paths
-                                const newContent: CdmObject[] = [];
-                                for (const sub of ac.contents) {
-                                    // true means keep this as a child
-                                    if (cleanSubGroup(sub)) {
-                                        newContent.push(sub);
-                                    }
-                                }
-                                // clear the old content and replace
-                                ac.contents.allItems = Object.assign([], newContent);
-                            }
-
-                            return true;
-                        };
-                    cleanSubGroup(attCtx);
 
                     // create an all-up ordering of attributes at the leaves of this tree based on insert order
                     // sort the attributes in each context by their creation order and mix that with the other sub-contexts that have been sorted

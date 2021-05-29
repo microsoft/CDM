@@ -455,10 +455,9 @@ public class ResolvedAttributeSetBuilder {
       appCtx.resAttNew.completeContext(appCtx.resOpt);
       // tie this new resolved att to the source via lineage
       if (appCtx.resAttNew.getAttCtx() != null && resAttSource != null && resAttSource.getAttCtx() != null
-              && resAttSource.getApplierState() != null &&  resAttSource.getApplierState().getFlexRemove() != true){
+              && (resAttSource.getApplierState() == null || !resAttSource.getApplierState().getFlexRemove())) {
         if (resAttSource.getAttCtx().getLineage() != null && resAttSource.getAttCtx().getLineage().size() > 0){
-          for (final CdmAttributeContextReference lineage : resAttSource.getAttCtx().getLineage())
-          {
+          for (final CdmAttributeContextReference lineage : resAttSource.getAttCtx().getLineage()) {
             appCtx.resAttNew.getAttCtx().addLineage(lineage);
           }
         } else{

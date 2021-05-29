@@ -34,7 +34,6 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
     def __init__(self, ctx: 'CdmCorpusContext', name: str, extends_entity: Optional['CdmEntityReference'] = None) -> None:
         super().__init__(ctx)
 
-        self._TAG = CdmEntityDefinition.__name__
         # the entity attribute Context.
         self.attribute_context = None  # type: Optional[CdmAttributeContext]
 
@@ -48,9 +47,10 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         self.extends_entity_resolution_guidance = None  # type: Optional[CdmAttributeResolutionGuidanceDefinition]
 
         # --- internal ---
+        self._attributes = CdmCollection(self.ctx, self, CdmObjectType.TYPE_ATTRIBUTE_DEF)  # type: CdmCollection
         self._rasb = None  # type: Optional[ResolvedAttributeSetBuilder]
         self._resolving_entity_references = False  # type: bool
-        self._attributes = CdmCollection(self.ctx, self, CdmObjectType.TYPE_ATTRIBUTE_DEF)  # type: CdmCollection
+        self._TAG = CdmEntityDefinition.__name__
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
 
     @property
@@ -202,6 +202,8 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                     return None
 
                 if self.extends_entity_resolution_guidance:
+                    res_opt._used_resolution_guidance = True
+
                     # some guidance was given on how to integrate the base attributes into the set. apply that guidance
                     rts_base = self._fetch_resolved_traits(res_opt)  # type: ResolvedTraitSet
 
@@ -294,7 +296,6 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         copy.extends_entity_resolution_guidance = self.extends_entity_resolution_guidance.copy(res_opt) if self.extends_entity_resolution_guidance else None
         copy.attribute_context = cast('CdmAttributeContext', self.attribute_context.copy(res_opt)) if self.attribute_context else None
 
-        att: CdmAttributeItem
         for att in self.attributes:
             copy.attributes.append(att.copy(res_opt))
 
@@ -302,7 +303,6 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
         return copy
 
-    # TODO: Refactor and split this function to be more structured.
     async def create_resolved_entity_async(self, new_ent_name: str, res_opt: Optional['ResolveOptions'] = None, folder: 'CdmFolderDefinition' = None,
                                            new_doc_name: str = None) -> 'CdmEntityDefinition':
         """Create a resolved copy of the entity."""
@@ -380,6 +380,9 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             # the context where it was created last modified, merged, created
             ras = self._fetch_resolved_attributes(res_opt_copy, acp_ent)
 
+            if res_opt_copy._used_resolution_guidance:
+                logger.warning(ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE)
+
             if ras is None:
                 return None
 
@@ -410,24 +413,17 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
                 # TEST CODE in C# by Jeff
                 # run over the resolved attributes and make sure none have the dummy context
-                # Action<ResolvedAttributeSet> testResolveAttributeCtx = null;
-                # testResolveAttributeCtx = (rasSub) =>
-                # {
-                #    if (rasSub.Set.Count != 0 && rasSub.AttributeContext.AtCoprusPath.StartsWith("cacheHolder"))
-                #        System.Diagnostics.Debug.WriteLine("Bad");
-                #    rasSub.Set.ForEach(ra =>
-                #    {
-                #        if (ra.AttCtx.AtCoprusPath.StartsWith("cacheHolder"))
-                #            System.Diagnostics.Debug.WriteLine("Bad");
+                # def test_resolve_attribute_ctx(ras_sub) -> None:
+                #    if len(ras_sub.set) != 0 and ras_sub.attribute_context.at_corpus_path.startswith('cacheHolder'):
+                #        print('Bad')
+                #    for ra in ras_sub.set:
+                #        if ra.att_ctx.at_corpus_path.startswith('cacheHolder'):
+                #            print('Bad')
 
                 #        # the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
-                #        if (ra.Target is ResolvedAttributeSet)
-                #        {
-                #            testResolveAttributeCtx(ra.Target as ResolvedAttributeSet);
-                #        }
-                #    });
-                # };
-                # testResolveAttributeCtx(ras);
+                #        if isinstance(ra.target, ResolvedAttributeSet):
+                #            test_resolve_attribute_ctx(ra.target)
+                # test_resolve_attribute_ctx(ras)
 
 
             # add the traits of the entity, also add to attribute context top node
@@ -483,83 +479,10 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 # explain anything our goal now is to prune that tree to just have the stuff one may need
                 # Do this by keeping the leafs and all of the lineage nodes for the attributes that end up in the
                 # resolved entity along with some special nodes that explain entity structure and inherit
-
-                # Run over the whole tree and make a set of the nodes that should be saved for sure.
-                # This is anything NOT under a generated set (so base entity chains, entity attributes entity definitions)
-                nodes_to_save = set()
-
-                def _save_structure_nodes(sub_item: CdmObject) -> bool:
-                    ac = cast(CdmAttributeContext, sub_item) if isinstance(sub_item, CdmAttributeContext) else None # type: CdmAttributeContext
-                    if not ac or ac.type == CdmAttributeContextType.GENERATED_SET:
-                        return True
-                    nodes_to_save.add(ac)
-                    if not ac.contents:
-                        return True
-
-                    # look at all children
-                    for sub_sub in ac.contents:
-                        if _save_structure_nodes(sub_sub) is False:
-                            return False
-                    return True
-
-                if _save_structure_nodes(att_ctx) is False:
+                # print('res ent', ent_name)
+                if not att_ctx._prune_to_scope(all_primary_ctx):
+                    # TODO: log error
                     return None
-
-                # Next, look at the attCtx for every resolved attribute. follow the lineage chain
-                # and mark all of those nodes as ones to save
-                # Also mark any parents of those as savers
-
-                # Helper that save the passed node and anything up the parent chain
-                def _save_parent_nodes(curr_node: CdmAttributeContext) -> bool:
-                    if curr_node in nodes_to_save:
-                        return True
-                    nodes_to_save.add(curr_node)
-                    # get the parent
-                    if curr_node.parent and curr_node.parent.explicit_reference:
-                        return _save_parent_nodes(cast(CdmAttributeContext, curr_node.parent.explicit_reference))
-                    return True
-
-                # Helper that saves the current node (and parents) plus anything in the lineage (with their parents)
-                def _save_lineage_nodes(curr_node: CdmAttributeContext) -> bool:
-                    if _save_parent_nodes(curr_node) is False:
-                        return False
-                    if curr_node.lineage:
-                        for lin in curr_node.lineage:
-                            if lin.explicit_reference:
-                                if _save_lineage_nodes(cast(CdmAttributeContext, lin.explicit_reference)) is False:
-                                    return False
-                    return True
-
-                # so, do that ^^^ for every primary context found earlier
-                for prim_ctx in all_primary_ctx:
-                    if _save_lineage_nodes(prim_ctx) is False:
-                        return None
-
-                # Now the cleanup, we have a set of the nodes that should be saved
-                # Run over the tree and re-build the contents collection with only the things to save
-                def _clean_sub_group(sub_item: CdmObject) -> bool:
-                    if sub_item.object_type == CdmObjectType.ATTRIBUTE_REF:
-                        return True  # not empty
-
-                    ac = cast(CdmAttributeContext, sub_item)
-
-                    if ac not in nodes_to_save:
-                        return False  # don't even look at content, this all goes away
-
-                    if ac.contents:
-                        # need to clean up the content array without triggering the code that fixes in document or paths
-                        new_content = []
-                        for sub in ac.contents:
-                            # true means keep this as a child
-                            if _clean_sub_group(sub) is True:
-                                new_content.append(sub)
-                        # clear the old content and replace
-                        ac.contents.clear()
-                        ac.contents.extend(new_content)
-
-                    return True
-
-                _clean_sub_group(att_ctx)
 
                 # Create an all-up ordering of attributes at the leaves of this tree based on insert order. Sort the attributes
                 # in each context by their creation order and mix that with the other sub-contexts that have been sorted.
@@ -806,6 +729,8 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         return self._trait_to_property_map._fetch_property_value(property_name, True)
 
     def fetch_resolved_entity_references(self, res_opt: 'ResolveOptions') -> 'ResolvedEntityReferenceSet':
+        """Deprecated: for internal use only"""
+
         # this whole resolved entity ref goo will go away when resolved documents are done.
         # for now, it breaks if structured att sets get made.
         from cdm.resolvedmodel import ResolvedEntityReferenceSet

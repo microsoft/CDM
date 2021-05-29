@@ -332,6 +332,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
       // make a copy and add defaults if missing
       final CdmAttributeResolutionGuidance resGuideWithDefault;
       if (this.getResolutionGuidance() != null) {
+        resOpt.usedResolutionGuidance = true;
         resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance().copy(resOpt);
       } else {
         resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
@@ -422,6 +423,9 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     return copy;
   }
 
+  /**
+   * @deprecated for internal use only.
+   */
   @Override
   public ResolvedEntityReferenceSet fetchResolvedEntityReferences(final ResolveOptions resOpt) {
     // Return null intentionally.

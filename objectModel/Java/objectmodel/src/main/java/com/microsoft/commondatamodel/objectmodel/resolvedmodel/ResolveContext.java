@@ -13,7 +13,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveContextScope;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.EventList;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -22,7 +21,6 @@ public class ResolveContext implements CdmCorpusContext {
 
   final protected Map<String, Object> cache;
   String corpusPathRoot;
-  int errors;
   private Stack<ResolveContextScope> scopeStack;
   private ResolveContextScope currentScope;
   private CdmCorpusDefinition corpus;

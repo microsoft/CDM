@@ -353,7 +353,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
 
                 // fix up the reference to defintion. need to get path from this document to the 
                 // add moniker if this is a reference
-                if (ac.definition != null) {
+                if (ac.definition) {
                     ac.definition.inDocument = docHome;
 
                     if (ac.definition && ac.definition.namedReference) {
@@ -442,6 +442,189 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
             resOpt.saveResolutionsOnCopy = false;
             resOpt.mapOldCtxToNewCtx = undefined;
         }
+
+        return true;
+    }
+
+    /**
+     * @internal
+     */
+    public collectContextFromAtts(rasSub: ResolvedAttributeSet, collected: Set<CdmAttributeContext>): void {
+        rasSub.set.forEach(ra => {
+            const raCtx: CdmAttributeContext = ra.attCtx;
+            collected.add(raCtx);
+
+            // the target for a resolved att can be a TypeAttribute OR it can be another ResolvedAttributeSet (meaning a group)
+            if (ra.target instanceof ResolvedAttributeSet) {
+                // a group
+                this.collectContextFromAtts(ra.target as ResolvedAttributeSet, collected);
+            }
+        });
+    }
+
+    /**
+     * @internal
+     */
+    public pruneToScope(scopeSet: Set<CdmAttributeContext>): boolean {
+        // run over the whole tree and make a set of the nodes that should be saved for sure. This is anything NOT under a generated set 
+        // (so base entity chains, entity attributes entity definitions)
+
+        // for testing, don't delete this
+        // const countNodes = (subItem) => {
+        //    if (subItem instanceof CdmAttributeContext) {
+        //        return 1;
+        //    }
+        //    const ac: CdmAttributeContext = subItem as CdmAttributeContext;
+        //    if (ac.contents === undefined || ac.contents.length === 0) {
+        //        return 1;
+        //    }
+        //    // look at all children
+        //    let total: number = 0;
+        //    for (const subSub of ac.contents) {
+        //        total += countNodes(subSub);
+        //    }
+        //    return 1 + total;
+        // };
+        // console.log(`Pre Prune ${countNodes(this)}`);
+
+
+        // so ... the change from the old behavior is to depend on the lineage pointers to save the attribute defs
+        // in the 'structure' part of the tree that might matter. keep all of the other structure info and keep some 
+        // special nodes (like the ones that have removed attributes) that won't get found from lineage trace but that are
+        // needed to understand what took place in resolution
+        const nodesToSave = new Set<CdmAttributeContext>();
+
+        // helper that save the passed node and anything up the parent chain 
+        const saveParentNodes = (currNode: CdmAttributeContext) => {
+            if (nodesToSave.has(currNode)) {
+                return true;
+            }
+            nodesToSave.add(currNode);
+            // get the parent 
+            if (currNode.parent?.explicitReference) {
+                return saveParentNodes(currNode.parent.explicitReference as CdmAttributeContext);
+            }
+            return true;
+        };
+
+        // helper that saves the current node (and parents) plus anything in the lineage (with their parents)
+        const saveLineageNodes = (currNode: CdmAttributeContext) => {
+            if (!saveParentNodes(currNode)) {
+                return false;
+            }
+            if (currNode.lineage && currNode.lineage.length > 0) {
+                for (const lin of currNode.lineage) {
+                    if (lin.explicitReference) {
+                        if (!saveLineageNodes(lin.explicitReference as CdmAttributeContext)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        };
+
+
+        const saveStructureNodes = (subItem: CdmObject, inGenerated: boolean, inProjection: boolean, inRemove: boolean) => {
+            if (!(subItem instanceof CdmAttributeContext)) {
+                return true;
+            }
+
+            const ac: CdmAttributeContext = subItem as CdmAttributeContext;
+            if (ac.type === cdmAttributeContextType.generatedSet) {
+                inGenerated = true; // special mode where we hate everything except the removed att notes
+            }
+
+            if (inGenerated && (ac.type === cdmAttributeContextType.operationExcludeAttributes || ac.type === cdmAttributeContextType.operationIncludeAttributes)) {
+                inRemove = true; // triggers us to know what to do in the next code block.
+            }
+            let removedAttribute: boolean = false;
+            if (ac.type == cdmAttributeContextType.attributeDefinition) {
+                // empty attribute nodes are descriptions of source attributes that may or may not be needed. lineage will sort it out.
+                // the exception is for attribute descriptions under a remove attributes operation. they are gone from the resolved att set, so
+                // no history would remain 
+                if (inRemove) {
+                    removedAttribute = true;
+                } else if (!ac.contents || ac.contents.length === 0) {
+                    return true;
+                }
+            }
+
+            if (!inGenerated || removedAttribute) {
+                // mark this as something worth saving, sometimes 
+                // these get discovered at the leaf of a tree that we want to mostly ignore, so can cause a
+                // discontinuity in the 'save' chains, so fix that
+                saveLineageNodes(ac);
+            }
+
+            if (ac.type === cdmAttributeContextType.projection) {
+                inProjection = true; // track this so we can do the next thing ...
+            }
+            if (ac.type === cdmAttributeContextType.entity && inProjection) {
+                // this is far enough, the entity that is somewhere under a projection chain
+                // things under this might get saved through lineage, but down to this point will get in for sure
+                return true;
+            }
+
+            if (!ac.contents|| ac.contents.length === 0) {
+                return true;
+            }
+            // look at all children
+            for (const subSub of ac.contents) {
+                if (!saveStructureNodes(subSub, inGenerated, inProjection, inRemove)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        if (!saveStructureNodes(this, false, false, false)) {
+            return false;
+        }
+
+        // next, look at the attCtx for every resolved attribute. follow the lineage chain and mark all of those nodes as ones to save
+        // also mark any parents of those as savers
+
+
+        // so, do that ^^^ for every primary context found earlier
+        for (const primCtx of scopeSet) {
+            if (!saveLineageNodes(primCtx)) {
+                return false;
+            }
+        }
+
+        // now the cleanup, we have a set of the nodes that should be saved
+        // run over the tree and re-build the contents collection with only the things to save
+        const cleanSubGroup = (subItem: CdmObject) => {
+            if (subItem.objectType === cdmObjectType.attributeRef) {
+                return true; // not empty
+            }
+
+            const ac: CdmAttributeContext = subItem as CdmAttributeContext;
+
+            if (!nodesToSave.has(ac)) {
+                return false; // don't even look at content, this all goes away
+            }
+
+            if (ac.contents && ac.contents.length > 0) {
+                // need to clean up the content array without triggering the code that fixes in document or paths
+                const newContent: CdmObject[] = [];
+                for (const sub of ac.contents) {
+                    // true means keep this as a child
+                    if (cleanSubGroup(sub)) {
+                        newContent.push(sub);
+                    }
+                }
+                // clear the old content and replace
+                ac.contents.clear();
+                ac.contents.allItems.push(...newContent);
+            }
+
+            return true;
+        };
+        cleanSubGroup(this);
+
+        // console.log(`Post Prune ${countNodes(this)}`);
 
         return true;
     }

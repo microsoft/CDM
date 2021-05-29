@@ -18,6 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestForeignKeyOneToOneCardinality()
         {
+            bool updateResults = false;
             string testName = "TestForeignKeyOneToOneCardinality";
             {
                 string entityName = "Person";
@@ -60,7 +61,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -104,7 +106,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -115,6 +118,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestForeignKeyManyToManyCardinality()
         {
+            bool updateResults = false;
+
             string testName = "TestForeignKeyManyToManyCardinality";
             {
                 string entityName = "Customer";
@@ -157,7 +162,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -201,7 +207,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -245,7 +252,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }
@@ -256,6 +264,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestForeignKeyOneToManyCardinality()
         {
+            bool updateResults = false;
             string testName = "TestForeignKeyOneToManyCardinality";
             {
                 string entityName = "Team";
@@ -298,7 +307,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
             {
@@ -541,7 +551,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     expected_normalized_structured,
                     expected_referenceOnly_normalized,
                     expected_referenceOnly_structured,
-                    expected_referenceOnly_normalized_structured
+                    expected_referenceOnly_normalized_structured,
+                    updateResults
                 );
             }
         }

@@ -319,9 +319,20 @@ public class CdmCorpusDefinition {
     tagSuffix.append(String.format("-%s-%s", kind, thisId));
     tagSuffix.append(String
         .format("-(%s)", resOpt.getDirectives() != null ? resOpt.getDirectives().getTag() : ""));
-    if (resOpt.depthInfo.getMaxDepthExceeded()) {
-      DepthInfo currDepthInfo = resOpt.depthInfo;
-      tagSuffix.append(String.format("-%s", currDepthInfo.getMaxDepth() - currDepthInfo.getCurrentDepth()));
+    // only for attributes
+    if (kind == "rasb") {
+      // if MaxDepth was not initialized before, initialize it now
+      if (resOpt.depthInfo.getMaxDepth() == null) {
+        resOpt.depthInfo.setMaxDepth(resOpt.getMaxDepth());
+      }
+
+      // add to the cache tag either if we reached maximum depth or how many levels we can go down until reaching the maximum depth
+      if (resOpt.depthInfo.getCurrentDepth() > resOpt.depthInfo.getMaxDepth()) {
+        tagSuffix.append("-overMaxDepth");
+      } else {
+        DepthInfo currDepthInfo = resOpt.depthInfo;
+        tagSuffix.append(String.format("-%stoMaxDepth", currDepthInfo.getMaxDepth() - currDepthInfo.getCurrentDepth()));
+      }
     }
     if (resOpt.inCircularReference) {
       tagSuffix.append("-pk");
@@ -758,9 +769,12 @@ public class CdmCorpusDefinition {
     }
 
     CdmDocumentDefinition wrtDoc = resOpt.getWrtDoc();
-    if (!wrtDoc.indexIfNeededAsync(resOpt, true).join()) {
-      Logger.error(ctx, TAG, "resolveSymbolReference", wrtDoc.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
-      return null;
+
+    if (wrtDoc.getNeedsIndexing() && !wrtDoc.isCurrentlyIndexing()) {
+      if (!wrtDoc.indexIfNeededAsync(resOpt, true).join()) {
+        Logger.error(ctx, TAG, "resolveSymbolReference", wrtDoc.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
+        return null;
+      }
     }
 
     if (wrtDoc.getNeedsIndexing() && resOpt.getImportsLoadStrategy() == ImportsLoadStrategy.DoNotLoad) {

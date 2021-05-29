@@ -276,11 +276,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                         ProjectionContext projCtx = projDef.ConstructProjectionContext(projDirective, under);
                         rasb.ResolvedAttributeSet = projDef.ExtractResolvedAttributes(projCtx, under);
+                        // from the traits of purpose and applied here
+                        rasb.ResolvedAttributeSet.ApplyTraits(this.FetchResolvedTraits(resOpt));
                     }
                 }
                 else
                 {
-                    // An Entity Reference
+                    // Resolution guidance
+
+                    resOpt.UsedResolutionGuidance = true;
 
                     AttributeResolutionContext arc = this.FetchAttResContext(resOpt);
                     RelationshipInfo relInfo = arc.GetRelationshipInfo();
@@ -477,6 +481,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         // the only thing we need this code for is testing!!!
+        [Obsolete("For internal use only.")]
         public override ResolvedEntityReferenceSet FetchResolvedEntityReferences(ResolveOptions resOpt = null)
         {
             if (resOpt == null)

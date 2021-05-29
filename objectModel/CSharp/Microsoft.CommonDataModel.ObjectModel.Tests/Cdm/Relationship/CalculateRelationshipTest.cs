@@ -137,7 +137,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// </summary>
         /// <param name="testName"></param>
         /// <param name="entityName"></param>
-        private async Task TestRun(string testName, string entityName, bool isEntitySet)
+        private async Task TestRun(string testName, string entityName, bool isEntitySet, bool updateExpectedOutput = false)
         {
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
             string inputFolder = TestHelper.GetInputFolderPath(testsSubpath, testName);
@@ -155,7 +155,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
             AssertEntityShapeInResolvedEntity(resolvedEntity, isEntitySet);
 
-            await AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputFolder, entityName, resolvedEntity);
+            await AttributeContextUtil.ValidateAttributeContext(expectedOutputFolder, entityName, resolvedEntity, updateExpectedOutput);
 
             await corpus.CalculateEntityGraphAsync(manifest);
             await manifest.PopulateManifestRelationshipsAsync();
