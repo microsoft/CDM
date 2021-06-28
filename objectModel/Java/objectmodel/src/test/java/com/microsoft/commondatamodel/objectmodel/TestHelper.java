@@ -5,7 +5,6 @@ package com.microsoft.commondatamodel.objectmodel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
@@ -14,8 +13,7 @@ import com.microsoft.commondatamodel.objectmodel.storage.RemoteAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import org.testng.Assert;
 
 import java.io.File;
@@ -61,8 +59,6 @@ public class TestHelper {
    * the entire set of CDM standard schemas, after 8000+ F&O entities were added.
    */
   public static final String CDM_STANDARDS_SCHEMA_PATH = "local:/core/applicationCommon/applicationCommon.manifest.cdm.json";
-
-  private static Logger LOGGER = LoggerFactory.getLogger(TestHelper.class);
 
   /**
    * Gets the input folder path associated with specified test.
@@ -224,7 +220,8 @@ public class TestHelper {
         return true;
       }
       if (logError) {
-        LOGGER.error("Objects do not match. Expected = '{}', actual = '{}'", expected, actual);
+        // Default logger is not available in adapters, send to standard stream.
+        System.err.println("Objects do not match. Expected = '" + expected + "'" + " actual = '" + actual + "'");
       }
       return false;
     }
@@ -233,7 +230,7 @@ public class TestHelper {
       final String expectedString = (String) expected;
       final String actualString = (String) actual;
 
-      if (Strings.isNullOrEmpty(expectedString) && Strings.isNullOrEmpty(actualString)) {
+      if (StringUtils.isNullOrEmpty(expectedString) && StringUtils.isNullOrEmpty(actualString)) {
         return true;
       }
       if (expectedString.equals(actualString)) {
@@ -245,7 +242,8 @@ public class TestHelper {
         final OffsetDateTime actualDate = OffsetDateTime.parse(actualString);
 
         if (expectedDate != actualDate && logError) {
-          LOGGER.error("DateTime did not match. Expected '{}', found '{}'", expectedString, actualString);
+          // Default logger is not available in adapters, send to standard stream.
+          System.err.println("DateTime did not match. Expected '" + expectedString + "'" + " found '" + actualString + "'");
         }
 
         return expectedDate.equals(actualDate);
@@ -285,8 +283,9 @@ public class TestHelper {
 
       if (expectedJsonNode.size() != 0) {
         if (logError) {
-          LOGGER.error("Arrays do not match. Found list member in expected but not in actual : '{}'",
-                  expectedJsonNode.get(0));
+          // Default logger is not available in adapters, send to standard stream.
+          System.err.println("Arrays do not match. Found list member in expected but not in actual : " +
+                  "'" + expectedJsonNode.get(0) + "'");
         }
 
         return false;
@@ -294,8 +293,9 @@ public class TestHelper {
 
       if (actualJsonNode.size() != 0) {
         if (logError) {
-          LOGGER.error("Arrays do not match. Found list member in actual but not in expected: '{}'",
-                  actualJsonNode.get(0));
+          // Default logger is not available in adapters, send to standard stream.
+          System.err.println("Arrays do not match. Found list member in actual but not in expected: '"
+                          + actualJsonNode.get(0) + "'");
         }
 
         return false;
@@ -313,7 +313,8 @@ public class TestHelper {
                 actualJsonNode.get(expectedField.getKey()), logError);
         if (!foundProperty) {
           if (logError) {
-            LOGGER.error("Value does not match for property '{}'", expectedField.getKey());
+            // Default logger is not available in adapters, send to standard stream.
+            System.err.println("Value does not match for property '" + expectedField.getKey() + "'");
           }
 
           return false;
@@ -326,7 +327,8 @@ public class TestHelper {
         // if expectedJsonNode.get(actualField.getKey()) is not null, equality with actualJsonNode.get(...) was checked in previous for.
         if (actualJsonNode.get(actualField.getKey()) != null && expectedJsonNode.get(actualField.getKey()) == null) {
           if (logError) {
-            LOGGER.error("Value does not match for property '{}'", actualField.getKey());
+            // Default logger is not available in adapters, send to standard stream.
+            System.err.println("Value does not match for property '" + actualField.getKey() + "'");
           }
 
           return false;

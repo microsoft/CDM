@@ -5,7 +5,6 @@ package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
@@ -16,6 +15,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarat
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -25,7 +25,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Loc
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Model;
 import com.microsoft.commondatamodel.objectmodel.storage.AdlsAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
-import com.microsoft.commondatamodel.objectmodel.utilities.InterceptLog;
+import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +33,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.Assert;
@@ -143,18 +145,23 @@ public class ModelJsonTest extends ModelJsonTestBase {
    */
   @Test
   public void testManifestFoundationImport() throws InterruptedException, ExecutionException {
-    try (final InterceptLog interceptLog = new InterceptLog(CdmCorpusDefinition.class)) {
-      final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testManifestFoundationImport", null);
 
-      final CdmManifestDefinition cdmManifest =
-          corpus.<CdmManifestDefinition>fetchObjectAsync(
-                  CdmConstants.MODEL_JSON_EXTENSION,
-              corpus.getStorage().fetchRootFolder("local"))
-              .get();
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testManifestFoundationImport", null);
 
-      // Verify that no errors were logged.
-      interceptLog.verifyNumLogEvents(0);
-    }
+    corpus.setEventCallback(new EventCallback() {
+      @Override
+      public void apply(CdmStatusLevel level, String message) {
+        if (CdmStatusLevel.Warning.compareTo(level) <= 0) {
+          Assert.fail(message);
+        }
+      }
+    });
+
+    final CdmManifestDefinition cdmManifest =
+            corpus.<CdmManifestDefinition>fetchObjectAsync(
+                    CdmConstants.MODEL_JSON_EXTENSION,
+                    corpus.getStorage().fetchRootFolder("local"))
+                    .get();
   }
 
   /**
@@ -393,7 +400,7 @@ public class ModelJsonTest extends ModelJsonTestBase {
   }
 
   private void removeDescriptionFromEntityIfEmpty(final JsonNode entity) {
-    if (entity.has("description") && Strings.isNullOrEmpty(entity.get("description").asText())) {
+    if (entity.has("description") && StringUtils.isNullOrEmpty(entity.get("description").asText())) {
       ((ObjectNode) entity).remove("description");
     }
   }

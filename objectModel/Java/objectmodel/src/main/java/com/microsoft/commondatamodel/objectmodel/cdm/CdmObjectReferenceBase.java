@@ -8,8 +8,6 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
-import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -62,7 +60,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   }
 
   static int offsetAttributePromise(final String ref) {
-    if (Strings.isNullOrEmpty(ref)) {
+    if (StringUtils.isNullOrEmpty(ref)) {
       return -1;
     }
 
@@ -478,7 +476,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
 
   @Override
   public String fetchObjectDefinitionName() {
-    if (!Strings.isNullOrEmpty(this.namedReference)) {
+    if (!StringUtils.isNullOrEmpty(this.namedReference)) {
       final int pathEnd = this.getNamedReference().lastIndexOf('/');
       if (pathEnd == -1 || pathEnd + 1 == this.getNamedReference().length()) {
         return this.getNamedReference();
@@ -501,7 +499,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     if (this.getCtx() != null
         && this.getCtx().getCorpus() != null
         && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      if (!Strings.isNullOrEmpty(this.getNamedReference())) {
+      if (!StringUtils.isNullOrEmpty(this.getNamedReference())) {
         path = pathFrom + this.getNamedReference();
       } else {
         // when an object is defined inline inside a reference, we need a path to the reference
@@ -534,7 +532,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     if (preChildren != null && preChildren.invoke(this, refPath)) {
       return false;
     }
-    if (this.getExplicitReference() != null && Strings.isNullOrEmpty(this.getNamedReference()) && this.getExplicitReference().visit(path, preChildren, postChildren)) {
+    if (this.getExplicitReference() != null && StringUtils.isNullOrEmpty(this.getNamedReference()) && this.getExplicitReference().visit(path, preChildren, postChildren)) {
       return true;
     }
     if (this.visitRef(path, preChildren, postChildren)) {
@@ -567,7 +565,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     }
 
     final CdmObjectReferenceBase copy;
-    if (!Strings.isNullOrEmpty(this.getNamedReference())) {
+    if (!StringUtils.isNullOrEmpty(this.getNamedReference())) {
       copy = this.copyRefObject(resOpt, this.getNamedReference(), this.isSimpleNamedReference());
     } else {
       copy = this.copyRefObject(resOpt, this.getExplicitReference(), this.isSimpleNamedReference());
@@ -599,7 +597,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
-    if (!Strings.isNullOrEmpty(this.namedReference)) {
+    if (!StringUtils.isNullOrEmpty(this.namedReference)) {
       return this.copyRefObject(resOpt, this.namedReference, true);
     }
     String newDeclaredPath = this.getDeclaredPath() != null && this.getDeclaredPath().endsWith("/(ref)") ?

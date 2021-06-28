@@ -6,7 +6,6 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -44,7 +43,7 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     if (this.getCtx() != null
         && this.getCtx().getCorpus() != null
         && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      if (Strings.isNullOrEmpty(this.getDeclaredPath())) {
+      if (StringUtils.isNullOrEmpty(this.getDeclaredPath())) {
         this.setDeclaredPath(pathRoot + this.getName());
       }
 

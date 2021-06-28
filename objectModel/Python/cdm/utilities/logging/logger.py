@@ -92,7 +92,7 @@ def _get_message_from_resource_file(code: 'CdmLogCode', args) -> str:
         Loads the string from resource file for particular enum and inserts arguments in it.
         """
         message = log_messages[code.name]
-        i = 0;
+        i = 0
         for x in args:
             string = '{' + str(i) + '}'
             message = message.replace(string, str(x))

@@ -11,6 +11,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Linq;
+    using System.Net;
 
     /// <summary>
     /// Network adapter is an abstract class that contains logic for adapters dealing with data across network.
@@ -75,6 +76,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
         }
 
+        /// <summary>
+        /// A set of HttpStatusCodes that will stop the retry logic if the HTTP response has one of these types.
+        /// </summary>
+        public HashSet<HttpStatusCode> AvoidRetryCodes { get; set; } = new HashSet<HttpStatusCode>()
+        {
+            HttpStatusCode.NotFound
+        };
+
         public async Task<CdmHttpResponse> ExecuteRequest(CdmHttpRequest httpRequest)
         {
             var response = await this.httpClient.SendAsync(httpRequest, this.WaitTimeCallback, this.Ctx);
@@ -132,7 +141,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <returns>The <see cref="TimeSpan"/>, specifying the waiting time, or null if no wait time is necessary.</returns>
         private TimeSpan? DefaultGetWaitTime(CdmHttpResponse response, bool hasFailed, int retryNumber)
         {
-            if (response != null && response.IsSuccessful && !hasFailed)
+            if (response != null && ((response.IsSuccessful && !hasFailed) || this.AvoidRetryCodes.Contains(response.StatusCode)))
             {
                 return null;
             }

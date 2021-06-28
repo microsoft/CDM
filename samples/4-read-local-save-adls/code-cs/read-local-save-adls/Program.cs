@@ -39,6 +39,15 @@ namespace read_local_save_adls
             var cdmCorpus = new CdmCorpusDefinition();
             cdmCorpus.Storage.DefaultNamespace = "local";
 
+            // set callback to receive error and warning logs.
+            cdmCorpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    Console.WriteLine(message);
+                }
+            }, CdmStatusLevel.Warning);
+
             // ------------------------------------------------------------------------------------------------------------
             // Set up adapters for managing access to different files-system locations
 

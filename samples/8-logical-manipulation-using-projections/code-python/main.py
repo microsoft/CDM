@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import asyncio, sys, os
+from cdm.enums import CdmStatusLevel
 from typing import Optional, TYPE_CHECKING
 
 sys.path.append('../../../objectModel/Python')
@@ -11,6 +12,10 @@ from cdm.objectmodel import CdmCorpusDefinition, CdmDataTypeReference, CdmEntity
     CdmProjection, CdmTypeAttributeDefinition
 from cdm.storage import LocalAdapter
 from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
+
+def event_callback(status_level: 'CdmStatusLevel', message: str):
+    # Print log messages from SDK.
+    print(message)
 
 async def logical_manipulation_using_projections():
     '''This sample demonstrates how to model a set of common scenarios using projections. 
@@ -25,6 +30,9 @@ async def logical_manipulation_using_projections():
 
     # Make a corpus, the corpus is the collection of all documents and folders created or discovered while navigating objects and paths
     corpus = CdmCorpusDefinition()
+
+    # set callback to receive error and warning logs.
+    corpus.set_event_callback(event_callback, CdmStatusLevel.WARNING)
 
     print('Configure storage adapters')
 

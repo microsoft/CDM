@@ -25,7 +25,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 
         public ResolveContext(CdmCorpusDefinition corpus, EventCallback statusEvent, CdmStatusLevel? reportAtLevel = null)
         {
-            this.ReportAtLevel = reportAtLevel != null ? reportAtLevel.Value : CdmStatusLevel.Info;
+            this.ReportAtLevel = reportAtLevel != null ? reportAtLevel.Value : CdmStatusLevel.Warning;
             this.StatusEvent = statusEvent;
             this.Cache = new ConcurrentDictionary<string, object>();
             this.Corpus = corpus;

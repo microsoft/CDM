@@ -27,8 +27,8 @@ def rel2_cache_key(rel: 'CdmE2ERelationship') -> str:
     """"standardized way of turning a relationship object into a key for caching
     without using the object itself as a key (could be duplicate relationship objects)"""
     name_and_pipe = ''
-    if rel.relationship_name:
-        name_and_pipe = '{}|'.format(rel.relationship_name)
+    if rel.name:
+        name_and_pipe = '{}|'.format(rel.name)
     return '{}{}|{}|{}|{}'.format(name_and_pipe, rel.to_entity, rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
 
 
@@ -303,7 +303,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         return True
 
     def _localize_rel_to_manifest(self, rel: 'CdmE2ERelationship') -> 'CdmE2ERelationship':
-        rel_copy = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, rel.relationship_name)  # type: CdmE2ERelationship
+        rel_copy = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, rel.name)  # type: CdmE2ERelationship
         rel_copy.to_entity = self.ctx.corpus.storage.create_relative_corpus_path(rel.to_entity, self)
         rel_copy.from_entity = self.ctx.corpus.storage.create_relative_corpus_path(rel.from_entity, self)
         rel_copy.to_entity_attribute = rel.to_entity_attribute

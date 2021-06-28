@@ -544,7 +544,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         }
         if (this.imports !== undefined) {
             for (const imp of this.imports) {
-                links.add(imp.atCorpusPath);
+                links.add(imp.corpusPath);
             }
         }
         if (this.entities !== undefined) {

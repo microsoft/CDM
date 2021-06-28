@@ -5,6 +5,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
 
             var testInputPath = Path.Combine(TestHelper.GetInputFolderPath(testsSubpath, nameof(TestReadManifest)), "input.txt");
             var testActualOutputPath = Path.Combine(TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestReadManifest)), "output.txt");
-            
+
             using (var reader = new StreamReader(testInputPath, Encoding.UTF8))
             {
                 using (var writer = new StreamWriter(testActualOutputPath, false, Encoding.UTF8))
@@ -64,6 +65,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
         private CdmCorpusDefinition SetupCdmCorpus()
         {
             var cdmCorpus = new CdmCorpusDefinition();
+            cdmCorpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    Assert.Fail(message);
+                }
+            }, CdmStatusLevel.Warning);
+
             cdmCorpus.Storage.Mount("local", new LocalAdapter(TestHelper.GetInputFolderPath(testsSubpath, nameof(TestReadManifest))));
             cdmCorpus.Storage.DefaultNamespace = "local";
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(TestHelper.SampleSchemaFolderPath));

@@ -22,6 +22,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationArr
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationRenameAttributes;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationReplaceAsForeignKey;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -42,6 +43,11 @@ public class Program {
     public static void main(final String[] args) throws ExecutionException, InterruptedException {
         // Make a corpus, the corpus is the collection of all documents and folders created or discovered while navigating objects and paths
         CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+
+        // set callback to receive error and warning logs.
+        corpus.setEventCallback((level, message) -> {
+        System.out.println(message);
+        }, CdmStatusLevel.Warning);
 
         System.out.println("Configure storage adapters.");
 

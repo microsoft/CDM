@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ParameterCollection;
@@ -155,7 +154,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
       // get the new cache tag now that we have the list of docs
       cacheTag = ctx.getCorpus()
           .createDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
-      if (!Strings.isNullOrEmpty(cacheTag)) {
+      if (!StringUtils.isNullOrEmpty(cacheTag)) {
         ctx.fetchCache().put(cacheTag, rtsResult);
       }
     } else {
@@ -196,7 +195,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
         && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
       path = this.getDeclaredPath();
 
-      if (Strings.isNullOrEmpty(path)) {
+      if (StringUtils.isNullOrEmpty(path)) {
         path = pathFrom + this.traitName;
         this.setDeclaredPath(path);
       }

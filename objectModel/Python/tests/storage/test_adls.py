@@ -10,6 +10,7 @@ import os
 
 from tests.common import async_test, TestHelper
 from tests.adls_test_helper import AdlsTestHelper
+from cdm.enums import CdmStatusLevel
 from cdm.storage.adls import ADLSAdapter
 from cdm.utilities.network.token_provider import TokenProvider
 from cdm.objectmodel import CdmCorpusDefinition
@@ -84,39 +85,61 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(manifest.entities[0].data_partitions[1].location, 'TestEntity-With=Special Characters/year=2020/TestEntity-partition-With=Special Characters-1.csv')
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_write_read_shared_key(self):
         await self.run_write_read_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_write_read__client_id(self):
         await self.run_write_read_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_check_filetime_shared_key(self):
         await self.run_check_filetime_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_check_filetime_client_id(self):
         await self.run_check_filetime_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_file_enum_shared_key(self):
         await self.run_file_enum_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_file_enum_client_id(self):
         await self.run_file_enum_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
     async def test_adls_special_characters(self):
         await self.run_special_characters_test(AdlsTestHelper.create_adapter_with_client_id('PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:'))
+
+    @async_test
+    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
+    async def test_avoid_retry_codes(self):
+        """Tests if the adapter won't retry if a HttpStatusCode response with a code in AvoidRetryCodes is received."""
+        adls_adapter = AdlsTestHelper.create_adapter_with_shared_key()
+        adls_adapter.number_of_retries = 3
+
+        corpus = CdmCorpusDefinition()
+        corpus.storage.mount('adls', adls_adapter)
+        count = 0
+
+        def callback(status, message: str):
+            nonlocal count
+            if message.find('Response for request ') != -1:
+                count += 1
+
+        corpus.set_event_callback(callback, CdmStatusLevel.PROGRESS)
+
+        await corpus.fetch_object_async('adls:/inexistentFile.cdm.json')  # type: CdmDocumentDefinition
+
+        self.assertEqual(1, count)
 
     def test_create_corpus_and_adapter_path(self):
         host_1 = 'storageaccount.dfs.core.windows.net'

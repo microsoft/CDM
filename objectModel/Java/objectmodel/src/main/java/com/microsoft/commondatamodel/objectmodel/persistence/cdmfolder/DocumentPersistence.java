@@ -4,7 +4,6 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
@@ -21,6 +20,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Imp
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class DocumentPersistence {
@@ -47,11 +47,11 @@ public class DocumentPersistence {
     doc.setFolderPath(path);
     doc.setNamespace(nameSpace);
 
-    if (!Strings.isNullOrEmpty(obj.getSchema())) {
+    if (!StringUtils.isNullOrEmpty(obj.getSchema())) {
       doc.setSchema(obj.getSchema());
     }
 
-    if (!Strings.isNullOrEmpty(obj.getDocumentVersion())) {
+    if (!StringUtils.isNullOrEmpty(obj.getDocumentVersion())) {
       doc.setDocumentVersion(obj.getDocumentVersion());
     }
 
@@ -93,7 +93,7 @@ public class DocumentPersistence {
       isResolvedDoc = isResolvedDoc || entity.getAttributeContext() != null;
     }
 
-    if (!Strings.isNullOrEmpty(obj.getJsonSchemaSemanticVersion())) {
+    if (!StringUtils.isNullOrEmpty(obj.getJsonSchemaSemanticVersion())) {
       doc.setJsonSchemaSemanticVersion(obj.getJsonSchemaSemanticVersion());
       if (compareJsonSemanticVersion(ctx, doc.getJsonSchemaSemanticVersion()) > 0) {
           String message = "This ObjectModel version supports json semantic version " + jsonSemanticVersion + " at maximum.";

@@ -4,7 +4,6 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.*;
@@ -12,6 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +23,7 @@ public class CdmObjectRefPersistence {
   public static Object toData(final CdmObjectReference instance, final ResolveOptions resOpt, final CopyOptions options) {
     Object copy = null;
 
-    if (!Strings.isNullOrEmpty(instance.getNamedReference())) {
+    if (!StringUtils.isNullOrEmpty(instance.getNamedReference())) {
       final Object identifier = Utils.copyIdentifierRef(instance, resOpt, options);
 
       if (instance.isSimpleNamedReference()) {

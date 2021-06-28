@@ -152,7 +152,7 @@ class CalculateRelationshipTest(unittest.TestCase):
         """Get a string version of the relationship collection"""
         bldr = ''
         for rel in relationships:
-            bldr += '{}|{}|{}|{}|{}'.format(rel.relationship_name if rel.relationship_name else '', rel.to_entity,
+            bldr += '{}|{}|{}|{}|{}'.format(rel.name if rel.name else '', rel.to_entity,
                                             rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
             bldr += '\n'
         return bldr
@@ -160,8 +160,8 @@ class CalculateRelationshipTest(unittest.TestCase):
     def _get_relationship_string(self, rel: 'CdmE2ERelationship') -> str:
         """Get a string version of the relationship collection"""
         name_and_pipe = ''
-        if rel.relationship_name:
-            name_and_pipe = rel.relationship_name + '|'
+        if rel.name:
+            name_and_pipe = rel.name + '|'
 
         return '{}{}|{}|{}|{}\n'.format(name_and_pipe, rel.to_entity,
                                         rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
@@ -193,8 +193,8 @@ class CalculateRelationshipTest(unittest.TestCase):
         """Print the relationship"""
         bldr = ''
 
-        if relationship.relationship_name:
-            bldr += '  Name: {}\n'.format(relationship.relationship_name)
+        if relationship.name:
+            bldr += '  Name: {}\n'.format(relationship.name)
 
         bldr += '  FromEntity: {}\n'.format(relationship.from_entity)
         bldr += '  FromEntityAttribute: {}\n'.format(relationship.from_entity_attribute)

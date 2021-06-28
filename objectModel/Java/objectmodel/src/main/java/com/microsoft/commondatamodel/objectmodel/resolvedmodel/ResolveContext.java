@@ -39,7 +39,7 @@ public class ResolveContext implements CdmCorpusContext {
   }
 
   public ResolveContext(final CdmCorpusDefinition corpus, final EventCallback statusEvent, CdmStatusLevel reportAtLevel) {
-    this.reportAtLevel = reportAtLevel != null ? reportAtLevel : CdmStatusLevel.Info;
+    this.reportAtLevel = reportAtLevel != null ? reportAtLevel : CdmStatusLevel.Warning;
     this.statusEvent = statusEvent;
     this.cache = new LinkedHashMap<>();
     this.corpus = corpus;

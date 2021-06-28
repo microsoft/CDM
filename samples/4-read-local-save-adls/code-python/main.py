@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 sys.path.append('../../../objectModel/Python')
 
-from cdm.enums import CdmDataFormat, CdmObjectType
+from cdm.enums import CdmDataFormat, CdmObjectType, CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition
 from cdm.storage import ADLSAdapter, LocalAdapter, RemoteAdapter
 from cdm.utilities import CopyOptions
@@ -17,6 +17,9 @@ if TYPE_CHECKING:
     from cdm.objectmodel import CdmDocumentDefinition, CdmDataPartitionDefinition, CdmEntityDefinition, CdmLocalEntityDeclarationDefinition, \
         CdmTypeAttributeDefinition
 
+def event_callback(status_level: 'CdmStatusLevel', message: str):
+    # Print log messages from SDK.
+    print(message)
 # ---------------------------------------------------------------------------------------------
 # This sample demonstrates CDM Object Model use case in which a model.json file is loaded from
 # a local file-system, its content explored and then changed, and finally saved to an
@@ -36,6 +39,9 @@ model_json_root = './4-read-local-save-adls/sample-data'
 # Instantiate corpus and set it to use default namespace 'adls'
 
 corpus = CdmCorpusDefinition()
+
+# set callback to receive error and warning logs.
+corpus.set_event_callback(event_callback, CdmStatusLevel.WARNING)
 corpus.default_namespace = 'local'
 
 # ---------------------------------------------------------------------------------------------

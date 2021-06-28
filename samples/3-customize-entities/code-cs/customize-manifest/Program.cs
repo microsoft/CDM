@@ -8,6 +8,7 @@ namespace customize_manifest
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------
@@ -26,6 +27,14 @@ namespace customize_manifest
         {
             // Make a corpus, the corpus is the collection of all documents and folders created or discovered while navigating objects and paths
             var cdmCorpus = new CdmCorpusDefinition();
+            // set callback to receive error and warning logs.
+            cdmCorpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    Console.WriteLine(message);
+                }
+            }, CdmStatusLevel.Warning);
 
             Console.WriteLine("Configure storage adapters");
             

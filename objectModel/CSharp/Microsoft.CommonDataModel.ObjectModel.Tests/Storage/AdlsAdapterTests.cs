@@ -9,6 +9,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json.Linq;
@@ -146,6 +147,37 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         {
             AdlsTestHelper.CheckADLSEnvironment();
             await RunSpecialCharactersTest(AdlsTestHelper.CreateAdapterWithClientId("PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:"));
+        }
+
+
+        /// <summary>
+        /// Tests if the adapter won't retry if a HttpStatusCode response with a code in AvoidRetryCodes is received.
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestAvoidRetryCodes()
+        {
+            AdlsTestHelper.CheckADLSEnvironment();
+            var adlsAdapter = AdlsTestHelper.CreateAdapterWithSharedKey();
+            adlsAdapter.NumberOfRetries = 3;
+
+            var corpus = new CdmCorpusDefinition();
+            corpus.Storage.Mount("adls", adlsAdapter);
+            var count = 0;
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (status, message) =>
+                {
+                    if (message.Contains("Response for request "))
+                    {
+                        count++;
+                    }
+                }
+            }, CdmStatusLevel.Progress);
+
+            await corpus.FetchObjectAsync<CdmDocumentDefinition>("adls:/inexistentFile.cdm.json");
+
+            Assert.AreEqual(1, count);
         }
 
         /// <summary>

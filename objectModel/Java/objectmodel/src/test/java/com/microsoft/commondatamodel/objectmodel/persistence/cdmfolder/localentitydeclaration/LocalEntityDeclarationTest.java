@@ -33,10 +33,10 @@ public class LocalEntityDeclarationTest {
    * Creates Manifest using empty string as namespace.
    */
   @Test
-  public void testLoadLocalEntityNoPartition() throws IOException, InterruptedException {
+  public void testLoadNoPartition() throws IOException, InterruptedException {
     final String content = TestHelper.getInputFileContent(
         TESTS_SUBPATH,
-        "testLoadLocalEntityNoPartition",
+        "testLoadNoPartition",
         "entities.manifest.cdm.json");
     final ManifestContent jsonContent = JMapper.MAP.readValue(content, ManifestContent.class);
     final CdmManifestDefinition cdmManifest = ManifestPersistence.fromObject(
@@ -62,10 +62,10 @@ public class LocalEntityDeclarationTest {
    * This checks the result when manifest was created with a non-null namespace. Entity Path should contain this namespace.
    */
   @Test
-  public void testLoadLocalEntityNoPartitionNamespaceSet() throws IOException, InterruptedException {
+  public void testLoadNoPartitionNamespaceSet() throws IOException, InterruptedException {
     final String content = TestHelper.getInputFileContent(
         TESTS_SUBPATH,
-        "testLoadLocalEntityNoPartitionNamespaceSet",
+        "testLoadNoPartitionNamespaceSet",
         "entities.manifest.cdm.json");
     final ManifestContent jsonContent = JMapper.MAP.readValue(content, ManifestContent.class);
     final CdmManifestDefinition cdmManifest = ManifestPersistence.fromObject(
@@ -90,8 +90,8 @@ public class LocalEntityDeclarationTest {
   }
 
   @Test
-  public void testLoadLocalEntityNoPartitionAbsoluteNamespaceSet() throws IOException, InterruptedException {
-    String content = TestHelper.getInputFileContent(TESTS_SUBPATH, "testLoadLocalEntityNoPartitionAbsoluteNamespaceSet", "entitiesWithNamespace.manifest.cdm.json");
+  public void testLoadNoPartitionAbsoluteNamespaceSet() throws IOException, InterruptedException {
+    String content = TestHelper.getInputFileContent(TESTS_SUBPATH, "testLoadNoPartitionAbsoluteNamespaceSet", "entities.manifest.cdm.json");
     ManifestContent manifestContent = JMapper.MAP.readValue(content, ManifestContent.class);
     CdmManifestDefinition cdmManifest = ManifestPersistence.fromObject(new ResolveContext(new CdmCorpusDefinition()), "testEntity", "testNamespace", "/", manifestContent);
     Assert.assertEquals(cdmManifest.getEntities().getCount(), 1);

@@ -13,6 +13,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import java.io.File;
@@ -27,6 +28,11 @@ public class Program {
     // Make a corpus, the corpus is the collection of all documents and folders created or
     // discovered while navigating objects and paths.
     CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+
+    // set callback to receive error and warning logs.
+    cdmCorpus.setEventCallback((level, message) -> {
+      System.out.println(message);
+    }, CdmStatusLevel.Warning);
 
     // This tells corpus to callback with info to our hook. To report progress messages and to fail
     // if an error happens when looking symbols up.

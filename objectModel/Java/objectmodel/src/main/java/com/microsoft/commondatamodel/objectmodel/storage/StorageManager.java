@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
@@ -82,7 +81,7 @@ public class StorageManager {
   }
 
   public List<String> mountFromConfig(final String adapterConfig, final boolean doesReturnErrorList) {
-    if (Strings.isNullOrEmpty(adapterConfig)) {
+    if (StringUtils.isNullOrEmpty(adapterConfig)) {
       Logger.error(this.corpus.getCtx(), TAG, "mountFromConfig", null, CdmLogCode.ErrStorageNullAdapterConfig);
       return null;
     }
@@ -308,26 +307,26 @@ public class StorageManager {
         // already called statusRpt when checking for unsupported path format.
         return null;
       }
-      if (!Strings.isNullOrEmpty(prefix) && prefix.charAt(prefix.length() - 1) != '/') {
+      if (!StringUtils.isNullOrEmpty(prefix) && prefix.charAt(prefix.length() - 1) != '/') {
         Logger.warning(this.corpus.getCtx(), TAG, "createAbsoluteCorpusPath", null, CdmLogCode.WarnStorageExpectedPathPrefix, prefix);
         prefix += "/";
       }
       // check if this is a relative path
-      if (!Strings.isNullOrEmpty(newObjectPath) && !newObjectPath.startsWith("/")) {
+      if (!StringUtils.isNullOrEmpty(newObjectPath) && !newObjectPath.startsWith("/")) {
         if (obj == null) {
           // relative path and no other info given, assume default and root
           prefix = "/";
         }
-        if (!Strings.isNullOrEmpty(nameSpace) && !Objects.equals(nameSpace, namespaceFromObj)) {
+        if (!StringUtils.isNullOrEmpty(nameSpace) && !Objects.equals(nameSpace, namespaceFromObj)) {
           Logger.error(this.corpus.getCtx(), TAG, "createAbsoluteCorpusPath", null, CdmLogCode.ErrStorageNamespaceMismatch);
           return null;
         }
         newObjectPath = prefix + newObjectPath;
-        finalNamespace = Strings.isNullOrEmpty(namespaceFromObj)
+        finalNamespace = StringUtils.isNullOrEmpty(namespaceFromObj)
                 ? (StringUtils.isNullOrTrimEmpty(nameSpace) ? this.defaultNamespace : nameSpace)
                 : namespaceFromObj;
       } else {
-        finalNamespace = Strings.isNullOrEmpty(nameSpace)
+        finalNamespace = StringUtils.isNullOrEmpty(nameSpace)
                 ? (StringUtils.isNullOrTrimEmpty(namespaceFromObj) ? this.defaultNamespace : namespaceFromObj)
                 : nameSpace;
       }
@@ -352,7 +351,7 @@ public class StorageManager {
       }
 
       final String config = namespaceAdapterTuple.getValue().fetchConfig();
-      if (Strings.isNullOrEmpty(config)) {
+      if (StringUtils.isNullOrEmpty(config)) {
         Logger.error(this.corpus.getCtx(), TAG, "fetchConfig", null, CdmLogCode.ErrStorageNullAdapter);
         continue;
       }

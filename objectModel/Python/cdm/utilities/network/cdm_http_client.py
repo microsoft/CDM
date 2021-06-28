@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext
 
 def urlopen_wrapper(request, timeout):
-    return urllib.request.urlopen(request,timeout=timeout)
+    return urllib.request.urlopen(request, timeout=timeout)
     
 
 async def in_thread_urlopen(request, timeout):
@@ -106,7 +106,7 @@ class CdmHttpClient:
             try:
                 start_time = datetime.now()
                 if ctx is not None:
-                    logger.info(ctx, self._TAG, self._send_async_helper, None,
+                    logger.debug(ctx, self._TAG, self._send_async_helper, None,
                                 'Sending request: {}, request type: {}, request url: {}, retry number: {}.'.format(
                                     cdm_request.request_id, request.method, cdm_request._strip_sas_sig(), retry_number))
                 # Send the request and convert timeout to seconds from milliseconds.
@@ -114,8 +114,8 @@ class CdmHttpClient:
                     if response is not None:
                         end_time = datetime.now()
                         if ctx is not None:
-                            logger.info(ctx, self._TAG, self._send_async_helper, None,
-                                        'Reponse for request {} received with elapsed time: {} ms.'.format(
+                            logger.debug(ctx, self._TAG, self._send_async_helper, None,
+                                        'Response for request {} received with elapsed time: {} ms.'.format(
                                             cdm_request.request_id, (end_time - start_time).total_seconds() * 1000.0))
                         cdm_response = CdmHttpResponse()
                         encoded_content = response.read()
@@ -134,14 +134,26 @@ class CdmHttpClient:
                         if hasattr(response, 'getheaders'):
                             cdm_response.response_headers = dict(response.getheaders())
             except urllib.error.URLError as exception:
+                end_time = datetime.now()
                 has_failed = True
+                cdm_response = CdmHttpResponse()
+                if hasattr(exception, 'reason'):
+                    cdm_response.reason = exception.reason
+                if hasattr(exception, 'status'):
+                    cdm_response.status_code = exception.status
+                cdm_response.is_successful = False
+
+                if ctx is not None:
+                    logger.debug(ctx, self._TAG, self._send_async_helper, None,
+                                'Response for request {} received with elapsed time: {} ms.'.format(
+                                    cdm_request.request_id, (end_time - start_time).total_seconds() * 1000.0))
                 if callback is None or retry_number == cdm_request.number_of_retries:
                     if retry_number != 0:
                         raise CdmNumberOfRetriesExceededException(exception)
                     else:
                         if exception.args and exception.args[0].args and exception.args[0].args[0] == 'timed out':
                             if ctx is not None:
-                                logger.info(ctx, self._TAG, self._send_async_helper, None,
+                                logger.debug(ctx, self._TAG, self._send_async_helper, None,
                                             'Reponse for request {} received with elapsed time: {} ms.'.format(
                                                 cdm_request.request_id,
                                                 (end_time - start_time).total_seconds() * 1000.0))

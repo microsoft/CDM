@@ -13,7 +13,7 @@ from tests.common import async_test, TestHelper
 def match_relationship(rel1, rel2):
     return rel1.get('fromEntity') == rel2.from_entity and rel1.get('fromEntityAttribute') == rel2.from_entity_attribute \
         and rel1.get('toEntity') == rel2.to_entity and rel1.get('toEntityAttribute') == rel2.to_entity_attribute \
-        and ('name' in rel1 and (rel1.get('name') == rel2.relationship_name) or (not rel1.get('name') and not rel2.relationship_name))
+        and ('name' in rel1 and (rel1.get('name') == rel2.name) or (not rel1.get('name') and not rel2.name))
 
 
 class RelationshipTest(unittest.TestCase):

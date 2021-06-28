@@ -57,7 +57,7 @@ class RelationshipPersistence:
         result.toAttribute = to_attrib
 
         result.description = instance.explanation
-        result.name = instance.relationship_name
+        result.name = instance.name
         utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
 
         return result

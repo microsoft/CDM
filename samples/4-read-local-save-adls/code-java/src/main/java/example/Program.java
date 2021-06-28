@@ -13,6 +13,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.AdlsAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import java.net.MalformedURLException;
@@ -44,6 +45,12 @@ public class Program {
     // Instantiate corpus and set up the default namespace to be local.
 
     final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+    
+    // set callback to receive error and warning logs.
+    cdmCorpus.setEventCallback((level, message) -> {
+        System.out.println(message);
+      }, CdmStatusLevel.Warning);
+    
     cdmCorpus.getStorage().setDefaultNamespace("local");
 
     // ---------------------------------------------------------------------------------------------

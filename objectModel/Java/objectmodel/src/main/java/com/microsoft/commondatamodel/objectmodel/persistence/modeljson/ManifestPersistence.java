@@ -4,7 +4,6 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
@@ -26,10 +25,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Mod
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.ReferenceEntity;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.ReferenceModel;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.SingleKeyRelationship;
-import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
@@ -356,7 +352,7 @@ public class ManifestPersistence {
                       entity.getEntityPath()
                   );
 
-              if (Strings.isNullOrEmpty(location)) {
+              if (StringUtils.isNullOrEmpty(location)) {
                 Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistInvalidEntityPath);
                 element = null;
               }

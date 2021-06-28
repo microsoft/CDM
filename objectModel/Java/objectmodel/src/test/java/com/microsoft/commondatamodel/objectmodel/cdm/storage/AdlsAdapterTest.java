@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microsoft.commondatamodel.objectmodel.AdlsTestHelper;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.AdlsAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase.CacheContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
@@ -19,6 +21,7 @@ import org.testng.annotations.Test;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.testng.Assert.*;
 
@@ -146,6 +149,29 @@ public class AdlsAdapterTest {
   {
     AdlsTestHelper.checkADLSEnvironment();
     runSpecialCharactersTest(AdlsTestHelper.createAdapterWithClientId("PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:"));
+  }
+
+  /**
+   * Tests if the adapter won't retry if a HttpStatusCode response with a code in AvoidRetryCodes is received.
+   */
+  @Test
+  public void testAvoidRetryCodes() {
+    AdlsTestHelper.checkADLSEnvironment();
+    AdlsAdapter adlsAdapter = AdlsTestHelper.createAdapterWithSharedKey();
+    adlsAdapter.setNumberOfRetries(3);
+
+    CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+    corpus.getStorage().mount("adls", adlsAdapter);
+    AtomicInteger count = new AtomicInteger();
+    corpus.setEventCallback((CdmStatusLevel level, String message) -> {
+      if (message.indexOf("Response for request ") != -1) {
+        count.getAndIncrement();
+      }
+    }, CdmStatusLevel.Progress);;
+
+    corpus.<CdmDocumentDefinition>fetchObjectAsync("adls:/inexistentFile.cdm.json").join();
+
+    Assert.assertEquals(count.get(), 1);
   }
 
   @Test

@@ -2,7 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from collections import OrderedDict
-from typing import List, Dict, Optional, TYPE_CHECKING
+from typing import List, Dict, Optional, Tuple, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmLogCode
 from cdm.utilities import JObject, logger
@@ -10,9 +10,8 @@ from cdm.utilities import JObject, logger
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmImport, CdmTraitCollection, CdmTraitDefinition
 
-cached_def_docs = {}  # type: Dict[str, CdmDocumentDefinition]
+cached_def_docs = {}  # type: Dict[Tuple[CdmCorpusContext, str], CdmDocumentDefinition]
 
-# TODO: confirm this mapping
 convert_type_to_expected_string = {
     str: 'string',
     int: 'number',
@@ -39,14 +38,18 @@ def add_import_docs_to_manifest(ctx: 'CdmCorpusContext', import_docs: List['CdmI
 
 
 async def fetch_def_doc(ctx: 'CdmCorpusContext', file_name: str) -> None:
-    if file_name in cached_def_docs:
-        return cached_def_docs[file_name]
+    # Since the CachedDefDocs is a static property and there might be multiple corpus running,
+    # we need to make sure that each corpus will have its own cached def document.
+    # This is achieved by adding the context as part of the key to the document.
+    key = (ctx, file_name)
+    if key in cached_def_docs:
+        return cached_def_docs[key]
 
     path = '/extensions/{}'.format(file_name)
     document = await ctx.corpus.fetch_object_async(path, ctx.corpus.storage.fetch_root_folder('cdm'))
 
     if document is not None:
-        cached_def_docs[file_name] = document
+        cached_def_docs[key] = document
 
     return document
 
