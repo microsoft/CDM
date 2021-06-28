@@ -10,6 +10,13 @@ from tests.cdm.projection.attribute_context_util import AttributeContextUtil
 from tests.common import TestHelper
 
 
+shortened_directives = {
+    'normalized': 'norm',
+    'referenceOnly': 'refOnly',
+    'structured': 'struc',
+    'virtual': 'virt',
+}
+
 class ProjectionTestUtils:
     """
     Common utility methods for projection tests
@@ -44,8 +51,12 @@ class ProjectionTestUtils:
         """Returns a suffix that contains the file name and resolution option used"""
         file_name_prefix = ''
 
-        for i in range(len(directives)):
-            file_name_prefix = '{}_{}'.format(file_name_prefix, directives[i])
+        for directive in directives:
+            shortened_directive = shortened_directives.get(directive)
+            if not shortened_directive:
+                raise Exception('Using unsupported directive')
+
+            file_name_prefix = '{}_{}'.format(file_name_prefix, shortened_directive)
 
         file_exists = os.path.exists(os.path.join(expected_output_path, 'AttrCtx_{}{}.txt'.format(entity_name, file_name_prefix))) \
             if expected_output_path and entity_name else True
@@ -164,8 +175,11 @@ class ProjectionTestUtils:
             if len(directives) > 0:
                 default_file_name_suffix = ProjectionTestUtils.get_resolution_option_name_suffix([])
                 default_string_file_path = os.path.join(expected_output_path, file_name_prefix + default_file_name_suffix + '.txt')
-                with open(default_string_file_path) as default_file:
-                    default_text = default_file.read().replace('\r\n', '\n')
+                if os.path.exists(default_string_file_path):
+                    with open(default_string_file_path) as default_file:
+                        default_text = default_file.read().replace('\r\n', '\n')
+                else:
+                    default_text = None
 
                 if actual_text == default_text:
                     if os.path.exists(expected_string_file_path):

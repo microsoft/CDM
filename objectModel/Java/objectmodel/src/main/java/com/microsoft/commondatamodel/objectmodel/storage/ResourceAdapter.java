@@ -3,23 +3,19 @@
 
 package com.microsoft.commondatamodel.objectmodel.storage;
 
-import com.google.common.base.Strings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 /**
  * Implementation of the resource adapter, enables the access to the files that are marked as resources.
  */
 public class ResourceAdapter extends StorageAdapterBase {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceAdapter.class);
     private static final String ROOT = "Microsoft.CommonDataModel.ObjectModel.Resources";
     
     @Override
@@ -53,7 +49,7 @@ public class ResourceAdapter extends StorageAdapterBase {
 
     @Override
     public String createAdapterPath(String corpusPath) throws StorageAdapterException {
-        if (Strings.isNullOrEmpty(corpusPath)) {
+        if (StringUtils.isNullOrEmpty(corpusPath)) {
             return null;
         }
         
@@ -62,7 +58,7 @@ public class ResourceAdapter extends StorageAdapterBase {
 
     @Override
     public String createCorpusPath(String adapterPath) {
-        if (Strings.isNullOrEmpty(adapterPath) || !adapterPath.startsWith(ROOT)) {
+        if (StringUtils.isNullOrEmpty(adapterPath) || !adapterPath.startsWith(ROOT)) {
             return null;
         }
 

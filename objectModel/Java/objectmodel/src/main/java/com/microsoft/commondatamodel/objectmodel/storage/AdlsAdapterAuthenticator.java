@@ -3,13 +3,13 @@
 
 package com.microsoft.commondatamodel.objectmodel.storage;
 
-import com.google.common.base.Strings;
 import com.microsoft.aad.msal4j.AzureCloudEndpoint;
 import com.microsoft.aad.msal4j.ClientCredentialFactory;
 import com.microsoft.aad.msal4j.ClientCredentialParameters;
 import com.microsoft.aad.msal4j.ConfidentialClientApplication;
 import com.microsoft.aad.msal4j.IAuthenticationResult;
 import com.microsoft.aad.msal4j.IClientCredential;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
 import org.apache.commons.codec.binary.Base64;
 
@@ -144,7 +144,7 @@ class AdlsAdapterAuthenticator {
     builder.append("/").append(accountName);
     builder.append(uri.getRawPath());
     // Append canonicalized queries.
-    if (!Strings.isNullOrEmpty(uri.getQuery())) {
+    if (!StringUtils.isNullOrEmpty(uri.getQuery())) {
       final String queryParameters = uri.getRawQuery();
       final String[] queryParts = queryParameters.split("&");
       for(final String item : queryParts) {

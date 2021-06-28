@@ -27,14 +27,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the storage adapter interface which operates over a local filesystem.
  */
 public class LocalAdapter extends StorageAdapterBase {
-  private static final Logger LOGGER = LoggerFactory.getLogger(LocalAdapter.class);
 
   static final String TYPE = "local";
   private String root;
@@ -262,7 +259,6 @@ public class LocalAdapter extends StorageAdapterBase {
     try {
       return new File(path).getCanonicalPath();
     } catch (Exception E) {
-      LOGGER.error("Unable to parse path '{}'.", path);
       return null;
     }
   }

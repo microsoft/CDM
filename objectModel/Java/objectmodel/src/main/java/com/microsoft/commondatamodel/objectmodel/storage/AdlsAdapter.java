@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -18,8 +17,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.utils.DateUtils;
 import org.apache.http.entity.StringEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -38,7 +36,6 @@ import java.util.stream.Collectors;
 public class AdlsAdapter extends NetworkAdapter {
   protected static final Duration ADLS_DEFAULT_TIMEOUT = Duration.ofMillis(5000);
   static final String TYPE = "adls";
-  private final static Logger LOGGER = LoggerFactory.getLogger(AdlsAdapter.class);
 
   // The MS continuation header key, used when building request url.
   private final static String HTTP_XMS_CONTINUATION = "x-ms-continuation";
@@ -195,7 +192,8 @@ public class AdlsAdapter extends NetworkAdapter {
       return "https://" + hostname + this.getEscapedRoot() + this.escapePath(formattedCorpusPath);
     }
     catch (UnsupportedEncodingException e) {
-      LOGGER.error("Could not encode corpusPath: " + corpusPath + ".", e);
+      // Default logger is not available in adapters, send to standard stream.
+      System.err.println("Could not encode corpusPath: " + corpusPath + "." + e.getMessage());
       return null;
     }
   }
@@ -220,7 +218,8 @@ public class AdlsAdapter extends NetworkAdapter {
         try {
           corpusPath = URLDecoder.decode(escapedCorpusPath, "UTF8");
         } catch (UnsupportedEncodingException e) {
-          LOGGER.error("Could not decode corpus path: " + escapedCorpusPath + ".", e);
+          // Default logger is not available in adapters, send to standard stream.
+          System.err.println("Could not decode corpus path: " + escapedCorpusPath + "." + e.getMessage());
           return null;
         }
 
@@ -279,7 +278,8 @@ public class AdlsAdapter extends NetworkAdapter {
       try {
         escapedFolderCorpusPath = this.escapePath(folderCorpusPath);
       } catch (UnsupportedEncodingException e) {
-        LOGGER.error("Could not encode corpus path: " + folderCorpusPath + ".", e);
+        // Default logger is not available in adapters, send to standard stream.
+        System.err.println("Could not encode corpus path: " + folderCorpusPath + "." + e.getMessage());
         return null;
       }
 
@@ -303,7 +303,8 @@ public class AdlsAdapter extends NetworkAdapter {
           try {
             escapedContinuationToken = URLEncoder.encode(continuationToken, "UTF8");
           } catch (UnsupportedEncodingException e) {
-            LOGGER.error("Unable to encode continuationToken '" + continuationToken + "' for the request.");
+            // Default logger is not available in adapters, send to standard stream.
+            System.err.println("Could not encode continuationToken" + continuationToken + "' for the request.");
             return result;
           }
 
@@ -347,7 +348,8 @@ public class AdlsAdapter extends NetworkAdapter {
               }
             }
           } catch (JsonProcessingException e) {
-            LOGGER.error("Unable to parse response content from request.");
+            // Default logger is not available in adapters, send to standard stream.
+            System.err.println("Unable to parse response content from request.");
             return null;
           }
         }
@@ -364,7 +366,7 @@ public class AdlsAdapter extends NetworkAdapter {
    */
   private String extractRootBlobContainerAndSubPath(String root) {
     // No root value was set)
-    if (Strings.isNullOrEmpty(root)) {
+    if (StringUtils.isNullOrEmpty(root)) {
       this.rootBlobContainer = "";
       this.updateRootSubPath("");
       return "";
@@ -562,7 +564,8 @@ public class AdlsAdapter extends NetworkAdapter {
     try {
       this.escapedRootSubPath = this.escapePath(this.unescapedRootSubPath);
     } catch (UnsupportedEncodingException e) {
-      LOGGER.error("Exception thrown when encoding path: " + this.unescapedRootSubPath + ".", e);
+      // Default logger is not available in adapters, send to standard stream.
+      System.err.println("Exception thrown when encoding path: " + this.unescapedRootSubPath + "." + e.getMessage());
       this.escapedRootSubPath = this.unescapedRootSubPath;
     } 
   }

@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
@@ -43,7 +42,7 @@ public class DataPartitionPersistence {
     partition.setLastFileModifiedTime(obj.getLastFileModifiedTime());
     partition.setLastFileStatusCheckTime(obj.getLastFileStatusCheckTime());
 
-    if (Strings.isNullOrEmpty(partition.getLocation())) {
+    if (StringUtils.isNullOrEmpty(partition.getLocation())) {
       Logger.warning(ctx , TAG, "fromData", null, CdmLogCode.WarnPersistPartitionLocMissing , partition.getName());
     }
 
@@ -96,7 +95,7 @@ public class DataPartitionPersistence {
       result.setName("");
     }
 
-    if (Strings.isNullOrEmpty(result.getLocation())) {
+    if (StringUtils.isNullOrEmpty(result.getLocation())) {
       Logger.warning(instance.getCtx() , TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.WarnPersistPartitionLocMissing, result.getName());
     }
 

@@ -4,11 +4,12 @@
 package com.microsoft.commondatamodel.objectmodel.samples;
 
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.FileReadWriteUtil;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -64,6 +65,10 @@ public class ReadManifestTest extends SampleTestBase {
 
     private CdmCorpusDefinition setupCdmCorpus() throws InterruptedException {
         final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+        cdmCorpus.setEventCallback((level, message) -> {
+            Assert.fail(message);
+        }, CdmStatusLevel.Warning);
+        
         cdmCorpus.getStorage().mount(
                 "local",
                 new LocalAdapter(TestHelper.getInputFolderPath(TESTS_SUBPATH, TEST_NAME)));
@@ -125,7 +130,7 @@ public class ReadManifestTest extends SampleTestBase {
             System.out.print("Show details for Entity or Sub-manifest number (press [enter] to exit): ");
             // Get the user's choice.
             String input = SCANNER.nextLine();
-            if (Strings.isNullOrEmpty(input)) {
+            if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(input)) {
                 break;
             }
 
@@ -175,7 +180,7 @@ public class ReadManifestTest extends SampleTestBase {
 
                         // Get the user's choice.
                         input = SCANNER.nextLine();
-                        if (Strings.isNullOrEmpty(input)) {
+                        if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(input)) {
                             break;
                         }
 
@@ -301,7 +306,7 @@ public class ReadManifestTest extends SampleTestBase {
             // The data partition location.
             System.out.println("  " + dataPartition.getLocation());
 
-            if (!Strings.isNullOrEmpty(dataPartition.getLocation())) {
+            if (!com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(dataPartition.getLocation())) {
                 System.out.println("  " + cdmCorpus.getStorage().corpusPathToAdapterPath(dataPartition.getLocation()));
             }
         }
@@ -337,7 +342,7 @@ public class ReadManifestTest extends SampleTestBase {
     }
 
     static void printTrait(CdmTraitReferenceBase trait) {
-        if (!Strings.isNullOrEmpty(trait.fetchObjectDefinitionName())) {
+        if (!com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(trait.fetchObjectDefinitionName())) {
             System.out.println("      " + trait.fetchObjectDefinitionName());
 
             if (trait instanceof CdmTraitReference) {
@@ -362,7 +367,7 @@ public class ReadManifestTest extends SampleTestBase {
     }
 
     static void printProperty(final String propertyName, final String propertyValue) {
-        if (!Strings.isNullOrEmpty(propertyValue)) {
+        if (!com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(propertyValue)) {
             System.out.println("  " + propertyName + ":" + " " + propertyValue);
         }
     }

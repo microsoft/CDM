@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.*;
 import com.microsoft.commondatamodel.objectmodel.enums.*;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
@@ -337,7 +336,7 @@ public class CdmCorpusDefinition {
     if (resOpt.inCircularReference) {
       tagSuffix.append("-pk");
     }
-    if (!Strings.isNullOrEmpty(extraTags)) {
+    if (!StringUtils.isNullOrEmpty(extraTags)) {
       tagSuffix.append(String.format("-%s", extraTags));
     }
 

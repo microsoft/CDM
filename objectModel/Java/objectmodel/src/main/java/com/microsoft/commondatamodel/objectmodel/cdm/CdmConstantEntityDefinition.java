@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -68,7 +67,7 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
       path = this.getDeclaredPath();
 
       if (StringUtils.isNullOrTrimEmpty(path)) {
-        path = pathFrom + (!Strings.isNullOrEmpty(this.getConstantEntityName())
+        path = pathFrom + (!StringUtils.isNullOrEmpty(this.getConstantEntityName())
             ? this.getConstantEntityName()
             : "(unspecified)");
         this.setDeclaredPath(path);

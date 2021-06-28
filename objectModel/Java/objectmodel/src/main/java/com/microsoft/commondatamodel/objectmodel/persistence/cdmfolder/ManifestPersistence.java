@@ -4,7 +4,6 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
@@ -23,6 +22,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Man
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.io.IOException;
@@ -57,19 +57,19 @@ public class ManifestPersistence {
     manifest.setNamespace(nameSpace);
     manifest.setExplanation(dataObj.getExplanation());
 
-    if (!Strings.isNullOrEmpty(dataObj.getSchema())) {
+    if (!StringUtils.isNullOrEmpty(dataObj.getSchema())) {
       manifest.setSchema(dataObj.getSchema());
     }
 
-    if (!Strings.isNullOrEmpty(dataObj.getJsonSchemaSemanticVersion())) {
+    if (!StringUtils.isNullOrEmpty(dataObj.getJsonSchemaSemanticVersion())) {
       manifest.setJsonSchemaSemanticVersion(dataObj.getJsonSchemaSemanticVersion());
     }
 
-    if (!Strings.isNullOrEmpty(dataObj.getDocumentVersion())) {
+    if (!StringUtils.isNullOrEmpty(dataObj.getDocumentVersion())) {
       manifest.setDocumentVersion(dataObj.getDocumentVersion());
     }
   
-    if (!Strings.isNullOrEmpty(dataObj.getManifestName())) {
+    if (!StringUtils.isNullOrEmpty(dataObj.getManifestName())) {
       manifest.setManifestName(dataObj.getManifestName());
     }
 
@@ -112,7 +112,7 @@ public class ManifestPersistence {
     }
 
     if (dataObj.getEntities() != null) {
-      final String fullPath = !Strings.isNullOrEmpty(nameSpace) ? nameSpace + ":" + path : path;
+      final String fullPath = !StringUtils.isNullOrEmpty(nameSpace) ? nameSpace + ":" + path : path;
       for (final JsonNode entityNode : dataObj.getEntities()) {
         CdmEntityDeclarationDefinition entity = null;
         try {
@@ -201,7 +201,7 @@ public class ManifestPersistence {
 
   private static String extractManifestName(final ManifestContent dataObj, final String name) {
     final String manifestName = dataObj.getManifestName();
-    if (!Strings.isNullOrEmpty(manifestName)) {
+    if (!StringUtils.isNullOrEmpty(manifestName)) {
       return manifestName;
     }
 

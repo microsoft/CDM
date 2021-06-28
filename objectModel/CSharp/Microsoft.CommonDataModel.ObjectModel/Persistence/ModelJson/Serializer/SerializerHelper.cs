@@ -25,13 +25,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types.Seri
         /// <returns>The processed data about the type passed as argument.</returns>
         public static TypeInfoPreprocessed GetTypeInfo(Type type)
         {
-            if (TypeInfoDictionary.ContainsKey(type))
+            TypeInfoPreprocessed typeInfo;
+            // Need to lock the dictionary since it is a static property and there might be multiple corpus running on the same environment.
+            lock (TypeInfoDictionary)
             {
-                return TypeInfoDictionary[type];
-            }
+                if (TypeInfoDictionary.ContainsKey(type))
+                {
+                    return TypeInfoDictionary[type];
+                }
 
-            var typeInfo = new TypeInfoPreprocessed(type);
-            TypeInfoDictionary.Add(type, typeInfo);
+                typeInfo = new TypeInfoPreprocessed(type);
+                TypeInfoDictionary.Add(type, typeInfo);
+            }
             return typeInfo;
         }
     }

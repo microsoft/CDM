@@ -3,9 +3,10 @@
 
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
 import com.microsoft.commondatamodel.objectmodel.utilities.CdmException;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -43,7 +44,7 @@ public class ParameterCollection {
   public void add(final CdmParameterDefinition element) throws CdmException {
     final String name = element.getName();
 
-    if (!Strings.isNullOrEmpty(name)) {
+    if (!StringUtils.isNullOrEmpty(name)) {
       if (lookup.containsKey(name)) {
         // why not just replace the old one?
         this.lookup.put(name, element);
@@ -60,7 +61,7 @@ public class ParameterCollection {
   }
 
   public CdmParameterDefinition resolveParameter(final int ordinal, final String name) throws CdmException {
-    if (!Strings.isNullOrEmpty(name)) {
+    if (!StringUtils.isNullOrEmpty(name)) {
       if (lookup.containsKey(name)) {
         return lookup.get(name);
       } else {

@@ -5,6 +5,7 @@ package example;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 
 import java.util.Arrays;
@@ -41,6 +42,11 @@ public class Program {
   public static void main(String[] args) throws ExecutionException, InterruptedException {
     // Make a corpus, the corpus is the collection of all documents and folders created or discovered while navigating objects and paths
     final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+
+    // set callback to receive error and warning logs.
+    cdmCorpus.setEventCallback((level, message) -> {
+      System.out.println(message);
+    }, CdmStatusLevel.Warning);
 
     System.out.println("configure storage adapters");
 

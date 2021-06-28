@@ -4,7 +4,6 @@
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
@@ -13,6 +12,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Att
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class AttributeContextPersistence {
     if (obj.getParent() != null)
       attributeContext.setParent(AttributeContextReferencePersistence.fromData(ctx, obj.getParent()));
 
-    if (!Strings.isNullOrEmpty(obj.getExplanation()))
+    if (!StringUtils.isNullOrEmpty(obj.getExplanation()))
       attributeContext.setExplanation(obj.getExplanation());
 
     if (obj.getDefinition() != null) {

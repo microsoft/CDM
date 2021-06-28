@@ -66,8 +66,26 @@ export class projectionTestUtils {
     public static getResolutionOptionNameSuffix(directives: string[]): string {
         let fileNamePrefix: string = '';
 
-        for (let i: number = 0; i < directives.length; i++) {
-            fileNamePrefix = `${fileNamePrefix}_${directives[i]}`;
+        for (const directive of directives) {
+            let shortenedDirective: string;
+
+            switch (directive) {
+                case 'normalized':
+                    shortenedDirective = 'norm';
+                    break;
+                case 'referenceOnly':
+                    shortenedDirective = 'refOnly';
+                    break;
+                case 'structured':
+                    shortenedDirective = 'struc';
+                    break;
+                case 'virtual':
+                    shortenedDirective = 'virt';
+                    break;
+                default:
+                    throw 'Using unsupported directive';
+            }
+            fileNamePrefix = `${fileNamePrefix}_${shortenedDirective}`;
         }
 
         if (!fileNamePrefix) {
@@ -206,7 +224,7 @@ export class projectionTestUtils {
 
             if (directives.length > 0) {
                 const defaultStringFilePath: string = `${expectedOutputPath}/${fileNamePrefix}${defaultFileNameSuffix}.txt`;
-                const defaultText: string = fs.readFileSync(defaultStringFilePath).toString();
+                const defaultText: string = fs.existsSync(defaultStringFilePath) ? fs.readFileSync(defaultStringFilePath).toString() : undefined;
 
                 if (actualText === defaultText) {
                     if (fs.existsSync(expectedStringFilePath)) {

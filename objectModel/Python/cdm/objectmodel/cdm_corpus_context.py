@@ -16,7 +16,7 @@ class CdmCorpusContext:
                     report_at_level: Optional['CdmStatusLevel'] = None, \
                     correlation_id: Optional[str] = None) -> None:
         self.corpus = corpus  # type: CdmCorpusDefinition
-        self.report_at_level = report_at_level or CdmStatusLevel.INFO  # type: CdmStatusLevel
+        self.report_at_level = report_at_level or CdmStatusLevel.WARNING  # type: CdmStatusLevel
         self.status_event = status_event  # type: EventCallback
         self.events = EventList() # type: EventList
         self.correlation_id = correlation_id or None # type: Optional[str]

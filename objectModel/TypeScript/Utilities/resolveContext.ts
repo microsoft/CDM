@@ -39,7 +39,7 @@ export class resolveContext implements CdmCorpusContext {
     public cache: Map<string, any>;
     public corpus: CdmCorpusDefinition;
     constructor(corpus: CdmCorpusDefinition, statusEvent?: EventCallback, reportAtLevel?: cdmStatusLevel) {
-        this.reportAtLevel = reportAtLevel !== undefined ? reportAtLevel : cdmStatusLevel.info;
+        this.reportAtLevel = reportAtLevel !== undefined ? reportAtLevel : cdmStatusLevel.warning;
         this.statusEvent = statusEvent;
         this.events = new EventList();
         this.cache = new Map<string, any>();

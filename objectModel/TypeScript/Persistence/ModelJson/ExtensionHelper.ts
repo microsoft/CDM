@@ -28,7 +28,7 @@ import { isCdmTraitDefinition } from '../../Utilities/cdmObjectTypeGuards';
 /**
  * Dictionary used to cache documents with trait definitions by file name.
  */
-const cachedDefDocs: { [key: string]: CdmDocumentDefinition } = {};
+const cachedDefDocs: Map<[CdmCorpusContext, string], CdmDocumentDefinition> = new Map<[CdmCorpusContext, string], CdmDocumentDefinition>();
 
 /**
  * Set of extensions that are officially supported and have their definitions in the extensions folder.
@@ -278,22 +278,22 @@ export function traitRefIsExtension(trait: CdmTraitReferenceBase): boolean {
  * @returns The retrieved document or null if no such document was found.
  */
 async function fetchDefDoc(ctx: CdmCorpusContext, fileName: string): Promise<CdmDocumentDefinition> {
-    if (cachedDefDocs[fileName] !== undefined) {
-        /**
-         * We already loaded this document and it is in the cache (dictionary)
-         */
-        return cachedDefDocs[fileName];
+    // Since the CachedDefDocs is a static property and there might be multiple corpus running,
+    // we need to make sure that each corpus will have its own cached def document.
+    // This is achieved by adding the context as part of the key to the document.
+    const key: [CdmCorpusContext, string] = [ctx, fileName];
+    if (cachedDefDocs.has(key)) {
+        // We already loaded this document and it is in the cache (dictionary)
+        return cachedDefDocs.get(key);
     }
 
-    /**
-     * We retrieve the document and cache in the dictionary for future reference.
-     */
+    // We retrieve the document and cache in the dictionary for future reference.
     const path: string = `/extensions/${fileName}`;
     const absPath: string = ctx.corpus.storage.createAbsoluteCorpusPath(path, ctx.corpus.storage.fetchRootFolder('cdm'));
     const document: CdmObject = await ctx.corpus.fetchObjectAsync(absPath);
     if (document) {
         const extensionDoc: CdmDocumentDefinition = document as CdmDocumentDefinition;
-        cachedDefDocs[fileName] = extensionDoc;
+        cachedDefDocs.set(key, extensionDoc);
 
         return extensionDoc;
     }

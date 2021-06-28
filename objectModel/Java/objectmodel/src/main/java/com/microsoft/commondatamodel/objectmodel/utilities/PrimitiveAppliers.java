@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttribute;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeResolutionGuidance;
@@ -164,7 +163,7 @@ public class PrimitiveAppliers {
         final ApplierState state = appCtx.resAttSource.getApplierState();
         final String ordinal = state != null && state.flexCurrentOrdinal != null ? state.flexCurrentOrdinal.toString() : "";
 
-        if (Strings.isNullOrEmpty(format)) {
+        if (StringUtils.isNullOrEmpty(format)) {
           return;
         }
 
@@ -569,7 +568,7 @@ public class PrimitiveAppliers {
   }
 
   private static String replace(final int start, final int at, final int length, String value, final boolean upper, final String format) {
-    if (upper && !Strings.isNullOrEmpty(value))
+    if (upper && !StringUtils.isNullOrEmpty(value))
       value = StringUtils.capitalize(value);
 
     String replaced = "";

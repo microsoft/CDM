@@ -5,7 +5,6 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projecti
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.*;
@@ -17,6 +16,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.pro
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
@@ -115,7 +115,7 @@ public class ProjectionPersistence {
 
         Object source = null;
         if (instance.getSource() != null &&
-                !Strings.isNullOrEmpty(instance.getSource().getNamedReference()) &&
+                !StringUtils.isNullOrEmpty(instance.getSource().getNamedReference()) &&
                 instance.getSource().getExplicitReference() == null) {
             source = instance.getSource().getNamedReference();
         } else if (instance.getSource() != null && instance.getSource() instanceof CdmEntityReference) {

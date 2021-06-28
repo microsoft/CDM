@@ -162,7 +162,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             {
                 Invoke = (CdmStatusLevel statusLevel, string message1) =>
                 {
-                    if (statusLevel >= CdmStatusLevel.Error)
+                    if (statusLevel >= CdmStatusLevel.Warning)
                     {
                         Assert.Fail(message1);
                     }

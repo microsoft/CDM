@@ -62,9 +62,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         {
             string fileNamePrefix = string.Empty;
 
-            for (int i = 0; i < directives.Count; i++)
+            foreach (string directive in directives)
             {
-                fileNamePrefix = $"{fileNamePrefix}_{directives[i]}";
+                string shortenedDirective;
+
+                switch (directive)
+                {
+                    case "normalized":
+                        shortenedDirective = "norm";
+                        break;
+                    case "referenceOnly":
+                        shortenedDirective = "refOnly";
+                        break;
+                    case "structured":
+                        shortenedDirective = "struc";
+                        break;
+                    case "virtual":
+                        shortenedDirective = "virt";
+                        break;
+                    default:
+                        Assert.Fail("Using unsupported directive");
+                        return null;
+                }
+
+                fileNamePrefix = $"{fileNamePrefix}_{shortenedDirective}";
             }
 
             bool fileExists = expectedOutputPath != null && entityName != null ?
@@ -218,7 +239,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                 {
                     string defaultFileNameSuffix = GetResolutionOptionNameSuffix(new List<string>() { });
                     string defaultStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, $"{fileNamePrefix}{defaultFileNameSuffix}.txt"));
-                    string defaultText = File.ReadAllText(defaultStringFilePath);
+                    string defaultText = File.Exists(defaultStringFilePath) ? File.ReadAllText(defaultStringFilePath) : null;
 
                     if (actualText.Equals(defaultText))
                     {

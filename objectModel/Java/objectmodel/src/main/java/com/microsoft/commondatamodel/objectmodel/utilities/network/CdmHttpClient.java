@@ -164,7 +164,7 @@ public class CdmHttpClient {
                 final Instant startTime = java.time.Instant.now();
                 if (ctx != null)
                 {
-                    Logger.info(ctx, TAG, "sendAsyncHelper",
+                    Logger.debug(ctx, TAG, "sendAsyncHelper",
                             null, Logger.format("Sending request {0}, request type: {1}, request url: {2}, retry number: {3}.", cdmHttpRequest.getRequestId(), httpRequest.getMethod(), cdmHttpRequest.stripSasSig(), retryNumber));
                 }
 
@@ -173,8 +173,8 @@ public class CdmHttpClient {
                 if (ctx != null)
                 {
                     final Instant endTime = java.time.Instant.now();
-                    Logger.info(ctx, TAG, "sendAsyncHelper",
-                            null, Logger.format("Response {0} received, elapsed time: {1} ms.", cdmHttpRequest.getRequestId(), Duration.between(startTime, endTime).toMillis()));
+                    Logger.debug(ctx, TAG, "sendAsyncHelper",
+                            null, Logger.format("Response for request {0} received, elapsed time: {1} ms.", cdmHttpRequest.getRequestId(), Duration.between(startTime, endTime).toMillis()));
                 }
 
                 if (response != null) {
@@ -207,7 +207,7 @@ public class CdmHttpClient {
                         if (exception instanceof ConnectTimeoutException) {
                             if (ctx != null)
                             {
-                                Logger.info(ctx, TAG, "sendAsyncHelper",
+                                Logger.debug(ctx, TAG, "sendAsyncHelper",
                                         null, Logger.format("Request {0} timeout after {1} s.", cdmHttpRequest.getRequestId(), cdmHttpRequest.getTimeout().getSeconds()));
                             }
 

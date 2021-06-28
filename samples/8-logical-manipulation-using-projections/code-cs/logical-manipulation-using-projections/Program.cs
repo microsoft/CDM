@@ -27,6 +27,15 @@ namespace entity_modeling_using_projections
             // Make a corpus, the corpus is the collection of all documents and folders created or discovered while navigating objects and paths
             var corpus = new CdmCorpusDefinition();
 
+            // set callback to receive error and warning logs.
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    Console.WriteLine(message);
+                }
+            }, CdmStatusLevel.Warning);
+
             Console.WriteLine("Configure storage adapters.");
 
             // Configure storage adapters to point at the target local manifest location and at the fake public standards

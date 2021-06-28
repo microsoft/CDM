@@ -13,55 +13,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
 
     public class Logger
     {
-        private static NLog.Logger defaultLogger = null;
         private static ResourceManager resManager = new ResourceManager("Microsoft.CommonDataModel.ObjectModel.Resx.LogMessages", Assembly.GetExecutingAssembly());
 
-        /// <summary>
-        /// The default logger, used if ctx doesn't provide status report.
-        /// </summary>
-        private static NLog.Logger DefaultLogger
-        {
-            get
-            {
-                if (defaultLogger == null)
-                {
-                    // Fetch the custom NLog configuration.
-                    defaultLogger = NLog.LogManager.GetCurrentClassLogger();
-
-                    // Default logger will always be created. But if warnings and errors are not enabled
-                    // then we can safely assume that logger was not loaded properly and use default settings then.
-                    if (!defaultLogger.IsWarnEnabled && !defaultLogger.IsErrorEnabled)
-                    {
-                        var config = new NLog.Config.LoggingConfiguration();
-                        // Targets where to log to: File and Console.
-
-                        var layout = "${callsite:className=false} ${longdate} ${threadid} ${level:uppercase=true} ${message}";
-
-                        var logfile = new NLog.Targets.FileTarget("logfile")
-                        {
-                            Layout = layout,
-                            FileName = "cdm_log_${date:format=yyyyMMdd}.txt"
-                        };
-
-                        var logconsole = new NLog.Targets.ConsoleTarget("logconsole")
-                        {
-                            Layout = layout
-                        };
-
-                        // Rules for mapping loggers to targets.
-                        config.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Fatal, logconsole);
-                        config.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Fatal, logfile);
-
-                        // Apply config.
-                        NLog.LogManager.Configuration = config;
-
-                        defaultLogger = NLog.LogManager.GetCurrentClassLogger();
-                    }
-                }
-
-                return defaultLogger;
-            }
-        }
 
         /// <summary>
         /// Log to DEBUG level.
@@ -75,7 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         {
             if (CdmStatusLevel.Progress >= ctx.ReportAtLevel)
             {
-                Log(CdmStatusLevel.Progress, ctx, className, message, method, DefaultLogger.Debug, corpusPath);
+                Log(CdmStatusLevel.Progress, ctx, className, message, method, Console.WriteLine, corpusPath);
             }
         }
 
@@ -91,7 +44,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         {
             if (CdmStatusLevel.Info >= ctx.ReportAtLevel)
             {
-                Log(CdmStatusLevel.Info, ctx, className, message, method, DefaultLogger.Info, corpusPath);
+                Log(CdmStatusLevel.Info, ctx, className, message, method, Console.WriteLine, corpusPath);
             }
         }
 
@@ -111,7 +64,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
                 // Get message from resource for the code enum.
                 string message = GetMessagefromResourceFile(code, args);
 
-                Log(CdmStatusLevel.Warning, ctx, className, message, method, DefaultLogger.Warn, corpusPath, code);
+                Log(CdmStatusLevel.Warning, ctx, className, message, method, Console.WriteLine, corpusPath, code);
             }
         }
 
@@ -131,7 +84,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
                 // Get message from resource for the code enum.
                 string message = GetMessagefromResourceFile(code, args);
 
-                Log(CdmStatusLevel.Error, ctx, className, message, method, DefaultLogger.Error, corpusPath, code);
+                Log(CdmStatusLevel.Error, ctx, className, message, method, Console.Error.WriteLine, corpusPath, code);
             }
         }
 

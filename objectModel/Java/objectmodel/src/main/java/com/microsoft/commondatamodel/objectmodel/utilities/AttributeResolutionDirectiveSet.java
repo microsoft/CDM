@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
-import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -132,7 +131,7 @@ public class AttributeResolutionDirectiveSet {
    * @return String
    */
   public String getTag() {
-    if (Strings.isNullOrEmpty(sortedTag)) {
+    if (StringUtils.isNullOrEmpty(sortedTag)) {
       if (set != null && !set.isEmpty()) {
         this.sortedTag = "";
         final StringBuilder tagBuilder = new StringBuilder();
@@ -147,7 +146,7 @@ public class AttributeResolutionDirectiveSet {
       }
     }
 
-    if (!Strings.isNullOrEmpty(sortedTag)) {
+    if (!StringUtils.isNullOrEmpty(sortedTag)) {
       return sortedTag;
     }
 

@@ -3,9 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 
 public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements CdmObjectDefinition {
@@ -43,7 +43,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
 
     final String name;
 
-    if (!Strings.isNullOrEmpty(this.getDeclaredPath())) {
+    if (!StringUtils.isNullOrEmpty(this.getDeclaredPath())) {
       name = this.getDeclaredPath();
     } else {
       name = this.getName();

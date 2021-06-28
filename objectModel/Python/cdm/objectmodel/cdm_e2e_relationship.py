@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Optional, TYPE_CHECKING
+import warnings
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import ResolveOptions, logger
@@ -20,7 +21,7 @@ class CdmE2ERelationship(CdmObjectDefinition):
         super().__init__(ctx)
 
         self._TAG = CdmE2ERelationship.__name__
-        self.relationship_name = name  # type: str
+        self.name = name  # type: str
         self.from_entity = None  # type: Optional[str]
         self.from_entity_attribute = None  # type: Optional[str]
         self.to_entity = None  # type: Optional[str]
@@ -29,6 +30,16 @@ class CdmE2ERelationship(CdmObjectDefinition):
     @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.E2E_RELATIONSHIP_DEF
+
+    @property
+    def relationship_name(self) -> str:
+        warnings.warn('This property has been deprecated, use the `name` property instead.', DeprecationWarning)
+        return self.name
+    
+    @relationship_name.setter
+    def relationship_name(self, name):
+        warnings.warn('This property has been deprecated, use the `name` property instead.', DeprecationWarning)
+        self.name = name
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmE2ERelationship'] = None) -> 'CdmE2ERelationship':
         if not res_opt:
@@ -39,7 +50,7 @@ class CdmE2ERelationship(CdmObjectDefinition):
         else:
             copy = host
             copy.ctx = self.ctx
-            copy.relationship_name = self.get_name()
+            copy.name = self.get_name()
 
         copy.from_entity = self.from_entity
         copy.from_entity_attribute = self.from_entity_attribute
@@ -50,7 +61,7 @@ class CdmE2ERelationship(CdmObjectDefinition):
         return copy
 
     def get_name(self) -> str:
-        return self.relationship_name
+        return self.name
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         return False

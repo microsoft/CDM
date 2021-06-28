@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
@@ -18,6 +17,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Imp
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
@@ -102,7 +102,7 @@ public class DocumentPersistence {
                     String absolutePath = ctx.getCorpus()
                         .getStorage()
                         .createAbsoluteCorpusPath(cdmImport.getCorpusPath(), documentDefinition);
-                    if (!Strings.isNullOrEmpty(documentDefinition.getNamespace()) && absolutePath.startsWith(documentDefinition.getNamespace() + ":")) {
+                    if (!StringUtils.isNullOrEmpty(documentDefinition.getNamespace()) && absolutePath.startsWith(documentDefinition.getNamespace() + ":")) {
                       absolutePath = absolutePath.substring(documentDefinition.getNamespace().length() + 1);
                     }
                     cdmImport.setCorpusPath(ctx.getCorpus()

@@ -3,7 +3,7 @@
 
 import { Stopwatch } from 'ts-stopwatch';
 
-import { CdmCorpusDefinition, CdmManifestDefinition } from '../../../internal';
+import { CdmCorpusDefinition, CdmDocumentDefinition, CdmManifestDefinition, cdmStatusLevel } from '../../../internal';
 import { ADLSAdapter } from '../../../Storage';
 import { StorageAdapterCacheContext } from '../../../Storage/StorageAdapterBase';
 import { TokenProvider } from '../../../Utilities/Network';
@@ -139,6 +139,28 @@ describe('Cdm.Storage.AdlsAdapter', () => {
 
     adlsIt('ADLSSpecialCharactersTest', async () => {
         await adlsTest.runSpecialCharactersTest(adlsTestHelper.createAdapterWithClientId('PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:'));
+    });
+
+    /**
+     * Tests if the adapter won't retry if a HttpStatusCode response with a code in AvoidRetryCodes is received.
+     */
+     adlsIt('testAvoidRetryCodes', async () => {
+        const adlsAdapter = adlsTestHelper.createAdapterWithSharedKey();
+        adlsAdapter.numberOfRetries = 3;
+
+        const corpus = new CdmCorpusDefinition();
+        corpus.storage.mount('adls', adlsAdapter);
+        let count = 0;
+        corpus.setEventCallback((status, message) => {
+            if (message.indexOf('Response for request ') !== -1) {
+                count++;
+            }
+        }, cdmStatusLevel.progress);
+
+        await corpus.fetchObjectAsync<CdmDocumentDefinition>('adls:/inexistentFile.cdm.json');
+
+        expect(count)
+            .toEqual(1);
     });
 
     /**

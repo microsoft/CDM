@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as cdm from '../../../objectModel/TypeScript';
+import { cdmStatusLevel } from '../../../objectModel/TypeScript/internal';
 
 /**
  * This sample demonstrates how to model a set of common scenarios using projections. 
@@ -24,6 +25,10 @@ async function runSample() {
     // const pathFromExeToExampleRoot: string = '../../';
 
     corpus.storage.mount('local', new cdm.types.LocalAdapter(pathFromExeToExampleRoot + '8-logical-manipulation-using-projections/sample-data'));
+
+     // set callback to receive error and warning logs.
+     corpus.setEventCallback( (level, message) => { console.log(message) }, cdmStatusLevel.warning);
+
     corpus.storage.defaultNamespace = 'local'; // local is our default. so any paths that start out navigating without a device tag will assume local
 
     // Fake cdm, normaly use the CDM Standards adapter

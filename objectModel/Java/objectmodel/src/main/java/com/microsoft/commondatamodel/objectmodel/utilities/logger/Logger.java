@@ -7,8 +7,8 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
-import org.slf4j.LoggerFactory;
 
+import java.io.Console;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 import java.util.ResourceBundle;
 
 public class Logger {
-  private static final org.slf4j.Logger defaultLogger = LoggerFactory.getLogger(Logger.class);
   private static final ResourceBundle resource = ResourceBundle.getBundle("LogMessages");
 
   /**
@@ -33,8 +32,7 @@ public class Logger {
    */
   public static void debug(CdmCorpusContext ctx, String classname, String method, String corpuspath, String message) {
     if (CdmStatusLevel.Progress.compareTo(ctx.getReportAtLevel()) >= 0) {
-      Consumer<String> statusEvent = defaultLogger::debug;
-      log(CdmStatusLevel.Progress, ctx, classname, message, method, statusEvent, corpuspath, CdmLogCode.None);
+      log(CdmStatusLevel.Progress, ctx, classname, message, method, System.out::println, corpuspath, CdmLogCode.None);
     }
   }
 
@@ -48,8 +46,7 @@ public class Logger {
     */
   public static void info(CdmCorpusContext ctx, String classname, String method, String corpuspath, String message) {
     if (CdmStatusLevel.Info.compareTo(ctx.getReportAtLevel()) >= 0) {
-      Consumer<String> statusEvent = defaultLogger::info;
-      log(CdmStatusLevel.Info, ctx, classname, message, method, statusEvent, corpuspath, CdmLogCode.None);
+      log(CdmStatusLevel.Info, ctx, classname, message, method, System.out::println, corpuspath, CdmLogCode.None);
     }
   }
 
@@ -58,7 +55,6 @@ public class Logger {
    * 
    * @param classname The classname, usually the class that is calling the method.
    * @param ctx The CDM corpus context.
-   * @param message The message.
    * @param method The method, usually denotes the class and method calling this
    *    method.
    * @param corpuspath The corpuspath, usually denotes corpus path of document.
@@ -68,10 +64,9 @@ public class Logger {
    */
   public static void warning(CdmCorpusContext ctx, String classname, String method, String corpuspath, CdmLogCode code, String... args) {
     if (CdmStatusLevel.Warning.compareTo(ctx.getReportAtLevel()) >= 0) {
-      Consumer<String> statusEvent = defaultLogger::warn;
       // Get message from resource for the code enum.
       String message = getMessagefromResourceFile(code, args);
-      log(CdmStatusLevel.Warning, ctx, classname, message, method, statusEvent, corpuspath, code);
+      log(CdmStatusLevel.Warning, ctx, classname, message, method, System.out::println, corpuspath, code);
     }
   }
 
@@ -80,7 +75,6 @@ public class Logger {
    * 
    * @param ctx The CDM corpus context.
    * @param classname The classname, usually the class that is calling the method.
-   * @param message The message.
    * @param method The method, usually denotes method calling this
    *        method.
    * @param corpuspath The corpuspath, usually denotes corpus path of document.
@@ -89,10 +83,9 @@ public class Logger {
    */
   public static void error(CdmCorpusContext ctx, String classname, String method, String corpuspath, CdmLogCode code, String... args) {
     if (CdmStatusLevel.Error.compareTo(ctx.getReportAtLevel()) >= 0) {
-      Consumer<String> statusEvent = defaultLogger::error;
       // Get message from resource for the code enum.
       String message = getMessagefromResourceFile(code, args);
-      log(CdmStatusLevel.Error, ctx, classname, message, method, statusEvent, corpuspath, code);
+      log(CdmStatusLevel.Error, ctx, classname, message, method, System.err::println, corpuspath, code);
     }
   }
 

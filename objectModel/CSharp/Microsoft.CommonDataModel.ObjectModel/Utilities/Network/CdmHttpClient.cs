@@ -141,7 +141,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 
                     if (ctx != null)
                     {
-                        Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, request url: {cdmRequest.StripSasSig()}, retry number: {retryNumber}.");
+                        Logger.Debug(ctx, Tag, nameof(SendAsyncHelper), null, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, request url: {cdmRequest.StripSasSig()}, retry number: {retryNumber}.");
                     }
 
                     // The check is added to fix a known issue in .net http client when reading HEAD request > 2GB.
@@ -160,7 +160,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                     {
                         if (ctx != null && cdmRequest.Timeout != null)
                         {
-                            Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Request {cdmRequest.RequestId} timeout after {cdmRequest.Timeout?.Seconds} s.");
+                            Logger.Debug(ctx, Tag, nameof(SendAsyncHelper), null, $"Request {cdmRequest.RequestId} timeout after {cdmRequest.Timeout?.Seconds} s.");
                         }
 
                         throw new CdmTimedOutException("Request timeout.");
@@ -170,7 +170,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                     if (ctx != null)
                     {
                         DateTimeOffset endTime = DateTimeOffset.UtcNow;
-                        Logger.Info(ctx, Tag, nameof(SendAsyncHelper), null, $"Response for request {cdmRequest.RequestId} received, elapsed time: {endTime.Subtract(startTime).TotalMilliseconds} ms.");
+                        Logger.Debug(ctx, Tag, nameof(SendAsyncHelper), null, $"Response for request {cdmRequest.RequestId} received, elapsed time: {endTime.Subtract(startTime).TotalMilliseconds} ms.");
                     }
 
                     if (response != null)

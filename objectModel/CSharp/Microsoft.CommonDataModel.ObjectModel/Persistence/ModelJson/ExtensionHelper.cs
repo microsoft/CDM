@@ -6,6 +6,7 @@ using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
 using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         /// <summary>
         /// Dictionary used to cache documents with trait definitions by file name.
         /// </summary>
-        private static Dictionary<string, CdmDocumentDefinition> CachedDefDocs = new Dictionary<string, CdmDocumentDefinition>();
+        private static Dictionary<Tuple<CdmCorpusContext, string>, CdmDocumentDefinition> CachedDefDocs = new Dictionary<Tuple<CdmCorpusContext, string>, CdmDocumentDefinition>();
 
         /// <summary>
         /// Set of extensions that are officially supported and have their definitions in the extensions folder.
@@ -348,9 +349,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         /// <returns>The content of the definition file with the expected fileName, or null if no such file was found.</returns>
         private static async Task<CdmDocumentDefinition> FetchDefDoc(CdmCorpusContext ctx, string fileName)
         {
-            if (CachedDefDocs.ContainsKey(fileName))
+            // Since the CachedDefDocs is a static property and there might be multiple corpus running,
+            // we need to make sure that each corpus will have its own cached def document.
+            // This is achieved by adding the context as part of the key to the document.
+            var key = Tuple.Create(ctx, fileName);
+            if (CachedDefDocs.ContainsKey(key))
             {
-                return CachedDefDocs[fileName];
+                return CachedDefDocs[key];
             }
 
             string path = $"/extensions/{fileName}";
@@ -360,7 +365,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             {
                 CdmDocumentDefinition extensionDoc = document as CdmDocumentDefinition;
 
-                CachedDefDocs.Add(fileName, extensionDoc);
+                // Needs to lock the dictionary since it is a static property and there might be multiple corpus running on the same environment.
+                lock (CachedDefDocs)
+                {
+                    CachedDefDocs.Add(key, extensionDoc);
+                }
                 return extensionDoc;
             }
             return null;

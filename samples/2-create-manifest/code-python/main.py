@@ -15,11 +15,17 @@ from cdm.utilities import CopyOptions
 
 ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
 
+def event_callback(status_level: 'CdmStatusLevel', message: str):
+    # Print log messages from SDK.
+    print(message)
+
 async def main():
     # Make a corpus, the corpus is the collection of all documents and folders created or discovered while navigating
     # objects and paths.
     cdm_corpus = CdmCorpusDefinition()
-    cdm_corpus.ctx.report_at_level = CdmStatusLevel.ERROR
+    
+    # set callback to receive error and warning logs.
+    cdm_corpus.set_event_callback(event_callback, CdmStatusLevel.WARNING)
 
     print('Configure storage adapters')
     cdm_corpus.storage.mount('local', LocalAdapter(root=os.path.join(ROOT_PATH, '../sample-data')))

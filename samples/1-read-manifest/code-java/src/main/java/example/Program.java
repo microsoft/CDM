@@ -3,7 +3,6 @@
 
 package example;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeItem;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmConstantEntityDefinition;
@@ -18,6 +17,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 
 import java.util.List;
@@ -42,6 +42,11 @@ public class Program {
     // or discovered while navigating objects and paths.
 
     final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+
+     // set callback to receive error and warning logs.
+    cdmCorpus.setEventCallback((level, message) -> {
+      System.out.println(message);
+    }, CdmStatusLevel.Warning);
 
     // ---------------------------------------------------------------------------------------------
     // Configure storage adapters and mount them to the corpus.
@@ -135,7 +140,7 @@ public class Program {
       System.out.print("Show details for Entity or Sub-manifest number (press [enter] to exit): ");
       // Get the user's choice.
       String input = SCANNER.nextLine();
-      if (Strings.isNullOrEmpty(input)) {
+      if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(input)) {
         break;
       }
 
@@ -185,7 +190,7 @@ public class Program {
 
             // Get the user's choice.
             input = SCANNER.nextLine();
-            if (Strings.isNullOrEmpty(input)) {
+            if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(input)) {
               break;
             }
 
@@ -311,7 +316,7 @@ public class Program {
       // The data partition location.
       System.out.println("  " + dataPartition.getLocation());
 
-      if (!Strings.isNullOrEmpty(dataPartition.getLocation())) {
+      if (!com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(dataPartition.getLocation())) {
         System.out.println("  " + cdmCorpus.getStorage().corpusPathToAdapterPath(dataPartition.getLocation()));
       }
     }
@@ -347,7 +352,7 @@ public class Program {
   }
 
   static void printTrait(CdmTraitReferenceBase trait) {
-    if (!Strings.isNullOrEmpty(trait.fetchObjectDefinitionName())) {
+    if (!com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(trait.fetchObjectDefinitionName())) {
       System.out.println("      " + trait.fetchObjectDefinitionName());
 
       if (trait instanceof CdmTraitReference) {
@@ -374,7 +379,7 @@ public class Program {
   }
 
   static void printProperty(final String propertyName, final String propertyValue) {
-    if (!Strings.isNullOrEmpty(propertyValue)) {
+    if (!com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(propertyValue)) {
       System.out.println("  " + propertyName + ":" + " " + propertyValue);
     }
   }

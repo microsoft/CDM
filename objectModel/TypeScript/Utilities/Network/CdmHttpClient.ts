@@ -148,7 +148,7 @@ export class CdmHttpClient {
                 try {
                     const startTime = new Date();
                     if (ctx != null) {
-                        Logger.info(ctx, this.TAG, this.SendAsyncHelper.name, null, `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, request url: ${cdmRequest.stripSasSig()}, retry number: ${retryNumber}.`);
+                        Logger.debug(ctx, this.TAG, this.SendAsyncHelper.name, null, `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, request url: ${cdmRequest.stripSasSig()}, retry number: ${retryNumber}.`);
                        
                     }
 
@@ -161,7 +161,7 @@ export class CdmHttpClient {
 
                     if (ctx != null) {
                         const endTime = new Date();
-                        Logger.info(ctx, this.TAG, this.SendAsyncHelper.name, null, `Response for request ${cdmRequest.requestId} received, elapsed time: ${endTime.valueOf() - startTime.valueOf()} ms.`);
+                        Logger.debug(ctx, this.TAG, this.SendAsyncHelper.name, null, `Response for request ${cdmRequest.requestId} received, elapsed time: ${endTime.valueOf() - startTime.valueOf()} ms.`);
                     }
                 } catch (err) {
                     hasFailed = true;
@@ -225,7 +225,7 @@ export class CdmHttpClient {
         const timeoutPromise = new Promise<CdmHttpResponse>((resolve, reject) => {
             timeout = setTimeout(() => {
                 if (ctx != null && infoMessage != null) {
-                     Logger.info(ctx, this.TAG, this.raceAsyncTaskAgainstTimeout.name, null, infoMessage);
+                     Logger.debug(ctx, this.TAG, this.raceAsyncTaskAgainstTimeout.name, null, infoMessage);
 
                 }
                 clearTimeout(timeout);

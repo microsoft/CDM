@@ -6,7 +6,6 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
@@ -227,7 +226,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
         && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
       path = this.getDeclaredPath();
 
-      if (Strings.isNullOrEmpty(path)) {
+      if (StringUtils.isNullOrEmpty(path)) {
         path = pathFrom + this.getName();
         this.setDeclaredPath(path);
       }

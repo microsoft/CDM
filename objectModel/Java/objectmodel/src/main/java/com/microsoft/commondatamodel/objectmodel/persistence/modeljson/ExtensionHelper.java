@@ -6,13 +6,14 @@ package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.MetadataObject;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +26,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 final class ExtensionHelper {
   private static final String TAG = ExtensionHelper.class.getSimpleName();
@@ -32,8 +35,9 @@ final class ExtensionHelper {
   public static final String EXTENSION_DOC_NAME = "custom.extension.cdm.json";
   /**
    * Dictionary used to cache documents with trait definitions by file name.
+   * Needs to be a concurrent dictionary since it is a static property and there might be multiple corpus running on the same environment.
    */
-  private static final Map<String, CdmDocumentDefinition> cachedDefDocs = new LinkedHashMap<>();
+  private static final ConcurrentMap<Pair<CdmCorpusContext, String>, CdmDocumentDefinition> cachedDefDocs = new ConcurrentHashMap<>();
   /**
    * Set of extensions that are officially supported and have their definitions in the extensions
    * folder.
@@ -358,7 +362,7 @@ final class ExtensionHelper {
    * @return Whether the trait is an extension.
    */
   private static boolean traitNameHasExtensionMark(final String traitName) {
-    if (Strings.isNullOrEmpty(traitName)) {
+    if (StringUtils.isNullOrEmpty(traitName)) {
       return false;
     }
 
@@ -395,8 +399,12 @@ final class ExtensionHelper {
    */
   private static CompletableFuture<CdmDocumentDefinition> fetchDefDoc(final CdmCorpusContext ctx,
                                                                       final String fileName) {
-    if (cachedDefDocs.containsKey(fileName)) {
-      return CompletableFuture.completedFuture(cachedDefDocs.get(fileName));
+    // Since the CachedDefDocs is a static property and there might be multiple corpus running,
+    // we need to make sure that each corpus will have its own cached def document.
+    // This is achieved by adding the context as part of the key to the document.
+    Pair<CdmCorpusContext, String> key = Pair.of(ctx, fileName);
+    if (cachedDefDocs.containsKey(key)) {
+      return CompletableFuture.completedFuture(cachedDefDocs.get(key));
     }
 
     final String path = String.format("/extensions/%1$s", fileName);
@@ -412,7 +420,7 @@ final class ExtensionHelper {
                 final CdmDocumentDefinition extensionDoc =
                     document instanceof CdmDocumentDefinition ? (CdmDocumentDefinition) document : null;
 
-                cachedDefDocs.put(fileName, extensionDoc);
+                cachedDefDocs.put(key, extensionDoc);
                 return extensionDoc;
               }
               return null;

@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
@@ -16,7 +15,6 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.Proje
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
@@ -95,7 +93,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
         && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
       this.getDeclaredPath();
 
-      if (Strings.isNullOrEmpty(path)) {
+      if (StringUtils.isNullOrEmpty(path)) {
         path = pathFrom + this.getName();
         this.setDeclaredPath(path);
       }

@@ -13,21 +13,15 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projection.AttributeContextUtil;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.InterceptLog;
-import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 
-import org.apache.logging.log4j.Level;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
@@ -39,8 +33,6 @@ public class EntityResolutionTest {
   private static final String REFERENCE_ONLY = "referenceOnly";
   private static final String TXT = ".txt";
   private static final String CDM = "cdm";
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(EntityResolutionTest.class);
 
   /**
    * The path between TestDataPath and TestName.
@@ -150,14 +142,19 @@ public class EntityResolutionTest {
    */
   @Test
   public void testResolveWithExtended() throws InterruptedException, ExecutionException {
-    try (final InterceptLog interceptLog = new InterceptLog(CdmCorpusDefinition.class, Level.WARN)) {
-      final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveWithExtended", null);
-      final CdmEntityDefinition ent = cdmCorpus
-          .<CdmEntityDefinition>fetchObjectAsync("local:/sub/Account.cdm.json/Account").get();
-      ent.createResolvedEntityAsync("Account_").get();
+    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveWithExtended", null);
 
-      interceptLog.verifyNumLogEvents(0);
-    }
+    cdmCorpus.setEventCallback(new EventCallback() {
+      @Override
+      public void apply(CdmStatusLevel level, String message) {
+        if (message.contains("unable to resolve the reference"))
+          Assert.fail();
+        }
+      }, CdmStatusLevel.Warning);
+
+    final CdmEntityDefinition ent = cdmCorpus
+            .<CdmEntityDefinition>fetchObjectAsync("local:/sub/Account.cdm.json/Account").get();
+    ent.createResolvedEntityAsync("Account_").get();
   }
 
   /**
@@ -285,8 +282,6 @@ public class EntityResolutionTest {
     Assert.assertTrue((Files.isDirectory(Paths.get(TestHelper.SCHEMA_DOCS_ROOT))), "SchemaDocsRoot not found!!!");
 
     final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
-    LOGGER.info("reading source file");
-
     final StorageAdapterBase adapter = new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT);
     cdmCorpus.getStorage().mount(LOCAL, adapter);
     final CdmManifestDefinition manifest = cdmCorpus
@@ -294,7 +289,7 @@ public class EntityResolutionTest {
     final AttributeResolutionDirectiveSet directives = new AttributeResolutionDirectiveSet(
         new LinkedHashSet<>(Arrays.asList(NORMALIZED, REFERENCE_ONLY)));
     final String allResolved = ResolutionTestUtils.listAllResolved(cdmCorpus, directives, manifest, new StringSpewCatcher());
-    assert (!Strings.isNullOrEmpty(allResolved));
+    assert (!StringUtils.isNullOrEmpty(allResolved));
   }
 
    /**

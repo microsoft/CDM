@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
@@ -60,7 +59,7 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
         && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
       path = this.getDeclaredPath();
 
-      if (Strings.isNullOrEmpty(path)) {
+      if (StringUtils.isNullOrEmpty(path)) {
         path = pathFrom + this.getPurposeName();
         this.setDeclaredPath(path);
       }

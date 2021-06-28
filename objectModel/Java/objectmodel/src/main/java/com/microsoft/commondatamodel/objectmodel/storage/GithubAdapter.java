@@ -7,16 +7,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpClient;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpRequest;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
 import java.io.IOException;
-import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -93,7 +90,7 @@ public class GithubAdapter extends NetworkAdapter {
     final String ghRoot = GithubAdapter.ghRawRoot;
 
     // Might not be an adapterPath that we understand. check that first.
-    if (!Strings.isNullOrEmpty(adapterPath) && adapterPath.startsWith(ghRoot)) {
+    if (!StringUtils.isNullOrEmpty(adapterPath) && adapterPath.startsWith(ghRoot)) {
       return StringUtils.slice(adapterPath, ghRoot.length());
     }
 

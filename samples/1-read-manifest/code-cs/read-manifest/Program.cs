@@ -8,6 +8,7 @@ namespace read_manifest
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
 
     /**
      * --------------------------------------------------------------------------------------------------------------------
@@ -26,6 +27,15 @@ namespace read_manifest
             // while navigating objects and paths.
 
             var cdmCorpus = new CdmCorpusDefinition();
+
+            // set callback to receive error and warning logs.
+            cdmCorpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    Console.WriteLine(message);
+                }
+            }, CdmStatusLevel.Warning);
 
             // ------------------------------------------------------------------------------------------------------------
             // Configure storage adapters and mount them to the corpus. 

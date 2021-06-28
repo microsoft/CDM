@@ -80,8 +80,26 @@ public class ProjectionTestUtils {
     public static String getResolutionOptionNameSuffix(List<String> directives) {
         String fileNamePrefix = "";
 
-        for (int i = 0; i < directives.size(); i++) {
-            fileNamePrefix = fileNamePrefix + "_" + directives.get(i);
+        for (String directive : directives) {
+            String shortenedDirective;
+            switch (directive) {
+                case "normalized":
+                    shortenedDirective = "norm";
+                    break;
+                case "referenceOnly":
+                    shortenedDirective = "refOnly";
+                    break;
+                case "structured":
+                    shortenedDirective = "struc";
+                    break;
+                case "virtual":
+                    shortenedDirective = "virt";
+                    break;
+                default:
+                    Assert.fail("Using unsupported directive");
+                    return null;
+            }
+            fileNamePrefix = fileNamePrefix + "_" + shortenedDirective;
         }
 
         if (StringUtils.isNullOrTrimEmpty(fileNamePrefix)) {
@@ -143,8 +161,8 @@ public class ProjectionTestUtils {
                 expectedStringFilePath = new File(expectedOutputPath, fileNamePrefix + fileNameSuffix + ".txt").toPath();
 
                 if (directives.size() > 0) {
-                    Path defaultStringFilePath = new File(expectedOutputPath, fileNamePrefix + defaultFileNameSuffix + ".txt").toPath();
-                    String defaultText = new String(Files.readAllBytes(defaultStringFilePath), StandardCharsets.UTF_8);
+                    File defaultStringFile = new File(expectedOutputPath, fileNamePrefix + defaultFileNameSuffix + ".txt");
+                    String defaultText = defaultStringFile.exists() ? new String(Files.readAllBytes(defaultStringFile.toPath()), StandardCharsets.UTF_8) : null;
 
                     if (actualText.equals(defaultText)) {
                         final File actualFile = new File(expectedStringFilePath.toString());
