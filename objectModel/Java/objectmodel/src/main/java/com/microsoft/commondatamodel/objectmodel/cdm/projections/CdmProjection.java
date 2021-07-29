@@ -421,7 +421,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
         resolvedAttributeSet.setAttributeContext(attCtxUnder);
 
         if (projCtx == null) {
-            Logger.error(this.getCtx(), TAG, "extractResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrProjFailedToResolve, this.getAtCorpusPath());
+            Logger.error(this.getCtx(), TAG, "extractResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrProjFailedToResolve);
             return resolvedAttributeSet;
         }
 

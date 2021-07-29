@@ -115,7 +115,7 @@ class CdmOperationRenameAttributes(CdmOperationBase):
                     new_attribute_name = self._get_new_attribute_name(current_PAS, source_attribute_name)  # type: str
 
                     # Create new resolved attribute with the new name, set the new attribute as target
-                    res_attr_new = self._create_new_resolved_attribute(proj_ctx, None, current_PAS._current_resolved_attribute.target, new_attribute_name)  # type: ResolvedAttribute
+                    res_attr_new = self._create_new_resolved_attribute(proj_ctx, None, current_PAS._current_resolved_attribute, new_attribute_name)  # type: ResolvedAttribute
 
                     # Get the attribute name the way it appears in the applyTo list
                     apply_to_name = top_level_rename_attribute_names[current_PAS._current_resolved_attribute.resolved_name]
@@ -160,8 +160,4 @@ class CdmOperationRenameAttributes(CdmOperationBase):
             logger.error(self.ctx, self._TAG, self.getNewAttributeName.__name__, self.at_corpus_path, CdmLogCode.ERR_PROJ_RENAME_FORMAT_IS_NOT_SET)
             return ''
 
-        attribute_name = StringUtils._replace(self.rename_format, 'a', source_attribute_name)
-        attribute_name = StringUtils._replace(attribute_name, 'o', ordinal)
-        attribute_name = StringUtils._replace(attribute_name, 'm', current_attribute_name)
-
-        return attribute_name
+        return self._replace_wildcard_characters(self.rename_format, source_attribute_name, ordinal, current_attribute_name)

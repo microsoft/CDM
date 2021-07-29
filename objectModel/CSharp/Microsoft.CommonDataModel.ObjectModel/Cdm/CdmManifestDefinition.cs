@@ -236,12 +236,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 foreach (var entity in this.Entities)
                 {
-                    var entDef = await this.GetEntityFromReference(entity, this);
+
+                    string entityPath = await this.GetEntityPathFromDeclaration(entity, this);
+                    CdmEntityDefinition entDef = await this.Ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(entityPath);
+
                     if (entDef == null)
-                    {
-                        Logger.Error(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveEntityRefError);
-                        return null;
-                    }
+                        Logger.Error(this.Ctx, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveEntityFailure, entityPath);
 
                     if (entDef.InDocument.Folder == null)
                     {
@@ -423,23 +423,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// finds and returns an entity object from an EntityDeclaration object that probably comes from a manifest
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <param name="manifest"></param>
-        /// <returns></returns>
-        internal async Task<CdmEntityDefinition> GetEntityFromReference(CdmEntityDeclarationDefinition entity, CdmManifestDefinition manifest)
-        {
-            string entityPath = await this.GetEntityPathFromDeclaration(entity, manifest);
-            CdmEntityDefinition result = await this.Ctx.Corpus.FetchObjectAsync<CdmEntityDefinition>(entityPath);
-
-            if (result == null)
-                Logger.Error(this.Ctx, Tag, nameof(GetEntityFromReference), this.AtCorpusPath, CdmLogCode.ErrResolveEntityFailure, entityPath);
-
-            return result;
         }
 
         private bool IsRelAllowed(CdmE2ERelationship rel, CdmRelationshipDiscoveryStyle option)

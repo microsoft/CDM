@@ -184,11 +184,6 @@ export class PersistenceLayer {
                     JSON.parse(jsonData)
                 ) as unknown as CdmDocumentDefinition;
             } else if (docNameInLowCase.endsWith(CdmConstants.modelJsonExtension)) {
-                if (docNameInLowCase !== CdmConstants.modelJsonExtension) {
-                    Logger.error(this.ctx, this.TAG, this.LoadDocumentFromPathAsync.name, docPath, cdmLogCode.ErrPersistDocNameLoadFailure, docName);
-                    return undefined;
-                }
-
                 docContent = await ModelJson.ManifestPersistence.fromObject(
                     this.ctx,
                     JSON.parse(jsonData),

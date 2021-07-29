@@ -125,7 +125,7 @@ public class ManifestPersistence {
             } else if (EntityDeclaration.EntityDeclarationDefinitionType.ReferencedEntity.equals(type)) {
               entity = ReferencedEntityDeclarationPersistence.fromData(ctx, fullPath, entityNode);
             } else {
-              Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistEntityDeclarationMissing);
+              Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistEntityDeclarationMissing,  entityNode.get("entityName").asText());
             }
           } else {
             if (entityNode.has("entitySchema")) {

@@ -121,13 +121,10 @@
     <value>Cannot resolve the manifest '{0}' because it has not been added to a folder</value>
   </data>
   <data name="ErrValdnIntegrityCheckFailure" xml:space="preserve">
-    <value>Integrity check failed. Reason: The object '{0}' is missing the following fields. At least one of the following must be provided: {1}</value>
+    <value>Integrity check failed. The object '{0}' is missing the following fields: {1}</value>
   </data>
   <data name="ErrPersistProjInvalidOpsType" xml:space="preserve">
     <value>Invalid operation type '{0}'.</value>
-  </data>
-  <data name="ErrResolveEntityRefError" xml:space="preserve">
-    <value>Unable to get entity from reference</value>
   </data>
   <data name="ErrDocIsNotFolder" xml:space="preserve">
     <value>The document containing the entity '{0}' is not in a folder</value>
@@ -157,10 +154,10 @@
     <value>Failed saving sub-manifest document {0}</value>
   </data>
   <data name="ErrPersistEntityPathNotFound" xml:space="preserve">
-    <value>Could not find entity path or similar</value>
+    <value>Entity path not set in entity declaration for entity '{0}'.</value>
   </data>
   <data name="ErrUnsupportedRef" xml:space="preserve">
-    <value>No support for absolute references yet. fix {0} {1}</value>
+    <value>Absolute references are not supported. Fix {0} {1}</value>
   </data>
   <data name="ErrIndexFailed" xml:space="preserve">
     <value>Could not index document.</value>
@@ -207,7 +204,7 @@
   <data name="ErrStorageNullCorpusPath" xml:space="preserve">
     <value>The corpus path is null or empty</value>
   </data>
-  <data name="ErrValdnInvalidResx" xml:space="preserve">
+  <data name="ErrValdnInvalidExpression" xml:space="preserve">
     <value>The {0} '{1}' could not form a valid regular expression. Reason: {2}</value>
   </data>
   <data name="ErrProjFailedToResolve" xml:space="preserve">
@@ -220,22 +217,22 @@
     <value>Array expansion operation does not support attribute groups.</value>
   </data>
   <data name="ErrValdnInvalidMinCardinality" xml:space="preserve">
-    <value>Invalid minimum cardinality {0}.</value>
+    <value>Invalid minimum cardinality {0}. Value must be a number greater than zero or '*'.</value>
   </data>
   <data name="ErrValdnInvalidMaxCardinality" xml:space="preserve">
-    <value>Invalid maximum cardinality {0}.</value>
+    <value>Invalid maximum cardinality {0}. Value must be greater than or equal to 0 and less than maxCardinality.</value>
   </data>
   <data name="ErrProjStringError" xml:space="preserve">
-    <value>Unable to get number for string '{0}'. Falling to default value {1}.</value>
+    <value>Unable to get number for string '{0}'. Using default value '{1}'.</value>
   </data>
   <data name="ErrInvalidPath" xml:space="preserve">
     <value>Invalid path '{0}'</value>
   </data>
   <data name="ErrDocEntityReplacementFailure" xml:space="preserve">
-    <value>Attempting to replace source entity's document '{0}'</value>
+    <value>Unable to replace source entity's document '{0}'.</value>
   </data>
-  <data name="ErrResolveEntityNotFound" xml:space="preserve">
-    <value>No Entity Name provided.</value>
+  <data name="ErrResolveNewEntityNameNotSet" xml:space="preserve">
+    <value>New entity name not provided for resolved entity.</value>
   </data>
   <data name="ErrDocWrtDocNotfound" xml:space="preserve">
     <value>No WRT document was supplied.</value>
@@ -247,7 +244,7 @@
     <value>Expected entity to have an "Owner" document set. Cannot create entity declaration to add to manifest.</value>
   </data>
   <data name="ErrValdnMissingLanguageTag" xml:space="preserve">
-    <value>Default value missing languageTag or displayText.</value>
+    <value>A 'defaultValue' property is empty or one of its entries is missing 'languageTag' and 'displayText' values.</value>
   </data>
   <data name="ErrUnsupportedType" xml:space="preserve">
     <value>Default value type not supported. Please use JArray.</value>
@@ -262,7 +259,7 @@
     <value>No registered storage adapter understood the path '{0}'</value>
   </data>
   <data name="ErrStorageNamespaceMismatch" xml:space="preserve">
-    <value>The namespace '{0}' found on the path does not match the namespace found on the object"</value>
+    <value>The namespace '{0}' found on the path '{1}' does not match the namespace found on the object '{2}' which has namespace '{3}'.</value>
   </data>
   <data name="ErrStorageNullAdapterConfig" xml:space="preserve">
     <value>Adapter config cannot be null or empty.</value>
@@ -277,10 +274,10 @@
     <value>Missing type in Json config for the namespace {0}.</value>
   </data>
   <data name="ErrStorageInvalidPathFormat" xml:space="preserve">
-    <value>The path should start with '.\' and should not contain '..\' or '\.\'</value>
+    <value>The path should not start with './' or '.\'and should not contain '../' , '..\', '/./', '\.\'.</value>
   </data>
   <data name="ErrPersistFileWriteFailure" xml:space="preserve">
-    <value>Failed to write to the file '{0}' for reason {1}.</value>
+    <value>Failed to persist document '{0}'. Reason: {1}.</value>
   </data>
   <data name="ErrPersistFileReadFailure" xml:space="preserve">
     <value>Could not read '{0}' from the '{1}' namespace. Reason '{2}'</value>
@@ -289,61 +286,55 @@
     <value>Document name cannot be null or empty.</value>
   </data>
   <data name="ErrPersistDocNameLoadFailure" xml:space="preserve">
-    <value>Failed to load '{0}', as it's not an acceptable file name. It must be {1}.</value>
+    <value>Failed to load '{0}', as it's not an acceptable file name. File must be named '{1}'.</value>
   </data>
   <data name="ErrPersistDocConversionFailure" xml:space="preserve">
-    <value>Could not convert '{0}'. Reason '{1}'</value>
+    <value>There was an error loading document '{0}'. Reason: {1}</value>
   </data>
   <data name="ErrPersistClassMissing" xml:space="preserve">
-    <value>Could not find a Persistence class to handle the file '{0}'</value>
+    <value>Could not find a Persistence class to handle the file '{0}'. Supported formats are model.json, manifest.cdm.json and cdm.json.</value>
   </data>
   <data name="ErrPersistAdapterNotFoundForNamespace" xml:space="preserve">
     <value>Could not find a storage adapter registered for the namespace '{0}'.</value>
   </data>
   <data name="ErrPersistAdapterWriteFailure" xml:space="preserve">
-    <value>The storage adapter '{0}' claims it is unable to write files.</value>
+    <value>The storage adapter '{0}' reports it is unable to write files.</value>
   </data>
   <data name="ErrPersistSaveLinkedDocs" xml:space="preserve">
     <value>Failed to save linked documents for file '{0}'.</value>
   </data>
-  <data name="ErrPersistModelJsonAttrConversionFailure" xml:space="preserve">
+  <data name="ErrPersistModelJsonToAttrConversionFailure" xml:space="preserve">
     <value>There was an error while trying to convert model.json attribute to cdm attribute.</value>
   </data>
-  <data name="ErrPersistManifestSavingFailure" xml:space="preserve">
-    <value>Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported.</value>
+  <data name="ErrPersistModelJsonEntityAttrError" xml:space="preserve">
+    <value>Saving a manifest with an entity containing an entity attribute to model.json format is not supported.</value>
   </data>
   <data name="ErrPersistCardinalityPropMissing" xml:space="preserve">
     <value>Both minimum and maximum are required for the Cardinality property.</value>
   </data>
-  <data name="ErrPersistProjInvalidType" xml:space="preserve">
-    <value>Type {0} is invalid for this operation.</value>
-  </data>
-  <data name="ErrPersistEntityParsingError" xml:space="preserve">
-    <value>There was an error while trying to parse entity type.</value>
-  </data>
-  <data name="ErrPersistModelJsonRelConversionError" xml:space="preserve">
-    <value>There was an error while trying to convert cdm relationship to model.json relationship.</value>
+  <data name="ErrPersistModelJsonEntityParsingError" xml:space="preserve">
+    <value>There was an error while trying to parse model.json entity.</value>
   </data>
   <data name="ErrPersistModelJsonEntityDeclarationConversionError" xml:space="preserve">
     <value>There was an error while trying to convert {0}'s entity declaration to model json format.</value>
   </data>
-  <data name="ErrPersistModelIdDuplication" xml:space="preserve">
-    <value>Same ModelId pointing to different locations</value>
+  <data name="ErrPersistModelJsonModelIdDuplication" xml:space="preserve">
+    <value>Same ModelId '{0}' pointing to different locations.</value>
   </data>
-  <data name="ErrPersistInvalidEntityPath" xml:space="preserve">
-    <value>Invalid entity path set in entity {0}</value>
+  <data name="ErrPersistModelJsonInvalidEntityPath" xml:space="preserve">
+    <value>Invalid entity path set in reference entity '{0}'.</value>
   </data>
   <data name="ErrPersistModelIdNotFound" xml:space="preserve">
     <value>Model Id {0} from {1} not found in referenceModels.</value>
   </data>
-  <data name="ErrPersistDocFetchError" xml:space="preserve">
+  <data name="ErrPersistModelJsonDocConversionError" xml:space="preserve">
     <value>There was an error while trying to fetch the entity doc from local entity declaration Persistence.</value>
   </data>
-  <data name="ErrPersistModelJsonEntityPartitionConversionError" xml:space="preserve">
-    <value>There was an error while trying to convert cdm data partition to model.json partition.</value>
+  <data name="ErrPersistModelJsonEntityRefConversionError" xml:space="preserve">
+    <value>There was an error while trying to convert reference entity from model.json for entity {0}.</value>
   </data>
   <data name="ErrPersistProjUnsupportedProp" xml:space="preserve">
-    <value>Unsupported: applyTo property type should be string or List string.</value>
+    <value>Unsupported: '{0}' property type should be '{1}'.</value>
   </data>
   <data name="ErrPersistEntityAttrUnsupported" xml:space="preserve">
     <value>The EntityAttribute {0} is projection based. Resolution guidance is not supported with a projection.</value>
@@ -355,7 +346,7 @@
     <value>RenameFormat should be set for this operation to work.</value>
   </data>
   <data name="ErrPersistModelJsonEntityConversionError" xml:space="preserve">
-    <value>There was an error while trying to convert a model.json entity to the CDM entity.</value>
+    <value>There was an error while trying to convert a  CDM entity from model.json for entity {0}.</value>
   </data>
   <data name="ErrPersistCdmEntityFetchError" xml:space="preserve">
     <value>There was an error while trying to fetch cdm entity doc.</value>
@@ -367,10 +358,10 @@
     <value>This ObjectModel version supports json semantic version {0} at maximum. Trying to load a document with version {1}.</value>
   </data>
   <data name="ErrPersistEntityDeclarationMissing" xml:space="preserve">
-    <value>Could not find the type for entity declaration</value>
+    <value>Invalid entity declaration type defined for entity '{0}'.</value>
   </data>
-  <data name="ErrPersistInvalidExtensionTrait" xml:space="preserve">
-    <value>Invalid extension trait name {0}, expected prefix {1}.</value>
+  <data name="ErrPersistModelJsonInvalidExtensionTrait" xml:space="preserve">
+    <value>Invalid model.json extension trait name '{0}', expected prefix '{1}'.</value>
   </data>
   <data name="ErrPersistFilePersistError" xml:space="preserve">
     <value>Could not persist file '{0}'. Reason {1}.</value>
@@ -379,34 +370,37 @@
     <value>Failed to persist '{0}'</value>
   </data>
   <data name="ErrPersistFailure" xml:space="preserve">
-    <value>Failed to persist '{0}', as it's not an acceptable file name. It must be {1}.</value>
+    <value>Failed to persist '{0}', as it's not an acceptable file name. File must be named '{1}'.</value>
   </data>
   <data name="ErrProjInvalidAttrState" xml:space="preserve">
     <value>Invalid ProjectionAttributeState provided for addition to the Set. Add operation failed.</value>
   </data>
+  <data name="ErrProjUnsupportedSource" xml:space="preserve">
+    <value>Unsupported source type '{0}' in operation '{1}'.</value>
+  </data>
   <data name="ErrValdnMissingDoc" xml:space="preserve">
-    <value>Document '{0}' is not in a folder</value>
+    <value>Document object '{0}' has not been added to any folder object.</value>
   </data>
   <data name="ErrObjectWithoutOwnerFound" xml:space="preserve">
     <value>Found object without owner when calculating relationships.</value>
   </data>
   <data name="ErrPersistInvalidMaxCardinality" xml:space="preserve">
-    <value>Invalid maximum cardinality {0}.</value>
+    <value>Invalid maximum cardinality {0}. Value must be greater than or equal to 0 and less than maxCardinality.</value>
   </data>
   <data name="ErrPersistInvalidMinCardinality" xml:space="preserve">
-    <value>Invalid minimum cardinality {0}.</value>
+    <value>Invalid minimum cardinality {0}. Value must be a number greater than zero or '*'.</value>
   </data>
   <data name="ErrDocSymbolNotFound" xml:space="preserve">
     <value>Could not find symbol '{0}' in document[{1}]</value>
   </data>
   <data name="ErrValdnInvalidDoc" xml:space="preserve">
-    <value>The requested path: {0} involves a document that failed validation</value>
+    <value>The requested path '{0}' refers a document that failed validation.</value>
   </data>
   <data name="ErrDocAdapterNotFound" xml:space="preserve">
     <value>Adapter not found for the document '{0}'</value>
   </data>
   <data name="ErrAdapterNotFound" xml:space="preserve">
-    <value>Adapter not found for the corpus path.</value>
+    <value>Adapter not found for the corpus path for namesapce {0}.</value>
   </data>
   <data name="ErrPersistConversionError" xml:space="preserve">
     <value>Could not convert '{0}'. Reason '{1}'.</value>
@@ -427,7 +421,7 @@
     <value>There was an error while trying to convert from JSON to CdmImport. Reason: JSON object is null</value>
   </data>
   <data name="ErrPersistJsonObjectRefConversionError" xml:space="preserve">
-    <value>There was an error while trying to convert from JSON to CdmObjectReferenceBase. Reason: '{0}'</value>
+    <value>There was an error while trying to save to file. Reason: '{0}'</value>
   </data>
   <data name="ErrStorageObjectNodeCastFailed" xml:space="preserve">
     <value>Config cannot be cast to objectNode. Config: {0}, Error: {1}</value>
@@ -445,7 +439,7 @@
     <value>Unable to resolve the reference '{0}' to a known object</value>
   </data>
   <data name="WarnValdnPrimaryKeyMissing" xml:space="preserve">
-    <value>There is a primary key missing for the entry {0}.</value>
+    <value>Primary key is missing for entity '{0}'.</value>
   </data>
   <data name="WarnPartitionFileFetchFailed" xml:space="preserve">
     <value>Failed to fetch all files in the folder location '{0}' described by a partition pattern. Exception: {1}</value>
@@ -459,8 +453,8 @@
   <data name="WarnDocImportNotLoaded" xml:space="preserve">
     <value>Import document {0} not loaded. This may cause unexpected behavior of the model.</value>
   </data>
-  <data name="WarnIdentifierArgumentsNotSupported" xml:space="preserve">
-    <value>is.linkedEntity.identifier does not support arguments</value>
+  <data name="WarnLinkEntIdentArgsNotSupported" xml:space="preserve">
+    <value>Trait 'is.linkedEntity.identifier' is not accepting arguments, skipping relationship recording for attribute '{0}' in entity '{1}'.</value>
   </data>
   <data name="WarnDocChangesDiscarded" xml:space="preserve">
     <value>discarding changes in document: {0}</value>
@@ -478,10 +472,13 @@
     <value>startOrdinal {0} should not be greater than endOrdinal {1}</value>
   </data>
   <data name="WarnValdnMaxOrdinalTooHigh" xml:space="preserve">
-    <value>endOrdinal {0} is greater than the maximum allowed ordinal of {1}. Using the maximum allowed ordinal instead.</value>
+    <value>The endOrdinal '{0}' is greater than the maximum allowed ordinal '{1}</value>
+  </data>
+  <data name="WarnProjAddArtifactAttrNotSupported" xml:space="preserve">
+    <value>Operation AddArtifactAttribute is not supported on {0} yet.</value>
   </data>
   <data name="WarnProjRenameAttrNotSupported" xml:space="preserve">
-    <value>RenameAttributes is not supported on an attribute group yet.</value>
+    <value>Operation RenameAttributes is not supported on an attribute group yet.</value>
   </data>
   <data name="WarnPartitionInvalidArguments" xml:space="preserve">
     <value>Invalid set of arguments provided for data partition corresponding to location: {0}</value>
@@ -508,7 +505,7 @@
     <value>There was an issue while trying to read relationships from the model.json file.</value>
   </data>
   <data name="WarnPersistCustomExtNotSupported" xml:space="preserve">
-    <value>Custom extensions are not supported in referenced entity.</value>
+    <value>Custom extensions are not supported in referenced entity '{0}'.</value>
   </data>
   <data name="WarnPersistRelUndefinedSourceEntity" xml:space="preserve">
     <value>Relationship's source entity '{0}' is not defined.</value>
@@ -531,11 +528,8 @@
   <data name="WarnProjFKWithoutSourceEntity" xml:space="preserve">
     <value>Found ReplaceAsForeignKey operation for attribute '{0}' without a source entity. This operation is only supported on an entity typed attribute.</value>
   </data>
-  <data name="WarnProjRemoveOpsFailed" xml:space="preserve">
-    <value>Invalid ProjectionAttributeState provided for removal from the Set. Remove operation failed.</value>
-  </data>
   <data name="WarnStorageRemoveAdapterFailed" xml:space="preserve">
-    <value>Cannot remove the adapter from non-existing namespace.</value>
+    <value>Cannot remove the adapter from a non-existing namespace '{0}'.</value>
   </data>
   <data name="WarnStorageExpectedPathPrefix" xml:space="preserve">
     <value>Expected path prefix to end in /, but it didn't. Appended the / {0}</value>
@@ -548,5 +542,92 @@
   </data>
   <data name="ErrPersistModelJsonEntityDeclarationConversionFailure" xml:space="preserve">
     <value>There was an error while trying to convert {0}'s entity declaration to model json format. Exception: {1}</value>
+  </data>
+  <data name="ErrPersistSymsEntityFetchError" xml:space="preserve">
+    <value>Error while fetching CDM entity document from path '{0}'</value>
+  </data>
+  <data name="ErrPersistSymsDbWriteFailed" xml:space="preserve">
+    <value>Syms Adapter write operation to create database for document '{0}' failed. Reason '{1}'.</value>
+  </data>
+  <data name="ErrPersistSymsEntityDeclConversionException" xml:space="preserve">
+    <value>Syms conversion failed for entity '{0}'. Reason '{1}'</value>
+  </data>
+  <data name="ErrPersistSymsEntityDeclConversionFailure" xml:space="preserve">
+    <value>Syms conversion failed for entity '{0}'.</value>
+  </data>
+  <data name="ErrPersistSymsTablesReadFailed" xml:space="preserve">
+    <value>Unable to get all tables from SyMS for document path '{0}'. Reason: '{1}'</value>
+  </data>
+  <data name="ErrPersistSymsTableWriteFailed" xml:space="preserve">
+    <value>Syms Adapter write operation to create tables for document '{0}' failed. Reason '{1}'. Payload = {2}</value>
+  </data>
+  <data name="ErrPersistSymsUnsupportedCdmConversion" xml:space="preserve">
+    <value>Document '{0}' can not be saved in SyMS as it has multiple databases to saved.</value>
+  </data>
+  <data name="ErrPersistSymsUnsupportedManifest" xml:space="preserve">
+    <value>Document '{0}' is not supported for save. Use &lt;databaseName&gt;/&lt;databaseName&gt;.manifest.cdm.json to save SyMS database.</value>
+  </data>
+  <data name="WarnPersistSymsEntityMissing" xml:space="preserve">
+    <value>Entity {0} is not inside a document or its owner is not a document.</value>
+  </data>
+  <data name="ErrPersistSymsAdlsAdapterMissing" xml:space="preserve">
+    <value>Location mentioned in dcoument with name {0} is not mounted.</value>
+  </data>
+  <data name="ErrPersistSymsEntityPathNull" xml:space="preserve">
+    <value>Entity path for entity {0} is null.</value>
+  </data>
+  <data name="ErrPersistSymsPartitionNotSupported" xml:space="preserve">
+    <value>SyMS includes a spark partition for table '{0}' which is currently not supported by CDM.</value>
+  </data>
+  <data name="ErrPersistSymsDBSourceTraitMissing" xml:space="preserve">
+    <value>The 'is.storagesource' trait is missing in database {0}. This is mandatory trait for syms conversion.</value>
+  </data>
+  <data name="ErrPersistSymsNotSupported" xml:space="preserve">
+    <value>Tables without data partition are not supported in syms.</value>
+  </data>
+  <data name="ErrPersistSymsTableMissingDataLocation" xml:space="preserve">
+    <value>Syms table {0} data location is empty.</value>
+  </data>
+  <data name="ErrPersistSymsTableFormatTypeNotSupported" xml:space="preserve">
+    <value>Encountered unknown format type for table {0}. Supported format type is csv .</value>
+  </data>
+  <data name="ErrPersistSymsTableInvalidDataLocation" xml:space="preserve">
+    <value>Syms table {0} data location should either be folder or .csv file.</value>
+  </data>
+  <data name="ErrPersistSymsUnknownDataFormat" xml:space="preserve">
+    <value>Encountered unknown CDM data format for attribute {0} which can not be mapped to syMS.</value>
+  </data>
+  <data name="WarnPersistSymsDbCreatedWithoutTables" xml:space="preserve">
+    <value>CDM manifest with path {0} does not contain any entity so empty database created.</value>
+  </data>
+  <data name="ErrPersistSymsAdlsAdapterNotMounted" xml:space="preserve">
+    <value>Appropriate adls adapter for path {0} is not mounted. Tried creating new one but failed.</value>
+  </data>
+  <data name="ErrPersistSymsAttrConversionError" xml:space="preserve">
+    <value>Syms to CDM conversion failed for entity {0} because data column was not recieved from syms.</value>
+  </data>
+  <data name="ErrPersistSymsAttrConversionFailure" xml:space="preserve">
+    <value>Syms to CDM conversion failed for attribute {0} for entity {1}.</value>
+  </data>
+  <data name="ErrPersistSymsInvalidDbObject" xml:space="preserve">
+    <value>Database object receieved from syms was either null or not with type as DATABASE.</value>
+  </data>
+  <data name="ErrPersistSymsInvalidDbPropObject" xml:space="preserve">
+    <value>Database properties object received from syms either was empty or didn't have source location.</value>
+  </data>
+  <data name="ErrPersistSymsStorageSourceTraitError" xml:space="preserve">
+    <value>{0} trait must be defined. It must have argument name {1} value in format  '&lt;namespace&gt;:/' and mounted to adls apapter.</value>
+  </data>
+  <data name="WarnPersistSymsProjNotExist" xml:space="preserve">
+    <value>Projection exist only for logical entities.</value>
+  </data>
+  <data name="WarnTelemetryIngestionFailed" xml:space="preserve">
+    <value>Failed to ingest telemetry. Reason '{0}'</value>
+  </data>
+  <data name="ErrPersistModelJsonFromAttrConversionFailure" xml:space="preserve">
+    <value>There was an error while trying to convert model.json attribute from cdm attribute.</value>
+  </data>
+  <data name="ErrStorageFolderNotFound" xml:space="preserve">
+    <value>Folder not found for the namespace '{0}'</value>
   </data>
 </root>

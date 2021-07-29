@@ -29,7 +29,7 @@ export class OperationBasePersistence {
       const operationName: string = OperationTypeConvertor.operationTypeToString(operationType);
 
       if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, operationName)) {
-        Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjInvalidType, object.$type);
+        Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistProjInvalidOpsType, object.$type);
       } else {
           operation.type = operationType;
       }

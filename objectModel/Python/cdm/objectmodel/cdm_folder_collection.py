@@ -29,8 +29,8 @@ class CdmFolderCollection(CdmCollection):
 
     def _add_item_modifications(self, obj: 'CdmFolderDefinition') -> None:
         obj._corpus = self.owner._corpus
-        obj.namespace = self.owner.namespace
-        obj.folder_path = '{}{}/'.format(self.owner.folder_path, obj.name)
+        obj._namespace = self.owner._namespace
+        obj._folder_path = '{}{}/'.format(self.owner._folder_path, obj.name)
         # TODO: At this point we should also propagate the root adapter into the child folder
         # and all its sub-folders and contained documents. For now, don't add things to the
         # folder unless it's tied to an adapter root.

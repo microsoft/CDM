@@ -1,0 +1,115 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "NewPerson",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "PersonInfo",
+                    "entity": {
+                        "operations": [
+                            {
+                                "$type": "addArtifactAttribute",
+                                "newAttribute": {
+                                    "name": "newName_1",
+                                    "dataType": "string"
+                                }
+                            }
+                        ],
+                        "source": {
+                            "operations": [
+                                {
+                                    "$type": "renameAttributes",
+                                    "renameFormat": "renamingAgain-{m}",
+                                    "applyTo": [
+                                        "renaming-newName"
+                                    ]
+                                }
+                            ],
+                            "source": {
+                                "operations": [
+                                    {
+                                        "$type": "renameAttributes",
+                                        "renameFormat": "renaming-{m}",
+                                        "applyTo": [
+                                            "newName"
+                                        ]
+                                    }
+                                ],
+                                "source": {
+                                    "operations": [
+                                        {
+                                            "$type": "addArtifactAttribute",
+                                            "newAttribute": {
+                                                "name": "newName",
+                                                "dataType": "string"
+                                            }
+                                        }
+                                    ],
+                                    "source": {
+                                        "operations": [
+                                            {
+                                                "$type": "excludeAttributes",
+                                                "excludeAttributes": [
+                                                    "age",
+                                                    "phoneNumber",
+                                                    "name"
+                                                ]
+                                            }
+                                        ],
+                                        "source": "Person"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "name": "FavoriteTerm",
+                    "dataType": "string",
+                    "projection": {
+                        "operations": [
+                            {
+                                "$type": "addArtifactAttribute",
+                                "newAttribute": {
+                                    "name": "newTerm",
+                                    "dataType": "string"
+                                },
+                                "insertAtTop": true
+                            }
+                        ],
+                        "source": {
+                            "operations": [
+                                {
+                                    "$type": "renameAttributes",
+                                    "renameFormat": "renamed-{m}",
+                                    "applyTo": [
+                                        "newName"
+                                    ]
+                                }
+                            ],
+                            "source": {
+                                "operations": [
+                                    {
+                                        "$type": "addArtifactAttribute",
+                                        "newAttribute": {
+                                            "name": "newName",
+                                            "dataType": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

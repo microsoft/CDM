@@ -38,7 +38,7 @@ public class EventListTests {
         corpus.fetchObjectAsync("foo:/bar").join();
         assertNotNull(corpus.getCtx().getEvents(), "Ctx.events should not be null");
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNamespaceNotRegistered);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNamespaceNotRegistered, true);
 
         // Test fetching a good object, this should leave event recorder empty
         corpus.fetchObjectAsync("local:/default.manifest.cdm.json").join();
@@ -48,23 +48,23 @@ public class EventListTests {
         CdmManifestDefinition manifest = corpus.makeObject(CdmObjectType.ManifestDef, "dummy");
         manifest.saveAsAsync("foo:/bar", true).join();
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrValdnMissingDoc);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrValdnMissingDoc, true);
 
         // Test resolving a manifest not added to a folder, this should yield at least one error message in the recorder
         manifest.createResolvedManifestAsync("new dummy", null).join();
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveManifestFailed);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveManifestFailed, true);
 
         // Test resolving an entity without WRT doc, this should yield at least one error message in the recorder
         CdmEntityDefinition entity2 = corpus.makeObject(CdmObjectType.EntityDef, "MyEntity2");
         entity2.createResolvedEntityAsync("MyEntity2-Resolved").join();
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrDocWrtDocNotfound);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrDocWrtDocNotfound, true);
 
         // Test invoking FileStatusCheckAsync on the manifest, this should yield at least one error message in the recorder
         manifest.fileStatusCheckAsync().join();
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace, true);
 
         // Repeat the same test but with status level 'None', no events should be recorded
         corpus.getCtx().setReportAtLevel(CdmStatusLevel.None);
@@ -77,7 +77,7 @@ public class EventListTests {
         CdmDataPartitionDefinition part = corpus.makeObject(CdmObjectType.DataPartitionDef, "part");
         part.fileStatusCheckAsync().join();
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath, true);
 
         // Test checking file status on a data partition pattern
         CdmDocumentDefinition refDoc = corpus.makeObject(CdmObjectType.DocumentDef, "RefEntDoc");
@@ -85,8 +85,7 @@ public class EventListTests {
         partPattern.setInDocument(refDoc);
         partPattern.fileStatusCheckAsync().join();
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrDocAdapterNotFound);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullCorpusPath, true);
 
         // Test calculating relationships - no errors/warnings
         corpus.calculateEntityGraphAsync(manifest).join();
@@ -95,6 +94,13 @@ public class EventListTests {
         // Test populating relationships in manifest - no errors/warnings
         manifest.populateManifestRelationshipsAsync().join();
         testBasicLogsState(corpus);
+
+        // Test filtering code logic
+        corpus.getCtx().getSuppressedLogCodes().add(CdmLogCode.ErrPathNullObjectPath);
+        CdmDataPartitionDefinition part2 = corpus.makeObject(CdmObjectType.DataPartitionDef, "part2");
+        part2.fileStatusCheckAsync().join();
+
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath, false);
     }
 
     /**
@@ -126,7 +132,7 @@ public class EventListTests {
         manifest.createResolvedManifestAsync("new dummy 2", null).join();
 
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveReferenceFailure);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveReferenceFailure, true);
 
         // Keep for debugging
 //        corpus.getCtx().getEvents().forEach(logEntry -> {
@@ -145,33 +151,33 @@ public class EventListTests {
 
         corpus.getStorage().mount("dummy", null);
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullAdapter);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullAdapter, true);
 
         corpus.getStorage().unmount("nothing");
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnStorageRemoveAdapterFailed);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnStorageRemoveAdapterFailed, true);
 
         // No errors/warnings expected here
         corpus.getStorage().fetchRootFolder(null);
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace, true);
 
         corpus.getStorage().adapterPathToCorpusPath("Test");
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidAdapterPath);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidAdapterPath, true);
 
         corpus.getStorage().corpusPathToAdapterPath("unknown:/Test");
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageAdapterNotFound);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNamespaceNotRegistered);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageAdapterNotFound, true);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNamespaceNotRegistered, true);
 
         corpus.getStorage().createAbsoluteCorpusPath(null);
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath, true);
 
         corpus.getStorage().createRelativeCorpusPath(null);
         testBasicLogsState(corpus);
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath, true);
 
     }
 
@@ -239,7 +245,7 @@ public class EventListTests {
         } else {
             assertTrue(corpus.getCtx().getEvents().size() > 0, "There should have been at least one event recorded");
             assertTrue(corpus.getCtx().getEvents().get(0).containsKey("timestamp"), "The recorded event should have had a timestamp key");
-            assertEquals(corpus.getCtx().getEvents().get(0).get("correlationId"), DUMMY_CORRELATION_ID,
+            assertEquals(corpus.getCtx().getEvents().get(0).get("cid"), DUMMY_CORRELATION_ID,
                     "The recorded event should have had a correlationId key with the dummy value");
 
             if (corpus.getCtx().getReportAtLevel() == CdmStatusLevel.Progress) {

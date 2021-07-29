@@ -105,6 +105,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public TokenProvider TokenProvider { get; set; }
 
         /// <summary>
+        /// The user-defined token provider ( Async ).
+        /// </summary>
+        public TokenProviderAsync TokenProviderAsync { get; set; }
+
+        /// <summary>
         /// Maximum number of items to be returned by the directory list API.
         /// If omitted or greater than 5,000, the response will include up to 5,000 items.
         /// </summary>
@@ -212,6 +217,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             this.Hostname = hostname;
             this.Root = root;
             this.TokenProvider = tokenProvider;
+        }
+
+        /// <summary>
+        /// The ADLS constructor for user-defined token provider (Async)).
+        /// </summary>
+        public ADLSAdapter(string hostname, TokenProviderAsync tokenProviderAsync) : this()
+        {
+            this.Hostname = hostname;
+            this.TokenProviderAsync = tokenProviderAsync;
         }
 
         /// <summary>
@@ -623,6 +637,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             else if (this.TokenProvider != null)
             {
                 request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{this.TokenProvider.GetToken()}" } }, method);
+            }
+            else if (this.TokenProviderAsync != null)
+            {
+                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{await this.TokenProviderAsync.GetTokenAsync()}" } }, method);
             }
             else if (this.ClientId != null && this.Tenant != null && this.Secret != null)
             {

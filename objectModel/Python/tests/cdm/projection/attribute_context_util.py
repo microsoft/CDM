@@ -2,11 +2,13 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import os
+from typing import cast
 from unittest import TestCase
 
 from cdm.enums import CdmObjectType
-from cdm.objectmodel import CdmEntityDefinition, CdmAttributeContext, CdmAttributeReference, CdmCorpusDefinition, \
-    CdmArgumentDefinition, CdmTraitReference
+from cdm.objectmodel import CdmEntityDefinition, CdmAttributeContext, CdmAttributeReference, \
+    CdmArgumentDefinition, CdmTraitReference, CdmCollection, CdmAttributeItem, CdmAttributeGroupDefinition, \
+    CdmTraitCollection
 
 
 class AttributeContextUtil:
@@ -30,7 +32,7 @@ class AttributeContextUtil:
         self._get_content_declared_path(resolved_entity.attribute_context)
 
         # get the traits for all the attributes of a resolved entity
-        self._get_traits(resolved_entity)
+        self._get_traits(resolved_entity.attributes)
 
         return self._bldr
 
@@ -55,14 +57,26 @@ class AttributeContextUtil:
                 if not isinstance(content, CdmAttributeReference):
                     self._get_content_declared_path(content)
 
-    def _get_traits(self, resolved_entity: 'CdmEntityDefinition') -> None:
+    def _get_traits(self, attributes: 'CdmCollection[CdmAttributeItem]') -> None:
         """Get the traits for all the attributes of a resolved entity"""
-        for attrib in resolved_entity.attributes:
+        for attrib in attributes:
             attrib_corpus_path = attrib.at_corpus_path
             self._bldr += attrib_corpus_path
             self._bldr += '\n'
 
-            for trait in attrib.applied_traits:
+            from cdm.objectmodel import CdmAttributeGroupReference
+
+            if isinstance(attrib, CdmAttributeGroupReference):
+                att_group_def = cast(CdmAttributeGroupReference, attrib).explicit_reference  # type: CdmAttributeGroupDefinition
+                self._bldr += att_group_def.at_corpus_path
+                self._bldr += '\n'
+                self._get_trait_collection(att_group_def.exhibits_traits)
+                self._get_traits(att_group_def.members)
+            else:
+                self._get_trait_collection(attrib.applied_traits)
+
+    def _get_trait_collection(self, trait_collection: 'CdmTraitCollection') -> None:
+            for trait in trait_collection:
                 attrib_traits = trait.named_reference
                 self._bldr += attrib_traits
                 self._bldr += '\n'

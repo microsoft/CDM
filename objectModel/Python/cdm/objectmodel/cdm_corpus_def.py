@@ -52,6 +52,8 @@ SYMBOL_TYPE_CHECK = {
     CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF: CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF,
     CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF: CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF,
     CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF: CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF,
+    CdmObjectType.OPERATION_ALTER_TRAITS_DEF: CdmObjectType.OPERATION_ALTER_TRAITS_DEF,
+    CdmObjectType.OPERATION_ADD_ARTIFACT_ATTRIBUTE_DEF: CdmObjectType.OPERATION_ADD_ARTIFACT_ATTRIBUTE_DEF,
 }
 
 
@@ -105,7 +107,7 @@ class CdmCorpusDefinition:
         return self._persistence
 
     def _add_document_objects(self, folder: 'CdmFolderDefinition', doc: 'CdmDocumentDefinition'):
-        path = self.storage.create_absolute_corpus_path('{}{}'.format(doc.folder_path, doc.name), doc).lower()
+        path = self.storage.create_absolute_corpus_path('{}{}'.format(doc._folder_path, doc.name), doc).lower()
         self._document_library._add_document_path(path, folder, doc)
 
         return doc
@@ -167,7 +169,7 @@ class CdmCorpusDefinition:
                 obj.ctx = ctx
 
             logger.info(self.ctx, self._TAG, self._check_object_integrity.__name__, current_doc.at_corpus_path,
-                        'checked \'{}\''.format(current_doc.folder_path + path))
+                        'checked \'{}\''.format(current_doc._folder_path + path))
 
             return False
 
@@ -712,7 +714,9 @@ class CdmCorpusDefinition:
                                       CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF,
                                       CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF,
                                       CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF,
-                                      CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF}
+                                      CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF,
+                                      CdmObjectType.OPERATION_ALTER_TRAITS_DEF,
+                                      CdmObjectType.OPERATION_ADD_ARTIFACT_ATTRIBUTE_DEF}
 
         def callback(obj: 'CdmObject', path: str) -> bool:
             # I can't think of a better time than now to make sure any recently changed or added things have an in doc
@@ -744,7 +748,7 @@ class CdmCorpusDefinition:
 
             return False
 
-        corpus_path_root = current_doc.folder_path + current_doc.name
+        corpus_path_root = current_doc._folder_path + current_doc.name
         current_doc.visit(relative_path, callback, None)
 
     def _docs_for_symbol(self, res_opt: 'ResolveOptions', wrt_doc: 'CdmDocumentDefinition',
@@ -870,7 +874,7 @@ class CdmCorpusDefinition:
             # don't create new folders, just go as far as possible
             if last_folder:
                 # maybe the search is for a folder?
-                last_path = last_folder.folder_path
+                last_path = last_folder._folder_path
                 if last_path == object_path:
                     return last_folder
 
@@ -967,7 +971,7 @@ class CdmCorpusDefinition:
         self._remove_object_definitions(doc)
 
         # Remove from path lookup, folder lookup and global list of documents.
-        path = self.storage.create_absolute_corpus_path(doc.folder_path + doc.name, doc).lower()
+        path = self.storage.create_absolute_corpus_path(doc._folder_path + doc.name, doc).lower()
         self._document_library._remove_document_path(path, folder, doc)
 
     def _remove_object_definitions(self, doc: CdmDocumentDefinition) -> None:
@@ -992,7 +996,9 @@ class CdmCorpusDefinition:
                                         CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF,
                                         CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF,
                                         CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF,
-                                        CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF]:
+                                        CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF,
+                                        CdmObjectType.OPERATION_ALTER_TRAITS_DEF,
+                                        CdmObjectType.OPERATION_ADD_ARTIFACT_ATTRIBUTE_DEF]:
                 self._unregister_symbol(path, doc)
                 self._unregister_definition_reference_documents(i_object, 'rasb')
 
@@ -1426,10 +1432,10 @@ class CdmCorpusDefinition:
     async def _fetch_last_modified_time_from_object_async(self, curr_object: 'CdmObject') -> datetime:
         """Return last modified time of the file where the input object can be found."""
         if isinstance(curr_object, CdmContainerDefinition):
-            adapter = self.storage.fetch_adapter(cast('CdmContainerDefinition', curr_object).namespace)
+            adapter = self.storage.fetch_adapter(cast('CdmContainerDefinition', curr_object)._namespace)
             if not adapter:
                 logger.error(self.ctx, self._TAG, self._fetch_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
-                             CdmLogCode.ERR_ADAPTER_NOT_FOUND)
+                             CdmLogCode.ERR_ADAPTER_NOT_FOUND, cast('CdmContainerDefinition', curr_object).namespace)
                 return None
             # Remove namespace from path
             path_tuple = StorageUtils.split_namespace_path(curr_object.at_corpus_path)
@@ -1460,7 +1466,7 @@ class CdmCorpusDefinition:
             adapter = self.storage.fetch_adapter(namespace)
             if not adapter:
                 logger.error(self.ctx, self._TAG, self._fetch_last_modified_time_from_partition_path_async.__name__, corpus_path,
-                             CdmLogCode.ERR_ADAPTER_NOT_FOUND)
+                             CdmLogCode.ERR_ADAPTER_NOT_FOUND, namespace)
                 return None
             try:
                 return await adapter.compute_last_modified_time_async(path_tuple[1])

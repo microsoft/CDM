@@ -264,13 +264,8 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return CompletableFuture.runAsync(() -> {
       try (Logger.LoggerScope logScope = Logger.enterScope(CdmDataPartitionPatternDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
-        final String nameSpace = getInDocument().getNamespace();
-        final StorageAdapter adapter = getCtx().getCorpus().getStorage().fetchAdapter(nameSpace);
-
-        if (adapter == null) {
-          Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocAdapterNotFound, this.getInDocument().getName());
-          return;
-        }
+        String nameSpace = null;
+        StorageAdapter adapter = null;
 
         // make sure the root is a good full corpus path
         String rootCleaned = getRootLocation() != null && getRootLocation().endsWith("/") ? getRootLocation().substring(0, getRootLocation().length() - 1) : getRootLocation();
@@ -289,13 +284,22 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.ErrStorageNullCorpusPath, this.getAtCorpusPath());
             return;
           }
+
+          nameSpace = pathTuple.getLeft();
+          adapter = this.getCtx().getCorpus().getStorage().fetchAdapter(nameSpace);
+
+          if (adapter == null) {
+            Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocAdapterNotFound, this.getInDocument().getName());
+            return;
+          }
+
           // get a list of all corpusPaths under the root
           fileInfoList = adapter.fetchAllFilesAsync(pathTuple.getRight()).join();
         } catch (Exception e) {
           Logger.warning(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.getMessage());
         }
 
-        if (fileInfoList != null) {
+        if (fileInfoList != null && nameSpace != null) {
           // remove root of the search from the beginning of all paths so anything in the root is not found by regex
           for (int i = 0; i < fileInfoList.size(); i++) {
             fileInfoList.set(i, nameSpace + ":" + fileInfoList.get(i));
@@ -318,7 +322,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             } catch (final PatternSyntaxException e) {
               Logger.error(this.getCtx(), TAG,
                       "fileStatusCheckAsync",
-                      rootCorpus, CdmLogCode.ErrValdnInvalidResx, !StringUtils.isNullOrTrimEmpty(this.globPattern) ? "glob pattern" : "regular expression",
+                      rootCorpus, CdmLogCode.ErrValdnInvalidExpression, !StringUtils.isNullOrTrimEmpty(this.globPattern) ? "glob pattern" : "regular expression",
                       !StringUtils.isNullOrTrimEmpty(this.globPattern) ? this.globPattern : this.regularExpression, e.getMessage());
             }
 

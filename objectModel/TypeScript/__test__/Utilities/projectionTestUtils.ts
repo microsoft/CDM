@@ -1,3 +1,4 @@
+import { CdmTraitReference } from 'Cdm/CdmTraitReference';
 import * as fs from 'fs';
 
 import {
@@ -13,7 +14,11 @@ import {
     CdmProjection,
     CdmTypeAttributeDefinition,
     cdmStatusLevel,
-    resolveOptions
+    resolveOptions,
+    CdmCollection,
+    CdmAttributeGroupReference,
+    CdmAttributeItem,
+    CdmAttributeGroupDefinition
 } from '../../internal';
 import { AttributeContextUtil } from '../Cdm/Projection/AttributeContextUtil';
 import { testHelper } from '../testHelper';
@@ -195,6 +200,54 @@ export class projectionTestUtils {
         projection.source = projectionSource;
 
         return projection;
+    }
+
+    /**
+     * Validates trait "has.expansionInfo.list" for array type.
+     * @param attribute The type attribute
+     * @param expectedAttrName The expected attribute name
+     * @param ordinal The expected ordinal
+     * @param expansionName The expected expansion name
+     * @param memberAttribute The expected member attribute name
+     * @internal
+     */
+    public static validateExpansionInfoTrait(attribute: CdmTypeAttributeDefinition, expectedAttrName: string, ordinal: number, expansionName: string, memberAttribute: string) {
+        expect(attribute.name)
+            .toEqual(expectedAttrName);
+        const trait: CdmTraitReference = attribute.appliedTraits.item('has.expansionInfo.list') as CdmTraitReference;
+        expect(trait)
+            .not    
+            .toBeUndefined();
+        expect(trait.arguments.fetchValue('expansionName'))
+            .toEqual(expansionName);
+        expect(trait.arguments.fetchValue('ordinal'))
+            .toEqual(ordinal.toString());
+        expect(trait.arguments.fetchValue('memberAttribute'))
+            .toEqual(memberAttribute);
+    }
+
+    /**
+     * Validates the creation of an attribute group and return its definition
+     * @param attributes The collection of attributes
+     * @param attributeGroupName The attribute group name
+     * @param attributesSize The expected size of the attributes collection
+     * @internal
+     */
+    public static validateAttributeGroup(attributes: CdmCollection<CdmAttributeItem>, attributeGroupName: string, attributesSize: number = 1, index: number = 0)  {
+        expect(attributes.length)
+            .toEqual(attributesSize);
+        expect(attributes.allItems[index].objectType)
+            .toEqual(cdmObjectType.attributeGroupRef);
+        const attGroupReference: CdmAttributeGroupReference = attributes.allItems[index] as CdmAttributeGroupReference;
+        expect(attGroupReference.explicitReference)
+            .not
+            .toBeUndefined();
+
+        const attGroupDefinition: CdmAttributeGroupDefinition = attGroupReference.explicitReference as CdmAttributeGroupDefinition;
+        expect(attGroupDefinition.attributeGroupName)
+            .toEqual(attributeGroupName);
+
+        return attGroupDefinition;
     }
 
     /**

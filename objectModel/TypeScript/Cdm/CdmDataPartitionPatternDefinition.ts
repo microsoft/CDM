@@ -16,6 +16,7 @@ import { isLocalEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGu
 import { Logger, enterScope } from '../Utilities/Logging/Logger';
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { using } from "using-statement";
+import path = require('node:path');
 
 /**
  * The object model implementation for Data Partition Pattern.
@@ -193,13 +194,8 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
      */
     public async fileStatusCheckAsync(): Promise<void> {
         return await using(enterScope(CdmDataPartitionPatternDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
-            const namespace: string = this.inDocument.namespace;
-            const adapter: StorageAdapter = this.ctx.corpus.storage.fetchAdapter(namespace);
-
-        if (adapter === undefined) {
-            Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrDocAdapterNotFound, this.inDocument.name);
-            return;
-        }
+            let namespace: string = undefined;
+            let adapter: StorageAdapter = undefined;
 
             // make sure the root is a good full corpus path
             let rootCleaned: string = this.rootLocation && this.rootLocation.endsWith('/') ? this.rootLocation.substring(0, this.rootLocation.length - 1) : this.rootLocation;
@@ -216,13 +212,22 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                     Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrStorageNullCorpusPath);
                     return;
                 }
+
+                namespace = pathTuple[0];
+                adapter = this.ctx.corpus.storage.fetchAdapter(namespace);
+
+                if (adapter === undefined) {
+                    Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrDocAdapterNotFound, this.inDocument.name);
+                    return;
+                }
+
                 // get a list of all corpusPaths under the root
                 fileInfoList = await adapter.fetchAllFilesAsync(pathTuple[1]);
             } catch (e) {
                 Logger.warning(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.Message);
             }
 
-            if (fileInfoList !== undefined) {
+            if (fileInfoList !== undefined && namespace !== undefined) {
                 // remove root of the search from the beginning of all paths so anything in the root is not found by regex
                 for (let i: number = 0; i < fileInfoList.length; i++) {
                     fileInfoList[i] = `${namespace}:${fileInfoList[i]}`;
@@ -241,7 +246,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                     try {
                         regexPattern = new RegExp(regularExpression);
                     } catch (e) {
-                        Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidResx, this.globPattern, this.regularExpression, e.message);
+                        Logger.error(this.ctx, this.TAG, this.fileStatusCheckAsync.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidExpression, this.globPattern, this.regularExpression, e.message);
                     }
 
                     if (regexPattern !== undefined) {

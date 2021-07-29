@@ -296,7 +296,7 @@ public class CdmTraitReference extends CdmTraitReferenceBase {
     }
 
     for (final CdmArgumentDefinition arg : this.arguments) {
-      copy.getArguments().add(arg);
+      copy.getArguments().add((CdmArgumentDefinition)arg.copy(resOpt));
     }
 
     return copy;

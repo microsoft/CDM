@@ -28,7 +28,7 @@ class LocalEntityDeclarationPersistence:
         entity_path = data.get('entityPath') or data.get('entitySchema')
 
         if entity_path is None:
-            logger.error(ctx, LocalEntityDeclarationPersistence.__name__, LocalEntityDeclarationPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_PATH_NOT_FOUND)
+            logger.error(ctx, LocalEntityDeclarationPersistence.__name__, LocalEntityDeclarationPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_PATH_NOT_FOUND, data.get('entityName'))
 
         local_entity.entity_path = entity_path
 

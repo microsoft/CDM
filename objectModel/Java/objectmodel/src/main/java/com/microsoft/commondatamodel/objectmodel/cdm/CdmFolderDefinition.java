@@ -72,11 +72,8 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   }
 
   /**
-   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
    * @return String
    */
-  @Deprecated
   public String getFolderPath() {
     return folderPath;
   }
@@ -102,10 +99,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   /**
    *
    * @return String
-   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
    */
-  @Deprecated
   public String getNamespace() {
     return namespace;
   }

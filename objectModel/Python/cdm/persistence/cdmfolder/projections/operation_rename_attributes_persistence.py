@@ -33,7 +33,7 @@ class OperationRenameAttributesPersistence:
         elif isinstance(data.applyTo, list):
             rename_attributes_op.apply_to = data.applyTo
         elif data.applyTo is not None:
-            logger.error(ctx, _TAG, OperationRenameAttributesPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_PROJ_UNSUPPORTED_PROP)
+            logger.error(ctx, _TAG, OperationRenameAttributesPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_PROJ_UNSUPPORTED_PROP, 'applyTo', 'string or list of strings')
 
         return rename_attributes_op
 

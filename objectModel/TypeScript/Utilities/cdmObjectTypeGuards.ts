@@ -1,6 +1,5 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
 import {
     CdmArgumentDefinition,
     CdmAttributeContext,
@@ -37,6 +36,8 @@ import {
     CdmOperationIncludeAttributes,
     CdmOperationRenameAttributes,
     CdmOperationReplaceAsForeignKey,
+    CdmOperationAlterTraits,
+    CdmOperationAddArtifactAttribute,
     CdmParameterDefinition,
     CdmProjection,
     CdmPurposeDefinition,
@@ -225,4 +226,12 @@ export function isOperationAddAttributeGroup(obj: CdmObject): obj is CdmOperatio
 
 export function isResolvedAttributeSet(obj: refCounted): obj is ResolvedAttributeSet {
     return obj && (obj as ResolvedAttributeSet).set !== undefined && (obj as ResolvedAttributeSet).resolvedName2resolvedAttribute !== undefined;
+}
+
+export function isOperationAlterTraits(obj: CdmObject): obj is CdmOperationAlterTraits {
+    return obj && obj.objectType === cdmObjectType.operationAlterTraitsDef;
+}
+
+export function isOperationAddArtifactAttribute(obj: CdmObject): obj is CdmOperationAddArtifactAttribute {
+    return obj && obj.objectType === cdmObjectType.operationAddArtifactAttributeDef;
 }

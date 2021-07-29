@@ -184,14 +184,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             using (Logger.EnterScope(nameof(CdmDataPartitionPatternDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
-                string nameSpace = this.InDocument.Namespace;
-                StorageAdapter adapter = this.Ctx.Corpus.Storage.FetchAdapter(nameSpace);
-
-                if (adapter == null)
-                {
-                    Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrDocAdapterNotFound, this.InDocument.Name);
-                    return;
-                }
+                string nameSpace = null;
+                StorageAdapter adapter = null;
 
                 // make sure the root is a good full corpus path
                 string rootCleaned = this.RootLocation?.EndsWith("/") == true ? this.RootLocation.Substring(0, this.RootLocation.Length - 1) : this.RootLocation;
@@ -211,6 +205,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrStorageNullCorpusPath);
                         return;
                     }
+
+                    nameSpace = pathTuple.Item1;
+                    adapter = this.Ctx.Corpus.Storage.FetchAdapter(nameSpace);
+
+                    if (adapter == null)
+                    {
+                        Logger.Error(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.ErrDocAdapterNotFound, this.InDocument.Name);
+                        return;
+                    }
+
                     // get a list of all corpusPaths under the root
                     fileInfoList = await adapter.FetchAllFilesAsync(pathTuple.Item2);
                 }
@@ -219,7 +223,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     Logger.Warning(this.Ctx, Tag, nameof(FileStatusCheckAsync), this.AtCorpusPath, CdmLogCode.WarnPartitionFileFetchFailed, rootCorpus, e.Message);
                 }
 
-                if (fileInfoList != null)
+                if (fileInfoList != null && nameSpace != null)
                 {
                     // remove root of the search from the beginning of all paths so anything in the root is not found by regex
                     for (int i = 0; i < fileInfoList.Count; i++)
@@ -253,7 +257,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             Logger.Error(this.Ctx, Tag,
                                 nameof(FileStatusCheckAsync),
                                 this.AtCorpusPath,
-                                CdmLogCode.ErrValdnInvalidResx, !String.IsNullOrWhiteSpace(this.GlobPattern) ? "glob pattern" : "regular expression",
+                                CdmLogCode.ErrValdnInvalidExpression, !String.IsNullOrWhiteSpace(this.GlobPattern) ? "glob pattern" : "regular expression",
                                 !String.IsNullOrWhiteSpace(this.GlobPattern) ? this.GlobPattern : this.RegularExpression, e.Message);
                         }
 

@@ -315,7 +315,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 return None
 
             if not new_ent_name:
-                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_ENTITY_NOTFOUND)
+                logger.error(self.ctx, self._TAG, self.create_resolved_entity_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_NEW_ENTITY_NAME_NOT_SET)
                 return None
 
             # if the wrtDoc needs to be indexed (like it was just modified) then do that first

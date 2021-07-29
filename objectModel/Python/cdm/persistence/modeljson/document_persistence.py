@@ -30,7 +30,7 @@ class DocumentPersistence:
         entity_dec = await EntityPersistence.from_data(ctx, data_obj, extension_trait_def_list, local_extension_trait_def_list)
 
         if not entity_dec:
-            logger.error(ctx, DocumentPersistence.__name__, DocumentPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_MODELJSON_ENTITY_CONVERSION_ERROR)
+            logger.error(ctx, DocumentPersistence.__name__, DocumentPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_MODELJSON_ENTITY_CONVERSION_ERROR, data_obj.name)
             return None
 
         if data_obj.get('imports'):
@@ -67,8 +67,8 @@ class DocumentPersistence:
                     # so it is necessary to recalculate the path to be relative to the manifest.
                     absolute_path = ctx.corpus.storage.create_absolute_corpus_path(imp.corpusPath, document)
 
-                    if document.namespace and absolute_path.startswith(document.namespace + ':'):
-                        absolute_path = absolute_path[len(document.namespace) + 1:]
+                    if document._namespace and absolute_path.startswith(document._namespace + ':'):
+                        absolute_path = absolute_path[len(document._namespace) + 1:]
 
                     imp.corpusPath = ctx.corpus.storage.create_relative_corpus_path(absolute_path, manifest)
                     entity.imports.append(imp)

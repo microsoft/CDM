@@ -51,8 +51,11 @@ class CdmTraitReference(CdmTraitReferenceBase):
             copy.arguments.clear()
 
         if not simple_reference:
-            copy.arguments.extend(self.arguments)
             copy._resolved_arguments = self._resolved_arguments
+
+        for arg in self.arguments:
+            copy.arguments.append(arg.copy(res_opt))
+
         return copy
 
     def _visit_ref(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
@@ -83,7 +86,7 @@ class CdmTraitReference(CdmTraitReferenceBase):
             if not arg_name and len(self.arguments) == 1:
                 return arg.value
 
-    def _fetch_resolved_traits(self, res_opt: 'ResolveOptions') -> 'ResolvedTraitSet':
+    def _fetch_resolved_traits(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
         from cdm.utilities import SymbolSet
         from .cdm_corpus_def import CdmCorpusDefinition
 

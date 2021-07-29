@@ -32,7 +32,7 @@ public class ReferencedEntityDeclarationPersistence {
         ? obj.get("entityPath").asText()
         : obj.get("entityDeclaration").asText();
     if (entityPath == null) {
-      Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistEntityPathNotFound);
+      Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistEntityPathNotFound, obj.get("entityName").asText());
     }
 
     // The entity path has to be absolute.

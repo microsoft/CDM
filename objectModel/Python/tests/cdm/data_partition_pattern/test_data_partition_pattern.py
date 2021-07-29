@@ -1,6 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
+from cdm.storage.local import LocalAdapter
 from datetime import datetime, timezone
 import os
 import unittest
@@ -88,6 +89,19 @@ class _data_partition_patternTest(unittest.TestCase):
         self.assertEqual(len(cdmManifest.entities[0].data_partitions), 0)
         # make sure the last check time is still being set
         self.assertIsNotNone(cdmManifest.entities[0].data_partition_patterns[0].last_file_status_check_time)
+
+    @async_test
+    async def test_pattern_with_different_namespace(self):
+        test_name = 'TestPatternWithDifferentNamespace'
+        cdm_corpus = TestHelper.get_local_corpus(self.test_subpath, test_name)
+        local_adapter = cdm_corpus.storage.fetch_adapter('local')
+        local_path = local_adapter._full_root
+        cdm_corpus.storage.mount('other', LocalAdapter(os.path.join(local_path, 'other')))
+        cdm_manifest = await cdm_corpus.fetch_object_async('local:/patternManifest.manifest.cdm.json')
+
+        await cdm_manifest.file_status_check_async()
+        
+        self.assertEqual(1, len(cdm_manifest.entities[0].data_partitions))
 
     @async_test
     async def test_variations_in_root_location(self):

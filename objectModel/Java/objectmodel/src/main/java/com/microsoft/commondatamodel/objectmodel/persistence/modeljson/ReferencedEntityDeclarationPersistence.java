@@ -57,7 +57,7 @@ public class ReferencedEntityDeclarationPersistence {
       ExtensionHelper.processExtensionFromJson(ctx, obj, extensionTraits, extensionTraitDefList);
 
       if (extensionTraitDefList.size() > 0) {
-        Logger.warning(ctx, TAG, "fromData", null, CdmLogCode.WarnPersistCustomExtNotSupported);
+        Logger.warning(ctx, TAG, "fromData", null, CdmLogCode.WarnPersistCustomExtNotSupported, referencedEntity.getEntityName());
       }
 
       return CompletableFuture.completedFuture(referencedEntity);
@@ -70,7 +70,7 @@ public class ReferencedEntityDeclarationPersistence {
     final int sourceIndex = instance.getEntityPath().lastIndexOf("/");
 
     if (sourceIndex == -1) {
-      Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
+      Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityRefConversionError, instance.getEntityName());
       return CompletableFuture.completedFuture(null);
     }
 

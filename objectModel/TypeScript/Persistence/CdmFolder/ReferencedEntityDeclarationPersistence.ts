@@ -39,7 +39,7 @@ export class ReferencedEntityDeclarationPersistence {
         let entityPath: string = dataObj.entityPath !== undefined ? dataObj.entityPath : dataObj.entityDeclaration;
 
         if (entityPath === undefined) {
-            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistEntityPathNotFound);
+            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistEntityPathNotFound, dataObj.entityName);
         }
 
         // The entity path has to be absolute.

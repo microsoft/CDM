@@ -147,14 +147,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                         var referenceEntity = element.ToObject<ReferenceEntity>();
                         if (!referenceModels.ContainsKey(referenceEntity.ModelId))
                         {
-                            Logger.Error((ResolveContext)ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistModelIdNotFound, referenceEntity.ModelId, referenceEntity.Name);
+                            Logger.Error((ResolveContext)ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistModelJsonModelIdNotFound, referenceEntity.ModelId, referenceEntity.Name);
                             return null;
                         }
                         entity = await ReferencedEntityDeclarationPersistence.FromData(ctx, referenceEntity, referenceModels[referenceEntity.ModelId]);
                     }
                     else
                     {
-                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistEntityParsingError);
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistModelJsonEntityParsingError);
                     }
 
                     if (entity != null)
@@ -164,7 +164,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     else
                     {
-                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistEntityParsingError);
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistModelJsonEntityParsingError);
                     }
                 }
             }
@@ -330,7 +330,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                             var location = instance.Ctx.Corpus.Storage.CorpusPathToAdapterPath(entity.EntityPath);
                             if (string.IsNullOrEmpty(location))
                             {
-                                Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistInvalidEntityPath);
+                                Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonInvalidEntityPath);
                                 element = null;
                             }
 
@@ -345,7 +345,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                                 {
                                     if (referenceModels.TryGetValue(referenceEntity.ModelId, out var savedLocation) && savedLocation != location)
                                     {
-                                        Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelIdDuplication);
+                                        Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonModelIdDuplication);
                                         element = null;
                                     }
                                     else if (savedLocation == null)
@@ -416,10 +416,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     if (relationship != null)
                     {
                         result.Relationships.Add(relationship);
-                    }
-                    else
-                    {
-                        Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonRelConversionError);
                     }
                 }
             }

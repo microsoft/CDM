@@ -61,7 +61,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adapter not found for the corpus path..
+        ///   Looks up a localized string similar to Adapter not found for the corpus path for namesapce {0}..
         /// </summary>
         internal static string ErrAdapterNotFound {
             get {
@@ -88,7 +88,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempting to replace source entity&apos;s document &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Unable to replace source entity&apos;s document &apos;{0}&apos;..
         /// </summary>
         internal static string ErrDocEntityReplacementFailure {
             get {
@@ -223,7 +223,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The storage adapter &apos;{0}&apos; claims it is unable to write files..
+        ///   Looks up a localized string similar to The storage adapter &apos;{0}&apos; reports it is unable to write files..
         /// </summary>
         internal static string ErrPersistAdapterWriteFailure {
             get {
@@ -250,7 +250,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find a Persistence class to handle the file &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Could not find a Persistence class to handle the file &apos;{0}&apos;. Supported formats are model.json, manifest.cdm.json and cdm.json..
         /// </summary>
         internal static string ErrPersistClassMissing {
             get {
@@ -286,7 +286,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not convert &apos;{0}&apos;. Reason &apos;{1}&apos;.
+        ///   Looks up a localized string similar to There was an error loading document &apos;{0}&apos;. Reason: {1}.
         /// </summary>
         internal static string ErrPersistDocConversionFailure {
             get {
@@ -295,16 +295,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while trying to fetch the entity doc from local entity declaration Persistence..
-        /// </summary>
-        internal static string ErrPersistDocFetchError {
-            get {
-                return ResourceManager.GetString("ErrPersistDocFetchError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to load &apos;{0}&apos;, as it&apos;s not an acceptable file name. It must be {1}..
+        ///   Looks up a localized string similar to Failed to load &apos;{0}&apos;, as it&apos;s not an acceptable file name. File must be named &apos;{1}&apos;..
         /// </summary>
         internal static string ErrPersistDocNameLoadFailure {
             get {
@@ -322,7 +313,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find the type for entity declaration.
+        ///   Looks up a localized string similar to Invalid entity declaration type defined for entity &apos;{0}&apos;..
         /// </summary>
         internal static string ErrPersistEntityDeclarationMissing {
             get {
@@ -331,16 +322,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while trying to parse entity type..
-        /// </summary>
-        internal static string ErrPersistEntityParsingError {
-            get {
-                return ResourceManager.GetString("ErrPersistEntityParsingError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could not find entity path or similar.
+        ///   Looks up a localized string similar to Entity path not set in entity declaration for entity &apos;{0}&apos;..
         /// </summary>
         internal static string ErrPersistEntityPathNotFound {
             get {
@@ -349,7 +331,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to persist &apos;{0}&apos;, as it&apos;s not an acceptable file name. It must be {1}..
+        ///   Looks up a localized string similar to Failed to persist &apos;{0}&apos;, as it&apos;s not an acceptable file name. File must be named &apos;{1}&apos;..
         /// </summary>
         internal static string ErrPersistFailure {
             get {
@@ -385,7 +367,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to write to the file &apos;{0}&apos; for reason {1}..
+        ///   Looks up a localized string similar to Failed to persist document &apos;{0}&apos;. Reason: {1}..
         /// </summary>
         internal static string ErrPersistFileWriteFailure {
             get {
@@ -394,25 +376,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid entity path set in entity {0}.
-        /// </summary>
-        internal static string ErrPersistInvalidEntityPath {
-            get {
-                return ResourceManager.GetString("ErrPersistInvalidEntityPath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid extension trait name {0}, expected prefix {1}..
-        /// </summary>
-        internal static string ErrPersistInvalidExtensionTrait {
-            get {
-                return ResourceManager.GetString("ErrPersistInvalidExtensionTrait", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid maximum cardinality {0}..
+        ///   Looks up a localized string similar to Invalid maximum cardinality {0}. Value must be greater than or equal to 0 and less than maxCardinality..
         /// </summary>
         internal static string ErrPersistInvalidMaxCardinality {
             get {
@@ -421,7 +385,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid minimum cardinality {0}..
+        ///   Looks up a localized string similar to Invalid minimum cardinality {0}. Value must be a number greater than zero or &apos;*&apos;..
         /// </summary>
         internal static string ErrPersistInvalidMinCardinality {
             get {
@@ -466,29 +430,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while trying to convert from JSON to CdmObjectReferenceBase. Reason: &apos;{0}&apos;.
+        ///   Looks up a localized string similar to There was an error while trying to save to file. Reason: &apos;{0}&apos;.
         /// </summary>
         internal static string ErrPersistJsonObjectRefConversionError {
             get {
                 return ResourceManager.GetString("ErrPersistJsonObjectRefConversionError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported..
-        /// </summary>
-        internal static string ErrPersistManifestSavingFailure {
-            get {
-                return ResourceManager.GetString("ErrPersistManifestSavingFailure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Same ModelId pointing to different locations.
-        /// </summary>
-        internal static string ErrPersistModelIdDuplication {
-            get {
-                return ResourceManager.GetString("ErrPersistModelIdDuplication", resourceCulture);
             }
         }
         
@@ -502,16 +448,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while trying to convert model.json attribute to cdm attribute..
+        ///   Looks up a localized string similar to There was an error while trying to fetch the entity doc from local entity declaration Persistence..
         /// </summary>
-        internal static string ErrPersistModelJsonAttrConversionFailure {
+        internal static string ErrPersistModelJsonDocConversionError {
             get {
-                return ResourceManager.GetString("ErrPersistModelJsonAttrConversionFailure", resourceCulture);
+                return ResourceManager.GetString("ErrPersistModelJsonDocConversionError", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while trying to convert a model.json entity to the CDM entity..
+        ///   Looks up a localized string similar to Saving a manifest with an entity containing an entity attribute to model.json format is not supported..
+        /// </summary>
+        internal static string ErrPersistModelJsonEntityAttrError {
+            get {
+                return ResourceManager.GetString("ErrPersistModelJsonEntityAttrError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while trying to convert a  CDM entity from model.json for entity {0}..
         /// </summary>
         internal static string ErrPersistModelJsonEntityConversionError {
             get {
@@ -538,20 +493,65 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while trying to convert cdm data partition to model.json partition..
+        ///   Looks up a localized string similar to There was an error while trying to parse model.json entity..
         /// </summary>
-        internal static string ErrPersistModelJsonEntityPartitionConversionError {
+        internal static string ErrPersistModelJsonEntityParsingError {
             get {
-                return ResourceManager.GetString("ErrPersistModelJsonEntityPartitionConversionError", resourceCulture);
+                return ResourceManager.GetString("ErrPersistModelJsonEntityParsingError", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while trying to convert cdm relationship to model.json relationship..
+        ///   Looks up a localized string similar to There was an error while trying to convert reference entity from model.json for entity {0}..
         /// </summary>
-        internal static string ErrPersistModelJsonRelConversionError {
+        internal static string ErrPersistModelJsonEntityRefConversionError {
             get {
-                return ResourceManager.GetString("ErrPersistModelJsonRelConversionError", resourceCulture);
+                return ResourceManager.GetString("ErrPersistModelJsonEntityRefConversionError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while trying to convert model.json attribute from cdm attribute..
+        /// </summary>
+        internal static string ErrPersistModelJsonFromAttrConversionFailure {
+            get {
+                return ResourceManager.GetString("ErrPersistModelJsonFromAttrConversionFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid entity path set in reference entity &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrPersistModelJsonInvalidEntityPath {
+            get {
+                return ResourceManager.GetString("ErrPersistModelJsonInvalidEntityPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid model.json extension trait name &apos;{0}&apos;, expected prefix &apos;{1}&apos;..
+        /// </summary>
+        internal static string ErrPersistModelJsonInvalidExtensionTrait {
+            get {
+                return ResourceManager.GetString("ErrPersistModelJsonInvalidExtensionTrait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Same ModelId &apos;{0}&apos; pointing to different locations..
+        /// </summary>
+        internal static string ErrPersistModelJsonModelIdDuplication {
+            get {
+                return ResourceManager.GetString("ErrPersistModelJsonModelIdDuplication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while trying to convert model.json attribute to cdm attribute..
+        /// </summary>
+        internal static string ErrPersistModelJsonToAttrConversionFailure {
+            get {
+                return ResourceManager.GetString("ErrPersistModelJsonToAttrConversionFailure", resourceCulture);
             }
         }
         
@@ -583,15 +583,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type {0} is invalid for this operation..
-        /// </summary>
-        internal static string ErrPersistProjInvalidType {
-            get {
-                return ResourceManager.GetString("ErrPersistProjInvalidType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unsupported: applyTo property type should be string or List string..
         /// </summary>
         internal static string ErrPersistProjUnsupportedProp {
@@ -606,6 +597,213 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrPersistSaveLinkedDocs {
             get {
                 return ResourceManager.GetString("ErrPersistSaveLinkedDocs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location mentioned in dcoument with name {0} is not mounted..
+        /// </summary>
+        internal static string ErrPersistSymsAdlsAdapterMissing {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsAdlsAdapterMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appropriate adls adapter for path {0} is not mounted. Tried creating new one but failed..
+        /// </summary>
+        internal static string ErrPersistSymsAdlsAdapterNotMounted {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsAdlsAdapterNotMounted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syms to CDM conversion failed for entity {0} because data column was not recieved from syms..
+        /// </summary>
+        internal static string ErrPersistSymsAttrConversionError {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsAttrConversionError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syms to CDM conversion failed for attribute {0} for entity {1}..
+        /// </summary>
+        internal static string ErrPersistSymsAttrConversionFailure {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsAttrConversionFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;is.storagesource&apos; trait is missing in database {0}. This is mandatory trait for syms conversion..
+        /// </summary>
+        internal static string ErrPersistSymsDBSourceTraitMissing {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsDBSourceTraitMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syms Adapter write operation to create database for document &apos;{0}&apos; failed. Reason &apos;{1}&apos;..
+        /// </summary>
+        internal static string ErrPersistSymsDbWriteFailed {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsDbWriteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syms conversion failed for entity &apos;{0}&apos;. Reason &apos;{1}&apos;.
+        /// </summary>
+        internal static string ErrPersistSymsEntityDeclConversionException {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsEntityDeclConversionException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syms conversion failed for entity &apos;{0}&apos;..
+        /// </summary>
+        internal static string ErrPersistSymsEntityDeclConversionFailure {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsEntityDeclConversionFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error while fetching CDM entity document from path &apos;{0}&apos;.
+        /// </summary>
+        internal static string ErrPersistSymsEntityFetchError {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsEntityFetchError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Entity path for entity {0} is null..
+        /// </summary>
+        internal static string ErrPersistSymsEntityPathNull {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsEntityPathNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database object receieved from syms was either null or not with type as DATABASE..
+        /// </summary>
+        internal static string ErrPersistSymsInvalidDbObject {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsInvalidDbObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database properties object received from syms either was empty or didn&apos;t have source location..
+        /// </summary>
+        internal static string ErrPersistSymsInvalidDbPropObject {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsInvalidDbPropObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tables without data partition are not supported in syms..
+        /// </summary>
+        internal static string ErrPersistSymsNotSupported {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SyMS includes a spark partition for table &apos;{0}&apos; which is currently not supported by CDM..
+        /// </summary>
+        internal static string ErrPersistSymsPartitionNotSupported {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsPartitionNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} trait must be defined. It must have argument name {1} value in format  &apos;&lt;namespace&gt;:/&apos; and mounted to adls apapter..
+        /// </summary>
+        internal static string ErrPersistSymsStorageSourceTraitError {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsStorageSourceTraitError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Encountered unknown format type for table {0}. Supported format type is csv ..
+        /// </summary>
+        internal static string ErrPersistSymsTableFormatTypeNotSupported {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsTableFormatTypeNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syms table {0} data location should either be folder or .csv file..
+        /// </summary>
+        internal static string ErrPersistSymsTableInvalidDataLocation {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsTableInvalidDataLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syms table {0} data location is empty..
+        /// </summary>
+        internal static string ErrPersistSymsTableMissingDataLocation {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsTableMissingDataLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to get all tables from SyMS for document path &apos;{0}&apos;. Reason: &apos;{1}&apos;.
+        /// </summary>
+        internal static string ErrPersistSymsTablesReadFailed {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsTablesReadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Syms Adapter write operation to create tables for document &apos;{0}&apos; failed. Reason &apos;{1}&apos;. Payload = {2}.
+        /// </summary>
+        internal static string ErrPersistSymsTableWriteFailed {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsTableWriteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Encountered unknown CDM data format for attribute {0} which can not be mapped to syMS..
+        /// </summary>
+        internal static string ErrPersistSymsUnknownDataFormat {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsUnknownDataFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document &apos;{0}&apos; can not be saved in SyMS as it has multiple databases to saved..
+        /// </summary>
+        internal static string ErrPersistSymsUnsupportedCdmConversion {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsUnsupportedCdmConversion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document &apos;{0}&apos; is not supported for save. Use &lt;databaseName&gt;/&lt;databaseName&gt;.manifest.cdm.json to save SyMS database..
+        /// </summary>
+        internal static string ErrPersistSymsUnsupportedManifest {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsUnsupportedManifest", resourceCulture);
             }
         }
         
@@ -664,7 +862,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to get number for string &apos;{0}&apos;. Falling to default value {1}..
+        ///   Looks up a localized string similar to Unable to get number for string &apos;{0}&apos;. Using default value &apos;{1}&apos;..
         /// </summary>
         internal static string ErrProjStringError {
             get {
@@ -678,6 +876,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrProjUnsupportedAttrGroups {
             get {
                 return ResourceManager.GetString("ErrProjUnsupportedAttrGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsupported source type &apos;{0}&apos; in operation &apos;{1}&apos;..
+        /// </summary>
+        internal static string ErrProjUnsupportedSource {
+            get {
+                return ResourceManager.GetString("ErrProjUnsupportedSource", resourceCulture);
             }
         }
         
@@ -709,24 +916,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No Entity Name provided..
-        /// </summary>
-        internal static string ErrResolveEntityNotFound {
-            get {
-                return ResourceManager.GetString("ErrResolveEntityNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to get entity from reference.
-        /// </summary>
-        internal static string ErrResolveEntityRefError {
-            get {
-                return ResourceManager.GetString("ErrResolveEntityRefError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to New folder not found {0}.
         /// </summary>
         internal static string ErrResolveFolderNotFound {
@@ -741,6 +930,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrResolveManifestFailed {
             get {
                 return ResourceManager.GetString("ErrResolveManifestFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New entity name not provided for resolved entity..
+        /// </summary>
+        internal static string ErrResolveNewEntityNameNotSet {
+            get {
+                return ResourceManager.GetString("ErrResolveNewEntityNameNotSet", resourceCulture);
             }
         }
         
@@ -763,6 +961,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Folder not found for the namespace &apos;{0}&apos;.
+        /// </summary>
+        internal static string ErrStorageFolderNotFound {
+            get {
+                return ResourceManager.GetString("ErrStorageFolderNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No registered storage adapter understood the path &apos;{0}&apos;.
         /// </summary>
         internal static string ErrStorageInvalidAdapterPath {
@@ -772,7 +979,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The path should start with &apos;.\&apos; and should not contain &apos;..\&apos; or &apos;\.\&apos;.
+        ///   Looks up a localized string similar to The path should not start with &apos;./&apos; or &apos;.\&apos;and should not contain &apos;../&apos; , &apos;..\&apos;, &apos;/./&apos;, &apos;\.\&apos;..
         /// </summary>
         internal static string ErrStorageInvalidPathFormat {
             get {
@@ -808,7 +1015,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The namespace &apos;{0}&apos; found on the path does not match the namespace found on the object&quot;.
+        ///   Looks up a localized string similar to The namespace &apos;{0}&apos; found on the path &apos;{1}&apos; does not match the namespace found on the object &apos;{2}&apos; which has namespace &apos;{3}&apos;..
         /// </summary>
         internal static string ErrStorageNamespaceMismatch {
             get {
@@ -943,7 +1150,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No support for absolute references yet. fix {0} {1}.
+        ///   Looks up a localized string similar to Absolute references are not supported. Fix {0} {1}.
         /// </summary>
         internal static string ErrUnsupportedRef {
             get {
@@ -961,7 +1168,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Integrity check failed. Reason: The object &apos;{0}&apos; is missing the following fields. At least one of the following must be provided: {1}.
+        ///   Looks up a localized string similar to Integrity check failed. The object &apos;{0}&apos; is missing the following fields: {1}.
         /// </summary>
         internal static string ErrValdnIntegrityCheckFailure {
             get {
@@ -979,7 +1186,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The requested path: {0} involves a document that failed validation.
+        ///   Looks up a localized string similar to The requested path &apos;{0}&apos; refers a document that failed validation..
         /// </summary>
         internal static string ErrValdnInvalidDoc {
             get {
@@ -988,7 +1195,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid maximum cardinality {0}..
+        ///   Looks up a localized string similar to The {0} &apos;{1}&apos; could not form a valid regular expression. Reason: {2}.
+        /// </summary>
+        internal static string ErrValdnInvalidExpression {
+            get {
+                return ResourceManager.GetString("ErrValdnInvalidExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid maximum cardinality {0}. Value must be greater than or equal to 0 and less than maxCardinality..
         /// </summary>
         internal static string ErrValdnInvalidMaxCardinality {
             get {
@@ -997,7 +1213,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid minimum cardinality {0}..
+        ///   Looks up a localized string similar to Invalid minimum cardinality {0}. Value must be a number greater than zero or &apos;*&apos;..
         /// </summary>
         internal static string ErrValdnInvalidMinCardinality {
             get {
@@ -1006,16 +1222,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} &apos;{1}&apos; could not form a valid regular expression. Reason: {2}.
-        /// </summary>
-        internal static string ErrValdnInvalidResx {
-            get {
-                return ResourceManager.GetString("ErrValdnInvalidResx", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Document &apos;{0}&apos; is not in a folder.
+        ///   Looks up a localized string similar to Document object &apos;{0}&apos; has not been added to any folder object..
         /// </summary>
         internal static string ErrValdnMissingDoc {
             get {
@@ -1024,7 +1231,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Default value missing languageTag or displayText..
+        ///   Looks up a localized string similar to A &apos;defaultValue&apos; property is empty or one of its entries is missing &apos;languageTag&apos; and &apos;displayText&apos; values..
         /// </summary>
         internal static string ErrValdnMissingLanguageTag {
             get {
@@ -1069,11 +1276,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to is.linkedEntity.identifier does not support arguments.
+        ///   Looks up a localized string similar to Trait &apos;is.linkedEntity.identifier&apos; is not accepting arguments, skipping relationship recording for attribute &apos;{0}&apos; in entity &apos;{1}&apos;..
         /// </summary>
-        internal static string WarnIdentifierArgumentsNotSupported {
+        internal static string WarnLinkEntIdentArgsNotSupported {
             get {
-                return ResourceManager.GetString("WarnIdentifierArgumentsNotSupported", resourceCulture);
+                return ResourceManager.GetString("WarnLinkEntIdentArgsNotSupported", resourceCulture);
             }
         }
         
@@ -1105,7 +1312,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Custom extensions are not supported in referenced entity..
+        ///   Looks up a localized string similar to Custom extensions are not supported in referenced entity &apos;{0}&apos;..
         /// </summary>
         internal static string WarnPersistCustomExtNotSupported {
             get {
@@ -1213,11 +1420,47 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CDM manifest with path {0} does not contain any entity so empty database created..
+        /// </summary>
+        internal static string WarnPersistSymsDbCreatedWithoutTables {
+            get {
+                return ResourceManager.GetString("WarnPersistSymsDbCreatedWithoutTables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Entity {0} is not inside a document or its owner is not a document..
+        /// </summary>
+        internal static string WarnPersistSymsEntityMissing {
+            get {
+                return ResourceManager.GetString("WarnPersistSymsEntityMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Projection exist only for logical entities..
+        /// </summary>
+        internal static string WarnPersistSymsProjNotExist {
+            get {
+                return ResourceManager.GetString("WarnPersistSymsProjNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This ObjectModel version supports json semantic version {0} at maximum. Trying to load a document with version {1}..
         /// </summary>
         internal static string WarnPersistUnsupportedJsonSemVer {
             get {
                 return ResourceManager.GetString("WarnPersistUnsupportedJsonSemVer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operation AddArtifactAttribute is not supported on {0} yet..
+        /// </summary>
+        internal static string WarnProjAddArtifactAttrNotSupported {
+            get {
+                return ResourceManager.GetString("WarnProjAddArtifactAttrNotSupported", resourceCulture);
             }
         }
         
@@ -1236,15 +1479,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string WarnProjFKWithoutSourceEntity {
             get {
                 return ResourceManager.GetString("WarnProjFKWithoutSourceEntity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid ProjectionAttributeState provided for removal from the Set. Remove operation failed..
-        /// </summary>
-        internal static string WarnProjRemoveOpsFailed {
-            get {
-                return ResourceManager.GetString("WarnProjRemoveOpsFailed", resourceCulture);
             }
         }
         
@@ -1312,11 +1546,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot remove the adapter from non-existing namespace..
+        ///   Looks up a localized string similar to Cannot remove the adapter from a non-existing namespace &apos;{0}&apos;..
         /// </summary>
         internal static string WarnStorageRemoveAdapterFailed {
             get {
                 return ResourceManager.GetString("WarnStorageRemoveAdapterFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to ingest telemetry. Reason &apos;{0}&apos;.
+        /// </summary>
+        internal static string WarnTelemetryIngestionFailed {
+            get {
+                return ResourceManager.GetString("WarnTelemetryIngestionFailed", resourceCulture);
             }
         }
         
@@ -1330,7 +1573,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to endOrdinal {0} is greater than the maximum allowed ordinal of {1}. Using the maximum allowed ordinal instead..
+        ///   Looks up a localized string similar to The endOrdinal &apos;{0}&apos; is greater than the maximum allowed ordinal &apos;{1}.
         /// </summary>
         internal static string WarnValdnMaxOrdinalTooHigh {
             get {
@@ -1348,7 +1591,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is a primary key missing for the entry {0}..
+        ///   Looks up a localized string similar to Primary key is missing for entity &apos;{0}&apos;..
         /// </summary>
         internal static string WarnValdnPrimaryKeyMissing {
             get {

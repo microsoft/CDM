@@ -70,7 +70,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
 
-        context = self.ctx.corpus.storage.fetch_adapter(self.in_document.namespace).create_file_query_cache_context()
+        context = self.ctx.corpus.storage.fetch_adapter(self.in_document._namespace).create_file_query_cache_context()
         try:
             full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.entity_path, self.in_document)
             modified_time = await self.ctx.corpus._compute_last_modified_time_async(full_path, self)

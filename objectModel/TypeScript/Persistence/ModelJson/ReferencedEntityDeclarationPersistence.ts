@@ -87,7 +87,7 @@ export class ReferencedEntityDeclarationPersistence {
         const sourceIndex: number = instance.entityPath.lastIndexOf('/');
 
         if (sourceIndex === -1) {
-            Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
+            Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonEntityRefConversionError, instance.entityName);
             return Promise.reject('Source name is not present in entityDeclaration path.');
         }
 

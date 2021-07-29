@@ -85,6 +85,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                             CdmOperationAddAttributeGroup addAttributeGroupOp = OperationAddAttributeGroupPersistence.FromData(ctx, operationJson);
                             projection.Operations.Add(addAttributeGroupOp);
                             break;
+                        case "alterTraits":
+                            CdmOperationAlterTraits alterTraitsOp = OperationAlterTraitsPersistence.FromData(ctx, operationJson);
+                            projection.Operations.Add(alterTraitsOp);
+                            break;
+                        case "addArtifactAttribute":
+                            CdmOperationAddArtifactAttribute addArtifactAttributeOp = OperationAddArtifactAttributePersistence.FromData(ctx, operationJson);
+                            projection.Operations.Add(addArtifactAttributeOp);
+                            break;
                         default:
                             Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistProjInvalidOpsType, type);
                             break;
@@ -165,6 +173,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                         case CdmObjectType.OperationAddAttributeGroupDef:
                             OperationAddAttributeGroup addAttributeGroupOp = OperationAddAttributeGroupPersistence.ToData(operation as CdmOperationAddAttributeGroup, resOpt, options);
                             operations.Add(addAttributeGroupOp);
+                            break;
+                        case CdmObjectType.OperationAlterTraitsDef:
+                            OperationAlterTraits alterTraitsOp = OperationAlterTraitsPersistence.ToData(operation as CdmOperationAlterTraits, resOpt, options);
+                            operations.Add(alterTraitsOp);
+                            break;
+                        case CdmObjectType.OperationAddArtifactAttributeDef:
+                            OperationAddArtifactAttribute addArtifactAttributeOp = OperationAddArtifactAttributePersistence.ToData(operation as CdmOperationAddArtifactAttribute, resOpt, options);
+                            operations.Add(addArtifactAttributeOp);
                             break;
                         default:
                             OperationBase baseOp = new OperationBase();

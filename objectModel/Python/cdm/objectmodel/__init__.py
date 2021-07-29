@@ -49,6 +49,8 @@ from .projections.cdm_operation_rename_attributes import CdmOperationRenameAttri
 from .projections.cdm_operation_replace_as_foreign_key import CdmOperationReplaceAsForeignKey
 from .projections.cdm_operation_include_attributes import CdmOperationIncludeAttributes
 from .projections.cdm_operation_add_attribute_group import CdmOperationAddAttributeGroup
+from .projections.cdm_operation_alter_traits import CdmOperationAlterTraits
+from .projections.cdm_operation_add_artifact_attribute import CdmOperationAddArtifactAttribute
 from .cdm_parameter_def import CdmParameterDefinition
 from .projections.cdm_projection import CdmProjection
 from .cdm_purpose_def import CdmPurposeDefinition
@@ -115,6 +117,8 @@ __all__ = [
     'CdmOperationReplaceAsForeignKey',
     'CdmOperationIncludeAttributes',
     'CdmOperationAddAttributeGroup',
+    'CdmOperationAlterTraits',
+    'CdmOperationAddArtifactAttribute',
     'CdmParameterDefinition',
     'CdmProjection',
     'CdmPurposeDefinition',

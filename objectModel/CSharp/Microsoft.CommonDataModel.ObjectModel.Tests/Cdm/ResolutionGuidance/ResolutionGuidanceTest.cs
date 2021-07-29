@@ -39,17 +39,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             // Tests warning log when resolution guidance is used on a data typed attribute.
             var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TypeAttribute.cdm.json/Entity");
             await entity.CreateResolvedEntityAsync("res-entity");
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
 
             // Tests warning log when resolution guidance is used on a entity typed attribute.
             entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/EntityAttribute.cdm.json/Entity");
             await entity.CreateResolvedEntityAsync("res-entity");
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
 
             // Tests warning log when resolution guidance is used when extending an entity.
             entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/ExtendsEntity.cdm.json/Entity");
             await entity.CreateResolvedEntityAsync("res-entity");
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
         }
 
         [TestMethod]

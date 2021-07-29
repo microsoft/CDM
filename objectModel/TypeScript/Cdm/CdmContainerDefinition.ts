@@ -3,6 +3,9 @@
 
 import { CdmObject } from '../internal';
 
+/**
+ * @deprecated Only for internal use.
+ */
 export interface CdmContainerDefinition extends CdmObject {
     /**
      * @deprecated Only for internal use.

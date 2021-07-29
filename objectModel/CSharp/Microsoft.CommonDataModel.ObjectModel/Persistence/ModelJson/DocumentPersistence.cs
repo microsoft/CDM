@@ -31,7 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (entity == null)
             {
-                Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistModelJsonEntityConversionError);
+                Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistModelJsonEntityConversionError, obj.Name);
                 return null;
             }
 

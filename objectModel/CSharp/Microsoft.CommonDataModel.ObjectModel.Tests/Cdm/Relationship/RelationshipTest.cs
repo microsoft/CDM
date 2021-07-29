@@ -215,7 +215,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             await corpus.CalculateEntityGraphAsync(manifest);
             // Check if the warning was logged.
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnProjFKWithoutSourceEntity);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnProjFKWithoutSourceEntity, true);
 
             await manifest.PopulateManifestRelationshipsAsync();
             Assert.AreEqual(0, manifest.Relationships.Count);

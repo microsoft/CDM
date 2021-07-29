@@ -85,8 +85,8 @@ class CdmEntityCollectionTests(unittest.TestCase):
         cdm_corpus.storage.mount('local', LocalAdapter('C:\\Root\\Path'))
 
         manifest = CdmManifestDefinition(cdm_corpus.ctx, 'manifest')
-        manifest.folder_path = '/'
-        manifest.namespace = 'local'
+        manifest._folder_path = '/'
+        manifest._namespace = 'local'
         entity = CdmEntityDefinition(manifest.ctx, 'entityName', None)
 
         manifest.entities.append(entity)

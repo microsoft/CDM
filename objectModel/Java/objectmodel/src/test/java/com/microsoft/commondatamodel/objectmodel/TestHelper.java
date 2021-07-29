@@ -475,13 +475,14 @@ public class TestHelper {
   }
 
   /**
-   * Asserts the logcode, the same as the expected.
-   *
+   *Asserts in logcode, if expected log code is not in log codes recorded list (isPresent = true)
+   *Asserts in logcode, if expected log code in log codes recorded list (isPresent = false)
    * @param corpus The corpus object.
-   * @param expectedCode The expectedcode cdmlogcode..
+   * @param expectedCode The expectedcode cdmlogcode.
+   * @param isPresent The flag to decide how to assert the test.
    * @return
    */
-  public static void assertCdmLogCodeEquality(CdmCorpusDefinition corpus, CdmLogCode expectedCode) {
+  public static void assertCdmLogCodeEquality(CdmCorpusDefinition corpus, CdmLogCode expectedCode, boolean isPresent) {
     boolean toAssert = false;
     for (Map<String,String> logEntry : corpus.getCtx().getEvents()) {
       if ( ((expectedCode.name().startsWith("Warn") && logEntry.get("level").equals(CdmStatusLevel.Warning.name()))
@@ -491,7 +492,17 @@ public class TestHelper {
       }
     }
 
-    if (!toAssert)
-      Assert.fail("The recorded log events should have contained message with log code " + expectedCode.toString() + " of appropriate level");
+    if (isPresent) {
+      if (!toAssert) {
+        Assert.fail("The recorded log events should have contained message with log code " + expectedCode.toString() + " of appropriate level");
+      }
+    }
+    else {
+      if (toAssert) {
+        Assert.fail("The recorded log events should have not contained message with log code " + expectedCode.toString() +
+                " of appropriate level as this message should be filtered out.");
+    }
   }
+ }
+
 }

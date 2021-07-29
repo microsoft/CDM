@@ -161,7 +161,6 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
       } else if (this.getValue() instanceof String){
         copy.setValue(this.getValue());
       } else {
-        Logger.error(this.getCtx(), TAG, "copy", this.getAtCorpusPath(), CdmLogCode.ErrUnrecognizedType);
         throw new RuntimeException("Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
       }
     }

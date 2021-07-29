@@ -213,11 +213,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         }
 
         /// <summary>
-        /// Asserts in logcode, if expected log code is not in log codes recorded list.
+        /// Asserts in logcode, if expected log code is not in log codes recorded list (isPresent = true)
+        /// Asserts in logcode, if expected log code in log codes recorded list (isPresent = false)
         /// </summary>
         /// <param name="corpus">The corpus object.</param>
         /// <param name="expectedcode">The expectedcode cdmlogcode.</param>
-        public static void AssertCdmLogCodeEquality(CdmCorpusDefinition corpus, CdmLogCode expectedCode)
+        /// <param name="isPresent">The flag to decide how to assert the test.</param>
+        public static void AssertCdmLogCodeEquality(CdmCorpusDefinition corpus, CdmLogCode expectedCode, bool isPresent)
         {
             bool toAssert = false;
             corpus.Ctx.Events.ForEach(logEntry =>
@@ -229,8 +231,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                     toAssert = true;
                 }
             });
-            Assert.IsTrue(toAssert, $"The recorded log events should have contained message with log code {expectedCode} of appropriate level");
+
+            if (isPresent)
+            {
+                Assert.IsTrue(toAssert, $"The recorded log events should have contained message with log code {expectedCode} of appropriate level");
+            }
+            else
+            {
+                Assert.IsFalse(toAssert, $"The recorded log events should not have contained message with log code {expectedCode} of appropriate level as this message should be filtered out.");
+            }
         }
+
         public static bool CompareObjectsContent(object expected, object actual, bool logError = false)
         {
             if (expected == actual)

@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.datapartitionpattern;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -121,6 +122,23 @@ public class DataPartitionPatternTest {
     Assert.assertEquals(cdmManifest.getEntities().get(0).getDataPartitions().size(), 0);
     // make sure the last check time is still being set
     AssertJUnit.assertNotNull(cdmManifest.getEntities().get(0).getDataPartitionPatterns().get(0).getLastFileStatusCheckTime());
+  }
+
+  /**
+   * Testing that partition is correctly found when namespace of pattern differs from namespace of the manifest
+   */
+  @Test
+  public void TestPatternWithDifferentNamespace() throws IOException, InterruptedException {
+    final String testName = "TestPatternWithDifferentNamespace";
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+    LocalAdapter localAdapter = (LocalAdapter)cdmCorpus.getStorage().fetchAdapter("local");
+    final String localPath = localAdapter.getFullRoot();
+    cdmCorpus.getStorage().mount("other", new LocalAdapter(new File(localPath, "other").toString()));
+    final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/patternManifest.manifest.cdm.json").join();
+
+    cdmManifest.fileStatusCheckAsync().join();
+
+    Assert.assertEquals(1, cdmManifest.getEntities().get(0).getDataPartitions().size());
   }
 
   /**

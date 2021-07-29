@@ -76,7 +76,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 { "adls", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.ADLSAdapter", "Microsoft.CommonDataModel.ObjectModel.Adapter.Adls") },
                 { "remote", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.RemoteAdapter") },
                 { "github", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.GithubAdapter") },
-                { "cdm-standards", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.CdmStandardsAdapter") }
+                { "cdm-standards", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.CdmStandardsAdapter") },
+                { "syms", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.SymsAdapter", "Microsoft.CommonDataModel.ObjectModel.Adapter.Syms") },
             };
 
             // Set up default adapters.
@@ -167,7 +168,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
                 if (!this.NamespaceAdapters.ContainsKey(nameSpace))
                 {
-                    Logger.Warning(this.Ctx, Tag, nameof(Unmount), null, CdmLogCode.WarnStorageRemoveAdapterFailed);
+                    Logger.Warning(this.Ctx, Tag, nameof(Unmount), null, CdmLogCode.WarnStorageRemoveAdapterFailed, nameSpace);
                     return false;
                 }
 
@@ -250,7 +251,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
                 if (folder == null)
                 {
-                    Logger.Error(this.Ctx, Tag, nameof(FetchAdapter), null, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
+                    Logger.Error(this.Ctx, Tag, nameof(FetchAdapter), null, CdmLogCode.ErrStorageFolderNotFound, nameSpace);
                 }
 
                 return folder;
@@ -275,6 +276,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                         if (result != null)
                         {
                             // got one, add the prefix
+                            if (result == "")
+                                result = "/";
                             result = $"{kv.Key}:{result}";
                             break;
                         }
@@ -396,7 +399,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     }
                     if (!string.IsNullOrWhiteSpace(nameSpace) && nameSpace != namespaceFromObj)
                     {
-                        Logger.Error(this.Ctx, Tag, nameof(CreateAbsoluteCorpusPath), null, CdmLogCode.ErrStorageNamespaceMismatch, nameSpace);
+                        Logger.Error(this.Ctx, Tag, nameof(CreateAbsoluteCorpusPath), null, CdmLogCode.ErrStorageNamespaceMismatch, nameSpace, newObjectPath, prefix, namespaceFromObj);
                         return null;
                     }
                     newObjectPath = prefix + newObjectPath;

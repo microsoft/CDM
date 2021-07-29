@@ -45,5 +45,7 @@ export enum cdmObjectType {
     operationReplaceAsForeignKeyDef,
     operationIncludeAttributesDef,
     operationAddAttributeGroupDef,
+    operationAlterTraitsDef,
+    operationAddArtifactAttributeDef,
     projectionDef
 }

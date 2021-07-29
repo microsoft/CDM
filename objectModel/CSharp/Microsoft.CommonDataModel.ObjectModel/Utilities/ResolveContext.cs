@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         public EventList Events { get; }
         ///<inheritdoc/>
         public string CorrelationId { get; set; }
+        public HashSet<CdmLogCode> SuppressedLogCodes { get; }
 
         internal string RelativePath;
         internal IDictionary<string, dynamic> Cache;
@@ -30,6 +32,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             this.Cache = new ConcurrentDictionary<string, object>();
             this.Corpus = corpus;
             this.Events = new EventList();
+            this.SuppressedLogCodes = new HashSet<CdmLogCode>();
         }
 
         internal void PushScope(CdmTraitDefinition currentTrait)

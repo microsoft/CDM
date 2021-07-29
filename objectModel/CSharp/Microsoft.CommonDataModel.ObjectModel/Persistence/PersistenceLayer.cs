@@ -27,6 +27,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
     using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Types;
+    using System.IO;
+    using Newtonsoft.Json.Linq;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models;
 
     public class PersistenceLayer
     {
@@ -34,11 +39,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
 
         internal const string FolioExtension = ".folio.cdm.json";
         internal const string ManifestExtension = ".manifest.cdm.json";
+
         internal const string CdmExtension = ".cdm.json";
         internal const string ModelJsonExtension = "model.json";
 
         internal const string CdmFolder = "CdmFolder";
         internal const string ModelJson = "ModelJson";
+        internal const string Syms = "Syms";
+
+        internal const string SymsDatabases = "databases.manifest.cdm.json";
 
         internal CdmCorpusDefinition Corpus { get; }
         internal CdmCorpusContext Ctx => this.Corpus.Ctx;
@@ -46,7 +55,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
         private static readonly IDictionary<string, IPersistenceType> persistenceTypes = new Dictionary<string, IPersistenceType>
         {
             { CdmFolder, new CdmFolderType() },
-            { ModelJson, new ModelJsonType() }
+            { ModelJson, new ModelJsonType() },
+            { Syms, new SymsFolderType() },
         };
 
         /// <summary>
@@ -135,7 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             // Default behavior auto formats date values.
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
-                DateParseHandling = DateParseHandling.None
+                DateParseHandling = DateParseHandling.None,
             };
 
             CdmDocumentDefinition docContent = null;
@@ -164,7 +174,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 // log message used by navigator, do not change or remove
                 Logger.Debug(this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, $"fail file: {docPath}");
 
-                string message = $"Could not read '{docPath}' from the '{folder.Namespace}' namespace. Reason '{e.Message}'";
                 // When shallow validation is enabled, log messages about being unable to find referenced documents as warnings instead of errors.
                 if (resOpt != null && resOpt.ShallowValidation)
                 {
@@ -201,24 +210,75 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
 
             try
             {
+                if (Persistence.Syms.Utils.CheckIfSymsAdapter(adapter))
+                {
+                    if (docName.EqualsWithIgnoreCase(SymsDatabases))
+                    {
+                        // List of Databases
+                        SymsDatabasesResponse databases = JsonConvert.DeserializeObject<SymsDatabasesResponse>(jsonData);
+                        docContent = Persistence.Syms.ManifestDatabasesPersistence.FromObject(Ctx,docName, folder.Namespace, folder.FolderPath, databases) as CdmDocumentDefinition;
+                    }
+                    else if (docName.Contains(ManifestExtension))
+                    {
+                        // Specific database
+                        var database = JsonConvert.DeserializeObject<DatabaseEntity>(jsonData);
+
+                        // Get all tables
+                        List<TableEntity> tablesEntity = new List<TableEntity>();
+                        try
+                        {
+                            // TO DO : these calls must be optimised.
+                            List<string> tables = await adapter.FetchAllFilesAsync($"/{database.Name}/");
+                            foreach (var table in tables)
+                            {
+                                var jsonTable = await adapter.ReadAsync($"/{database.Name}/{table}");
+                                tablesEntity.Add(JsonConvert.DeserializeObject<TableEntity>(jsonTable));
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistSymsTablesReadFailed, docName, e.Message);
+                            return null;
+                        }
+
+                        var jsonRelationships = await adapter.ReadAsync($"{docPath}/relationships");
+                        var symsRelationshipResponse = JsonConvert.DeserializeObject<SymsRelationshipResponse>(jsonRelationships);
+
+                        var syms = new SymsManifestContent 
+                        {
+                            Database = database, 
+                            Entities = tablesEntity,
+                            Relationships = symsRelationshipResponse.Relationships
+                        };
+
+                        docContent = Persistence.Syms.ManifestPersistence.FromObject(Ctx, docName, folder.Namespace, folder.FolderPath, syms) as CdmDocumentDefinition;
+                    }
+                    else if (docName.Contains(CdmExtension))
+                    {
+                        // specific table
+                        TableEntity table = JsonConvert.DeserializeObject<TableEntity>(jsonData);
+                        docContent = Persistence.Syms.DocumentPersistence.FromObject(this.Ctx, folder.Namespace, folder.FolderPath, table);
+                    }
+                    else
+                    {
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistSymsUnsupportedCdmConversion, docName);
+                        return null;
+                    }
+
+                }
                 // Check file extensions, which performs a case-insensitive ordinal string comparison
-                if (docName.EndWithOrdinalIgnoreCase(ManifestExtension) || docName.EndWithOrdinalIgnoreCase(FolioExtension))
+                else if (docName.EndWithOrdinalIgnoreCase(ManifestExtension) || docName.EndWithOrdinalIgnoreCase(FolioExtension))
                 {
                     docContent = Persistence.CdmFolder.ManifestPersistence.FromObject(Ctx, docName, folder.Namespace, folder.FolderPath, JsonConvert.DeserializeObject<ManifestContent>(jsonData)) as CdmDocumentDefinition;
                 }
                 else if (docName.EndWithOrdinalIgnoreCase(ModelJsonExtension))
                 {
-                    if (!docName.EqualsWithOrdinalIgnoreCase(ModelJsonExtension))
-                    {
-                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistDocNameLoadFailure, docName, ModelJsonExtension);
-                        return null;
-                    }
 
                     docContent = await Persistence.ModelJson.ManifestPersistence.FromObject(this.Ctx, JsonConvert.DeserializeObject<Model>(jsonData), folder);
                 }
                 else if (docName.EndWithOrdinalIgnoreCase(CdmExtension))
                 {
-                    docContent = Persistence.CdmFolder.DocumentPersistence.FromObject(this.Ctx, docName, folder.Namespace, folder.FolderPath, JsonConvert.DeserializeObject<DocumentContent>(jsonData));
+                    docContent = Persistence.CdmFolder.DocumentPersistence.FromObject(this.Ctx, docName, folder.Namespace, folder.FolderPath, JsonConvert.DeserializeObject<Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types.DocumentContent>(jsonData));
                 }
                 else
                 {
@@ -289,8 +349,34 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
 
                 // What kind of document is requested?
                 // Check file extensions using a case-insensitive ordinal string comparison.
-                string persistenceType = newName.EndWithOrdinalIgnoreCase(ModelJsonExtension)
-                    ? ModelJson : CdmFolder;
+                string persistenceType;
+
+                if (Persistence.Syms.Utils.CheckIfSymsAdapter(adapter))
+                {
+                    if (newName.Equals(SymsDatabases))
+                    {
+                        // Not supporting saving list of databases at once. May cause perf issue.
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistSymsUnsupportedManifest, newName);
+                        return false;
+                    }
+                    if (!newName.EndWithOrdinalIgnoreCase(ManifestExtension)
+                        && !newName.EndWithOrdinalIgnoreCase(CdmExtension)
+                        )
+                    {
+                        // syms support *.cdm and *.manifest.cdm only
+                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistSymsUnsupportedCdmConversion, newName);
+                        return false;
+                    }
+                    persistenceType = Syms;
+                    options.PersistenceTypeName = Syms;
+                }
+                else
+                {
+                    if (newName.EndWithOrdinalIgnoreCase(ModelJsonExtension))
+                        persistenceType = ModelJson;
+                    else
+                        persistenceType = CdmFolder;
+                }
 
                 if (persistenceType == ModelJson && !newName.EqualsWithOrdinalIgnoreCase(ModelJsonExtension))
                 {
@@ -304,12 +390,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
 
                 try
                 {
-                    if (newName.EndWithOrdinalIgnoreCase(ModelJsonExtension) || newName.EndWithOrdinalIgnoreCase(ManifestExtension)
+                   if (newName.EndWithOrdinalIgnoreCase(ModelJsonExtension) || newName.EndWithOrdinalIgnoreCase(ManifestExtension)
                         || newName.EndWithOrdinalIgnoreCase(FolioExtension))
                     {
                         if (persistenceType == "CdmFolder")
                         {
                             persistedDoc = Persistence.CdmFolder.ManifestPersistence.ToData(doc as CdmManifestDefinition, resOpt, options);
+                        }
+                        else if (persistenceType == Syms)
+                        {
+                            persistedDoc = await Persistence.Syms.ManifestPersistence.ToDataAsync(doc as CdmManifestDefinition, resOpt, options);
                         }
                         else
                         {
@@ -321,9 +411,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                             persistedDoc = await Persistence.ModelJson.ManifestPersistence.ToData(doc as CdmManifestDefinition, resOpt, options);
                         }
                     }
+                    
                     else if (newName.EndWithOrdinalIgnoreCase(CdmExtension))
                     {
-                        persistedDoc = Persistence.CdmFolder.DocumentPersistence.ToData(doc, resOpt, options);
+                        if (persistenceType == "CdmFolder")
+                        {
+                            persistedDoc = Persistence.CdmFolder.DocumentPersistence.ToData(doc, resOpt, options);
+                        }
+                        else if (persistenceType == Syms)
+                        {
+                            //not supproted currently Why?. Because tables must data partition details in sms.
+                            Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistSymsNotSupported, newName);
+                            return false;
+                        }
+                        
                     }
                     else
                     {
@@ -352,13 +453,73 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 // ask the adapter to make it happen
                 try
                 {
-                    var content = JsonConvert.SerializeObject(persistedDoc, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
-                    await adapter.WriteAsync(newPath, content);
+                    if (persistenceType == Syms)
+                    {
+                        if (newName.EndWithOrdinalIgnoreCase(ManifestExtension))
+                        {
+                            string payload = "";
+                            try
+                            {
+                                // Create DB
+                                payload = Persistence.Syms.Utils.GetDBPayload(persistedDoc, DDLType.CREATE);
+                                Logger.Debug(this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), null, $"payload to create file: {payload}");
+                                await adapter.WriteAsync(newPath, payload);
+                                if (((SymsManifestContent)persistedDoc).Entities.Count > 0)
+                                {
+                                    try
+                                    {
+                                        // Create tables
+                                        payload = Persistence.Syms.Utils.GetTablesPayload(((SymsManifestContent)persistedDoc).Entities, DDLType.CREATE);
+                                        await adapter.WriteAsync(newPath, payload);
+
+                                        payload = Persistence.Syms.Utils.GetRelationshipPayload(((SymsManifestContent)persistedDoc).Relationships, DDLType.CREATE);
+                                        await adapter.WriteAsync(newPath, payload);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistSymsTableWriteFailed, newName, e.Message);
+                                        Logger.Debug((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, $"Error mesg: {e.Message} payload = { payload}");
+
+                                        //Rollback: try to delete DB
+                                        await adapter.WriteAsync(newPath, Persistence.Syms.Utils.GetDBPayload(persistedDoc, DDLType.DROP));
+                                        return false;
+                                    }
+                                }
+                                else
+                                {
+                                    // warning
+                                    Logger.Warning((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.WarnPersistSymsDbCreatedWithoutTables, newName);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistSymsDbWriteFailed, newName, e.Message, payload);
+                                return false;
+                            }
+
+                        }
+                        else if (newName.EndWithOrdinalIgnoreCase(CdmExtension))
+                        {
+                            try
+                            {
+                                // Create tables
+                                await adapter.WriteAsync(newPath, Persistence.Syms.Utils.GetTablesPayload(persistedDoc, DDLType.CREATE));
+                            } catch (Exception)
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var content = JsonConvert.SerializeObject(persistedDoc, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                        await adapter.WriteAsync(newPath, content);
+                    }
 
                     doc._fileSystemModifiedTime = await adapter.ComputeLastModifiedTimeAsync(newPath);
 
                     // Write the adapter's config.
-                    if (options.IsTopLevelDocument)
+                    if (options.IsTopLevelDocument && persistenceType != Syms)
                     {
                         await this.Corpus.Storage.SaveAdaptersConfigAsync("/config.json", adapter);
 

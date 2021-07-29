@@ -15,40 +15,40 @@ class TestFolderDefinition(unittest.TestCase):
 
         folder_path = '/'
         child_folder = root_folder._fetch_child_folder_from_path(folder_path, False)
-        self.assertEqual(folder_path, child_folder.folder_path)
+        self.assertEqual(folder_path, child_folder._folder_path)
 
         folder_path = '/'
         child_folder = root_folder._fetch_child_folder_from_path(folder_path, True)
-        self.assertEqual(folder_path, child_folder.folder_path)
+        self.assertEqual(folder_path, child_folder._folder_path)
 
         folder_path = '/core'
         child_folder = root_folder._fetch_child_folder_from_path(folder_path, False)
-        self.assertEqual('/', child_folder.folder_path)
+        self.assertEqual('/', child_folder._folder_path)
 
         folder_path = '/core'
         child_folder = root_folder._fetch_child_folder_from_path(folder_path, True)
-        self.assertEqual(folder_path + '/', child_folder.folder_path)
+        self.assertEqual(folder_path + '/', child_folder._folder_path)
 
         folder_path = '/core/'
         child_folder = root_folder._fetch_child_folder_from_path(folder_path, False)
-        self.assertEqual(folder_path, child_folder.folder_path)
+        self.assertEqual(folder_path, child_folder._folder_path)
 
         folder_path = '/core/'
         child_folder = root_folder._fetch_child_folder_from_path(folder_path, True)
-        self.assertEqual(folder_path, child_folder.folder_path)
+        self.assertEqual(folder_path, child_folder._folder_path)
 
         folder_path = '/core/applicationCommon'
         child_folder = root_folder._fetch_child_folder_from_path(folder_path, False)
-        self.assertEqual('/core/', child_folder.folder_path)
+        self.assertEqual('/core/', child_folder._folder_path)
 
         folder_path = '/core/applicationCommon'
         child_folder = root_folder._fetch_child_folder_from_path(folder_path, True)
-        self.assertEqual(folder_path + '/', child_folder.folder_path)
+        self.assertEqual(folder_path + '/', child_folder._folder_path)
 
         folder_path = '/core/applicationCommon/'
         child_folder = root_folder._fetch_child_folder_from_path(folder_path, False)
-        self.assertEqual(folder_path, child_folder.folder_path)
+        self.assertEqual(folder_path, child_folder._folder_path)
 
         folder_path = '/core/applicationCommon/'
         child_folder = root_folder._fetch_child_folder_from_path(folder_path, True)
-        self.assertEqual(folder_path, child_folder.folder_path)
+        self.assertEqual(folder_path, child_folder._folder_path)

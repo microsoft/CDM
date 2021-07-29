@@ -44,6 +44,7 @@ export class AttributeContextPersistence {
                 case cdmAttributeContextType.attributeGroup:
                     attributeContext.definition = CdmFolder.AttributeGroupReferencePersistence.fromData(ctx, object.definition);
                     break;
+                case cdmAttributeContextType.addedAttributeNewArtifact:
                 case cdmAttributeContextType.addedAttributeSupporting:
                 case cdmAttributeContextType.addedAttributeIdentity:
                 case cdmAttributeContextType.addedAttributeExpansionTotal:
@@ -104,6 +105,8 @@ export class AttributeContextPersistence {
                 return cdmAttributeContextType.attributeGroup;
             case 'attributeDefinition':
                 return cdmAttributeContextType.attributeDefinition;
+            case 'addedAttributeNewArtifact':
+                return cdmAttributeContextType.addedAttributeNewArtifact;
             case 'addedAttributeSupporting':
                 return cdmAttributeContextType.addedAttributeSupporting;
             case 'addedAttributeIdentity':
@@ -142,6 +145,10 @@ export class AttributeContextPersistence {
                 return cdmAttributeContextType.operationIncludeAttributes;
             case 'operationAddAttributeGroup':
                 return cdmAttributeContextType.operationAddAttributeGroup;
+            case 'operationAlterTraits':
+                return cdmAttributeContextType.operationAlterTraits;
+            case 'operationAddArtifactAttribute':
+                return cdmAttributeContextType.operationAddArtifactAttribute;
             case 'unknown':
                 return cdmAttributeContextType.unknown;
 
@@ -159,6 +166,8 @@ export class AttributeContextPersistence {
                 return 'attributeGroup';
             case cdmAttributeContextType.attributeDefinition:
                 return 'attributeDefinition';
+            case cdmAttributeContextType.addedAttributeNewArtifact:
+                return 'addedAttributeNewArtifact';
             case cdmAttributeContextType.addedAttributeSupporting:
                 return 'addedAttributeSupporting';
             case cdmAttributeContextType.addedAttributeIdentity:
@@ -197,6 +206,10 @@ export class AttributeContextPersistence {
                 return 'operationIncludeAttributes';
             case cdmAttributeContextType.operationAddAttributeGroup:
                 return 'operationAddAttributeGroup';
+            case cdmAttributeContextType.operationAlterTraits:
+                return 'operationAlterTraits';
+            case cdmAttributeContextType.operationAddArtifactAttribute:
+                return 'operationAddArtifactAttribute';
             default:
                 return 'unknown';
         }

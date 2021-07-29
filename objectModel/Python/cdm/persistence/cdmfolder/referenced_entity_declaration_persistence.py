@@ -22,7 +22,7 @@ class ReferencedEntityDeclarationPersistence:
         entity_path = data.get('entityPath') or data.get('entityDeclaration')
 
         if not entity_path:
-            logger.error(ctx, _TAG, ReferencedEntityDeclarationPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_PATH_NOT_FOUND)
+            logger.error(ctx, _TAG, ReferencedEntityDeclarationPersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_PATH_NOT_FOUND, data.get('entityName'))
 
         # The entity path has to be absolute.
         # If the namespace is not present then add the "prefixPath" which has the absolute folder path.

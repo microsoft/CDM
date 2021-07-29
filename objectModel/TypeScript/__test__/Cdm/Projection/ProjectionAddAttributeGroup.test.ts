@@ -3,12 +3,7 @@
 
 import {
     AttributeResolutionDirectiveSet,
-    CdmAttributeGroupDefinition,
-    CdmAttributeGroupReference,
-    CdmAttributeItem,
-    CdmCorpusDefinition,
-    CdmCollection,
-    CdmEntityAttributeDefinition,
+    CdmAttributeGroupDefinition, CdmCorpusDefinition, CdmEntityAttributeDefinition,
     CdmEntityDefinition,
     CdmEntityReference,
     CdmFolderDefinition,
@@ -61,7 +56,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Exclude attributes: ['age', 'phoneNumber']
-        const attGroupDefinition: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'PersonAttributeGroup');
+        const attGroupDefinition: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity.attributes, 'PersonAttributeGroup');
         expect(attGroupDefinition.members.length)
             .toEqual(3);
         expect((attGroupDefinition.members.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -89,7 +84,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Included attributes: ['age', 'phoneNumber']
-        const attGroupDefinition: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'PersonAttributeGroup', 3);
+        const attGroupDefinition: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity.attributes, 'PersonAttributeGroup', 3);
         expect(attGroupDefinition.members.length)
             .toEqual(5);
         expect((attGroupDefinition.members.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -144,7 +139,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // condition met, put all attributes in an attribute group
-        const attGroupDefinition: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity2.attributes, 'PersonAttributeGroup');
+        const attGroupDefinition: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity2.attributes, 'PersonAttributeGroup');
         expect(attGroupDefinition.members.length)
             .toEqual(5);
         expect((attGroupDefinition.members.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -216,7 +211,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
         // Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         // Original set of attributes: ['id', 'name', 'value', 'date']
         // condition met, put all attributes in an attribute group
-        const attGroupDefinition: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntityWithStructured.attributes, 'PersonAttributeGroup');
+        const attGroupDefinition: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntityWithStructured.attributes, 'PersonAttributeGroup');
         expect(attGroupDefinition.members.length)
             .toEqual(4);
         expect((attGroupDefinition.members.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -245,7 +240,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ 'structured' ]);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
-        const attGroupDefinition: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'PersonInfo');
+        const attGroupDefinition: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity.attributes, 'PersonInfo');
         expect(attGroupDefinition.members.length)
             .toEqual(5);
         expect((attGroupDefinition.members.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -293,7 +288,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
 
         // Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         // Original set of attributes: ['id', 'name', 'value', 'date']
-        const attGroupDefinition: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'PersonAttributeGroup');
+        const attGroupDefinition: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity.attributes, 'PersonAttributeGroup');
         expect(attGroupDefinition.members.length)
             .toEqual(4);
         expect((attGroupDefinition.members.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -337,7 +332,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
 
         // Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         // Original set of attributes: ['id', 'name', 'value', 'date']
-        const attGroupDefinition: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'PersonAttributeGroup');
+        const attGroupDefinition: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity.attributes, 'PersonAttributeGroup');
         expect(attGroupDefinition.members.length)
             .toEqual(4);
         expect((attGroupDefinition.members.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -366,7 +361,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ ]);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
-        const attGroupDefinition: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'ChildAttributeGroup');
+        const attGroupDefinition: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity.attributes, 'ChildAttributeGroup');
         expect(attGroupDefinition.members.length)
             .toEqual(5);
         expect((attGroupDefinition.members.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -398,7 +393,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // This will result in two attribute groups with the same set of attributes being generated
-        const attGroup1: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'PersonAttributeGroup', 2);
+        const attGroup1: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity.attributes, 'PersonAttributeGroup', 2);
         expect(attGroup1.members.length)
             .toEqual(5);
         expect((attGroup1.members.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -412,7 +407,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
         expect((attGroup1.members.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('email');
 
-        const attGroup2: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'SecondAttributeGroup', 2, 1);
+        const attGroup2: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity.attributes, 'SecondAttributeGroup', 2, 1);
         expect(attGroup2.members.length)
             .toEqual(5);
         expect((attGroup2.members.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -443,8 +438,8 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ ]);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
-        const outerAttGroup: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'OuterAttributeGroup');
-        const innerAttGroup: CdmAttributeGroupDefinition = validateAttributeGroup(outerAttGroup.members, 'InnerAttributeGroup');
+        const outerAttGroup: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity.attributes, 'OuterAttributeGroup');
+        const innerAttGroup: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(outerAttGroup.members, 'InnerAttributeGroup');
 
         expect(innerAttGroup.members.length)
             .toEqual(5);
@@ -483,7 +478,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
             .toEqual('name');
         expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
             .toEqual('age');
-        const attGroupDefinition: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'AddressAttributeGroup', 5, 2);
+        const attGroupDefinition: CdmAttributeGroupDefinition = projectionTestUtils.validateAttributeGroup(resolvedEntity.attributes, 'AddressAttributeGroup', 5, 2);
         expect((attGroupDefinition.members.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('address');
         expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
@@ -491,27 +486,4 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('email');
     });
-
-    /**
-     * Validates the creation of an attribute group and return its definition
-     * @param attributes The collection of attributes
-     * @param attributeGroupName The attribute group name
-     * @param attributesSize The expected size of the attributes collection
-     */
-    function validateAttributeGroup(attributes: CdmCollection<CdmAttributeItem>, attributeGroupName: string, attributesSize: number = 1, index: number = 0)  {
-        expect(attributes.length)
-            .toEqual(attributesSize);
-        expect(attributes.allItems[index].objectType)
-            .toEqual(cdmObjectType.attributeGroupRef);
-        const attGroupReference: CdmAttributeGroupReference = attributes.allItems[index] as CdmAttributeGroupReference;
-        expect(attGroupReference.explicitReference)
-            .not
-            .toBeUndefined();
-
-        const attGroupDefinition: CdmAttributeGroupDefinition = attGroupReference.explicitReference as CdmAttributeGroupDefinition;
-        expect(attGroupDefinition.attributeGroupName)
-            .toEqual(attributeGroupName);
-
-        return attGroupDefinition;
-    }
 });

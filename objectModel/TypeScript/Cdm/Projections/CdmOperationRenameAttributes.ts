@@ -152,7 +152,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
                     const newAttributeName: string = this.getNewAttributeName(currentPAS, sourceAttributeName);
 
                     // Create new resolved attribute with the new name, set the new attribute as target
-                    const resAttrNew: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, undefined, currentPAS.currentResolvedAttribute.target as CdmAttribute, newAttributeName);
+                    const resAttrNew: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, undefined, currentPAS.currentResolvedAttribute, newAttributeName);
 
                     // Get the attribute name the way it appears in the applyTo list
                     const applyToName: string = topLevelRenameAttributeNames.get(currentPAS.currentResolvedAttribute.resolvedName);
@@ -197,7 +197,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
     /**
      * Renames an attribute with the current renameFormat
      * @param attributeState The attribute state
-     * @params ourceAttributeNameThe parent attribute name (if any)
+     * @params sourceAttributeName parent attribute name (if any)
      */
     getNewAttributeName(attributeState: ProjectionAttributeState, sourceAttributeName: string): string {
         const currentAttributeName: string = attributeState.currentResolvedAttribute.resolvedName;
@@ -208,10 +208,6 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
             Logger.error(this.ctx, this.TAG, this.getNewAttributeName.name, null, cdmLogCode.ErrProjRenameFormatIsNotSet);
         }
 
-        let attributeName: string = StringUtils.replace(format, 'a', sourceAttributeName);
-        attributeName = StringUtils.replace(attributeName, 'o', ordinal);
-        attributeName = StringUtils.replace(attributeName, 'm', currentAttributeName);
-
-        return attributeName;
+        return CdmOperationBase.replaceWildcardCharacters(format, sourceAttributeName, ordinal, currentAttributeName)
     }
 }

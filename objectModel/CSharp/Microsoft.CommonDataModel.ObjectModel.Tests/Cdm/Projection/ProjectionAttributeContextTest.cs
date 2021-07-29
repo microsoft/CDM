@@ -70,7 +70,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         public async Task TestEntityNestedProjection()
         {
             string testName = "TestEntityNestedProjection";
-            string entityName = testName;
+            string entityName = "NestedProjection";
             CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
             
             await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
@@ -166,7 +166,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         public async Task TestEntityExtendsTrait()
         {
             string testName = "TestEntityExtendsTrait";
-            string entityName = testName;
+            string entityName = "ExtendsTrait";
             CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });
@@ -218,7 +218,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         public async Task TestProjectionExtendsTrait()
         {
             string testName = "TestProjectionExtendsTrait";
-            string entityName = testName;
+            string entityName = "ExtendsTrait";
             CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
 
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, new List<string> { });

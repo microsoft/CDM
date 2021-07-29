@@ -293,37 +293,7 @@ class ProjectionAddCountTest(unittest.TestCase):
         self.assertEqual('email2', resolved_entity.attributes[9].name)
         self.assertEqual('personCount', resolved_entity.attributes[10].name)
         self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[10].applied_traits[1].named_reference)
-
-    @async_test
-    async def test_with_array_expansion(self):
-        """AddCountAttribute with ArrayExpansion in the same projection (and then RenameAttributes)"""
-        test_name = 'test_with_array_expansion'
-        entity_name = 'NewPerson'
-        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
-
-        for res_opt in self.res_opts_combinations:
-            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
-
-        entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
-
-        # Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        # Expand 1...2, count attribute: "personCount" (first projection)
-        # The first projection will give us the expanded attributes as well as the pass-through input attributes
-        # Then do renameFormat = {m}{o} in the second projection
-        self.assertEqual(11, len(resolved_entity.attributes))
-        self.assertEqual('name1', resolved_entity.attributes[0].name)
-        self.assertEqual('age1', resolved_entity.attributes[1].name)
-        self.assertEqual('address1', resolved_entity.attributes[2].name)
-        self.assertEqual('phoneNumber1', resolved_entity.attributes[3].name)
-        self.assertEqual('email1', resolved_entity.attributes[4].name)
-        self.assertEqual('name2', resolved_entity.attributes[5].name)
-        self.assertEqual('age2', resolved_entity.attributes[6].name)
-        self.assertEqual('address2', resolved_entity.attributes[7].name)
-        self.assertEqual('phoneNumber2', resolved_entity.attributes[8].name)
-        self.assertEqual('email2', resolved_entity.attributes[9].name)
-        self.assertEqual('personCount', resolved_entity.attributes[10].name)
-        self.assertEqual('is.linkedEntity.array.count', resolved_entity.attributes[10].applied_traits[1].named_reference)
+        self.assertEqual('indicates.expansionInfo.count', resolved_entity.attributes[10].applied_traits[2].named_reference)
 
     @async_test
     async def test_combine_ops(self):

@@ -44,11 +44,6 @@ export class LocalEntityDeclarationPersistence {
             localExtensionTraitDefList
         );
 
-        if (entityDoc === undefined) {
-            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistDocFetchError);
-            return undefined;
-        }
-
         documentFolder.documents.push(entityDoc);
 
         // Entity schema path is the path to the doc containing the entity definition.
@@ -95,7 +90,7 @@ export class LocalEntityDeclarationPersistence {
                 if (cdmPartition !== undefined) {
                     localEntityDec.dataPartitions.push(cdmPartition);
                 } else {
-                    Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistDocFetchError);
+                    Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonDocConversionError);
                     return undefined;
                 }
             }
@@ -147,9 +142,6 @@ export class LocalEntityDeclarationPersistence {
                     const partition: Partition = await ModelJson.DataPartitionPersistence.toData(element, resOpt, options);
                     if (partition !== undefined) {
                         localEntity.partitions.push(partition);
-                    } else {
-                        Logger.error(instance.ctx, this.TAG, this.toData.name, instance.atCorpusPath, cdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
-                        return undefined;
                     }
                 }
             }

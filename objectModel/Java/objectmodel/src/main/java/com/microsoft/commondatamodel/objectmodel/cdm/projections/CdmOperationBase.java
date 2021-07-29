@@ -57,7 +57,7 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
-     * @param type CdmOperationType
+     * @param type CdmOperationType Invalid operation type
      */
     @Deprecated
     public void setType(final CdmOperationType type) {
@@ -92,8 +92,8 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     public abstract CdmObject copy(ResolveOptions resOpt, CdmObject host);
 
 
-    
-    /** 
+
+    /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      * @param resOpt Resolved options
@@ -103,6 +103,23 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     @Override
     @Deprecated
     public abstract Object copyData(final ResolveOptions resOpt, final CopyOptions options);
+
+    /**
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     * @param resOpt Resolved options
+     * @param copy CdmOperationBase
+     * @return Object
+     */
+    @Deprecated
+    public CdmOperationBase copyProj(ResolveOptions resOpt, CdmOperationBase copy) {
+        copy.setIndex(this.index);
+        copy.setCondition(this.condition);
+        copy.setSourceInput(this.sourceInput);
+
+        this.copyDef(resOpt, copy);
+        return copy;
+    }
 
     @Override
     public abstract String getName();
@@ -172,9 +189,7 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
         return createNewResolvedAttribute(projCtx, attrCtxUnder, targetAttr, overrideDefaultName, null);
     }
 
-
-    
-    /** 
+    /**
      * Projections require a new resolved attribute to be created multiple times
      * This function allows us to create new resolved attributes based on a input attribute
      *
@@ -214,5 +229,88 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
         }
 
         return newResAttr;
+    }
+
+    /**
+     * Projections require a new resolved attribute to be created multiple times
+     * This function allows us to create new resolved attributes based on a input attribute
+     *
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     * @param projCtx ProjectionContext
+     * @param attrCtxUnder CdmAttributeContext
+     * @param oldResolvedAttribute ResolvedAttribute
+     *          For some attributes obtained from the previous projection operation, they may have a different set of traits comparing to the resolved attribute target.
+     *          We would want to take the set of traits from the resolved attribute.
+     * @param overrideDefaultName String
+     * @return ResolvedAttribute
+     */
+    @Deprecated
+    public static ResolvedAttribute createNewResolvedAttribute(ProjectionContext projCtx, CdmAttributeContext attrCtxUnder, ResolvedAttribute oldResolvedAttribute, String overrideDefaultName) {
+        return createNewResolvedAttribute(projCtx, attrCtxUnder, oldResolvedAttribute, overrideDefaultName, null);
+    }
+
+        /**
+         * Projections require a new resolved attribute to be created multiple times
+         * This function allows us to create new resolved attributes based on a input attribute
+         *
+         * @deprecated This function is extremely likely to be removed in the public interface, and not
+         * meant to be called externally at all. Please refrain from using it.
+         * @param projCtx ProjectionContext
+         * @param attrCtxUnder CdmAttributeContext
+         * @param oldResolvedAttribute ResolvedAttribute
+         *          For some attributes obtained from the previous projection operation, they may have a different set of traits comparing to the resolved attribute target.
+         *          We would want to take the set of traits from the resolved attribute.
+         * @param overrideDefaultName String
+         * @param addedSimpleRefTraits List of String
+         * @return ResolvedAttribute
+         */
+    @Deprecated
+    public static ResolvedAttribute createNewResolvedAttribute(ProjectionContext projCtx, CdmAttributeContext attrCtxUnder, ResolvedAttribute oldResolvedAttribute, String overrideDefaultName, List<String> addedSimpleRefTraits) {
+        CdmAttribute targetAttr = (CdmAttribute) ((CdmAttribute)oldResolvedAttribute.getTarget()).copy();
+
+        ResolvedAttribute newResAttr = new ResolvedAttribute(
+                projCtx.getProjectionDirective().getResOpt(),
+                targetAttr,
+                !StringUtils.isNullOrTrimEmpty(overrideDefaultName) ? overrideDefaultName : targetAttr.getName(), attrCtxUnder);
+
+        targetAttr.setInDocument(projCtx.getProjectionDirective().getOwner().getInDocument());
+
+        newResAttr.setResolvedTraits(oldResolvedAttribute.getResolvedTraits().deepCopy());
+
+        if (addedSimpleRefTraits != null) {
+            for (final String trait : addedSimpleRefTraits) {
+                final CdmTraitReference tr = new CdmTraitReference(targetAttr.getCtx(), trait, true, false);
+                newResAttr.setResolvedTraits(newResAttr.getResolvedTraits().mergeSet(tr.fetchResolvedTraits()));
+            }
+        }
+
+        return newResAttr;
+    }
+
+    /**
+     * Replaces in the pattern in the source with the value
+     *
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     * @param format format
+     * @param baseAttributeName source attribute
+     * @param ordinal ordinal
+     * @param memberAttributeName String
+     * @return String
+     */
+    @Deprecated
+    public static String replaceWildcardCharacters(String format, String baseAttributeName, String ordinal, String memberAttributeName)
+    {
+        if (StringUtils.isNullOrEmpty(format))
+        {
+            return "";
+        }
+
+        String attributeName = StringUtils.replace(format, 'a', baseAttributeName);
+        attributeName = StringUtils.replace(attributeName, 'o', ordinal);
+        attributeName = StringUtils.replace(attributeName, 'm', memberAttributeName);
+
+        return attributeName;
     }
 }

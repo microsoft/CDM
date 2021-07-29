@@ -138,6 +138,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
         }
 
         /// <summary>
+        /// Testing that partition is correctly found when namespace of pattern differs from namespace of the manifest
+        /// </summary>
+        [TestMethod]
+        public async Task TestPatternWithDifferentNamespace()
+        {
+            string testName = "TestPatternWithDifferentNamespace";
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+            LocalAdapter localAdapter = (LocalAdapter)cdmCorpus.Storage.FetchAdapter("local");
+            var localPath = localAdapter.FullRoot;
+            cdmCorpus.Storage.Mount("other", new LocalAdapter(Path.Combine(localPath, "other")));
+            var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/patternManifest.manifest.cdm.json");
+
+            await cdmManifest.FileStatusCheckAsync();
+
+            Assert.AreEqual(1, cdmManifest.Entities[0].DataPartitions.Count);
+        }
+
+        /// <summary>
         /// Testing that patterns behave correctly with variations to rootLocation
         /// </summary>
         [TestMethod]

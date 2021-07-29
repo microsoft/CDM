@@ -458,6 +458,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     return false;
                 }
+
+                // Log the telemetry if the document is a manifest
+                if (this is CdmManifestDefinition)
+                {
+                    Logger.IngestManifestTelemetry(this as CdmManifestDefinition, this.Ctx, nameof(CdmDocumentDefinition), nameof(SaveAsAsync), this.AtCorpusPath);
+                }
+
+                // Log the telemetry of all entities contained in the document
+                else
+                {
+                    foreach (CdmObjectDefinition obj in this.Definitions)
+                    {
+                        if (obj is CdmEntityDefinition)
+                        {
+                            Logger.IngestEntityTelemetry(obj as CdmEntityDefinition, this.Ctx, nameof(CdmDocumentDefinition), nameof(SaveAsAsync), this.AtCorpusPath);
+                        }
+                    }
+                }
+
                 return true;
             }
         }

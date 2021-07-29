@@ -53,7 +53,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (extensionTraitDefList.Count > 0)
             {
-                Logger.Warning(ctx, Tag, nameof(FromData), null, CdmLogCode.WarnPersistCustomExtNotSupported);
+                Logger.Warning(ctx, Tag, nameof(FromData), null, CdmLogCode.WarnPersistCustomExtNotSupported, referencedEntity.EntityName);
             }
 
             return referencedEntity;
@@ -65,7 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             if (sourceIndex == -1)
             {
-                Logger.Error(instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
+                Logger.Error(instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityRefConversionError, instance.EntityName);
 
                 return null;
             }

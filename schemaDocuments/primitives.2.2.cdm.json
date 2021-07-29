@@ -1,0 +1,730 @@
+{
+  "documentVersion": "2.2",
+  "$schema": "./schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "/foundations.4.3.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "traitName": "is",
+      "explanation": "the root 'trait' from which all others derive."
+    },
+    {
+      "traitName": "does",
+      "extendsTrait": "is",
+      "explanation": "a root with a more meaningful base name for certain exhibited traits"
+    },
+    {
+      "traitName": "means",
+      "extendsTrait": "is",
+      "explanation": "a root with a more meaningful base name for certain semantic meaning traits"
+    },
+    {
+      "traitName": "has",
+      "extendsTrait": "is",
+      "explanation": "a root for traits that describe properties of an object"
+    },
+    {
+      "dataTypeName": "any",
+      "explanation": "the root dataType"
+    },
+    {
+      "traitName": "is.dataFormat",
+      "extendsTrait": "is",
+      "associatedProperties": [
+        "dataFormat"
+      ]
+    },
+    {
+      "traitName": "is.dataFormat.integer",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.big",
+      "explanation": "indicates an atomic but multi-unit version of a fundamental type such as a multi byte encoded character, a double precision float, a long integer.",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.small",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.floatingPoint",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.array",
+      "explanation": "indicates a contiguous sequence of fundamental units that shoud be taken as a whole and considered one value. Array of Character is a String, Array of Byte is a Binary Object",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.character",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.byte",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.numeric",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.date",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.time",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.boolean",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.guid",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.timeOffset",
+      "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.JSInteger",
+      "extendsTrait": "is.dataFormat",
+      "explanation": "represents the 54 bit integer numbers compatible with javascript"
+    },
+    {
+      "dataTypeName": "integer",
+      "explanation": "Whole numbers, assumed to correspond with a 32 bit signed int",
+      "extendsDataType": "any",
+      "exhibitsTraits": [
+        "is.dataFormat.integer"
+      ]
+    },
+    {
+      "dataTypeName": "float",
+      "extendsDataType": "any",
+      "explanation": "Fractional numbers, assumed to correspond with a 32 bit float IEEE approximation.",
+      "exhibitsTraits": [
+        "is.dataFormat.floatingPoint"
+      ]
+    },
+    {
+      "traitName": "is.dataFormat.numeric.shaped",
+      "extendsTrait": "is.dataFormat.numeric",
+      "explanation": "for setting the exact precision and scale of numeric values",
+      "hasParameters": [
+        {
+          "name": "precision",
+          "explanation": "the total number of significant digits",
+          "dataType": "integer"
+        },
+        {
+          "name": "scale",
+          "explanation": "the number of digits to the right of the decimal place",
+          "dataType": "integer"
+        }
+      ]
+    },
+    {
+      "dataTypeName": "decimal",
+      "explanation": "A precice fractional number with a specific precision and scale",
+      "extendsDataType": "any",
+      "exhibitsTraits": [
+        "is.dataFormat.numeric.shaped"
+      ]
+    },
+    {
+      "dataTypeName": "boolean",
+      "extendsDataType": "any",
+      "exhibitsTraits": [
+        "is.dataFormat.boolean"
+      ]
+    },
+    {
+      "dataTypeName": "char",
+      "extendsDataType": "any",
+      "exhibitsTraits": [
+        "is.dataFormat.character",
+        "is.dataFormat.big"
+      ]
+    },
+    {
+      "dataTypeName": "sChar",
+      "extendsDataType": "any",
+      "exhibitsTraits": [
+        "is.dataFormat.character"
+      ]
+    },
+    {
+      "dataTypeName": "string",
+      "extendsDataType": "char",
+      "exhibitsTraits": [
+        "is.dataFormat.array"
+      ]
+    },
+    {
+      "dataTypeName": "byte",
+      "extendsDataType": "any",
+      "exhibitsTraits": [
+        "is.dataFormat.byte"
+      ]
+    },
+    {
+      "dataTypeName": "binary",
+      "extendsDataType": "byte",
+      "exhibitsTraits": [
+        "is.dataFormat.array"
+      ]
+    },
+    {
+      "dataTypeName": "smallInteger",
+      "extendsDataType": "integer",
+      "exhibitsTraits": [
+        "is.dataFormat.small"
+      ]
+    },
+    {
+      "dataTypeName": "bigInteger",
+      "extendsDataType": "integer",
+      "exhibitsTraits": [
+        "is.dataFormat.big"
+      ]
+    },
+    {
+      "dataTypeName": "double",
+      "extendsDataType": "float",
+      "exhibitsTraits": [
+        "is.dataFormat.big"
+      ]
+    },
+    {
+      "dataTypeName": "guid",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "is.dataFormat.guid"
+      ]
+    },
+    {
+      "dataTypeName": "fixedDecimal",
+      "explanation": "the 64 bit fixed (4) scale numbers used by PBI",
+      "extendsDataType": {
+        "dataTypeReference": "decimal",
+        "appliedTraits": [
+          {
+            "traitReference": "is.dataFormat.numeric.shaped",
+            "arguments": [
+              {
+                "name": "precision",
+                "value": "19"
+              },
+              {
+                "name": "scale",
+                "value": "4"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "dataTypeName": "variableDecimal",
+      "explanation": "15 digit precision numbers with no fixed scale",
+      "extendsDataType": {
+        "dataTypeReference": "decimal",
+        "appliedTraits": [
+          {
+            "traitReference": "is.dataFormat.numeric.shaped",
+            "arguments": [
+              {
+                "name": "precision",
+                "value": "15"
+              },
+              {
+                "name": "scale",
+                "value": "-1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "dataTypeName": "JSInteger",
+      "extendsDataType": {
+        "dataTypeReference": "decimal",
+        "appliedTraits": [
+          {
+            "traitReference": "is.dataFormat.numeric.shaped",
+            "arguments": [
+              {
+                "name": "precision",
+                "value": "16"
+              },
+              {
+                "name": "scale",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        "is.dataFormat.JSInteger"
+      ]
+    },
+    {
+      "traitName": "means.identity",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.identity.entityId",
+      "extendsTrait": "means.identity"
+    },
+    {
+      "dataTypeName": "entityId",
+      "extendsDataType": "guid",
+      "explanation": "a unique identifier for entity instances",
+      "exhibitsTraits": [
+        "means.identity.entityId"
+      ]
+    },
+    {
+      "traitName": "means.fileName",
+      "extendsTrait": "means"
+    },
+    {
+      "dataTypeName": "fileName",
+      "extendsDataType": "string",
+      "explanation": "a string value representing the name of a file.",
+      "exhibitsTraits": [
+        "means.fileName"
+      ]
+    },
+    {
+      "dataTypeName": "object",
+      "extendsDataType": "any",
+      "explanation": "types for trait parameters that take objects as values"
+    },
+    {
+      "dataTypeName": "cdmObject",
+      "extendsDataType": "object",
+      "explanation": "types for trait parameters that take CDM objects as values"
+    },
+    {
+      "dataTypeName": "trait",
+      "extendsDataType": "cdmObject",
+      "explanation": "types for trait parameters that take objects as values"
+    },
+    {
+      "dataTypeName": "dataType",
+      "extendsDataType": "cdmObject",
+      "explanation": "types for trait parameters that take objects as values"
+    },
+    {
+      "dataTypeName": "purpose",
+      "extendsDataType": "cdmObject",
+      "explanation": "types for trait parameters that take objects as values"
+    },
+    {
+      "traitName": "means.entityName",
+      "extendsTrait": "means",
+      "explanation": "a string value is the name of a CDM entity."
+    },
+    {
+      "dataTypeName": "entityName",
+      "extendsDataType": "string",
+      "explanation": "type for trait parameters that take entity names as values",
+      "exhibitsTraits": [
+        {
+          "traitReference": {
+            "traitName": "means.entityName",
+            "extendsTrait": "means",
+            "explanation": "[deprecated] use the standalone 'means.entityName' trait instead.",
+            "ugly": true
+          }
+        },
+        "means.entityName"
+      ]
+    },
+    {
+      "traitName": "means.entityName.specific",
+      "extendsTrait": "means.entityName",
+      "explanation": "holds the name of specific CDM entity as a parameter of the trait.",
+      "hasParameters": [
+        {
+          "name": "entity",
+          "dataType": "entityName",
+          "explanation": "the name of a specific CDM entity."
+        }
+      ]
+    },
+    {
+      "dataTypeName": "entity",
+      "extendsDataType": "cdmObject",
+      "explanation": "types for trait parameters that take objects as values",
+      "exhibitsTraits": [
+        "means.entityName.specific"
+      ]
+    },
+    {
+      "dataTypeName": "attribute",
+      "extendsDataType": "cdmObject",
+      "explanation": "types for trait parameters that take objects as values"
+    },
+    {
+      "dataTypeName": "attributeGroup",
+      "extendsDataType": "cdmObject",
+      "explanation": "types for trait parameters that take objects as values"
+    },
+    {
+      "dataTypeName": "attributeName",
+      "extendsDataType": "string",
+      "explanation": "type for trait parameters that take attribute names as values",
+      "exhibitsTraits": [
+        {
+          "traitReference": {
+            "traitName": "means.attributeName",
+            "extendsTrait": "means"
+          }
+        }
+      ]
+    },
+    {
+      "traitName": "means.content",
+      "extendsTrait": "means"
+    },
+    {
+      "traitName": "means.content.text",
+      "extendsTrait": "means.content"
+    },
+    {
+      "traitName": "means.content.text.HTML",
+      "extendsTrait": "means.content.text"
+    },
+    {
+      "traitName": "means.content.text.JSON",
+      "extendsTrait": "means.content.text"
+    },
+    {
+      "traitName": "means.content.text.XML",
+      "extendsTrait": "means.content.text"
+    },
+    {
+      "traitName": "means.content.text.CSV",
+      "extendsTrait": "means.content.text"
+    },
+    {
+      "traitName": "means.content.binary",
+      "extendsTrait": "means.content"
+    },
+    {
+      "traitName": "means.content.binary.image",
+      "extendsTrait": "means.content.binary"
+    },
+    {
+      "traitName": "means.content.binary.image.BMP",
+      "extendsTrait": "means.content.binary.image"
+    },
+    {
+      "traitName": "means.content.binary.image.GIF",
+      "extendsTrait": "means.content.binary.image"
+    },
+    {
+      "traitName": "means.content.binary.image.JPG",
+      "extendsTrait": "means.content.binary.image"
+    },
+    {
+      "traitName": "means.content.binary.image.PNG",
+      "extendsTrait": "means.content.binary.image"
+    },
+    {
+      "traitName": "means.content.binary.image.TIFF",
+      "extendsTrait": "means.content.binary.image"
+    },
+    {
+      "dataTypeName": "list",
+      "extendsDataType": "string",
+      "explanation": "a CSV contained within one string value",
+      "exhibitsTraits": [
+        "means.content.text.CSV"
+      ]
+    },
+    {
+      "entityName": "reference",
+      "explanation": "a root entity for constant reference tables",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "2.2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "purposeName": "hasA",
+      "explanation": "The root relationship for associating attributes with entities."
+    },
+    {
+      "traitName": "is.hidden",
+      "explanation": "All attributes with this trait should be hidden from view of the entity consumer."
+    },
+    {
+      "traitName": "is.secret",
+      "extendsTrait": "is"
+    },
+    {
+      "traitName": "is.required",
+      "extendsTrait": "is"
+    },
+    {
+      "traitName": "is.sensitive",
+      "extendsTrait": "is"
+    },
+    {
+      "traitName": "does.elevateAttribute",
+      "explanation": "elevates (up to a entity) a trait that describes a specific attribute",
+      "extendsTrait": "does",
+      "elevated": true,
+      "hasParameters": [
+        {
+          "name": "attribute",
+          "dataType": "attribute",
+          "defaultValue": "this.attribute",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "is.identifiedBy",
+      "explanation": "names a specifc identity attribute to use with an entity",
+      "extendsTrait": "does.elevateAttribute",
+      "associatedProperties": [
+        "primaryKey",
+        "isPrimaryKey"
+      ]
+    },
+    {
+      "purposeName": "identifiedBy",
+      "extendsPurpose": "hasA",
+      "exhibitsTraits": [
+        "is.identifiedBy"
+      ],
+      "explanation": "The attribute which supplies the unique identifier for the entity. Used by default in references unless a different attribute is supplied with 'is.identifiedBy' trait."
+    },
+    {
+      "traitName": "is.named",
+      "extendsTrait": "does.elevateAttribute"
+    },
+    {
+      "purposeName": "namedBy",
+      "extendsPurpose": "hasA",
+      "explanation": "The attribute which supplies the name for the entity.",
+      "exhibitsTraits": [
+        "is.named"
+      ]
+    },
+    {
+      "traitName": "is.ordered",
+      "extendsTrait": "does.elevateAttribute"
+    },
+    {
+      "purposeName": "orderedBy",
+      "extendsPurpose": "hasA",
+      "explanation": "An attribute which determines the ordering of entity records",
+      "exhibitsTraits": [
+        "is.ordered"
+      ]
+    },
+    {
+      "traitName": "is.locatable",
+      "extendsTrait": "does.elevateAttribute"
+    },
+    {
+      "purposeName": "locatedAt",
+      "extendsPurpose": "hasA",
+      "explanation": "An attribute which identifies the location of an entity",
+      "exhibitsTraits": [
+        "is.locatable"
+      ]
+    },
+    {
+      "traitName": "is.addedInSupportOf",
+      "extendsTrait": "is",
+      "hasParameters": [
+        {
+          "name": "inSupportOf",
+          "dataType": "attributeName",
+          "direction": "both",
+          "explanation": "output parameter naming the attribute that is being supported"
+        }
+      ]
+    },
+    {
+      "traitName": "is.linkedEntity",
+      "explanation": "base for traits that are used to decorate the attributes and artifacts created by the traits on the hasFlexibleRelationshipWithEntity relationship."
+    },
+    {
+      "traitName": "is.linkedEntity.identifier",
+      "extendsTrait": "is.linkedEntity",
+      "explanation": "Marks the attribute(s) that hold foreign key references to a linked (used as an attribute) entity. This attribute is added to the resolved entity to enumerate the referenced entities.",
+      "hasParameters": [
+        {
+          "name": "entityReferences",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "entitySet"
+                ]
+              }
+            ]
+          },
+          "explanation": "a reference to the constant entity holding the list of entity references"
+        }
+      ]
+    },
+    {
+      "traitName": "is.linkedEntity.name",
+      "extendsTrait": "is.linkedEntity",
+      "explanation": "Marks an attribute that contains the entity name or 'class' for the situation where one entity links to (uses as an attribute) a set of possible entities."
+    },
+    {
+      "traitName": "is.linkedEntity.array",
+      "explanation": "Identifies the case when one entity links to (uses as an attribute) an array of other entities."
+    },
+    {
+      "traitName": "is.linkedEntity.array.count",
+      "explanation": "Marks an attribute that contains the count of items in the array of linked (used as an attribute) entities"
+    },
+    {
+      "entityName": "defaultArtifacts",
+      "explanation": "default definitions for attributes that are generated and added during resolution",
+      "extendsEntity": "reference",
+      "hasAttributes": [
+        {
+          "name": "id",
+          "dataType": "entityId",
+          "appliedTraits": [
+            "is.linkedEntity.identifier"
+          ]
+        },
+        {
+          "name": "count",
+          "dataType": "integer",
+          "appliedTraits": [
+            "is.linkedEntity.array.count"
+          ]
+        },
+        {
+          "name": "type",
+          "dataType": "entityName",
+          "appliedTraits": [
+            "is.linkedEntity.name"
+          ]
+        }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "2.2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "traitName": "is.dataFormat.list",
+      "extendsTrait": "is.dataFormat",
+      "explanation": "Marks the attribute that contains a list of attributes."
+    },
+    {
+      "traitName": "has.expansionInfo",
+      "extendsTrait": "has",
+      "hasParameters": [
+        {
+          "name": "expansionName",
+          "dataType": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "indicates.expansionInfo.count",
+      "extendsTrait": "has.expansionInfo",
+      "explanation": "Marks the attribute is the count of elements in an expansion."
+    },
+    {
+      "traitName": "has.expansionInfo.list",
+      "extendsTrait": "has.expansionInfo",
+      "explanation": "Marks the attribute that is part of a list and its ordinal.",
+      "hasParameters": [
+        {
+          "name": "ordinal",
+          "dataType": "integer",
+          "required": true
+        },
+        {
+          "name": "memberAttribute",
+          "dataType": "string"
+        }
+      ]
+    },
+    {
+      "traitName": "is.dataFormat.map",
+      "extendsTrait": "is.dataFormat",
+      "explanation": "Marks the attribute that contains a map of attributes."
+    },
+    {
+      "traitName": "is.dataFormat.mapKey",
+      "extendsTrait": "is.dataFormat",
+      "explanation": "Marks the attribute that is one of the keys in a map."
+    },
+    {
+      "traitName": "is.dataFormat.mapValue",
+      "extendsTrait": "is.dataFormat",
+      "explanation": "Marks the attribute that is one of the values in a map."
+    },
+    {
+      "traitName": "indicates.expansionInfo.mapKey",
+      "extendsTrait": "has.expansionInfo",
+      "explanation": "Marks the attribute that is one of the keys in a map and its ordinal.",
+      "hasParameters": [
+        {
+          "name": "ordinal",
+          "dataType": "integer",
+          "required": true
+        }
+      ]
+    },
+    {
+      "traitName": "has.expansionInfo.mapValue",
+      "extendsTrait": "has.expansionInfo",
+      "explanation": "Marks the attribute that is one of the values in a map and its ordinal.",
+      "hasParameters": [
+        {
+          "name": "ordinal",
+          "dataType": "integer",
+          "required": true
+        },
+        {
+          "name": "memberAttribute",
+          "dataType": "string"
+        }
+      ]
+    }
+  ]
+}

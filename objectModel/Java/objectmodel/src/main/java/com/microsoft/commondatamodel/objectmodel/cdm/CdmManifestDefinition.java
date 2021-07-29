@@ -600,9 +600,13 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         }
 
         for (final CdmEntityDeclarationDefinition entity : this.getEntities()) {
-          final CdmEntityDefinition entDef = this.getEntityFromReferenceAsync(entity, this).join();
+          final String entityPath = this.createEntityPathFromDeclarationAsync(entity, this).join();
+          final CdmEntityDefinition entDef = this.getCtx()
+                                              .getCorpus()
+                                              .<CdmEntityDefinition>fetchObjectAsync(entityPath)
+                                              .join();
           if (null == entDef) {
-            Logger.error(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveEntityRefError);
+            Logger.error(this.getCtx(), TAG, "createResolvedManifestAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveEntityFailure, entityPath);
             return null;
           }
 
@@ -685,28 +689,6 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     });
   }
 
-  /**
-   * finds and returns an entity object from an EntityDeclaration object that probably comes from a manifest.
-   * @param entity CdmEntityDeclarationDefinition
-   * @param manifest CdmManifestDefinition
-   * @return CompletableFuture
-   */
-  private CompletableFuture<CdmEntityDefinition> getEntityFromReferenceAsync(
-      final CdmEntityDeclarationDefinition entity,
-      final CdmManifestDefinition manifest) {
-    return CompletableFuture.supplyAsync(() -> {
-      final String entityPath = this.createEntityPathFromDeclarationAsync(entity, manifest).join();
-      final CdmEntityDefinition result = this.getCtx()
-          .getCorpus()
-          .<CdmEntityDefinition>fetchObjectAsync(entityPath)
-          .join();
-
-      if (null == result) {
-        Logger.error(this.getCtx(), TAG, "getEntityFromReferenceAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveEntityFailure, entityPath);
-      }
-      return result;
-    });
-  }
 
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not

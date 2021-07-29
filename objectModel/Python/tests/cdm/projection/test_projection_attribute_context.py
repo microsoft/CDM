@@ -50,7 +50,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
     async def test_entity_nested_projection(self):
         """Extends entity with a nested projection"""
         test_name = 'test_entity_nested_projection'
-        entity_name = 'TestEntityNestedProjection'
+        entity_name = 'NestedProjection'
         corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, [])
@@ -119,7 +119,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
     async def test_entity_extends_trait(self):
         """Entity that extends and exhibits custom traits"""
         test_name = 'test_entity_extends_trait'
-        entity_name = 'TestEntityExtendsTrait'
+        entity_name = 'ExtendsTrait'
         corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         resolved_entity = await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, [])
@@ -159,7 +159,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
     async def test_projection_extends_trait(self):
         """Entity with projection that extends and exhibits custom traits"""
         test_name = 'test_projection_extends_trait'
-        entity_name = 'TestProjectionExtendsTrait'
+        entity_name = 'ExtendsTrait'
         corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         resolved_entity = await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, [])

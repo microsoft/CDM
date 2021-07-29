@@ -31,7 +31,7 @@ class EntityPersistence:
             if type_attribute is not None:
                 entity.attributes.append(type_attribute)
             else:
-                logger.error(ctx, EntityPersistence.__name__, EntityPersistence.from_data.__name__, element.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_ATTR_CONVERSION_FAILURE)
+                logger.error(ctx, EntityPersistence.__name__, EntityPersistence.from_data.__name__, element.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_TO_ATTR_CONVERSION_FAILURE)
                 return
 
         extension_helper.process_extension_from_json(ctx, data, entity.exhibits_traits, extension_trait_def_list, local_extension_trait_def_list)
@@ -51,14 +51,14 @@ class EntityPersistence:
             data.attributes = []
             for element in instance.attributes:
                 if element.object_type != CdmObjectType.TYPE_ATTRIBUTE_DEF:
-                    logger.error(ctx, EntityPersistence.__name__, EntityPersistence.to_data.__name__, element.at_corpus_path, CdmLogCode.ERR_PERSIST_MANIFEST_SAVING_FAILURE)
+                    logger.error(ctx, EntityPersistence.__name__, EntityPersistence.to_data.__name__, element.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_ENTITY_ATTR_ERROR)
                     return None
 
                 attribute = await TypeAttributePersistence.to_data(element, res_opt, options)
                 if attribute:
                     data.attributes.append(attribute)
                 else:
-                    logger.error(ctx, EntityPersistence.__name__, EntityPersistence.to_data.__name__, CdmLogCode.ERR_PERSIST_MODELJSON_ATTR_CONVERSION_FAILURE)
+                    logger.error(ctx, EntityPersistence.__name__, EntityPersistence.to_data.__name__, CdmLogCode.ERR_PERSIST_MODELJSON_FROM_ATTR_CONVERSION_FAILURE)
                     return None
 
         return data

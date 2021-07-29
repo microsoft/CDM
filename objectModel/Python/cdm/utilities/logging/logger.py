@@ -55,6 +55,9 @@ def _log(level: 'CdmStatusLevel', ctx: 'CdmCorpusContext', class_name: str, mess
     Log to the specified status level by using the status event on the corpus context (if it exists) or to the default logger.
     The log level, class_name, message and path values are also added as part of a new entry to the log recorder.
     """
+    if ctx.suppressed_log_codes.__contains__(code):
+        return
+
     #  Write message to the configured logger
     if level >= ctx.report_at_level:
         timestamp = time_utils._get_formatted_date_string(datetime.utcnow())
@@ -74,10 +77,10 @@ def _log(level: 'CdmStatusLevel', ctx: 'CdmCorpusContext', class_name: str, mess
                 event['code'] = code.name
 
             if ctx.correlation_id is not None:
-                event['correlationId'] = ctx.correlation_id
+                event['cid'] = ctx.correlation_id
 
             if corpus_path is not None:
-                event['corpuspath'] = corpus_path
+                event['path'] = corpus_path
             ctx.events.append(event)
 
         formatted_message = _format_message(class_name, message, method, ctx.correlation_id, corpus_path)

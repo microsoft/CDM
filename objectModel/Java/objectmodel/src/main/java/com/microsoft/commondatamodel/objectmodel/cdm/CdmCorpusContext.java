@@ -3,9 +3,12 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.EventList;
+
+import java.util.HashSet;
 
 public interface CdmCorpusContext {
 
@@ -18,6 +21,8 @@ public interface CdmCorpusContext {
   void setReportAtLevel(CdmStatusLevel value);
 
   EventCallback getStatusEvent();
+
+  HashSet<CdmLogCode> getSuppressedLogCodes();
 
   void setStatusEvent(EventCallback value);
 

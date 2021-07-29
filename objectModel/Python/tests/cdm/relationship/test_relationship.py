@@ -185,7 +185,7 @@ class RelationshipTest(unittest.TestCase):
 
         await corpus.calculate_entity_graph_async(manifest)
         # Check if the warning was logged.
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_PROJ_FK_WITHOUT_SOURCE_ENTITY, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_PROJ_FK_WITHOUT_SOURCE_ENTITY, True, self)
 
         await manifest.populate_manifest_relationships_async()
 

@@ -61,6 +61,10 @@ export class Logger {
           code: cdmLogCode): void {
           // Write message to the configured logger
           if (ctx !== undefined) {
+
+              if (ctx.suppressedLogCodes.has(code))
+                return;
+
               // Store a record of the event.
               // Save some dict init and string formatting cycles by checking
               // whether the recording is actually enabled.
@@ -78,11 +82,11 @@ export class Logger {
                   }
 
                   if (ctx.correlationId !== undefined) {
-                      theEvent.set('correlationId', ctx.correlationId);
+                      theEvent.set('cid', ctx.correlationId);
                   }
 
                   if (corpusPath !== null) {
-                      theEvent.set('corpuspath', corpusPath);
+                      theEvent.set('path', corpusPath);
                   }
 
                   ctx.events.push(theEvent);

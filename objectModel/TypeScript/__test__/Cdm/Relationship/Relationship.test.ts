@@ -272,7 +272,7 @@ describe('Cdm/Relationship/Relationship', () => {
 
         await corpus.calculateEntityGraphAsync(manifest);
         // Check if the warning was logged.
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnProjFKWithoutSourceEntity);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnProjFKWithoutSourceEntity, true);
 
         await manifest.populateManifestRelationshipsAsync();
         expect(manifest.relationships.length)

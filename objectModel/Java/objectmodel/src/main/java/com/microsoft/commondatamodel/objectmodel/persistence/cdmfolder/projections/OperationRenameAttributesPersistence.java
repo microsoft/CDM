@@ -43,7 +43,7 @@ public class OperationRenameAttributesPersistence {
                 renameAttributesOp.setApplyTo(JMapper.MAP.convertValue(obj.get("applyTo"), new TypeReference<ArrayList<String>>() {
                 }));
             } else {
-                Logger.error(ctx, TAG, "fromData", renameAttributesOp.getAtCorpusPath(), CdmLogCode.ErrPersistProjUnsupportedProp);
+                Logger.error(ctx, TAG, "fromData", renameAttributesOp.getAtCorpusPath(), CdmLogCode.ErrPersistProjUnsupportedProp, "applyTo", "string or list of strings");
             }
         }
 

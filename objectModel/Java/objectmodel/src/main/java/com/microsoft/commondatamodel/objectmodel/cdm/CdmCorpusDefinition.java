@@ -538,6 +538,12 @@ public class CdmCorpusDefinition {
       case OperationAddAttributeGroupDef:
         newObj = new CdmOperationAddAttributeGroup(this.ctx);
         break;
+      case OperationAlterTraitsDef:
+        newObj = new CdmOperationAlterTraits(this.ctx);
+        break;
+      case OperationAddArtifactAttributeDef:
+        newObj = new CdmOperationAddArtifactAttribute(this.ctx);
+        break;
     }
 
     return (T) newObj;
@@ -951,6 +957,20 @@ public class CdmCorpusDefinition {
         case OperationAddAttributeGroupDef: {
           if (found.getObjectType() != CdmObjectType.OperationAddAttributeGroupDef) {
             Logger.error(ctx, TAG, "resolveSymbolReference", wrtDoc.getAtCorpusPath(), CdmLogCode.ErrUnexpectedType, "add attribute group operation", symbolDef);
+            found = null;
+          }
+          break;
+        }
+        case OperationAlterTraitsDef: {
+          if (found.getObjectType() != CdmObjectType.OperationAlterTraitsDef) {
+            Logger.error(ctx, TAG, "resolveSymbolReference", wrtDoc.getAtCorpusPath(), CdmLogCode.ErrUnexpectedType, "alter traits operation", symbolDef);
+            found = null;
+          }
+          break;
+        }
+        case OperationAddArtifactAttributeDef: {
+          if (found.getObjectType() != CdmObjectType.OperationAddArtifactAttributeDef) {
+            Logger.error(ctx, TAG, "resolveSymbolReference", wrtDoc.getAtCorpusPath(), CdmLogCode.ErrUnexpectedType, "add artifact attribute operation", symbolDef);
             found = null;
           }
           break;
@@ -2238,7 +2258,9 @@ public class CdmCorpusDefinition {
         case OperationRenameAttributesDef:
         case OperationReplaceAsForeignKeyDef:
         case OperationIncludeAttributesDef:
-        case OperationAddAttributeGroupDef: {
+        case OperationAddAttributeGroupDef:
+        case OperationAlterTraitsDef:
+        case OperationAddArtifactAttributeDef:{
           ctx.setRelativePath(relativePath);
           final String corpusPath;
           if (corpusPathRoot.endsWith("/") || path.startsWith("/")) {
@@ -2689,7 +2711,7 @@ public class CdmCorpusDefinition {
           this.storage.fetchAdapter(((CdmContainerDefinition) currObject).getNamespace());
 
       if (adapter == null) {
-        Logger.error(this.ctx, TAG, "computeLastModifiedTimeFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrAdapterNotFound);
+        Logger.error(this.ctx, TAG, "computeLastModifiedTimeFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrAdapterNotFound, ((CdmContainerDefinition) currObject).getNamespace());
         return CompletableFuture.completedFuture(null);
       }
       // Remove namespace from path
@@ -2736,7 +2758,7 @@ public class CdmCorpusDefinition {
       final StorageAdapter adapter = this.storage.fetchAdapter(nameSpace);
 
       if (adapter == null) {
-        Logger.error(this.ctx, TAG, "computeLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrAdapterNotFound);
+        Logger.error(this.ctx, TAG, "computeLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrAdapterNotFound, nameSpace);
         return CompletableFuture.completedFuture(null);
       }
       try {
@@ -2821,6 +2843,8 @@ public class CdmCorpusDefinition {
         case OperationReplaceAsForeignKeyDef:
         case OperationIncludeAttributesDef:
         case OperationAddAttributeGroupDef:
+        case OperationAlterTraitsDef:
+        case OperationAddArtifactAttributeDef:
           thiz.unRegisterSymbol(path, doc);
           thiz.unRegisterDefinitionReferenceSymbols(iObject, "rasb");
           break;

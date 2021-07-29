@@ -20,7 +20,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         RenameAttributes,
         ReplaceAsForeignKey,
         IncludeAttributes,
-        AddAttributeGroup
+        AddAttributeGroup,
+        AlterTraits,
+        AddArtifactAttribute,
     }
 
     internal class OperationTypeConvertor
@@ -49,6 +51,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
                     return "includeAttributes";
                 case CdmOperationType.AddAttributeGroup:
                     return "addAttributeGroup";
+                case CdmOperationType.AlterTraits:
+                    return "alterTraits";
+                case CdmOperationType.AddArtifactAttribute:
+                    return "addArtifactAttribute";
                 case CdmOperationType.Error:
                 default:
                     throw new InvalidOperationException();
@@ -76,6 +82,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
                     return CdmOperationType.ArrayExpansion;
                 case CdmObjectType.OperationCombineAttributesDef:
                     return CdmOperationType.CombineAttributes;
+                case CdmObjectType.OperationAlterTraitsDef:
+                    return CdmOperationType.AlterTraits;
                 case CdmObjectType.OperationExcludeAttributesDef:
                     return CdmOperationType.ExcludeAttributes;
                 case CdmObjectType.OperationIncludeAttributesDef:
@@ -84,6 +92,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
                     return CdmOperationType.RenameAttributes;
                 case CdmObjectType.OperationReplaceAsForeignKeyDef:
                     return CdmOperationType.ReplaceAsForeignKey;
+                case CdmObjectType.OperationAddArtifactAttributeDef:
+                    return CdmOperationType.AddArtifactAttribute;
                 default:
                     return CdmOperationType.Error;
             }

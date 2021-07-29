@@ -370,7 +370,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                                 }
 
                                 if (reqdTrait.parameterValues === undefined || reqdTrait.parameterValues.length === 0) {
-                                    Logger.warning(this.ctx, this.TAG, this.constructResolvedAttributes.name, this.atCorpusPath, cdmLogCode.WarnIdentifierArgumentsNotSupported);
+                                    Logger.warning(this.ctx, this.TAG, this.constructResolvedAttributes.name, this.atCorpusPath, cdmLogCode.WarnLinkEntIdentArgsNotSupported, att.displayName, this.entity.namedReference);
                                     return;
                                 }
                                 const entReferences: (string)[] = [];

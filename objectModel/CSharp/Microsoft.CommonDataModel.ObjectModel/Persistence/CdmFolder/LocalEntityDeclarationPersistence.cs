@@ -31,7 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
                 if (entityPath == null)
                 {
-                    Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistEntityPathNotFound);
+                    Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistEntityPathNotFound, (string)obj["entityName"]);
                 }
 
             }

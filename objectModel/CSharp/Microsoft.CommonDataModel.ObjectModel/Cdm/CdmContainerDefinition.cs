@@ -4,18 +4,20 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using System;
+
+    [Obsolete("Only for internal use")]
     public interface CdmContainerDefinition : CdmObject
     {
         /// <summary>
         /// The namespace where this object can be found.
         /// </summary>
         [Obsolete("Only for internal use")]
-        string Namespace { get; set; }
+        string Namespace { get; }
 
         /// <summary>
         /// The folder where this object exists.
         /// </summary>
         [Obsolete("Only for internal use")]
-        string FolderPath { get; set; }
+        string FolderPath { get; }
     }
 }

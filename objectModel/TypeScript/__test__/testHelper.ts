@@ -231,11 +231,13 @@ export const testHelper = {
     },
 
      /**
-    *Asserts the logcode, the same as the expected.
+    *Asserts the logcode, if unexpected log code is present in log codes recorded list.
+    *Asserts in logcode, if expected log code in log codes recorded list (isPresent = false)
     * @param corpus The corpus object.
     * @param expectedcode The expectedcode cdmlogcode.
+    * @param isPresent The flag to decide how to assert the test.
     */
-    expectCdmLogCodeEquality(corpus: CdmCorpusDefinition, expectedCode: cdmLogCode): void {
+    expectCdmLogCodeEquality(corpus: CdmCorpusDefinition, expectedCode: cdmLogCode, isPresent: boolean): void {
         var toAssert: boolean = false;
         corpus.ctx.events.allItems.forEach(logEntry => {
             if ( ((cdmLogCode[expectedCode].startsWith('Warn') && logEntry.get('level') === cdmStatusLevel[cdmStatusLevel.warning])
@@ -244,7 +246,13 @@ export const testHelper = {
                 toAssert = true;
             }
         });
-        expect(toAssert).toBe(true);
+
+        if ( isPresent == true ) {
+            expect(toAssert).toBe(true);
+        }
+        else {
+            expect(toAssert).toBe(false);
+        }
     }
 };
 

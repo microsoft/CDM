@@ -40,6 +40,8 @@ public enum CdmObjectType {
   OperationReplaceAsForeignKeyDef,
   OperationIncludeAttributesDef,
   OperationAddAttributeGroupDef,
+  OperationAlterTraitsDef,
+  OperationAddArtifactAttributeDef,
   ParameterDef,
   ProjectionDef,
   PurposeDef,

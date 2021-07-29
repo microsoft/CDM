@@ -4,11 +4,11 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using System;
@@ -22,7 +22,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         /// The path between TestDataPath and TestName.
         /// </summary>
         private readonly string testsSubpath = Path.Combine("Persistence", "CdmFolder", "Manifest");
-        private readonly string InvalidFormatMesg = "The path should start with '.\\' and should not contain '..\\' or '\\.\\'";
 
         /// <summary>
         /// Testing for manifest impl instance with no entities and no sub manifests.
@@ -56,11 +55,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.AreEqual(cdmManifest.Entities.Count, 2);
             Assert.AreEqual("cdmTest", cdmManifest.ManifestName);
 
-            content = TestHelper.GetInputFileContent(testsSubpath, "TestManifestWithEverything", "complete.manifest.cdm.json");
+            content = TestHelper.GetInputFileContent(testsSubpath, "TestManifestWithEverything", "noname.manifest.cdm.json");
             cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "docName.manifest.cdm.json", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(cdmManifest.SubManifests.Count, 1);
             Assert.AreEqual(cdmManifest.Entities.Count, 2);
-            Assert.AreEqual("cdmTest", cdmManifest.ManifestName);
+            Assert.AreEqual("docName", cdmManifest.ManifestName);
         }
 
         /// <summary>
@@ -90,7 +89,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         {
             var content = TestHelper.GetInputFileContent(testsSubpath, "TestManifestForCopyData", "complete.manifest.cdm.json");
             var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "docName", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
-            ManifestContent manifestObject = CdmObjectBase.CopyData(cdmManifest, null, null);
+            ManifestContent manifestObject = ManifestPersistence.ToData(cdmManifest, null, null);
             Assert.AreEqual(manifestObject.Schema, "CdmManifestDefinition.cdm.json");
             Assert.AreEqual(manifestObject.JsonSchemaSemanticVersion, "1.0.0");
             Assert.AreEqual(manifestObject.DocumentVersion, "2.0.0");
@@ -115,12 +114,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var inputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestLoadsAndSetsTimesCorrectly");
             var timeBeforeLoad = DateTime.Now;
 
-            var cdmCorpus = new CdmCorpusDefinition();
-            cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestLoadsAndSetsTimesCorrectly");
+            cdmCorpus.SetEventCallback(new EventCallback { 
+                Invoke = (CdmStatusLevel level, string message) => Assert.Fail($"Unexpected log: {message}") 
+            }, CdmStatusLevel.Warning);
             cdmCorpus.Storage.Mount("someNamespace", new LocalAdapter(inputPath));
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(inputPath));
-            cdmCorpus.Storage.Unmount("cdm");
-            cdmCorpus.Storage.DefaultNamespace = "local";
+
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("someNamespace:/default.manifest.cdm.json");
             var statusTimeAtLoad = cdmManifest.LastFileStatusCheckTime;
             // hard coded because the time comes from inside the file
@@ -185,26 +184,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         public void TestPathThatDoesNotEndInSlash()
         {
             var corpus = new CdmCorpusDefinition();
-
-            var callback = new EventCallback();
-            var functionWasCalled = false;
-            CdmStatusLevel functionParameter1 = CdmStatusLevel.Info;
-            string functionParameter2 = null;
-            callback.Invoke = (CdmStatusLevel statusLevel, string message1) =>
-            {
-                functionWasCalled = true;
-                functionParameter1 = statusLevel;
-                functionParameter2 = message1;
-            };
-            corpus.SetEventCallback(callback, CdmStatusLevel.Warning);
-
             var absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
                 new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "Mnp" });
             Assert.AreEqual("cdm:Mnp/Abc", absolutePath);
 
-            Assert.AreEqual(functionWasCalled, true);
-            Assert.AreEqual(functionParameter1, CdmStatusLevel.Warning);
-            Assert.IsTrue(functionParameter2.Contains("Expected path prefix to end in /, but it didn't. Appended the /"));
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnStorageExpectedPathPrefix, true);
         }
 
         /// <summary>
@@ -215,46 +199,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         public void TestPathRootInvalidObjectPath()
         {
             var corpus = new CdmCorpusDefinition();
-            var callback = new EventCallback();
-            var functionWasCalled = false;
-            var functionParameter1 = CdmStatusLevel.Info;
-            string functionParameter2 = null;
-            callback.Invoke = (CdmStatusLevel statusLevel, string message1) =>
-            {
-                functionWasCalled = true;
-                functionParameter1 = statusLevel;
-                functionParameter2 = message1;
-            };
-            corpus.SetEventCallback(callback, CdmStatusLevel.Warning);
 
-            var absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("./Abc");
-            Assert.IsTrue(functionWasCalled);
-            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
+            corpus.Storage.CreateAbsoluteCorpusPath("./Abc");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
 
-            functionWasCalled = false;
-            absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("/./Abc");
-            Assert.IsTrue(functionWasCalled);
-            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
+            corpus.Storage.CreateAbsoluteCorpusPath("/./Abc");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
 
-            functionWasCalled = false;
-            absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("../Abc");
-            Assert.IsTrue(functionWasCalled);
-            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
+            corpus.Storage.CreateAbsoluteCorpusPath("../Abc");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
 
-            functionWasCalled = false;
-            absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc/./Def");
-            Assert.IsTrue(functionWasCalled);
-            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
+            corpus.Storage.CreateAbsoluteCorpusPath("Abc/./Def");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
 
-            functionWasCalled = false;
-            absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc/../Def");
-            Assert.IsTrue(functionWasCalled);
-            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
+            corpus.Storage.CreateAbsoluteCorpusPath("Abc/../Def");
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
         }
 
         /// <summary>
@@ -265,54 +224,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         public void TestPathRootInvalidFolderPath()
         {
             var corpus = new CdmCorpusDefinition();
-            var callback = new EventCallback();
-            var functionWasCalled = false;
-            var functionParameter1 = CdmStatusLevel.Info;
-            string functionParameter2 = null;
-            callback.Invoke = (CdmStatusLevel statusLevel, string message1) =>
-            {
-                functionWasCalled = true;
-                functionParameter1 = statusLevel;
-                functionParameter2 = message1;
-            };
-            corpus.SetEventCallback(callback, CdmStatusLevel.Warning);
 
-            var absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
-                new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "./Mnp" });
-            Assert.IsTrue(functionWasCalled);
-            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
+            corpus.Storage.CreateAbsoluteCorpusPath("Abc", new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "./Mnp" });
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
 
-            functionWasCalled = false;
-            absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
-                new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "/./Mnp" });
-            Assert.IsTrue(functionWasCalled);
-            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
+            corpus.Storage.CreateAbsoluteCorpusPath("Abc", new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "/./Mnp" });
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
 
-            functionWasCalled = false;
-            absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
-                new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "../Mnp" });
-            functionParameter2 = functionParameter2.Split("|")[1].Trim();
-            Assert.IsTrue(functionWasCalled);
-            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
+            corpus.Storage.CreateAbsoluteCorpusPath("Abc", new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "../Mnp" });
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
 
-            functionWasCalled = false;
-            absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
-                new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "Mnp/./Qrs" });
-            functionParameter2 = functionParameter2.Split("|")[1].Trim();
-            Assert.IsTrue(functionWasCalled);
-            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
+            corpus.Storage.CreateAbsoluteCorpusPath("Abc", new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "Mnp/./Qrs" });
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
 
-            functionWasCalled = false;
-            absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
-                new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "Mnp/../Qrs" });
-            functionParameter2 = functionParameter2.Split("|")[1].Trim();
-            Assert.IsTrue(functionWasCalled);
-            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains(InvalidFormatMesg));
+            corpus.Storage.CreateAbsoluteCorpusPath("Abc", new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "Mnp/../Qrs" });
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
         }
     }
 }

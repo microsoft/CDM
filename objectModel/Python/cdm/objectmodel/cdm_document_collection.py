@@ -63,9 +63,9 @@ class CdmDocumentCollection(CdmCollection):
             obj._localize_corpus_paths(self.owner)  # returns false if it fails, but ... who cares? we tried
             obj.owner.documents.remove(obj.name)
 
-        obj.folder_path = self.owner.folder_path
         obj.folder = self.owner
-        obj.namespace = self.owner.namespace
+        obj._folder_path = self.owner._folder_path
+        obj._namespace = self.owner._namespace
 
         super()._make_document_dirty()  # set the document to dirty so it will get saved in the new folder location if saved
         self.owner._corpus._add_document_objects(self.owner, obj)

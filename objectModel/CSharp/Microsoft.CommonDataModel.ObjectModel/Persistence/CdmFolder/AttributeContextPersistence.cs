@@ -41,6 +41,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     case CdmAttributeContextType.AddedAttributeIdentity:
                     case CdmAttributeContextType.AddedAttributeExpansionTotal:
                     case CdmAttributeContextType.AddedAttributeSelectedType:
+                    case CdmAttributeContextType.AddedAttributeNewArtifact:
                     case CdmAttributeContextType.AttributeDefinition:
                         attributeContext.Definition = AttributeReferencePersistence.FromData(ctx, obj.Value<string>("definition"));
                         break;
@@ -108,6 +109,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return CdmAttributeContextType.AddedAttributeExpansionTotal;
                 case "addedAttributeSelectedType":
                     return CdmAttributeContextType.AddedAttributeSelectedType;
+                case "addedAttributeNewArtifact":
+                    return CdmAttributeContextType.AddedAttributeNewArtifact;
                 case "generatedRound":
                     return CdmAttributeContextType.GeneratedRound;
                 case "generatedSet":
@@ -138,6 +141,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return CdmAttributeContextType.OperationIncludeAttributes;
                 case "operationAddAttributeGroup":
                     return CdmAttributeContextType.OperationAddAttributeGroup;
+                case "operationAlterTraits":
+                    return CdmAttributeContextType.OperationAlterTraits;
+                case "operationAddArtifactAttribute":
+                    return CdmAttributeContextType.OperationAddArtifactAttribute;
                 default:
                     return CdmAttributeContextType.Unknown;
             }
@@ -163,6 +170,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return "addedAttributeExpansionTotal";
                 case CdmAttributeContextType.AddedAttributeSelectedType:
                     return "addedAttributeSelectedType";
+                case CdmAttributeContextType.AddedAttributeNewArtifact:
+                    return "addedAttributeNewArtifact";
                 case CdmAttributeContextType.GeneratedRound:
                     return "generatedRound";
                 case CdmAttributeContextType.GeneratedSet:
@@ -193,6 +202,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return "operationIncludeAttributes";
                 case CdmAttributeContextType.OperationAddAttributeGroup:
                     return "operationAddAttributeGroup";
+                case CdmAttributeContextType.OperationAlterTraits:
+                    return "operationAlterTraits";
+                case CdmAttributeContextType.OperationAddArtifactAttribute:
+                    return "operationAddArtifactAttribute";
                 default:
                     return "unknown";
             }

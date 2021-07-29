@@ -128,7 +128,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                        }
                        else
                        {
-                            Logger.Error(ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistEntityDeclarationMissing);
+                            Logger.Error(ctx, Tag, nameof(FromObject), null, CdmLogCode.ErrPersistEntityDeclarationMissing, (string)entityObj["entityName"]);
                        }
                     } 
                     else

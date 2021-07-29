@@ -54,8 +54,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets or sets the corpus path for the folder.
         /// </summary>
-        [Obsolete("Only for internal use")]
-        public string FolderPath { get; set; }
+        public string FolderPath { get; internal set; }
 
         /// <summary>
         /// Gets or sets the direct children for the directory folder.
@@ -68,8 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public CdmDocumentCollection Documents { get; set; }
 
         /// <inheritdoc />
-        [Obsolete("Only for internal use")]
-        public string Namespace { get; set; }
+        public string Namespace { get; internal set; }
 
         /// <summary>
         /// Creates a folder instance from data.

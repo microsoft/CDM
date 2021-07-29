@@ -56,7 +56,7 @@ public class ProjectionAddAttributeGroupTest {
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Exclude attributes: ["age", "phoneNumber"]
-        CdmAttributeGroupDefinition attGroupDefinition = this.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonAttributeGroup");
+        CdmAttributeGroupDefinition attGroupDefinition = ProjectionTestUtils.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonAttributeGroup");
         Assert.assertEquals(3, attGroupDefinition.getMembers().getCount());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(0)).getName());
         Assert.assertEquals("address", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(1)).getName());
@@ -81,7 +81,7 @@ public class ProjectionAddAttributeGroupTest {
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Included attributes: ["age", "phoneNumber"]
-        CdmAttributeGroupDefinition attGroupDefinition = this.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonAttributeGroup", 3);
+        CdmAttributeGroupDefinition attGroupDefinition = ProjectionTestUtils.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonAttributeGroup", 3);
         Assert.assertEquals(5, attGroupDefinition.getMembers().getCount());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(0)).getName());
         Assert.assertEquals("age", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(1)).getName());
@@ -123,7 +123,7 @@ public class ProjectionAddAttributeGroupTest {
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Condition met, put all attributes in an attribute group
-        CdmAttributeGroupDefinition attGroupDefinition = this.validateAttributeGroup(resolvedEntity2.getAttributes(), "PersonAttributeGroup");
+        CdmAttributeGroupDefinition attGroupDefinition = ProjectionTestUtils.validateAttributeGroup(resolvedEntity2.getAttributes(), "PersonAttributeGroup");
         Assert.assertEquals(5, attGroupDefinition.getMembers().getCount());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(0)).getName());
         Assert.assertEquals("age", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(1)).getName());
@@ -185,7 +185,7 @@ public class ProjectionAddAttributeGroupTest {
         // Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         // Original set of attributes: ["id", "name", "value", "date"]
         // Condition met, put all attributes in an attribute group
-        CdmAttributeGroupDefinition attGroupDefinition = this.validateAttributeGroup(resolvedEntityWithStructured.getAttributes(), "PersonAttributeGroup");
+        CdmAttributeGroupDefinition attGroupDefinition = ProjectionTestUtils.validateAttributeGroup(resolvedEntityWithStructured.getAttributes(), "PersonAttributeGroup");
         Assert.assertEquals(4, attGroupDefinition.getMembers().getCount());
         Assert.assertEquals("id", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(0)).getName());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(1)).getName());
@@ -210,7 +210,7 @@ public class ProjectionAddAttributeGroupTest {
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("structured"))).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        CdmAttributeGroupDefinition attGroupDefinition = this.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonInfo");
+        CdmAttributeGroupDefinition attGroupDefinition = ProjectionTestUtils.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonInfo");
         Assert.assertEquals(5, attGroupDefinition.getMembers().getCount());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(0)).getName());
         Assert.assertEquals("age", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(1)).getName());
@@ -253,7 +253,7 @@ public class ProjectionAddAttributeGroupTest {
 
         // Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         // Original set of attributes: ["id", "name", "value", "date"]
-        CdmAttributeGroupDefinition attGroupDefinition = this.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonAttributeGroup");
+        CdmAttributeGroupDefinition attGroupDefinition = ProjectionTestUtils.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonAttributeGroup");
         Assert.assertEquals(4, attGroupDefinition.getMembers().getCount());
         Assert.assertEquals("id", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(0)).getName());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(1)).getName());
@@ -293,7 +293,7 @@ public class ProjectionAddAttributeGroupTest {
 
         // Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         // Original set of attributes: ["id", "name", "value", "date"]
-        CdmAttributeGroupDefinition attGroupDefinition = this.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonAttributeGroup");
+        CdmAttributeGroupDefinition attGroupDefinition = ProjectionTestUtils.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonAttributeGroup");
         Assert.assertEquals(4, attGroupDefinition.getMembers().getCount());
         Assert.assertEquals("id", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(0)).getName());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(1)).getName());
@@ -318,7 +318,7 @@ public class ProjectionAddAttributeGroupTest {
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        CdmAttributeGroupDefinition attGroupDefinition = this.validateAttributeGroup(resolvedEntity.getAttributes(), "ChildAttributeGroup");
+        CdmAttributeGroupDefinition attGroupDefinition = ProjectionTestUtils.validateAttributeGroup(resolvedEntity.getAttributes(), "ChildAttributeGroup");
         Assert.assertEquals(5, attGroupDefinition.getMembers().getCount());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(0)).getName());
         Assert.assertEquals("age", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(1)).getName());
@@ -345,7 +345,7 @@ public class ProjectionAddAttributeGroupTest {
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // This will result in two attribute groups with the same set of attributes being generated
-        CdmAttributeGroupDefinition attGroup1 = this.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonAttributeGroup", 2);
+        CdmAttributeGroupDefinition attGroup1 = ProjectionTestUtils.validateAttributeGroup(resolvedEntity.getAttributes(), "PersonAttributeGroup", 2);
         Assert.assertEquals(5, attGroup1.getMembers().getCount());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) attGroup1.getMembers().get(0)).getName());
         Assert.assertEquals("age", ((CdmTypeAttributeDefinition) attGroup1.getMembers().get(1)).getName());
@@ -353,7 +353,7 @@ public class ProjectionAddAttributeGroupTest {
         Assert.assertEquals("phoneNumber", ((CdmTypeAttributeDefinition) attGroup1.getMembers().get(3)).getName());
         Assert.assertEquals("email", ((CdmTypeAttributeDefinition) attGroup1.getMembers().get(4)).getName());
 
-        CdmAttributeGroupDefinition attGroup2 = this.validateAttributeGroup(resolvedEntity.getAttributes(), "SecondAttributeGroup", 2, 1);
+        CdmAttributeGroupDefinition attGroup2 = ProjectionTestUtils.validateAttributeGroup(resolvedEntity.getAttributes(), "SecondAttributeGroup", 2, 1);
         Assert.assertEquals(5, attGroup2.getMembers().getCount());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) attGroup2.getMembers().get(0)).getName());
         Assert.assertEquals("age", ((CdmTypeAttributeDefinition) attGroup2.getMembers().get(1)).getName());
@@ -379,8 +379,8 @@ public class ProjectionAddAttributeGroupTest {
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        CdmAttributeGroupDefinition outerAttGroup = this.validateAttributeGroup(resolvedEntity.getAttributes(), "OuterAttributeGroup");
-        CdmAttributeGroupDefinition innerAttGroup = this.validateAttributeGroup(outerAttGroup.getMembers(), "InnerAttributeGroup");
+        CdmAttributeGroupDefinition outerAttGroup = ProjectionTestUtils.validateAttributeGroup(resolvedEntity.getAttributes(), "OuterAttributeGroup");
+        CdmAttributeGroupDefinition innerAttGroup = ProjectionTestUtils.validateAttributeGroup(outerAttGroup.getMembers(), "InnerAttributeGroup");
 
         Assert.assertEquals(5, innerAttGroup.getMembers().getCount());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) innerAttGroup.getMembers().get(0)).getName());
@@ -411,35 +411,9 @@ public class ProjectionAddAttributeGroupTest {
         Assert.assertEquals(5, resolvedEntity.getAttributes().getCount());
         Assert.assertEquals("name", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName());
         Assert.assertEquals("age", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName());
-        CdmAttributeGroupDefinition attGroupDefinition = this.validateAttributeGroup(resolvedEntity.getAttributes(), "AddressAttributeGroup", 5, 2);
+        CdmAttributeGroupDefinition attGroupDefinition = ProjectionTestUtils.validateAttributeGroup(resolvedEntity.getAttributes(), "AddressAttributeGroup", 5, 2);
         Assert.assertEquals("address", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(0)).getName());
         Assert.assertEquals("phoneNumber", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName());
         Assert.assertEquals("email", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName());
-    }
-
-    CdmAttributeGroupDefinition validateAttributeGroup(CdmCollection<CdmAttributeItem> attributes, String attributeGroupName) {
-        return validateAttributeGroup(attributes, attributeGroupName, 1, 0);
-    }
-
-    CdmAttributeGroupDefinition validateAttributeGroup(CdmCollection<CdmAttributeItem> attributes, String attributeGroupName, int attributesSize) {
-        return validateAttributeGroup(attributes, attributeGroupName, attributesSize, 0);
-    }
-
-    /**
-     * Validates the creation of an attribute group and return its definition
-     * @param attributes The collection of attributes
-     * @param attributeGroupName The attribute group name
-     * @param attributesSize The expected size of the attributes collection
-     */
-    CdmAttributeGroupDefinition validateAttributeGroup(CdmCollection<CdmAttributeItem> attributes, String attributeGroupName, int attributesSize, int index) {
-        Assert.assertEquals(attributesSize, attributes.getCount());
-        Assert.assertEquals(CdmObjectType.AttributeGroupRef, attributes.get(index).getObjectType());
-        CdmAttributeGroupReference attGroupReference = (CdmAttributeGroupReference) attributes.get(index);
-        Assert.assertNotNull(attGroupReference.getExplicitReference());
-
-        CdmAttributeGroupDefinition attGroupDefinition = (CdmAttributeGroupDefinition) attGroupReference.getExplicitReference();
-        Assert.assertEquals(attributeGroupName, attGroupDefinition.getAttributeGroupName());
-
-        return attGroupDefinition;
     }
 }

@@ -67,8 +67,8 @@ class PersistenceLayer:
         doc_content = None  # type: Optional[CdmDocumentDefinition]
         json_data = None
         fs_modified_time = None
-        doc_path = folder.folder_path + doc_name
-        adapter = self._ctx.corpus.storage.fetch_adapter(folder.namespace)  # type: StorageAdapter
+        doc_path = folder._folder_path + doc_name
+        adapter = self._ctx.corpus.storage.fetch_adapter(folder._namespace)  # type: StorageAdapter
 
         try:
             if adapter.can_read():
@@ -89,10 +89,10 @@ class PersistenceLayer:
             # when shallow validation is enabled, log messages about being unable to find referenced documents as warnings instead of errors.
             if res_opt and res_opt.shallow_validation:
                 logger.warning(self._ctx, self._TAG, PersistenceLayer._load_document_from_path_async.__name__, doc_path,
-                               CdmLogCode.WARN_PERSIST_FILE_READ_FAILURE, doc_path, folder.Namespace, e)
+                               CdmLogCode.WARN_PERSIST_FILE_READ_FAILURE, doc_path, folder._namespace, e)
             else:
                 logger.error(self._ctx, self._TAG, self._load_document_from_path_async.__name__, doc_path,
-                             CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE, doc_path, str(folder.namespace), e)
+                             CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE, doc_path, folder._namespace, e)
             return None
 
         try:
@@ -121,13 +121,9 @@ class PersistenceLayer:
                 from cdm.persistence.cdmfolder.types import ManifestContent
                 manifest = ManifestContent()
                 manifest.decode(json_data)
-                doc_content = ManifestPersistence.from_object(self._ctx, doc_name, folder.namespace, folder.folder_path,
+                doc_content = ManifestPersistence.from_object(self._ctx, doc_name, folder._namespace, folder._folder_path,
                                                               manifest)
             elif doc_name_lower.endswith(PersistenceLayer.MODEL_JSON_EXTENSION):
-                if doc_name_lower != PersistenceLayer.MODEL_JSON_EXTENSION:
-                    logger.error(self._ctx, self._TAG, self._load_document_from_path_async.__name__, doc_path,
-                                 CdmLogCode.ERR_PERSIST_DOC_NAME_LOAD_FAILURE, doc_name, self.MODEL_JSON_EXTENSION)
-                    return None
                 from cdm.persistence.modeljson import ManifestPersistence
                 from cdm.persistence.modeljson.types import Model
                 model = Model()
@@ -138,7 +134,7 @@ class PersistenceLayer:
                 from cdm.persistence.cdmfolder.types import DocumentContent
                 document = DocumentContent()
                 document.decode(json_data)
-                doc_content = DocumentPersistence.from_object(self._ctx, doc_name, folder.namespace, folder.folder_path,
+                doc_content = DocumentPersistence.from_object(self._ctx, doc_name, folder._namespace, folder._folder_path,
                                                               document)
             else:
                 # Could not find a registered persistence class to handle this document type.
@@ -214,7 +210,7 @@ class PersistenceLayer:
         an option will cause us to also save any linked documents."""
 
         # find out if the storage adapter is able to write.
-        namespace = doc.namespace
+        namespace = doc._namespace
         if namespace is None:
             namespace = self._corpus.storage.default_namespace
 
@@ -278,7 +274,7 @@ class PersistenceLayer:
             return False
 
         # turn the name into a path
-        new_path = '{}{}'.format(doc.folder_path, new_name)
+        new_path = '{}{}'.format(doc._folder_path, new_name)
         new_path = self._ctx.corpus.storage.create_absolute_corpus_path(new_path, doc)
         if new_path.startswith(namespace + ':'):
             new_path = new_path[len(namespace) + 1:]

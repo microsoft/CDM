@@ -23,17 +23,17 @@ class ResolutionGuidanceTest(unittest.TestCase):
         # Tests warning log when resolution guidance is used on a data typed attribute.
         entity = await corpus.fetch_object_async('local:/TypeAttribute.cdm.json/Entity')  # type: CdmEntityDefinition
         await entity.create_resolved_entity_async('res-entity')
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE, True, self)
 
         # Tests warning log when resolution guidance is used on a entity typed attribute.
         entity = await corpus.fetch_object_async('local:/EntityAttribute.cdm.json/Entity')  # type: CdmEntityDefinition
         await entity.create_resolved_entity_async('res-entity')
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE, True, self)
 
         # Tests warning log when resolution guidance is used when extending an entity.
         entity = await corpus.fetch_object_async('local:/ExtendsEntity.cdm.json/Entity')  # type: CdmEntityDefinition
         await entity.create_resolved_entity_async('res-entity')
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_DEPRECATED_RESOLUTION_GUIDANCE, True, self)
 
     @async_test
     async def test_by_entity_name(self):

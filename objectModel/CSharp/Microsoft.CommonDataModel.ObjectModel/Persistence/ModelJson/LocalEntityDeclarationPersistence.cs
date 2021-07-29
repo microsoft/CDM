@@ -26,12 +26,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
             var entityDoc = await DocumentPersistence.FromData(ctx, obj, extensionTraitDefList, localExtensionTraitDefList);
 
-            if (entityDoc == null)
-            {
-                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistDocFetchError);
-                return null;
-            }
-
             documentFolder.Documents.Add(entityDoc);
 
             // Entity schema path is the path to the doc containing the entity definition.
@@ -68,7 +62,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     else
                     {
-                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistDocFetchError);
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistModelJsonDocConversionError);
                         return null;
                     }
                 }
@@ -118,11 +112,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                         if (partition != null)
                         {
                             localEntity.Partitions.Add(partition);
-                        }
-                        else
-                        {
-                            Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToData), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
-                            return null;
                         }
                     }
                 }

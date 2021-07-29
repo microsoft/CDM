@@ -49,6 +49,8 @@ import {
     CdmOperationIncludeAttributes,
     CdmOperationRenameAttributes,
     CdmOperationReplaceAsForeignKey,
+    CdmOperationAlterTraits,
+    CdmOperationAddArtifactAttribute,
     CdmParameterDefinition,
     CdmProjection,
     CdmPurposeDefinition,
@@ -87,10 +89,12 @@ import {
     isConstantEntityDefinition,
     isDataTypeDefinition,
     isEntityDefinition,
+    isOperationAddArtifactAttribute,
     isOperationAddAttributeGroup,
     isOperationAddCountAttribute,
     isOperationAddSupportingAttribute,
     isOperationAddTypeAttribute,
+    isOperationAlterTraits,
     isOperationArrayExpansion,
     isOperationCombineAttributes,
     isOperationExcludeAttributes,
@@ -762,6 +766,12 @@ export class CdmCorpusDefinition {
                 case cdmObjectType.operationAddAttributeGroupDef:
                     newObj = new CdmOperationAddAttributeGroup(this.ctx);
                     break;
+                case cdmObjectType.operationAlterTraitsDef:
+                    newObj = new CdmOperationAlterTraits(this.ctx);
+                    break;
+                case cdmObjectType.operationAddArtifactAttributeDef:
+                    newObj = new CdmOperationAddArtifactAttribute(this.ctx);
+                    break;    
                 default:
             }
 
@@ -1183,6 +1193,8 @@ export class CdmCorpusDefinition {
                         case cdmObjectType.operationReplaceAsForeignKeyDef:
                         case cdmObjectType.operationIncludeAttributesDef:
                         case cdmObjectType.operationAddAttributeGroupDef:
+                        case cdmObjectType.operationAlterTraitsDef:
+                        case cdmObjectType.operationAddArtifactAttributeDef:
                             ctx.relativePath = relativePath;
                             const corpusPath: string = `${corpusPathRoot}/${path}`;
                             if (currentDoc.internalDeclarations.has(path) && !skipDuplicates) {
@@ -1517,7 +1529,7 @@ export class CdmCorpusDefinition {
             const adapter: StorageAdapter = this.storage.fetchAdapter((currObject as CdmContainerDefinition).namespace);
 
             if (adapter === undefined) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPath.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrAdapterNotFound);
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPath.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrAdapterNotFound, (currObject as CdmContainerDefinition).namespace);
 
                 return undefined;
             }
@@ -2136,6 +2148,8 @@ export class CdmCorpusDefinition {
                         case cdmObjectType.operationReplaceAsForeignKeyDef:
                         case cdmObjectType.operationIncludeAttributesDef:
                         case cdmObjectType.operationAddAttributeGroupDef:
+                        case cdmObjectType.operationAlterTraitsDef:
+                        case cdmObjectType.operationAddArtifactAttributeDef:
                             this.unRegisterSymbol(path, doc);
                             this.unRegisterDefinitionReferenceDocuments(iObject, 'rasb');
                         default:
@@ -2412,7 +2426,7 @@ export class CdmCorpusDefinition {
         if (resolvedEntity.fetchResolvedTraits(resOpt)
             .find(resOpt, 'is.identifiedBy') === undefined) {
 
-            Logger.warning(this.ctx, this.TAG, this.checkPrimaryKeyAttributes.name, resolvedEntity.atCorpusPath, cdmLogCode.WarnValdnPrimaryKetMissing, resolvedEntity.getName());
+            Logger.warning(this.ctx, this.TAG, this.checkPrimaryKeyAttributes.name, resolvedEntity.atCorpusPath, cdmLogCode.WarnValdnPrimaryKeyMissing, resolvedEntity.getName());
         }
     }
 
@@ -2528,6 +2542,18 @@ export class CdmCorpusDefinition {
             case cdmObjectType.operationAddAttributeGroupDef:
                 if (!isOperationAddAttributeGroup(found)) {
                     Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'add attribute group operation', symbolDef);
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationAlterTraitsDef:
+                if (!isOperationAlterTraits(found)) {
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'alter traits operation', symbolDef);
+                    return undefined;
+                }
+                break;
+            case cdmObjectType.operationAddArtifactAttributeDef:
+                if (!isOperationAddArtifactAttribute(found)) {
+                    Logger.error(this.ctx, this.TAG, this.reportErrorStatus.name, found.atCorpusPath, cdmLogCode.ErrUnexpectedType, 'add artifact attribute operation', symbolDef);
                     return undefined;
                 }
                 break;

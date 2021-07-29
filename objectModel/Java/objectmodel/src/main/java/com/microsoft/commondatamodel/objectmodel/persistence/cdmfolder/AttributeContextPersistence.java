@@ -46,6 +46,7 @@ public class AttributeContextPersistence {
         case AttributeGroup:
           attributeContext.setDefinition(AttributeGroupReferencePersistence.fromData(ctx, JMapper.MAP.valueToTree(obj.getDefinition())));
           break;
+        case AddedAttributeNewArtifact:
         case AddedAttributeSupporting:
         case AddedAttributeIdentity:
         case AddedAttributeExpansionTotal:
@@ -138,6 +139,8 @@ public class AttributeContextPersistence {
         return CdmAttributeContextType.AddedAttributeExpansionTotal;
       case "addedAttributeSelectedType":
         return CdmAttributeContextType.AddedAttributeSelectedType;
+      case "addedAttributeNewArtifact":
+        return CdmAttributeContextType.AddedAttributeNewArtifact;
       case "generatedRound":
         return CdmAttributeContextType.GeneratedRound;
       case "generatedSet":
@@ -168,6 +171,10 @@ public class AttributeContextPersistence {
         return CdmAttributeContextType.OperationIncludeAttributes;
       case "operationAddAttributeGroup":
         return CdmAttributeContextType.OperationAddAttributeGroup;
+      case "operationAlterTraits":
+        return CdmAttributeContextType.OperationAlterTraits;
+      case "operationAddArtifactAttribute":
+        return CdmAttributeContextType.OperationAddArtifactAttribute;
       default:
         return CdmAttributeContextType.Unknown;
     }
@@ -191,6 +198,8 @@ public class AttributeContextPersistence {
         return "addedAttributeExpansionTotal";
       case AddedAttributeSelectedType:
         return "addedAttributeSelectedType";
+      case AddedAttributeNewArtifact:
+        return "addedAttributeNewArtifact";
       case GeneratedRound:
         return "generatedRound";
       case GeneratedSet:
@@ -221,6 +230,10 @@ public class AttributeContextPersistence {
         return "operationIncludeAttributes";
       case OperationAddAttributeGroup:
         return "operationAddAttributeGroup";
+      case OperationAlterTraits:
+        return "operationAlterTraits";
+      case OperationAddArtifactAttribute:
+        return "operationAddArtifactAttribute";
       default:
         return "unknown";
     }

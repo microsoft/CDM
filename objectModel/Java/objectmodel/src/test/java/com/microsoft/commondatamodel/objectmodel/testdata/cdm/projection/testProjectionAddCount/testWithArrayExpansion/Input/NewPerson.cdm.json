@@ -12,25 +12,89 @@
       "extendsEntity": "CdmEntity",
       "hasAttributes": [
         {
+          "name": "Favorite Terms",
+          "dataType": "string",
+          "description": "I can construct a list on a Type Attribute.",
+          "projection": {
+            "operations": [
+              {
+                "$type": "arrayExpansion",
+                "condition": "!structured",
+                "startOrdinal": 1,
+                "endOrdinal": 2
+              },
+              {
+                "$type": "renameAttributes",
+                "condition": "!structured",
+                "renameFormat": "Term_{o}"
+              },
+              {
+                "$type": "addArtifactAttribute",
+                "condition": "!structured",
+                "newAttribute": {
+                  "dataType": "integer",
+                  "name": "number of favorite terms"
+                }
+              },
+              {
+                "$type": "alterTraits",
+                "condition": "!structured",
+                "traitsToAdd": [
+                  {
+                    "traitReference": "indicates.expansionInfo.count",
+                    "arguments": [
+                        {
+                          "name": "expansionName",
+                          "value": "{a}"
+                        }
+                    ]
+                  }
+                ],
+                "applyTo": "number of favorite terms",
+                "argumentsContainWildcards" : true
+              }
+            ],
+            "runSequentially": true
+          }
+        },
+        {
           "name": "PersonInfo",
           "entity": {
             "operations": [
               {
                 "$type": "arrayExpansion",
+                "condition": "!structured",
                 "startOrdinal": 1,
                 "endOrdinal": 2
               },
               {
-                "$type": "addCountAttribute",
-                "countAttribute": {
-                  "name": "personCount",
-                  "dataType": "integer",
-                  "appliedTraits": []
-                }
+                "$type": "renameAttributes",
+                "condition": "!structured",
+                "renameFormat": "{m}{o}"
               },
               {
-                "$type": "renameAttributes",
-                "renameFormat": "{m}{o}"
+                "$type": "addArtifactAttribute",
+                "newAttribute": {
+                  "name": "personCount",
+                  "dataType": "integer"
+                }
+              },         
+              {
+                "$type": "alterTraits",
+                "condition": "!structured",
+                "traitsToAdd": [
+                  {
+                    "traitReference": "indicates.expansionInfo.count",
+                    "arguments": [
+                        {
+                          "name": "expansionName",
+                          "value": "{a}"
+                        }
+                    ]
+                  }
+                ],
+                "applyTo": "personCount",
+                "argumentsContainWildcards" : true
               }
             ],
             "runSequentially": true,

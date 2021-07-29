@@ -41,7 +41,7 @@ public final class AttributeContextUtil {
         getContentDeclaredPath(resolvedEntity.getAttributeContext());
 
         // get the traits for all the attributes of a resolved entity
-        getTraits(resolvedEntity);
+        getTraits(resolvedEntity.getAttributes());
 
         return bldr.toString();
     }
@@ -82,21 +82,33 @@ public final class AttributeContextUtil {
     /**
      * Get the traits for all the attributes of a resolved entity
      */
-    private void getTraits(CdmEntityDefinition resolvedEntity) {
-        for (CdmAttributeItem attrib : resolvedEntity.getAttributes()) {
+    private void getTraits(CdmCollection<CdmAttributeItem> attributes) {
+        for (CdmAttributeItem attrib : attributes) {
             String attribCorpusPath = attrib.getAtCorpusPath();
             bldr.append(attribCorpusPath);
             bldr.append(endOfLine);
 
-            for (CdmTraitReferenceBase trait : attrib.getAppliedTraits()) {
-                String attribTraits = trait.getNamedReference();
-                bldr.append(attribTraits);
+            if (attrib instanceof  CdmAttributeGroupReference) {
+                CdmAttributeGroupDefinition attGroupDef = (CdmAttributeGroupDefinition)((CdmAttributeGroupReference)attrib).getExplicitReference();
+                bldr.append(attGroupDef.getAtCorpusPath());
                 bldr.append(endOfLine);
+                getTraitCollection(attGroupDef.getExhibitsTraits());
+                getTraits(attGroupDef.getMembers());
+            } else {
+                getTraitCollection(attrib.getAppliedTraits());
+            }
+        }
+    }
 
-                if (trait instanceof CdmTraitReference) {
-                    for (CdmArgumentDefinition args : ((CdmTraitReference) trait).getArguments()) {
-                        getArgumentValues(args);
-                    }
+    private void getTraitCollection(CdmTraitCollection traitCollection) {
+        for (CdmTraitReferenceBase trait : traitCollection) {
+            String attribTraits = trait.getNamedReference();
+            bldr.append(attribTraits);
+            bldr.append(endOfLine);
+
+            if (trait instanceof CdmTraitReference){
+                for (CdmArgumentDefinition args : ((CdmTraitReference)trait).getArguments()) {
+                    getArgumentValues(args);
                 }
             }
         }

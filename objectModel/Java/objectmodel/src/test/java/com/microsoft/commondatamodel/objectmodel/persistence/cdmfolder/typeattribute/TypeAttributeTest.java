@@ -233,7 +233,7 @@ public class TypeAttributeTest {
     final CdmTypeAttributeDefinition emptyDefaultValueAttribute = (CdmTypeAttributeDefinition)entity.getAttributes().get(4);
     Assert.assertEquals(functionParameters.get("functionWasCalled"), "true");
     Assert.assertEquals(functionParameters.get("functionParameter1"), CdmStatusLevel.Error.toString());
-    Assert.assertTrue(functionParameters.get("functionParameter2").contains("Default value missing languageTag or displayText."));
+    Assert.assertTrue(functionParameters.get("functionParameter2").contains("A 'defaultValue' property is empty or one of its entries is missing 'languageTag' and 'displayText' values."));
     Assert.assertNull(emptyDefaultValueAttribute.fetchDefaultValue());
     // set the default value to an empty list for testing that it should be removed from the generated json.
     emptyDefaultValueAttribute.updateDefaultValue(new ArrayList());

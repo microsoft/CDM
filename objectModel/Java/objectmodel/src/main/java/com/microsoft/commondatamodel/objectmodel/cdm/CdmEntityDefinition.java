@@ -411,7 +411,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     }
 
     if (StringUtils.isNullOrEmpty(newEntName)) {
-      Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveEntityNotFound);
+      Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveNewEntityNameNotSet);
       return CompletableFuture.completedFuture(null);
     }
 

@@ -89,7 +89,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
         /// <param name="found">The projection attribute state that contains the "found" attribute</param>
         /// <param name="resAttrFromAction">The resolved attribute that resulted from the action</param>
         /// <param name="attrCtxType">The attribute context type to give the "action" attribute context parameter</param>
-        /// <param name="storeLineage">normally lineage goes from new context to the found. false means don't and maybe even flip it</param>
+        /// <param name="lineageOut">normally lineage goes from new context to the found. false means don't and maybe even flip it</param>
+        /// <param name="lineageIn"></param>
         internal void CreateAndStoreAttributeContextParameters(string searchFor, ProjectionAttributeState found, ResolvedAttribute resAttrFromAction, 
                             CdmAttributeContextType attrCtxType, CdmAttributeContext lineageOut, CdmAttributeContext lineageIn)
         {

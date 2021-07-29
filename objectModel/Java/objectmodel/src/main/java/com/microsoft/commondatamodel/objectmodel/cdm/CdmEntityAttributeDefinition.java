@@ -34,7 +34,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   private TraitToPropertyMap t2pm;
   private Boolean isPolymorphicSource;
 
-  
+
 
   public CdmEntityAttributeDefinition(final CdmCorpusContext ctx, final String name) {
     super(ctx, name);
@@ -89,8 +89,8 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
     String path = "";
     if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
+            && this.getCtx().getCorpus() != null
+            && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
       this.getDeclaredPath();
 
       if (StringUtils.isNullOrEmpty(path)) {
@@ -109,7 +109,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
       }
     }
     if (this.visitAtt(path, preChildren,
-        postChildren)) {
+            postChildren)) {
       return true;
     }
     return postChildren != null && postChildren.invoke(this, path);
@@ -160,7 +160,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
     final ResolvedTraitSet rtsThisAtt = this.fetchResolvedTraits(resOpt);
     final CdmAttributeResolutionGuidance resGuide = this
-        .getResolutionGuidance();
+            .getResolutionGuidance();
 
     // this context object holds all of the info about what needs to happen to resolve these attributes
     final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuide, rtsThisAtt);
@@ -174,7 +174,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
         final ResolvedEntityReference rer = new ResolvedEntityReference();
         // referencing attribute(s) come from this attribute
         rer.getReferencing().getResolvedAttributeSetBuilder()
-            .mergeAttributes(this.fetchResolvedAttributes(resOpt, null));
+                .mergeAttributes(this.fetchResolvedAttributes(resOpt, null));
 
         // either several or one entity
         // for now, a sub for the 'select one' idea
@@ -184,9 +184,9 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
           if (attsPick != null) {
             for (int i = 0; i < attsPick.getCount(); i++) {
               if (attsPick.getAllItems().get(i).getObjectType()
-                  == CdmObjectType.EntityAttributeDef) {
+                      == CdmObjectType.EntityAttributeDef) {
                 final CdmEntityReference er = ((CdmEntityAttributeDefinition) attsPick.getAllItems().get(i))
-                    .getEntity();
+                        .getEntity();
                 rer.getReferenced().add(resolveSide(er, resOpt));
               }
             }
@@ -301,7 +301,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     final CdmAttributeResolutionGuidance resGuideWithDefault;
     if (this.getResolutionGuidance() != null) {
       resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance()
-                .copy(resOpt);
+              .copy(resOpt);
     } else {
       resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
     }
@@ -354,8 +354,8 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   @Override
   @Deprecated
   public ResolvedAttributeSetBuilder constructResolvedAttributes(
-      final ResolveOptions resOpt,
-      CdmAttributeContext under) {
+          final ResolveOptions resOpt,
+          CdmAttributeContext under) {
     // find and cache the complete set of attributes
     // attributes definitions originate from and then get modified by subsequent re-defintions from (in this order):
     // the entity used as an attribute, traits applied to that entity,
@@ -483,7 +483,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
               if (reqdTrait.getParameterValues() == null
                       || reqdTrait.getParameterValues().length() == 0) {
-                Logger.warning(this.getCtx(), TAG, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.WarnIdentifierArgumentsNotSupported);
+                Logger.warning(this.getCtx(), TAG, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.WarnLinkEntIdentArgsNotSupported, att.displayName(), this.getEntity().getNamedReference());
                 continue;
               }
 
@@ -585,18 +585,18 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
       ResolvedTrait identifyingTrait;
 
       if (otherResTraits != null
-          && (identifyingTrait = otherResTraits.find(resOpt, "is.identifiedBy")) != null) {
+              && (identifyingTrait = otherResTraits.find(resOpt, "is.identifiedBy")) != null) {
         final Object attRef = identifyingTrait
-            .getParameterValues()
-            .fetchParameterValue("attribute")
-            .getValue();
+                .getParameterValues()
+                .fetchParameterValue("attribute")
+                .getValue();
         final String[] bits = attRef instanceof String ? ((String) attRef).split("/")
-            : ((CdmObjectReference) attRef).getNamedReference().split("/");
+                : ((CdmObjectReference) attRef).getNamedReference().split("/");
         final String attName = bits[bits.length - 1];
         String absoluteEntPath = this.getCtx()
-            .getCorpus()
-            .getStorage()
-            .createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument());
+                .getCorpus()
+                .getStorage()
+                .createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument());
         entReferences.add(absoluteEntPath);
         attReferences.add(attName);
       }
@@ -622,8 +622,8 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
             if (otherAttribute != null) {
               final ResolvedAttributeSet resolvedAttributeSet = sideOther.getEntity().fetchResolvedAttributes(otherOpts);
               if (resolvedAttributeSet != null) {
-              sideOther.getResolvedAttributeSetBuilder().ownOne(
-                resolvedAttributeSet.get(otherAttribute.getName()).copy());
+                sideOther.getResolvedAttributeSetBuilder().ownOne(
+                        resolvedAttributeSet.get(otherAttribute.getName()).copy());
               }
             }
           }

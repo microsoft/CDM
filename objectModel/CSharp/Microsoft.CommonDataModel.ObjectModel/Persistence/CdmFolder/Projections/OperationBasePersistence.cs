@@ -13,7 +13,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
     class OperationBasePersistence
     {
-        private static readonly string Tag = nameof(CdmOperationAddAttributeGroup);
+        private static readonly string Tag = nameof(OperationBasePersistence);
 
         public static T FromData<T>(CdmCorpusContext ctx, CdmObjectType objectType, JToken obj)
             where T : CdmOperationBase
@@ -28,7 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (obj["$type"] != null && !StringUtils.EqualsWithIgnoreCase(obj["$type"].ToString(), OperationTypeConvertor.OperationTypeToString(operationType)))
             {
-                Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistProjInvalidType, obj["$type"].ToString());
+                Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistProjInvalidOpsType, obj["$type"].ToString());
             }
             else
             {
@@ -85,6 +85,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return new OperationRenameAttributes() as T;
                 case CdmObjectType.OperationReplaceAsForeignKeyDef:
                     return new OperationReplaceAsForeignKey() as T;
+                case CdmObjectType.OperationAlterTraitsDef:
+                    return new OperationAlterTraits() as T;
+                case CdmObjectType.OperationAddArtifactAttributeDef:
+                    return new OperationAddArtifactAttribute() as T;
             }
 
             return null;
