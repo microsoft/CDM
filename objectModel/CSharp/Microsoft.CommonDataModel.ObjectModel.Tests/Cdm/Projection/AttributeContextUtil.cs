@@ -34,7 +34,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             GetContentDeclaredPath(resolvedEntity.AttributeContext);
 
             // get the traits for all the attributes of a resolved entity
-            GetTraits(resolvedEntity);
+            GetTraits(resolvedEntity.Attributes);
 
             return bldr.ToString();
         }
@@ -86,28 +86,43 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         /// Get the traits for all the attributes of a resolved entity
         /// </summary>
         /// <param name="resolvedEntity"></param>
-        private void GetTraits(CdmEntityDefinition resolvedEntity)
+        private void GetTraits(CdmCollection<CdmAttributeItem> attributes)
         {
-            foreach (CdmAttributeItem attrib in resolvedEntity.Attributes)
+            foreach (CdmAttributeItem attrib in attributes)
             {
                 string attribCorpusPath = attrib.AtCorpusPath;
                 bldr.AppendLine(attribCorpusPath);
 
-                foreach (CdmTraitReferenceBase trait in attrib.AppliedTraits)
+                if (attrib is CdmAttributeGroupReference)
                 {
-                    string attribTraits = trait.NamedReference;
-                    bldr.AppendLine(attribTraits);
+                    CdmAttributeGroupDefinition attGroupDef = (CdmAttributeGroupDefinition)(attrib as CdmAttributeGroupReference).ExplicitReference;
+                    bldr.AppendLine(attGroupDef.AtCorpusPath);
+                    GetTraitCollection(attGroupDef.ExhibitsTraits);
+                    GetTraits(attGroupDef.Members);
+                } else
+                {
+                    GetTraitCollection(attrib.AppliedTraits);
+                }
+            }
+        }
 
-                    if (trait is CdmTraitReference)
+        private void GetTraitCollection(CdmTraitCollection traitCollection)
+        {
+            foreach (CdmTraitReferenceBase trait in traitCollection)
+            {
+                string attribTraits = trait.NamedReference;
+                bldr.AppendLine(attribTraits);
+
+                if (trait is CdmTraitReference)
+                {
+                    foreach (CdmArgumentDefinition args in (trait as CdmTraitReference).Arguments)
                     {
-                        foreach (CdmArgumentDefinition args in (trait as CdmTraitReference).Arguments)
-                        {
-                            GetArgumentValues(args);
-                        }
+                        GetArgumentValues(args);
                     }
                 }
             }
         }
+
 
         private void GetArgumentValues(CdmArgumentDefinition args)
         {

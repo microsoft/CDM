@@ -236,7 +236,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         expect(functionParameter1)
             .toEqual(cdmStatusLevel.error);
         expect(functionParameter2)
-            .toContain('Default value missing languageTag or displayText.');
+            .toContain('A \'defaultValue\' property is empty or one of its entries is missing \'languageTag\' and \'displayText\' values.');
         expect(emptyDefaultValueAttribute.defaultValue)
             .toBeUndefined();
         // set the default value to an empty list for testing that it should be removed from the generated json.

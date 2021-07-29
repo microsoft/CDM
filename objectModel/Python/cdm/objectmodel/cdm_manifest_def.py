@@ -176,11 +176,11 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 return None
 
             for entity in self.entities:
-                ent_def = await self._get_entity_from_reference(entity, self)
+                entity_path = await self._get_entity_path_from_declaration(entity, cast('CdmObject', self))
+                ent_def = await self.ctx.corpus.fetch_object_async(entity_path)  # type: CdmEntityDefinition
 
-                if not ent_def:
-                    logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_ENTITY_REF_ERROR)
-                    return None
+                if ent_def is None:
+                    logger.error(self.ctx, self._TAG, self._get_entity_from_reference.__name__, None, CdmLogCode.ERR_RESOLVE_ENTITY_FAILURE, entity_path)
 
                 if not ent_def.in_document.folder:
                     logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IS_NOT_FOLDERformat, ent_def.entity_name)
@@ -239,7 +239,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
         with logger._enter_scope(self._TAG, self.ctx, self.file_status_check_async.__name__):
-            adapter = self.ctx.corpus.storage.fetch_adapter(self.in_document.namespace)
+            adapter = self.ctx.corpus.storage.fetch_adapter(self.in_document._namespace)
             if adapter:
                 context = adapter.create_file_query_cache_context()
                 try:
@@ -263,15 +263,6 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                         
                 finally:
                     context.dispose()
-
-    async def _get_entity_from_reference(self, entity: 'CdmEntityDeclarationDefinition', manifest: 'CdmManifestDefinition') -> 'CdmEntityDefinition':
-        entity_path = await self._get_entity_path_from_declaration(entity, cast('CdmObject', manifest))
-        result = await self.ctx.corpus.fetch_object_async(entity_path)  # type: CdmEntityDefinition
-
-        if result is None:
-            logger.error(self.ctx, self._TAG, self._get_entity_from_reference.__name__, None, CdmLogCode.ERR_RESOLVE_ENTITY_FAILURE, entity_path)
-
-        return result
 
     async def _get_entity_path_from_declaration(self, entity_dec: 'CdmEntityDeclarationDefinition', obj: Optional['CdmObject'] = None):
         while isinstance(entity_dec, CdmReferencedEntityDeclarationDefinition):

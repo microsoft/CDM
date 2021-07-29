@@ -1,0 +1,90 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Person",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "Favorite Terms",
+                    "dataType": "string",
+                    "description": "I can construct a list on a Type Attribute.",
+                    "projection": {
+                        "operations": [
+                            {
+                                "$type": "alterTraits",
+                                "condition": "structured",
+                                "traitsToAdd": [
+                                    "is.dataFormat.list"
+                                ]
+                            },
+                            {
+                                "$type": "arrayExpansion",
+                                "condition": "!structured",
+                                "startOrdinal": 1,
+                                "endOrdinal": 2
+                            },
+                            {
+                                "$type": "renameAttributes",
+                                "condition": "!structured",
+                                "renameFormat": "Term {o}"
+                            },
+                            {
+                                "$type": "alterTraits",
+                                "condition": "!structured",
+                                "traitsToAdd": [
+                                    {
+                                        "traitReference": "has.expansionInfo.list",
+                                        "arguments": [
+                                            {
+                                                "name": "expansionName",
+                                                "value": "{m}"
+                                            },
+                                            {
+                                                "name": "ordinal",
+                                                "value": "{o}"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "argumentsContainWildcards": true
+                            },
+                            {
+                                "$type": "addArtifactAttribute",
+                                "condition": "!structured",
+                                "newAttribute": {
+                                    "dataType": "integer",
+                                    "name": "number of favorite terms"
+                                }
+                            },
+                            {
+                                "$type": "alterTraits",
+                                "condition": "!structured",
+                                "traitsToAdd": [
+                                    {
+                                        "traitReference": "indicates.expansionInfo.count",
+                                        "arguments": [
+                                            {
+                                                "name": "expansionName",
+                                                "value": "{a}"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "applyTo": "number of favorite terms",
+                                "argumentsContainWildcards": true
+                            }
+                        ],
+                        "runSequentially": true
+                    }
+                }
+            ]
+        }
+    ]
+}

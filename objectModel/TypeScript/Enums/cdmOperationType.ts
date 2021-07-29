@@ -17,7 +17,9 @@ export enum cdmOperationType {
     renameAttributes,
     replaceAsForeignKey,
     includeAttributes,
-    addAttributeGroup
+    addAttributeGroup,
+    alterTraits,
+    addArtifactAttribute,
 }
 
 /**
@@ -48,7 +50,11 @@ export class OperationTypeConvertor {
             case cdmOperationType.includeAttributes:
                 return 'includeAttributes';
             case cdmOperationType.addAttributeGroup:
-                return 'addAttributeGroup';
+                return 'addAttributeGroup';            
+            case cdmOperationType.alterTraits:
+                return 'alterTraits';
+            case cdmOperationType.addArtifactAttribute:
+                return 'addArtifactAttribute';
             case cdmOperationType.error:
             default:
                 throw new Error('Invalid operation.');
@@ -81,6 +87,10 @@ export class OperationTypeConvertor {
                 return cdmOperationType.renameAttributes;
             case cdmObjectType.operationReplaceAsForeignKeyDef:
                 return cdmOperationType.replaceAsForeignKey;
+            case cdmObjectType.operationAlterTraitsDef:
+                return cdmOperationType.alterTraits;
+            case cdmObjectType.operationAddArtifactAttributeDef:
+                return cdmOperationType.addArtifactAttribute;
         }
     }
 }

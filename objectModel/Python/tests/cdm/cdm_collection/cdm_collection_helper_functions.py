@@ -18,8 +18,8 @@ def generate_manifest(local_root_path: str) -> 'CdmManifestDefinition':
     cdmCorpus.storage.mount('cdm', adapter)
 
     manifest = CdmManifestDefinition(cdmCorpus.ctx, 'manifest')
-    manifest.folder_path = '/'
-    manifest.namespace = 'local'
+    manifest._folder_path = '/'
+    manifest._namespace = 'local'
 
     return manifest
 

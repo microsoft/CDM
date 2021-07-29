@@ -151,7 +151,7 @@ public class Utils {
    * @return Object
    */
   public static Object createConstant(final CdmCorpusContext ctx, final Object obj) {
-    if (obj == null) {
+    if (obj instanceof JsonNode && ((JsonNode) obj).isNull() || obj == null) {
       return null;
     }
 

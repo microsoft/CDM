@@ -194,7 +194,7 @@ export class StorageManager {
 
                 return true;
             } else {
-                Logger.warning(this.ctx, this.TAG, this.unMount.name, null, cdmLogCode.WarnStorageRemoveAdapterFailed);
+                Logger.warning(this.ctx, this.TAG, this.unMount.name, null, cdmLogCode.WarnStorageRemoveAdapterFailed, nameSpace);
             }
         });
     }

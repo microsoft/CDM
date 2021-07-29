@@ -189,11 +189,11 @@ class StorageManager:
             namespace_from_obj = None
 
             if obj and hasattr(obj, 'namespace') and hasattr(obj, 'folder_path'):
-                prefix = obj.folder_path
-                namespace_from_obj = obj.namespace
+                prefix = obj._folder_path
+                namespace_from_obj = obj._namespace
             elif obj and obj.in_document:
-                prefix = obj.in_document.folder_path
-                namespace_from_obj = obj.in_document.namespace
+                prefix = obj.in_document._folder_path
+                namespace_from_obj = obj.in_document._namespace
 
             if prefix and self._contains_unsupported_path_format(prefix):
                 # Already called status_rpt when checking for unsupported path format.
@@ -229,12 +229,12 @@ class StorageManager:
         with logger._enter_scope(self._TAG, self._ctx, self.create_relative_corpus_path.__name__):
             new_path = self.create_absolute_corpus_path(object_path, relative_to)
 
-            namespace_string = relative_to.namespace + ':' if relative_to and relative_to.namespace else ''
+            namespace_string = relative_to._namespace + ':' if relative_to and relative_to._namespace else ''
             if namespace_string and new_path.startswith(namespace_string):
                 new_path = new_path[len(namespace_string):]
 
-                if relative_to and relative_to.folder_path and new_path.startswith(relative_to.folder_path):
-                    new_path = new_path[len(relative_to.folder_path):]
+                if relative_to and relative_to._folder_path and new_path.startswith(relative_to._folder_path):
+                    new_path = new_path[len(relative_to._folder_path):]
             return new_path
 
     def mount(self, namespace: str, adapter: 'StorageAdapterBase') -> None:
@@ -252,8 +252,8 @@ class StorageManager:
                 self.namespace_adapters[namespace] = adapter
                 fd = CdmFolderDefinition(self._ctx, '')
                 fd._corpus = self._corpus
-                fd.namespace = namespace
-                fd.folder_path = '/'
+                fd._namespace = namespace
+                fd._folder_path = '/'
                 self._namespace_folders[namespace] = fd
                 if namespace in self._system_defined_namespaces:
                     self._system_defined_namespaces.remove(namespace)

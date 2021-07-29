@@ -34,9 +34,18 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
     /**
      * @inheritdoc
-     * @deprecated Only for internal use.
      */
-    public folderPath: string;
+    public get folderPath(): string {
+        return this._folderPath;
+    }
+
+    /**
+     * @inheritdoc
+     * @internal
+     */
+    public set folderPath(value: string) {
+        this._folderPath = value;
+    }
 
     /**
      * @inheritdoc
@@ -62,9 +71,18 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
     /**
      * @inheritdoc
-     * @deprecated Only for internal use.
      */
-    public namespace: string;
+    public get namespace(): string {
+        return this._namespace;
+    }
+
+    /**
+     * @inheritdoc
+     * @internal
+     */
+    public set namespace(value: string) {
+        this._namespace = value;
+    }
 
     /**
      * @inheritdoc
@@ -74,6 +92,9 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
     public static get objectType(): cdmObjectType {
         return cdmObjectType.folderDef;
     }
+
+    private _folderPath: string;
+    private _namespace: string;
 
     /**
      * Initializes a new instance of theFolderImpl class.

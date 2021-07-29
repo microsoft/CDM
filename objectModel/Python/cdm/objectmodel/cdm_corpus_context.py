@@ -19,6 +19,8 @@ class CdmCorpusContext:
         self.report_at_level = report_at_level or CdmStatusLevel.WARNING  # type: CdmStatusLevel
         self.status_event = status_event  # type: EventCallback
         self.events = EventList() # type: EventList
+        self.suppressed_log_codes = set() # type: set
+
         self.correlation_id = correlation_id or None # type: Optional[str]
 
         # --- internal ---

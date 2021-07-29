@@ -33,6 +33,8 @@ from .projections.operation_rename_attributes import OperationRenameAttributes
 from .projections.operation_replace_as_foreign_key import OperationReplaceAsForeignKey
 from .projections.operation_include_attributes import OperationIncludeAttributes
 from .projections.operation_add_attribute_group import OperationAddAttributeGroup
+from .projections.operation_alter_traits import OperationAlterTraits
+from .projections.operation_add_artifact_attribute import OperationAddArtifactAttribute
 from .parameter import Parameter
 from .projections.projection import Projection
 from .purpose import Purpose
@@ -77,6 +79,8 @@ __all__ = [
     'OperationReplaceAsForeignKey',
     'OperationIncludeAttributes',
     'OperationAddAttributeGroup',
+    'OperationAlterTraits',
+    'OperationAddArtifactAttribute',
     'Parameter',
     'Projection',
     'Purpose',

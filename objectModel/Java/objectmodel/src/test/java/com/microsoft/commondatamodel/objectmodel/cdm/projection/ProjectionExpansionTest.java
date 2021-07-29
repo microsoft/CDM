@@ -6,7 +6,6 @@ package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationArrayExpansion;
-import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationExcludeAttributes;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationRenameAttributes;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -20,6 +19,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -295,7 +295,7 @@ public class ProjectionExpansionTest {
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Collections.emptyList())).join();
 
         // Original set of attributes: ["name", "age", "address"]
         // Expand 1...3, renameFormat = {m}{o}
@@ -309,6 +309,29 @@ public class ProjectionExpansionTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(6)).getName(), "name3");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getName(), "age3");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(8)).getName(), "address3");
+    }
+
+    /**
+     * ArrayExpansion on an type attribute
+     */
+    @Test
+    public void testTypeAttribute() throws InterruptedException {
+        String testName = "testTypeAttribute";
+        String entityName = "Person";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+
+        CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+
+        // Original set of attributes: ["Favorite Terms"]
+        // Expand 1...2, renameFormat = Term {o}
+        Assert.assertEquals(resolvedEntity.getAttributes().size(), 2);
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "Term 1");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "Term 2");
     }
 
     /**
@@ -404,7 +427,7 @@ public class ProjectionExpansionTest {
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Collections.emptyList())).join();
 
         // Original set of attributes: ["name", "age", "address"]
         // Expand 1...3 and then 1...2, renameFormat = {m}_{o}

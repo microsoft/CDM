@@ -1,7 +1,7 @@
 {
     "$id": "http://microsoft.com/cdm/schema.cdm.json",
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "$version": "1.2.0",
+    "$version": "1.3.0",
     "type": "object",
     "definitions": {
         "import": {
@@ -390,7 +390,7 @@
             "properties": {
                 "removeAttribute": {
                     "type": "boolean",
-                    "description": "If true, this attribute definiton will be removed from the final resolved attribute list of an entity.",
+                    "description": "If true, this attribute definition will be removed from the final resolved attribute list of an entity.",
                     "default": false
                 },
                 "imposedDirectives": {
@@ -431,7 +431,7 @@
                 },
                 "renameFormat": {
                     "type": "string",
-                    "description": "Format specifier for generated attribute names. May contain a single occurence of ('{a} or 'A'), ('{m}' or '{M}') and '{o}' for the base (a/A)ttribute name, any (m/M)ember attributes from entities and array (o)rdinal. examples: '{a}{o}.{m}' could produce 'address2.city', '{a}{o}' gives 'city1'. Using '{A}' or '{M}' will uppercase the first letter of the name portions.",
+                    "description": "Format specifier for generated attribute names. May contain a single occurrence of ('{a} or 'A'), ('{m}' or '{M}') and '{o}' for the base (a/A)ttribute name, any (m/M)ember attributes from entities and array (o)rdinal. examples: '{a}{o}.{m}' could produce 'address2.city', '{a}{o}' gives 'city1'. Using '{A}' or '{M}' will uppercase the first letter of the name portions.",
                     "default": "{a}{o}{M}"
                 },
                 "expansion": {
@@ -505,7 +505,7 @@
                 },
                 "selectsSubAttribute": {
                     "type": "object",
-                    "description": "Used to select either 'one' or 'all' of the attributes from an entity when it is being used as an attribute of another entity. If the 'structured' directive is set, this trait causes resolved attributes to end up in groups rather than a flattend list.",
+                    "description": "Used to select either 'one' or 'all' of the attributes from an entity when it is being used as an attribute of another entity. If the 'structured' directive is set, this trait causes resolved attributes to end up in groups rather than a flattened list.",
                     "properties": {
                         "selects": {
                             "enum": [
@@ -943,7 +943,7 @@
         },
         "attributeContext": {
             "type": "object",
-            "description": "A container representing shared lineage, ownership and context in a hierachy describing the relatioships among an entities attributes.",
+            "description": "A container representing shared lineage, ownership and context in a hierarchy describing the relationships among an entities attributes.",
             "properties": {
                 "explanation": {
                     "type": "string",
@@ -1386,6 +1386,7 @@
                     "default": "{a}{o}{M}"
                 },
                 "applyTo": {
+                    "description": "A list of attributes from the input attributes set that will renamed following the patterns specified on RenameFormat.If not specified, renames all the attributes.",
                     "oneOf": [
                         {
                             "type": "string",
@@ -1476,6 +1477,133 @@
                 "includeAttributes"
             ]
         },
+         "operationAlterTraits": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "description": "An operation to help alter traits in attributes from the source."
+                },
+                "condition": {
+                    "type": "string",
+                    "description": "A string condition expression where projection should evaluate."
+                },
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the operation."
+                },
+                "sourceInput": {
+                    "type": "boolean",
+                    "description": "Property of an operation that defines if the operation receives the input from previous operation or from source entity."
+                },
+                "traitsToAdd": {
+                    "description": "A list of traits or trait groups that will be applied on the input",
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitOrTraitGroupClassReference"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "traitsToRemove": {
+                    "description": "A list of traits or trait groups that will be removed (if found) on the input.",
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitOrTraitGroupClassReference"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "argumentsContainWildcards": {
+                    "type": "boolean",
+                    "description": "If true, checks all arguments from all traits and performs replacement. May contain a single occurrence of ('{a} or 'A'), ('{m}' or '{M}') and '{o}' for the base (a/A)ttribute name, any (m/M)ember attributes from entities and array (o)rdinal."
+                },
+                "applyTo": {
+                    "description": "A list of attributes from the input attributes set to which traits defined in traitsToAdd property will be added (or arguments updated) and/or removed as indicated in traitsToRemove property. If not specified, traits in all attributes from the source will be targeted.",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "description": "A single attribute to apply the rename on. This is an optional."
+                        },
+                        {
+                            "type": "array",
+                            "description": "The attribute set to apply the rename on. This is an optional.",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "oneOf": [
+                {
+                    "required": [
+                        "$type",
+                        "traitsToAdd"
+                    ]
+                },
+                {
+                    "required": [
+                        "$type",
+                        "traitsToRemove"
+                    ]
+                }
+            ]
+        },
+        "operationAddArtifactAttribute": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "$type": {
+                    "type": "string",
+                    "description": "An operation to help add an artifact attribute to the input attribute list."
+                },
+                "condition": {
+                    "type": "string",
+                    "description": "A string condition expression where projection should evaluate."
+                },
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the operation."
+                },
+                "sourceInput": {
+                    "type": "boolean",
+                    "description": "Property of an operation that defines if the operation receives the input from previous operation or from source entity."
+                },
+                "newAttribute": {
+                    "description": "The new attribute that will be added to the input attributes list.",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "$ref": "#/definitions/typeAttribute"
+                        }
+                    ]
+                },
+                "insertAtTop": {
+                    "type": "boolean",
+                    "description": "If true, the new attribute will be added at the top of the input attribute list. Otherwise, it is added at the bottom of the input attribute list."
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "$type",
+                "newAttribute"
+            ]
+        },
         "projection": {
             "type": "object",
             "description": "Blocks of operation that get evaluated based on a source and conditions.",
@@ -1517,6 +1645,12 @@
                             "$ref": "#/definitions/operationAddTypeAttribute"
                         },
                         {
+                            "$ref": "#/definitions/operationAddArtifactAttribute"
+                        },
+                        {
+                            "$ref": "#/definitions/operationAlterTraits"
+                        },
+                        {
                             "type": "array",
                             "items": {
                                 "oneOf": [
@@ -1549,6 +1683,12 @@
                                     },
                                     {
                                         "$ref": "#/definitions/operationAddTypeAttribute"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/operationAddArtifactAttribute"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/operationAlterTraits"
                                     }
                                 ]
                             }

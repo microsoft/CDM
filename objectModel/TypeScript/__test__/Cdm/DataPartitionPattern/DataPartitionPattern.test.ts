@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import path = require('path');
+import { LocalAdapter } from '../../../Storage';
 import { CdmCorpusDefinition } from '../../../Cdm/CdmCorpusDefinition';
 import { CdmDataPartitionDefinition } from '../../../Cdm/CdmDataPartitionDefinition';
 import { CdmLocalEntityDeclarationDefinition } from '../../../Cdm/CdmLocalEntityDeclarationDefinition';
@@ -144,6 +146,24 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
     });
 
     /**
+     * Testing that partition is correctly found when namespace of pattern differs from namespace of the manifest
+     */
+    it('TestPatternWithDifferentNamespace', async (done) => {
+        const testName: string = 'TestPatternWithDifferentNamespace';
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+        const localAdapter: LocalAdapter = cdmCorpus.storage.fetchAdapter('local') as LocalAdapter;
+        const localPath: string = localAdapter.fullRoot;
+        cdmCorpus.storage.mount('other', new LocalAdapter(path.join(localPath, 'other')));
+        var cdmManifest = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local:/patternManifest.manifest.cdm.json');
+
+        await cdmManifest.fileStatusCheckAsync();
+
+        expect(cdmManifest.entities.allItems[0].dataPartitions.length)
+            .toBe(1);
+        done();
+    });
+
+    /**
      * Testing that patterns behave correctly with variations to rootLocation
      */
     it('TestVariationsInRootLocation', async (done) => {
@@ -186,7 +206,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         let patternsWithGlobAndRegex: number = 0;
         corpus.setEventCallback(
             (level, msg) => {
-                if (msg.indexOf('CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | fileStatusCheckAsync') != -1){
+                if (msg.indexOf('CdmDataPartitionPatternDefinition | The Data Partition Pattern contains both a glob pattern (/testfile.csv) and a regular expression (/subFolder/testSubFile.csv) set, the glob pattern will be used. | fileStatusCheckAsync') != -1) {
                     patternsWithGlobAndRegex++;
                 }
             },

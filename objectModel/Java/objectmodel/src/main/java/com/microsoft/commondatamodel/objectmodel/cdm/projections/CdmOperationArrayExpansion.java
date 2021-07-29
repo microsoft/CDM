@@ -18,6 +18,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -193,13 +194,12 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
                     }
 
                     // Create a new resolved attribute for the expanded attribute
-                    ResolvedAttribute newResAttr = createNewResolvedAttribute(projCtx, attrCtxExpandedAttr, (CdmAttribute) currentPAS.getCurrentResolvedAttribute().getTarget(), currentPAS.getCurrentResolvedAttribute().getResolvedName());
-                    newResAttr.getAttCtx().addLineage(currentPAS.getCurrentResolvedAttribute().getAttCtx());
+                    ResolvedAttribute newResAttr = createNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.getCurrentResolvedAttribute(), currentPAS.getCurrentResolvedAttribute().getResolvedName());
 
                     // Create a projection attribute state for the expanded attribute
                     ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.getCtx());
                     newPAS.setCurrentResolvedAttribute(newResAttr);
-                    newPAS.setPreviousStateList(new ArrayList<>(Arrays.asList(currentPAS)));
+                    newPAS.setPreviousStateList(new ArrayList<>(Collections.singletonList(currentPAS)));
                     newPAS.setOrdinal(i);
 
                     projAttrStatesFromRounds.add(newPAS);

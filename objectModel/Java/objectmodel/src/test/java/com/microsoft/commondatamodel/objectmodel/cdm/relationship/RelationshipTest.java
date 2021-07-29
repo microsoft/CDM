@@ -272,7 +272,7 @@ public class RelationshipTest {
 
       corpus.calculateEntityGraphAsync(manifest).join();
       // Check if the warning was logged.
-      TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnProjFKWithoutSourceEntity);
+      TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnProjFKWithoutSourceEntity, true);
 
       manifest.populateManifestRelationshipsAsync().join();
       Assert.assertEquals(manifest.getRelationships().size(), 0);

@@ -38,7 +38,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     else
                     {
-                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistModelJsonAttrConversionFailure);
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistModelJsonToAttrConversionFailure);
                         return null;
                     }
                 }
@@ -66,7 +66,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 {
                     if (element.ObjectType != CdmObjectType.TypeAttributeDef)
                     {
-                        Logger.Error((ResolveContext)ctx, Tag, nameof(ToData), element.AtCorpusPath, CdmLogCode.ErrPersistManifestSavingFailure);
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(ToData), element.AtCorpusPath, CdmLogCode.ErrPersistModelJsonEntityAttrError);
                         return null;
                     }
 
@@ -78,7 +78,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     }
                     else
                     {
-                        Logger.Error((ResolveContext)ctx, Tag, nameof(ToData), element.AtCorpusPath, CdmLogCode.ErrPersistModelJsonAttrConversionFailure);
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(ToData), element.AtCorpusPath, CdmLogCode.ErrPersistModelJsonFromAttrConversionFailure);
                         return null;
                     }
                 }

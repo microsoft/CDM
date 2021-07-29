@@ -189,7 +189,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             // test log error "Default value missing languageTag or displayText."
             Assert.IsTrue(functionWasCalled);
             Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
-            Assert.IsTrue(functionParameter2.Contains("Default value missing languageTag or displayText."));
+            Assert.IsTrue(functionParameter2.Contains("A 'defaultValue' property is empty or one of its entries is missing 'languageTag' and 'displayText' values."));
             Assert.IsNull(emptyDefaultValueAttribute.DefaultValue);
             // set the default value to an empty list for testing that it should be removed from the generated json.
             emptyDefaultValueAttribute.DefaultValue = new List<object>();

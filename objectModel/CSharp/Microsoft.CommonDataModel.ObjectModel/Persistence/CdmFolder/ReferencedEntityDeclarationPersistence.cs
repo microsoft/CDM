@@ -26,7 +26,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (entityPath == null)
             {
-                Logger.Error(ctx as ResolveContext, Tag, nameof(FromData), null, CdmLogCode.ErrPersistEntityPathNotFound);
+                Logger.Error(ctx as ResolveContext, Tag, nameof(FromData), null, CdmLogCode.ErrPersistEntityPathNotFound, (string)obj["entityName"]);
             }
 
             // The entity path has to be absolute.

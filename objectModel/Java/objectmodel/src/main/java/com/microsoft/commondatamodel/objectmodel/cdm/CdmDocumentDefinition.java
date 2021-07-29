@@ -660,7 +660,13 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return;
   }
 
-  OffsetDateTime getFileSystemModifiedTime() {
+  /**
+   * @return date time offset
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public OffsetDateTime getFileSystemModifiedTime() {
     return _fileSystemModifiedTime;
   }
 

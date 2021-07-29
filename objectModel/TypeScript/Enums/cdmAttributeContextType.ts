@@ -8,6 +8,7 @@ export enum cdmAttributeContextType {
     attributeGroup,
     generatedSet,
     generatedRound,
+    addedAttributeNewArtifact,
     addedAttributeSupporting,
     addedAttributeIdentity,
     addedAttributeSelectedType,
@@ -26,5 +27,7 @@ export enum cdmAttributeContextType {
     operationReplaceAsForeignKey,
     operationIncludeAttributes,
     operationAddAttributeGroup,
+    operationAlterTraits,
+    operationAddArtifactAttribute,
     unknown
 }

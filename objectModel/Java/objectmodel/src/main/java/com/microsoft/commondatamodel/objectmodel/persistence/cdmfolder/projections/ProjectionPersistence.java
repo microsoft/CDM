@@ -96,6 +96,14 @@ public class ProjectionPersistence {
                         CdmOperationAddAttributeGroup addAttributeGroupOp = OperationAddAttributeGroupPersistence.fromData(ctx, operationJson);
                         projection.getOperations().add(addAttributeGroupOp);
                         break;
+                    case "alterTraits":
+                        CdmOperationAlterTraits addAlterTraitsOp = OperationAlterTraitsPersistence.fromData(ctx, operationJson);
+                        projection.getOperations().add(addAlterTraitsOp);
+                        break;
+                    case "addArtifactAttribute":
+                        CdmOperationAddArtifactAttribute addArtifactAttributeOp = OperationAddArtifactAttributePersistence.fromData(ctx, operationJson);
+                        projection.getOperations().add(addArtifactAttributeOp);
+                        break;
                     default:
                         Logger.error(ctx, TAG, "fromData", source.getAtCorpusPath(), CdmLogCode.ErrPersistProjInvalidOpsType, type);
                         break;
@@ -168,6 +176,14 @@ public class ProjectionPersistence {
                     case OperationAddAttributeGroupDef:
                         OperationAddAttributeGroup addAttributeGroupOp = OperationAddAttributeGroupPersistence.toData((CdmOperationAddAttributeGroup) operation, resOpt, options);
                         operations.add(addAttributeGroupOp);
+                        break;
+                    case OperationAlterTraitsDef:
+                        OperationAlterTraits alterTraitsOp = OperationAlterTraitsPersistence.toData((CdmOperationAlterTraits) operation, resOpt, options);
+                        operations.add(alterTraitsOp);
+                        break;
+                    case OperationAddArtifactAttributeDef:
+                        OperationAddArtifactAttribute addArtifactAttributeOp = OperationAddArtifactAttributePersistence.toData((CdmOperationAddArtifactAttribute) operation, resOpt, options);
+                        operations.add(addArtifactAttributeOp);
                         break;
                     default:
                         OperationBase baseOp = new OperationBase();

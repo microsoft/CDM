@@ -34,7 +34,7 @@ class ManifestPersistence:
     @staticmethod
     def from_data(ctx: 'CdmCorpusContext', doc_name: str, json_data: str, folder: 'CdmFolderDefinition') -> 'CdmManifestDefinition':
         obj = ManifestContent().decode(json_data)
-        return ManifestPersistence.from_object(ctx, doc_name, folder.namespace, folder.folder_path, obj)
+        return ManifestPersistence.from_object(ctx, doc_name, folder._namespace, folder._folder_path, obj)
 
     @staticmethod
     def from_object(ctx: CdmCorpusContext, name: str, namespace: str, path: str, data: 'ManifestContent') -> 'CdmManifestDefinition':
@@ -52,8 +52,8 @@ class ManifestPersistence:
 
         manifest = ctx.corpus.make_object(CdmObjectType.MANIFEST_DEF, manifest_name)
         manifest.name = name  # this is the document name which is assumed by constructor to be related to the the manifest name, but may not be
-        manifest.folder_path = path
-        manifest.namespace = namespace
+        manifest._folder_path = path
+        manifest._namespace = namespace
         manifest.explanation = data.get('explanation')
 
         if data.schema:
@@ -111,7 +111,7 @@ class ManifestPersistence:
                 elif entity_obj.get('type') == 'ReferencedEntity' or 'entityDeclaration' in entity_obj:
                     manifest.entities.append(ReferencedEntityDeclarationPersistence.from_data(ctx, full_path, entity_obj))
                 else:
-                    logger.error(ctx, _TAG, ManifestPersistence.from_object.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_DECLARATION_MISSING)
+                    logger.error(ctx, _TAG, ManifestPersistence.from_object.__name__, None, CdmLogCode.ERR_PERSIST_ENTITY_DECLARATION_MISSING, entity_obj.get('entityName'))
                     return None
 
         if data.get('relationships'):

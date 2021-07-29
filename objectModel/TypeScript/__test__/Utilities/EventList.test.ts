@@ -34,7 +34,7 @@ describe('Utilities.EventList', () => {
         // Test fetching an object from invalid namespace results in at least one error message in the recorder
         await corpus.fetchObjectAsync('foo:/bar');
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageAdapterNotFound)
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageAdapterNotFound, true)
 
         // Test fetching a good object, this should leave event recorder empty
         await corpus.fetchObjectAsync('local:/default.manifest.cdm.json');
@@ -44,23 +44,23 @@ describe('Utilities.EventList', () => {
         let manifest: CdmManifestDefinition = corpus.MakeObject(cdmObjectType.manifestDef, 'dummy');
         await manifest.saveAsAsync('foo:/bar', true);
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrValdnMissingDoc)
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrValdnMissingDoc, true)
 
         // Test resolving a manifest not added to a folder, this should yield at least one error message in the recorder
         await manifest.createResolvedManifestAsync('new dummy', null);
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrResolveManifestFailed)
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrResolveManifestFailed, true)
 
         // Test resolving an entity without WRT doc, this should yield at least one error message in the recorder
         let entity2: CdmEntityDefinition = corpus.MakeObject(cdmObjectType.entityDef, 'MyEntity2');
         await entity2.createResolvedEntityAsync('MyEntity2-Resolved');
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrDocWrtDocNotfound)
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrDocWrtDocNotfound, true)
 
         // Test invoking FileStatusCheckAsync on the manifest, this should yield at least one error message in the recorder
         await manifest.fileStatusCheckAsync();
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNullNamespace)
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNullNamespace, true)
 
         // Repeat the same test but with status level 'None', no events should be recorded
         corpus.ctx.reportAtLevel = cdmStatusLevel.none;
@@ -73,7 +73,7 @@ describe('Utilities.EventList', () => {
         const part: CdmDataPartitionDefinition = corpus.MakeObject(cdmObjectType.dataPartitionDef, 'part');
         await part.fileStatusCheckAsync();
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPathNullObjectPath);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPathNullObjectPath, true);
 
         // Test checking file status on a data partition pattern
         const refDoc: CdmDocumentDefinition = corpus.MakeObject(cdmObjectType.documentDef, 'RefEntDoc');
@@ -81,8 +81,7 @@ describe('Utilities.EventList', () => {
         partPattern.inDocument = refDoc;
         await partPattern.fileStatusCheckAsync();
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNullNamespace);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrDocAdapterNotFound);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNullCorpusPath, true);
 
         // Test calculating relationships - no errors/warnings
         await corpus.calculateEntityGraphAsync(manifest);
@@ -91,6 +90,12 @@ describe('Utilities.EventList', () => {
         // Test populating relationships in manifest - no errors/warnings
         await manifest.populateManifestRelationshipsAsync();
         TestBasicLogsState(corpus);
+        
+        // Test filtering code logic 
+        corpus.ctx.suppressedLogCodes.add(cdmLogCode.ErrPathNullObjectPath);
+        const part2: CdmDataPartitionDefinition = corpus.MakeObject(cdmObjectType.dataPartitionDef, 'part2');
+        await part2.fileStatusCheckAsync();
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPathNullObjectPath, false);
     });
 
     /**
@@ -119,7 +124,7 @@ describe('Utilities.EventList', () => {
         await manifest.createResolvedManifestAsync('new dummy 2', null);
 
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrResolveReferenceFailure)
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrResolveReferenceFailure, true)
 
         // Keep for debugging
         // corpus.ctx.events.allItems.forEach(logEntry => {
@@ -136,33 +141,34 @@ describe('Utilities.EventList', () => {
 
         corpus.storage.mount('dummy', null);
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNullAdapter);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNullAdapter, true);
 
         corpus.storage.unMount('nothing');
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnStorageRemoveAdapterFailed);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnStorageRemoveAdapterFailed, true);
 
         // No errors/warnings expected here
         corpus.storage.fetchRootFolder(null);
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNullNamespace);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNullNamespace, true);
 
         corpus.storage.adapterPathToCorpusPath('Test');
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidAdapterPath);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageInvalidAdapterPath, true);
 
         corpus.storage.corpusPathToAdapterPath('unknown:/Test');
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageAdapterNotFound);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNamespaceNotRegistered);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageAdapterNotFound, true);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrStorageNamespaceNotRegistered, true);
 
         corpus.storage.createAbsoluteCorpusPath(null);
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPathNullObjectPath);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPathNullObjectPath, true);
 
         corpus.storage.createRelativeCorpusPath(null);
         TestBasicLogsState(corpus);
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPathNullObjectPath);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPathNullObjectPath, true);
+        
     });
 
     /**
@@ -212,7 +218,7 @@ describe('Utilities.EventList', () => {
         } else {
             expect(corpus.ctx.events.length).toBeGreaterThan(0);
             expect(corpus.ctx.events.allItems[0].has('timestamp')).toBe(true);
-            expect(corpus.ctx.events.allItems[0].get('correlationId')).toBe(DummyCorrelationId);
+            expect(corpus.ctx.events.allItems[0].get('cid')).toBe(DummyCorrelationId);
 
             if (corpus.ctx.reportAtLevel == cdmStatusLevel.progress) {
                 expect(corpus.ctx.events.allItems[0].get('message')).toBe('Entering scope');

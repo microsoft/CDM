@@ -56,6 +56,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string AppId { get; set; }
 
         /// <summary>
+        /// Gets or sets the client for ingesting telemetry.
+        /// </summary>
+        public TelemetryClient TelemetryClient { get; set; }
+
+        /// <summary>
         /// Whether we are currently performing a resolution or not.
         /// Used to stop making documents dirty during CdmCollections operations.
         /// </summary>
@@ -424,7 +429,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     case CdmObjectType.OperationArrayExpansionDef:
                         if (found.ObjectType != CdmObjectType.OperationArrayExpansionDef)
                         {
-                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, " array expansion operation", symbolDef);
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "array expansion operation", symbolDef);
                             found = null;
                         }
                         break;
@@ -460,6 +465,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         if (found.ObjectType != CdmObjectType.OperationAddAttributeGroupDef)
                         {
                             Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "add attribute group operation", symbolDef);
+                            found = null;
+                        }
+                        break;
+                    case CdmObjectType.OperationAlterTraitsDef:
+                        if (found.ObjectType != CdmObjectType.OperationAlterTraitsDef)
+                        {
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "alter traits operation", symbolDef);
+                            found = null;
+                        }
+                        break;
+                    case CdmObjectType.OperationAddArtifactAttributeDef:
+                        if (found.ObjectType != CdmObjectType.OperationAddArtifactAttributeDef)
+                        {
+                            Logger.Error(ctx, Tag, nameof(ResolveSymbolReference), found.AtCorpusPath, CdmLogCode.ErrUnexpectedType, "add artifact attribute operation", symbolDef);
                             found = null;
                         }
                         break;
@@ -700,6 +719,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     break;
                 case CdmObjectType.ManifestDef:
                     newObj = new CdmManifestDefinition(this.Ctx, nameOrRef);
+                    
+                    // Log and ingest a message when a new manifest is created
+                    Logger.Debug(this.Ctx, Tag, $"{nameof(MakeObject)}<{typeof(T).Name}>", newObj.AtCorpusPath, "New Manifest created.", true);
                     break;
                 case CdmObjectType.ManifestDeclarationDef:
                     newObj = new CdmManifestDeclarationDefinition(this.Ctx, nameOrRef);
@@ -772,6 +794,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     break;
                 case CdmObjectType.OperationAddAttributeGroupDef:
                     newObj = new CdmOperationAddAttributeGroup(this.Ctx);
+                    break;
+                case CdmObjectType.OperationAlterTraitsDef:
+                    newObj = new CdmOperationAlterTraits(this.Ctx);
+                    break;
+                case CdmObjectType.OperationAddArtifactAttributeDef:
+                    newObj = new CdmOperationAddArtifactAttribute(this.Ctx);
                     break;
             }
             return (T)newObj;
@@ -1010,7 +1038,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public async Task<T> FetchObjectAsync<T>(string objectPath, CdmObject obj = null, ResolveOptions resOpt = null, bool forceReload = false)
             where T : CdmObject
         {
-            using (Logger.EnterScope(Tag, Ctx, nameof(FetchObjectAsync)))
+            using (Logger.EnterScope(Tag, Ctx, $"{nameof(FetchObjectAsync)}<{typeof(T).Name}>"))
             {
                 if (resOpt == null)
                 {
@@ -1052,6 +1080,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     if (documentPath.Equals(objectPath))
                     {
+                        // Log the telemetry if the document is a manifest
+                        if (typeof(T) == typeof(CdmManifestDefinition))
+                        {
+                            Logger.IngestManifestTelemetry((CdmManifestDefinition)newObj, this.Ctx, nameof(CdmCorpusDefinition),
+                                $"{nameof(FetchObjectAsync)}<{nameof(CdmManifestDefinition)}>", newObj.AtCorpusPath);
+                        }
+
                         return (T)newObj;
                     }
 
@@ -1068,6 +1103,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     if (result == null)
                     {
                         Logger.Error(this.Ctx, Tag, nameof(FetchObjectAsync), newObj.AtCorpusPath, CdmLogCode.ErrDocSymbolNotFound, objectPath, newObj.AtCorpusPath);
+                    }
+                    else
+                    {
+                        // Log the telemetry if the object is a manifest
+                        if (typeof(T) == typeof(CdmManifestDefinition))
+                        {
+                            Logger.IngestManifestTelemetry((CdmManifestDefinition)result, this.Ctx, nameof(CdmCorpusDefinition),
+                                $"{nameof(FetchObjectAsync)}<{nameof(CdmManifestDefinition)}>", result.AtCorpusPath);
+                        }
+
+                        // Log the telemetry if the object is an entity
+                        else if (typeof(T) == typeof(CdmEntityDefinition))
+                        {
+                            Logger.IngestEntityTelemetry((CdmEntityDefinition)result, this.Ctx, nameof(CdmCorpusDefinition),
+                                    $"{nameof(FetchObjectAsync)}<{nameof(CdmEntityDefinition)}>", result.AtCorpusPath);
+                        }
                     }
 
                     return (T)result;
@@ -1302,6 +1353,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         case CdmObjectType.OperationReplaceAsForeignKeyDef:
                         case CdmObjectType.OperationIncludeAttributesDef:
                         case CdmObjectType.OperationAddAttributeGroupDef:
+                        case CdmObjectType.OperationAlterTraitsDef:
+                        case CdmObjectType.OperationAddArtifactAttributeDef:
                             if (iObject.ObjectType == CdmObjectType.AttributeGroupRef || iObject.ObjectType == CdmObjectType.AttributeContextRef
                             || iObject.ObjectType == CdmObjectType.DataTypeRef || iObject.ObjectType == CdmObjectType.EntityRef
                             || iObject.ObjectType == CdmObjectType.PurposeRef || iObject.ObjectType == CdmObjectType.TraitRef
@@ -1369,6 +1422,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         case CdmObjectType.OperationReplaceAsForeignKeyDef:
                         case CdmObjectType.OperationIncludeAttributesDef:
                         case CdmObjectType.OperationAddAttributeGroupDef:
+                        case CdmObjectType.OperationAlterTraitsDef:
+                        case CdmObjectType.OperationAddArtifactAttributeDef:
                             this.UnRegisterSymbol(path, doc);
                             this.UnRegisterDefinitionReferenceSymbols(iObject as CdmObjectBase, "rasb");
                             break;
@@ -1735,60 +1790,64 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     foreach (var entityDec in currManifest.Entities)
                     {
-                        var entityPath = await currManifest.GetEntityPathFromDeclaration(entityDec, currManifest);
-                        // the path returned by GetEntityPathFromDeclaration is an absolute path.
-                        // no need to pass the manifest to FetchObjectAsync.
-                        var entity = await this.FetchObjectAsync<CdmEntityDefinition>(entityPath);
-
-                        if (entity == null)
-                            continue;
-
-                        CdmEntityDefinition resEntity;
-                        // make options wrt this entity document and "relational" always
-                        var resOpt = new ResolveOptions(entity.InDocument, new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" }));
-
-                        bool isResolvedEntity = entity.AttributeContext != null;
-
-                        // only create a resolved entity if the entity passed in was not a resolved entity
-                        if (!isResolvedEntity)
+                        using (Logger.EnterScope(nameof(CdmCorpusDefinition), Ctx, $"{nameof(CalculateEntityGraphAsync)}(perEntity)"))
                         {
-                            // first get the resolved entity so that all of the references are present
-                            resEntity = await entity.CreateResolvedEntityAsync($"wrtSelf_{entity.EntityName}", resOpt);
-                        }
-                        else
-                        {
-                            resEntity = entity;
-                        }
+                            var entityPath = await currManifest.GetEntityPathFromDeclaration(entityDec, currManifest);
 
-                        // find outgoing entity relationships using attribute context
-                        List<CdmE2ERelationship> outgoingRelationships = this.FindOutgoingRelationships(
-                            resOpt,
-                            resEntity,
-                            resEntity.AttributeContext,
-                            isResolvedEntity);
+                            // the path returned by GetEntityPathFromDeclaration is an absolute path.
+                            // no need to pass the manifest to FetchObjectAsync.
+                            var entity = await this.FetchObjectAsync<CdmEntityDefinition>(entityPath);
 
-                        this.OutgoingRelationships[entity] = outgoingRelationships;
+                            if (entity == null)
+                                continue;
 
-                        // flip outgoing entity relationships list to get incoming relationships map
-                        if (outgoingRelationships != null)
-                        {
-                            foreach (CdmE2ERelationship rel in outgoingRelationships)
+                            CdmEntityDefinition resEntity;
+
+                            // make options wrt this entity document and "relational" always
+                            var resOpt = new ResolveOptions(entity.InDocument, new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" }));
+
+                            bool isResolvedEntity = entity.AttributeContext != null;
+
+                            // only create a resolved entity if the entity passed in was not a resolved entity
+                            if (!isResolvedEntity)
                             {
-                                var targetEnt = await this.FetchObjectAsync<CdmEntityDefinition>(rel.ToEntity, currManifest);
-                                if (targetEnt != null)
-                                {
-                                    if (!this.IncomingRelationships.ContainsKey(targetEnt))
-                                        this.IncomingRelationships[targetEnt] = new List<CdmE2ERelationship>();
+                                // first get the resolved entity so that all of the references are present
+                                resEntity = await entity.CreateResolvedEntityAsync($"wrtSelf_{entity.EntityName}", resOpt);
+                            }
+                            else
+                            {
+                                resEntity = entity;
+                            }
 
-                                    this.IncomingRelationships[targetEnt].Add(rel);
+                            // find outgoing entity relationships using attribute context
+                            List<CdmE2ERelationship> outgoingRelationships = this.FindOutgoingRelationships(
+                                resOpt,
+                                resEntity,
+                                resEntity.AttributeContext,
+                                isResolvedEntity);
+
+                            this.OutgoingRelationships[entity] = outgoingRelationships;
+
+                            // flip outgoing entity relationships list to get incoming relationships map
+                            if (outgoingRelationships != null)
+                            {
+                                foreach (CdmE2ERelationship rel in outgoingRelationships)
+                                {
+                                    var targetEnt = await this.FetchObjectAsync<CdmEntityDefinition>(rel.ToEntity, currManifest);
+                                    if (targetEnt != null)
+                                    {
+                                        if (!this.IncomingRelationships.ContainsKey(targetEnt))
+                                            this.IncomingRelationships[targetEnt] = new List<CdmE2ERelationship>();
+
+                                        this.IncomingRelationships[targetEnt].Add(rel);
+                                    }
                                 }
                             }
+
+                            // delete the resolved entity if we created one here
+                            if (!isResolvedEntity)
+                                resEntity.InDocument.Folder.Documents.Remove(resEntity.InDocument.Name);
                         }
-
-                        // delete the resolved entity if we created one here
-                        if (!isResolvedEntity)
-                            resEntity.InDocument.Folder.Documents.Remove(resEntity.InDocument.Name);
-
                     }
 
                     if (currManifest.SubManifests != null)
@@ -2199,7 +2258,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (adapter == null)
                 {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromObject), currObject.AtCorpusPath, CdmLogCode.ErrAdapterNotFound, currObject.Id.ToString());
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromObject), currObject.AtCorpusPath, CdmLogCode.ErrAdapterNotFound, (currObject as CdmContainerDefinition).Namespace);
                     return null;
                 }
 

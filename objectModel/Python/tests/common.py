@@ -248,7 +248,19 @@ class TestHelper:
         return ''
 
     @staticmethod
-    def assert_cdm_log_code_equality(corpus: 'CdmCorpusDefinition', expected_code: 'CdmLogCode', self) -> None:
+    def assert_cdm_log_code_unexpected_code(corpus: 'CdmCorpusDefinition', unexpected_code: 'CdmLogCode', self) -> None:
+        to_assert = False
+        for log_entry in corpus.ctx.events:
+            if ((unexpected_code.name.startswith('WARN') and log_entry['level'] == CdmStatusLevel.WARNING.name)
+                or (unexpected_code.name.startswith('ERR') and log_entry['level'] == CdmStatusLevel.ERROR.name)) \
+                    and log_entry['code'] == unexpected_code.name:
+                to_assert = True
+
+        self.assertTrue(not to_assert, 'The recorded log events should have not contained message with log code ' +
+                        unexpected_code.name + ' of appropriate level as this message should be filtered out.')
+
+    @staticmethod
+    def assert_cdm_log_code_equality(corpus: 'CdmCorpusDefinition', expected_code: 'CdmLogCode', is_present: bool, self) -> None:
         to_assert = False
         for log_entry in corpus.ctx.events:
             if ((expected_code.name.startswith('WARN') and log_entry['level'] == CdmStatusLevel.WARNING.name)
@@ -256,5 +268,10 @@ class TestHelper:
                     and log_entry['code'] == expected_code.name:
                 to_assert = True
 
-        self.assertTrue(to_assert, 'The recorded log events should have contained message with log code ' +
+        if  is_present == True:
+            self.assertTrue(to_assert, 'The recorded log events should have contained message with log code ' +
                         expected_code.name + ' of appropriate level')
+        else :
+            self.assertTrue(not to_assert, 'The recorded log events should have not contained message with log code ' +
+                        expected_code.name + ' of appropriate level as this message should be filtered out.')
+

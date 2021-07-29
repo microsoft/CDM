@@ -11,8 +11,6 @@ from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet
 from tests.common import async_test
 from tests.utilities.projection_test_utils import ProjectionTestUtils
 
-if TYPE_CHECKING:
-    from cdm.objectmodel import CdmAttributeItem, CdmCollection
 
 
 class ProjectionAddAttributeGroupTest(unittest.TestCase):
@@ -48,7 +46,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Exclude attributes: ['age', 'phoneNumber']
-        att_group_definition = self.validate_attribute_group(resolved_entity.attributes, 'PersonAttributeGroup')
+        att_group_definition = ProjectionTestUtils.validate_attribute_group(self, resolved_entity.attributes, 'PersonAttributeGroup')
         self.assertEqual(3, len(att_group_definition.members))
         self.assertEqual('name', att_group_definition.members[0].name)
         self.assertEqual('address', att_group_definition.members[1].name)
@@ -69,7 +67,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Included attributes: ['age', 'phoneNumber']
-        att_group_definition = self.validate_attribute_group(resolved_entity.attributes, 'PersonAttributeGroup', 3)
+        att_group_definition = ProjectionTestUtils.validate_attribute_group(self, resolved_entity.attributes, 'PersonAttributeGroup', 3)
         self.assertEqual(5, len(att_group_definition.members))
         self.assertEqual('name', att_group_definition.members[0].name)
         self.assertEqual('age', att_group_definition.members[1].name)
@@ -107,7 +105,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Condition met, put all attributes in an attribute group
-        att_group_definition = self.validate_attribute_group(resolved_entity2.attributes, 'PersonAttributeGroup')
+        att_group_definition = ProjectionTestUtils.validate_attribute_group(self, resolved_entity2.attributes, 'PersonAttributeGroup')
         self.assertEqual(5, len(att_group_definition.members))
         self.assertEqual('name', att_group_definition.members[0].name)
         self.assertEqual('age', att_group_definition.members[1].name)
@@ -166,7 +164,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         # Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         # Original set of attributes: ['id', 'name', 'value', 'date']
         # Condition met, put all attributes in an attribute group
-        att_group_definition = self.validate_attribute_group(resolved_entity_with_structured.attributes, 'PersonAttributeGroup')
+        att_group_definition = ProjectionTestUtils.validate_attribute_group(self, resolved_entity_with_structured.attributes, 'PersonAttributeGroup')
         self.assertEqual(4, len(att_group_definition.members))
         self.assertEqual('id', att_group_definition.members[0].name)
         self.assertEqual('name', att_group_definition.members[1].name)
@@ -187,7 +185,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'structured' ])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
-        att_group_definition = self.validate_attribute_group(resolved_entity.attributes, 'PersonInfo')
+        att_group_definition = ProjectionTestUtils.validate_attribute_group(self, resolved_entity.attributes, 'PersonInfo')
         self.assertEqual(5, len(att_group_definition.members))
         self.assertEqual('name', att_group_definition.members[0].name)
         self.assertEqual('age', att_group_definition.members[1].name)
@@ -227,7 +225,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
 
         # Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         # Original set of attributes: ['id', 'name', 'value', 'date']
-        att_group_definition = self.validate_attribute_group(resolved_entity.attributes, 'PersonAttributeGroup')
+        att_group_definition = ProjectionTestUtils.validate_attribute_group(self, resolved_entity.attributes, 'PersonAttributeGroup')
         self.assertEqual(4, len(att_group_definition.members))
         self.assertEqual('id', att_group_definition.members[0].name)
         self.assertEqual('name', att_group_definition.members[1].name)
@@ -264,7 +262,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
 
         # Verify correctness of the resolved attributes after running the AddAttributeGroup operation
         # Original set of attributes: ['id', 'name', 'value', 'date']
-        att_group_definition = self.validate_attribute_group(resolved_entity.attributes, 'PersonAttributeGroup')
+        att_group_definition = ProjectionTestUtils.validate_attribute_group(self, resolved_entity.attributes, 'PersonAttributeGroup')
         self.assertEqual(4, len(att_group_definition.members))
         self.assertEqual('id', att_group_definition.members[0].name)
         self.assertEqual('name', att_group_definition.members[1].name)
@@ -285,7 +283,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ ])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
-        att_group_definition = self.validate_attribute_group(resolved_entity.attributes, 'ChildAttributeGroup')
+        att_group_definition = ProjectionTestUtils.validate_attribute_group(self, resolved_entity.attributes, 'ChildAttributeGroup')
         self.assertEqual(5, len(att_group_definition.members))
         self.assertEqual('name', att_group_definition.members[0].name)
         self.assertEqual('age', att_group_definition.members[1].name)
@@ -308,7 +306,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # This will result in two attribute groups with the same set of attributes being generated
-        att_group1 = self.validate_attribute_group(resolved_entity.attributes, 'PersonAttributeGroup', 2)  # type: CdmAttributeGroupDefinition
+        att_group1 = ProjectionTestUtils.validate_attribute_group(self, resolved_entity.attributes, 'PersonAttributeGroup', 2)  # type: CdmAttributeGroupDefinition
         self.assertEqual(5, len(att_group1.members))
         self.assertEqual('name', att_group1.members[0].name)
         self.assertEqual('age', att_group1.members[1].name)
@@ -316,7 +314,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         self.assertEqual('phoneNumber', att_group1.members[3].name)
         self.assertEqual('email', att_group1.members[4].name)
 
-        att_group2 = self.validate_attribute_group(resolved_entity.attributes, 'SecondAttributeGroup', 2, 1)  # type: CdmAttributeGroupDefinition
+        att_group2 = ProjectionTestUtils.validate_attribute_group(self, resolved_entity.attributes, 'SecondAttributeGroup', 2, 1)  # type: CdmAttributeGroupDefinition
         self.assertEqual(5, len(att_group2.members))
         self.assertEqual('name', att_group2.members[0].name)
         self.assertEqual('age', att_group2.members[1].name)
@@ -338,8 +336,8 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ ])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
-        outer_att_group = self.validate_attribute_group(resolved_entity.attributes, 'OuterAttributeGroup')  # type: CdmAttributeGroupDefinition
-        inner_att_group = self.validate_attribute_group(outer_att_group.members, 'InnerAttributeGroup')
+        outer_att_group = ProjectionTestUtils.validate_attribute_group(self, resolved_entity.attributes, 'OuterAttributeGroup')  # type: CdmAttributeGroupDefinition
+        inner_att_group = ProjectionTestUtils.validate_attribute_group(self, outer_att_group.members, 'InnerAttributeGroup')
 
         self.assertEqual(5, len(inner_att_group.members))
         self.assertEqual('name', inner_att_group.members[0].name)
@@ -366,23 +364,8 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         self.assertEqual(5, len(resolved_entity.attributes))
         self.assertEqual('name', resolved_entity.attributes[0].name)
         self.assertEqual('age', resolved_entity.attributes[1].name)
-        att_group_definition = self.validate_attribute_group(resolved_entity.attributes, 'AddressAttributeGroup', 5, 2)
+        att_group_definition = ProjectionTestUtils.validate_attribute_group(self, resolved_entity.attributes, 'AddressAttributeGroup', 5, 2)
         self.assertEqual('address', att_group_definition.members[0].name)
         self.assertEqual('phoneNumber', resolved_entity.attributes[3].name)
         self.assertEqual('email', resolved_entity.attributes[4].name)
 
-    def validate_attribute_group(self, attributes: 'CdmCollection[CdmAttributeItem]', attribute_group_name: str, \
-                                 attributes_size: int = 1, index: int = 0) -> 'CdmAttributeGroupDefinition':
-        """Validates the creation of an attribute group and return its definition
-            @param attributes = The collection of attributes.
-            @param attribute_group_name = The attribute group name.
-            @param attributes_size = The expected size of the attributes collection."""
-        self.assertEqual(attributes_size, len(attributes))
-        self.assertEqual(CdmObjectType.ATTRIBUTE_GROUP_REF, attributes[index].object_type)
-        att_group_reference = attributes[index]  # type: CdmAttributeGroupReference
-        self.assertIsNotNone(att_group_reference.explicit_reference)
-
-        att_group_definition = att_group_reference.explicit_reference  # type: CdmAttributeGroupDefinition
-        self.assertEqual(attribute_group_name, att_group_definition.attribute_group_name)
-
-        return att_group_definition

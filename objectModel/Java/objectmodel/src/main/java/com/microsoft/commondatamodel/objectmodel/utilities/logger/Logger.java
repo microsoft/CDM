@@ -160,6 +160,9 @@ public class Logger {
    */
   private static void log(CdmStatusLevel level, CdmCorpusContext ctx, String classname, String message, String method,
       Consumer<String> defaultStatusEvent, String corpuspath, CdmLogCode code) {
+    if (ctx.getSuppressedLogCodes().contains(code))
+      return;
+
     // Write message to the configured logger
 
     // Store a record of the event.
@@ -178,11 +181,11 @@ public class Logger {
       }
 
       if (ctx.getCorrelationId() != null) {
-        theEvent.put("correlationId", ctx.getCorrelationId());
+        theEvent.put("cid", ctx.getCorrelationId());
       }
 
       if (corpuspath != null) {
-        theEvent.put("corpuspath", corpuspath);
+        theEvent.put("path", corpuspath);
       }
 
       ctx.getEvents().add(theEvent);

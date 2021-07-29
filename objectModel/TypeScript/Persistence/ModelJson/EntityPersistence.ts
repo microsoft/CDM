@@ -42,7 +42,7 @@ export class EntityPersistence {
                 if (typeAttribute !== undefined) {
                     entity.attributes.push(typeAttribute);
                 } else {
-                    Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonAttrConversionFailure);
+                    Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonToAttrConversionFailure);
                     return undefined;
                 }
             }
@@ -83,7 +83,7 @@ export class EntityPersistence {
             result.attributes = [];
             for (const element of instance.attributes.allItems) {
                 if (element.objectType !== cdmObjectType.typeAttributeDef) {
-                    Logger.error(ctx, this.TAG, this.toData.name, null, cdmLogCode.ErrPersistManifestSavingFailure);
+                    Logger.error(ctx, this.TAG, this.toData.name, null, cdmLogCode.ErrPersistModelJsonEntityAttrError);
                     return undefined;
                 }
 
@@ -92,7 +92,7 @@ export class EntityPersistence {
                 if (attribute !== undefined) {
                     result.attributes.push(attribute);
                 } else {
-                    Logger.error(ctx, this.TAG, this.toData.name, null, cdmLogCode.ErrPersistModelJsonAttrConversionFailure);
+                    Logger.error(ctx, this.TAG, this.toData.name, null, cdmLogCode.ErrPersistModelJsonFromAttrConversionFailure);
                     return undefined;
                 }
             }

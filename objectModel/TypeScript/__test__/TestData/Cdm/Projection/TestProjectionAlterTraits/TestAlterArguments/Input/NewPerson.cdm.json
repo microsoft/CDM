@@ -1,0 +1,63 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        },
+        {
+            "corpusPath": "traitGroup:/TraitGroup.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "NewPerson",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "PersonInfo",
+                    "entity": {
+                        "source": "Person",
+                        "operations": [
+                            {
+                                "$type": "alterTraits",
+                                "condition": "structured",
+                                "traitsToAdd": [
+                                    {
+                                        "traitReference": "means.TraitG4",
+                                        "arguments": [
+                                            "6",
+                                            {
+                                                "name": "scale",
+                                                "value": "20"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "applyTo": [
+                                    "address"
+                                ]
+                            },
+                            {
+                                "$type": "alterTraits",
+                                "condition": "normalized",
+                                "traitsToAdd": [
+                                    {
+                                        "traitReference": "means.TraitG4",
+                                        "arguments": [
+                                            "8",
+                                            null
+                                        ]
+                                    }
+                                ],
+                                "applyTo": [
+                                    "address"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

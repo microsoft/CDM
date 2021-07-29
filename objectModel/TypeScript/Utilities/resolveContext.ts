@@ -5,6 +5,7 @@ import { CdmCorpusContext } from '../Cdm/CdmCorpusContext';
 import {
     CdmCorpusDefinition,
     CdmDocumentDefinition,
+    cdmLogCode,
     CdmObjectBase,
     cdmStatusLevel,
     CdmTraitDefinition,
@@ -26,6 +27,7 @@ export class resolveContext implements CdmCorpusContext {
     public reportAtLevel: cdmStatusLevel;
     public statusEvent: EventCallback;
     public events: EventList;
+    public suppressedLogCodes: Set<cdmLogCode>;
     public correlationId: string;
     public currentDoc?: CdmDocumentDefinition;
     /**
@@ -42,6 +44,7 @@ export class resolveContext implements CdmCorpusContext {
         this.reportAtLevel = reportAtLevel !== undefined ? reportAtLevel : cdmStatusLevel.warning;
         this.statusEvent = statusEvent;
         this.events = new EventList();
+        this.suppressedLogCodes = new Set<cdmLogCode>();
         this.cache = new Map<string, any>();
         this.corpus = corpus;
     }

@@ -53,6 +53,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             RegisteredClasses.Register<CdmOperationReplaceAsForeignKey, OperationReplaceAsForeignKeyPersistence>();
             RegisteredClasses.Register<CdmOperationIncludeAttributes, OperationIncludeAttributesPersistence>();
             RegisteredClasses.Register<CdmOperationAddAttributeGroup, OperationAddAttributeGroupPersistence>();
+            RegisteredClasses.Register<CdmOperationAlterTraits, OperationAlterTraitsPersistence>();
+            RegisteredClasses.Register<CdmOperationAddArtifactAttribute, OperationAddArtifactAttributePersistence>();
         }
     }
 }

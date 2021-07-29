@@ -209,7 +209,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                             continue
 
                         if not reqd_trait.parameter_values:
-                            logger.warning(self.ctx, self._TAG,  CdmEntityAttributeDefinition._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.WARN_IDENTIFIER_ARGUMENTS_NOT_SUPPORTED)
+                            logger.warning(self.ctx, self._TAG,  CdmEntityAttributeDefinition._construct_resolved_attributes.__name__, self.at_corpus_path, CdmLogCode.WARN_LINK_ENT_IDENT_ARGS_NOT_SUPPORTED)
                             continue
 
                         ent_references = []
@@ -231,9 +231,9 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                             if atts_pick:
                                 for attribute in atts_pick:
                                     if attribute.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
-                                        add_entity_reference(attribute.entity, self.in_document.namespace)
+                                        add_entity_reference(attribute.entity, self.in_document._namespace)
                         else:
-                            add_entity_reference(self.entity, self.in_document.namespace)
+                            add_entity_reference(self.entity, self.in_document._namespace)
 
                         c_ent = self.ctx.corpus.make_object(CdmObjectType.CONSTANT_ENTITY_DEF)
                         c_ent.entity_shape = self.ctx.corpus.make_ref(CdmObjectType.ENTITY_REF, 'entityGroupSet', True)

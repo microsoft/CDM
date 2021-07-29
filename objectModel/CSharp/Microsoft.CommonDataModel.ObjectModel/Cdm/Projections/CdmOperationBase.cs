@@ -40,6 +40,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public abstract override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null);
 
+        internal CdmOperationBase CopyProj(ResolveOptions resOpt, CdmOperationBase copy)
+        {
+            copy.Index = this.Index;
+            copy.Condition = this.Condition;
+            copy.SourceInput = this.SourceInput;
+
+            this.CopyDef(resOpt, copy);
+            return copy;
+        }
+
         /// <inheritdoc />
         [Obsolete("CopyData is deprecated. Please use the Persistence Layer instead.")]
         public abstract override dynamic CopyData(ResolveOptions resOpt = null, CopyOptions options = null);
@@ -67,7 +77,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// A function to cumulate the projection attribute states
         /// </summary>
         /// <param name="projCtx"></param>
-        /// <param name="projAttrStateList"></param>
+        /// <param name="projAttrStateSet"></param>
         /// <param name="attrCtx"></param>
         /// <returns></returns>
         internal abstract ProjectionAttributeStateSet AppendProjectionAttributeState(
@@ -119,8 +129,75 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 newResAttr.ResolvedTraits = resTraitSet.DeepCopy();
             }
+            
 
             return newResAttr;
+        }
+
+        /// <summary>
+        /// Projections require a new resolved attribute to be created multiple times
+        /// This function allows us to create new resolved attributes based on a input attribute
+        /// </summary>
+        /// <param name="projCtx"></param>
+        /// <param name="attrCtxUnder"></param>
+        /// <param name="oldResolvedAttribute">
+        /// For some attributes obtained from the previous projection operation, they may have a different set of traits comparing to the resolved attribute target. 
+        /// We would want to take the set of traits from the resolved attribute.
+        /// </param>
+        /// <param name="overrideDefaultName"></param>
+        /// <param name="addedSimpleRefTraits"></param>
+        /// <returns></returns>
+        internal static ResolvedAttribute CreateNewResolvedAttribute(
+            ProjectionContext projCtx,
+            CdmAttributeContext attrCtxUnder,
+            ResolvedAttribute oldResolvedAttribute,
+            string overrideDefaultName = null,
+            List<string> addedSimpleRefTraits = null)
+        {
+            var targetAttr = oldResolvedAttribute.Target.Copy() as CdmAttribute;
+
+            ResolvedAttribute newResAttr = new ResolvedAttribute(
+                projCtx.ProjectionDirective.ResOpt,
+                targetAttr,
+                !string.IsNullOrWhiteSpace(overrideDefaultName) ? overrideDefaultName : targetAttr.GetName(), attrCtxUnder);
+
+            targetAttr.InDocument = projCtx.ProjectionDirective.Owner.InDocument;
+
+            newResAttr.ResolvedTraits = oldResolvedAttribute.ResolvedTraits.DeepCopy();
+
+            if (addedSimpleRefTraits != null)
+            {
+                foreach (string trait in addedSimpleRefTraits)
+                {
+                    var tr = new CdmTraitReference(targetAttr.Ctx, trait, true, false);
+                    newResAttr.ResolvedTraits = newResAttr.ResolvedTraits.MergeSet(tr.FetchResolvedTraits());
+                }
+            }
+            
+
+            return newResAttr;
+        }
+
+        /// <summary>
+        /// Replace the wildcard character. {a/A} will be replaced with the current attribute name. {m/M} will be replaced with the entity attribute name. {o} will be replaced with the index of the attribute after an array expansion
+        /// </summary>
+        /// <param name="format">The original text.</param>
+        /// <param name="baseAttributeName">The entity attribute name, it may be empty string if it's not avaialble (type attribute).</param>
+        /// <param name="ordinal">The ordinal number, it may be empty string if it's not available (not expanded).</param>
+        /// <param name="memberAttributeName">The current attribute name, It may be empty string if the source is a ResolvedAttributeSet.</param>
+        /// <returns></returns>
+        internal static string ReplaceWildcardCharacters(string format, string baseAttributeName, string ordinal, string memberAttributeName)
+        {
+            if (string.IsNullOrEmpty(format))
+            {
+                return "";
+            }
+
+            string attributeName = StringUtils.Replace(format, 'a', baseAttributeName);
+            attributeName = StringUtils.Replace(attributeName, 'o', ordinal);
+            attributeName = StringUtils.Replace(attributeName, 'm', memberAttributeName);
+
+            return attributeName;
         }
     }
 }

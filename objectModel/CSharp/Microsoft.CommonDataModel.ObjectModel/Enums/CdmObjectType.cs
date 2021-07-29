@@ -47,6 +47,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         OperationReplaceAsForeignKeyDef,
         OperationIncludeAttributesDef,
         OperationAddAttributeGroupDef,
+        OperationAlterTraitsDef,
+        OperationAddArtifactAttributeDef,
         ProjectionDef
     }
 
@@ -77,6 +79,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         AttributeGroup,
         GeneratedSet,
         GeneratedRound,
+        AddedAttributeNewArtifact,
         AddedAttributeSupporting,
         AddedAttributeIdentity,
         AddedAttributeSelectedType,
@@ -95,6 +98,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         OperationReplaceAsForeignKey,
         OperationIncludeAttributes,
         OperationAddAttributeGroup,
+        OperationAlterTraits,
+        OperationAddArtifactAttribute,
         Unknown
     }
 }

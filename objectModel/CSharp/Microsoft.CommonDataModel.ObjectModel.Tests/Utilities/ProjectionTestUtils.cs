@@ -209,6 +209,45 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         }
 
         /// <summary>
+        /// Validates trait "has.expansionInfo.list" for array type.
+        /// </summary>
+        /// <param name="attribute">The type attribute.</param>
+        /// <param name="expectedAttrName">The expected attribute name.</param>
+        /// <param name="ordinal">The expected ordinal.</param>
+        /// <param name="expansionName">The expected expansion name.</param>
+        /// <param name="memberAttribute">The expected member attribute name.</param>
+        /// <returns></returns>
+        public static void ValidateExpansionInfoTrait(CdmTypeAttributeDefinition attribute, string expectedAttrName, int ordinal, string expansionName, string memberAttribute)
+        {
+            Assert.AreEqual(expectedAttrName, attribute.Name);
+            CdmTraitReference trait = (CdmTraitReference) attribute.AppliedTraits.Item("has.expansionInfo.list");
+            Assert.IsNotNull(trait);
+            Assert.AreEqual(trait.Arguments.FetchValue("expansionName"), expansionName);
+            Assert.AreEqual(trait.Arguments.FetchValue("ordinal"), ordinal.ToString());
+            Assert.AreEqual(trait.Arguments.FetchValue("memberAttribute"), memberAttribute);
+        }
+
+        /// <summary>
+        /// Validates the creation of an attribute group and return its definition
+        /// </summary>
+        /// <param name="attributes">The collection of attributes.</param>
+        /// <param name="attributeGroupName">The attribute group name.</param>
+        /// <param name="attributesSize">The expected size of the attributes collection.</param>
+        /// <returns></returns>
+        public static CdmAttributeGroupDefinition ValidateAttributeGroup(CdmCollection<CdmAttributeItem> attributes, string attributeGroupName, int attributesSize = 1, int index = 0)
+        {
+            Assert.AreEqual(attributesSize, attributes.Count);
+            Assert.AreEqual(CdmObjectType.AttributeGroupRef, attributes[index].ObjectType);
+            CdmAttributeGroupReference attGroupReference = attributes[index] as CdmAttributeGroupReference;
+            Assert.IsNotNull(attGroupReference.ExplicitReference);
+
+            CdmAttributeGroupDefinition attGroupDefinition = attGroupReference.ExplicitReference as CdmAttributeGroupDefinition;
+            Assert.AreEqual(attributeGroupName, attGroupDefinition.AttributeGroupName);
+
+            return attGroupDefinition;
+        }
+
+        /// <summary>
         /// Validates if the attribute context of the resolved entity matches the expected output.
         /// </summary>
         /// <param name="directives"></param>

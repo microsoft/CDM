@@ -86,6 +86,15 @@ class ResolvedTraitSet:
 
         return None
 
+    def remove(self, res_opt: 'ResolveOptions', trait_name: str) -> bool:
+        rt = self.find(res_opt, trait_name)
+        if rt is not None:
+            self.lookup_by_trait.pop(rt.trait)
+            self.rt_set.remove(rt)
+            return True
+
+        return False
+
     def deep_copy(self) -> 'ResolvedTraitSet':
         copy = ResolvedTraitSet(self.res_opt)
 
@@ -135,9 +144,7 @@ class ResolvedTraitSet:
             # Get the value index from the parameter collection given the parameter that this argument is setting.
             param_def = arg._get_parameter_def()
             if param_def is not None:
-                i_param = res_trait.parameter_values.index_of(param_def)
-                av[i_param] = ParameterValue.fetch_replacement_value(self.res_opt, av[i_param], new_val, True)
-                res_trait.parameter_values.was_set[i_param] = True
+                res_trait.parameter_values.update_parameter_value(self.res_opt, param_def.get_name(), new_val)
             else:
                 # debug
                 param_def = arg._get_parameter_def()

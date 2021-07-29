@@ -29,10 +29,6 @@ class LocalEntityDeclarationPersistence:
         local_extension_trait_def_list = []  # type: List[CdmTraitDefinition]
         entity_doc = await DocumentPersistence.from_data(ctx, data, extension_trait_def_list, local_extension_trait_def_list)
 
-        if not entity_doc:
-            logger.error(ctx, _TAG, "from_data", None, CdmLogCode.ERR_PERSIST_DOC_FETCH_ERROR)
-            return None
-
         document_folder.documents.append(entity_doc)
 
         # Entity schema path is the path to the doc containing the entity definition.

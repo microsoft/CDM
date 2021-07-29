@@ -151,7 +151,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             if (missingFields.Count > 0)
             {
-                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) => $"'{s}'")));
                 return false;
             }
             if (Cardinality != null)
@@ -396,7 +396,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                                 if (reqdTrait.ParameterValues == null || reqdTrait.ParameterValues.Length == 0)
                                 {
-                                    Logger.Warning(this.Ctx as ResolveContext, Tag, nameof(ConstructResolvedAttributes), this.AtCorpusPath, CdmLogCode.WarnIdentifierArgumentsNotSupported);
+                                    Logger.Warning(this.Ctx as ResolveContext, Tag, nameof(ConstructResolvedAttributes), this.AtCorpusPath, CdmLogCode.WarnLinkEntIdentArgsNotSupported, att.DisplayName, this.Entity.NamedReference);
                                     continue;
                                 }
 

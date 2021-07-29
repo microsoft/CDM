@@ -67,7 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
         /// <param name="cdmRequest">The CDM Http request.</param>
         /// <param name="callback">The callback that gets executed after the request finishes.</param>
         /// <returns>The <see cref="Task"/>, representing CDM Http response.</returns>
-        internal async Task<CdmHttpResponse> SendAsync(CdmHttpRequest cdmRequest, Callback callback = null, CdmCorpusContext ctx = null)
+        public async Task<CdmHttpResponse> SendAsync(CdmHttpRequest cdmRequest, Callback callback = null, CdmCorpusContext ctx = null)
         {
             // Merge headers first.
             foreach (var item in this.Headers)

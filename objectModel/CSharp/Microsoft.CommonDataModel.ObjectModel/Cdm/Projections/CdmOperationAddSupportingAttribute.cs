@@ -31,7 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             CdmOperationAddSupportingAttribute copy = new CdmOperationAddSupportingAttribute(this.Ctx)
             {
-                SupportingAttribute = this.SupportingAttribute?.Copy() as CdmTypeAttributeDefinition
+                SupportingAttribute = this.SupportingAttribute?.Copy(resOpt) as CdmTypeAttributeDefinition
             };
             return copy;
         }

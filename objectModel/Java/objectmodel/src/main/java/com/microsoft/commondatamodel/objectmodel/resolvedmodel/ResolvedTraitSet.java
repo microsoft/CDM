@@ -99,7 +99,7 @@ public class ResolvedTraitSet {
     return traitSetResult;
   }
 
-  ResolvedTraitSet mergeSet(final ResolvedTraitSet toMerge) {
+  public ResolvedTraitSet mergeSet(final ResolvedTraitSet toMerge) {
     return mergeSet(toMerge, false);
   }
 
@@ -143,6 +143,22 @@ public class ResolvedTraitSet {
     }
 
     return null;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public boolean remove(ResolveOptions resOpt, String traitName) {
+    ResolvedTrait rt = this.find(resOpt, traitName);
+    if (rt != null) {
+      this.lookupByTrait.remove(rt.getTrait());
+      this.set.remove(rt);
+      return true;
+    }
+
+    return false;
   }
 
   public ResolvedTraitSet deepCopy() {
@@ -216,9 +232,7 @@ public class ResolvedTraitSet {
       // get the value index from the parameter collection given the parameter that this argument is setting
       CdmParameterDefinition paramDef = arg.getParameterDef();
       if (paramDef != null) {
-        int iParam = resTrait.getParameterValues().indexOf(paramDef);
-        av.set(iParam, ParameterValue.fetchReplacementValue(resOpt, av.get(iParam), newVal, true));
-        resTrait.getParameterValues().getWasSet().set(iParam, true);
+        resTrait.getParameterValues().setParameterValue(this.getResOpt(), paramDef.getName(), newVal);
       } else {
         // debug
         paramDef = arg.getParameterDef();

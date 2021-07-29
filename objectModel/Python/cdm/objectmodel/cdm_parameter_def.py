@@ -45,6 +45,9 @@ class CdmParameterDefinition(CdmObjectSimple):
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.PARAMETER_DEF
 
+    def get_name(self) -> str:
+        return self.name
+
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmParameterDefinition'] = None) -> 'CdmParameterDefinition':
         if not res_opt:
             res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)

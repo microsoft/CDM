@@ -87,7 +87,7 @@ async def list_all_resolved(corpus, directives, manifest, spew):
 
     async def seek_entities(f: 'CdmManifestDefinition'):
         if f.entities is not None:
-            spew.spew_line(f.folder_path)
+            spew.spew_line(f._folder_path)
 
             for entity in f.entities:
                 ent = entity

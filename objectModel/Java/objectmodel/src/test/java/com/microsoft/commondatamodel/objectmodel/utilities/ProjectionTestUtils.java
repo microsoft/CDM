@@ -130,6 +130,49 @@ public class ProjectionTestUtils {
         return CompletableFuture.completedFuture(resolvedEntity);
     }
 
+    public static CdmAttributeGroupDefinition validateAttributeGroup(CdmCollection<CdmAttributeItem> attributes, String attributeGroupName) {
+        return validateAttributeGroup(attributes, attributeGroupName, 1, 0);
+    }
+
+    public static CdmAttributeGroupDefinition validateAttributeGroup(CdmCollection<CdmAttributeItem> attributes, String attributeGroupName, int attributesSize) {
+        return validateAttributeGroup(attributes, attributeGroupName, attributesSize, 0);
+    }
+
+    /**
+     * Validates the creation of an attribute group and return its definition
+     * @param attributes The collection of attributes
+     * @param attributeGroupName The attribute group name
+     * @param attributesSize The expected size of the attributes collection
+     */
+    public static CdmAttributeGroupDefinition validateAttributeGroup(CdmCollection<CdmAttributeItem> attributes, String attributeGroupName, int attributesSize, int index) {
+        Assert.assertEquals(attributesSize, attributes.getCount());
+        Assert.assertEquals(CdmObjectType.AttributeGroupRef, attributes.get(index).getObjectType());
+        CdmAttributeGroupReference attGroupReference = (CdmAttributeGroupReference) attributes.get(index);
+        Assert.assertNotNull(attGroupReference.getExplicitReference());
+
+        CdmAttributeGroupDefinition attGroupDefinition = (CdmAttributeGroupDefinition) attGroupReference.getExplicitReference();
+        Assert.assertEquals(attributeGroupName, attGroupDefinition.getAttributeGroupName());
+
+        return attGroupDefinition;
+    }
+
+    /**
+     * Validates trait "has.expansionInfo.list" for array type.
+     * @param attribute The type attribute.
+     * @param expectedAttrName The expected attribute name.
+     * @param ordinal The expected ordinal.
+     * @param expansionName The expected expansion name.
+     * @param memberAttribute The expected member attribute name.
+     */
+    public static void validateExpansionInfoTrait(CdmTypeAttributeDefinition attribute, String expectedAttrName, int ordinal, String expansionName, String memberAttribute) {
+        Assert.assertEquals(expectedAttrName, attribute.getName());
+        CdmTraitReference trait = (CdmTraitReference) attribute.getAppliedTraits().item("has.expansionInfo.list");
+        Assert.assertNotNull(trait);
+        Assert.assertEquals(trait.getArguments().fetchValue("expansionName"), expansionName);
+        Assert.assertEquals(trait.getArguments().fetchValue("ordinal"), String.valueOf(ordinal));
+        Assert.assertEquals(trait.getArguments().fetchValue("memberAttribute"), memberAttribute);
+    }
+
     /**
      * Validates if the attribute context of the resolved entity matches the expected output.
      * @see ProjectionTestUtils#validateAttributeContext(List, String, String, CdmEntityDefinition, boolean)
@@ -186,7 +229,7 @@ public class ProjectionTestUtils {
                     actualFileWriter.write(actualText);
                     actualFileWriter.flush();
                 }
-                resolvedEntity.getInDocument().saveAsAsync("Resolved_" + entityName + ".cdm.json", false).join();
+                resolvedEntity.getInDocument().saveAsAsync("Resolved_" + entityName + fileNameSuffix + ".cdm.json", false).join();
 
                 // Expected
                 String expectedFileNameSuffix = getResolutionOptionNameSuffix(directives);

@@ -131,7 +131,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 CdmObject ent = this.Ctx.Corpus.ResolveSymbolReference(resOpt, this.InDocument, entName, CdmObjectType.EntityDef, retry: true);
                 if (ent == null)
                 {
-                    Logger.Warning(ctx, Tag, nameof(FetchResolvedReference), this.AtCorpusPath, CdmLogCode.WarnResolveEntityFailed ,entName, this.NamedReference);
+                    Logger.Warning(ctx, Tag, nameof(FetchResolvedReference), this.AtCorpusPath, CdmLogCode.WarnResolveEntityFailed, entName, this.NamedReference);
                     return null;
                 }
 

@@ -68,19 +68,18 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # the document folder.
         self.folder = None  # type: Optional[CdmFolderDefinition]
 
-        # The namespace where this object can be found
-        self.namespace = None  # type: Optional[str]
+        # --- internal ---
 
-        # The folder where this object exists
-        self.folder_path = None  # type: Optional[str]
-
-        # internal
         self._currently_indexing = False
         self._declarations_indexed = False
         self._file_system_modified_time = None  # type: Optional[datetime]
+        # The folder where this object exists
+        self._folder_path = None  # type: Optional[str]
         self._imports_indexed = False
         self._import_priorities = None  # type: Optional[ImportPriorities]
         self._is_dirty = True  # type: bool
+        # The namespace where this object can be found
+        self._namespace = None  # type: Optional[str]
         self._needs_indexing = True
         self._imports = CdmImportCollection(self.ctx, self)
         self._definitions = CdmDefinitionCollection(self.ctx, self)
@@ -94,6 +93,16 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             return 'NULL:/{}'.format(self.name)
 
         return self.folder.at_corpus_path + self.name
+
+    @property
+    def folder_path(self) -> str:
+        warnings.warn('This property is likely to be removed soon.\nUse doc.owner._folder_path instead.', DeprecationWarning)
+        return self._folder_path
+
+    @property
+    def namespace(self) -> str:
+        warnings.warn('This property is likely to be removed soon.\nUse doc.owner.namespace instead.', DeprecationWarning)
+        return self._namespace
 
     @property
     def imports(self) -> 'CdmImportCollection':
@@ -138,7 +147,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
         copy.in_document = copy
         copy._is_dirty = True
-        copy.folder_path = self.folder_path
+        copy._folder_path = self._folder_path
         copy.schema = self.schema
         copy.json_schema_semantic_version = self.json_schema_semantic_version
         copy.document_version = self.document_version

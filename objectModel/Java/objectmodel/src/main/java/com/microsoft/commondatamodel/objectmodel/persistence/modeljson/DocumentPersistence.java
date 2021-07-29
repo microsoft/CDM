@@ -51,7 +51,7 @@ public class DocumentPersistence {
               localExtensionTraitDefList)
               .join();
       if (entity == null) {
-        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistModelJsonEntityConversionError);
+        Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistModelJsonEntityConversionError, obj.getName());
         return null;
       }
 

@@ -21,6 +21,8 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.pro
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.OperationIncludeAttributes;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.OperationRenameAttributes;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.OperationReplaceAsForeignKey;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.OperationAlterTraits;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.OperationAddArtifactAttribute;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -39,7 +41,7 @@ public class OperationBasePersistence {
     String operationName = OperationTypeConvertor.operationTypeToString(operationType);
 
     if (obj.get("$type") != null && !StringUtils.equalsWithIgnoreCase(obj.get("$type").asText(), operationName)) {
-      Logger.error(ctx, TAG, "fromData", operation.getAtCorpusPath(), CdmLogCode.ErrPersistProjInvalidType, obj.get("$type").toString());
+      Logger.error(ctx, TAG, "fromData", operation.getAtCorpusPath(), CdmLogCode.ErrPersistProjInvalidOpsType, obj.get("$type").toString());
     } else {
         operation.setType(operationType);
     }
@@ -108,6 +110,12 @@ public class OperationBasePersistence {
         break;
       case OperationReplaceAsForeignKeyDef:
         obj = new OperationReplaceAsForeignKey();
+        break;
+      case OperationAlterTraitsDef:
+        obj = new OperationAlterTraits();
+        break;
+      case OperationAddArtifactAttributeDef:
+        obj = new OperationAddArtifactAttribute();
         break;
       default:
         return null;

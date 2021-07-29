@@ -115,18 +115,18 @@ class ManifestPersistence:
                 location = reference_models.get(reference_entity.modelId)
 
                 if not location:
-                    logger.error(ctx, _TAG, "from_object", None, CdmLogCode.ERR_PERSIST_MODEL_ID_NOT_FOUND, reference_entity.modelId, reference_entity.name)
+                    logger.error(ctx, _TAG, "from_object", None, CdmLogCode.ERR_PERSIST_MODELJSON_MODEL_ID_NOT_FOUND, reference_entity.modelId, reference_entity.name)
                     return None
 
                 entity = await ReferencedEntityDeclarationPersistence.from_data(ctx, reference_entity, location)
             else:
-                logger.error(ctx, _TAG, 'from_object', None, CdmLogCode.ERR_PERSIST_ENTITY_PARSING_ERROR)
+                logger.error(ctx, _TAG, 'from_object', None, CdmLogCode.ERR_PERSIST_MODELJSON_ENTITY_PARSING_ERROR)
 
             if entity:
                 manifest.entities.append(entity)
                 entity_schema_by_name[entity.entity_name] = entity.entity_path
             else:
-                logger.error(ctx, _TAG, 'from_object', None, CdmLogCode.ERR_PERSIST_ENTITY_PARSING_ERROR)
+                logger.error(ctx, _TAG, 'from_object', None, CdmLogCode.ERR_PERSIST_MODELJSON_ENTITY_PARSING_ERROR)
 
         if obj.get('relationships'):
             for relationship in obj.get('relationships'):
@@ -206,7 +206,7 @@ class ManifestPersistence:
                     location = instance.ctx.corpus.storage.corpus_path_to_adapter_path(entity.entity_path)
 
                     if not location:
-                        logger.error(instance.ctx, _TAG,'to_data', instance.at_corpus_path, CdmLogCode.ERR_PERSIST_INVALID_ENTITY_PATH, entity.entity_name)
+                        logger.error(instance.ctx, _TAG,'to_data', instance.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_INVALID_ENTITY_PATH, entity.entity_name)
                         element = None
 
                     reference_entity = element  # type: ReferenceEntity
@@ -219,7 +219,7 @@ class ManifestPersistence:
                         if reference_entity.modelId:
                             saved_location = reference_models.get(reference_entity.modelId)
                             if saved_location is not None and saved_location != location:
-                                logger.error(instance.ctx, 'to_data', instance.at_corpus_path, _TAG, CdmLogCode.ERR_PERSIST_MODEL_ID_DUPLICATION)
+                                logger.error(instance.ctx, 'to_data', instance.at_corpus_path, _TAG, CdmLogCode.ERR_PERSIST_MODELJSON_MODEL_ID_DUPLICATION)
                                 element = None
                             elif saved_location is None:
                                 reference_models[reference_entity.modelId] = location
@@ -250,9 +250,6 @@ class ManifestPersistence:
                 relationship = await RelationshipPersistence.to_data(cdm_relationship, res_opt, options, instance.ctx)
                 if relationship is not None:
                     result.relationships.append(relationship)
-                else:
-                    logger.error(instance.ctx, 'to_data', instance.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_REL_CONVERSION_ERROR)
-                    return None
 
         if instance.imports:
             result.imports = []

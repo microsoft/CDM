@@ -4,7 +4,6 @@
 package com.microsoft.commondatamodel.objectmodel.utilities.network;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageManager;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;

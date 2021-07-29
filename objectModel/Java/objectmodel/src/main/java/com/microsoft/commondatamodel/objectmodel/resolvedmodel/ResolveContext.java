@@ -7,12 +7,14 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveContextScope;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.EventList;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -28,6 +30,7 @@ public class ResolveContext implements CdmCorpusContext {
   private CdmStatusLevel reportAtLevel;
   private EventCallback statusEvent;
   private EventList events;
+  private HashSet<CdmLogCode> suppressedLogCodes;
   private String correlationId;
 
   public ResolveContext(final CdmCorpusDefinition corpus) {
@@ -44,6 +47,7 @@ public class ResolveContext implements CdmCorpusContext {
     this.cache = new LinkedHashMap<>();
     this.corpus = corpus;
     this.events = new EventList();
+    this.suppressedLogCodes = new HashSet<CdmLogCode>();
   }
 
   @Override
@@ -77,6 +81,11 @@ public class ResolveContext implements CdmCorpusContext {
   @Override
   public EventList getEvents() {
     return events;
+  }
+
+  @Override
+  public HashSet<CdmLogCode> getSuppressedLogCodes() {
+    return suppressedLogCodes;
   }
 
   @Override

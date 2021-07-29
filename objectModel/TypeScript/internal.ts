@@ -127,6 +127,8 @@ export * from './Cdm/Projections/CdmOperationRenameAttributes';
 export * from './Cdm/Projections/CdmOperationReplaceAsForeignKey';
 export * from './Cdm/Projections/CdmOperationIncludeAttributes';
 export * from './Cdm/Projections/CdmOperationAddAttributeGroup';
+export * from './Cdm/Projections/CdmOperationAlterTraits';
+export * from './Cdm/Projections/CdmOperationAddArtifactAttribute';
 export * from './Cdm/Projections/CdmProjection';
 export * from './Enums/cdmOperationType';
 export * from './Cdm/Projections/CdmOperationCollection';

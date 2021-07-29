@@ -163,7 +163,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         string newAttributeName = GetNewAttributeName(currentPAS, sourceAttributeName);
 
                         // Create new resolved attribute with the new name, set the new attribute as target
-                        ResolvedAttribute resAttrNew = CreateNewResolvedAttribute(projCtx, null, currentPAS.CurrentResolvedAttribute.Target, newAttributeName);
+                        ResolvedAttribute resAttrNew = CreateNewResolvedAttribute(projCtx, null, currentPAS.CurrentResolvedAttribute, newAttributeName);
 
                         // Get the attribute name the way it appears in the applyTo list
                         string applyToName = topLevelRenameAttributeNames[currentPAS.CurrentResolvedAttribute.ResolvedName];
@@ -223,11 +223,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return "";
             }
 
-            string attributeName = StringUtils.Replace(format, 'a', sourceAttributeName);
-            attributeName = StringUtils.Replace(attributeName, 'o', ordinal);
-            attributeName = StringUtils.Replace(attributeName, 'm', currentAttributeName);
-
-            return attributeName;
+            return ReplaceWildcardCharacters(format, sourceAttributeName, ordinal, currentAttributeName);
         }
     }
 }

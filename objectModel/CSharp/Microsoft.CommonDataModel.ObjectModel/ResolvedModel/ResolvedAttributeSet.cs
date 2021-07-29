@@ -5,7 +5,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;

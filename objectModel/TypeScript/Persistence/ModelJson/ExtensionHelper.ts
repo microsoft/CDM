@@ -78,7 +78,7 @@ export async function standardImportDetection(
     for (let traitIndex: number = localExtensionTraitDefList.length - 1; traitIndex >= 0; traitIndex--) {
         const extensionTraitDef: CdmTraitDefinition = localExtensionTraitDefList[traitIndex];
         if (!traitDefIsExtension(extensionTraitDef)) {
-            Logger.error(this.ctx, this.TAG, this.standardImportDetection.name, null, cdmLogCode.ErrPersistInvalidExtensionTrait, extensionTraitDef.traitName, extensionTraitNamePrefix);
+            Logger.error(this.ctx, this.TAG, this.standardImportDetection.name, null, cdmLogCode.ErrPersistModelJsonInvalidExtensionTrait, extensionTraitDef.traitName, extensionTraitNamePrefix);
             return undefined;
         }
 

@@ -49,7 +49,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             // Test fetching an object from invalid namespace results in at least one error message in the recorder
             _ = await corpus.FetchObjectAsync<CdmDocumentDefinition>("foo:/bar");
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNamespaceNotRegistered);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNamespaceNotRegistered, true);
 
             // Test fetching a good object, this should leave event recorder empty
             _ = await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/default.manifest.cdm.json");
@@ -59,23 +59,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             var manifest = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "dummy");
             await manifest.SaveAsAsync("foo:/bar", true);
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrValdnMissingDoc);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrValdnMissingDoc,true);
 
             // Test resolving a manifest not added to a folder, this should yield at least one error message in the recorder
             await manifest.CreateResolvedManifestAsync("new dummy", null);
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveManifestFailed);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveManifestFailed, true);
 
             // Test resolving an entity without WRT doc, this should yield at least one error message in the recorder
             var entity2 = corpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, "MyEntity2");
             await entity2.CreateResolvedEntityAsync("MyEntity2-Resolved");
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrDocWrtDocNotfound);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrDocWrtDocNotfound, true);
 
             // Test invoking FileStatusCheckAsync on the manifest, this should yield at least one error message in the recorder
             await manifest.FileStatusCheckAsync();
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace, true);
 
             // Repeat the same test but with status level 'None', no events should be recorded
             corpus.Ctx.ReportAtLevel = CdmStatusLevel.None;
@@ -88,7 +88,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             var part = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "part");
             await part.FileStatusCheckAsync();
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath, true);
 
             // Test checking file status on a data partition pattern
             var refDoc = corpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, "RefEntDoc");
@@ -96,8 +96,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             partPattern.InDocument = refDoc;
             await partPattern.FileStatusCheckAsync();
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrDocAdapterNotFound);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullCorpusPath, true);
 
             // Test calculating relationships - no errors/warnings
             await corpus.CalculateEntityGraphAsync(manifest);
@@ -106,6 +105,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             // Test populating relationships in manifest - no errors/warnings
             await manifest.PopulateManifestRelationshipsAsync();
             TestBasicLogsState(corpus);
+
+            // Test filtering code logic 
+            corpus.Ctx.SuppressedLogCodes.Add(CdmLogCode.ErrPathNullObjectPath);
+            var part2 = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "part2");
+            await part2.FileStatusCheckAsync();
+
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath, false);
         }
 
         /// <summary>
@@ -137,7 +143,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             await manifest.CreateResolvedManifestAsync("new dummy 2", null);
 
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveReferenceFailure);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveReferenceFailure, true);
 
             // Keep for debugging
             //corpus.Ctx.Events.ForEach(logEntry => {
@@ -158,33 +164,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
 
             corpus.Storage.Mount("dummy", null);
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullAdapter);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullAdapter, true);
 
             corpus.Storage.Unmount("nothing");
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnStorageRemoveAdapterFailed);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnStorageRemoveAdapterFailed, true);
 
             // No errors/warnings expected here
             corpus.Storage.FetchRootFolder(null);
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNullNamespace, true);
 
             corpus.Storage.AdapterPathToCorpusPath("Test");
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidAdapterPath);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidAdapterPath, true);
 
             corpus.Storage.CorpusPathToAdapterPath("unknown:/Test");
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageAdapterNotFound);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNamespaceNotRegistered);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageAdapterNotFound, true);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageNamespaceNotRegistered, true);
 
             corpus.Storage.CreateAbsoluteCorpusPath(null);
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath, true);
 
             corpus.Storage.CreateRelativeCorpusPath(null);
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrPathNullObjectPath, true);
         }
 
         /// <summary>
@@ -206,8 +212,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             TestBasicLogsState(corpus);
             
             // Verify method on entry/exit event
-            Assert.IsTrue(corpus.Ctx.Events[0]["method"] == "FetchObjectAsync", "The first recorded event message should have specified scope method of 'FetchObjectAsync'");
-            Assert.IsTrue(corpus.Ctx.Events[corpus.Ctx.Events.Count - 1]["method"] == "FetchObjectAsync",
+            Assert.IsTrue(corpus.Ctx.Events[0]["method"] == "FetchObjectAsync<CdmDocumentDefinition>", "The first recorded event message should have specified scope method of 'FetchObjectAsync'");
+            Assert.IsTrue(corpus.Ctx.Events[corpus.Ctx.Events.Count - 1]["method"] == "FetchObjectAsync<CdmDocumentDefinition>",
                 "The last recorded event message should have specified scope method of 'FetchObjectAsync'");
 
             // Keep for debugging
@@ -245,7 +251,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             {
                 Assert.IsTrue(corpus.Ctx.Events.Count > 0, "There should have been at least one event recorded");
                 Assert.IsTrue(corpus.Ctx.Events[0].ContainsKey("timestamp"), "The recorded event should have had a timestamp key");
-                Assert.IsTrue(corpus.Ctx.Events[0]["correlationId"] == DummyCorrelationId, "The recorded event should have had a correlationId key with the dummy value");
+                Assert.IsTrue(corpus.Ctx.Events[0]["cid"] == DummyCorrelationId, "The recorded event should have had a correlationId key with the dummy value");
 
                 if (corpus.Ctx.ReportAtLevel == CdmStatusLevel.Progress)
                 {

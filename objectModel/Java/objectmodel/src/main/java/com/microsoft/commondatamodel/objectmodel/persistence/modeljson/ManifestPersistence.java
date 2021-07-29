@@ -161,7 +161,7 @@ public class ManifestPersistence {
         } else if ("ReferenceEntity".equals(type)) {
           final ReferenceEntity referenceEntity = (ReferenceEntity) element;
           if (!referenceModels.containsKey(referenceEntity.getModelId())) {
-            Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistModelIdNotFound, referenceEntity.getModelId(), referenceEntity.getName());
+            Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistModelJsonModelIdNotFound, referenceEntity.getModelId(), referenceEntity.getName());
             return CompletableFuture.completedFuture(null);
           }
           entity = ReferencedEntityDeclarationPersistence
@@ -170,7 +170,7 @@ public class ManifestPersistence {
                   referenceEntity,
                   referenceModels.get(referenceEntity.getModelId())).join();
         } else {
-          Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistEntityParsingError);
+          Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistModelJsonEntityParsingError);
         }
 
         if (entity != null) {
@@ -178,7 +178,7 @@ public class ManifestPersistence {
           manifest.getEntities().add(entity);
           entityPathByName.put(entity.getEntityName(), entity.getEntityPath());
         } else {
-          Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistEntityParsingError);
+          Logger.error(ctx, TAG, "fromObject", null, CdmLogCode.ErrPersistModelJsonEntityParsingError);
         }
       }
     }
@@ -353,7 +353,7 @@ public class ManifestPersistence {
                   );
 
               if (StringUtils.isNullOrEmpty(location)) {
-                Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistInvalidEntityPath);
+                Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonInvalidEntityPath);
                 element = null;
               }
 
@@ -368,7 +368,7 @@ public class ManifestPersistence {
                 if (referenceEntity.getModelId() != null) {
                   final String savedLocation = referenceModels.get(referenceEntity.getModelId());
                   if (savedLocation != null && !Objects.equals(savedLocation, location)) {
-                    Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelIdDuplication);
+                    Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonModelIdDuplication);
                     element = null;
                   } else if (savedLocation == null) {
                     referenceModels.put(referenceEntity.getModelId(), location);
@@ -425,8 +425,6 @@ public class ManifestPersistence {
 
           if (null != relationship) {
             result.getRelationships().add(relationship);
-          } else {
-            Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonRelConversionError);
           }
         });
       }

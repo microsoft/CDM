@@ -30,6 +30,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
             return argument;
         }
+
         public static dynamic ToData(CdmArgumentDefinition instance, ResolveOptions resOpt, CopyOptions options)
         {
             dynamic val = null;

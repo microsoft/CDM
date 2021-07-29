@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.*;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projections.*;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.OperationAlterTraits;
 import com.microsoft.commondatamodel.objectmodel.persistence.common.InterfaceToImpl;
 import com.microsoft.commondatamodel.objectmodel.persistence.common.PersistenceType;
 
@@ -55,6 +56,8 @@ public class CdmFolderType implements PersistenceType {
     registeredClasses.register(CdmOperationReplaceAsForeignKey.class, OperationReplaceAsForeignKeyPersistence.class);
     registeredClasses.register(CdmOperationIncludeAttributes.class, OperationIncludeAttributesPersistence.class);
     registeredClasses.register(CdmOperationAddAttributeGroup.class, OperationAddAttributeGroupPersistence.class);
+    registeredClasses.register(CdmOperationAlterTraits.class, OperationAlterTraits.class);
+    registeredClasses.register(CdmOperationAddArtifactAttribute.class, OperationAddArtifactAttributePersistence.class);
   }
 
   @Override

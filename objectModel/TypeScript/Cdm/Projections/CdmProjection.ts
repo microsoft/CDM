@@ -370,7 +370,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         resolvedAttributeSet.attributeContext = attCtxUnder;
 
         if (!projCtx) {
-            Logger.error(this.ctx, CdmProjection.name, this.extractResolvedAttributes.name, this.atCorpusPath, cdmLogCode.ErrProjFailedToResolve, this.atCorpusPath);
+            Logger.error(this.ctx, CdmProjection.name, this.extractResolvedAttributes.name, this.atCorpusPath, cdmLogCode.ErrProjFailedToResolve);
             return resolvedAttributeSet;
         }
 

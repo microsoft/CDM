@@ -591,7 +591,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (string.IsNullOrEmpty(newEntName))
                 {
-                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(CreateResolvedEntityAsync), this.AtCorpusPath, CdmLogCode.ErrResolveEntityNotFound);
+                    Logger.Error((ResolveContext)this.Ctx, Tag, nameof(CreateResolvedEntityAsync), this.AtCorpusPath, CdmLogCode.ErrResolveNewEntityNameNotSet);
                     return null;
                 }
 

@@ -25,7 +25,7 @@ class TestEventList(TestCase):
         # Test fetching an object from invalid namespace results in at least one error message in the recorder
         await corpus.fetch_object_async('foo:/bar')
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_ADAPTER_NOT_FOUND, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_ADAPTER_NOT_FOUND, True, self)
 
         # Test fetching a good object, this should leave event recorder empty
         await corpus.fetch_object_async('local:/default.manifest.cdm.json')
@@ -35,23 +35,23 @@ class TestEventList(TestCase):
         manifest = corpus.make_object(CdmObjectType.MANIFEST_DEF, 'dummy')  # type: CdmManifestDefinition
         await manifest.save_as_async('foo:/bar', True)
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_VALDN_MISSING_DOC, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_VALDN_MISSING_DOC, True, self)
 
         # Test resolving a manifest not added to a folder, this should yield at least one error message in the recorder
         await manifest.create_resolved_manifest_async('new dummy', None)
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_RESOLVE_MANIFEST_FAILED, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_RESOLVE_MANIFEST_FAILED, True, self)
 
         # Test resolving an entity without WRT doc, this should yield at least one error message in the recorder
         entity2 = corpus.make_object(CdmObjectType.ENTITY_DEF, 'MyEntity2')
         await entity2.create_resolved_entity_async('MyEntity2-Resolved')
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_DOC_WRT_DOC_NOT_FOUND, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_DOC_WRT_DOC_NOT_FOUND, True, self)
 
         # Test invoking FileStatusCheckAsync on the manifest, this should yield at least one error message in the recorder
         await manifest.file_status_check_async()
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_NULL_NAMESPACE, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_NULL_NAMESPACE, True, self)
 
         # Repeat the same test but with status level 'None', no events should be recorded
         corpus.ctx.report_at_level = CdmStatusLevel.NONE
@@ -64,7 +64,7 @@ class TestEventList(TestCase):
         part = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, "part")  # type: CdmDataPartitionDefinition
         await part.file_status_check_async()
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PATH_NULL_OBJECT_PATH, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PATH_NULL_OBJECT_PATH, True, self)
 
         # Test checking file status on a data partition pattern
         ref_doc = corpus.make_object(CdmObjectType.DOCUMENT_DEF, "RefEntDoc")  # type: CdmDocumentDefinition
@@ -72,8 +72,7 @@ class TestEventList(TestCase):
         part_pattern.in_document = ref_doc
         await part_pattern.file_status_check_async()
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_NULL_NAMESPACE, self)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_DOC_ADAPTER_NOT_FOUND, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_NULL_CORPUS_PATH, True, self)
 
         # Test calculating relationships - no errors/warnings
         await corpus.calculate_entity_graph_async(manifest)
@@ -82,6 +81,13 @@ class TestEventList(TestCase):
         # Test populating relationships in manifest - no errors/warnings
         await manifest.populate_manifest_relationships_async()
         self._test_basic_logs_state(corpus)
+
+        # Test filtering code logic
+        corpus.ctx.suppressed_log_codes.add(CdmLogCode.ERR_PATH_NULL_OBJECT_PATH);
+        part2 = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, "part")  # type: CdmDataPartitionDefinition
+        await part2.file_status_check_async()
+
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PATH_NULL_OBJECT_PATH, False, self);
 
     @async_test
     async def test_with_nesting(self):
@@ -108,7 +114,7 @@ class TestEventList(TestCase):
         await manifest.create_resolved_manifest_async('new dummy 2', None)
 
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_RESOLVE_REFERENCE_FAILURE, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_RESOLVE_REFERENCE_FAILURE, True, self)
 
         # Keep for debugging
         # for log_entry in corpus.ctx.events:
@@ -124,33 +130,33 @@ class TestEventList(TestCase):
 
         corpus.storage.mount('dummy', None)
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_NULL_ADAPTER, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_NULL_ADAPTER, True, self)
 
         corpus.storage.unmount('nothing')
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_STORAGE_REMOVE_ADAPTER_FAILED, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.WARN_STORAGE_REMOVE_ADAPTER_FAILED, True, self)
 
         # No errors/warnings expected here
         corpus.storage.fetch_root_folder(None)
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_NULL_NAMESPACE, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_NULL_NAMESPACE, True, self)
 
         corpus.storage.adapter_path_to_corpus_path('Test')
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_ADAPTER_PATH, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_INVALID_ADAPTER_PATH, True, self)
 
         corpus.storage.corpus_path_to_adapter_path('unknown:/Test')
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_ADAPTER_NOT_FOUND, self)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_NAMESPACE_NOT_REGISTERED, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_ADAPTER_NOT_FOUND, True, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_STORAGE_NAMESPACE_NOT_REGISTERED, True, self)
 
         corpus.storage.create_absolute_corpus_path(None)
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PATH_NULL_OBJECT_PATH, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PATH_NULL_OBJECT_PATH, True, self)
 
         corpus.storage.create_relative_corpus_path(None)
         self._test_basic_logs_state(corpus)
-        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PATH_NULL_OBJECT_PATH, self)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PATH_NULL_OBJECT_PATH, True, self)
 
     @async_test
     async def test_scoping(self):
@@ -197,7 +203,7 @@ class TestEventList(TestCase):
         else:
             self.assertTrue(len(corpus.ctx.events) > 0, 'There should have been at least one event recorded')
             self.assertTrue('timestamp' in corpus.ctx.events[0], 'The recorded event should have had a timestamp key')
-            self.assertTrue(corpus.ctx.events[0]['correlationId'] == DUMMY_CORRELATION_ID,
+            self.assertTrue(corpus.ctx.events[0]['cid'] == DUMMY_CORRELATION_ID,
                             'The recorded event should have had a correlationId key with the dummy value')
 
             if corpus.ctx.report_at_level == CdmStatusLevel.PROGRESS:

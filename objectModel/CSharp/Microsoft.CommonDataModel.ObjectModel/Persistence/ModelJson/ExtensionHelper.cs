@@ -74,7 +74,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 CdmTraitDefinition extensionTraitDef = localExtensionTraitDefList[traitIndex];
                 if (!TraitDefIsExtension(extensionTraitDef))
                 {
-                    Logger.Error(ctx, Tag, nameof(StandardImportDetection), extensionTraitDef.AtCorpusPath, CdmLogCode.ErrPersistInvalidExtensionTrait, extensionTraitDef.TraitName, ExtensionTraitNamePrefix);
+                    Logger.Error(ctx, Tag, nameof(StandardImportDetection), extensionTraitDef.AtCorpusPath, CdmLogCode.ErrPersistModelJsonInvalidExtensionTrait, extensionTraitDef.TraitName, ExtensionTraitNamePrefix);
                     return null;
                 }
 

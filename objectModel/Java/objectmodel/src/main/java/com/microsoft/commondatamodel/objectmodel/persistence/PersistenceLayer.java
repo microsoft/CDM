@@ -212,10 +212,6 @@ public class PersistenceLayer {
                 if (docName.toLowerCase().endsWith(PersistenceLayer.manifestExtension) || docName.toLowerCase().endsWith(PersistenceLayer.folioExtension)) {
                     docContent = com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence.fromData(ctx, docName, jsonData, folder);
                 } else if (docName.toLowerCase().endsWith(PersistenceLayer.modelJsonExtension)) {
-                    if (!docName.toLowerCase().equals(PersistenceLayer.modelJsonExtension)) {
-                        Logger.error(ctx, TAG, "loadDocumentFromPathAsync", docPath, CdmLogCode.ErrPersistDocNameLoadFailure, docName, CdmConstants.MODEL_JSON_EXTENSION);
-                        return null;
-                    }
                     docContent = com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ManifestPersistence.fromData(this.ctx, docName, jsonData, folder).join();
                 } else if (docName.toLowerCase().endsWith(PersistenceLayer.cdmExtension)) {
                     docContent = com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.DocumentPersistence.fromData(this.ctx, docName, jsonData, folder);

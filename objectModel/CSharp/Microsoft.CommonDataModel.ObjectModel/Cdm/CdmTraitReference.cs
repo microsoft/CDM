@@ -55,7 +55,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.ResolvedArguments = this.ResolvedArguments;
             }
             foreach (var arg in this.Arguments)
-                copy.Arguments.Add(arg);
+            {
+                copy.Arguments.Add(arg.Copy(resOpt) as CdmArgumentDefinition);
+            }
 
             return copy;
         }

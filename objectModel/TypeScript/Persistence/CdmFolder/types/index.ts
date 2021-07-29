@@ -45,4 +45,6 @@ export * from './Projections/OperationCombineAttributes';
 export * from './Projections/OperationRenameAttributes';
 export * from './Projections/OperationReplaceAsForeignKey';
 export * from './Projections/OperationIncludeAttributes';
+export * from './Projections/OperationAlterTraits';
+export * from './Projections/OperationAddArtifactAttribute';
 export * from './Projections/Projection';

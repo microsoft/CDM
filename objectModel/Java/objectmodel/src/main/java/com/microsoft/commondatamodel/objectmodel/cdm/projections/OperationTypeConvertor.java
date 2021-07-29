@@ -41,6 +41,10 @@ public class OperationTypeConvertor {
                 return "includeAttributes";
             case AddAttributeGroup:
                 return "addAttributeGroup";
+            case AlterTraits:
+                return "alterTraits";
+            case AddArtifactAttribute:
+                return "addArtifactAttribute";
             case Error:
             default:
                 throw new UnsupportedOperationException();
@@ -75,6 +79,10 @@ public class OperationTypeConvertor {
         return CdmOperationType.RenameAttributes;
       case OperationReplaceAsForeignKeyDef:
         return CdmOperationType.ReplaceAsForeignKey;
+      case OperationAlterTraitsDef:
+        return CdmOperationType.AlterTraits;
+      case OperationAddArtifactAttributeDef:
+        return CdmOperationType.AddArtifactAttribute;
       default:
         return CdmOperationType.Error;
     }

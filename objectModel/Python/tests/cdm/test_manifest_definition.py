@@ -30,7 +30,7 @@ class ManifestDefinitionTests(unittest.TestCase):
         copy.exhibits_traits[0].named_reference = 'newTraitName'
 
 
-        self.assertEquals(entity_name, entity_dec.entity_name)
-        self.assertEquals(sub_manifest_name, sub_manifest.manifest_name)
-        self.assertEquals(relationship_name, relationship.name)
-        self.assertEquals(trait_name, trait.named_reference)
+        self.assertEqual(entity_name, entity_dec.entity_name)
+        self.assertEqual(sub_manifest_name, sub_manifest.manifest_name)
+        self.assertEqual(relationship_name, relationship.name)
+        self.assertEqual(trait_name, trait.named_reference)

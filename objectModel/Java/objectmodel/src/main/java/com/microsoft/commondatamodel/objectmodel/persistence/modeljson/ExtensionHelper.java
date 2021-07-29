@@ -96,7 +96,7 @@ final class ExtensionHelper {
       for (int traitIndex = localExtensionTraitDefList.size() - 1; traitIndex >= 0; traitIndex--) {
         final CdmTraitDefinition extensionTraitDef = localExtensionTraitDefList.get(traitIndex);
         if (!traitDefIsExtension(extensionTraitDef)) {
-          Logger.error(ctx, TAG, "standardImportDetection", extensionTraitDef.getAtCorpusPath(), CdmLogCode.ErrPersistInvalidExtensionTrait, extensionTraitDef.getTraitName(), extensionTraitNamePrefix);
+          Logger.error(ctx, TAG, "standardImportDetection", extensionTraitDef.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonInvalidExtensionTrait, extensionTraitDef.getTraitName(), extensionTraitNamePrefix);
           return null;
         }
 

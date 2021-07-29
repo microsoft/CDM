@@ -19,7 +19,7 @@ class ReferencedEntityTest(unittest.TestCase):
         test_name = 'test_ref_entity_with_slash_path'
 
         slash_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
-        slash_local_path = (slash_corpus.storage.namespace_adapters.get('local')).root
+        slash_local_path = slash_corpus.storage.namespace_adapters.get('local').root
         slash_adapter = LocalAdapterWithSlashPath(slash_local_path, '/')
         slash_corpus.storage.mount('slash', slash_adapter)
         slash_corpus.storage.defaultNamespace = 'slash'
@@ -39,7 +39,7 @@ class ReferencedEntityTest(unittest.TestCase):
         self.assertEqual(1, len(slash_model.entities))
 
         back_slash_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
-        back_slash_local_path = (back_slash_corpus.storage.namespace_adapters.get('local')).root
+        back_slash_local_path = back_slash_corpus.storage.namespace_adapters.get('local').root
         back_slash_adapter = LocalAdapterWithSlashPath(back_slash_local_path, '\\')
         back_slash_corpus.storage.mount('backslash', back_slash_adapter)
         back_slash_corpus.storage.default_namespace = 'backslash'

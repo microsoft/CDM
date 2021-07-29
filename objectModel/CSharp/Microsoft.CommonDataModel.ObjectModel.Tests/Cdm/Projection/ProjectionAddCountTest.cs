@@ -222,7 +222,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         }
 
         /// <summary>
-        /// CountAttribute on an entity attribute
+        /// CountAttribute on an entity attribute using resolution guidance
         /// </summary>
         [TestMethod]
         public async Task TestCountAttribute()
@@ -283,7 +283,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         }
 
         /// <summary>
-        /// CountAttribute on an entity definition
+        /// CountAttribute on an entity definition using resolution guidance
         /// </summary>
         [TestMethod]
         public async Task TestExtendsEntity()
@@ -342,43 +342,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             Assert.AreEqual("email2", (resolvedEntity.Attributes[9] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("personCount", (resolvedEntity.Attributes[10] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[10].AppliedTraits[1].NamedReference);
-        }
-
-        /// <summary>
-        /// AddCountAttribute with ArrayExpansion in the same projection (and then RenameAttributes)
-        /// </summary>
-        [TestMethod]
-        public async Task TestWithArrayExpansion()
-        {
-            string testName = "TestWithArrayExpansion";
-            string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
-
-            foreach (List<string> resOpt in resOptsCombinations)
-            {
-                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
-            }
-
-            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
-
-            // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-            // Expand 1...2, count attribute: "personCount" (first projection)
-            // The first projection will give us the expanded attributes as well as the pass-through input attributes
-            // Then do renameFormat = {m}{o} in the second projection
-            Assert.AreEqual(11, resolvedEntity.Attributes.Count);
-            Assert.AreEqual("name1", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("age1", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("address1", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("phoneNumber1", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("email1", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("name2", (resolvedEntity.Attributes[5] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("age2", (resolvedEntity.Attributes[6] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("address2", (resolvedEntity.Attributes[7] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("phoneNumber2", (resolvedEntity.Attributes[8] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("email2", (resolvedEntity.Attributes[9] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("personCount", (resolvedEntity.Attributes[10] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("is.linkedEntity.array.count", resolvedEntity.Attributes[10].AppliedTraits[1].NamedReference);
+            Assert.AreEqual("indicates.expansionInfo.count", resolvedEntity.Attributes[10].AppliedTraits[2].NamedReference);
         }
 
         /// <summary>
@@ -501,7 +465,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         }
 
         /// <summary>
-        /// CountAttribute on an entity with an attribute group
+        /// CountAttribute on an entity with an attribute group using resolution guidance
         /// </summary>
         [TestMethod]
         public async Task TestGroup()

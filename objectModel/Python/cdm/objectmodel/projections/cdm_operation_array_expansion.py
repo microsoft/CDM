@@ -128,8 +128,7 @@ class CdmOperationArrayExpansion(CdmOperationBase):
                         break
 
                     # Create a new resolved attribute for the expanded attribute
-                    new_res_attr = self._create_new_resolved_attribute(proj_ctx, attr_ctx_expanded_attr, current_PAS._current_resolved_attribute.target, current_PAS._current_resolved_attribute.resolved_name)
-                    new_res_attr.att_ctx._add_lineage(current_PAS._current_resolved_attribute.att_ctx)
+                    new_res_attr = self._create_new_resolved_attribute(proj_ctx, attr_ctx_expanded_attr, current_PAS._current_resolved_attribute, current_PAS._current_resolved_attribute.resolved_name)
 
                     # Create a projection attribute state for the expanded attribute
                     new_PAS = ProjectionAttributeState(proj_output_set._ctx)

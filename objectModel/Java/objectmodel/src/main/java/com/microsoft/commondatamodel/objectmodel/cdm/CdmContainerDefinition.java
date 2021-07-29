@@ -3,6 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+/**
+ * @deprecated internal use only.
+ */
 public interface CdmContainerDefinition extends CdmObject {
 
   /**

@@ -227,10 +227,11 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             }
 
             for (const entity of this.entities) {
-                const entDef: CdmEntityDefinition = await this.getEntityFromReference(entity, this);
+                const entityPath: string = await this.getEntityPathFromDeclaration(entity, this);
+                const entDef: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entityPath);
 
                 if (entDef === undefined) {
-                    Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveEntityRefError);
+                    Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveEntityFailure, entityPath);
                     return undefined;
                 }
 
@@ -392,23 +393,6 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 await (subManifest as unknown as CdmManifestDefinition).populateManifestRelationshipsAsync(option);
             }
         });
-    }
-
-    /**
-     * @internal
-     * Find and return an entity object from an EntityDeclaration object that probably comes from a manifest
-     */
-    public async getEntityFromReference(
-        entity: CdmEntityDeclarationDefinition,
-        manifest: CdmManifestDefinition): Promise<CdmEntityDefinition> {
-        const entityPath: string = await this.getEntityPathFromDeclaration(entity, manifest);
-        const result: CdmEntityDefinition = await this.ctx.corpus.fetchObjectAsync<CdmEntityDefinition>(entityPath);
-
-        if (result === undefined) {
-            Logger.error(this.ctx, this._TAG, this.getEntityFromReference.name, this.atCorpusPath, cdmLogCode.ErrResolveEntityFailure, entityPath);
-        }
-
-        return result;
     }
 
     /**

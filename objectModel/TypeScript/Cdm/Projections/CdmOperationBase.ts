@@ -9,11 +9,13 @@ import {
     CdmObjectDefinitionBase,
     cdmObjectType,
     cdmOperationType,
+    CdmTraitReference,
     ProjectionAttributeStateSet,
     ProjectionContext,
     ResolvedAttribute,
     ResolvedTraitSet,
     resolveOptions,
+    StringUtils,
     VisitCallback
 } from '../../internal';
 
@@ -43,6 +45,18 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
 
     constructor(ctx: CdmCorpusContext) {
         super(ctx);
+    }
+
+    /**
+     * @internal
+     */
+    copyProj(resOpt: resolveOptions, copy: CdmOperationBase): CdmOperationBase {
+        copy.index = this.index;
+        copy.condition = this.condition;
+        copy.sourceInput = this.sourceInput;
+
+        this.copyDef(resOpt, copy);
+        return copy;
     }
 
     /**
@@ -91,11 +105,14 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     public static createNewResolvedAttribute(
         projCtx: ProjectionContext,
         attrCtxUnder: CdmAttributeContext,
-        targetAttr: CdmAttribute,
+        target_attr_or_resolved_attr: CdmAttribute | ResolvedAttribute,
         overrideDefaultName: string = null,
         addedSimpleRefTraits: string[] = null
     ): ResolvedAttribute {
-        targetAttr = targetAttr.copy() as CdmAttribute;
+
+        const targetAttr: CdmAttribute = target_attr_or_resolved_attr instanceof CdmAttribute 
+                                            ? target_attr_or_resolved_attr.copy() as CdmAttribute 
+                                            : (target_attr_or_resolved_attr.target as CdmAttribute).copy() as CdmAttribute;
 
         const newResAttr: ResolvedAttribute = new ResolvedAttribute(
             projCtx.projectionDirective.resOpt,
@@ -105,23 +122,57 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
         );
         targetAttr.inDocument = projCtx.projectionDirective.owner.inDocument;
 
-        targetAttr.inDocument = projCtx.projectionDirective.owner.inDocument;
+        if (target_attr_or_resolved_attr instanceof CdmAttribute) {
+            if (addedSimpleRefTraits) {
+                for (const trait of addedSimpleRefTraits) {
+                    if (!targetAttr.appliedTraits.item(trait)) {
+                        targetAttr.appliedTraits.push(trait, true);
+                    }
+                }
+            }
 
-        if (addedSimpleRefTraits) {
-            for (const trait of addedSimpleRefTraits) {
-                if (!targetAttr.appliedTraits.item(trait)) {
-                    targetAttr.appliedTraits.push(trait, true);
+            const resTraitSet: ResolvedTraitSet = targetAttr.fetchResolvedTraits(projCtx.projectionDirective.resOpt);
+
+            // Create deep a copy of traits to avoid conflicts in case of parameters
+            if (resTraitSet) {
+                newResAttr.resolvedTraits = resTraitSet.deepCopy();
+            }            
+        } else {
+            newResAttr.resolvedTraits = target_attr_or_resolved_attr.resolvedTraits.deepCopy();
+
+            if (addedSimpleRefTraits) {
+                for (const trait of addedSimpleRefTraits) {
+                    const tr = new CdmTraitReference(targetAttr.ctx, trait, true, false);
+                    newResAttr.resolvedTraits = newResAttr.resolvedTraits.mergeSet(tr._fetchResolvedTraits());
                 }
             }
         }
 
-        const resTraitSet: ResolvedTraitSet = targetAttr.fetchResolvedTraits(projCtx.projectionDirective.resOpt);
-
-        // Create deep a copy of traits to avoid conflicts in case of parameters
-        if (resTraitSet) {
-            newResAttr.resolvedTraits = resTraitSet.deepCopy();
-        }
-
         return newResAttr;
     }
+
+
+    /**
+     * Replace the wildcard character. {a/A} will be replaced with the current attribute name. 
+     * {m/M} will be replaced with the entity attribute name. 
+     * {o} will be replaced with the index of the attribute after an array expansion
+     * @internal
+     */
+        public static replaceWildcardCharacters(
+            format: string,
+            baseAttributeName: string,
+            ordinal: string,
+            memberAttributeName: string
+        ): string {
+            if (!format) {
+                return ''
+            }
+            
+            let attributeName: string = StringUtils.replace(format, 'a', baseAttributeName);
+            attributeName = StringUtils.replace(attributeName, 'o', ordinal);
+            attributeName = StringUtils.replace(attributeName, 'm', memberAttributeName);
+
+            return attributeName;
+        }
+
 }

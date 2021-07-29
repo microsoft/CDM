@@ -40,10 +40,6 @@ public class LocalEntityDeclarationPersistence {
     final List<CdmTraitDefinition> localExtensionTraitDefList = new ArrayList<>();
     return DocumentPersistence.fromData(ctx, obj, extensionTraitDefList, localExtensionTraitDefList)
         .thenCompose(entityDoc -> {
-          if (entityDoc == null) {
-            Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistDocFetchError);
-            return CompletableFuture.completedFuture(null);
-          }
 
           documentFolder.getDocuments().add(entityDoc);
 
@@ -90,7 +86,7 @@ public class LocalEntityDeclarationPersistence {
               if (cdmPartition != null) {
                 localEntity.getDataPartitions().add(cdmPartition);
               } else {
-                Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistDocFetchError);
+                Logger.error(ctx, TAG, "fromData", null, CdmLogCode.ErrPersistModelJsonDocConversionError);
                 return CompletableFuture.completedFuture(null);
               }
             }
@@ -143,9 +139,6 @@ public class LocalEntityDeclarationPersistence {
 
                 if (partition != null) {
                   localEntity.getPartitions().add(partition);
-                } else {
-                  Logger.error(instance.getCtx(), TAG, "toData", instance.getAtCorpusPath(), CdmLogCode.ErrPersistModelJsonEntityPartitionConversionError);
-                  return CompletableFuture.completedFuture(null);
                 }
               }
             }

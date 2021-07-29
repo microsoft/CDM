@@ -136,7 +136,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
         // Create a new attribute context for the operation
         AttributeContextParameters attrCtxOpRenameAttrsParam = new AttributeContextParameters();
         attrCtxOpRenameAttrsParam.setUnder(attrCtx);
-        attrCtxOpRenameAttrsParam.setType(CdmAttributeContextType.OperationExcludeAttributes);
+        attrCtxOpRenameAttrsParam.setType(CdmAttributeContextType.OperationRenameAttributes);
         attrCtxOpRenameAttrsParam.setName("operation/index" + this.getIndex() + "/operationRenameAttributes");
 
         CdmAttributeContext attrCtxOpRenameAttrs = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxOpRenameAttrsParam);
@@ -173,7 +173,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
                     String newAttributeName = this.getNewAttributeName(currentPAS, sourceAttributeName);
 
                     // Create new resolved attribute with the new name, set the new attribute as target
-                    ResolvedAttribute resAttrNew = createNewResolvedAttribute(projCtx, null, (CdmAttribute) currentPAS.getCurrentResolvedAttribute().getTarget(), newAttributeName, null);
+                    ResolvedAttribute resAttrNew = createNewResolvedAttribute(projCtx, null, currentPAS.getCurrentResolvedAttribute(), newAttributeName, null);
 
                     // Get the attribute name the way it appears in the applyTo list
                     String applyToName = topLevelRenameAttributeNames.get(currentPAS.getCurrentResolvedAttribute().getResolvedName());
@@ -227,10 +227,6 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
             return "";
         }
 
-        String attributeName = StringUtils.replace(format, 'a', sourceAttributeName);
-        attributeName = StringUtils.replace(attributeName, 'o', ordinal);
-        attributeName = StringUtils.replace(attributeName, 'm', currentAttributeName);
-
-        return attributeName;
+        return replaceWildcardCharacters(format, sourceAttributeName, ordinal, currentAttributeName);
     }
 }

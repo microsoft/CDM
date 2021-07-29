@@ -1,18 +1,21 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
 import * as fs from 'fs';
 import { EOL } from 'os';
 import {
     CdmArgumentDefinition,
     CdmAttributeContext,
+    CdmAttributeGroupDefinition,
     CdmAttributeReference,
+    CdmCollection,
     CdmConstantEntityDefinition,
-    CdmCorpusDefinition,
+    CdmAttributeItem,
     CdmEntityDefinition,
+    CdmAttributeGroupReference,
     CdmObjectReference,
     CdmObjectReferenceBase,
     cdmObjectType,
+    CdmTraitCollection,
     CdmTraitReference
 } from '../../../internal';
 
@@ -44,7 +47,7 @@ export class AttributeContextUtil {
         this.getContentDeclaredPath(resolvedEntity.attributeContext);
 
         // get the traits for all the attributes of a resolved entity
-        this.getTraits(resolvedEntity);
+        this.getTraits(resolvedEntity.attributes);
 
         return this.bldr;
     }
@@ -85,25 +88,38 @@ export class AttributeContextUtil {
     /**
      * Get the traits for all the attributes of a resolved entity
      */
-    private getTraits(resolvedEntity: CdmEntityDefinition): void {
-        for (const attrib of resolvedEntity.attributes) {
+    private getTraits(attributes: CdmCollection<CdmAttributeItem>): void {
+        for (const attrib of attributes) {
             const attribCorpusPath: string = attrib.atCorpusPath;
             this.bldr += attribCorpusPath;
             this.bldr += this.endOfLine;
 
-            for (const trait of attrib.appliedTraits) {
-                const attribTraits: string = trait.namedReference;
-                this.bldr += attribTraits;
+            if (attrib instanceof CdmAttributeGroupReference) {
+                const attGroupDef: CdmAttributeGroupDefinition = attrib.explicitReference as CdmAttributeGroupDefinition
+                this.bldr += attGroupDef.atCorpusPath;
                 this.bldr += this.endOfLine;
+                this.getTraitCollection(attGroupDef.exhibitsTraits);
+                this.getTraits(attGroupDef.members);
+            } else {
+                this.getTraitCollection(attrib.appliedTraits);
+            }
+        }
+    
+    }
 
-                if (trait instanceof CdmTraitReference) {
-                    for (const args of trait.arguments) {
-                        this.getArgumentValues(args);
-                    }
+    private getTraitCollection(traitCollection: CdmTraitCollection): void {
+        for (const trait of traitCollection) {
+            const attribTraits: string = trait.namedReference;
+            this.bldr += attribTraits;
+            this.bldr += this.endOfLine;
+
+            if (trait instanceof CdmTraitReference) {
+                for (const args of trait.arguments) {
+                    this.getArgumentValues(args);
                 }
             }
         }
-    }
+    } 
 
     private getArgumentValues(args: CdmArgumentDefinition): void {
         const paramName: string = args.resolvedParameter?.name;

@@ -612,7 +612,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 }
 
                 if (!newEntName || newEntName === '') {
-                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrResolveEntityNotFound);
+                    Logger.error(this.ctx, this.TAG, this.createResolvedEntityAsync.name, null, cdmLogCode.ErrResolveNewEntityNameNotSet);
                     return undefined;
                 }
 

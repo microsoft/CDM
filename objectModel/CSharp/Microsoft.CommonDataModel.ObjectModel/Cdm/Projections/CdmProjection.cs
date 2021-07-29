@@ -409,7 +409,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (projCtx == null)
             {
-                Logger.Error(this.Ctx, nameof(CdmEntityAttributeDefinition), "ExtractResolvedAttributes", this.AtCorpusPath, CdmLogCode.ErrProjFailedToResolve, this.AtCorpusPath);
+                Logger.Error(this.Ctx, nameof(CdmEntityAttributeDefinition), "ExtractResolvedAttributes", this.AtCorpusPath, CdmLogCode.ErrProjFailedToResolve);
                 return resolvedAttributeSet;
             }
 

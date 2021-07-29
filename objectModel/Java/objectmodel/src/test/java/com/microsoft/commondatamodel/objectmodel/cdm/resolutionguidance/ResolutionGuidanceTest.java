@@ -296,17 +296,17 @@ public class ResolutionGuidanceTest {
         // Tests warning log when resolution guidance is used on a data typed attribute.
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TypeAttribute.cdm.json/Entity").join();
         entity.createResolvedEntityAsync("res-entity").join();
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
 
         // Tests warning log when resolution guidance is used on a entity typed attribute.
         entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/EntityAttribute.cdm.json/Entity").join();
         entity.createResolvedEntityAsync("res-entity").join();
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
 
         // Tests warning log when resolution guidance is used when extending an entity.
         entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/ExtendsEntity.cdm.json/Entity").join();
         entity.createResolvedEntityAsync("res-entity").join();
-        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance);
+        TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.WarnDeprecatedResolutionGuidance, true);
     }
 
     @Test

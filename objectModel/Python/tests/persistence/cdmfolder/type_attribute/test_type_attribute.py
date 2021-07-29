@@ -157,7 +157,7 @@ class TypeAttributeTest(unittest.TestCase):
         emptyDefaultValueAttribute = entity.attributes[4]  # type: CdmTypeAttributeDefinition
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
-        self.assertTrue(function_parameter2.find('Default value missing languageTag or displayText.') != -1)
+        self.assertTrue(function_parameter2.find('A \'defaultValue\' property is empty or one of its entries is missing \'languageTag\' and \'displayText\' values.') != -1)
         self.assertIsNone(emptyDefaultValueAttribute.default_value)
         # set the default value to an empty list for testing that it should be removed from the generated json.
         emptyDefaultValueAttribute.default_value = []

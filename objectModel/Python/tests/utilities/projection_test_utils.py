@@ -154,6 +154,32 @@ class ProjectionTestUtils:
         return projection
 
     @staticmethod
+    def validate_expansion_info_trait(test: 'TestCase', attribute: 'CdmTypeAttributeDefinition', expected_attr_name: str, ordinal: int, expansion_name: str, member_attribute: str):
+        test.assertEqual(expected_attr_name, attribute.name)
+        trait = attribute.applied_traits.item('has.expansionInfo.list')
+        test.assertIsNotNone(trait)
+        test.assertEqual(expansion_name, trait.arguments.fetch_value('expansionName'))
+        test.assertEqual(str(ordinal), trait.arguments.fetch_value('ordinal'))
+        test.assertEqual(member_attribute, trait.arguments.fetch_value('memberAttribute'))
+
+    @staticmethod
+    def validate_attribute_group(test: 'TestCase', attributes: 'CdmCollection[CdmAttributeItem]', attribute_group_name: str, \
+                                 attributes_size: int = 1, index: int = 0) -> 'CdmAttributeGroupDefinition':
+        """Validates the creation of an attribute group and return its definition
+            @param attributes = The collection of attributes.
+            @param attribute_group_name = The attribute group name.
+            @param attributes_size = The expected size of the attributes collection."""
+        test.assertEqual(attributes_size, len(attributes))
+        test.assertEqual(CdmObjectType.ATTRIBUTE_GROUP_REF, attributes[index].object_type)
+        att_group_reference = attributes[index]  # type: CdmAttributeGroupReference
+        test.assertIsNotNone(att_group_reference.explicit_reference)
+
+        att_group_definition = att_group_reference.explicit_reference  # type: CdmAttributeGroupDefinition
+        test.assertEqual(attribute_group_name, att_group_definition.attribute_group_name)
+
+        return att_group_definition
+
+    @staticmethod
     async def validate_attribute_context(test: 'TestCase', directives: List[str], expected_output_path: str, entity_name: str, resolved_entity: 'CdmEntityDefinition', update_expected_output: Optional[bool] = False):
         """
         Validates if the attribute context of the resolved entity matches the expected output.

@@ -28,13 +28,12 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         #  the folder name.
         self.name = name  # type: str
 
-        self.namespace = None  # type: Optional[str]
 
-        self.folder_path = '{}/'.format(name)  # type: Optional[str]
+        # --- internal ---
 
-        # --- Internal ---
 
         self._document_lookup = {}  # type: Dict[str, CdmDocumentDefinition]
+        self._folder_path = '{}/'.format(name)  # type: Optional[str]
 
         # the direct children for the directory folder.
         self._child_folders = CdmFolderCollection(self.ctx, self)  # type: CdmFolderCollection
@@ -43,15 +42,24 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         self._documents = CdmDocumentCollection(self.ctx, self)  # type: CdmDocumentCollection
 
         self._corpus = None  # type: CdmDocumentDefinition
+        self._namespace = None  # type: Optional[str]
 
 
     @property
     def at_corpus_path(self) -> str:
-        if self.namespace is None:
+        if self._namespace is None:
             # We're not under any adapter (not in a corpus), so return special indicator.
-            return 'NULL:{}'.format(self.folder_path)
+            return 'NULL:{}'.format(self._folder_path)
 
-        return '{}:{}'.format(self.namespace, self.folder_path)
+        return '{}:{}'.format(self._namespace, self._folder_path)
+
+    @property
+    def folder_path(self) -> str:
+        return self._folder_path
+
+    @property
+    def namespace(self) -> str:
+        return self._namespace
 
     @property
     def child_folders(self) -> 'CdmFolderCollection':

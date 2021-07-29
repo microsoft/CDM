@@ -45,6 +45,8 @@ from cdm.objectmodel.projections.cdm_operation_rename_attributes import CdmOpera
 from cdm.objectmodel.projections.cdm_operation_replace_as_foreign_key import CdmOperationReplaceAsForeignKey
 from cdm.objectmodel.projections.cdm_operation_include_attributes import CdmOperationIncludeAttributes
 from cdm.objectmodel.projections.cdm_operation_add_attribute_group import CdmOperationAddAttributeGroup
+from cdm.objectmodel.projections.cdm_operation_alter_traits import CdmOperationAlterTraits
+from cdm.objectmodel.projections.cdm_operation_add_artifact_attribute import CdmOperationAddArtifactAttribute
 
 switcher = {
     CdmObjectType.ARGUMENT_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmArgumentDefinition(ctx, name_or_ref),
@@ -88,7 +90,9 @@ switcher = {
     CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationRenameAttributes(ctx),
     CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationReplaceAsForeignKey(ctx),
     CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationIncludeAttributes(ctx),
-    CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAddAttributeGroup(ctx)
+    CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAddAttributeGroup(ctx),
+    CdmObjectType.OPERATION_ALTER_TRAITS_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAlterTraits(ctx),
+    CdmObjectType.OPERATION_ADD_ARTIFACT_ATTRIBUTE_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAddArtifactAttribute(ctx)
 }
 
 

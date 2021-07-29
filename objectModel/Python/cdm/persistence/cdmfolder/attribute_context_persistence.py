@@ -21,6 +21,7 @@ map_type_name_to_enum = {
     'entityReferenceExtends': CdmAttributeContextType.ENTITY_REFERENCE_EXTENDS,
     'attributeGroup': CdmAttributeContextType.ATTRIBUTE_GROUP,
     'attributeDefinition': CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+    'addedAttributeNewArtifact': CdmAttributeContextType.ADDED_ATTRIBUTE_NEW_ARTIFACT,
     'addedAttributeSupporting': CdmAttributeContextType.ADDED_ATTRIBUTE_SUPPORTING,
     'addedAttributeIdentity': CdmAttributeContextType.ADDED_ATTRIBUTE_IDENTITY,
     'addedAttributeExpansionTotal': CdmAttributeContextType.ADDED_ATTRIBUTE_EXPANSION_TOTAL,
@@ -40,6 +41,8 @@ map_type_name_to_enum = {
     'operationReplaceAsForeignKey': CdmAttributeContextType.OPERATION_REPLACE_AS_FOREIGN_KEY,
     'operationIncludeAttributes': CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES,
     'operationAddAttributeGroup': CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP,
+    'operationAlterTraits': CdmAttributeContextType.OPERATION_ALTER_TRAITS,
+    'operationAddArtifactAttribute': CdmAttributeContextType.OPERATION_ADD_ARTIFACT_ATTRIBUTE,
     'unknown': CdmAttributeContextType.UNKNOWN
 }
 
@@ -48,6 +51,7 @@ map_enum_to_type_name = {
     CdmAttributeContextType.ENTITY_REFERENCE_EXTENDS: 'entityReferenceExtends',
     CdmAttributeContextType.ATTRIBUTE_GROUP: 'attributeGroup',
     CdmAttributeContextType.ATTRIBUTE_DEFINITION: 'attributeDefinition',
+    CdmAttributeContextType.ADDED_ATTRIBUTE_NEW_ARTIFACT: 'addedAttributeNewArtifact',
     CdmAttributeContextType.ADDED_ATTRIBUTE_SUPPORTING: 'addedAttributeSupporting',
     CdmAttributeContextType.ADDED_ATTRIBUTE_IDENTITY: 'addedAttributeIdentity',
     CdmAttributeContextType.ADDED_ATTRIBUTE_EXPANSION_TOTAL: 'addedAttributeExpansionTotal',
@@ -67,6 +71,8 @@ map_enum_to_type_name = {
     CdmAttributeContextType.OPERATION_REPLACE_AS_FOREIGN_KEY: 'operationReplaceAsForeignKey',
     CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES: 'operationIncludeAttributes',
     CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP: 'operationAddAttributeGroup',
+    CdmAttributeContextType.OPERATION_ALTER_TRAITS: 'operationAlterTraits',
+    CdmAttributeContextType.OPERATION_ADD_ARTIFACT_ATTRIBUTE: 'operationAddArtifactAttribute',
     CdmAttributeContextType.UNKNOWN: 'unknown'
 }
 
@@ -91,8 +97,10 @@ class AttributeContextPersistence:
                 attribute_context.definition = EntityReferencePersistence.from_data(ctx, data.definition)
             elif attribute_context.type == CdmAttributeContextType.ATTRIBUTE_GROUP:
                 attribute_context.definition = AttributeGroupReferencePersistence.from_data(ctx, data.definition)
-            elif attribute_context.type == CdmAttributeContextType.ADDED_ATTRIBUTE_SUPPORTING \
+            elif attribute_context.type == CdmAttributeContextType.ADDED_ATTRIBUTE_NEW_ARTIFACT \
+                    or attribute_context.type == CdmAttributeContextType.ADDED_ATTRIBUTE_SUPPORTING \
                     or attribute_context.type == CdmAttributeContextType.ADDED_ATTRIBUTE_IDENTITY \
+                    or attribute_context.type == CdmAttributeContextType.ADDED_ATTRIBUTE_NEW_ARTIFACT \
                     or attribute_context.type == CdmAttributeContextType.ADDED_ATTRIBUTE_EXPANSION_TOTAL \
                     or attribute_context.type == CdmAttributeContextType.ADDED_ATTRIBUTE_SELECTED_TYPE \
                     or attribute_context.type == CdmAttributeContextType.ATTRIBUTE_DEFINITION:

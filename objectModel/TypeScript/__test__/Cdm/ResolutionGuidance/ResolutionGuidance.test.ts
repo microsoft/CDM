@@ -25,17 +25,17 @@ describe('Cdm.ResolutionGuidance', () => {
         // Tests warning log when resolution guidance is used on a data typed attribute.
         var entity = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TypeAttribute.cdm.json/Entity');
         await entity.createResolvedEntityAsync('res-entity');
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnDeprecatedResolutionGuidance);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnDeprecatedResolutionGuidance, true);
 
         // Tests warning log when resolution guidance is used on a entity typed attribute.
         entity = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/EntityAttribute.cdm.json/Entity');
         await entity.createResolvedEntityAsync('res-entity');
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnDeprecatedResolutionGuidance);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnDeprecatedResolutionGuidance, true);
 
         // Tests warning log when resolution guidance is used when extending an entity.
         entity = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/ExtendsEntity.cdm.json/Entity');
         await entity.createResolvedEntityAsync('res-entity');
-        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnDeprecatedResolutionGuidance);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.WarnDeprecatedResolutionGuidance, true);
 
         done();
     });

@@ -86,11 +86,8 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
         with logger._enter_scope(self._TAG, self.ctx, self.file_status_check_async.__name__):
-            namespace = self.in_document.namespace
-            adapter = self.ctx.corpus.storage.fetch_adapter(namespace)
-
-            if adapter is None:
-                logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ADAPTER_NOT_FOUND, self.in_document.name)
+            namespace = None
+            adapter = None
 
             # make sure the root is a good full corpus path.
             root_cleaned = (self.root_location[:-1] if self.root_location and self.root_location.endswith('/') else self.root_location) or ''
@@ -102,6 +99,13 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                 if not path_tuple:
                     logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_STORAGE_NULL_CORPUS_PATH)
                     return
+
+                namespace = path_tuple[0]
+                adapter = self.ctx.corpus.storage.fetch_adapter(namespace)
+                                
+                if adapter is None:
+                    logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_ADAPTER_NOT_FOUND, self.in_document.name)
+
                 # get a list of all corpus_paths under the root.
                 file_info_list = await adapter.fetch_all_files_async(path_tuple[1])
             except Exception as e:
@@ -109,7 +113,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                 logger.warning(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path,
                                CdmLogCode.WARN_PARTITION_FILE_FETCH_FAILED, root_corpus, e)
 
-            if file_info_list is not None:
+            if file_info_list is not None and namespace is not None:
                 # remove root of the search from the beginning of all paths so anything in the root is not found by regex.
                 file_info_list = [(namespace + ':' + fi)[len(root_corpus):] for fi in file_info_list]
 
@@ -126,7 +130,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                     try:
                         reg = regex.compile(regular_expression)
                     except Exception as e:
-                        logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_RESX,
+                        logger.error(self.ctx, self._TAG, CdmDataPartitionPatternDefinition.file_status_check_async.__name__, self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_EXPRESSION,
                                      'glob pattern' if self.glob_pattern and not self.glob_pattern.isspace(
                                      ) else 'regular expression', self.glob_pattern if self.glob_pattern and not self.glob_pattern.isspace() else self.regular_expression, e)
 

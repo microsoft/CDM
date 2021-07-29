@@ -370,7 +370,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 options = new CopyOptions();
             }
 
-            string persistenceTypeName = "CdmFolder";
+            string persistenceTypeName = options?.PersistenceTypeName;
+
+            if (persistenceTypeName == null || persistenceTypeName == "")
+            {
+                persistenceTypeName = "CdmFolder";
+            }
+
             return PersistenceLayer.ToData<T, dynamic>(instance, resOpt, options, persistenceTypeName);
         }
 

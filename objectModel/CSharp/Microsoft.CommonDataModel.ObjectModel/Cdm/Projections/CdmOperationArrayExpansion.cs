@@ -75,7 +75,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (missingFields.Count > 0)
             {
-                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) => $"'{s}'")));
                 return false;
             }
 
@@ -174,8 +174,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
 
                         // Create a new resolved attribute for the expanded attribute
-                        ResolvedAttribute newResAttr = CreateNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.CurrentResolvedAttribute.Target, currentPAS.CurrentResolvedAttribute.ResolvedName);
-                        newResAttr.AttCtx.AddLineage(currentPAS.CurrentResolvedAttribute.AttCtx);
+                        ResolvedAttribute newResAttr = CreateNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.CurrentResolvedAttribute, currentPAS.CurrentResolvedAttribute.ResolvedName);
 
                         // Create a projection attribute state for the expanded attribute
                         ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.Ctx)
