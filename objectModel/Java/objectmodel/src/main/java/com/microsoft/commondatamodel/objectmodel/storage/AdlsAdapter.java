@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -17,7 +19,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.client.utils.DateUtils;
 import org.apache.http.entity.StringEntity;
-
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -85,12 +86,17 @@ public class AdlsAdapter extends NetworkAdapter {
   private AdlsAdapterAuthenticator adlsAdapterAuthenticator;
 
   public AdlsAdapter(final String hostname, final String root, final String tenant, final String clientId, final String secret) {
+    this(hostname, root, tenant, clientId, secret, AzureCloudEndpoint.AzurePublic);
+  }
+
+  public AdlsAdapter(final String hostname, final String root, final String tenant, final String clientId, final String secret, final AzureCloudEndpoint endpoint) {
     this();
     this.updateRoot(root);
     this.updateHostname(hostname);
     this.adlsAdapterAuthenticator.setTenant(tenant);
     this.adlsAdapterAuthenticator.setClientId(clientId);
     this.adlsAdapterAuthenticator.setSecret(secret);
+    this.adlsAdapterAuthenticator.setEndpoint(endpoint);
   }
 
   public AdlsAdapter(final String hostname, final String root, final String sharedKey) {
@@ -136,7 +142,7 @@ public class AdlsAdapter extends NetworkAdapter {
   public CompletableFuture<String> readAsync(final String corpusPath) {
     return CompletableFuture.supplyAsync(() -> {
       final CdmHttpRequest cdmHttpRequest;
-      final String url = this.createAdapterPath(corpusPath);
+      String url = this.createFormattedAdapterPath(corpusPath);
 
       cdmHttpRequest = this.buildRequest(url, "GET");
       try {
@@ -159,7 +165,7 @@ public class AdlsAdapter extends NetworkAdapter {
       throw new IllegalArgumentException("Could not create folder for document '" + corpusPath + "'");
     }
     return CompletableFuture.runAsync(() -> {
-      final String url = this.createAdapterPath(corpusPath);
+      String url = this.createFormattedAdapterPath(corpusPath);
 
       try {
         CdmHttpRequest request = this.buildRequest(url + "?resource=file", "PUT");
@@ -179,6 +185,10 @@ public class AdlsAdapter extends NetworkAdapter {
 
   @Override
   public String createAdapterPath(final String corpusPath) {
+    if (corpusPath == null) {
+      return null;
+    }
+
     final String formattedCorpusPath = this.formatCorpusPath(corpusPath);
     if (formattedCorpusPath == null) {
       return null;
@@ -245,7 +255,7 @@ public class AdlsAdapter extends NetworkAdapter {
         return cachedValue;
       }
       else{
-        final String url = this.createAdapterPath(corpusPath);
+        String url = this.createFormattedAdapterPath(corpusPath);
 
         final CdmHttpRequest request = this.buildRequest(url, "HEAD");
         CdmHttpResponse cdmResponse = executeRequest(request).join();
@@ -357,6 +367,18 @@ public class AdlsAdapter extends NetworkAdapter {
 
       return result;
     });
+  }
+
+  /**
+   * Creates formatted adapter path with "dfs" in the url for sending requests.
+   * @param corpusPath the corpus path.
+   * @return the formatted adapter path
+   */
+  private String createFormattedAdapterPath(String corpusPath)
+  {
+    String adapterPath = this.createAdapterPath(corpusPath);
+
+    return adapterPath != null ? adapterPath.replace(this.hostname, this.formattedHostname): null;
   }
 
   /**
@@ -517,6 +539,11 @@ public class AdlsAdapter extends NetworkAdapter {
     if (locationHint != null) {
       configObject.put("locationHint", locationHint);
     }
+
+    if (this.adlsAdapterAuthenticator.getEndpoint() != null) {
+      configObject.put("endpoint", this.adlsAdapterAuthenticator.getEndpoint().toString());
+    }
+
     resultConfig.set("config", configObject);
     try {
       return JMapper.WRITER.writeValueAsString(resultConfig);
@@ -538,15 +565,33 @@ public class AdlsAdapter extends NetworkAdapter {
       throw new RuntimeException("Root has to be set for ADLS adapter.");
     }
     if (configsJson.has("hostname")) {
-      this.hostname = configsJson.get("hostname").asText();
+      this.updateHostname(configsJson.get("hostname").asText());
     } else {
       throw new RuntimeException("Hostname has to be set for ADLS adapter.");
     }
+
     if (configsJson.has("tenant") && configsJson.has("clientId")) {
       this.adlsAdapterAuthenticator.setTenant(configsJson.get("tenant").asText());
       this.adlsAdapterAuthenticator.setClientId(configsJson.get("clientId").asText());
+
+      // To keep backwards compatibility with config files that were generated before the introduction of the `endpoint` property.
+      if (this.getEndpoint() == null) {
+        this.adlsAdapterAuthenticator.setEndpoint(AzureCloudEndpoint.AzurePublic);
+      }
     }
+
     this.setLocationHint(configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null);
+
+    if (configsJson.has("endpoint")) {
+      String endpointStr = configsJson.get("endpoint").asText();
+      final com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint endpoint;
+      try {
+        endpoint = com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint.valueOf(endpointStr);
+        this.adlsAdapterAuthenticator.setEndpoint(endpoint);
+      } catch (IllegalArgumentException ex) {
+        throw new RuntimeException("Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.");
+      }
+    }
   }
 
   private String getEscapedRoot() {
@@ -633,5 +678,13 @@ public class AdlsAdapter extends NetworkAdapter {
 
   public void setHttpMaxResults(int value) {
     this.httpMaxResults = value;
+  }
+
+  public com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint getEndpoint() {
+    return this.adlsAdapterAuthenticator.getEndpoint();
+  }
+
+  public void setEndpoint(final com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint endpoint) {
+    this.adlsAdapterAuthenticator.setEndpoint(endpoint);
   }
 }

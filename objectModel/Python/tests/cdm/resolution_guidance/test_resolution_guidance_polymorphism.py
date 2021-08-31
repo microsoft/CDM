@@ -10,7 +10,7 @@ class ResolutionGuidancePolymorphismTest(common_test.CommonTest):
     @async_test
     async def test_polymorphism(self):
         """Resolution Guidance Test - Polymorphism"""
-        test_name = 'TestPolymorphism'
+        test_name = 'test_polymorphism'
         entity_name = 'Customer'
 
         # Refer to bug https://powerbi.visualstudio.com/Power%20Query/_workitems/edit/327155
@@ -59,7 +59,7 @@ class ResolutionGuidancePolymorphismTest(common_test.CommonTest):
     @async_test
     async def test_polymorphism_with_attribute_group_ref(self):
         """Resolution Guidance Test - Polymorphism With AttributeGroupRef"""
-        test_name = 'TestPolymorphismWithAttributeGroupRef'
+        test_name = 'test_polymorphism_with_attribute_group_ref'
         entity_name = 'Customer'
 
         # Refer to bug https://powerbi.visualstudio.com/Power%20Query/_workitems/edit/327155
@@ -108,7 +108,7 @@ class ResolutionGuidancePolymorphismTest(common_test.CommonTest):
     @async_test
     async def test_polymorphism_with_rename_as_member(self):
         """Resolution Guidance Test - Polymorphism With Rename As Member"""
-        test_name = 'TestPolymorphismWithRenameAsMember'
+        test_name = 'test_polymorphism_with_rename_as_member'
         entity_name = 'Customer'
 
         # Refer to bug https://powerbi.visualstudio.com/Power%20Query/_workitems/edit/327155

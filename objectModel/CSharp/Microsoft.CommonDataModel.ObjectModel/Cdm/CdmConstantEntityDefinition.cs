@@ -63,7 +63,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmConstantEntityDefinition;
-                copy.Ctx = this.Ctx;
                 copy.ConstantEntityName = this.ConstantEntityName;
             }
 

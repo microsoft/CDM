@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from enum import Enum
+import re
 
 
 def rchop(the_string, ending):
@@ -56,3 +57,21 @@ class StringUtils:
 
         result = source.replace('{{{}}}'.format(lower_case_pattern), value)
         return result.replace('{{{}}}'.format(upper_case_pattern), upper_case_value)
+
+    @staticmethod
+    def snake_case_to_pascal_case(snake_str: str) -> str:
+        if StringUtils.is_null_or_white_space(snake_str):
+            return snake_str
+
+        components = snake_str.split('_')
+
+        return ''.join(x.title() for x in components)
+
+    @staticmethod
+    def pascal_case_to_snake_case(pascal_str: str) -> str:
+        if StringUtils.is_null_or_white_space(pascal_str):
+            return pascal_str
+
+        pattern = re.compile(r'(?<!^)(?=[A-Z])')
+
+        return pattern.sub('_', pascal_str).upper()

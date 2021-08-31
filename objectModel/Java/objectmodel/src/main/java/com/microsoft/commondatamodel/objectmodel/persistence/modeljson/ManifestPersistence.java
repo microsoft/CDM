@@ -258,7 +258,6 @@ public class ManifestPersistence {
           .map((CdmTraitDefinition cdmTraitDef) -> (CdmObjectDefinition) cdmTraitDef)
           .collect(Collectors.toList()).forEach(cdmObjectDef -> extensionDoc.getDefinitions().add(cdmObjectDef));
       extensionDoc.getImports().add("cdm:/extensions/base.extension.cdm.json");
-      extensionDoc.setJsonSchemaSemanticVersion("1.0.0");
       extensionDoc.setFolderPath(folder.getFolderPath());
       extensionDoc.setNamespace(folder.getNamespace());
 

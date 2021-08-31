@@ -40,23 +40,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            CdmOperationAlterTraits copy;
-            if (host == null)
-            {
-                copy = new CdmOperationAlterTraits(this.Ctx);
-            }
-            else
-            {
-                copy = host as CdmOperationAlterTraits;
-                copy.Ctx = this.Ctx;
-            }
+            var copy = host == null ? new CdmOperationAlterTraits(this.Ctx) : host as CdmOperationAlterTraits;
 
             List<CdmTraitReferenceBase> traitsToAdd = null;
             
             if (this.TraitsToAdd != null)
             {
                 traitsToAdd = new List<CdmTraitReferenceBase>();
-                this.TraitsToAdd.ForEach(trait => traitsToAdd.Add((CdmTraitReferenceBase)trait.Copy(resOpt)));
+                this.TraitsToAdd.ForEach(trait => traitsToAdd.Add(trait.Copy(resOpt) as CdmTraitReferenceBase));
             }
 
             List<CdmTraitReferenceBase> traitsToRemove = null;
@@ -64,20 +55,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.TraitsToRemove != null)
             {
                 traitsToRemove = new List<CdmTraitReferenceBase>();
-                this.TraitsToRemove.ForEach(trait => traitsToRemove.Add((CdmTraitReferenceBase)trait.Copy(resOpt)));
+                this.TraitsToRemove.ForEach(trait => traitsToRemove.Add(trait.Copy(resOpt) as CdmTraitReferenceBase));
             }
 
-            List<string> applyTo = null;
 
             if (this.ApplyTo != null)
             {
-                applyTo = new List<string>();
-                applyTo.AddRange(this.ApplyTo);
+                copy.ApplyTo = new List<string>(this.ApplyTo);
             }
 
             copy.TraitsToAdd = traitsToAdd;
             copy.TraitsToRemove = traitsToRemove;
-            copy.ApplyTo = applyTo;
             copy.ArgumentsContainWildcards = this.ArgumentsContainWildcards;
 
             this.CopyProj(resOpt, copy);

@@ -39,6 +39,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
     /**
      * @inheritdoc
+     * Note: Use setLastFileModifiedTime() for setting the value.
      */
     public lastFileStatusCheckTime: Date;
 
@@ -51,6 +52,8 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public lastChildFileModifiedTime: Date;
+
+    private lastFileModifiedOldTime: Date;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.localEntityDeclarationDef;
@@ -71,6 +74,8 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         this.entityName = entityName;
         this.dataPartitions = new CdmCollection<CdmDataPartitionDefinition>(this.ctx, this, cdmObjectType.dataPartitionDef);
         this.dataPartitionPatterns = new CdmCollection<CdmDataPartitionPatternDefinition>(this.ctx, this, cdmObjectType.dataPartitionDef);
+        this.lastFileModifiedTime = null;
+        this.lastFileModifiedOldTime = null;
     }
 
     /**
@@ -106,7 +111,6 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
             copy = new CdmLocalEntityDeclarationDefinition(this.ctx, this.entityName);
         } else {
             copy = host as CdmLocalEntityDeclarationDefinition;
-            copy.ctx = this.ctx;
             copy.entityName = this.entityName;
             copy.dataPartitionPatterns.clear();
             copy.dataPartitions.clear();
@@ -117,11 +121,11 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
         copy.lastChildFileModifiedTime = this.lastChildFileModifiedTime;
 
         for (const partition of this.dataPartitions) {
-            copy.dataPartitions.push(partition);
+            copy.dataPartitions.push(partition.copy(resOpt) as CdmDataPartitionDefinition);
         }
 
         for (const pattern of this.dataPartitionPatterns) {
-            copy.dataPartitionPatterns.push(pattern);
+            copy.dataPartitionPatterns.push(pattern.copy(resOpt) as CdmDataPartitionPatternDefinition);
         }
         this.copyDef(resOpt, copy);
 
@@ -202,7 +206,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
             }
 
             this.lastFileStatusCheckTime = new Date();
-            this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
+            this.setLastFileModifiedTime(timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime));
 
             await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
         }
@@ -254,5 +258,26 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
             this.dataPartitions.push(newPartition);
         }
+    }
+
+    public setLastFileModifiedTime(value : Date): void {
+        this.setLastFileModifiedOldTime(this.lastFileModifiedTime);
+        this.lastFileModifiedTime = value;
+    }
+    
+    public getlastFileModifiedTime(): Date {
+        return this.lastFileModifiedTime;
+    }
+    
+    private setLastFileModifiedOldTime(value: Date): void {
+        this.lastFileModifiedOldTime = value;
+    }
+
+    public getlastFileModifiedOldTime(): Date {
+        return this.lastFileModifiedOldTime;
+    }
+
+    public resetLastFileModifiedOldTime(): void {
+       this.setLastFileModifiedOldTime(null);
     }
 }

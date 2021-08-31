@@ -140,7 +140,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    * The maximum json semantic version supported by this ObjectModel version.
    */
   public static String getCurrentJsonSchemaSemanticVersion() {
-    return "1.2.0";
+    return "1.3.0";
   }
 
   @Deprecated
@@ -217,6 +217,9 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   void clearCaches() {
     this.internalDeclarations = new LinkedHashMap<>();
+
+    // reset the list before indexing
+    this.setImportPriorities(null);
 
     // Remove all of the cached paths and resolved pointers.
     this.visit("", null, (iObject, path) -> {
@@ -483,8 +486,31 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
         this.isDirty = false;
       }
 
+      // Log the telemetry if the document is a manifest
+      if (this instanceof CdmManifestDefinition) {
+        for (CdmEntityDeclarationDefinition entity : ((CdmManifestDefinition)this).getEntities()) {
+          if (entity instanceof CdmLocalEntityDeclarationDefinition) {
+            ((CdmLocalEntityDeclarationDefinition)entity).resetLastFileModifiedOldTime();
+          }
+          for (CdmE2ERelationship relationship : ((CdmManifestDefinition)this).getRelationships()) {
+            relationship.resetLastFileModifiedOldTime();
+          }
+        }
+        Logger.ingestManifestTelemetry((CdmManifestDefinition) this, this.getCtx(), TAG, "saveAsAsync", this.getAtCorpusPath());
+      }
+
+      // Log the telemetry of all entities contained in the document
+      else {
+        for (CdmObjectDefinition obj : this.getDefinitions()) {
+          if (obj instanceof CdmEntityDefinition) {
+            Logger.ingestEntityTelemetry((CdmEntityDefinition) obj, this.getCtx(), TAG, "saveAsAsync", this.getAtCorpusPath());
+          }
+        }
+      }
+
       return this.getCtx().getCorpus().getPersistence().saveDocumentAsAsync(this, newName, saveReferenced, options);
     }
+    
   }
 
   CdmObject fetchObjectFromDocumentPath(final String objectPath, final ResolveOptions resOpt) {

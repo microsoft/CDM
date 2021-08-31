@@ -8,6 +8,7 @@ import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse, TokenProvider } from '.
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { NetworkAdapter } from './NetworkAdapter';
 import { configObjectType } from './StorageAdapter';
+import { azureCloudEndpoint, AzureCloudEndpointConvertor } from '../Enums/azureCloudEndpoint';
 
 export class ADLSAdapter extends NetworkAdapter {
     /**
@@ -56,6 +57,7 @@ export class ADLSAdapter extends NetworkAdapter {
     public sharedKey: string;
     public tokenProvider: TokenProvider;
     public httpMaxResults: number = 5000;
+    public endpoint?: azureCloudEndpoint;
 
     // The map from corpus path to adapter path.
     private readonly adapterPaths: Map<string, string>;
@@ -88,7 +90,8 @@ export class ADLSAdapter extends NetworkAdapter {
         root?: string,
         tenantOrSharedKeyorTokenProvider?: string | TokenProvider,
         clientId?: string,
-        secret?: string) {
+        secret?: string,
+        endpoint?: azureCloudEndpoint) {
         super();
 
         if (hostname && root) {
@@ -103,10 +106,11 @@ export class ADLSAdapter extends NetworkAdapter {
                         this._tenant = tenantOrSharedKeyorTokenProvider;
                         this.clientId = clientId;
                         this.secret = secret;
+                        this.endpoint = endpoint === undefined ? azureCloudEndpoint.AzurePublic : endpoint;
                     }
                 } else {
                     this.tokenProvider = tenantOrSharedKeyorTokenProvider;
-                }
+              }
             }
         }
 
@@ -121,7 +125,7 @@ export class ADLSAdapter extends NetworkAdapter {
     }
 
     public async readAsync(corpusPath: string): Promise<string> {
-        const url: string = this.createAdapterPath(corpusPath);
+        const url: string = this.createFormattedAdapterPath(corpusPath);
 
         const cdmHttpRequest: CdmHttpRequest = await this.buildRequest(url, 'GET');
 
@@ -134,7 +138,8 @@ export class ADLSAdapter extends NetworkAdapter {
         if (!this.ensurePath(`${this.root}${corpusPath}`)) {
             throw new Error(`Could not create folder for document ${corpusPath}`);
         }
-        const url: string = this.createAdapterPath(corpusPath);
+
+        const url: string = this.createFormattedAdapterPath(corpusPath);
 
         let request: CdmHttpRequest = await this.buildRequest(`${url}?resource=file`, 'PUT');
         await super.executeRequest(request);
@@ -154,7 +159,12 @@ export class ADLSAdapter extends NetworkAdapter {
     }
 
     public createAdapterPath(corpusPath: string): string {
+        if (corpusPath === undefined || corpusPath === null) {
+            return undefined;
+        }
+
         const formattedCorpusPath: string = this.formatCorpusPath(corpusPath);
+
         if (formattedCorpusPath === undefined || formattedCorpusPath === null) {
             return undefined;
         }
@@ -200,7 +210,7 @@ export class ADLSAdapter extends NetworkAdapter {
         }
         else {
 
-            const url: string = this.createAdapterPath(corpusPath);
+            const url: string = this.createFormattedAdapterPath(corpusPath);
 
             const request: CdmHttpRequest = await this.buildRequest(url, 'HEAD');
 
@@ -306,6 +316,10 @@ export class ADLSAdapter extends NetworkAdapter {
             configObject.locationHint = this.locationHint;
         }
 
+        if (this.endpoint !== undefined) {
+            configObject.endpoint = azureCloudEndpoint[this.endpoint];
+        }
+
         resultConfig.config = configObject;
 
         return JSON.stringify(resultConfig);
@@ -335,10 +349,24 @@ export class ADLSAdapter extends NetworkAdapter {
         if (configJson.tenant && configJson.clientId) {
             this._tenant = configJson.tenant;
             this.clientId = configJson.clientId;
+
+            // To keep backwards compatibility with config files that were generated before the introduction of the `endpoint` property.
+            if (!this.endpoint) {
+                this.endpoint = azureCloudEndpoint.AzurePublic;
+            }
         }
 
         if (configJson.locationHint) {
             this.locationHint = configJson.locationHint;
+        }
+
+        if (configJson.endpoint) {
+            const endpointStr = configJson.endpoint;
+            if (Object.values(azureCloudEndpoint).includes(endpointStr)) {
+                this.endpoint = azureCloudEndpoint[endpointStr as unknown as keyof azureCloudEndpoint];
+            } else {
+                throw new Error('Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.');
+            }
         }
     }
 
@@ -443,6 +471,12 @@ export class ADLSAdapter extends NetworkAdapter {
         }
 
         return request;
+    }
+
+    private createFormattedAdapterPath(corpusPath: string): string {
+        const adapterPath: string = this.createAdapterPath(corpusPath);
+
+        return adapterPath ? adapterPath.replace(this.hostname, this.formattedHostname) : undefined;
     }
 
     private ensurePath(pathFor: string): boolean {
@@ -550,7 +584,7 @@ export class ADLSAdapter extends NetworkAdapter {
             const clientConfig = {
                 auth: {
                     clientId: this.clientId,
-                    authority: `https://login.microsoftonline.com/${this.tenant}`,
+                    authority: `${AzureCloudEndpointConvertor.azureCloudEndpointToURL(this.endpoint)}/${this.tenant}`,
                     clientSecret: this.secret
                 }
             };

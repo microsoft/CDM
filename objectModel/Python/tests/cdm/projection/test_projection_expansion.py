@@ -30,7 +30,7 @@ class ProjectionExpansionTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionExpansion')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionExpansionTest')
 
     @async_test
     async def test_entity_attribute_proj_using_object_model(self):
@@ -467,9 +467,9 @@ class ProjectionExpansionTest(unittest.TestCase):
         # Expand 1...3, renameFormat = {m}{o}, include [name, age1]
         self.assertEqual(4, len(resolved_entity.attributes))
         self.assertEqual('name1', resolved_entity.attributes[0].name)
-        self.assertEqual('age1', resolved_entity.attributes[1].name)
-        self.assertEqual('name2', resolved_entity.attributes[2].name)
-        self.assertEqual('name3', resolved_entity.attributes[3].name)
+        self.assertEqual('name2', resolved_entity.attributes[1].name)
+        self.assertEqual('name3', resolved_entity.attributes[2].name)
+        self.assertEqual('age1', resolved_entity.attributes[3].name)
 
     @async_test
     async def test_polymorphic(self):

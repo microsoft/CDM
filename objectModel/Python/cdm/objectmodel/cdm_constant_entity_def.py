@@ -73,7 +73,6 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
             copy = CdmConstantEntityDefinition(self.ctx, self.constant_entity_name)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.constant_entity_name = self.constant_entity_name
 
         copy.entity_shape = self.entity_shape.copy(res_opt)

@@ -30,7 +30,8 @@ public class CustomizeEntitiesTest extends SampleTestBase{
             customizeEnities(setupCdmCorpus());
             TestHelper.assertFolderFilesEquality(
                     TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, TEST_NAME),
-                    TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, TEST_NAME));
+                    TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, TEST_NAME),
+                    true);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }

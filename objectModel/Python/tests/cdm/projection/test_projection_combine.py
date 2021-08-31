@@ -31,7 +31,7 @@ class ProjectionCombineTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and test_name.
-    tests_sub_path = os.path.join('Cdm', 'Projection', 'TestProjectionCombine')
+    tests_sub_path = os.path.join('Cdm', 'Projection', 'ProjectionCombineTest')
 
     @async_test
     async def test_extends(self) -> None:

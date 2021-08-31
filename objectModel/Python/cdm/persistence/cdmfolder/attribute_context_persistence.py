@@ -21,6 +21,7 @@ map_type_name_to_enum = {
     'entityReferenceExtends': CdmAttributeContextType.ENTITY_REFERENCE_EXTENDS,
     'attributeGroup': CdmAttributeContextType.ATTRIBUTE_GROUP,
     'attributeDefinition': CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+    'attributeExcluded': CdmAttributeContextType.ATTRIBUTE_EXCLUDED,
     'addedAttributeNewArtifact': CdmAttributeContextType.ADDED_ATTRIBUTE_NEW_ARTIFACT,
     'addedAttributeSupporting': CdmAttributeContextType.ADDED_ATTRIBUTE_SUPPORTING,
     'addedAttributeIdentity': CdmAttributeContextType.ADDED_ATTRIBUTE_IDENTITY,
@@ -51,6 +52,7 @@ map_enum_to_type_name = {
     CdmAttributeContextType.ENTITY_REFERENCE_EXTENDS: 'entityReferenceExtends',
     CdmAttributeContextType.ATTRIBUTE_GROUP: 'attributeGroup',
     CdmAttributeContextType.ATTRIBUTE_DEFINITION: 'attributeDefinition',
+    CdmAttributeContextType.ATTRIBUTE_EXCLUDED: 'attributeExcluded',
     CdmAttributeContextType.ADDED_ATTRIBUTE_NEW_ARTIFACT: 'addedAttributeNewArtifact',
     CdmAttributeContextType.ADDED_ATTRIBUTE_SUPPORTING: 'addedAttributeSupporting',
     CdmAttributeContextType.ADDED_ATTRIBUTE_IDENTITY: 'addedAttributeIdentity',
@@ -84,7 +86,9 @@ class AttributeContextPersistence:
             return None
 
         attribute_context = ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_DEF, data.name)
-        attribute_context.type = map_type_name_to_enum[data.type]
+        # TEMPORARY CODE
+        temp = map_type_name_to_enum[data.type]
+        attribute_context.type = temp
 
         if data.get('parent'):
             attribute_context.parent = AttributeContextReferencePersistence.from_data(ctx, data.get('parent'))
@@ -103,7 +107,8 @@ class AttributeContextPersistence:
                     or attribute_context.type == CdmAttributeContextType.ADDED_ATTRIBUTE_NEW_ARTIFACT \
                     or attribute_context.type == CdmAttributeContextType.ADDED_ATTRIBUTE_EXPANSION_TOTAL \
                     or attribute_context.type == CdmAttributeContextType.ADDED_ATTRIBUTE_SELECTED_TYPE \
-                    or attribute_context.type == CdmAttributeContextType.ATTRIBUTE_DEFINITION:
+                    or attribute_context.type == CdmAttributeContextType.ATTRIBUTE_DEFINITION \
+                    or attribute_context.type == CdmAttributeContextType.ATTRIBUTE_EXCLUDED:
                 attribute_context.definition = AttributeReferencePersistence.from_data(ctx, data.definition)
 
         # I know the trait collection names look wrong. but I wanted to use the def baseclass

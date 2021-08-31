@@ -187,6 +187,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.AreSame(importDoc, secondImportDoc);
         }
 
+        /// <summary>
+        /// Testing that import priorites update correctly when imports are changed
+        /// </summary>
+        [TestMethod]
+        public async Task TestPrioritizingImportsAfterEdit()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPrioritizingImportsAfterEdit));
+
+            var document = await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/mainDoc.cdm.json");
+            await document.RefreshAsync(new ResolveOptions(document));
+
+            Assert.AreEqual(0, document.Imports.Count);
+            // the current doc itself is added to the list of priorities
+            Assert.AreEqual(1, document.ImportPriorities.ImportPriority.Count);
+
+            document.Imports.Add("importDoc.cdm.json", true);
+            await document.RefreshAsync(new ResolveOptions(document));
+
+            Assert.AreEqual(1, document.Imports.Count);
+            Assert.AreEqual(2, document.ImportPriorities.ImportPriority.Count);
+        }
+
         private CdmCorpusDefinition CreateTestCorpus(StorageAdapter adapter)
         {
             var cdmCorpus = new CdmCorpusDefinition();

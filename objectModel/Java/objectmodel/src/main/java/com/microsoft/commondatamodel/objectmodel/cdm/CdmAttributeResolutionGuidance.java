@@ -415,7 +415,9 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
       copy.setRemovedDirectives(new ArrayList<>(this.getRemovedDirectives()));
     }
 
-    copy.setAddSupportingAttribute(this.getAddSupportingAttribute());
+    copy.setAddSupportingAttribute(
+            this.getAddSupportingAttribute() != null
+                    ? (CdmTypeAttributeDefinition) this.getAddSupportingAttribute() : null);
     copy.setCardinality(this.getCardinality());
     copy.setRenameFormat(this.getRenameFormat());
 

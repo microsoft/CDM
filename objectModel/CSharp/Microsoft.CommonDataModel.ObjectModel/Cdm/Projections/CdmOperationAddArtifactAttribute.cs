@@ -36,18 +36,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            CdmOperationAddArtifactAttribute copy;
-            if (host == null)
-            {
-                copy = new CdmOperationAddArtifactAttribute(this.Ctx);
-            }
-            else
-            {
-                copy = host as CdmOperationAddArtifactAttribute;
-                copy.Ctx = this.Ctx;
-            }
+            var copy = host == null ? new CdmOperationAddArtifactAttribute(this.Ctx) : host as CdmOperationAddArtifactAttribute;
 
-            copy.NewAttribute = this.NewAttribute.Copy(resOpt) as CdmAttributeItem;
+            copy.NewAttribute = this.NewAttribute?.Copy(resOpt) as CdmAttributeItem;
             copy.InsertAtTop = this.InsertAtTop;
 
             this.CopyProj(resOpt, copy);

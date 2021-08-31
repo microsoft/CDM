@@ -10,7 +10,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
     using System;
-    using System.Collections.Generic;
 
     class LocalEntityDeclarationPersistence
     {

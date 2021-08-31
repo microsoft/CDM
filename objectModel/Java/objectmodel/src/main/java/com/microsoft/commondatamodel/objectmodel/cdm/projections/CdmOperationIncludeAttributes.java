@@ -17,6 +17,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,11 +39,17 @@ public class CdmOperationIncludeAttributes extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        List<String> includeAttributes = new ArrayList<String>();
-        includeAttributes.addAll(this.includeAttributes);
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
 
-        CdmOperationIncludeAttributes copy = new CdmOperationIncludeAttributes(this.getCtx());
-        copy.includeAttributes = includeAttributes;
+        CdmOperationIncludeAttributes copy = host == null ? new CdmOperationIncludeAttributes(this.getCtx()) : (CdmOperationIncludeAttributes)host;
+
+        if (this.includeAttributes != null) {
+            copy.setIncludeAttributes(new ArrayList<String>(this.includeAttributes));
+        }
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -138,35 +145,53 @@ public class CdmOperationIncludeAttributes extends CdmOperationBase {
         // Initialize a projection attribute context tree builder with the created attribute context for the operation
         ProjectionAttributeContextTreeBuilder attrCtxTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpIncludeAttrs);
 
+        // Index that holds the current attribute name as the key and the attribute as value
+        Map<String, ProjectionAttributeState> topLevelIncludeAttribute = new HashMap<>();
+
+        // List of attributes that were not included on the final attribute list
+        List<ProjectionAttributeState> removedAttributes = new ArrayList<>();
+
         // Iterate through all the PAS in the PASSet generated from the projection source's resolved attributes
         for (ProjectionAttributeState currentPAS : projCtx.getCurrentAttributeStateSet().getStates()) {
             // Check if the current PAS's RA is in the list of attributes to include.
             if (topLevelIncludeAttributeNames.containsKey(currentPAS.getCurrentResolvedAttribute().getResolvedName())) {
-                // Get the attribute name the way it appears in the include list
-                String includeAttributeName = topLevelIncludeAttributeNames.get(currentPAS.getCurrentResolvedAttribute().getResolvedName());
-
-                // Create the attribute context parameters and just store it in the builder for now
-                // We will create the attribute contexts at the end
-                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(includeAttributeName, currentPAS, currentPAS.getCurrentResolvedAttribute(),
-                        CdmAttributeContextType.AttributeDefinition,
-                        currentPAS.getCurrentResolvedAttribute().getAttCtx(), // lineage is the included attribute
-                        null); // don't know who will point here yet
-
-
-                // Create a projection attribute state for the included attribute by creating a copy of the current state
-                // Copy() sets the current state as the previous state for the new one
-                // We only create projection attribute states for attributes in the include list
-                ProjectionAttributeState newPAS = currentPAS.copy();
-
-                projAttrStateSet.add(newPAS);
+                topLevelIncludeAttribute.put(currentPAS.getCurrentResolvedAttribute().getResolvedName(), currentPAS);
             } else {
-                // Create the attribute context parameters and just store it in the builder for now
-                // We will create the attribute contexts at the end
-                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(null, currentPAS, currentPAS.getCurrentResolvedAttribute(),
-                        CdmAttributeContextType.AttributeDefinition,
-                        currentPAS.getCurrentResolvedAttribute().getAttCtx(), // lineage is the excluded attribute
-                        null); // don't know who will point here, probably nobody, I mean, we got excluded
+                removedAttributes.add(currentPAS);
             }
+        }
+
+        // Loop through the list of attributes in the same order that was specified by the user
+        for (Map.Entry<String, String> entry : topLevelIncludeAttributeNames.entrySet()) {
+            // Get the attribute state
+            ProjectionAttributeState currentPAS = topLevelIncludeAttribute.get(entry.getKey());
+
+            // Get the attribute name the way it appears in the include list
+            String includeAttributeName = entry.getValue();
+
+            // Create the attribute context parameters and just store it in the builder for now
+            // We will create the attribute contexts at the end
+            attrCtxTreeBuilder.createAndStoreAttributeContextParameters(includeAttributeName, currentPAS, currentPAS.getCurrentResolvedAttribute(),
+                    CdmAttributeContextType.AttributeDefinition,
+                    currentPAS.getCurrentResolvedAttribute().getAttCtx(), // lineage is the included attribute
+                    null); // don't know who will point here yet
+
+            // Create a projection attribute state for the included attribute by creating a copy of the current state
+            // Copy() sets the current state as the previous state for the new one
+            // We only create projection attribute states for attributes in the include list
+            ProjectionAttributeState newPAS = currentPAS.copy();
+
+            projAttrStateSet.add(newPAS);
+        }
+
+        // Generate attribute context nodes for the attributes that were not included
+        for (ProjectionAttributeState currentPAS : removedAttributes) {
+            // Create the attribute context parameters and just store it in the builder for now
+            // We will create the attribute contexts at the end
+            attrCtxTreeBuilder.createAndStoreAttributeContextParameters(null, currentPAS, currentPAS.getCurrentResolvedAttribute(),
+                    CdmAttributeContextType.AttributeExcluded,
+                    currentPAS.getCurrentResolvedAttribute().getAttCtx(), // lineage is the excluded attribute
+                    null); // don't know who will point here, probably nobody, I mean, we got excluded
         }
 
         // Create all the attribute contexts and construct the tree

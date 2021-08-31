@@ -3,7 +3,6 @@
 
 import { CdmFolder } from '..';
 import {
-    CardinalitySettings,
     CdmCorpusContext,
     cdmDataFormat,
     cdmLogCode,
@@ -42,35 +41,7 @@ export class TypeAttributePersistence {
         typeAttribute.purpose = CdmFolder.PurposeReferencePersistence.fromData(ctx, object.purpose);
         typeAttribute.dataType = CdmFolder.DataTypeReferencePersistence.fromData(ctx, object.dataType);
 
-        if (object.cardinality) {
-            let minCardinality: string;
-            if (object.cardinality.minimum) {
-                minCardinality = object.cardinality.minimum;
-            }
-
-            let maxCardinality: string;
-            if (object.cardinality.maximum) {
-                maxCardinality = object.cardinality.maximum;
-            }
-
-            if (!minCardinality || !maxCardinality) {
-                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistCardinalityPropMissing);
-            }
-
-            if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-                Logger.error(ctx, TypeAttributePersistence.TAG, this.fromData.name, null, cdmLogCode.ErrValdnInvalidMinCardinality, minCardinality);
-            }
-
-            if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-                Logger.error(ctx, TypeAttributePersistence.TAG, this.fromData.name, null, cdmLogCode.ErrValdnInvalidMaxCardinality, maxCardinality);
-            }
-
-            if (minCardinality && maxCardinality && CardinalitySettings.isMinimumValid(minCardinality) && CardinalitySettings.isMaximumValid(maxCardinality)) {
-                typeAttribute.cardinality = new CardinalitySettings(typeAttribute);
-                typeAttribute.cardinality.minimum = minCardinality;
-                typeAttribute.cardinality.maximum = maxCardinality;
-            }
-        }
+        typeAttribute.cardinality = utils.cardinalitySettingsFromData(object.cardinality, typeAttribute);
 
         typeAttribute.attributeContext =
             CdmFolder.AttributeContextReferencePersistence.fromData(ctx, object.attributeContext);
@@ -129,7 +100,8 @@ export class TypeAttributePersistence {
             appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, appliedTraits, options),
             resolutionGuidance: instance.resolutionGuidance
                 ? instance.resolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
-            attributeContext: instance.attributeContext ? instance.attributeContext.copyData(resOpt, options) as string : undefined
+            attributeContext: instance.attributeContext ? instance.attributeContext.copyData(resOpt, options) as string : undefined,
+            cardinality: utils.cardinalitySettingsToData(instance.cardinality)
         };
 
         object.projection = instance.projection ? instance.projection.copyData(resOpt, options) as Projection : undefined;

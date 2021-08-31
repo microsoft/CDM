@@ -31,7 +31,7 @@ public class StorageManager {
   private static final String TAG = StorageManager.class.getSimpleName();
 
   private final CdmCorpusDefinition corpus;
-  private final Map<String, CdmFolderDefinition> namespaceFolder = new LinkedHashMap<>();
+  private Map<String, CdmFolderDefinition> namespaceFolders = new LinkedHashMap<>();
 
   private String defaultNamespace;
   private Map<String, StorageAdapter> namespaceAdapters = new LinkedHashMap<>();
@@ -68,7 +68,7 @@ public class StorageManager {
         fd.setCorpus(this.corpus);
         fd.setNamespace(nameSpace);
         fd.setFolderPath("/");
-        this.namespaceFolder.put(nameSpace, fd);
+        this.namespaceFolders.put(nameSpace, fd);
         this.systemDefinedNamespaces.remove(nameSpace);
       } else {
         Logger.error(this.corpus.getCtx(), TAG, "mount", null, CdmLogCode.ErrStorageNullAdapter);
@@ -167,7 +167,7 @@ public class StorageManager {
 
       if (this.namespaceAdapters.containsKey(nameSpace)) {
         this.namespaceAdapters.remove(nameSpace);
-        this.namespaceFolder.remove(nameSpace);
+        this.namespaceFolders.remove(nameSpace);
         this.systemDefinedNamespaces.remove(nameSpace);
 
         // The special case, use resource adapter.
@@ -211,10 +211,10 @@ public class StorageManager {
       return null;
     }
 
-    if (this.namespaceFolder.containsKey(nameSpace)) {
+    if (this.namespaceFolders.containsKey(nameSpace)) {
       return this.namespaceAdapters.get(nameSpace);
     }
-    Logger.error(this.corpus.getCtx(), TAG, "fetchAdapter", null, CdmLogCode.ErrStorageFolderNotFound, nameSpace);
+    Logger.error(this.corpus.getCtx(), TAG, "fetchAdapter", null, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
     return null;
   }
 
@@ -224,10 +224,10 @@ public class StorageManager {
         Logger.error(this.corpus.getCtx(), TAG, "fetchRootFolder", null, CdmLogCode.ErrStorageNullNamespace);
         return null;
       }
-      if (this.namespaceFolder.containsKey(nameSpace)) {
-        return this.namespaceFolder.get(nameSpace);
-      } else if (this.namespaceFolder.containsKey(this.defaultNamespace)) {
-        return this.namespaceFolder.get(this.defaultNamespace);
+      if (this.namespaceFolders.containsKey(nameSpace)) {
+        return this.namespaceFolders.get(nameSpace);
+      } else if (this.namespaceFolders.containsKey(this.defaultNamespace)) {
+        return this.namespaceFolders.get(this.defaultNamespace);
       }
       Logger.error(this.corpus.getCtx(), TAG, "fetchRootFolder", null, CdmLogCode.ErrStorageFolderNotFound, nameSpace);
       return null;
@@ -448,6 +448,14 @@ public class StorageManager {
 
   public void setNamespaceAdapters(final Map<String, StorageAdapter> namespaceAdapters) {
     this.namespaceAdapters = namespaceAdapters;
+  }
+
+  public Map<String, CdmFolderDefinition> getNamespaceFolders() {
+    return namespaceFolders;
+  }
+
+  public void setNamespaceFolders(final Map<String, CdmFolderDefinition> namespaceFolders) {
+    this.namespaceFolders = namespaceFolders;
   }
 
   public String getDefaultNamespace() {

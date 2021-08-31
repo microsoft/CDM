@@ -167,7 +167,6 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
                 copy = new CdmTypeAttributeDefinition(this.ctx, this.name);
             } else {
                 copy = host as CdmTypeAttributeDefinition;
-                copy.ctx = this.ctx;
                 copy.name = this.getName();
             }
             copy.dataType = this.dataType ? <CdmDataTypeReference>this.dataType.copy(resOpt) : undefined;

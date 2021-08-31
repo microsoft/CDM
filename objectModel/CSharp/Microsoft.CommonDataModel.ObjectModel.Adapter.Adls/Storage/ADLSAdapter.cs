@@ -19,6 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using System.Security.Cryptography;
     using Newtonsoft.Json.Linq;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
 
     public class ADLSAdapter : NetworkAdapter
     {
@@ -81,6 +82,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The account/shared key.
         /// </summary>
         public string SharedKey { get; set; }
+
+        /// <summary>
+        /// The national clouds endpoints, default is the public cloud endpoint.
+        /// </summary>
+        public AzureCloudEndpoint? Endpoint { get; set; }
 
         /// <summary>
         /// The SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
@@ -190,13 +196,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The ADLS constructor for clientId/secret authentication.
         /// </summary>
-        public ADLSAdapter(string hostname, string root, string tenant, string clientId, string secret) : this()
+        public ADLSAdapter(string hostname, string root, string tenant, string clientId, string secret, AzureCloudEndpoint endpoint = AzureCloudEndpoint.AzurePublic) : this()
         {
             this.Hostname = hostname;
             this.Root = root;
             this.Tenant = tenant;
             this.ClientId = clientId;
             this.Secret = secret;
+            this.Endpoint = endpoint;
         }
 
         /// <summary>
@@ -248,7 +255,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public override async Task<string> ReadAsync(string corpusPath)
         {
-            string url = this.CreateAdapterPath(corpusPath);
+            string url = this.CreateFormattedAdapterPath(corpusPath);
 
             var httpRequest = await this.BuildRequest(url, HttpMethod.Get);
 
@@ -272,7 +279,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 throw new Exception($"Could not create folder for document '{corpusPath}'");
             }
 
-            string url = this.CreateAdapterPath(corpusPath);
+            string url = this.CreateFormattedAdapterPath(corpusPath);
 
             var request = await this.BuildRequest($"{url}?resource=file", HttpMethod.Put);
             await this.ExecuteRequest(request);
@@ -290,7 +297,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public override string CreateAdapterPath(string corpusPath)
         {
+            if (corpusPath == null)
+            {
+                return null;
+            }
+
             var formattedCorpusPath = this.FormatCorpusPath(corpusPath);
+
             if (formattedCorpusPath == null)
             {
                 return null;
@@ -334,6 +347,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 }
             }
 
+            // If adapterPath does not belong to the ADLSAdapter, return null
             return null;
         }
 
@@ -351,7 +365,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             else
             {
-                var url = this.CreateAdapterPath(corpusPath);
+                var url = this.CreateFormattedAdapterPath(corpusPath);
 
                 var httpRequest = await this.BuildRequest(url, HttpMethod.Head);
 
@@ -477,6 +491,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 configObject.Add("locationHint", this.LocationHint);
             }
 
+            if (this.Endpoint != null)
+            {
+                configObject.Add("endpoint", this.Endpoint.ToString());
+            }
+
             resultConfig.Add("config", configObject);
 
             return resultConfig.ToString();
@@ -516,11 +535,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 this.Tenant = configJson["tenant"].ToString();
                 this.ClientId = configJson["clientId"].ToString();
+
+                // To keep backwards compatibility with config files that were generated before the introduction of the `Endpoint` property.
+                if (this.Endpoint == null)
+                {
+                    this.Endpoint = AzureCloudEndpoint.AzurePublic;
+                }
             }
 
             if (configJson["locationHint"] != null)
             {
                 this.LocationHint = configJson["locationHint"].ToString();
+            }
+
+            if (configJson["endpoint"] != null) {
+                AzureCloudEndpoint endpoint;
+                if (Enum.TryParse(configJson["endpoint"].ToString(), out endpoint)) {
+                    this.Endpoint = endpoint;
+                } 
+                else
+                {
+                    throw new Exception("Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.");
+                }
             }
         }
 
@@ -662,11 +698,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
+        /// Create formatted adapter path with "dfs" in the url for sending requests.
+        /// </summary>
+        /// <param name="corpusPath">The corpusPath</param>
+        /// <returns>The formatted adapter path</returns>
+        private string CreateFormattedAdapterPath(string corpusPath)
+        {
+            string adapterPath = this.CreateAdapterPath(corpusPath);
+
+            return adapterPath != null ? adapterPath.Replace(this.Hostname, this.formattedHostname) : null;
+        }
+
+        /// <summary>
         /// Extracts the filesystem and sub-path from the given root value.
         /// </summary>
         /// <param name="root">The root</param>
-        /// <param name="fileSystem">The extracted filesystem name</param>
-        /// <param name="subPath">The extracted sub-path</param>
         /// <returns>The root path with leading slash</returns>
         private string ExtractRootBlobContainerAndSubPath(string root)
         {
@@ -819,7 +865,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             if (this.Context == null)
             {
                 this.Context = ConfidentialClientApplicationBuilder.Create(this.ClientId)
-                    .WithAuthority(AzureCloudInstance.AzurePublic, this.Tenant)
+                    .WithAuthority(AzureCloudEndpointConvertor.AzureCloudEndpointToInstance(this.Endpoint.Value), this.Tenant)
                     .WithClientSecret(this.Secret)
                     .Build();
             }

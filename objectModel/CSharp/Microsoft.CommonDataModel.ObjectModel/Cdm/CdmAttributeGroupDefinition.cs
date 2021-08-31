@@ -79,7 +79,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmAttributeGroupDefinition;
-                copy.Ctx = this.Ctx;
                 copy.AttributeGroupName = this.AttributeGroupName;
                 copy.Members.Clear();
             }
@@ -87,7 +86,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.AttributeContext = (CdmAttributeContextReference)this.AttributeContext?.Copy(resOpt);
 
             foreach (var newMember in this.Members)
-                copy.Members.Add(newMember);
+            {
+                copy.Members.Add(newMember.Copy(resOpt) as CdmAttributeItem);
+            }
             this.CopyDef(resOpt, copy);
             return copy;
         }

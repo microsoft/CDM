@@ -6,12 +6,13 @@ import unittest
 from typing import Set
 
 from cdm.enums import CdmObjectType, CdmStatusLevel, CdmDataFormat, ImportsLoadStrategy
-from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmTypeAttributeDefinition
+from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmTypeAttributeDefinition, CdmEntityDefinition
 from cdm.persistence import PersistenceLayer
 from cdm.persistence.cdmfolder.entity_persistence import EntityPersistence
+from cdm.persistence.cdmfolder.type_attribute_persistence import TypeAttributePersistence
 from cdm.persistence.cdmfolder.types import TypeAttribute
 from cdm.storage import LocalAdapter
-from cdm.utilities import JObject, ResolveOptions
+from cdm.utilities import JObject, ResolveOptions, CopyOptions
 
 from tests.common import async_test, TestHelper
 
@@ -355,6 +356,28 @@ class TypeAttributeTest(unittest.TestCase):
         q_trait_named_references = self._fetch_trait_named_references(attribute_q.applied_traits)
         self.assertTrue('is.dataFormat.array' in q_trait_named_references)
         self.assertTrue('means.content.text.JSON' in q_trait_named_references)
+
+    @async_test
+    async def test_cardinality_persistence(self):
+        '''
+        Testing that cardinality settings are loaded and saved correctly
+        '''
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_cardinality_persistence')
+
+        # test from_data
+        entity = await corpus.fetch_object_async('local:/someEntity.cdm.json/someEntity')  # type: CdmEntityDefinition
+        attribute = entity.attributes[0]  # type: CdmTypeAttributeDefinition
+
+        self.assertIsNotNone(attribute.cardinality)
+        self.assertEqual(attribute.cardinality.minimum, '0')
+        self.assertEqual(attribute.cardinality.maximum, '1')
+
+        # test to_data
+        attribute_data = TypeAttributePersistence.to_data(attribute, ResolveOptions(entity.in_document), CopyOptions())
+
+        self.assertIsNotNone(attribute_data.cardinality)
+        self.assertEqual(attribute_data.cardinality.minimum, '0')
+        self.assertEqual(attribute_data.cardinality.maximum, '1')
 
     @staticmethod
     def _fetch_trait_named_references(traits: 'CdmTraitCollection') -> Set[str]:

@@ -3,6 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,8 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
   private String fromEntityAttribute;
   private String toEntity;
   private String toEntityAttribute;
+  private OffsetDateTime lastFileModifiedTime;
+  private OffsetDateTime lastFileModifiedOldTime;
 
   public CdmE2ERelationship(
       final CdmCorpusContext ctx,
@@ -34,6 +37,8 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     this.toEntity = null;
     this.toEntityAttribute = null;
     this.setObjectType(CdmObjectType.E2ERelationshipDef);
+    this.lastFileModifiedTime = null;
+    this.lastFileModifiedOldTime = null;
   }
 
   @Override
@@ -106,6 +111,23 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     this.toEntityAttribute = value;
   }
 
+  public OffsetDateTime getlastFileModifiedOldTime() {
+    return this.lastFileModifiedOldTime;
+  }
+
+  private void setlastFileModifiedOldTime(OffsetDateTime lastFileModifiedOldTime) {
+    this.lastFileModifiedOldTime = lastFileModifiedOldTime;
+  }
+
+  public OffsetDateTime getlastFileModifiedTime() {
+    return this.lastFileModifiedTime;
+  }
+
+  public void setlastFileModifiedTime(OffsetDateTime lastFileModifiedTime) {
+    this.setlastFileModifiedOldTime(lastFileModifiedTime);
+    this.lastFileModifiedTime = lastFileModifiedTime;
+  }
+
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
     return false;
@@ -160,7 +182,6 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
       copy = new CdmE2ERelationship(this.getCtx(), this.getName());
     } else {
       copy = (CdmE2ERelationship) host;
-      copy.setCtx(this.getCtx());
       copy.setName(this.getName());
     }
 
@@ -172,5 +193,13 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
     this.copyDef(resOpt, copy);
 
     return copy;
+  }
+
+  /**
+   * Reset LastFileModifiedOldTime.
+   */
+  public void resetLastFileModifiedOldTime()
+  {
+      this.setlastFileModifiedOldTime(null);
   }
 }

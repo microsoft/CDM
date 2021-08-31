@@ -22,9 +22,9 @@ public class ForwardCompatibilityTest {
      */
     private static final String TESTS_SUBPATH =
             new File(new File(new File(
-                    "cdm"),
-                    "projection"),
-                    "testForwardCompatibility")
+                    "Cdm"),
+                    "Projection"),
+                    "ForwardCompatibilityTest")
                     .toString();
 
     /**

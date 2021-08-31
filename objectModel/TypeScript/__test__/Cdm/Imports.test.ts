@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { 
+import {
     CdmCorpusDefinition,
     CdmDocumentDefinition,
     CdmManifestDefinition,
@@ -212,6 +212,30 @@ describe('Cdm/ImportsTest', () => {
 
         expect(importDoc)
             .toBe(secondImportDoc);
+    });
+
+    /**
+     * Testing that import priorites update correctly when imports are changed
+     */
+    it('TestPrioritizingImportsAfterEdit', async () => {
+        var corpus = testHelper.getLocalCorpus(testsSubpath, 'TestPrioritizingImportsAfterEdit');
+
+        var document = await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/mainDoc.cdm.json');
+        await document.refreshAsync(new resolveOptions(document));
+
+        expect(document.imports.length)
+            .toEqual(0);
+        // the current doc itself is added to the list of priorities
+        expect(document.importPriorities.importPriority.size)
+            .toEqual(1);
+
+        document.imports.push('importDoc.cdm.json', true);
+        await document.refreshAsync(new resolveOptions(document));
+
+        expect(document.imports.length)
+            .toEqual(1);
+        expect(document.importPriorities.importPriority.size)
+            .toEqual(2);
     });
 
     function createTestCorpus(adapter: StorageAdapter): CdmCorpusDefinition {

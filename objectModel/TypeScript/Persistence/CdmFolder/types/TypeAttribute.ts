@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { AttributeResolutionGuidance, CardinalitySettings, DataTypeReference, Projection, PurposeReference, TraitGroupReference, TraitReference } from '.';
+import { AttributeResolutionGuidance, CardinalitySettingsData, DataTypeReference, Projection, PurposeReference, TraitGroupReference, TraitReference } from '.';
 
 export abstract class TypeAttribute {
     public explanation?: string;
@@ -24,6 +24,6 @@ export abstract class TypeAttribute {
     public valueConstrainedToList?: boolean;
     public defaultValue?: any;
     public resolutionGuidance? : AttributeResolutionGuidance;
-    public cardinality?: CardinalitySettings;
+    public cardinality?: CardinalitySettingsData;
     public projection?: Projection;
 }

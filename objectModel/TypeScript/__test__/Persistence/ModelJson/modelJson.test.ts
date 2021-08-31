@@ -86,7 +86,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         const obtainedModelJson: Model = await ModelJson.ManifestPersistence.toData(cdmManifest, undefined, undefined);
         stopwatch.stop();
 
-        HandleOutput('TestLoadingCdmFolderAndModelJsonToData', modelJsonExtension, obtainedModelJson);
+        HandleOutput('TestLoadingCdmFolderAndModelJsonToData', modelJsonExtension, obtainedModelJson, false, true);
 
         expect(stopwatch.getTime())
             .toBeLessThan(8500);
@@ -142,7 +142,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         // the corpus path in the imports are relative to the document where it was defined.
         // when saving in model.json the documents are flattened to the manifest level
         // so it is necessary to recalculate the path to be relative to the manifest.
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('notImportant', 'notImportantLocation');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestImportsRelativePath');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const manifest: CdmManifestDefinition = new CdmManifestDefinition(corpus.ctx, 'manifest');
@@ -375,14 +375,15 @@ describe('Persistence.ModelJson.ModelJson', () => {
      * @param testName The name of the test.
      * @param outputFileName The name of the output file. Used both for expected and actual output.
      * @param actualOutput The output obtained through operations, that is to be compared with the expected output.
+     * @param isLanguageSpecific There is subfolder called Typescript.
      */
-    function HandleOutput(testName: string, outputFileName: string, actualOutput: object, doesWriteTestDebuggingFiles?: boolean): void {
+    function HandleOutput(testName: string, outputFileName: string, actualOutput: object, doesWriteTestDebuggingFiles?: boolean, isLanguageSpecific?: boolean): void {
         const actualOutputSerialized: string = JSON.stringify(actualOutput);
         if (doesWriteTestDebuggingFiles) {
             testHelper.writeActualOutputFileContent(testsSubpath, testName, outputFileName, actualOutputSerialized);
         }
 
-        const expectedOutputSerialized: string = testHelper.getExpectedOutputFileContent(testsSubpath, testName, outputFileName);
+        const expectedOutputSerialized: string = testHelper.getExpectedOutputFileContent(testsSubpath, testName, outputFileName, isLanguageSpecific);
         const expectedOutput: object = JSON.parse(expectedOutputSerialized) as object;
 
         testHelper.assertObjectContentEquality(expectedOutput, actualOutput);

@@ -141,6 +141,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                         if (element.Location != null)
                         {
                             var adlsPath = instance.Ctx.Corpus.Storage.CorpusPathToAdapterPath(element.Location);
+                            string location = element.Location;
                             if (adlsPath == null)
                             {
                                 Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToDataAsync), instance.AtCorpusPath, CdmLogCode.ErrPersistSymsAdlsAdapterMissing, element.Location);
@@ -149,15 +150,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                             var symsPath = Utils.AdlsAdapterPathToSymsPath(adlsPath);
                             if (symsPath != null)
                             {
-                                element.Location = symsPath;
+                                location = symsPath;
                             }
                             else
                             {
                                 var pathTuple = StorageUtils.SplitNamespacePath(element.Location);
-                                element.Location = Utils.CreateSymsAbsolutePath(symsRootPath, pathTuple.Item2);
+                                location = Utils.CreateSymsAbsolutePath(symsRootPath, pathTuple.Item2);
                             }
 
-                            paths.Add(element.Location);
+                            paths.Add(location);
                         }
 
                         teProperties.StorageDescriptor = DataPartitionPersistence.ToData(element, teProperties.StorageDescriptor, resOpt, options);

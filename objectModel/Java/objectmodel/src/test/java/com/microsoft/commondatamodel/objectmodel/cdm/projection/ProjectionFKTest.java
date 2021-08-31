@@ -30,12 +30,7 @@ public class ProjectionFKTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testProjectionFK")
-            .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionFKTest").toString();
 
     @Test
     public void testEntityAttribute() throws InterruptedException {

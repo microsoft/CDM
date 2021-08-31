@@ -38,12 +38,7 @@ public class ProjectionMiscellaneousTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testProjectionMiscellaneous")
-            .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionMiscellaneousTest").toString();
 
     /**
      * Test case scenario for Bug #24 from the projections internal bug bash

@@ -48,7 +48,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
 
             TestHelper.AssertFolderFilesEquality(
                 TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestCreateNetNewEntities)),
-                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestCreateNetNewEntities)));
+                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestCreateNetNewEntities)), true);
         }
 
         private CdmCorpusDefinition SetupCdmCorpus()

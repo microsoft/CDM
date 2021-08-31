@@ -97,7 +97,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmManifestDeclarationDefinition;
-                copy.Ctx = this.Ctx;
                 copy.ManifestName = this.ManifestName;
             }
 

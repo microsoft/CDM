@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import os
+from typing import TYPE_CHECKING
 import unittest
 
 from cdm.enums import ImportsLoadStrategy
@@ -10,6 +11,9 @@ from cdm.utilities import ResolveOptions
 
 from tests.common import async_test, TestHelper
 
+if TYPE_CHECKING:
+    from cdm.objectmodel import CdmDocumentDefinition, CdmFolderDefinition
+
 
 class ImportsTests(unittest.TestCase):
     tests_subpath = os.path.join('Cdm', 'Imports')
@@ -17,7 +21,7 @@ class ImportsTests(unittest.TestCase):
     @async_test
     async def test_entity_with_missing_import(self):
         """The path between TestDataPath and TestName."""
-        test_name = 'TestEntityWithMissingImport'
+        test_name = 'test_entity_with_missing_import'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
@@ -30,7 +34,7 @@ class ImportsTests(unittest.TestCase):
 
     @async_test
     async def test_entity_with_missing_nested_imports_async(self):
-        test_name = 'TestEntityWithMissingNestedImportsAsync'
+        test_name = 'test_entity_with_missing_nested_imports_async'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
@@ -46,7 +50,7 @@ class ImportsTests(unittest.TestCase):
 
     @async_test
     async def test_entity_with_same_imports_async(self):
-        test_name = 'TestEntityWithSameImportsAsync'
+        test_name = 'test_entity_with_same_imports_async'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
@@ -63,7 +67,7 @@ class ImportsTests(unittest.TestCase):
     @async_test
     async def test_non_existing_adapter_namespace(self):
         """Test an import with a non-existing namespace name."""
-        test_name = 'TestNonExistingAdapterNamespace'
+        test_name = 'test_non_existing_adapter_namespace'
         local_adapter = LocalAdapter(TestHelper.get_input_folder_path(self.tests_subpath, test_name))
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
 
@@ -81,7 +85,7 @@ class ImportsTests(unittest.TestCase):
     @async_test
     async def test_loading_same_imports_async(self):
         """Testing docs that load the same import"""
-        test_name = 'TestLoadingSameImportsAsync'
+        test_name = 'test_loading_same_imports_async'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
@@ -102,9 +106,29 @@ class ImportsTests(unittest.TestCase):
         self.assertIsNotNone(second_import.imports[0]._document)
 
     @async_test
+    async def test_prioritizing_imports_after_edit(self):
+        """Testing that import priorities update correctly when imports are changed"""
+        test_name = 'test_prioritizing_imports_after_edit'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+
+        document = await corpus.fetch_object_async('local:/mainDoc.cdm.json')  # type: CdmDocumentDefinition
+        res_opt = ResolveOptions(document)
+        await document.refresh_async(res_opt)
+
+        self.assertEqual(0, len(document.imports))
+        # the current doc itself is added to the list of priorities
+        self.assertEqual(1, len(document._import_priorities.import_priority))
+
+        document.imports.append('importDoc.cdm.json', True)
+        await document.refresh_async(res_opt)
+
+        self.assertEqual(1, len(document.imports))
+        self.assertEqual(2, len(document._import_priorities.import_priority))
+
+    @async_test
     async def test_loading_same_missing_imports_async(self):
         """Testing docs that load the same import"""
-        test_name = 'TestLoadingSameMissingImportsAsync'
+        test_name = 'test_loading_same_missing_imports_async'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
@@ -126,7 +150,7 @@ class ImportsTests(unittest.TestCase):
     @async_test
     async def test_loading_already_present_imports_async(self):
         """Testing docs that load the same import"""
-        test_name = 'TestLoadingAlreadyPresentImportsAsync'
+        test_name = 'test_loading_already_present_imports_async'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD

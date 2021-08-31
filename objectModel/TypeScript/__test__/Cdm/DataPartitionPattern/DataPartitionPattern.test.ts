@@ -505,7 +505,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             }
 
             if (message.indexOf('StorageManager | The object path cannot be null or empty. | createAbsoluteCorpusPath') == -1 &&
-                message.indexOf('CdmCorpusDefinition | The object path cannot be null or empty. | getLastModifiedTimeFromPartitionPath') == -1) {
+                message.indexOf('CdmCorpusDefinition | The object path cannot be null or empty. | getLastModifiedTimeFromPartitionPathAsync') == -1) {
                 fail(new Error('Unexpected error message received'));
             }
         }, cdmStatusLevel.warning);

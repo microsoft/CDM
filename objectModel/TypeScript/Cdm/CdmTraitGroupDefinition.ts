@@ -54,7 +54,6 @@ export class CdmTraitGroupDefinition extends CdmObjectDefinitionBase {
                 copy = new CdmTraitGroupDefinition(this.ctx, this.traitGroupName);
             } else {
                 copy = host as CdmTraitGroupDefinition;
-                copy.ctx = this.ctx;
                 copy.traitGroupName = this.traitGroupName;
             }
 

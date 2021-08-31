@@ -31,7 +31,7 @@ import { resolutionTestUtils } from './ResolutionTestUtils';
  */
 // tslint:disable-next-line: max-func-body-length
 describe('Cdm/Resolution/EntityResolution', () => {
-    const testsSubpath: string = 'Cdm/Resolution/EntityResolution';
+    const testsSubpath: string = 'Cdm/Resolution/EntityResolutionTest';
     const schemaDocsRoot: string = testHelper.schemaDocumentsPath;
 
     /**

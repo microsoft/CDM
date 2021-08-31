@@ -41,7 +41,7 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionExpansion';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionExpansionTest';
 
     /**
      * Test for creating a projection with an ArrayExpansion operation on an entity attribute using the object model
@@ -621,11 +621,11 @@ describe('Cdm/Projection/ProjectionExpansionTest', () => {
         expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('name1');
         expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
-            .toEqual('age1');
-        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
             .toEqual('name2');
-        expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
+        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
             .toEqual('name3');
+        expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
+            .toEqual('age1');
     });
 
     /**

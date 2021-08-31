@@ -42,38 +42,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return doc;
         }
 
-        public static List<TableEntity> ToData(CdmCorpusContext ctx, CdmDocumentDefinition doc,string dbName, ResolveOptions resOpt, CopyOptions options)
+        public static TableEntity ToData(CdmCorpusContext ctx, CdmDocumentDefinition doc, TableProperties currentTableProperties, ResolveOptions resOpt, CopyOptions options)
         {
-            List<TableEntity> symsTables = new List<TableEntity>();
+            if (currentTableProperties == null)
+                return null;
 
-            for (int i = 0; i < doc.Definitions.Count; i++)
+            if (doc .Definitions.Count == 0 || doc.Definitions.Count > 1)
             {
-                if (doc.Definitions[i] is CdmEntityDefinition cdmEntity)
+                Logger.Error((ResolveContext)ctx, Tag, nameof(ToData), doc.AtCorpusPath, CdmLogCode.ErrPersistSymsMultipleOrZeroTableDefinition, doc.Name);
+                return null;
+            }
+            if (doc.Definitions[0] is CdmEntityDefinition cdmEntity)
+            {
+                var tableEntity = EntityPersistence.ToData(cdmEntity, ctx, resOpt, options);
+                TableProperties teProperties = (TableProperties)tableEntity.Properties;
+                
+                if (cdmEntity.Owner != null && cdmEntity.Owner is CdmDocumentDefinition document)
                 {
-                    var tableEntity = EntityPersistence.ToData(cdmEntity, ctx, resOpt, options);
-                    TableProperties teProperties = (TableProperties)tableEntity.Properties;
-                    teProperties.NamespaceProperty = new TableNamespace
+                    if (document.Imports.Count > 0)
                     {
-                        DatabaseName = dbName
-                    };
-
-                    if (cdmEntity.Owner != null && cdmEntity.Owner is CdmDocumentDefinition document)
-                    {
-                        if (document.Imports.Count > 0)
-                        {
-                            var Imports = Utils.ListCopyData<Import>(resOpt, document.Imports, options);
-                            teProperties.Properties["cdm:imports"] = JToken.FromObject(Imports);
-                        }
-                        symsTables.Add(tableEntity);
+                        var Imports = Utils.ListCopyData<Import>(resOpt, document.Imports, options);
+                        teProperties.Properties["cdm:imports"] = JToken.FromObject(Imports);
                     }
                 }
+
+                teProperties.NamespaceProperty = currentTableProperties.NamespaceProperty;
+                teProperties.StorageDescriptor.Source = currentTableProperties.StorageDescriptor.Source;
+                teProperties.StorageDescriptor.Format = currentTableProperties.StorageDescriptor.Format;
+                teProperties.Partitioning = currentTableProperties.Partitioning;
+
+                tableEntity.Properties = teProperties;
+                return tableEntity;
             }
-
-            if (symsTables.Count > 0 )
-                return symsTables;
-
             return null;
         }
+
         public static async Task<TableEntity> ToDataAsync(dynamic documentObjectOrPath, CdmManifestDefinition manifest, CdmCorpusContext ctx,
              ResolveOptions resOpt, CopyOptions options)
         {

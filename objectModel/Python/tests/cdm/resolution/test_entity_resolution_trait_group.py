@@ -12,7 +12,7 @@ from tests.common import async_test, TestHelper
 
 
 class EntityResolutionTraitGroup(unittest.TestCase):
-    tests_sub_path = os.path.join('Cdm', 'Resolution', 'EntityResolution')
+    tests_sub_path = os.path.join('Cdm', 'Resolution', 'EntityResolutionTest')
 
     @async_test
     async def test_resolved_trait_group_e2e(self):

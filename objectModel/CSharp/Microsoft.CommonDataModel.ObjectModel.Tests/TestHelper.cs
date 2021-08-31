@@ -24,7 +24,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// The path of the TestDataFolder.
         /// Here will be found input files and expected output files used by tests
         /// </summary>
-        public const string TestDataPath = "../../../TestData";
+        public const string TestDataPath = "../../../../../../testData";
 
         /// <summary>
         /// The path of the sample schema documents folder.
@@ -48,10 +48,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// </summary>
         /// <param name="testSubpath">The subpath of the test. Path is formed from {TestDataPath}{TestSubpath}{TestName}{FolderUse}</param>
         /// <param name="testName">The name of the test this path is associated with.</param>
+        /// <param name="isLanguageSpecific">Indicate whether there is subfolder called CSharp.</param>
         /// <returns>Input folder path.</returns>
-        public static string GetInputFolderPath(string testSubpath, string testName)
+        public static string GetInputFolderPath(string testSubpath, string testName, bool isLanguageSpecific = false)
         {
-            return GetTestFolderPath(testSubpath, testName, TestHelper.TestFolders.Input);
+            return GetTestFolderPath(testSubpath, testName, TestHelper.TestFolders.Input, isLanguageSpecific);
         }
 
         /// <summary>
@@ -100,16 +101,44 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// <param name="testSubpath">The subpath of the test. Path is formed from {TestDataPath}{TestSubpath}{TestName}{FolderUse}</param>
         /// <param name="testName">The name of the test this file is an expected output for.</param>
         /// <param name="fileName">The name of the file to be read.</param>
+        /// <param name="isLanguageSpecific">Indicate whether there is subfolder called CSharp.</param>
         /// <returns>The content of the file</returns>
-        public static string GetExpectedOutputFileContent(string testSubpath, string testName, string fileName)
+        public static string GetExpectedOutputFileContent(string testSubpath, string testName, string fileName, bool isLanguageSpecific = false)
         {
             var pathOfExpectedOutputFolder = GetExpectedOutputFolderPath(testSubpath, testName);
+            if (isLanguageSpecific)
+            {
+                pathOfExpectedOutputFolder = Path.Combine(pathOfExpectedOutputFolder, "CSharp");
+            }
 
             var pathOfExpectedOutputFile = Path.Combine(pathOfExpectedOutputFolder, fileName);
             Assert.IsTrue(File.Exists(pathOfExpectedOutputFile),
                 $"Was unable to find the expected output file for test {testName}, file name = {fileName}");
 
             return File.ReadAllText(pathOfExpectedOutputFile);
+        }
+
+        /// <summary>
+        /// Gets the content of an actual output file for a particular test.
+        /// </summary>
+        /// <param name="testSubpath">The subpath of the test. Path is formed from {TestDataPath}{TestSubpath}{TestName}{FolderUse}</param>
+        /// <param name="testName">The name of the test this file is an expected output for.</param>
+        /// <param name="fileName">The name of the file to be read.</param>
+        /// <param name="isLanguageSpecific">Indicate whether there is subfolder called CSharp.</param>
+        /// <returns>The content of the file</returns>
+        public static string GetActualOutputFileContent(string testSubpath, string testName, string fileName, bool isLanguageSpecific = false)
+        {
+            var pathOfActualOutputFolder = GetActualOutputFolderPath(testSubpath, testName);
+            if (isLanguageSpecific)
+            {
+                pathOfActualOutputFolder = Path.Combine(pathOfActualOutputFolder, "CSharp");
+            }
+
+            var pathOfActualOutputFile = Path.Combine(pathOfActualOutputFolder, fileName);
+            Assert.IsTrue(File.Exists(pathOfActualOutputFile),
+                $"Was unable to find the actual output file for test {testName}, file name = {fileName}");
+
+            return File.ReadAllText(pathOfActualOutputFile);
         }
 
         /// <summary>
@@ -131,9 +160,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             File.WriteAllText(pathOfExpectedOutputFile, fileContent);
         }
 
-        public static CdmCorpusDefinition GetLocalCorpus(string testSubpath, string testName, string testInputDir = null)
+        public static CdmCorpusDefinition GetLocalCorpus(string testSubpath, string testName, string testInputDir = null, bool isLanguageSpecific = false)
         {
-            testInputDir = testInputDir ?? GetInputFolderPath(testSubpath, testName);
+            testInputDir = testInputDir ?? GetInputFolderPath(testSubpath, testName, isLanguageSpecific);
             var testOutputDir = GetActualOutputFolderPath(testSubpath, testName);
 
             var corpus = new CdmCorpusDefinition();
@@ -186,21 +215,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// </summary>
         /// <param name="expectedFolderPath">The expected output folder path.</param>
         /// <param name="actualFolderPath">The actual output folder path.</param>
-        public static void AssertFolderFilesEquality(string expectedFolderPath, string actualFolderPath)
+        /// <param name="differentConfig">Indicate whether the config file is different with other languages.</param>
+        public static void AssertFolderFilesEquality(string expectedFolderPath, string actualFolderPath, bool differentConfig = false)
         {
             var expectedFilePaths = Directory.GetFiles(expectedFolderPath);
-            Assert.AreEqual(
-                expectedFilePaths.Length,
-                Directory.GetFiles(actualFolderPath).Length,
-                String.Format("The number of files in actual directory {0} is different.", actualFolderPath));
+            if (!differentConfig)
+            {
+                Assert.AreEqual(
+                    expectedFilePaths.Length,
+                    Directory.GetFiles(actualFolderPath).Length,
+                    String.Format("The number of files in actual directory {0} is different.", actualFolderPath));
+            }
 
             foreach (var expectedFilePath in expectedFilePaths)
             {
                 var expectedFilename = Path.GetRelativePath(expectedFolderPath, expectedFilePath);
-                var actualFilePath = Path.Combine(actualFolderPath, expectedFilename);
+                var isSpecialConfig = expectedFilename == "config-CSharp.json";
+
+                if (expectedFilename.EndsWith("-Java.json")
+                        || expectedFilename.EndsWith("-Python.json")
+                        || expectedFilename.EndsWith("-TypeScript.json"))
+                {
+                    continue;
+                }
+
+                var actualFilePath = Path.Combine(actualFolderPath, isSpecialConfig && differentConfig ? "config.json" : expectedFilename);
                 var expectedFileContent = File.ReadAllText(expectedFilePath);
                 var actualFileContent = File.ReadAllText(actualFilePath);
-                AssertFileContentEquality(expectedFileContent, actualFileContent);
+                if (expectedFilename.EndsWith(".csv"))
+                {
+                    AssertFileContentEquality(expectedFileContent, actualFileContent);
+                }
+                else
+                {
+                    AssertSameObjectWasSerialized(expectedFileContent, actualFileContent);
+                }
             }
 
             var expectedSubFolders = Directory.GetDirectories(expectedFolderPath);
@@ -474,12 +523,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// </summary>
         /// <param name="testName">The name of test currently runnig that will used created path.</param>
         /// <param name="use">Whether the path is for Input, Expected Output or ActualOutput.</param>
+        /// <param name="isLanguageSpecific">Indicate whether there is subfolder called CSharp.</param>
         /// <returns></returns>
-        private static string GetTestFolderPath(string testSubpath, string testName, TestHelper.TestFolders use)
+        private static string GetTestFolderPath(string testSubpath, string testName, TestHelper.TestFolders use, bool isLanguageSpecific = false)
         {
             string folderName = Enum.GetName(typeof(TestHelper.TestFolders), use);
+            if (use == TestFolders.ActualOutput)
+            {
+                folderName = GetTestActualOutputFolderName();
+            }
 
-            string testFolderPath = Path.Combine(TestDataPath, testSubpath, testName, folderName);
+            string testFolderPath = isLanguageSpecific ? Path.Combine(TestDataPath, testSubpath, testName, folderName, "CSharp")
+                : Path.Combine(TestDataPath, testSubpath, testName, folderName);
 
             if (use == TestHelper.TestFolders.ActualOutput && !Directory.Exists(testFolderPath))
             {
@@ -492,6 +547,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
             //Assert.IsTrue(Directory.Exists(testFolderPath), $"Was unable to find directory {testFolderPath}");
             return testFolderPath;
+        }
+
+        public static string GetTestActualOutputFolderName()
+        {
+            return $"{Enum.GetName(typeof(TestFolders), TestFolders.ActualOutput)}-CSharp";
         }
     }
 }

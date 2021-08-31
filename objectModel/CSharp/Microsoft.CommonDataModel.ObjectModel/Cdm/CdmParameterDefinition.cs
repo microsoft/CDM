@@ -106,7 +106,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.Explanation = this.Explanation;
             copy.DefaultValue = defVal;
             copy.Required = this.Required;
-            copy.DataTypeRef = (this.DataTypeRef != null ? this.DataTypeRef.Copy(resOpt) : null) as CdmDataTypeReference;
+            copy.DataTypeRef = this.DataTypeRef?.Copy(resOpt) as CdmDataTypeReference;
             return copy;
         }
 

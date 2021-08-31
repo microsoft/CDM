@@ -29,9 +29,9 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionAlterTraits';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionAlterTraitsTest';
 
-    const traitGroupFilePath: string = testHelper.testDataPath + '/Cdm/Projection/TestProjectionAlterTraits';
+    const traitGroupFilePath: string = testHelper.testDataPath + '/Cdm/Projection/ProjectionAlterTraitsTest';
 
     /**
      * All possible combinations of the different resolution directives
@@ -152,9 +152,9 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
         // alter traits on ["renaming-newName", + { "means.TraitG4(precision:5, scale:15)" } ]
         expect(resolvedEntity.attributes.length)
             .toEqual(4);
-        validateTrait(resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition, 'name');
-        validateTrait(resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition, 'age', false, true);
-        validateTrait(resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition, 'phoneNumber', false, true);
+        validateTrait(resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition, 'age', false, true);
+        validateTrait(resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition, 'phoneNumber', false, true);
+        validateTrait(resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition, 'name');
         validateTrait(resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition, 'renaming-newName', true);
 
     });

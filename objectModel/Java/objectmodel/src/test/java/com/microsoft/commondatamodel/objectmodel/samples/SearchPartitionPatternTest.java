@@ -43,7 +43,7 @@ public class SearchPartitionPatternTest extends SampleTestBase{
 
         TestHelper.assertFolderFilesEquality(
                 TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, TEST_NAME),
-                TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, TEST_NAME));
+                TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, TEST_NAME), true);
     }
 
     private CdmCorpusDefinition setupCdmCorpus() throws InterruptedException {

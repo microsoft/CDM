@@ -34,7 +34,7 @@ class ProjectionAddSupportingAttributeTest(unittest.TestCase):
     ]
 
     # The path between test_data_path and test_name.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionAddSupportingAttribute')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionAddSupportingAttributeTest')
 
     @async_test
     async def test_combine_ops_proj(self):

@@ -1,7 +1,7 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import List, Optional
+from typing import Optional
 import os
 import json
 import asyncio
@@ -10,7 +10,8 @@ import filecmp
 from cdm.enums import CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition
 from cdm.storage import LocalAdapter, RemoteAdapter
-import unittest
+from cdm.utilities.string_utils import StringUtils
+
 
 def async_test(f):
     def wrapper(*args, **kwargs):
@@ -18,12 +19,13 @@ def async_test(f):
         future = coro(*args, **kwargs)
         loop = asyncio.get_event_loop()
         loop.run_until_complete(future)
+
     return wrapper
 
 
 INPUT_FOLDER_NAME = 'Input'
 EXPECTED_OUTPUT_FOLDER_NAME = 'ExpectedOutput'
-ACTUAL_OUTPUT_FOLDER_NAME = 'ActualOutput'
+ACTUAL_OUTPUT_FOLDER_NAME = 'ActualOutput-Python'
 
 
 class TestHelper:
@@ -32,29 +34,41 @@ class TestHelper:
     # the entire set of CDM standard schemas, after 8000+ F&O entities were added.
     cdm_standards_schema_path = 'local:/core/applicationCommon/applicationCommon.manifest.cdm.json'
 
+    schema_documents_path = '../../schemaDocuments'
+
     # The path of the sample schema documents folder.
     sample_schema_folder_path = '../../samples/example-public-standards'
 
     @staticmethod
-    def compare_folder_files_equality(expected_folder_path: str, actual_folder_path: str) -> str:
+    def compare_folder_files_equality(expected_folder_path: str, actual_folder_path: str,
+                                      different_config: Optional[bool] = False) -> str:
         expected_names = os.listdir(expected_folder_path)
         actual_names = os.listdir(actual_folder_path)
 
-        if len(expected_names) != len(actual_names):
-            return 'Lists length do not match. '
+        if not different_config:
+            if len(expected_names) != len(actual_names):
+                return 'Lists length do not match. '
 
         error_log = ''
         for expected_name in expected_names:
             expected_path = os.path.join(expected_folder_path, expected_name)
-            actual_path = os.path.join(actual_folder_path, expected_name)
+            is_special_config = expected_name == 'config-Python.json'
+            if expected_name.endswith('-CSharp.json') or expected_name.endswith('-Java.json') or expected_name.endswith(
+                    '-TypeScript.json'):
+                continue
+
+            actual_path = os.path.join(actual_folder_path,
+                                       'config.json' if is_special_config and different_config else expected_name)
 
             if os.path.isfile(expected_path):
                 if expected_path.endswith('json'):
                     with open(expected_path, 'r') as expected_file:
                         with open(actual_path, 'r') as actual_file:
-                            file_error_log = TestHelper.compare_same_object(json.loads(expected_file.read()), json.loads(actual_file.read()))
+                            file_error_log = TestHelper.compare_same_object(json.loads(expected_file.read()),
+                                                                            json.loads(actual_file.read()))
                             if file_error_log != '':
-                                error_log += 'The file object {} is not the same as expected, details: '.format(actual_path)
+                                error_log += 'The file object {} is not the same as expected, details: '.format(
+                                    actual_path)
                                 error_log += file_error_log
                 elif not filecmp.cmp(expected_path, actual_path):
                     error_log += 'The file {} is not the same as expected.'.format(actual_path)
@@ -84,23 +98,27 @@ class TestHelper:
 
     @staticmethod
     def get_schema_docs_root():
-        return os.path.join('..', '..', 'schemaDocuments')
+        return TestHelper.schema_documents_path
 
     @staticmethod
-    def get_input_folder_path(test_subpath: str, test_name: str):
-        return TestHelper.get_test_folder_path(test_subpath, test_name, INPUT_FOLDER_NAME)
+    def get_input_folder_path(test_subpath: str, test_name: str, is_language_specific: Optional[bool] = False):
+        return TestHelper.get_test_folder_path(test_subpath, test_name, INPUT_FOLDER_NAME, is_language_specific)
 
     @staticmethod
     def get_expected_output_folder_path(test_subpath: str, test_name: str):
         return TestHelper.get_test_folder_path(test_subpath, test_name, EXPECTED_OUTPUT_FOLDER_NAME)
 
     @staticmethod
-    def get_data(test_subpath: str, test_name: str, folder_name: str, file_name: str):
-        return json.loads(TestHelper.get_file_content(test_subpath, test_name, folder_name, file_name))
+    def get_data(test_subpath: str, test_name: str, folder_name: str, file_name: str,
+                 is_language_specific: Optional[bool] = False):
+        return json.loads(
+            TestHelper.get_file_content(test_subpath, test_name, folder_name, file_name, is_language_specific))
 
     @staticmethod
-    def get_expected_output_data(test_subpath: str, test_name: str, file_name: str):
-        return TestHelper.get_data(test_subpath, test_name, EXPECTED_OUTPUT_FOLDER_NAME, file_name)
+    def get_expected_output_data(test_subpath: str, test_name: str, file_name: str,
+                                 is_language_specific: Optional[bool] = False):
+        return TestHelper.get_data(test_subpath, test_name, EXPECTED_OUTPUT_FOLDER_NAME, file_name,
+                                   is_language_specific)
 
     @staticmethod
     def get_input_data(test_subpath: str, test_name: str, file_name: str):
@@ -111,14 +129,17 @@ class TestHelper:
         return TestHelper.get_file_content(test_subpath, test_name, INPUT_FOLDER_NAME, file_name)
 
     @staticmethod
-    def get_output_file_content(test_subpath: str, test_name: str, file_name: str):
-        return TestHelper.get_file_content(test_subpath, test_name, EXPECTED_OUTPUT_FOLDER_NAME, file_name)
+    def get_output_file_content(test_subpath: str, test_name: str, file_name: str,
+                                is_language_specific: Optional[bool] = False):
+        return TestHelper.get_file_content(test_subpath, test_name, EXPECTED_OUTPUT_FOLDER_NAME, file_name, is_language_specific)
 
     @staticmethod
-    def get_file_content(test_subpath: str, test_name: str, folder_name: str, file_name: str):
+    def get_file_content(test_subpath: str, test_name: str, folder_name: str, file_name: str,
+                         is_language_specific: Optional[bool] = False):
         folder_path = TestHelper.get_test_folder_path(test_subpath, test_name, folder_name)
-        file_path = os.path.join(folder_path, file_name)
-        with open(file_path, 'r') as input_file:
+        file_path = os.path.join(folder_path, 'Python', file_name) if is_language_specific else os.path.join(
+            folder_path, file_name)
+        with open(file_path, 'r', encoding='utf-8-sig') as input_file:
             return input_file.read()
 
     @staticmethod
@@ -139,8 +160,10 @@ class TestHelper:
         return TestHelper.get_test_folder_path(test_subpath, test_name, ACTUAL_OUTPUT_FOLDER_NAME)
 
     @staticmethod
-    def get_local_corpus(test_subpath: str, test_name: str, test_input_dir: Optional[str] = None):
-        test_input_dir = test_input_dir or TestHelper.get_input_folder_path(test_subpath, test_name)
+    def get_local_corpus(test_subpath: str, test_name: str, test_input_dir: Optional[str] = None,
+                         is_language_specific: Optional[bool] = False):
+        test_input_dir = test_input_dir or TestHelper.get_input_folder_path(test_subpath, test_name,
+                                                                            is_language_specific)
         test_output_dir = TestHelper.get_actual_output_folder_path(test_subpath, test_name)
 
         cdm_corpus = CdmCorpusDefinition()
@@ -148,15 +171,18 @@ class TestHelper:
         cdm_corpus.storage.default_namespace = 'local'
         cdm_corpus.storage.mount('local', LocalAdapter(root=test_input_dir))
         cdm_corpus.storage.mount('output', LocalAdapter(root=test_output_dir))
-        cdm_corpus.storage.mount('cdm', LocalAdapter('../../schemaDocuments'))
+        cdm_corpus.storage.mount('cdm', LocalAdapter(TestHelper.schema_documents_path))
         cdm_corpus.storage.mount('remote', RemoteAdapter(hosts={'contoso': 'http://contoso.com'}))
 
         return cdm_corpus
 
     @staticmethod
-    def get_test_folder_path(test_subpath: str, test_name: str, folder_name: str):
-        test_name = TestHelper.to_pascal_case(test_name)
-        test_folder_path = os.path.join('tests', 'testdata', test_subpath, test_name, folder_name)
+    def get_test_folder_path(test_subpath: str, test_name: str, folder_name: str,
+                             is_language_specific: Optional[bool] = False):
+        test_name = StringUtils.snake_case_to_pascal_case(test_name)
+        test_folder_path = os.path.join('..', '..', 'testData', test_subpath, test_name, folder_name, 'Python') \
+            if is_language_specific else os.path.join('..', '..', 'testData', test_subpath, test_name,
+                                                      folder_name)
 
         if folder_name == ACTUAL_OUTPUT_FOLDER_NAME and not os.path.isdir(test_folder_path):
             os.makedirs(test_folder_path, exist_ok=True)
@@ -164,12 +190,8 @@ class TestHelper:
         return test_folder_path
 
     @staticmethod
-    def to_pascal_case(snake_str: str) -> str:
-        if snake_str.find('_') < 0:
-            return snake_str
-
-        components = snake_str.split('_')
-        return ''.join(x.title() for x in components)
+    def get_test_actual_output_folder_name():
+        return ACTUAL_OUTPUT_FOLDER_NAME
 
     @staticmethod
     def del_dict_none_values(dict_obj):
@@ -206,20 +228,24 @@ class TestHelper:
                 index_in_expected = len(expected_list) - 1
                 found = False
                 for index_in_actual, actual_item in reversed(list(enumerate(actual_list))):
-                    if TestHelper.compare_same_object_without_none_values(expected_list[index_in_expected], actual_item) == '':
+                    if TestHelper.compare_same_object_without_none_values(expected_list[index_in_expected],
+                                                                          actual_item) == '':
                         expected_list.pop(index_in_expected)
                         actual_list.pop(index_in_actual)
                         found = True
                         break
 
                 if not found:
-                    return 'Lists do not match. Found list member in expected but not in actual : {}.'.format(expected_list[index_in_expected])
+                    return 'Lists do not match. Found list member in expected but not in actual : {}.'.format(
+                        expected_list[index_in_expected])
 
             if expected_list:
-                return 'Lists do not match. Found list member in expected but not in actual : {}.'.format(expected_list[0])
+                return 'Lists do not match. Found list member in expected but not in actual : {}.'.format(
+                    expected_list[0])
 
             if actual_list:
-                return 'Lists do not match. Found list member in actual but not in expected : {}.'.format(actual_list[0])
+                return 'Lists do not match. Found list member in actual but not in expected : {}.'.format(
+                    actual_list[0])
 
             return ''
 
@@ -228,16 +254,17 @@ class TestHelper:
             actual_dict = actual_data.copy()
 
             for key in expected_dict.keys():
-                if not key in actual_dict:
+                if key not in actual_dict.keys():
                     return 'Dictionaries do not match. Found key in expected but not in actual: {}.'.format(key)
 
-                found_property = TestHelper.compare_same_object_without_none_values(expected_dict[key], actual_dict[key])
+                found_property = TestHelper.compare_same_object_without_none_values(expected_dict[key],
+                                                                                    actual_dict[key])
 
                 if found_property != '':
                     return 'Value does not match for property {}.'.format(key)
 
             for key in actual_dict.keys():
-                if not key in expected_dict:
+                if key not in expected_dict.keys():
                     return 'Value does not match for property {}.'.format(key)
 
             return ''
@@ -260,7 +287,8 @@ class TestHelper:
                         unexpected_code.name + ' of appropriate level as this message should be filtered out.')
 
     @staticmethod
-    def assert_cdm_log_code_equality(corpus: 'CdmCorpusDefinition', expected_code: 'CdmLogCode', is_present: bool, self) -> None:
+    def assert_cdm_log_code_equality(corpus: 'CdmCorpusDefinition', expected_code: 'CdmLogCode', is_present: bool,
+                                     self) -> None:
         to_assert = False
         for log_entry in corpus.ctx.events:
             if ((expected_code.name.startswith('WARN') and log_entry['level'] == CdmStatusLevel.WARNING.name)
@@ -268,10 +296,9 @@ class TestHelper:
                     and log_entry['code'] == expected_code.name:
                 to_assert = True
 
-        if  is_present == True:
+        if is_present == True:
             self.assertTrue(to_assert, 'The recorded log events should have contained message with log code ' +
-                        expected_code.name + ' of appropriate level')
-        else :
+                            expected_code.name + ' of appropriate level')
+        else:
             self.assertTrue(not to_assert, 'The recorded log events should have not contained message with log code ' +
-                        expected_code.name + ' of appropriate level as this message should be filtered out.')
-
+                            expected_code.name + ' of appropriate level as this message should be filtered out.')

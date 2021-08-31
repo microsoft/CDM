@@ -8,7 +8,7 @@ from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
 
 
 class Cache(unittest.TestCase):
-    tests_subpath = os.path.join('Cdm', 'Resolution', 'Cache')
+    tests_subpath = os.path.join('Cdm', 'Resolution', 'CacheTest')
     test_name_path = 'TestMaxDepth'
 
     @async_test

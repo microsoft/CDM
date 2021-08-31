@@ -45,8 +45,7 @@ public class ResolutionGuidanceTest {
     /**
      * The test's data path.
      */
-    private static final String TESTS_SUBPATH =
-            new File("cdm", "resolutionguidance").toString();
+    private static final String TESTS_SUBPATH = new File("Cdm", "ResolutionGuidance").toString();
 
     private static CompletableFuture<Void> runTest(final String testName, final String sourceEntityName) {
         return CompletableFuture.runAsync(() -> {
@@ -291,7 +290,7 @@ public class ResolutionGuidanceTest {
      */
     @Test
     public void testResolutionGuidanceDeprecation() throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolutionGuidanceDeprecation", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolutionGuidanceDeprecation");
 
         // Tests warning log when resolution guidance is used on a data typed attribute.
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TypeAttribute.cdm.json/Entity").join();
@@ -426,7 +425,7 @@ public class ResolutionGuidanceTest {
      */
     @Test
     public void testSelectsSubAttributeTakeNames() throws InterruptedException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSelectsSubAttributeTakeNames", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSelectsSubAttributeTakeNames");
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Sales.cdm.json/Sales").join();
         ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), null);
         CdmEntityDefinition resolvedEntity = entity.createResolvedEntityAsync("resolved", resOpt).join();
@@ -444,7 +443,7 @@ public class ResolutionGuidanceTest {
      */
     @Test
     public void testSelectsSubAttributeAvoidNames() throws InterruptedException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSelectsSubAttributeAvoidNames", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSelectsSubAttributeAvoidNames");
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Sales.cdm.json/Sales").join();
         ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), null);
         CdmEntityDefinition resolvedEntity = entity.createResolvedEntityAsync("resolved", resOpt).join();
@@ -469,7 +468,7 @@ public class ResolutionGuidanceTest {
         final String testActualOutputPath =
                 TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, testName);
 
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
         corpus.getStorage().mount("localActualOutput", new LocalAdapter(testActualOutputPath));
         final CdmFolderDefinition actualOutputFolder =
                 corpus.<CdmFolderDefinition>fetchObjectAsync("localActualOutput:/").join();

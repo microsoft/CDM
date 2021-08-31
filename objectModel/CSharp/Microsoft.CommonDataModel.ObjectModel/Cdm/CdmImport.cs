@@ -76,7 +76,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.Moniker = this.Moniker;
             }
 
-            copy.Document = this.Document;
+            copy.Document = this.Document?.Copy(resOpt) as CdmDocumentDefinition;
             return copy;
         }
 

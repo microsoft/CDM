@@ -112,7 +112,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmDataPartitionDefinition;
-                copy.Ctx = this.Ctx;
                 copy.Name = this.Name;
             }
 
@@ -121,7 +120,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
             copy.LastFileModifiedTime = this.LastFileModifiedTime;
             copy.Inferred = this.Inferred;
-            copy.Arguments = this.Arguments;
+            if (this.Arguments != null)
+            {
+                // deep copy the content
+                copy.Arguments = new Dictionary<string, List<string>>();
+                foreach (var key in this.Arguments.Keys)
+                {
+                    copy.Arguments.Add(key, new List<string>(this.Arguments[key]));
+                }
+            }
             copy.SpecializedSchema = this.SpecializedSchema;
 
             this.CopyDef(resOpt, copy);
@@ -178,7 +185,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             using (Logger.EnterScope(nameof(CdmDataPartitionDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
                 string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.Location, this.InDocument);
-                DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromPartitionPath(fullPath);
+                DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeFromPartitionPathAsync(fullPath);
 
                 // update modified times
                 this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;

@@ -146,7 +146,6 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
       copy = new CdmPurposeDefinition(this.getCtx(), this.getPurposeName(), null);
     } else {
       copy = (CdmPurposeDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setPurposeName(this.getPurposeName());
     }
 

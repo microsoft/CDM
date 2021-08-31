@@ -229,7 +229,7 @@ class CdmAttributeResolutionGuidanceDefinition(CdmObjectSimple):
             copy.imposed_directives = self.imposed_directives[:]
         if self.removed_directives:
             copy.removed_directives = self.removed_directives[:]
-        copy.add_supporting_attribute = self.add_supporting_attribute
+        copy.add_supporting_attribute = self.add_supporting_attribute.copy(res_opt) if self.add_supporting_attribute else None
         copy.cardinality = self.cardinality
         copy.rename_format = self.rename_format
 

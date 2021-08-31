@@ -34,7 +34,7 @@ class ProjectionIncludeTest(unittest.TestCase):
     foundation_json_path = 'cdm:/foundations.cdm.json'
 
     # The path between TestDataPath and test_name.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionInclude')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionIncludeTest')
 
     @async_test
     async def test_extends(self) -> None:
@@ -248,6 +248,28 @@ class ProjectionIncludeTest(unittest.TestCase):
         for res_opt in self.res_opts_combinations:
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
                 self.tests_subpath, entity_name, res_opt)
+
+    @async_test
+    async def test_reorder_proj(self) -> None:
+        """Test for Include Attributes from a Polymorphic Source"""
+        test_name = 'TestReorderProj'
+        entity_name = 'NewPerson'
+        corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
+
+        for res_opt in self.res_opts_combinations:
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, \
+                self.tests_subpath, entity_name, res_opt)
+
+        entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
+
+        # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
+        # Renamed attribute 'age' with format 'yearsOld' and re-order all attributes removing email
+        self.assertEqual(4, len(resolved_entity.attributes))
+        self.assertEqual('address', resolved_entity.attributes[0].name)
+        self.assertEqual('phoneNumber', resolved_entity.attributes[1].name)
+        self.assertEqual('yearsOld', resolved_entity.attributes[2].name)
+        self.assertEqual('name', resolved_entity.attributes[3].name)
 
     @async_test
     async def test_nested_include_exclude_proj(self) -> None:

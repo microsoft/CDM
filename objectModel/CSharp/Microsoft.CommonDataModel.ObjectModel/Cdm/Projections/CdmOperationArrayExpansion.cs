@@ -31,11 +31,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            CdmOperationArrayExpansion copy = new CdmOperationArrayExpansion(this.Ctx)
+            if (resOpt == null)
             {
-                StartOrdinal = this.StartOrdinal,
-                EndOrdinal = this.EndOrdinal
-            };
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var copy = host == null ? new CdmOperationArrayExpansion(this.Ctx) : host as CdmOperationArrayExpansion;
+
+            copy.StartOrdinal = this.StartOrdinal;
+            copy.EndOrdinal = this.EndOrdinal;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 

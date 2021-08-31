@@ -76,6 +76,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         EntityReferenceExtends,
         AttributeDefinition,
         EntityReferenceAsAttribute,
+        AttributeExcluded,
         AttributeGroup,
         GeneratedSet,
         GeneratedRound,

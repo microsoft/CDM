@@ -112,14 +112,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmDataPartitionPatternDefinition;
-                copy.Ctx = this.Ctx;
                 copy.Name = this.Name;
             }
 
             copy.RootLocation = this.RootLocation;
             copy.GlobPattern = this.GlobPattern;
             copy.RegularExpression = this.RegularExpression;
-            copy.Parameters = this.Parameters;
+            copy.Parameters = this.Parameters != null ? new List<String>(this.Parameters) : null;
             copy.LastFileStatusCheckTime = this.LastFileStatusCheckTime;
             copy.LastFileModifiedTime = this.LastFileModifiedTime;
 

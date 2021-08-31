@@ -40,7 +40,7 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionAddType';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionAddTypeTest';
 
     /**
      * Test for creating a projection with an AddTypeAttribute operation on an entity attribute using the object model
@@ -468,10 +468,10 @@ describe('Cdm/Projection/ProjectionAddTypeTest', () => {
         // rename ["contactId", "isPrimary"] as "new_{m}", include ["contactId", "new_isPrimary", "contactType"]
         expect(resolvedEntity.attributes.length)
             .toEqual(3);
-        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
-            .toEqual('new_isPrimary');
-        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
+            expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('new_contactId');
+            expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
+                .toEqual('new_isPrimary');
         expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
             .toEqual('contactType');
         expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).appliedTraits.allItems[4].namedReference)

@@ -17,7 +17,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class CorpusTest {
-    private static final String TESTS_SUBPATH = new File("cdm", "corpus").toString();
+    private static final String TESTS_SUBPATH = new File("Cdm", "Corpus").toString();
 
     /**
     * Tests if a symbol imported with a moniker can be found as the last resource.
@@ -25,7 +25,7 @@ public class CorpusTest {
     */
     @Test
     public void testResolveSymbolReference() throws InterruptedException, ExecutionException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveSymbolReference", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveSymbolReference");
 
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             Assert.fail(message);
@@ -41,7 +41,7 @@ public class CorpusTest {
      */
     @Test
     public void testComputeLastModifiedTimeAsync() throws InterruptedException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestComputeLastModifiedTimeAsync", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestComputeLastModifiedTimeAsync");
 
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             Assert.fail(message);
@@ -55,7 +55,7 @@ public class CorpusTest {
      */
     @Test
     public void testLazyLoadImports() throws InterruptedException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testImportsLoadStrategy", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testImportsLoadStrategy");
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             // when the imports are not loaded, there should be no reference validation.
             // no error should be logged.
@@ -73,7 +73,7 @@ public class CorpusTest {
      */
     @Test
     public void testLazyLoadCreateResolvedEntity() throws InterruptedException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLazyLoadCreateResolvedEntity", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLazyLoadCreateResolvedEntity");
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             // no error should be logged.
             Assert.fail(message);
@@ -105,7 +105,7 @@ public class CorpusTest {
     @Test
     public void testLoadImports() throws InterruptedException {
         final AtomicInteger errorCount = new AtomicInteger(0);
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testImportsLoadStrategy", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testImportsLoadStrategy");
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             if (message.contains("Unable to resolve the reference")) {
                 errorCount.getAndIncrement();
@@ -121,7 +121,7 @@ public class CorpusTest {
         Assert.assertEquals(1, errorCount.get());
 
         errorCount.set(0);
-        corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testImportsLoadStrategy", null);
+        corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testImportsLoadStrategy");
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             if (level == CdmStatusLevel.Warning && message.contains("Unable to resolve the reference")) {
                 errorCount.getAndIncrement();
@@ -144,7 +144,7 @@ public class CorpusTest {
     */
     @Test
     public void testResolveConstSymbolReference() throws InterruptedException, ExecutionException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveConstSymbolReference", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveConstSymbolReference");
 
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             Assert.fail(message);

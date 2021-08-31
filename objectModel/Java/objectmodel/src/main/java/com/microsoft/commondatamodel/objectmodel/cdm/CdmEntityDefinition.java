@@ -397,165 +397,165 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
    */
   public CompletableFuture<CdmEntityDefinition> createResolvedEntityAsync(
       final String newEntName,
-      ResolveOptions resOpt,
-      CdmFolderDefinition folderDef,
+      final ResolveOptions resOpt,
+      final CdmFolderDefinition folderDef,
       final String newDocName) {
-    Logger.LoggerScope logScope = Logger.enterScope(TAG, getCtx(), "createResolvedEntityAsync");
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
-    if (resOpt.getWrtDoc() == null) {
-      Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocWrtDocNotfound);
-      return CompletableFuture.completedFuture(null);
-    }
-
-    if (StringUtils.isNullOrEmpty(newEntName)) {
-      Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveNewEntityNameNotSet);
-      return CompletableFuture.completedFuture(null);
-    }
-
-    final ResolveOptions finalResOpt = resOpt;
-    final CdmFolderDefinition folder = folderDef != null ? folderDef : this.getInDocument().getFolder();
-
     return CompletableFuture.supplyAsync(() -> {
-      // if the wrtDoc needs to be indexed (like it was just modified) then do that first
-      if (!finalResOpt.getWrtDoc().indexIfNeededAsync(finalResOpt, true).join()) {
-        Logger.error(this.getCtx(), TAG,"createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
-        return null;
-      }
-
-      final String fileName = (StringUtils.isNullOrEmpty(newDocName)) ? String.format("%s.cdm.json", newEntName) : newDocName;
-      String origDoc = this.getInDocument().getAtCorpusPath();
-      // Don't overwrite the source document
-      final String targetAtCorpusPath = String.format("%s%s",
-              this.getCtx()
-                      .getCorpus()
-                      .getStorage()
-                      .createAbsoluteCorpusPath(folder.getAtCorpusPath(), folder),
-              fileName);
-      if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
-        Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocEntityReplacementFailure, targetAtCorpusPath);
-        return null;
-      }
-
-      // make sure the corpus has a set of default artifact attributes
-      this.getCtx().getCorpus().prepareArtifactAttributesAsync().join();
-
-      // Make the top level attribute context for this entity.
-      // For this whole section where we generate the attribute context tree and get resolved attributes.
-      // Set the flag that keeps all of the parent changes and document dirty from from happening.
-      boolean wasResolving = this.getCtx().getCorpus().isCurrentlyResolving;
-      this.getCtx().getCorpus().isCurrentlyResolving = true;
-      final String entName = newEntName;
-      final ResolveContext ctx = (ResolveContext) this.getCtx();
-      CdmAttributeContext attCtxEnt = ctx.getCorpus().makeObject(CdmObjectType.AttributeContextDef, entName, true);
-      attCtxEnt.setCtx(ctx);
-      attCtxEnt.setInDocument(this.getInDocument());
-
-      // cheating a bit to put the paths in the right place
-      final AttributeContextParameters acp = new AttributeContextParameters();
-      acp.setUnder(attCtxEnt);
-      acp.setType(CdmAttributeContextType.AttributeGroup);
-      acp.setName("attributeContext");
-
-      final CdmAttributeContext attCtxAC = CdmAttributeContext.createChildUnder(finalResOpt, acp);
-      // this is the node that actually is first in the context we save. all definition refs should take the new perspective that they
-      // can only be understood through the resolvedFrom moniker
-      final CdmEntityReference entRefThis = ctx.getCorpus().makeObject(CdmObjectType.EntityRef, this.getName(), true);
-      entRefThis.setOwner(this);
-      entRefThis.setInDocument(this.getInDocument()); // need to set owner and inDocument to this starting entity so the ref will be portable to the new document
-      CdmObject prevOwner = this.getOwner();
-      entRefThis.setExplicitReference(this);
-      // we don't want to change the owner of this entity to the entity reference
-      // re-assign whatever was there before
-      this.setOwner(prevOwner);
-
-      final AttributeContextParameters acpEnt = new AttributeContextParameters();
-      acpEnt.setUnder(attCtxAC);
-      acpEnt.setType(CdmAttributeContextType.Entity);
-      acpEnt.setName(entName);
-      acpEnt.setRegarding(entRefThis);
-
-      // reset previous depth information in case there are left overs
-      finalResOpt.depthInfo.reset();
-
-      final ResolveOptions resOptCopy = CdmAttributeContext.prepareOptionsForResolveAttributes(finalResOpt);
-      // resolve attributes with this context. the end result is that each resolved attribute
-      // points to the level of the context where it was  last modified, merged, created
-      final ResolvedAttributeSet ras = this.fetchResolvedAttributes(resOptCopy, acpEnt);
-
-      if (resOptCopy.usedResolutionGuidance) {
-        Logger.warning(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.WarnDeprecatedResolutionGuidance);
-      }
-
-      if (ras == null) {
-        return null;
-      }
-
-      this.getCtx().getCorpus().isCurrentlyResolving = wasResolving;
-
-      // Make a new document in given folder if provided or the same folder as the source entity.
-      folder.getDocuments().remove(fileName);
-      CdmDocumentDefinition docRes = folder.getDocuments().add(fileName);
-      // Add a import of the source document.
-      origDoc = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
-      docRes.getImports().add(origDoc, "resolvedFrom");
-      docRes.setDocumentVersion(this.getInDocument().getDocumentVersion());
-
-      // Make the empty entity.
-      CdmEntityDefinition entResolved = docRes.getDefinitions().add(entName);
-
-      // grab that context that comes from fetchResolvedAttributes. We are sure this tree is a copy that we can own, so no need to copy it again
-      CdmAttributeContext attCtx = null;
-      if (attCtxAC != null && attCtxAC.getContents() != null && attCtxAC.getContents().size() == 1) {
-        attCtx = (CdmAttributeContext) attCtxAC.getContents().get(0);
-      }
-      entResolved.setAttributeContext(attCtx);
-
-      if (attCtx != null) {
-        // fix all of the definition references, parent and lineage references, owner documents, etc. in the context tree
-        attCtx.finalizeAttributeContext(resOptCopy, String.format("%s/attributeContext/", entName), docRes, this.getInDocument(), "resolvedFrom", true);
-
-        // TEST CODE in C# by Jeff
-        // run over the resolved attributes and make sure none have the dummy context
-        //Action<ResolvedAttributeSet> testResolveAttributeCtx = null;
-        //testResolveAttributeCtx = (rasSub) =>
-        //{
-        //    if (rasSub.Set.Count != 0 && rasSub.AttributeContext.AtCoprusPath.StartsWith("cacheHolder"))
-        //        System.Diagnostics.Debug.WriteLine("Bad!!");
-        //    rasSub.Set.ForEach(ra =>
-        //    {
-        //        if (ra.AttCtx.AtCoprusPath.StartsWith("cacheHolder"))
-        //            System.Diagnostics.Debug.WriteLine("Bad!!");
-
-        //        // the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
-        //        if (ra.Target is ResolvedAttributeSet)
-        //        {
-        //            testResolveAttributeCtx(ra.Target as ResolvedAttributeSet);
-        //        }
-        //    });
-        //};
-        //testResolveAttributeCtx(ras);
-
-      }
-      // Add the traits of the entity, also add to attribute context top node
-      ResolvedTraitSet rtsEnt = this.fetchResolvedTraits(finalResOpt);
-      for (final ResolvedTrait rt : rtsEnt.getSet()) {
-        CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
-        entResolved.getExhibitsTraits().add(traitRef);
-        traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt); // fresh copy
-        if (entResolved.getAttributeContext() != null) {
-          entResolved.getAttributeContext().getExhibitsTraits().add(traitRef);
+      try (Logger.LoggerScope logScope = Logger.enterScope(TAG, getCtx(), "createResolvedEntityAsync")) {
+        ResolveOptions tmpResOpt = resOpt;
+        if (tmpResOpt == null) {
+          tmpResOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
         }
-      }
 
-      // special trait to explain this is a resolved entity
-      entResolved.indicateAbstractionLevel("resolved", finalResOpt);
+        if (tmpResOpt.getWrtDoc() == null) {
+          Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocWrtDocNotfound);
+          return null;
+        }
 
-      if (entResolved.getAttributeContext() != null) {
-        // the attributes have been named, shaped, etc for this entity so now it is safe to go and
-        // make each attribute context level point at these final versions of attributes
+        if (StringUtils.isNullOrEmpty(newEntName)) {
+          Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrResolveNewEntityNameNotSet);
+          return null;
+        }
+
+        final ResolveOptions finalResOpt = tmpResOpt;
+        final CdmFolderDefinition folder = folderDef != null ? folderDef : this.getInDocument().getFolder();
+        // if the wrtDoc needs to be indexed (like it was just modified) then do that first
+        if (!finalResOpt.getWrtDoc().indexIfNeededAsync(finalResOpt, true).join()) {
+          Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
+          return null;
+        }
+
+        final String fileName = (StringUtils.isNullOrEmpty(newDocName)) ? String.format("%s.cdm.json", newEntName) : newDocName;
+        String origDoc = this.getInDocument().getAtCorpusPath();
+        // Don't overwrite the source document
+        final String targetAtCorpusPath = String.format("%s%s",
+                this.getCtx()
+                        .getCorpus()
+                        .getStorage()
+                        .createAbsoluteCorpusPath(folder.getAtCorpusPath(), folder),
+                fileName);
+        if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
+          Logger.error(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.ErrDocEntityReplacementFailure, targetAtCorpusPath);
+          return null;
+        }
+
+        // make sure the corpus has a set of default artifact attributes
+        this.getCtx().getCorpus().prepareArtifactAttributesAsync().join();
+
+        // Make the top level attribute context for this entity.
+        // For this whole section where we generate the attribute context tree and get resolved attributes.
+        // Set the flag that keeps all of the parent changes and document dirty from from happening.
+        boolean wasResolving = this.getCtx().getCorpus().isCurrentlyResolving;
+        this.getCtx().getCorpus().isCurrentlyResolving = true;
+        final String entName = newEntName;
+        final ResolveContext ctx = (ResolveContext) this.getCtx();
+        CdmAttributeContext attCtxEnt = ctx.getCorpus().makeObject(CdmObjectType.AttributeContextDef, entName, true);
+        attCtxEnt.setCtx(ctx);
+        attCtxEnt.setInDocument(this.getInDocument());
+
+        // cheating a bit to put the paths in the right place
+        final AttributeContextParameters acp = new AttributeContextParameters();
+        acp.setUnder(attCtxEnt);
+        acp.setType(CdmAttributeContextType.AttributeGroup);
+        acp.setName("attributeContext");
+
+        final CdmAttributeContext attCtxAC = CdmAttributeContext.createChildUnder(finalResOpt, acp);
+        // this is the node that actually is first in the context we save. all definition refs should take the new perspective that they
+        // can only be understood through the resolvedFrom moniker
+        final CdmEntityReference entRefThis = ctx.getCorpus().makeObject(CdmObjectType.EntityRef, this.getName(), true);
+        entRefThis.setOwner(this);
+        entRefThis.setInDocument(this.getInDocument()); // need to set owner and inDocument to this starting entity so the ref will be portable to the new document
+        CdmObject prevOwner = this.getOwner();
+        entRefThis.setExplicitReference(this);
+        // we don't want to change the owner of this entity to the entity reference
+        // re-assign whatever was there before
+        this.setOwner(prevOwner);
+
+        final AttributeContextParameters acpEnt = new AttributeContextParameters();
+        acpEnt.setUnder(attCtxAC);
+        acpEnt.setType(CdmAttributeContextType.Entity);
+        acpEnt.setName(entName);
+        acpEnt.setRegarding(entRefThis);
+
+        // reset previous depth information in case there are left overs
+        finalResOpt.depthInfo.reset();
+
+        final ResolveOptions resOptCopy = CdmAttributeContext.prepareOptionsForResolveAttributes(finalResOpt);
+        // resolve attributes with this context. the end result is that each resolved attribute
+        // points to the level of the context where it was  last modified, merged, created
+        final ResolvedAttributeSet ras = this.fetchResolvedAttributes(resOptCopy, acpEnt);
+
+        if (resOptCopy.usedResolutionGuidance) {
+          Logger.warning(this.getCtx(), TAG, "createResolvedEntityAsync", this.getAtCorpusPath(), CdmLogCode.WarnDeprecatedResolutionGuidance);
+        }
+
+        if (ras == null) {
+          return null;
+        }
+
+        this.getCtx().getCorpus().isCurrentlyResolving = wasResolving;
+
+        // Make a new document in given folder if provided or the same folder as the source entity.
+        folder.getDocuments().remove(fileName);
+        CdmDocumentDefinition docRes = folder.getDocuments().add(fileName);
+        // Add a import of the source document.
+        origDoc = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
+        docRes.getImports().add(origDoc, "resolvedFrom");
+        docRes.setDocumentVersion(this.getInDocument().getDocumentVersion());
+
+        // Make the empty entity.
+        CdmEntityDefinition entResolved = docRes.getDefinitions().add(entName);
+
+        // grab that context that comes from fetchResolvedAttributes. We are sure this tree is a copy that we can own, so no need to copy it again
+        CdmAttributeContext attCtx = null;
+        if (attCtxAC != null && attCtxAC.getContents() != null && attCtxAC.getContents().size() == 1) {
+          attCtx = (CdmAttributeContext) attCtxAC.getContents().get(0);
+        }
+        entResolved.setAttributeContext(attCtx);
+
+        if (attCtx != null) {
+          // fix all of the definition references, parent and lineage references, owner documents, etc. in the context tree
+          attCtx.finalizeAttributeContext(resOptCopy, String.format("%s/attributeContext/", entName), docRes, this.getInDocument(), "resolvedFrom", true);
+
+          // TEST CODE in C# by Jeff
+          // run over the resolved attributes and make sure none have the dummy context
+          //Action<ResolvedAttributeSet> testResolveAttributeCtx = null;
+          //testResolveAttributeCtx = (rasSub) =>
+          //{
+          //    if (rasSub.Set.Count != 0 && rasSub.AttributeContext.AtCoprusPath.StartsWith("cacheHolder"))
+          //        System.Diagnostics.Debug.WriteLine("Bad!!");
+          //    rasSub.Set.ForEach(ra =>
+          //    {
+          //        if (ra.AttCtx.AtCoprusPath.StartsWith("cacheHolder"))
+          //            System.Diagnostics.Debug.WriteLine("Bad!!");
+
+          //        // the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
+          //        if (ra.Target is ResolvedAttributeSet)
+          //        {
+          //            testResolveAttributeCtx(ra.Target as ResolvedAttributeSet);
+          //        }
+          //    });
+          //};
+          //testResolveAttributeCtx(ras);
+
+        }
+        // Add the traits of the entity, also add to attribute context top node
+        ResolvedTraitSet rtsEnt = this.fetchResolvedTraits(finalResOpt);
+        for (final ResolvedTrait rt : rtsEnt.getSet()) {
+          CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
+          entResolved.getExhibitsTraits().add(traitRef);
+          traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt); // fresh copy
+          if (entResolved.getAttributeContext() != null) {
+            entResolved.getAttributeContext().getExhibitsTraits().add(traitRef);
+          }
+        }
+
+        // special trait to explain this is a resolved entity
+        entResolved.indicateAbstractionLevel("resolved", finalResOpt);
+
+        if (entResolved.getAttributeContext() != null) {
+          // the attributes have been named, shaped, etc for this entity so now it is safe to go and
+          // make each attribute context level point at these final versions of attributes
 
           // what we have is a resolved attribute set (maybe with structure) where each ra points at the best tree node
           // we also have the tree of context, we need to flip this around so that the right tree nodes point at the paths to the
@@ -577,66 +577,66 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
           // sort the attributes in each context by their creation order and mix that with the other sub-contexts that have been sorted
           orderContents(attCtx, attPath2Order);
 
-        // resolved attributes can gain traits that are applied to an entity when referenced
-        // since these traits are described in the context, it is redundant and messy to list them in the attribute
-        // so, remove them. create and cache a set of names to look for per context
-        // there is actually a hierarchy to all attributes from the base entity should have all traits applied independently of the
-        // sub-context they come from. Same is true of attribute entities. so do this recursively top down
-        final HashMap<CdmAttributeContext, HashSet<String>> ctx2traitNames = new LinkedHashMap<>();
+          // resolved attributes can gain traits that are applied to an entity when referenced
+          // since these traits are described in the context, it is redundant and messy to list them in the attribute
+          // so, remove them. create and cache a set of names to look for per context
+          // there is actually a hierarchy to all attributes from the base entity should have all traits applied independently of the
+          // sub-context they come from. Same is true of attribute entities. so do this recursively top down
+          final HashMap<CdmAttributeContext, HashSet<String>> ctx2traitNames = new LinkedHashMap<>();
 
-        collectContextTraits(attCtx, new LinkedHashSet<>(), ctx2traitNames);
+          collectContextTraits(attCtx, new LinkedHashSet<>(), ctx2traitNames);
 
-        // add the attributes, put them in attribute groups if structure needed
-        final Map<ResolvedAttribute, String> resAtt2RefPath = new LinkedHashMap<>();
+          // add the attributes, put them in attribute groups if structure needed
+          final Map<ResolvedAttribute, String> resAtt2RefPath = new LinkedHashMap<>();
 
-        addAttributes(ras, entResolved, entName + "/hasAttributes/", docRes,
-                ctx2traitNames, resOptCopy, resAtt2RefPath);
+          addAttributes(ras, entResolved, entName + "/hasAttributes/", docRes,
+                  ctx2traitNames, resOptCopy, resAtt2RefPath);
 
-        // fix entity traits
-        if (entResolved.getExhibitsTraits() != null) {
-          for (final CdmTraitReferenceBase et : entResolved.getExhibitsTraits()) {
-            if (et instanceof CdmTraitReference) {
-              replaceTraitAttRef((CdmTraitReference) et, newEntName, false);
+          // fix entity traits
+          if (entResolved.getExhibitsTraits() != null) {
+            for (final CdmTraitReferenceBase et : entResolved.getExhibitsTraits()) {
+              if (et instanceof CdmTraitReference) {
+                replaceTraitAttRef((CdmTraitReference) et, newEntName, false);
+              }
             }
+          }
+
+          fixContextTraits(attCtx, newEntName);
+          // and the attribute traits
+          final CdmCollection<CdmAttributeItem> entAttributes = entResolved.getAttributes();
+          if (entAttributes != null) {
+            entAttributes.forEach(entAtt -> {
+              final CdmTraitCollection attTraits = entAtt.getAppliedTraits();
+              if (attTraits != null) {
+                attTraits.forEach(tr -> {
+                  if (tr instanceof CdmTraitReference) {
+                    replaceTraitAttRef((CdmTraitReference) tr, newEntName, false);
+                  }
+                });
+              }
+            });
           }
         }
 
-        fixContextTraits(attCtx, newEntName);
-        // and the attribute traits
-        final CdmCollection<CdmAttributeItem> entAttributes = entResolved.getAttributes();
-        if (entAttributes != null) {
-          entAttributes.forEach(entAtt -> {
-            final CdmTraitCollection attTraits = entAtt.getAppliedTraits();
-            if (attTraits != null) {
-              attTraits.forEach(tr -> {
-                if (tr instanceof CdmTraitReference) {
-                  replaceTraitAttRef((CdmTraitReference) tr, newEntName, false);
-                }
-              });
-            }
-          });
+        // we are about to put this content created in the context of various documents (like references to attributes from base entities, etc.)
+        // into one specific document. all of the borrowed refs need to work. so, re-write all string references to work from this new document
+        // the catch-22 is that the new document needs these fixes done before it can be used to make these fixes.
+        // the fix needs to happen in the middle of the refresh
+        // trigger the document to refresh current content into the resolved OM
+        if (attCtx != null) {
+          attCtx.setParent(null); // remove the fake parent that made the paths work
         }
+        final ResolveOptions resOptNew = finalResOpt.copy();
+        resOptNew.setLocalizeReferencesFor(docRes);
+        resOptNew.setWrtDoc(docRes);
+        docRes.refreshAsync(resOptNew).join();
+        // get a fresh ref
+        entResolved = (CdmEntityDefinition) docRes.fetchObjectFromDocumentPath(newEntName, resOptNew);
+
+        this.getCtx().getCorpus().resEntMap.put(this.getAtCorpusPath(), entResolved.getAtCorpusPath());
+
+        return entResolved;
       }
-
-      // we are about to put this content created in the context of various documents (like references to attributes from base entities, etc.)
-      // into one specific document. all of the borrowed refs need to work. so, re-write all string references to work from this new document
-      // the catch-22 is that the new document needs these fixes done before it can be used to make these fixes.
-      // the fix needs to happen in the middle of the refresh
-      // trigger the document to refresh current content into the resolved OM
-      if (attCtx != null) {
-        attCtx.setParent(null); // remove the fake parent that made the paths work
-      }
-      final ResolveOptions resOptNew = finalResOpt.copy();
-      resOptNew.setLocalizeReferencesFor(docRes);
-      resOptNew.setWrtDoc(docRes);
-      docRes.refreshAsync(resOptNew).join();
-      // get a fresh ref
-      entResolved = (CdmEntityDefinition) docRes.fetchObjectFromDocumentPath(newEntName, resOptNew);
-
-      this.getCtx().getCorpus().resEntMap.put(this.getAtCorpusPath(), entResolved.getAtCorpusPath());
-
-      logScope.close();
-      return entResolved;
     });
   }
 
@@ -1054,13 +1054,19 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       copy = new CdmEntityDefinition(this.getCtx(), this.getEntityName(), null);
     } else {
       copy = (CdmEntityDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setEntityName(this.getEntityName());
       copy.getAttributes().clear();
     }
 
-    copy.setExtendsEntity(copy.getExtendsEntity() != null ? (CdmEntityReference) this.getExtendsEntity().copy(resOpt) : null);
-    copy.setAttributeContext(copy.getAttributeContext() != null ? (CdmAttributeContext) this.getAttributeContext().copy(resOpt) : null);
+    copy.setExtendsEntity(
+            this.getExtendsEntity() != null
+                    ? (CdmEntityReference) this.getExtendsEntity().copy(resOpt) : null);
+    copy.setExtendsEntityResolutionGuidance(
+            this.getExtendsEntityResolutionGuidance() != null
+                    ? (CdmAttributeResolutionGuidance) this.getExtendsEntityResolutionGuidance().copy(resOpt) : null);
+    copy.setAttributeContext(
+            this.getAttributeContext() != null
+                    ? (CdmAttributeContext) this.getAttributeContext().copy(resOpt) : null);
     for (final CdmAttributeItem hasAttribute : this.getAttributes()) {
       copy.getAttributes().add((CdmAttributeItem)hasAttribute.copy(resOpt));
     }

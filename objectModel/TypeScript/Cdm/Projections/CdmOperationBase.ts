@@ -51,6 +51,7 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
      * @internal
      */
     copyProj(resOpt: resolveOptions, copy: CdmOperationBase): CdmOperationBase {
+        copy.type = this.type;
         copy.index = this.index;
         copy.condition = this.condition;
         copy.sourceInput = this.sourceInput;

@@ -7,6 +7,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationIncludeAttributes;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
+
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -35,19 +37,9 @@ public class ProjectionIncludeTest {
     );
 
     /**
-     * Path to foundations
-     */
-    private static final String foundationJsonPath = "cdm:/foundations.cdm.json";
-
-    /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-            new File(new File(new File(
-                    "cdm"),
-                    "projection"),
-                    "testProjectionInclude")
-                    .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionIncludeTest").toString();
 
     /**
      * Test for entity extends with resolution guidance with a SelectsSomeTakeNames
@@ -306,6 +298,31 @@ public class ProjectionIncludeTest {
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
+    }
+
+    /**
+     * Test for Include Attributes from a Polymorphic Source
+     */
+    @Test
+    public void testReorderProj() throws InterruptedException {
+        String testName = "testReorderProj";
+        String entityName = "NewPerson";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+
+        CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>()).join();
+
+        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        // Renamed attribute "age" with format "yearsOld" and re-order all attributes removing email
+        Assert.assertEquals(resolvedEntity.getAttributes().getCount(), 4);
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "address");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "phoneNumber");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "yearsOld");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "name");
     }
 
     /**

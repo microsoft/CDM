@@ -16,7 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
         /// <summary>
         /// The path between TestDataPath and TestName.
         /// </summary>
-        private string testsSubpath = Path.Combine("Cdm", "Resolution", "Cache");
+        private string testsSubpath = Path.Combine("Cdm", "Resolution", "CacheTest");
 
         /// <summary>
         /// The TestName for all tests here

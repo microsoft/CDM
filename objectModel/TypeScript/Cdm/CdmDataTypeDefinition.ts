@@ -58,10 +58,9 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
                 copy = new CdmDataTypeDefinition(this.ctx, this.dataTypeName, undefined);
             } else {
                 copy = host as CdmDataTypeDefinition;
-                copy.ctx = this.ctx;
                 copy.dataTypeName = this.dataTypeName;
             }
-            copy.extendsDataType = this.extendsDataType ? <CdmDataTypeReference>this.extendsDataType.copy(resOpt) : undefined;
+            copy.extendsDataType = this.extendsDataType ? this.extendsDataType.copy(resOpt) as CdmDataTypeReference: undefined;
             this.copyDef(resOpt, copy);
 
             return copy;

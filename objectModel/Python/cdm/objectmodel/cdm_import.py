@@ -48,7 +48,7 @@ class CdmImport(CdmObjectSimple):
             copy.corpus_path = self.corpus_path
             copy.moniker = self.moniker
 
-        copy._document = self._document
+        copy._document = self._document.copy(res_opt) if self._document else None
 
         return copy
 

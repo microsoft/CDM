@@ -785,7 +785,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
         inGenerated = true; // special mode where we hate everything except the removed att notes
     }
 
-    if (inGenerated && (ac.getType() == CdmAttributeContextType.OperationExcludeAttributes || ac.getType() == CdmAttributeContextType.OperationIncludeAttributes)) {
+    if (inGenerated && ac.getType() == CdmAttributeContextType.OperationExcludeAttributes) {
         inRemove = true; // triggers us to know what to do in the next code block.
     }
     boolean removedAttribute = false;
@@ -798,6 +798,11 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
       } else if (ac.getContents() == null || ac.getContents().getCount() == 0) {
         return true;
       }
+    }
+
+    // this attribute was removed by a projection operation, but we want to keep the node to indicate what the operation did
+    if (ac.getType() == CdmAttributeContextType.AttributeExcluded) {
+        removedAttribute = true;
     }
 
     if (!inGenerated || removedAttribute) {

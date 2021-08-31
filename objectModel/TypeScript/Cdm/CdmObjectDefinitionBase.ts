@@ -32,6 +32,7 @@ export abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
     public copyDef(resOpt: resolveOptions, copy: CdmObjectDefinitionBase): void {
         // let bodyCode = () =>
         {
+            copy.ctx = this.ctx;
             copy.declaredPath = this.declaredPath;
             copy.explanation = this.explanation;
             copy.exhibitsTraits.clear();

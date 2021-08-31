@@ -404,8 +404,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             // Merge ["emailId, "phoneId, "socialId"] into "contactId", type attribute: "contactType",
             // rename ["contactId", "isPrimary"] as "new_{m}", include ["contactId", "new_isPrimary", "contactType"]
             Assert.AreEqual(3, resolvedEntity.Attributes.Count);
-            Assert.AreEqual("new_isPrimary", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("new_contactId", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("new_contactId", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("new_isPrimary", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("contactType", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("is.linkedEntity.name", resolvedEntity.Attributes[2].AppliedTraits[4].NamedReference);
         }

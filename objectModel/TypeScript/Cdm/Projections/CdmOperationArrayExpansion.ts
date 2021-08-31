@@ -41,11 +41,17 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy: CdmOperationArrayExpansion = new CdmOperationArrayExpansion(this.ctx);
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
+
+        const copy: CdmOperationArrayExpansion = !host ? new CdmOperationArrayExpansion(this.ctx) : host as CdmOperationArrayExpansion;
+
         copy.startOrdinal = this.startOrdinal;
         copy.endOrdinal = this.endOrdinal;
-
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

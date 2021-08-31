@@ -22,6 +22,9 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     public toEntityAttribute: string;
     public name: string;
 
+    private lastFileModifiedTime: Date;
+    private lastFileModifiedOldTime: Date;
+
     public static get objectType(): cdmObjectType {
         return cdmObjectType.e2eRelationshipDef;
     }
@@ -30,6 +33,9 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
         super(ctx);
         this.name = name;
         this.objectType = cdmObjectType.e2eRelationshipDef;
+
+        this.lastFileModifiedTime = null;
+        this.lastFileModifiedOldTime = null;
     }
 
     public getObjectType(): cdmObjectType {
@@ -46,7 +52,6 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
             copy = new CdmE2ERelationship(this.ctx, this.name);
         } else {
             copy = host as CdmE2ERelationship;
-            copy.ctx = this.ctx;
             copy.name = this.name;
         }
 
@@ -110,5 +115,26 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
         return false;
+    }
+
+    public setLastFileModifiedTime(value : Date): void {
+        this.setLastFileModifiedOldTime(this.lastFileModifiedTime);
+        this.lastFileModifiedTime = value;
+    }
+    
+    public getlastFileModifiedTime(): Date {
+        return this.lastFileModifiedTime;
+    }
+    
+    private setLastFileModifiedOldTime(value: Date): void {
+        this.lastFileModifiedOldTime = value;
+    }
+
+    public getlastFileModifiedOldTime(): Date {
+        return this.lastFileModifiedOldTime;
+    }
+
+    public resetLastFileModifiedOldTime(): void {
+        this.setLastFileModifiedOldTime(null);
     }
 }

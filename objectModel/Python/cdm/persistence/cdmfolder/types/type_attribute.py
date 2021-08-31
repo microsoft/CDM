@@ -8,6 +8,7 @@ from .data_type_reference import DataTypeReference
 from .trait_reference import TraitReference
 from .trait_group_reference import TraitGroupReference
 from .attribute_resolution_guidance import AttributeResolutionGuidance
+from ..types.projections.cardinality_settings_data import CardinalitySettingsData
 from cdm.utilities import JObject
 
 
@@ -36,3 +37,4 @@ class TypeAttribute(JObject):
         self.defaultValue = None  # type: object
         self.projection = None  # type: Optional[Projection]
         self.resolutionGuidance = None  # type: AttributeResolutionGuidance
+        self.cardinality = None  # type: CardinalitySettingsData

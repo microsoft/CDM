@@ -13,8 +13,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
-    using System.Resources;
+    using System.Linq;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
 
     public static class Utils
     {
@@ -337,69 +338,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         }
 
         /// <summary>
-        /// Creates a JSON object of syms relationship in the correct shape given an instance of a symsManifestContent object.
-        /// </summary>
-        internal static string GetRelationshipPayload(List<RelationshipEntity> relationshipEntities, DDLType dDLType)
-        {
-            string retValue;
-            IList<DDLPayload> DDLs = new List<DDLPayload>();
-
-            foreach (var entity in relationshipEntities)
-            {
-                DDLPayload dDlPayloadEntity = new DDLPayload();
-                dDlPayloadEntity.ActionType = dDLType;
-                switch (dDLType)
-                {
-                    case DDLType.CREATE:
-                        dDlPayloadEntity.NewEntity = entity;
-                        break;
-                    case DDLType.DROP:
-                        dDlPayloadEntity.OldEntity = entity;
-                        break;
-                    default:
-                        return null;
-                }
-
-                DDLs.Add(dDlPayloadEntity);
-            }
-
-            DDLBatch dDLBatch = new DDLBatch(DDLs);
-            retValue = JsonConvert.SerializeObject(dDLBatch, Formatting.Indented,
-               new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-
-            return retValue;
-        }
-
-        /// <summary>
-        /// Creates a JSON object of syms database in the correct shape given an instance of a symsManifestContent object.
-        /// </summary>
-        internal static string GetDBPayload(SymsManifestContent symsManifestContent, DDLType dDLType)
-        {
-            string retValue;
-            IList<DDLPayload> DDLs = new List<DDLPayload>();
-            DDLPayload dDlPayloadEntity = new DDLPayload();
-            dDlPayloadEntity.ActionType = dDLType;
-            switch (dDLType)
-            {
-                case DDLType.CREATE:
-                    dDlPayloadEntity.NewEntity = symsManifestContent.Database;
-                    break;
-                case DDLType.DROP:
-                    dDlPayloadEntity.OldEntity = symsManifestContent.Database;
-                    break;
-                default:
-                    return null;
-            }
-
-            DDLs.Add(dDlPayloadEntity);
-            DDLBatch dDLBatch = new DDLBatch(DDLs);
-
-            retValue = JsonConvert.SerializeObject(dDLBatch, Formatting.Indented,
-                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            return retValue;
-        }
-
-        /// <summary>
         /// check if adapter is syms.
         /// </summary>
         internal static bool CheckIfSymsAdapter(StorageAdapter adapter)
@@ -669,13 +607,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return new Tuple<string, string>(ns, adlsPath);
         }
 
-        public static string ExtractTableNameFromEntityPath(string enitityPath)
+        internal static string ExtractTableNameFromEntityPath(string enitityPath)
         {
-            string[] paths = enitityPath.Split('/');
+            var corpuspPath = FormatCorpusPath(enitityPath);
+            if (corpuspPath == null)
+            { 
+                return null;
+            }
+
+            string[] paths = corpuspPath.Split('/');
             if (paths.Length > 0)
+            {
                 if (!paths[paths.Length - 1].EndsWith(".cdm.json"))
+                {
                     return paths[paths.Length - 1];
+                }
+            }
             return null;
+        }
+
+        private static string FormatCorpusPath(string corpusPath)
+        {
+            var pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
+            if (pathTuple == null)
+            {
+                return null;
+            }
+
+            corpusPath = pathTuple.Item2;
+
+            if (corpusPath.Length > 0 && corpusPath[0] != '/')
+            {
+                corpusPath = $"/{corpusPath}";
+            }
+
+            return corpusPath;
         }
 
         /// <summary>
@@ -738,56 +704,254 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                     typeInfo.TypeName = "binary";
                     break;
                 case CdmDataFormat.Float:
-                     typeInfo.TypeName = "float";
+                    typeInfo.TypeName = "float";
                     break;
                 case CdmDataFormat.Char:
-                     typeInfo.TypeName = "string";
-                     typeInfo.Length = 1;
+                    typeInfo.TypeName = "string";
+                    typeInfo.Length = 1;
                     break;
                 case CdmDataFormat.String:
-                     typeInfo.TypeName = "string";
+                    typeInfo.TypeName = "string";
                     break;
                 case CdmDataFormat.Guid:
-                     typeInfo.TypeName = "string";
-                     typeInfo.Properties["guid"] = true;
+                    typeInfo.TypeName = "string";
+                    typeInfo.Properties["guid"] = true;
                     break;
                 case CdmDataFormat.Json:
-                     typeInfo.TypeName = "string";
-                     typeInfo.Properties["json"] = true;
+                    typeInfo.TypeName = "string";
+                    typeInfo.Properties["json"] = true;
                     break;
                 case CdmDataFormat.DateTimeOffset:
-                     typeInfo.TypeName = "string";
-                     typeInfo.Properties["dateTimeOffset"] = true;
+                    typeInfo.TypeName = "string";
+                    typeInfo.Properties["dateTimeOffset"] = true;
                     break;
                 case CdmDataFormat.Int64:
-                     typeInfo.TypeName = "long";
+                    typeInfo.TypeName = "long";
                     break;
                 case CdmDataFormat.Int32:
-                     typeInfo.TypeName = "integer";
+                    typeInfo.TypeName = "integer";
                     break;
                 case CdmDataFormat.Double:
-                     typeInfo.TypeName = "double";
+                    typeInfo.TypeName = "double";
                     break;
                 case CdmDataFormat.Date:
-                     typeInfo.TypeName = "date";
+                    typeInfo.TypeName = "date";
                     break;
                 case CdmDataFormat.DateTime:
-                     typeInfo.TypeName = "timestamp";
+                    typeInfo.TypeName = "timestamp";
                     typeInfo.Properties["dateTime"] = true;
                     break;
                 case CdmDataFormat.Time:
-                     typeInfo.TypeName = "timestamp";
+                    typeInfo.TypeName = "timestamp";
                     break;
                 case CdmDataFormat.Decimal:
-                     typeInfo.TypeName = "decimal";
+                    typeInfo.TypeName = "decimal";
                     break;
                 case CdmDataFormat.Boolean:
-                     typeInfo.TypeName = "boolean";
+                    typeInfo.TypeName = "boolean";
                     break;
                 default:
                     return null;
             }
             return typeInfo;
+        }
+
+        private static string JsonConvertSerializeObject(dynamic obj)
+        {
+            return JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+        }
+
+        /// <summary>
+        /// Convert to SyMs object to CDM object.
+        /// </summary>
+        internal static async Task<SymsManifestContent> GetSymsModel(StorageAdapter adapter, string databaseResponse, string docPath)
+        {
+            var database = JsonConvert.DeserializeObject<DatabaseEntity>(databaseResponse);
+            var entities = await adapter.ReadAsync($"/{database.Name}/{database.Name}.manifest.cdm.json/entitydefinition");
+            var relationships = await adapter.ReadAsync($"{docPath}/relationships");
+
+            return new SymsManifestContent
+            {
+                Database = database,
+                Entities = JsonConvert.DeserializeObject<SymsTableResponse>(entities).Tables,
+                Relationships = JsonConvert.DeserializeObject<SymsRelationshipResponse>(relationships).Relationships,
+                IntialSync = false,
+                RemovedEntities = null,
+                RemovedRelationships = null
+            };
+        }
+
+        /// <summary>
+        /// Create or update Database. Throws exception on failure.
+        /// </summary>
+        internal static async Task CreateOrUpdateDatabase(DatabaseEntity databaseEntity, StorageAdapter adapter)
+        {
+            await adapter.WriteAsync($"{databaseEntity.Name}/{databaseEntity.Name}.manifest.cdm.json", JsonConvertSerializeObject(databaseEntity));
+        }
+
+        /// <summary>
+        /// Create or update Syms Table Entity. Throws exception on failure.
+        /// </summary>
+        internal static async Task CreateOrUpdateTableEntity(TableEntity tableEntity, StorageAdapter adapter)
+        {
+            await adapter.WriteAsync($"{((TableProperties)tableEntity.Properties).NamespaceProperty.DatabaseName}/{tableEntity.Name}.cdm.json",
+                                                JsonConvertSerializeObject(tableEntity));
+        }
+
+        /// <summary>
+        /// Create or update Syms RelationshipEntity. Throws exception on failure.
+        /// </summary>
+        internal static async Task CreateOrUpdateRelationshipEntity(RelationshipEntity relationshipEntity, StorageAdapter adapter)
+        {
+            string databaseName = ((RelationshipProperties)relationshipEntity.Properties).NamespaceProperty.DatabaseName;
+            await adapter.WriteAsync($"{databaseName}/{databaseName}.manifest.cdm.json/relationships/{relationshipEntity.Name}",
+                JsonConvertSerializeObject(relationshipEntity));
+        }
+
+        /// <summary>
+        /// Create or add/update or remove Syms Entities. Throws exception on failure.
+        /// </summary>
+        internal static async Task CreateOrUpdateSymsEntities(SymsManifestContent symsManifestContent, StorageAdapter adapter)
+        {
+            IDictionary<string,string> failedUpdatedTables = new Dictionary<string, string>();
+            IDictionary<string, string> failedUpdatedRelatopnships = new Dictionary<string, string>();
+            IDictionary<string, string> failedRemovedTables = new Dictionary<string, string>();
+            IDictionary<string, string> failedRemovedRelationships = new Dictionary<string, string>();
+            string errorMesg = string.Empty;
+
+            if (symsManifestContent.IntialSync == true)
+            {
+                await CreateOrUpdateDatabase(symsManifestContent.Database, adapter);
+            }
+
+            if (symsManifestContent.RemovedEntities != null)
+            {
+                foreach (var removeTable in symsManifestContent.RemovedEntities)
+                {
+                    try
+                    {
+                        await RemoveTableEntity(removeTable, symsManifestContent.Database.Name, adapter);
+                    }
+                    catch (Exception e)
+                    {
+                        failedRemovedTables[removeTable] = e.Message;
+                    }
+                }
+                if (failedRemovedTables.Count > 0)
+                {
+                    errorMesg += $"Failed removed tables : {string.Join(",", failedRemovedTables.Select(kv => kv.Key + "Reason: " + kv.Value).ToArray())}";
+                }
+            }
+
+            if (symsManifestContent.RemovedRelationships != null)
+            {
+                foreach (var removeRelationship in symsManifestContent.RemovedRelationships)
+                {
+                    try
+                    {
+                        await RemoveRelationshipEntity(removeRelationship, symsManifestContent.Database.Name, adapter);
+                    }
+                    catch (Exception e)
+                    {
+                        failedRemovedRelationships[removeRelationship] = e.Message;
+                    }
+                }
+                if (failedRemovedRelationships.Count > 0)
+                {
+                    errorMesg += $"Failed removed relationships : {string.Join(",", failedRemovedRelationships.Select(kv => kv.Key + "Reason: " + kv.Value).ToArray())}";
+                }
+            }
+
+            if (symsManifestContent.Entities != null)
+            {
+                foreach (var table in symsManifestContent.Entities)
+                {
+                    try
+                    {
+                        await CreateOrUpdateTableEntity(table, adapter);
+                    }
+                    catch (Exception e)
+                    {
+                        failedUpdatedTables[table.Name] = e.Message;
+                    }
+                }
+                if (failedUpdatedTables.Count > 0)
+                {
+                    errorMesg += $"Failed updated tables : {string.Join(",", failedUpdatedTables.Select(kv => kv.Key + "Reason: " + kv.Value).ToArray())}";
+                }
+            }
+
+            if (symsManifestContent.Relationships != null)
+            {
+                foreach (var relationship in symsManifestContent.Relationships)
+                {
+                    try
+                    {
+                        await CreateOrUpdateRelationshipEntity(relationship, adapter);
+                    }
+                    catch (Exception e)
+                    {
+                        failedUpdatedTables[relationship.Name] = e.Message;
+                    }
+                }
+                if (failedUpdatedTables.Count > 0)
+                {
+                    errorMesg += $"Failed updated relationships : {string.Join(",", failedUpdatedRelatopnships.Select(kv => kv.Key + "Reason: " + kv.Value).ToArray())}";
+                }
+            }
+
+            if (!string.IsNullOrEmpty(errorMesg))
+            {
+                throw new Exception(errorMesg);
+            }
+        }
+
+        /// <summary>
+        /// Remove Table Entity. Throws exception on failure.
+        /// </summary>
+        internal static async Task RemoveTableEntity(string tableName, string databaseName, StorageAdapter adapter)
+        {
+            await adapter.WriteAsync($"{databaseName}/{tableName}.cdm.json", null);
+        }
+
+        /// <summary>
+        /// Remove Relationship Entity. Throws exception on failure.
+        /// </summary>
+        internal static async Task RemoveRelationshipEntity(string relationship, string databaseName, StorageAdapter adapter)
+        {
+            await adapter.WriteAsync($"{databaseName}/{databaseName}.manifest.cdm.json/relationships/{relationship}", null);
+        }
+
+        /// <summary>
+        /// Check if entity added or modified.
+        /// </summary>
+        internal static bool IsEntityAddedorModified(CdmLocalEntityDeclarationDefinition entity, IDictionary<string, TableEntity> existingSymsTables)
+        {
+            if (existingSymsTables == null || existingSymsTables.Count == 0 || !existingSymsTables.ContainsKey(entity.EntityName))
+            {
+                return true;
+            }
+            if (entity.LastFileModifiedTime != null && (entity.LastFileModifiedOldTime != null && entity.LastFileModifiedOldTime < entity.LastFileModifiedTime))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        ///  Check if relationship added or modified.
+        /// </summary>
+        internal static bool IsRelationshipAddedorModified(CdmE2ERelationship entity, IDictionary<string, RelationshipEntity> existingSymsRelationship)
+        {
+            if (entity.Name == null || existingSymsRelationship == null || existingSymsRelationship.Count == 0 || !existingSymsRelationship.ContainsKey(entity.Name))
+            {
+                return true;
+            }
+            if (entity.LastFileModifiedTime != null && (entity.LastFileModifiedOldTime != null && entity.LastFileModifiedOldTime < entity.LastFileModifiedTime))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

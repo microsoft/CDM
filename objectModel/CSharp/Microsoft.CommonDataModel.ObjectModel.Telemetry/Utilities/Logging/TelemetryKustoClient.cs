@@ -323,6 +323,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
                             case CdmStatusLevel.Error:
                                 errorLogEntries += logEntry;
                                 break;
+                            default:
+                                break;
                         }
                     }
 

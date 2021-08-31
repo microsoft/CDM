@@ -76,11 +76,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
 
         # this context object holds all of the info about what needs to happen to resolve these attributes.
         # make a copy and add defaults if missing
-        res_guide_with_default = None
-        if self.resolution_guidance is not None:
-            res_guide_with_default = self.resolution_guidance.copy(res_opt)
-        else:
-            res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx)
+        res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx) if self.resolution_guidance is None else self.resolution_guidance.copy(res_opt)
 
         res_guide_with_default._update_attribute_defaults(self.name, self)
 
@@ -279,7 +275,6 @@ class CdmEntityAttributeDefinition(CdmAttribute):
             copy = CdmEntityAttributeDefinition(self.ctx, self.name)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.name = self.name
 
         copy.entity = self.entity.copy(res_opt)

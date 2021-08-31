@@ -278,7 +278,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmTypeAttributeDefinition;
-                copy.Ctx = this.Ctx;
                 copy.Name = this.GetName();
             }
 

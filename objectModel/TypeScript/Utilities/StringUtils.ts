@@ -35,10 +35,28 @@ export class StringUtils {
         let upperCaseValue: string = '';
         
         if (value) {
-            upperCaseValue = value[0].toUpperCase() + (value.length > 1 ? value.slice(1) : "");
+            upperCaseValue = value[0].toUpperCase() + (value.length > 1 ? value.slice(1) : '');
         }
 
         const result: string = source.replace(`{${lowerCasePattern}}`, value);
         return result.replace(`{${upperCasePattern}}`, upperCaseValue);
     }
+
+    /**
+     * Convert snake cased string to pascal cased.
+     * @param snakeStr The orginal string
+     */
+    public static snakeCaseToPascalCase(snakeStr: string): string {
+        if (StringUtils.isNullOrWhiteSpace(snakeStr)) {
+            return snakeStr;
+        }
+        
+        const components: String[] = snakeStr.split('_');
+        if (components.length === 1) {
+          return snakeStr;
+        }
+    
+        return components.map(str => str.substring(0, 1) .toUpperCase() + str.substring(1).toLowerCase()).join('');
+      }
+
 }

@@ -204,14 +204,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmEntityDefinition;
-                copy.Ctx = this.Ctx;
                 copy.EntityName = this.EntityName;
                 copy.Attributes.Clear();
             }
 
-            copy.ExtendsEntity = copy.ExtendsEntity != null ? (CdmEntityReference)this.ExtendsEntity.Copy(resOpt) : null;
-            copy.ExtendsEntityResolutionGuidance = this.ExtendsEntityResolutionGuidance != null ? (CdmAttributeResolutionGuidance)this.ExtendsEntityResolutionGuidance.Copy(resOpt) : null;
-            copy.AttributeContext = copy.AttributeContext != null ? (CdmAttributeContext)this.AttributeContext.Copy(resOpt) : null;
+            copy.ExtendsEntity = (CdmEntityReference)this.ExtendsEntity?.Copy(resOpt);
+            copy.ExtendsEntityResolutionGuidance = (CdmAttributeResolutionGuidance)this.ExtendsEntityResolutionGuidance?.Copy(resOpt);
+            copy.AttributeContext = (CdmAttributeContext)this.AttributeContext?.Copy(resOpt);
             foreach (var att in this.Attributes)
             {
                 copy.Attributes.Add(att.Copy(resOpt) as CdmAttributeItem);

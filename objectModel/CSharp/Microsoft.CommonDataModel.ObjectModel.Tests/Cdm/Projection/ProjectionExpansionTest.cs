@@ -572,9 +572,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             // Expand 1...3, renameFormat = {m}{o}, include [name, age1]
             Assert.AreEqual(4, resolvedEntity.Attributes.Count);
             Assert.AreEqual("name1", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("age1", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("name2", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("name3", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("name2", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("name3", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("age1", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
         }
 
         /// <summary>

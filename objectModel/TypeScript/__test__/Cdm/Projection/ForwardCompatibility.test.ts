@@ -14,7 +14,7 @@ describe('Cdm/Projection/ForwardCompatibility', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestForwardCompatibility';
+    const testsSubpath: string = 'Cdm/Projection/ForwardCompatibilityTest';
 
     /**
      * Tests running all the projections (includes projections that are not implemented).

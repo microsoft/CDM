@@ -16,16 +16,6 @@ import java.util.List;
  * Unit test for Tokenizer functions
  */
 public class TokenizerUnitTest {
-    /**
-     * The path between TestDataPath and TestName.
-     */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testTokenizer")
-            .toString();
-
     @Test
     public void testGetExpressionAsTokenList() {
         List<List<String>> exprAndExpectedList = new ArrayList<>();

@@ -3,7 +3,6 @@
 
 import { CdmFolder } from '..';
 import {
-    CardinalitySettings,
     CdmCorpusContext,
     CdmEntityAttributeDefinition,
     CdmEntityReference,
@@ -31,35 +30,7 @@ export class EntityAttributePersistence {
         entityAttribute.displayName = utils.propertyFromDataToString(object.displayName);
         entityAttribute.explanation = utils.propertyFromDataToString(object.explanation);
 
-        if (object.cardinality) {
-            let minCardinality: string;
-            if (object.cardinality.minimum) {
-                minCardinality = object.cardinality.minimum;
-            }
-
-            let maxCardinality: string;
-            if (object.cardinality.maximum) {
-                maxCardinality = object.cardinality.maximum;
-            }
-
-            if (!minCardinality || !maxCardinality) {
-                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistCardinalityPropMissing, minCardinality);
-            }
-
-            if (!CardinalitySettings.isMinimumValid(minCardinality)) {
-                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistInvalidMinCardinality, minCardinality);
-            }
-
-            if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
-                Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistInvalidMaxCardinality, maxCardinality);
-            }
-
-            if (minCardinality && maxCardinality && CardinalitySettings.isMinimumValid(minCardinality) && CardinalitySettings.isMaximumValid(maxCardinality)) {
-                entityAttribute.cardinality = new CardinalitySettings(entityAttribute);
-                entityAttribute.cardinality.minimum = minCardinality;
-                entityAttribute.cardinality.maximum = maxCardinality;
-            }
-        }
+        entityAttribute.cardinality = utils.cardinalitySettingsFromData(object.cardinality, entityAttribute);
 
         entityAttribute.isPolymorphicSource = object.isPolymorphicSource;
 
@@ -87,6 +58,7 @@ export class EntityAttributePersistence {
 
         return entityAttribute;
     }
+
     public static toData(instance: CdmEntityAttributeDefinition, resOpt: resolveOptions, options: copyOptions): EntityAttribute {
         let entity: (string | EntityReferenceDefinition);
         entity = instance.entity ? instance.entity.copyData(resOpt, options) as (string | EntityReferenceDefinition) : undefined;
@@ -94,7 +66,7 @@ export class EntityAttributePersistence {
             instance.appliedTraits.allItems.filter(
                 (trait: CdmTraitReferenceBase) => trait instanceof CdmTraitGroupReference || !(trait as CdmTraitReference).isFromProperty) : undefined;
 
-        return {
+        const object: EntityAttribute = {
             name: instance.name,
             description: instance.description,
             displayName: instance.displayName,
@@ -106,7 +78,10 @@ export class EntityAttributePersistence {
             entity: entity,
             appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference | TraitGroupReference>(resOpt, appliedTraits, options),
             resolutionGuidance: instance.resolutionGuidance
-                ? instance.resolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined
+                ? instance.resolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
+            cardinality: utils.cardinalitySettingsToData(instance.cardinality)
         };
+
+        return object;
     }
 }

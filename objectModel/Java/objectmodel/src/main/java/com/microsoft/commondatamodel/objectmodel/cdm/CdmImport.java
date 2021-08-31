@@ -115,7 +115,9 @@ public class CdmImport extends CdmObjectSimple {
       copy.setMoniker(this.getMoniker());
     }
 
-    copy.setDocument(document);
+    copy.setDocument(
+            this.getDocument() != null
+                    ? (CdmDocumentDefinition) this.getDocument().copy(resOpt) : null);
     return copy;
   }
 }

@@ -29,7 +29,7 @@ class ProjectionMapTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and test_name.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionMap')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionMapTest')
 
     @async_test
     async def test_entity_attribute(self):

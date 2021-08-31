@@ -35,8 +35,17 @@ public class CdmOperationAddTypeAttribute extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationAddTypeAttribute copy = new CdmOperationAddTypeAttribute(this.getCtx());
-        copy.typeAttribute = (CdmTypeAttributeDefinition) this.typeAttribute.copy(resOpt, host);
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationAddTypeAttribute copy = host == null ? new CdmOperationAddTypeAttribute(this.getCtx()) : (CdmOperationAddTypeAttribute)host;
+
+        copy.setTypeAttribute(
+                this.getTypeAttribute() != null
+                        ? (CdmTypeAttributeDefinition)this.getTypeAttribute().copy(resOpt) : null);
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

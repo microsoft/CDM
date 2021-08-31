@@ -23,11 +23,7 @@ public class ProjectionObjectModelTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-            new File(new File(
-                    "cdm"),
-                    "projection")
-                    .toString();
+    private static final String TESTS_SUBPATH = new File(new File("Cdm"), "Projection").toString();
 
     /**
      * Basic test to save projection based entities and then try to reload them and validate that the projections were persisted correctly

@@ -73,14 +73,13 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
                 copy = new CdmAttributeGroupDefinition(this.ctx, this.attributeGroupName);
             } else {
                 copy = host as CdmAttributeGroupDefinition;
-                copy.ctx = this.ctx;
                 copy.attributeGroupName = this.attributeGroupName;
                 copy.members.clear();
             }
 
             copy.attributeContext = this.attributeContext ? <CdmAttributeContextReference>this.attributeContext.copy(resOpt) : undefined;
             for (const att of this.members) {
-                copy.members.push(att);
+                copy.members.push(att.copy(resOpt) as CdmAttributeItem);
             }
             this.copyDef(resOpt, copy);
 

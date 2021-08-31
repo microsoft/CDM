@@ -20,11 +20,11 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class SymbolResolveTest {
-    private static final String TESTS_SUBPATH = new File("cdm", "symbolResolution").toString();
+    private static final String TESTS_SUBPATH = new File("Cdm", "SymbolResolution").toString();
 
     @Test
     public void testSymbolResolution() throws InterruptedException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "symbolResolution", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSymbolResolution");
 
         // load the file
         final CdmEntityDefinition ent = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/symbolEntity.cdm.json/symbolEnt").join();

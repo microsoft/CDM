@@ -18,7 +18,7 @@ from tests.common import async_test, TestHelper
 
 
 class EntityResolution(unittest.TestCase):
-    tests_sub_path = os.path.join('Cdm', 'Resolution', 'EntityResolution')
+    tests_sub_path = os.path.join('Cdm', 'Resolution', 'EntityResolutionTest')
 
     @async_test
     async def test_owner_not_changed(self):

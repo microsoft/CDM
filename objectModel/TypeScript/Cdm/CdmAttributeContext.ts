@@ -535,7 +535,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
                 inGenerated = true; // special mode where we hate everything except the removed att notes
             }
 
-            if (inGenerated && (ac.type === cdmAttributeContextType.operationExcludeAttributes || ac.type === cdmAttributeContextType.operationIncludeAttributes)) {
+            if (inGenerated && ac.type === cdmAttributeContextType.operationExcludeAttributes) {
                 inRemove = true; // triggers us to know what to do in the next code block.
             }
             let removedAttribute: boolean = false;
@@ -548,6 +548,11 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
                 } else if (!ac.contents || ac.contents.length === 0) {
                     return true;
                 }
+            }
+
+            // this attribute was removed by a projection operation, but we want to keep the node to indicate what the operation did
+            if (ac.type === cdmAttributeContextType.attributeExcluded) {
+                removedAttribute = true;
             }
 
             if (!inGenerated || removedAttribute) {

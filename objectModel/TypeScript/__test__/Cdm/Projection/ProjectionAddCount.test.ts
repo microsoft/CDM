@@ -40,7 +40,7 @@ describe('Cdm/Projection/ProjectionAddCountTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionAddCount';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionAddCountTest';
 
     /**
      * Test for creating a projection with an AddCountAttribute operation on an entity attribute using the object model

@@ -167,16 +167,13 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 copy = new CdmEntityDefinition(this.ctx, this.entityName, undefined);
             } else {
                 copy = host as CdmEntityDefinition;
-                copy.ctx = this.ctx;
                 copy.entityName = this.entityName;
                 copy.attributes.clear();
             }
-            copy.extendsEntity = copy.extendsEntity ? <CdmEntityReference>this.extendsEntity.copy(resOpt) : undefined;
-            copy.extendsEntityResolutionGuidance =
-                this.extendsEntityResolutionGuidance !== undefined ?
-                    this.extendsEntityResolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance
-                    : undefined;
-            copy.attributeContext = copy.attributeContext ? <CdmAttributeContext>this.attributeContext.copy(resOpt) : undefined;
+            copy.extendsEntity = this.extendsEntity ? this.extendsEntity.copy(resOpt) as CdmEntityReference : undefined;
+            copy.extendsEntityResolutionGuidance = this.extendsEntityResolutionGuidance 
+                    ? this.extendsEntityResolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance : undefined;
+            copy.attributeContext = this.attributeContext ? this.attributeContext.copy(resOpt) as CdmAttributeContext : undefined;
             for (const att of this.attributes) {
                 copy.attributes.push(att.copy(resOpt) as CdmAttributeItem);
             }

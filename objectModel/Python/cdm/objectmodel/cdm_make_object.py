@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from cdm.enums import CdmObjectType
+from cdm.utilities import logger
 
 from .cdm_attribute_context import CdmAttributeContext
 from .cdm_attribute_context_ref import CdmAttributeContextReference
@@ -98,5 +99,8 @@ switcher = {
 
 def make_object(ctx, of_type: 'CdmObjectType', name_or_ref: str, simple_name_ref: bool) -> 'TObject':
     """instantiates a OM class based on the object type passed as first parameter."""
+    # Log and ingest a message when a new manifest is created
+    if of_type == CdmObjectType.MANIFEST_DEF:
+        logger.debug(ctx, None, make_object.__name__, None, 'New Manifest created.', True)
 
     return switcher[of_type](ctx, name_or_ref, simple_name_ref)

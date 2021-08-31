@@ -22,11 +22,11 @@ import org.testng.annotations.Test;
 import java.io.File;
 
 public class ReferencedEntityDeclarationTest {
-    private static final String TESTS_SUBPATH = new File("cdm", "referencedentitydeclaration").toString();
+    private static final String TESTS_SUBPATH = new File("Cdm", "Referencedentitydeclaration").toString();
 
     @Test
     public void testRefEntityWithSlashPath() throws InterruptedException {
-        CdmCorpusDefinition slashCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestRefEntityWithSlashPath", null);
+        CdmCorpusDefinition slashCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestRefEntityWithSlashPath");
         String slashLocalPath = ((LocalAdapter)slashCorpus.getStorage().getNamespaceAdapters().get("local")).getRoot();
         LocalAdapterWithSlashPath slashAdapter = new LocalAdapterWithSlashPath(slashLocalPath, "/");
         slashCorpus.getStorage().mount("slash", slashAdapter);

@@ -39,12 +39,7 @@ public class ProjectionCombineTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-            new File(new File(new File(
-                    "cdm"),
-                    "projection"),
-                    "testProjectionCombine")
-                    .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionCombineTest").toString();
 
     /**
      * Test Entity Extends with a Resolution Guidance that selects 'one'

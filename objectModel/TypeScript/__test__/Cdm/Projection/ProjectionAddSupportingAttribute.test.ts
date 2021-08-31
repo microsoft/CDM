@@ -35,7 +35,7 @@ describe('Cdm/Projection/ProjectionAddSupportingAttributeTest', (): void => {
   /**
    * The path between TestDataPath and TestName.
    */
-  const testsSubpath: string = 'Cdm/Projection/TestProjectionAddSupportingAttribute';
+  const testsSubpath: string = 'Cdm/Projection/ProjectionAddSupportingAttributeTest';
 
   /**
    * AddSupportingAttribute with replaceAsForeignKey operation in the same projection

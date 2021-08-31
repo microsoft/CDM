@@ -12,9 +12,15 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.CardinalitySettingsData;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,32 +52,32 @@ public class Utils {
     }
   }
 
-
-
   /**
    * Create a copy of the reference object.
-   * @param objRef CdmObjectReference
-   * @param resOpt ResolveOptions
+   * 
+   * @param objRef  CdmObjectReference
+   * @param resOpt  ResolveOptions
    * @param options CopyOptions
    * @return Object
    */
   public static Object copyIdentifierRef(final CdmObjectReference objRef, final ResolveOptions resOpt,
-                                         final CopyOptions options) {
-    // TODO-BQ: This function's return type is different than the C#, because Java does not support "anonymous class" like c# does.
+      final CopyOptions options) {
+    // TODO-BQ: This function's return type is different than the C#, because Java
+    // does not support "anonymous class" like c# does.
     final String identifier = objRef.getNamedReference();
     if (options == null || options.getIsStringRefs() == null || !options.getIsStringRefs()) {
       return identifier;
-//      CopyIdentifierRef result = new CopyIdentifierRef();
-//      result.setIdentifier(identifier);
-//      return result;
+      // CopyIdentifierRef result = new CopyIdentifierRef();
+      // result.setIdentifier(identifier);
+      // return result;
     }
 
     final CdmObjectDefinition resolved = objRef.fetchObjectDefinition(resOpt);
     if (resolved == null) {
       return identifier;
-//      CopyIdentifierRef result = new CopyIdentifierRef();
-//      result.setIdentifier(identifier);
-//      return result;
+      // CopyIdentifierRef result = new CopyIdentifierRef();
+      // result.setIdentifier(identifier);
+      // return result;
     }
 
     final CopyIdentifierRef result = new CopyIdentifierRef();
@@ -82,9 +88,10 @@ public class Utils {
 
   /**
    * Creates a JSON object in the correct shape given an instance of a CDM object.
+   * 
    * @param instance Object
-   * @param resOpt ResolveOptions
-   * @param options CopyOptions
+   * @param resOpt   ResolveOptions
+   * @param options  CopyOptions
    * @return JsonNode
    */
   public static JsonNode jsonForm(final Object instance, final ResolveOptions resOpt, final CopyOptions options) {
@@ -107,6 +114,7 @@ public class Utils {
 
   /**
    * Converts a JSON object to an CdmAttribute object.
+   * 
    * @param ctx CdmCorpusContext
    * @param obj Object
    * @return CdmAttributeItem
@@ -117,12 +125,14 @@ public class Utils {
 
   /**
    * Converts a JSON object to an CdmAttribute object.
-   * @param ctx CdmCorpusContext
-   * @param obj Object
+   * 
+   * @param ctx        CdmCorpusContext
+   * @param obj        Object
    * @param entityName String
    * @return CdmAttributeItem
    */
-  public static CdmAttributeItem createAttribute(final CdmCorpusContext ctx, final Object obj, final String entityName) {
+  public static CdmAttributeItem createAttribute(final CdmCorpusContext ctx, final Object obj,
+      final String entityName) {
     if (obj == null) {
       return null;
     }
@@ -146,6 +156,7 @@ public class Utils {
 
   /**
    * Creates a CDM object from a JSON object.
+   * 
    * @param ctx CdmCorpusContext
    * @param obj Object
    * @return Object
@@ -188,44 +199,47 @@ public class Utils {
 
   /**
    * Converts a JSON object to a CdmCollection of attributes.
-   * @param  ctx CdmCorpusContext
+   * 
+   * @param ctx CdmCorpusContext
    * @param obj JsonNode
-   * @return  ArrayList of CdmAttributeItem
-   */ 
-  public static ArrayList<CdmAttributeItem> createAttributeList(final CdmCorpusContext ctx,
-                                                                final JsonNode obj) {
+   * @return ArrayList of CdmAttributeItem
+   */
+  public static ArrayList<CdmAttributeItem> createAttributeList(final CdmCorpusContext ctx, final JsonNode obj) {
     return createAttributeList(ctx, obj, null);
   }
 
   /**
    * Converts a JSON object to a CdmCollection of attributes.
-   * @param  ctx CdmCorpusContext
-   * @param obj JsonNode
+   * 
+   * @param ctx        CdmCorpusContext
+   * @param obj        JsonNode
    * @param entityName String
-   * @return  ArrayList of CdmAttributeItem
+   * @return ArrayList of CdmAttributeItem
    */
-  public static ArrayList<CdmAttributeItem> createAttributeList(final CdmCorpusContext ctx,
-                                                                final JsonNode obj,
-                                                                final String entityName) {
+  public static ArrayList<CdmAttributeItem> createAttributeList(final CdmCorpusContext ctx, final JsonNode obj,
+      final String entityName) {
     if (obj == null) {
       return null;
     }
 
     final ArrayList<CdmAttributeItem> result = new ArrayList<>();
 
-//  TODO-BQ: Further testing and validation required.
+    // TODO-BQ: Further testing and validation required.
     obj.forEach((JsonNode node) -> result.add(createAttribute(ctx, node, entityName)));
 
     return result;
   }
 
   /**
-   * Converts a JSON object to a CdmCollection of TraitReferences and TraitGroupReferences.
-   * @param  ctx CdmCorpusContext
+   * Converts a JSON object to a CdmCollection of TraitReferences and
+   * TraitGroupReferences.
+   * 
+   * @param ctx CdmCorpusContext
    * @param obj Object
-   * @return  ArrayList of CdmAttributeItem
+   * @return ArrayList of CdmAttributeItem
    */
-  public static ArrayList<CdmTraitReferenceBase> createTraitReferenceList(final CdmCorpusContext ctx, final Object obj) {
+  public static ArrayList<CdmTraitReferenceBase> createTraitReferenceList(final CdmCorpusContext ctx,
+      final Object obj) {
 
     if (obj == null) {
       return null;
@@ -259,12 +273,13 @@ public class Utils {
 
   /**
    * Adds all elements of a list to a CdmCollection.
-   * @param cdmCollection CdmCollection of type T 
-   * @param list List of T
-   * @param <T> Type
+   * 
+   * @param cdmCollection CdmCollection of type T
+   * @param list          List of T
+   * @param <T>           Type
    */
   public static <T extends CdmObject> void addListToCdmCollection(final CdmCollection<T> cdmCollection,
-                                                                  final List<T> list) {
+      final List<T> list) {
     if (cdmCollection != null && list != null) {
       for (final T element : list) {
         cdmCollection.add(element);
@@ -274,17 +289,16 @@ public class Utils {
 
   /**
    * Creates a list object that is a copy of the input Iterable object.
-   * @param source Iterable of U
-   * @param resOpt ResolveOptions
-   * @param options CopyOptions 
-   * @param <T> Type
-   * @param <U> Type
-   * @return Arraylist of CdmObject 
+   * 
+   * @param source  Iterable of U
+   * @param resOpt  ResolveOptions
+   * @param options CopyOptions
+   * @param <T>     Type
+   * @param <U>     Type
+   * @return Arraylist of CdmObject
    */
-  public static <T, U extends CdmObject> ArrayList<T> listCopyDataAsCdmObject(
-      final Iterable<U> source,
-      final ResolveOptions resOpt,
-      final CopyOptions options) {
+  public static <T, U extends CdmObject> ArrayList<T> listCopyDataAsCdmObject(final Iterable<U> source,
+      final ResolveOptions resOpt, final CopyOptions options) {
     if (source == null) {
       return null;
     }
@@ -302,18 +316,14 @@ public class Utils {
     return casted;
   }
 
-
-  
-  /** 
-   * @param source Iterable
-   * @param resOpt Resolve Options
+  /**
+   * @param source  Iterable
+   * @param resOpt  Resolve Options
    * @param options Copy options
-   * @param <T> Type
+   * @param <T>     Type
    * @return ArrayNode
    */
-  public static <T> ArrayNode listCopyDataAsArrayNode(
-      final Iterable<T> source,
-      final ResolveOptions resOpt,
+  public static <T> ArrayNode listCopyDataAsArrayNode(final Iterable<T> source, final ResolveOptions resOpt,
       final CopyOptions options) {
     if (source == null) {
       return null;
@@ -339,7 +349,9 @@ public class Utils {
   }
 
   /**
-   * Converts dynamic input into a string for a property (ints are converted to string)
+   * Converts dynamic input into a string for a property (ints are converted to
+   * string)
+   * 
    * @param value The value that should be converted to a string.
    * @return The value converted into a string
    */
@@ -347,7 +359,7 @@ public class Utils {
     final String stringValue = getStringFromJson(value);
     if (stringValue != null && !stringValue.equals("")) {
       return stringValue;
-    } 
+    }
 
     final Integer intValue = getIntFromJson(value);
     if (intValue != null) {
@@ -358,7 +370,9 @@ public class Utils {
   }
 
   /**
-   * Converts dynamic input into an int for a property (numbers represented as strings are converted to int)
+   * Converts dynamic input into an int for a property (numbers represented as
+   * strings are converted to int)
+   * 
    * @param value The value that should be converted to an Integer.
    * @return The value converted into an Integer
    */
@@ -370,7 +384,7 @@ public class Utils {
 
     final String stringValue = getStringFromJson(value);
     if (stringValue != null) {
-      try{
+      try {
         return Integer.valueOf(stringValue);
       } catch (NumberFormatException ex) {
       }
@@ -380,15 +394,17 @@ public class Utils {
   }
 
   /**
-   * Converts dynamic input into a boolean for a property (booleans represented as strings are converted to boolean)
+   * Converts dynamic input into a boolean for a property (booleans represented as
+   * strings are converted to boolean)
+   * 
    * @param value The value that should be converted to a boolean.
    * @return The value converted into a boolean
    */
   static Boolean propertyFromDataToBoolean(final Object value) {
     if (value == null || value instanceof Boolean) {
-      return (Boolean)value;
+      return (Boolean) value;
     } else if (value instanceof BooleanNode) {
-      return ((BooleanNode)value).asBoolean();
+      return ((BooleanNode) value).asBoolean();
     }
 
     final String stringValue = getStringFromJson(value);
@@ -403,29 +419,52 @@ public class Utils {
 
   /**
    * Helper function to extract string value from a JsonNode object
+   * 
    * @param value A JsonNode that contains a string or a JsonNode object
    * @return The string value inside of the JsonNode
    */
   static String getStringFromJson(final Object value) {
     if (value instanceof String) {
-      return (String)value;
+      return (String) value;
     } else if (value instanceof TextNode) {
-      return ((TextNode)value).asText();
+      return ((TextNode) value).asText();
     }
     return null;
   }
 
   /**
    * Helper function to extract Integer value from a JsonNode object
+   * 
    * @param value A JsonNode that contains an Integer or a JsonNode object
    * @return The Integer value inside of the JsonNode
    */
   static Integer getIntFromJson(final Object value) {
     if (value instanceof Integer) {
-      return (Integer)value;
+      return (Integer) value;
     } else if (value instanceof IntNode) {
-      return (Integer)((IntNode)value).intValue();
+      return (Integer) ((IntNode) value).intValue();
     }
     return null;
+  }
+
+  /**
+   * Converts cardinality data in JsonNode form into a CardinalitySettings object
+   * 
+   * @param obj       The JsonNode representation of CardinalitySettings.
+   * @param attribute The attribute object where the cardinality object belongs.
+   *                  for logging.
+   * @return The CardinalitySettings object.
+   */
+  static CardinalitySettings cardinalitySettingsFromData(final JsonNode obj, final CdmAttribute attribute) {
+    if (obj == null) {
+      return null;
+    }
+
+    CardinalitySettings cardinality = new CardinalitySettings(attribute);
+    attribute.setCardinality(cardinality);
+    cardinality.setMinimum(obj.get("minimum") != null ? obj.get("minimum").asText() : null);
+    cardinality.setMaximum(obj.get("maximum") != null ? obj.get("maximum").asText() : null);
+
+    return cardinality.getMinimum() != null && cardinality.getMaximum() != null ? cardinality : null;
   }
 }

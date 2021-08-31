@@ -183,7 +183,6 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
       copy = new CdmReferencedEntityDeclarationDefinition(this.getCtx(), this.getEntityName());
     } else {
       copy = (CdmReferencedEntityDeclarationDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setEntityName(this.getEntityName());
     }
 

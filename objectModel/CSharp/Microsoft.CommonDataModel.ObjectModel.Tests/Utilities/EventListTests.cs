@@ -59,7 +59,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             var manifest = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "dummy");
             await manifest.SaveAsAsync("foo:/bar", true);
             TestBasicLogsState(corpus);
-            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrValdnMissingDoc,true);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrValdnMissingDoc, true);
 
             // Test resolving a manifest not added to a folder, this should yield at least one error message in the recorder
             await manifest.CreateResolvedManifestAsync("new dummy", null);

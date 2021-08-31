@@ -18,7 +18,7 @@ class DocumentDefinitionTests(unittest.TestCase):
     async def test_circular_import_with_moniker(self):
         """Test when A -> M/B -> C -> B.
         In this case, although A imports B with a moniker, B should be in the priorityimports because it is imported by C."""        
-        corpus = TestHelper.get_local_corpus('', '')  # type: CdmCorpusDefinition
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_circular_import_with_moniker')  # type: CdmCorpusDefinition
         folder = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         doc_a = CdmDocumentDefinition(corpus.ctx, 'A.cdm.json')  # type: CdmDocumentDefinition
@@ -50,7 +50,7 @@ class DocumentDefinitionTests(unittest.TestCase):
     async def test_deeper_circular_import_with_moniker(self):
         """Test when A -> B -> C/M -> D -> C.
         In this case, although B imports C with a moniker, C should be in the A's priorityimports because it is imported by D."""
-        corpus = TestHelper.get_local_corpus('', '')
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_deeper_circular_import_with_moniker')
         folder = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         doc_a = CdmDocumentDefinition(corpus.ctx, 'A.cdm.json')  # type: CdmDocumentDefinition
@@ -101,7 +101,7 @@ class DocumentDefinitionTests(unittest.TestCase):
     async def test_reading_cached_import_priority(self):
         """Test when A -> B -> C/M -> D.
         Index doc_b first then doc_a. Make sure that C does not appear in doc_a priority list."""
-        corpus = TestHelper.get_local_corpus('', '')
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_reading_cached_import_priority')
         folder = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         doc_a = CdmDocumentDefinition(corpus.ctx, 'A.cdm.json')  # type: CdmDocumentDefinition
@@ -138,7 +138,7 @@ class DocumentDefinitionTests(unittest.TestCase):
     async def test_monikered_import_is_added_to_end(self):
         """Test if monikered imports are added to the end of the priority list.
         A -> B/M -> C"""
-        corpus = TestHelper.get_local_corpus('', '')
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_monikered_import_is_added_to_end')
         folder = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         doc_a = CdmDocumentDefinition(corpus.ctx, 'A.cdm.json')  # type: CdmDocumentDefinition

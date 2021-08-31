@@ -25,9 +25,9 @@ public class CardinalitySettingUnitTest {
      */
     private static final String TESTS_SUBPATH =
         new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testCardinalitySetting")
+            "Cdm"),
+            "Projection"),
+            "CardinalitySettingUnitTest")
             .toString();
 
     /**

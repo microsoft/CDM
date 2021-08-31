@@ -19,7 +19,7 @@ public class ImportsTest {
   /**
    * The path between TestDataPath and TestName.
    */
-  private static final String TESTS_SUBPATH = new File("cdm", "imports").toString();
+  private static final String TESTS_SUBPATH = new File("Cdm", "Imports").toString();
 
   @Test
   public void testEntityWithMissingImport() throws InterruptedException {
@@ -45,9 +45,9 @@ public class ImportsTest {
   }
 
   @Test
-  public void testEntityWithMissingNestedImports() throws InterruptedException {
+  public void testEntityWithMissingNestedImportsAsync() throws InterruptedException {
     final StorageAdapter localAdapter =
-            this.createStorageAdapterForTest("testEntityWithMissingNestedImports");
+            this.createStorageAdapterForTest("testEntityWithMissingNestedImportsAsync");
 
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
@@ -70,8 +70,8 @@ public class ImportsTest {
   }
 
   @Test
-  public void testEntityWithSameImports() throws InterruptedException {
-    final StorageAdapter localAdapter = this.createStorageAdapterForTest("testEntityWithSameImports");
+  public void testEntityWithSameImportsAsync() throws InterruptedException {
+    final StorageAdapter localAdapter = this.createStorageAdapterForTest("testEntityWithSameImportsAsync");
 
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
@@ -188,6 +188,27 @@ public class ImportsTest {
     Assert.assertNotNull(secondImportDoc);
 
     Assert.assertEquals(importDoc, secondImportDoc);
+  }
+
+  /**
+   * Testing that import priorities update correctly when imports are changed
+   */
+  @Test
+  public void testPrioritizingImportsAfterEdit() throws InterruptedException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPrioritizingImportsAfterEdit");
+
+    final CdmDocumentDefinition document = corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/mainDoc.cdm.json").join();
+    document.refreshAsync(new ResolveOptions(document)).join();
+
+    Assert.assertEquals(document.getImports().size(), 0);
+    // the current doc itself is added to the list of priorities
+    Assert.assertEquals(document.getImportPriorities().getImportPriority().size(), 1);
+
+    document.getImports().add("importDoc.cdm.json", true);
+    document.refreshAsync(new ResolveOptions(document)).join();
+
+    Assert.assertEquals(document.getImports().size(), 1);
+    Assert.assertEquals(document.getImportPriorities().getImportPriority().size(), 2);
   }
 
   private CdmCorpusDefinition createTestCorpus(final StorageAdapter adapter) {

@@ -16,6 +16,7 @@ import {
     CdmTraitReference,
     CdmTraitReferenceBase,
     CdmTypeAttributeDefinition,
+    copyOptions,
     importsLoadStrategy,
     resolveContext,
     resolveOptions,
@@ -339,19 +340,19 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         corpus.storage.mount('local', new LocalAdapter('C:\\Root\\Path'));
         corpus.storage.defaultNamespace = 'local';
 
-        const cdmTypeAttributeDefinition : CdmTypeAttributeDefinition =
+        const cdmTypeAttributeDefinition: CdmTypeAttributeDefinition =
             corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'TestSavingTraitAttribute', false);
 
-        const englishConstantsList : string[] = [ 'en', 'Some description in English language' ];
-        const serbianConstantsList : string[] = [ 'sr', 'Opis na srpskom jeziku' ];
-        const chineseConstantsList : string[] =  [ 'cn', '一些中文描述' ];
-        const listOfConstLists : string[][ ] = [ englishConstantsList, serbianConstantsList, chineseConstantsList ];
+        const englishConstantsList: string[] = ['en', 'Some description in English language'];
+        const serbianConstantsList: string[] = ['sr', 'Opis na srpskom jeziku'];
+        const chineseConstantsList: string[] = ['cn', '一些中文描述'];
+        const listOfConstLists: string[][] = [englishConstantsList, serbianConstantsList, chineseConstantsList];
 
-        const constEntDef : CdmConstantEntityDefinition =
+        const constEntDef: CdmConstantEntityDefinition =
             corpus.MakeObject<CdmConstantEntityDefinition>(cdmObjectType.constantEntityDef, 'localizedDescriptions', false);
         constEntDef.constantValues = listOfConstLists;
         constEntDef.entityShape = corpus.MakeRef<CdmEntityReference>(cdmObjectType.entityRef, 'localizedTable', true);
-        const traitReference2 : CdmTraitReference = 
+        const traitReference2: CdmTraitReference =
             corpus.MakeObject<CdmTraitReference>(cdmObjectType.traitRef, 'is.localized.describedAs', false);
         traitReference2.arguments.push(
             'localizedDisplayText', corpus.MakeRef<CdmEntityReference>(cdmObjectType.entityRef, constEntDef, true));
@@ -366,8 +367,8 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         expect(result)
             .toBeTruthy();
 
-        const argument : Argument = (result.appliedTraits[0] as TraitReference).arguments[0] as Argument;
-        const constantValues : string[][] =
+        const argument: Argument = (result.appliedTraits[0] as TraitReference).arguments[0] as Argument;
+        const constantValues: string[][] =
             (((argument.value as EntityReferenceDefinition).entityReference) as ConstantEntity).constantValues;
         expect(constantValues[0][0])
             .toBe('en');
@@ -522,7 +523,37 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         done();
     });
 
-    function fetchTraitNamedReferences(traits: CdmTraitCollection) : Set<string> {
+    /**
+     * Testing that cardinality settings are loaded and saved correctly
+     */
+    it('TestCardinalityPersistence', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCardinalityPersistence');
+
+        // test fromData
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/someEntity.cdm.json/someEntity');
+        const attribute: CdmTypeAttributeDefinition = entity.attributes.allItems[0] as CdmTypeAttributeDefinition;
+
+        expect(attribute.cardinality)
+            .not.toBeUndefined();
+        expect(attribute.cardinality.minimum)
+            .toEqual('0');
+        expect(attribute.cardinality.maximum)
+            .toEqual('1');
+
+        // test toData
+        const attributeData: TypeAttribute = TypeAttributePersistence.toData(attribute, new resolveOptions(entity.inDocument), new copyOptions());
+
+        expect(attributeData.cardinality)
+            .not.toBeUndefined();
+        expect(attributeData.cardinality.minimum)
+            .toBe('0');
+        expect(attributeData.cardinality.maximum)
+            .toBe('1');
+
+        done();
+    });
+
+    function fetchTraitNamedReferences(traits: CdmTraitCollection): Set<string> {
         const namedReferences: Set<string> = new Set<string>();
         traits.allItems.forEach((trait: CdmTraitReference) => {
             namedReferences.add(trait.namedReference);

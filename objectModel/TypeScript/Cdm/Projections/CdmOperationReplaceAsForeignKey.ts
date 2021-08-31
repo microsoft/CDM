@@ -42,11 +42,17 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy: CdmOperationReplaceAsForeignKey = new CdmOperationReplaceAsForeignKey(this.ctx);
-        copy.reference = this.reference;
-        copy.replaceWith = this.replaceWith.copy() as CdmTypeAttributeDefinition;
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
 
+        const copy: CdmOperationReplaceAsForeignKey = !host ? new CdmOperationReplaceAsForeignKey(this.ctx) : host as CdmOperationReplaceAsForeignKey;
+
+        copy.replaceWith = this.replaceWith ? this.replaceWith.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
+        copy.reference = this.reference;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

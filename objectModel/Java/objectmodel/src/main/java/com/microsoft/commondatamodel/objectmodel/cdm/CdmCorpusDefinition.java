@@ -3,8 +3,25 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.projections.*;
-import com.microsoft.commondatamodel.objectmodel.enums.*;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAddAttributeGroup;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAddCountAttribute;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAddSupportingAttribute;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAddTypeAttribute;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAlterTraits;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAddArtifactAttribute;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationArrayExpansion;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationCombineAttributes;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationExcludeAttributes;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationRenameAttributes;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationReplaceAsForeignKey;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationIncludeAttributes;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmValidationStep;
+import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ParameterCollection;
@@ -13,7 +30,17 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageManager;
-import com.microsoft.commondatamodel.objectmodel.utilities.*;
+import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
+import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
+import com.microsoft.commondatamodel.objectmodel.utilities.DocsResult;
+import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.ImportInfo;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
+import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.TelemetryClient;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -51,13 +78,13 @@ public class CdmCorpusDefinition {
   Map<String, String> resEntMap;
 
   private String appId;
+  private TelemetryClient telemetryClient;
   private String rootPath;
   private Map<String, List<CdmDocumentDefinition>> symbolDefinitions;
   private Map<String, SymbolSet> definitionReferenceSymbols;
   private Map<String, ResolvedTraitSet> emptyRts;
   private Map<String, CdmTypeAttributeDefinition> knownArtifactAttributes;
   private DocumentLibrary documentLibrary;
-
 
   /**
    * Whether we are currently performing a resolution or not.
@@ -98,7 +125,6 @@ public class CdmCorpusDefinition {
     this.defaultResolutionDirectives = new AttributeResolutionDirectiveSet(directives);
   }
 
-  
   static CdmDocumentDefinition fetchPriorityDocument(final List<CdmDocumentDefinition> docs,
                                                             final Map<CdmDocumentDefinition, ImportInfo> importPriority) {
     CdmDocumentDefinition docBest = null;
@@ -219,7 +245,6 @@ public class CdmCorpusDefinition {
     }
   }
 
-  
   static int getNextId() {
     return nextId.incrementAndGet();
   }
@@ -271,10 +296,8 @@ public class CdmCorpusDefinition {
     return createDefinitionCacheTag(resOpt, definition, kind, "", false);
   }
 
-  CdmDocumentDefinition addDocumentObjects(final CdmFolderDefinition cdmFolderDefinition, final CdmDocumentDefinition docDef) {
-    final CdmDocumentDefinition doc = docDef;
-    final String path = this.storage.createAbsoluteCorpusPath(doc.getFolderPath() + doc.getName(), doc)
-        .toLowerCase();
+  CdmDocumentDefinition addDocumentObjects(final CdmFolderDefinition cdmFolderDefinition, final CdmDocumentDefinition doc) {
+    final String path = this.storage.createAbsoluteCorpusPath(doc.getFolderPath() + doc.getName(), doc);
     this.documentLibrary.addDocumentPath(path, cdmFolderDefinition, doc);
 
     return doc;
@@ -465,6 +488,11 @@ public class CdmCorpusDefinition {
         break;
       case ManifestDef:
         newObj = new CdmManifestDefinition(this.ctx, nameOrRef);
+
+        // Log and ingest a message when a new manifest is created
+        Logger.debug(this.getCtx(), TAG, "makeObject<CdmManifestDefinition>", 
+          newObj.getAtCorpusPath(), "New Manifest created.", true);
+
         break;
       case ManifestDeclarationDef:
         newObj = new CdmManifestDeclarationDefinition(this.ctx, nameOrRef);
@@ -554,15 +582,13 @@ public class CdmCorpusDefinition {
     docs.add(inDoc);
   }
 
-  void removeDocumentObjects(final CdmFolderDefinition cdmFolderDefinition, final CdmDocumentDefinition docDef) {
-    final CdmDocumentDefinition doc = docDef;
-
+  void removeDocumentObjects(final CdmFolderDefinition cdmFolderDefinition, final CdmDocumentDefinition doc) {
     // every symbol defined in this document is pointing at the document, so remove from cache.
     // also remove the list of docs that it depends on
     this.removeObjectDefinitions(doc);
 
     // remove from path lookup, cdmFolderDefinition lookup and global list of documents
-    final String path = this.storage.createAbsoluteCorpusPath(doc.getFolderPath() + doc.getName(), doc).toLowerCase();
+    final String path = this.storage.createAbsoluteCorpusPath(doc.getFolderPath() + doc.getName(), doc);
     this.documentLibrary.removeDocumentPath(path, cdmFolderDefinition, doc);
 
   }
@@ -578,22 +604,6 @@ public class CdmCorpusDefinition {
       final int index = docs.indexOf(inDoc);
       if (index != -1) {
         docs.remove(index);
-      }
-    }
-  }
-
-  /**
-   * Find import objects for the document that have not been loaded yet.
-   */
-  void findMissingImportsFromDocument(CdmDocumentDefinition doc) {
-    if (doc.getImports() != null) {
-      for (int i = 0; i < doc.getImports().size(); i++) {
-        final CdmImport anImport = doc.getImports().get(i);
-        if (anImport.getDocument() == null) {
-          // No document set for this import, see if it is already loaded into the corpus.
-          final String path = this.getStorage().createAbsoluteCorpusPath(anImport.getCorpusPath(), doc);
-          this.documentLibrary.addToDocsNotLoaded(path);
-        }
       }
     }
   }
@@ -620,51 +630,54 @@ public class CdmCorpusDefinition {
     }
   }
 
+  /**
+   * Recursively load all imports of a given document.
+   * @param doc
+   * @param resOpt
+   * @return
+   */
   CompletableFuture<Void> loadImportsAsync(CdmDocumentDefinition doc, ResolveOptions resOpt) {
-    Map<CdmDocumentDefinition, Short> docsNowLoaded = new ConcurrentHashMap<>();
-    List<String> docsNotLoaded = this.documentLibrary.listDocsNotLoaded();
-
-    if (docsNotLoaded.size() == 0) {
+    if (doc == null) {
       return CompletableFuture.completedFuture(null);
     }
 
-    Function<String, CompletableFuture<Void>> loadDocs = (missing) ->
+    Function<String, CompletableFuture<Void>> loadDocs = (docPath) ->
       this.documentLibrary.concurrentReadLock.acquire().thenRun(() -> {
-        if (this.documentLibrary.needToLoadDocument(missing, docsNowLoaded)) {
-          // Load it.
-          final CdmDocumentDefinition newDoc =
-                  (CdmDocumentDefinition) this.loadFolderOrDocumentAsync(missing, false, resOpt).join();
-
-          if (this.documentLibrary.markDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded)) {
-            Logger.info(this.ctx, TAG, "loadImportsAsync", newDoc.getAtCorpusPath(), Logger.format("Resolved import for '{0}' {1}.", newDoc.getName(), doc.getAtCorpusPath()));
-          } else {
-            Logger.warning(this.ctx, TAG, "loadImportsAsync", null, CdmLogCode.WarnResolveImportFailed, missing);
-          }
+        if (!this.documentLibrary.needToLoadDocument(docPath)) {
           this.documentLibrary.concurrentReadLock.release();
+          return;
         }
+
+        // Load it.
+        final CdmDocumentDefinition loadedDoc =
+                (CdmDocumentDefinition) this.loadFolderOrDocumentAsync(docPath, false, resOpt).join();
+
+        if (this.documentLibrary.markDocumentAsLoadedOrFailed(docPath, loadedDoc)) {
+          Logger.info(this.ctx, TAG, "loadImportsAsync", loadedDoc.getAtCorpusPath(), Logger.format("Resolved import for '{0}'.", loadedDoc.getName()));
+        } else {
+          Logger.warning(this.ctx, TAG, "loadImportsAsync", null, CdmLogCode.WarnResolveImportFailed, docPath);
+        }
+
+        this.documentLibrary.concurrentReadLock.release();
+
+        loadImportsAsync(loadedDoc, resOpt).join();
       });
 
+    // Loop through all of the document's imports and load them recursively.
     List<CompletableFuture<Void>> taskList = new ArrayList<>();
-    docsNotLoaded.forEach((key) -> taskList.add(loadDocs.apply(key)));
+    for (CdmImport imp : doc.getImports()) {
+      if (imp.getDocument() == null) {
+        String docPath = this.getStorage().createAbsoluteCorpusPath(imp.getCorpusPath(), doc);
+        CompletableFuture<Void> loadTask = loadDocs.apply(docPath);
+        taskList.add(loadTask);
+      }
+    }
 
     // Wait for all of the missing docs to finish loading.
-    CompletableFuture.allOf(taskList.toArray(new CompletableFuture[0])).join();
-
-    // Now that we've loaded new docs, find imports from them that need loading.
-    docsNowLoaded.forEach((key, value) -> this.findMissingImportsFromDocument(key));
-
-    // Repeat this process for the imports of the imports.
-    List<CompletableFuture<Void>> importTaskList = new ArrayList<>();
-    docsNowLoaded.forEach((key, value) -> importTaskList.add(this.loadImportsAsync(key, resOpt)));
-
-    // Wait for all of the missing docs to finish loading.
-    return CompletableFuture.allOf(importTaskList.toArray(new CompletableFuture[0]));
+    return CompletableFuture.allOf(taskList.toArray(new CompletableFuture[0]));
   }
 
   CompletableFuture<Void> resolveImportsAsync(final CdmDocumentDefinition doc, ResolveOptions resOpt) {
-    // find imports for this doc
-    this.findMissingImportsFromDocument(doc);
-
     // load imports (and imports of imports)
     return this.loadImportsAsync(doc, resOpt).thenRun(() -> {
 
@@ -1233,6 +1246,13 @@ public class CdmCorpusDefinition {
         }
 
         if (Objects.equals(documentPath, absolutePath)) {
+
+          // Log the telemetry if the document is a manifest
+          if (newObj instanceof CdmManifestDefinition) {
+            Logger.ingestManifestTelemetry((CdmManifestDefinition) newObj, this.getCtx(), TAG,
+              Logger.format("fetchObjectAsync<{0}>", CdmManifestDefinition.class.getSimpleName()), newObj.getAtCorpusPath());
+          }
+
           return CompletableFuture.completedFuture((T) newObj);
         }
 
@@ -1246,6 +1266,19 @@ public class CdmCorpusDefinition {
         final CdmObject result = ((CdmDocumentDefinition) newObj).fetchObjectFromDocumentPath(remainingObjectPath, resOpt);
         if (null == result) {
           Logger.error(this.ctx, TAG, "fetchObjectAsync", newObj.getAtCorpusPath(), CdmLogCode.ErrDocSymbolNotFound, objectPath, newObj.getAtCorpusPath());
+        }
+        else {
+          // Log the telemetry if the object is a manifest
+          if (result instanceof CdmManifestDefinition) {
+            Logger.ingestManifestTelemetry((CdmManifestDefinition) newObj, this.getCtx(), TAG,
+              Logger.format("fetchObjectAsync<{0}}>", CdmManifestDefinition.class.getSimpleName()), newObj.getAtCorpusPath());
+          }
+
+          // Log the telemetry if the object is an entity
+          else if (result instanceof CdmEntityDefinition) {
+            Logger.ingestEntityTelemetry((CdmEntityDefinition) result, this.getCtx(), TAG,
+              Logger.format("fetchObjectAsync<{0}>", CdmEntityDefinition.class.getSimpleName()), newObj.getAtCorpusPath());
+          }
         }
 
         return CompletableFuture.completedFuture((T) result);
@@ -1390,65 +1423,67 @@ public class CdmCorpusDefinition {
       try (Logger.LoggerScope logScope = Logger.enterScope(CdmCorpusDefinition.class.getSimpleName(), ctx, "calculateEntityGraphAsync")) {
         if (currManifest.getEntities() != null) {
           for (final CdmEntityDeclarationDefinition entityDec : currManifest.getEntities()) {
-            final String entityPath =
-                    currManifest.createEntityPathFromDeclarationAsync(entityDec, currManifest).join();
-            // The path returned by GetEntityPathFromDeclaration is an absolute path.
-            // No need to pass the manifest to fetchObjectAsync.
-            final CdmEntityDefinition entity =
-                    this.<CdmEntityDefinition>fetchObjectAsync(entityPath).join();
+            try (Logger.LoggerScope logScopePerEntity = Logger.enterScope(TAG, ctx, "calculateEntityGraphAsync(perEntity)")) {
+              final String entityPath =
+                      currManifest.createEntityPathFromDeclarationAsync(entityDec, currManifest).join();
+              // The path returned by GetEntityPathFromDeclaration is an absolute path.
+              // No need to pass the manifest to fetchObjectAsync.
+              final CdmEntityDefinition entity =
+                      this.<CdmEntityDefinition>fetchObjectAsync(entityPath).join();
 
-            if (entity == null) {
-              continue;
-            }
-            final CdmEntityDefinition resEntity;
-            // make options wrt this entity document and "relational" always
-            Set<String> directives = new LinkedHashSet<>();
-            directives.add("normalized");
-            directives.add("referenceOnly");
-            final ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), new AttributeResolutionDirectiveSet(directives));
-            final boolean isResolvedEntity = entity.getAttributeContext() != null;
+              if (entity == null) {
+                continue;
+              }
+              final CdmEntityDefinition resEntity;
+              // make options wrt this entity document and "relational" always
+              Set<String> directives = new LinkedHashSet<>();
+              directives.add("normalized");
+              directives.add("referenceOnly");
+              final ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), new AttributeResolutionDirectiveSet(directives));
+              final boolean isResolvedEntity = entity.getAttributeContext() != null;
 
-            // only create a resolved entity if the entity passed in was not a resolved entity
-            if (!isResolvedEntity) {
-              // first get the resolved entity so that all of the references are present
-              resEntity = entity.createResolvedEntityAsync("wrtSelf_" + entity.getEntityName(), resOpt).join();
-            } else {
-              resEntity = entity;
-            }
+              // only create a resolved entity if the entity passed in was not a resolved entity
+              if (!isResolvedEntity) {
+                // first get the resolved entity so that all of the references are present
+                resEntity = entity.createResolvedEntityAsync("wrtSelf_" + entity.getEntityName(), resOpt).join();
+              } else {
+                resEntity = entity;
+              }
 
-            // find outgoing entity relationships using attribute context
-            final ArrayList<CdmE2ERelationship> outgoingRelationships =
-                    this.findOutgoingRelationships(resOpt, resEntity, resEntity.getAttributeContext(), isResolvedEntity);
+              // find outgoing entity relationships using attribute context
+              final ArrayList<CdmE2ERelationship> outgoingRelationships =
+                      this.findOutgoingRelationships(resOpt, resEntity, resEntity.getAttributeContext(), isResolvedEntity);
 
-            this.outgoingRelationships.put(entity, outgoingRelationships);
+              this.outgoingRelationships.put(entity, outgoingRelationships);
 
-            // flip outgoing entity relationships list to get incoming relationships map
-            if (outgoingRelationships != null) {
-              for (final CdmE2ERelationship outgoingRelationship : outgoingRelationships) {
-                final CdmEntityDefinition targetEnt =
-                        this.<CdmEntityDefinition>fetchObjectAsync(
-                                outgoingRelationship.getToEntity(),
-                                currManifest
-                        ).join();
-                if (targetEnt != null) {
-                  if (!this.incomingRelationships.containsKey(targetEnt)) {
-                    this.incomingRelationships.put(
-                            targetEnt,
-                            new ArrayList<>()
-                    );
+              // flip outgoing entity relationships list to get incoming relationships map
+              if (outgoingRelationships != null) {
+                for (final CdmE2ERelationship outgoingRelationship : outgoingRelationships) {
+                  final CdmEntityDefinition targetEnt =
+                          this.<CdmEntityDefinition>fetchObjectAsync(
+                                  outgoingRelationship.getToEntity(),
+                                  currManifest
+                          ).join();
+                  if (targetEnt != null) {
+                    if (!this.incomingRelationships.containsKey(targetEnt)) {
+                      this.incomingRelationships.put(
+                              targetEnt,
+                              new ArrayList<>()
+                      );
+                    }
+
+                    this.incomingRelationships.get(targetEnt).add(outgoingRelationship);
                   }
-
-                  this.incomingRelationships.get(targetEnt).add(outgoingRelationship);
                 }
               }
-            }
 
-            // delete the resolved entity if we created one here
-            if (!isResolvedEntity) {
-              resEntity.getInDocument()
-                      .getFolder()
-                      .getDocuments()
-                      .remove(resEntity.getInDocument().getName());
+              // delete the resolved entity if we created one here
+              if (!isResolvedEntity) {
+                resEntity.getInDocument()
+                        .getFolder()
+                        .getDocuments()
+                        .remove(resEntity.getInDocument().getName());
+              }
             }
           }
         }
@@ -2687,6 +2722,14 @@ public class CdmCorpusDefinition {
     this.appId = appId;
   }
 
+  public TelemetryClient getTelemetryClient() {
+    return this.telemetryClient;
+  }
+
+  public void setTelemetryClient(TelemetryClient telemetryClient) {
+    this.telemetryClient = telemetryClient;
+  }
+
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
@@ -2704,30 +2747,30 @@ public class CdmCorpusDefinition {
   /**
    * Gets the last modified time of the object where it was readAsync from.
    */
-  CompletableFuture<OffsetDateTime> computeLastModifiedTimeFromObjectAsync(
+  CompletableFuture<OffsetDateTime> getLastModifiedTimeAsyncFromObjectAsync(
       final CdmObject currObject) {
     if (currObject instanceof CdmContainerDefinition) {
       final StorageAdapter adapter =
           this.storage.fetchAdapter(((CdmContainerDefinition) currObject).getNamespace());
 
       if (adapter == null) {
-        Logger.error(this.ctx, TAG, "computeLastModifiedTimeFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrAdapterNotFound, ((CdmContainerDefinition) currObject).getNamespace());
+        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrAdapterNotFound, ((CdmContainerDefinition) currObject).getNamespace());
         return CompletableFuture.completedFuture(null);
       }
       // Remove namespace from path
       final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(currObject.getAtCorpusPath());
       if (pathTuple == null) {
-        Logger.error(this.ctx, TAG, "computeLastModifiedTimeFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrStorageNullCorpusPath);
+        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrStorageNullCorpusPath);
         return CompletableFuture.completedFuture(null);
       }
       try {
         return adapter.computeLastModifiedTimeAsync(pathTuple.getRight());
       } catch (Exception e) {
-        Logger.error(this.ctx, TAG, "computeLastModifiedTimeFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.getRight(), e.getMessage());
+        Logger.error(this.ctx, TAG, "getLastModifiedTimeAsyncFromObjectAsync", currObject.getAtCorpusPath(), CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.getRight(), e.getMessage());
         return null;
       }
     } else {
-      return computeLastModifiedTimeFromObjectAsync(currObject.getInDocument());
+      return getLastModifiedTimeAsyncFromObjectAsync(currObject.getInDocument());
     }
   }
 
@@ -2745,11 +2788,11 @@ public class CdmCorpusDefinition {
    * @param corpusPath The corpus path
    * @return The last modified time
    */
-  CompletableFuture<OffsetDateTime> computeLastModifiedTimeFromPartitionPathAsync(final String corpusPath) {
+  CompletableFuture<OffsetDateTime> getLastModifiedTimeFromPartitionPathAsync(final String corpusPath) {
     // we do not want to load partitions from file, just check the modified times
     final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(corpusPath);
     if (pathTuple == null) {
-      Logger.error(this.ctx, TAG, "computeLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrPathNullObjectPath);
+      Logger.error(this.ctx, TAG, "getLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrPathNullObjectPath);
       return CompletableFuture.completedFuture(null);
     }
     final String nameSpace = pathTuple.getLeft();
@@ -2758,13 +2801,13 @@ public class CdmCorpusDefinition {
       final StorageAdapter adapter = this.storage.fetchAdapter(nameSpace);
 
       if (adapter == null) {
-        Logger.error(this.ctx, TAG, "computeLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrAdapterNotFound, nameSpace);
+        Logger.error(this.ctx, TAG, "getLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
         return CompletableFuture.completedFuture(null);
       }
       try {
         return adapter.computeLastModifiedTimeAsync(pathTuple.getRight());
       } catch (Exception e) {
-        Logger.error(this.ctx, TAG, "computeLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.getRight(), e.getMessage());
+        Logger.error(this.ctx, TAG, "getLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.getRight(), e.getMessage());
       }
     }
 
@@ -2791,7 +2834,7 @@ public class CdmCorpusDefinition {
       final CdmObject obj) {
     return fetchObjectAsync(corpusPath, obj, true).thenCompose(currObject -> {
       if (currObject != null) {
-        return this.computeLastModifiedTimeFromObjectAsync(currObject);
+        return this.getLastModifiedTimeAsyncFromObjectAsync(currObject);
       }
       return CompletableFuture.completedFuture(null);
     });

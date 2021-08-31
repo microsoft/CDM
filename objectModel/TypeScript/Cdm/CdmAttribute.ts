@@ -12,6 +12,7 @@ import {
     CdmTraitCollection,
     CdmTraitDefinition,
     CdmTraitReference,
+    CdmTraitReferenceBase,
     ResolvedEntityReferenceSet,
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
@@ -56,12 +57,10 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
         // let bodyCode = () =>
         {
             copy.purpose = this.purpose ? this.purpose.copy(resOpt) as CdmPurposeReference : undefined;
-            copy.resolutionGuidance = this.resolutionGuidance ?
-                this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance
-                : undefined;
+            copy.resolutionGuidance = this.resolutionGuidance ? this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance : undefined;
             copy.appliedTraits.clear();
             for (const trait of this.appliedTraits) {
-                copy.appliedTraits.push(trait);
+                copy.appliedTraits.push(trait.copy(resOpt) as CdmTraitReferenceBase);
             }
             this.copyDef(resOpt, copy);
 

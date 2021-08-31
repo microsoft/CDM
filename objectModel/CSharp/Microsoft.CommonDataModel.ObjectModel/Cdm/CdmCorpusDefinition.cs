@@ -880,24 +880,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return docBest;
         }
 
-        internal CdmDocumentDefinition AddDocumentObjects(CdmFolderDefinition folder, CdmDocumentDefinition docDef)
+        internal CdmDocumentDefinition AddDocumentObjects(CdmFolderDefinition folder, CdmDocumentDefinition doc)
         {
-            var path = this.Storage.CreateAbsoluteCorpusPath(docDef.FolderPath + docDef.Name, docDef).ToLower();
-            this.documentLibrary.AddDocumentPath(path, folder, docDef);
+            var path = this.Storage.CreateAbsoluteCorpusPath(doc.FolderPath + doc.Name, doc);
+            this.documentLibrary.AddDocumentPath(path, folder, doc);
 
-            return docDef;
+            return doc;
         }
 
-        internal void RemoveDocumentObjects(CdmFolderDefinition folder, CdmDocumentDefinition docDef)
+        internal void RemoveDocumentObjects(CdmFolderDefinition folder, CdmDocumentDefinition doc)
         {
-            CdmDocumentDefinition doc = docDef as CdmDocumentDefinition;
-
             // every symbol defined in this document is pointing at the document, so remove from cache.
             // also remove the list of docs that it depends on
             this.RemoveObjectDefinitions(doc);
 
             // remove from path lookup, folder lookup and global list of documents
-            string path = this.Storage.CreateAbsoluteCorpusPath(doc.FolderPath + doc.Name, doc).ToLower();
+            string path = this.Storage.CreateAbsoluteCorpusPath(doc.FolderPath + doc.Name, doc);
             this.documentLibrary.RemoveDocumentPath(path, folder, doc);
         }
 
@@ -1162,25 +1160,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Find import objects for the document that have not been loaded yet
-        /// </summary>
-        internal void FindMissingImportsFromDocument(CdmDocumentDefinition doc)
-        {
-            if (doc.Imports != null)
-            {
-                foreach (var imp in doc.Imports)
-                {
-                    if (imp.Document == null)
-                    {
-                        // no document set for this import, see if it is already loaded into the corpus
-                        string path = this.Storage.CreateAbsoluteCorpusPath(imp.CorpusPath, doc);
-                        this.documentLibrary.AddToDocsNotLoaded(path);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Attach document objects to corresponding import object
         /// </summary>
         internal void SetImportDocuments(CdmDocumentDefinition doc)
@@ -1207,63 +1186,56 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// 
+        /// Recursively load all imports of a given document.
         /// </summary>
         internal async Task LoadImportsAsync(CdmDocumentDefinition doc, ResolveOptions resOpt)
         {
-            var docsNowLoaded = new ConcurrentDictionary<CdmDocumentDefinition, byte>();
-            List<string> docsNotLoaded = this.documentLibrary.ListDocsNotLoaded();
-
-            if (docsNotLoaded.Count == 0)
+            if (doc == null)
             {
+                // if there's not document, our job here is done.
                 return;
             }
 
-            async Task loadDocs(string missing)
+            async Task LoadDocs(string docPath)
             {
-                if (this.documentLibrary.NeedToLoadDocument(missing, docsNowLoaded))
+                if (!this.documentLibrary.NeedToLoadDocument(docPath))
                 {
-                    this.documentLibrary.concurrentReadLock.Acquire();
+                    return;
+                }
 
-                    // load it
-                    var newDoc = await this.LoadFolderOrDocument(missing, false, resOpt) as CdmDocumentDefinition;
+                this.documentLibrary.concurrentReadLock.Acquire();
 
-                    if (this.documentLibrary.MarkDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded))
-                    {
-                        Logger.Info(this.Ctx, Tag, nameof(LoadImportsAsync), newDoc.AtCorpusPath, $"resolved import for '{newDoc.Name}'");
-                    }
-                    else
-                    {
-                        Logger.Warning(this.Ctx, Tag, nameof(LoadImportsAsync), null, CdmLogCode.WarnResolveImportFailed, missing);
-                    }
+                // load it
+                var loadedDoc = await this.LoadFolderOrDocument(docPath, false, resOpt) as CdmDocumentDefinition;
 
-                    this.documentLibrary.concurrentReadLock.Release();
+                if (this.documentLibrary.MarkDocumentAsLoadedOrFailed(docPath, loadedDoc))
+                {
+                    Logger.Info(this.Ctx, Tag, nameof(LoadImportsAsync), loadedDoc.AtCorpusPath, $"resolved import for '{loadedDoc.Name}'");
+                }
+                else
+                {
+                    Logger.Warning(this.Ctx, Tag, nameof(LoadImportsAsync), null, CdmLogCode.WarnResolveImportFailed, docPath);
+                }
+
+                this.documentLibrary.concurrentReadLock.Release();
+
+                await LoadImportsAsync(loadedDoc, resOpt);
+            }
+
+            // Loop through all of the document's imports and load them recursively.
+            var taskList = new List<Task>();
+            foreach (var imp in doc.Imports)
+            {
+                if (imp.Document == null)
+                {
+                    var docPath = this.Storage.CreateAbsoluteCorpusPath(imp.CorpusPath, doc);
+                    var loadTask = LoadDocs(docPath);
+                    taskList.Add(loadTask);
                 }
             }
 
-            var taskList = new List<Task>();
-            foreach (var missing in docsNotLoaded)
-            {
-                taskList.Add(loadDocs(missing));
-            }
-
-            // wait for all of the missing docs to finish loading
+            // Wait for all of the missing docs to finish loading.
             await Task.WhenAll(taskList);
-
-            // now that we've loaded new docs, find imports from them that need loading
-            foreach (var loadedDoc in docsNowLoaded.Keys)
-            {
-                this.FindMissingImportsFromDocument(loadedDoc);
-            }
-
-            // repeat this process for the imports of the imports
-            List<Task> importTaskList = new List<Task>();
-            foreach (var loadedDoc in docsNowLoaded.Keys)
-            {
-                importTaskList.Add(this.LoadImportsAsync(loadedDoc, resOpt));
-            }
-
-            await Task.WhenAll(importTaskList);
         }
 
         /// <summary>
@@ -1271,8 +1243,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         internal async Task ResolveImportsAsync(CdmDocumentDefinition doc, ResolveOptions resOpt)
         {
-            // find imports for this doc
-            this.FindMissingImportsFromDocument(doc);
             // load imports (and imports of imports)
             await this.LoadImportsAsync(doc, resOpt);
             // now that everything is loaded, attach import docs to this doc's import list
@@ -2242,7 +2212,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             CdmObject currObject = await this.FetchObjectAsync<CdmObject>(corpusPath, obj, true);
             if (currObject != null)
             {
-                return await this.GetLastModifiedTimeAsyncFromObject(currObject);
+                return await this.GetLastModifiedTimeFromObjectAsync(currObject);
             }
             return null;
         }
@@ -2250,7 +2220,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets the last modified time of the object where it was read from.
         /// </summary>
-        internal async Task<DateTimeOffset?> GetLastModifiedTimeAsyncFromObject(CdmObject currObject)
+        internal async Task<DateTimeOffset?> GetLastModifiedTimeFromObjectAsync(CdmObject currObject)
         {
             if (currObject is CdmContainerDefinition)
             {
@@ -2258,7 +2228,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (adapter == null)
                 {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromObject), currObject.AtCorpusPath, CdmLogCode.ErrAdapterNotFound, (currObject as CdmContainerDefinition).Namespace);
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrAdapterNotFound, (currObject as CdmContainerDefinition).Namespace);
                     return null;
                 }
 
@@ -2266,7 +2236,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(currObject.AtCorpusPath);
                 if (pathTuple == null)
                 {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromObject), currObject.AtCorpusPath, CdmLogCode.ErrStorageNullCorpusPath);
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrStorageNullCorpusPath);
                     return null;
                 }
 
@@ -2276,26 +2246,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromObject), currObject.AtCorpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.Item2, e.Message);
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromObjectAsync), currObject.AtCorpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.Item2, e.Message);
                     return null;
                 }
             }
             else
             {
-                return await this.GetLastModifiedTimeAsyncFromObject(currObject.InDocument);
+                return await this.GetLastModifiedTimeFromObjectAsync(currObject.InDocument);
             }
         }
 
         /// <summary>
         /// Gets the last modified time of the partition path without trying to read the file itself.
         /// </summary>
-        internal async Task<DateTimeOffset?> GetLastModifiedTimeAsyncFromPartitionPath(string corpusPath)
+        internal async Task<DateTimeOffset?> GetLastModifiedTimeFromPartitionPathAsync(string corpusPath)
         {
             // we do not want to load partitions from file, just check the modified times
             Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
             if (pathTuple == null)
             {
-                Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromPartitionPath), corpusPath, CdmLogCode.ErrPathNullObjectPath);
+                Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromPartitionPathAsync), corpusPath, CdmLogCode.ErrPathNullObjectPath);
                 return null;
             }
             string nameSpace = pathTuple.Item1;
@@ -2305,7 +2275,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (adapter == null)
                 {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromPartitionPath), corpusPath, CdmLogCode.ErrStorageAdapterNotFound, corpusPath);
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromPartitionPathAsync), corpusPath, CdmLogCode.ErrStorageAdapterNotFound, corpusPath);
                     return null;
                 }
 
@@ -2315,7 +2285,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeAsyncFromPartitionPath), corpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.Item2, e.Message);
+                    Logger.Error(this.Ctx, Tag, nameof(GetLastModifiedTimeFromPartitionPathAsync), corpusPath, CdmLogCode.ErrPartitionFileModTimeFailure, pathTuple.Item2, e.Message);
                 }
             }
             return null;

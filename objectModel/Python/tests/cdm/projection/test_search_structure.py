@@ -46,7 +46,7 @@ class SearchStructureUnitTest(unittest.TestCase):
     """
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestSearchStructure')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'SearchStructureTest')
 
     # Unit test for building a tree
     def test_build_tree(self):

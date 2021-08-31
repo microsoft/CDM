@@ -3,9 +3,9 @@
 
 import {
     AttributeContextParameters,
+    CdmAttribute,
     CdmAttributeContext,
     cdmAttributeContextType,
-    CdmAttributeItem,
     CdmCorpusContext,
     cdmLogCode,
     CdmObject,
@@ -25,10 +25,6 @@ import {
     resolveOptions,
     VisitCallback
 } from '../../internal';
-import { CdmAttribute } from '../CdmAttribute';
-import { CdmAttributeGroupReference } from '../CdmAttributeGroupReference';
-import { CdmEntityAttributeDefinition } from '../CdmEntityAttributeDefinition';
-import { CdmTypeAttributeDefinition } from '../CdmTypeAttributeDefinition';
 
 /**
  * Class to handle AlterTraits operations
@@ -55,32 +51,21 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
             resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
-        let copy: CdmOperationAlterTraits;
-        if (!host) {
-            copy = new CdmOperationAlterTraits(this.ctx);
-        } else {
-            copy = host as CdmOperationAlterTraits;
-            copy.ctx = this.ctx;
-        }
+        const copy: CdmOperationAlterTraits = !host ? new CdmOperationAlterTraits(this.ctx) : host as CdmOperationAlterTraits;
 
         const traitsToAdd: CdmTraitReferenceBase[] = [];
-        if (this.traitsToAdd != null){
+        if (this.traitsToAdd != undefined) {
             this.traitsToAdd.forEach(trait => traitsToAdd.push(trait.copy(resOpt) as CdmTraitReferenceBase));
         }
 
         const traitsToRemove: CdmTraitReferenceBase[] = [];
-        if (this.traitsToRemove != null){
+        if (this.traitsToRemove !== undefined) {
             this.traitsToRemove.forEach(trait => traitsToRemove.push(trait.copy(resOpt) as CdmTraitReferenceBase));
         }
-
-        const applyTo: string[] = [];
-        if (this.applyTo != null){
-            this.applyTo.forEach(item => applyTo.push(item));
-        }
-
+        
         copy.traitsToAdd = traitsToAdd;
         copy.traitsToRemove = traitsToRemove;
-        copy.applyTo = applyTo;
+        copy.applyTo = this.applyTo ? this.applyTo.slice() : undefined;
         copy.argumentsContainWildcards = this.argumentsContainWildcards;
 
         this.copyProj(resOpt, copy);

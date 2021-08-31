@@ -114,7 +114,7 @@ class ProjectionPersistence:
             source = instance.source
         elif instance.source and instance.source.named_reference and instance.source.explicit_reference == None:
             source = instance.source.named_reference
-        elif instance.source and isinstance(instance.source, CdmEntityReference):
+        elif instance.source and instance.source.object_type == CdmObjectType.ENTITY_REF:
             source = EntityReferencePersistence.to_data(instance.source, res_opt, options)
 
         operations = None

@@ -12,6 +12,7 @@ from tests.common import async_test, TestHelper
 from tests.adls_test_helper import AdlsTestHelper
 from cdm.enums import CdmStatusLevel
 from cdm.storage.adls import ADLSAdapter
+from cdm.enums import AzureCloudEndpoint
 from cdm.utilities.network.token_provider import TokenProvider
 from cdm.objectmodel import CdmCorpusDefinition
 
@@ -90,9 +91,15 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         await self.run_write_read_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
-    async def test_adls_write_read__client_id(self):
+    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    async def test_adls_write_read_client_id(self):
         await self.run_write_read_test(AdlsTestHelper.create_adapter_with_client_id())
+
+    @async_test
+    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
+    async def test_adls_write_read_with_blob_hostname(self):
+        await self.run_write_read_test(AdlsTestHelper.create_adapter_with_shared_key('', True))
+        await self.run_write_read_test(AdlsTestHelper.create_adapter_with_client_id('', False, True))
 
     @async_test
     @unittest.skipIf(IfRunTestsFlagNotSet(), 'ADLS environment variables not set up')
@@ -140,6 +147,37 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         await corpus.fetch_object_async('adls:/inexistentFile.cdm.json')  # type: CdmDocumentDefinition
 
         self.assertEqual(1, count)
+
+    def test_endpoint_missing_on_config(self):
+        """Checks if the endpoint of the adls adapter is set to default if not present in the config parameters.
+        This is necessary to support old config files that do not include an "endpoint"."""
+
+        config = {
+            'hostname': 'hostname.dfs.core.windows.net',
+            'root': 'root',
+            'tenant': 'tenant',
+            'clientId': 'clientId'
+        }
+
+        adls_adapter = ADLSAdapter()
+        adls_adapter.update_config(json.dumps(config))
+        self.assertEqual(AzureCloudEndpoint.AZURE_PUBLIC, adls_adapter.endpoint)
+
+    def test_formatted_hostname_from_config(self):
+        """Test if formatted_hostname is properly set when loading from config."""
+
+        config = {
+            'hostname': 'hostname.dfs.core.windows.net',
+            'root': 'root',
+            'tenant': 'tenant',
+            'clientId': 'clientId'
+        }
+
+        adls_adapter = ADLSAdapter()
+        adls_adapter.update_config(json.dumps(config))
+
+        corpus_path = adls_adapter.create_corpus_path('https://hostname.dfs.core.windows.net/root/partitions/data.csv')
+        self.assertEqual('/partitions/data.csv', corpus_path)
 
     def test_create_corpus_and_adapter_path(self):
         host_1 = 'storageaccount.dfs.core.windows.net'
@@ -279,8 +317,30 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(corpus.storage.fetch_adapter('adlsadapter4').root, '/root-ends-with-slash/folder1/folder2')
         self.assertEqual(corpus.storage.fetch_adapter('adlsadapter5').root, '/root-with-slashes/folder1/folder2')
 
+    def test_loading_and_saving_endpoint_in_config(self):
+        """
+        Test azure cloud endpoint in config.
+        """
+        # Mount from config
+        config = TestHelper.get_input_file_content(self.test_subpath, 'test_loading_and_saving_endpoint_in_config',
+                                                   'config.json')
+        corpus = CdmCorpusDefinition()
+        corpus.storage.mount_from_config(config)
+        self.assertFalse(hasattr(corpus.storage.fetch_adapter('adlsadapter1'), 'endpoint'))
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter2').endpoint, AzureCloudEndpoint.AZURE_PUBLIC)
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter3').endpoint, AzureCloudEndpoint.AZURE_CHINA)
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter4').endpoint, AzureCloudEndpoint.AZURE_GERMANY)
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter5').endpoint, AzureCloudEndpoint.AZURE_US_GOVERNMENT)
 
-
+        try:
+            config_snake_case = TestHelper.get_input_file_content(self.test_subpath, 'test_loading_and_saving_endpoint_in_config',
+                                                       'config-SnakeCase.json')
+            corpus_snake_case = CdmCorpusDefinition()
+            corpus_snake_case.storage.mount_from_config(config_snake_case)
+            self.fail('Expected RuntimeException for config.json using endpoint value in snake case.')
+        except Exception as ex:
+            message = 'Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.'
+            self.assertEqual(ex.args[0], message)
 
 if __name__ == '__main__':
     unittest.main()

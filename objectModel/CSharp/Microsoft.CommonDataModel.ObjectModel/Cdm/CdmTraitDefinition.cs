@@ -100,7 +100,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmTraitDefinition;
-                copy.Ctx = this.Ctx;
                 copy.TraitName = this.TraitName;
             }
 
@@ -108,7 +107,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.AllParameters = null;
             copy.Elevated = this.Elevated;
             copy.Ugly = this.Ugly;
-            copy.AssociatedProperties = this.AssociatedProperties;
+            copy.AssociatedProperties = this.AssociatedProperties != null ? new List<String>(this.AssociatedProperties) : null;
 
             this.CopyDef(resOpt, copy);
             return copy;

@@ -110,14 +110,13 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
             copy = CdmAttributeGroupDefinition(self.ctx, self.attribute_group_name)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.attribute_group_name = self.attribute_group_name
             copy.members.clear()
 
         copy.attribute_context = self.attribute_context.copy(res_opt) if self.attribute_context else None
 
         for att in self.members:
-            copy.members.append(att.copy())
+            copy.members.append(att.copy(res_opt))
 
         self._copy_def(res_opt, copy)
         return copy

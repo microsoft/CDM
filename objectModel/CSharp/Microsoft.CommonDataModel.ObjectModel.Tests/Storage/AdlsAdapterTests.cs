@@ -8,6 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
     using System.Diagnostics;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
@@ -115,6 +116,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         }
 
         [TestMethod]
+        public async Task ADLSWriteReadClientIdWithEndpoint()
+        {
+            AdlsTestHelper.CheckADLSEnvironment();
+            await RunWriteReadTest(AdlsTestHelper.CreateAdapterWithClientId(specifyEndpoint: true));
+        }
+
+        [TestMethod]
+        public async Task ADLSWriteReadWithBlobHostName()
+        {
+            AdlsTestHelper.CheckADLSEnvironment();
+            await RunWriteReadTest(AdlsTestHelper.CreateAdapterWithSharedKey(testBlobHostName: true));
+            await RunWriteReadTest(AdlsTestHelper.CreateAdapterWithClientId(testBlobHostName: true));
+        }
+
+        [TestMethod]
         public async Task ADLSCheckFileTimeSharedKey()
         {
             AdlsTestHelper.CheckADLSEnvironment();
@@ -178,6 +194,45 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             await corpus.FetchObjectAsync<CdmDocumentDefinition>("adls:/inexistentFile.cdm.json");
 
             Assert.AreEqual(1, count);
+        }
+
+        /// <summary>
+        /// Checks if the endpoint of the adls adapter is set to default if not present in the config parameters.
+        /// This is necessary to support old config files that do not include an "endpoint".
+        /// </summary>
+        [TestMethod]
+        public void TestEndpointMissingOnConfig()
+        {
+            var config = new JObject
+                {
+                    { "hostname", "hostname.dfs.core.windows.net" },
+                    { "root", "root" },
+                    { "tenant", "tenant" },
+                    { "clientId", "clientId" }
+                };
+            var adlsAdapter = new ADLSAdapter();
+            adlsAdapter.UpdateConfig(config.ToString());
+            Assert.AreEqual(AzureCloudEndpoint.AzurePublic, adlsAdapter.Endpoint);
+        }
+
+        /// <summary>
+        /// Test if formattedHostname is properly set when loading from config.
+        /// </summary>
+        [TestMethod]
+        public void TestFormattedHostname()
+        {
+            var config = new JObject
+                {
+                    { "hostname", "hostname.dfs.core.windows.net" },
+                    { "root", "root" },
+                    { "tenant", "tenant" },
+                    { "clientId", "clientId" }
+                };
+            var adlsAdapter = new ADLSAdapter();
+            adlsAdapter.UpdateConfig(config.ToString());
+
+            var corpusPath = adlsAdapter.CreateCorpusPath("https://hostname.dfs.core.windows.net/root/partitions/data.csv");
+            Assert.AreEqual("/partitions/data.csv", corpusPath);
         }
 
         /// <summary>
@@ -292,6 +347,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             Assert.AreEqual("/root-starts-with-slash/folder1/folder2", ((ADLSAdapter)corpus.Storage.FetchAdapter("adlsadapter3")).Root);
             Assert.AreEqual("/root-ends-with-slash/folder1/folder2", ((ADLSAdapter)corpus.Storage.FetchAdapter("adlsadapter4")).Root);
             Assert.AreEqual("/root-with-slashes/folder1/folder2", ((ADLSAdapter)corpus.Storage.FetchAdapter("adlsadapter5")).Root);
+        }
+
+        /// <summary>
+        /// Test azure cloud endpoint in config.
+        /// </summary>
+        [TestMethod]
+        public void TestLoadingAndSavingEndpointInConfig()
+        {
+            // Mount from config
+            var config = TestHelper.GetInputFileContent(testSubpath, nameof(TestLoadingAndSavingEndpointInConfig), "config.json");
+            var corpus = new CdmCorpusDefinition();
+            corpus.Storage.MountFromConfig(config);
+            Assert.Null(((ADLSAdapter)corpus.Storage.FetchAdapter("adlsadapter1")).Endpoint);
+            Assert.AreEqual(AzureCloudEndpoint.AzurePublic, ((ADLSAdapter)corpus.Storage.FetchAdapter("adlsadapter2")).Endpoint);
+            Assert.AreEqual(AzureCloudEndpoint.AzureChina, ((ADLSAdapter)corpus.Storage.FetchAdapter("adlsadapter3")).Endpoint);
+            Assert.AreEqual(AzureCloudEndpoint.AzureGermany, ((ADLSAdapter)corpus.Storage.FetchAdapter("adlsadapter4")).Endpoint);
+            Assert.AreEqual(AzureCloudEndpoint.AzureUsGovernment, ((ADLSAdapter)corpus.Storage.FetchAdapter("adlsadapter5")).Endpoint);
+            try
+            {
+                var configSnakeCase = TestHelper.GetInputFileContent(testSubpath, nameof(TestLoadingAndSavingEndpointInConfig), "config-SnakeCase.json");
+                var corpusSnakeCase = new CdmCorpusDefinition();
+                corpusSnakeCase.Storage.MountFromConfig(configSnakeCase);
+                Assert.Fail("Expected RuntimeException for config.json using endpoint value in snake case.");
+            } 
+            catch (Exception ex)
+            {
+                String message = "Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.";
+                Assert.AreEqual(message, ex.Message);
+            }
         }
 
         /// <summary>

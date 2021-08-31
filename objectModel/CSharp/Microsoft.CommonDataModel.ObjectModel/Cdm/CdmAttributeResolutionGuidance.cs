@@ -178,7 +178,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.removedDirectives = new List<string>(this.removedDirectives);
             }
 
-            copy.addSupportingAttribute = this.addSupportingAttribute;
+            copy.addSupportingAttribute = this.addSupportingAttribute?.Copy(resOpt) as CdmTypeAttributeDefinition;
             copy.cardinality = this.cardinality;
             copy.renameFormat = this.renameFormat;
 

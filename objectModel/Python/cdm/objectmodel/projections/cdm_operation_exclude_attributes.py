@@ -32,8 +32,15 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
         self.type = CdmOperationType.EXCLUDE_ATTRIBUTES  # type: CdmOperationType
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationExcludeAttributes'] = None) -> 'CdmOperationExcludeAttributes':
-        copy = CdmOperationExcludeAttributes(self.ctx)
-        copy.exclude_attributes = self.exclude_attributes[:]
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
+
+        copy = CdmOperationExcludeAttributes(self.ctx) if not host else host
+
+        if self.exclude_attributes is not None:
+            copy.exclude_attributes = self.exclude_attributes.copy()
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:
@@ -115,7 +122,7 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
                 # We will create the attribute contexts at the end
                 attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
                     exclude_attribute_name, current_PAS, current_PAS._current_resolved_attribute,
-                    CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                    CdmAttributeContextType.ATTRIBUTE_EXCLUDED,
                     current_PAS._current_resolved_attribute.att_ctx,  # lineage is the included attribute
                     None)  # don't know who will point here yet, excluded, so... this could be the end for you.
 

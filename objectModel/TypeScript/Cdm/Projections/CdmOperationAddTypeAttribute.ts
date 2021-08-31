@@ -39,10 +39,16 @@ export class CdmOperationAddTypeAttribute extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy: CdmOperationAddTypeAttribute = new CdmOperationAddTypeAttribute(this.ctx);
-        copy.typeAttribute = this.typeAttribute.copy(resOpt, host) as CdmTypeAttributeDefinition;
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
 
+        let copy: CdmOperationAddTypeAttribute = !host ? new CdmOperationAddTypeAttribute(this.ctx) : host as CdmOperationAddTypeAttribute;
+
+        copy.typeAttribute = this.typeAttribute ? this.typeAttribute.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

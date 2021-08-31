@@ -70,7 +70,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmPurposeDefinition;
-                copy.Ctx = this.Ctx;
                 copy.PurposeName = this.PurposeName;
             }
 

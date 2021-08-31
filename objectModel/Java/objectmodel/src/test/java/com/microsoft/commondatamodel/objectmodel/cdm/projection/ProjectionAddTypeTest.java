@@ -44,12 +44,7 @@ public class ProjectionAddTypeTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testProjectionAddType")
-            .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionAddTypeTest").toString();
 
     /**
      * Test for creating a projection with an AddTypeAttribute operation on an entity attribute using the object model
@@ -401,8 +396,8 @@ public class ProjectionAddTypeTest {
         // Merge ["emailId, "phoneId, "socialId"] into "contactId", type attribute: "contactType",
         // rename ["contactId", "isPrimary"] as "new_{m}", include ["contactId", "new_isPrimary", "contactType"]
         Assert.assertEquals(resolvedEntity.getAttributes().size(), 3);
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "new_isPrimary");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "new_contactId");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "new_contactId");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "new_isPrimary");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "contactType");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
     }

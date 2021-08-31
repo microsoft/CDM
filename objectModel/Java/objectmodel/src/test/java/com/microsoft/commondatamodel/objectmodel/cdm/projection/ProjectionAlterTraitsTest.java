@@ -39,10 +39,9 @@ public class ProjectionAlterTraitsTest {
     /**
      * The path between TestDataPath and TestName
      */
-    private static final String TESTS_SUBPATH = new File(new File(new File("cdm"), "projection"),
-            "testProjectionAlterTraits").toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionAlterTraitsTest").toString();
 
-    private static final String TRAIT_GROUP_FILE_PATH = new File(new File(new File(new File(TestHelper.TEST_DATA_PATH), "cdm"), "projection"), "testProjectionAlterTraits").toString();
+    private static final String TRAIT_GROUP_FILE_PATH = new File(new File(TestHelper.TEST_DATA_PATH), TESTS_SUBPATH).toString();
 
     /**
      * Test AlterTraits on an type attribute.
@@ -141,9 +140,9 @@ public class ProjectionAlterTraitsTest {
         // Rename attribute ["newName" -> "renaming-{m}" ]
         // alter traits on ["renaming-newName", + { "means.TraitG4(precision:5, scale:15)" } ]
         Assert.assertEquals(resolvedEntity.getAttributes().getCount(), 4);
-        validateTrait((CdmTypeAttributeDefinition)resolvedEntity.getAttributes().get(0), "name");
-        validateTrait((CdmTypeAttributeDefinition)resolvedEntity.getAttributes().get(1), "age", false, true);
-        validateTrait((CdmTypeAttributeDefinition)resolvedEntity.getAttributes().get(2), "phoneNumber", false, true);
+        validateTrait((CdmTypeAttributeDefinition)resolvedEntity.getAttributes().get(0), "age", false, true);
+        validateTrait((CdmTypeAttributeDefinition)resolvedEntity.getAttributes().get(1), "phoneNumber", false, true);
+        validateTrait((CdmTypeAttributeDefinition)resolvedEntity.getAttributes().get(2), "name");
         validateTrait((CdmTypeAttributeDefinition)resolvedEntity.getAttributes().get(3), "renaming-newName", true);
     }
 

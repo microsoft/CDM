@@ -1,12 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as fs from 'fs';
 import {
     CdmCorpusDefinition,
     CdmDataPartitionDefinition,
     CdmEntityDeclarationDefinition,
-    CdmFolderDefinition,
     CdmLocalEntityDeclarationDefinition,
     CdmManifestDefinition,
     cdmObjectType,
@@ -16,7 +14,6 @@ import {
 } from '../../../../internal';
 import { CdmFolder } from '../../../../Persistence';
 import { DataPartition, EntityDeclarationDefinition, ManifestContent, KeyValPair } from '../../../../Persistence/CdmFolder/types';
-import { LocalAdapter } from '../../../../Storage';
 import { testHelper } from '../../../testHelper';
 
 describe('Persistence.CdmFolder.DataPartition', () => {

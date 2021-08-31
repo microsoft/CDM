@@ -127,13 +127,9 @@ export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements C
             }
 
             copy.removeAttribute = this.removeAttribute;
-            if (this.imposedDirectives) {
-                copy.imposedDirectives = this.imposedDirectives.slice();
-            }
-            if (this.removedDirectives) {
-                copy.removedDirectives = this.removedDirectives.slice();
-            }
-            copy.addSupportingAttribute = this.addSupportingAttribute;
+            copy.imposedDirectives = this.imposedDirectives ? this.imposedDirectives.slice() : undefined;
+            copy.removedDirectives = this.removedDirectives ? this.removedDirectives.slice() : undefined;
+            copy.addSupportingAttribute = this.addSupportingAttribute ? this.addSupportingAttribute.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
             copy.cardinality = this.cardinality;
             copy.renameFormat = this.renameFormat;
 

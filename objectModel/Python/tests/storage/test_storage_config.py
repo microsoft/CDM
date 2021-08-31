@@ -58,7 +58,7 @@ class StorageConfigTest(unittest.TestCase):
         # Create a corpus to load the config.
         cdm_corpus = self.get_local_corpus(test_input_path)
 
-        config = await cdm_corpus.storage.fetch_adapter('local').read_async('/config.json')
+        config = await cdm_corpus.storage.fetch_adapter('local').read_async('/config-Python.json')
 
         different_corpus = CdmCorpusDefinition()
         unrecognized_adapters = different_corpus.storage.mount_from_config(config, True)

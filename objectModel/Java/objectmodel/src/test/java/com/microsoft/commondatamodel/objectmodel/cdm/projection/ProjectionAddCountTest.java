@@ -46,12 +46,7 @@ public class ProjectionAddCountTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testProjectionAddCount")
-            .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionAddCountTest").toString();
 
     /**
      * Test for creating a projection with an AddCountAttribute operation on an entity attribute using the object model

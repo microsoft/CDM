@@ -10,6 +10,7 @@ from cdm.enums import CdmLogCode
 from cdm.utilities.string_utils import StringUtils
 
 from .cdm_object_def import CdmObjectDefinition
+from datetime import datetime, timezone
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext
@@ -26,6 +27,8 @@ class CdmE2ERelationship(CdmObjectDefinition):
         self.from_entity_attribute = None  # type: Optional[str]
         self.to_entity = None  # type: Optional[str]
         self.to_entity_attribute = None  # type: Optional[str]
+        self.last_file_modified_time = None  # type: Optional[datetime]
+        self.last_file_modified_old_time = None  # type: Optional[datetime]
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -49,7 +52,6 @@ class CdmE2ERelationship(CdmObjectDefinition):
             copy = CdmE2ERelationship(self.ctx, self.get_name())
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.name = self.get_name()
 
         copy.from_entity = self.from_entity
@@ -100,3 +102,16 @@ class CdmE2ERelationship(CdmObjectDefinition):
             return True
 
         return False
+
+    def get_last_file_modified_time(self) -> datetime:
+        return self.last_file_modified_time
+
+    def set_last_file_modified_time(self, value: datetime) -> None:
+        self.last_file_modified_old_time = self.last_file_modified_old_time
+        self.last_file_modified_time = value
+
+    def get_last_file_modified_old_time(self) -> datetime:
+        return self.last_file_modified_old_time
+
+    def reset_last_file_modified_old_time(self) -> None:
+        self.last_file_modified_old_time = None;

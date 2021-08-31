@@ -63,7 +63,7 @@ export class CdmImport extends cdmObjectSimple {
                 copy.corpusPath = this.corpusPath;
                 copy.moniker = this.moniker;
             }
-            copy.document = this.document;
+            copy.document = this.document ? this.document.copy(resOpt) as CdmDocumentDefinition : undefined;
 
             return copy;
         }

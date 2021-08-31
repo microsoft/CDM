@@ -9,11 +9,12 @@ import {
     CdmEntityDefinition,
     CdmFolderDefinition,
     cdmStatusLevel,
-    resolveOptions
+    resolveOptions, 
+    copyOptions
 } from '../../../internal';
 import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
-import { AttributeContextExpectedValue, AttributeExpectedValue, ObjectValidator } from '../../Utilities/ObjectValidator';
+import { AttributeContextExpectedValue, AttributeExpectedValue } from '../../Utilities/ObjectValidator';
 
 /**
  * Base class for all the new resolution guidance tests.
@@ -165,7 +166,9 @@ export class CommonTest {
      * Runs validation to test actual output vs expected output for attributes collection vs attribute context.
      */
     protected static async saveActualEntityAndValidateWithExpected(expectedPath: string, actualResolvedEntityDef: CdmEntityDefinition): Promise<void> {
-        await actualResolvedEntityDef.inDocument.saveAsAsync(actualResolvedEntityDef.inDocument.name);
+        const newCopyOptionss: copyOptions = new copyOptions;
+        newCopyOptionss.isTopLevelDocument = false;
+        await actualResolvedEntityDef.inDocument.saveAsAsync(actualResolvedEntityDef.inDocument.name, false, newCopyOptionss);
         const actualPath: string = actualResolvedEntityDef.ctx.corpus.storage.corpusPathToAdapterPath(actualResolvedEntityDef.inDocument.atCorpusPath);
         const actualCtx = JSON.parse(fs.readFileSync(actualPath, 'utf8'));
         const expectedCtx = JSON.parse(fs.readFileSync(expectedPath, 'utf8'));

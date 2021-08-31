@@ -76,15 +76,7 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
             resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
         }
 
-        CdmOperationAlterTraits copy;
-        if (host == null) {
-            copy = new CdmOperationAlterTraits(this.getCtx());
-        }
-        else {
-            copy = (CdmOperationAlterTraits)host;
-            copy.setCtx(this.getCtx());
-        }
-
+        CdmOperationAlterTraits copy = host == null ? new CdmOperationAlterTraits(this.getCtx()) : (CdmOperationAlterTraits)host;
 
         List<CdmTraitReferenceBase> traitsToAdd = null;
         if (this.traitsToAdd != null) {
@@ -96,14 +88,12 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
             traitsToRemove = new ArrayList<CdmTraitReferenceBase>(this.traitsToRemove);
         }
 
-        List<String> applyTo = null;
         if (this.applyTo != null) {
-            applyTo = new ArrayList<String>(this.applyTo);
+            copy.setApplyTo(new ArrayList<String>(this.applyTo));
         }
 
         copy.traitsToAdd = traitsToAdd;
         copy.traitsToRemove = traitsToRemove;
-        copy.applyTo = applyTo;
         copy.argumentsContainWildcards = this.argumentsContainWildcards;
 
         this.copyProj(resOpt, copy);

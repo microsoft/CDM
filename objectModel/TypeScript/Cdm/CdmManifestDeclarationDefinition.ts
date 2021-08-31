@@ -80,7 +80,6 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
             copy = new CdmManifestDeclarationDefinition(this.ctx, this.manifestName);
         } else {
             copy = host as CdmManifestDeclarationDefinition;
-            copy.ctx = this.ctx;
             copy.manifestName = this.manifestName;
         }
         copy.definition = this.definition;

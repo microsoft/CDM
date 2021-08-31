@@ -35,11 +35,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal void CopyDef(ResolveOptions resOpt, CdmObjectDefinitionBase copy)
         {
+            copy.Ctx = this.Ctx;
             copy.DeclaredPath = this.DeclaredPath;
             copy.Explanation = this.Explanation;
             copy.ExhibitsTraits.Clear();
             foreach (var trait in this.ExhibitsTraits)
+            {
                 copy.ExhibitsTraits.Add(trait);
+            }
             copy.InDocument = this.InDocument; // if gets put into a new document, this will change. until, use the source
         }
 

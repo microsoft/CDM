@@ -336,6 +336,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         }
 
         /// <summary>
+        /// Test for Include Attributes from a Polymorphic Source
+        /// </summary>
+        [TestMethod]
+        public async Task TestReorderProj()
+        {
+            string testName = "TestReorderProj";
+            string entityName = "NewPerson";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, testName);
+
+            foreach (List<string> resOpt in resOptsCombinations)
+            {
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+            }
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+
+            // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+            // Renamed attribute "age" with format "yearsOld" and re-order all attributes removing email
+            Assert.AreEqual(4, resolvedEntity.Attributes.Count);
+            Assert.AreEqual("address", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("yearsOld", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("name", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
+        }
+
+        /// <summary>
         /// Test for entity attribute with resolution guidance with an empty SelectsSomeTakeNames list
         /// </summary>
         [TestMethod]

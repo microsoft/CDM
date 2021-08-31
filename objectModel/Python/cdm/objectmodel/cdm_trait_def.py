@@ -73,7 +73,6 @@ class CdmTraitDefinition(CdmObjectDefinition):
             copy = CdmTraitDefinition(self.ctx, self.trait_name, None)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.trait_name = self.trait_name
 
         if self.extends_trait:
@@ -82,7 +81,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
         copy._all_parameters = None
         copy.elevated = self.elevated
         copy.ugly = self.ugly
-        copy.associated_properties = self.associated_properties
+        copy.associated_properties = list(self.associated_properties) if self.associated_properties else None
 
         self._copy_def(res_opt, copy)
         return copy

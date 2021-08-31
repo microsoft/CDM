@@ -21,9 +21,9 @@ public class ExpressionTreeUnitTest {
      */
     private static final String TESTS_SUBPATH =
         new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testExpressionTree")
+            "Cdm"),
+            "Projection"),
+            "ExpressionTreeUnitTest")
             .toString();
 
     /**

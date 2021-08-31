@@ -24,7 +24,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DocumentLibrary {
     List<Pair<CdmFolderDefinition, CdmDocumentDefinition>> allDocuments;
     Map<String, Pair<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup;
-    Map<String, Short> docsNotLoaded;
     Map<String, Short> docsCurrentlyLoading;
     Map<CdmDocumentDefinition, Short> docsNotIndexed;
     Map<String, Short> docsNotFound;
@@ -34,7 +33,6 @@ public class DocumentLibrary {
     DocumentLibrary() {
         this.allDocuments = new ArrayList<>();
         this.pathLookup = new LinkedHashMap<>();
-        this.docsNotLoaded = new LinkedHashMap<>();
         this.docsCurrentlyLoading = new LinkedHashMap<>();
         this.docsNotFound = new LinkedHashMap<>();
         this.docsNotIndexed = new LinkedHashMap<>();
@@ -55,6 +53,7 @@ public class DocumentLibrary {
         if (!this.pathLookup.containsKey(path)) {
             this.allDocuments.add(new ImmutablePair<>(folder, doc));
             this.pathLookup.put(path, new ImmutablePair<>(folder, doc));
+            folder.getDocumentLookup().put(doc.getName(), doc);
         }
 
         this.documentLibraryLock.unlock();
@@ -77,21 +76,6 @@ public class DocumentLibrary {
         }
 
         this.documentLibraryLock.unlock();
-    }
-
-    /**
-     * Returns a list of all the documents that are not loaded.
-     */
-    List<String> listDocsNotLoaded() {
-        this.documentLibraryLock.lock();
-
-        List<String> list = new ArrayList<>();
-        for (Map.Entry<String, Short> entry : this.docsNotLoaded.entrySet()) {
-            list.add(entry.getKey());
-        }
-
-        this.documentLibraryLock.unlock();
-        return list;
     }
 
     /**
@@ -133,24 +117,6 @@ public class DocumentLibrary {
     }
 
     /**
-     * Adds a document to the list of documents that are not loaded if its path does not exist in the path lookup.
-     * @param path The document path.
-     */
-    void addToDocsNotLoaded(String path) {
-        this.documentLibraryLock.lock();
-
-        if (!this.docsNotFound.containsKey(path)) {
-            Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(path.toLowerCase());
-            // If the imports were not indexed yet there might be documents imported that weren't loaded.
-            if (lookup == null || (!lookup.getRight().isImportsIndexed() && !lookup.getRight().isCurrentlyIndexing())) {
-                this.docsNotLoaded.put(path, (short) 1);
-            }
-        }
-
-        this.documentLibraryLock.unlock();
-    }
-
-    /**
      * Fetches a document from the path lookup.
      * @param path The document path.
      * @return The document with the given path.
@@ -160,7 +126,7 @@ public class DocumentLibrary {
 
         CdmDocumentDefinition doc = null;
         if (!this.docsNotFound.containsKey(path)) {
-            final Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(path.toLowerCase());
+            final Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(path);
 
             if (lookup != null) {
                 doc = lookup.getRight();
@@ -173,33 +139,24 @@ public class DocumentLibrary {
 
     /**
      * Sets a document's status to loading if the document needs to be loaded.
-     * @param docName The document name.
+     * @param docPath The document name.
      * @return Whether a document needs to be loaded.
      */
-    boolean needToLoadDocument(String docName, Map<CdmDocumentDefinition, Short> docsNowLoaded) {
+    boolean needToLoadDocument(String docPath) {
         this.documentLibraryLock.lock();
 
-        boolean needToLoad = false;
-        CdmDocumentDefinition doc = null;
-        if (this.docsNotLoaded.containsKey(docName) && !this.docsNotFound.containsKey(docName) && !this.docsCurrentlyLoading.containsKey(docName)) {
-            // Set status to loading.
-            this.docsNotLoaded.remove(docName);
+        CdmDocumentDefinition document = this.pathLookup.containsKey(docPath) ? this.pathLookup.get(docPath).getValue() : null;
 
-            // The document was loaded already, skip it.
-            if (this.pathLookup.containsKey(docName.toLowerCase())) {
-                Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(docName.toLowerCase());
-                doc = lookup.getRight();
-            } else {
-                this.docsCurrentlyLoading.put(docName, (short) 1);
-                needToLoad = true;
-            }
+        // first check if the document was not found or is currently loading already.
+        // if the document was loaded previously, check if its imports were not indexed and it's not being indexed currently.
+        boolean needToLoad = !this.docsNotFound.containsKey(docPath) && !this.docsCurrentlyLoading.containsKey(docPath)
+                && (document == null || (!document.isImportsIndexed() && !document.isCurrentlyIndexing()));
+
+        if (needToLoad) {
+            this.docsCurrentlyLoading.put(docPath, (short) 1);
         }
+
         this.documentLibraryLock.unlock();
-
-        if (doc != null) {
-            // markDocumentAsLoadedOrFailed needs to because it also requires the lock.
-            this.markDocumentAsLoadedOrFailed(doc, docName, docsNowLoaded);
-        }
 
         return needToLoad;
     }
@@ -207,28 +164,25 @@ public class DocumentLibrary {
     /**
      * Marks a document for indexing if it has loaded successfully, or adds it to the list of documents not found if it
      * failed to load.
+     * @param docPath The document name.
      * @param doc The document that was loaded.
-     * @param docName The document name.
-     * @param docsNowLoaded The dictionary of documents that are now loaded.
      * @return Returns true if the document has loaded, false if it failed to load.
      */
-    boolean markDocumentAsLoadedOrFailed(CdmDocumentDefinition doc, String docName, Map<CdmDocumentDefinition, Short> docsNowLoaded) {
+    boolean markDocumentAsLoadedOrFailed(String docPath, CdmDocumentDefinition doc) {
         this.documentLibraryLock.lock();
 
         boolean hasLoaded = false;
         // Doc is no longer loading.
-        this.docsCurrentlyLoading.remove(docName);
+        this.docsCurrentlyLoading.remove(docPath);
 
         if (doc != null) {
-            // Doc is now loaded.
-            docsNowLoaded.put(doc, (short) 1);
             // Doc needs to be indexed.
             this.docsNotIndexed.put(doc, (short) 1);
             doc.setCurrentlyIndexing(true);
             hasLoaded = true;
         } else {
             // The doc failed to load, so set doc as not found.
-            this.docsNotFound.put(docName, (short) 1);
+            this.docsNotFound.put(docPath, (short) 1);
         }
 
         this.documentLibraryLock.unlock();

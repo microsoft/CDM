@@ -47,7 +47,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return new CdmAttributeGroupReference(this.Ctx, refTo, simpleReference);
             }
             else
+            {
                 return host.CopyToHost(this.Ctx, refTo, simpleReference);
+            }
         }
 
         [Obsolete("CopyData is deprecated. Please use the Persistence Layer instead.")]

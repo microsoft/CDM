@@ -75,11 +75,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             copy.Condition = this.Condition;
-            copy.Source = this.Source?.Copy() as CdmEntityReference;
+            copy.Source = this.Source?.Copy(resOpt) as CdmEntityReference;
 
             foreach (CdmOperationBase operation in this.Operations)
             {
-                copy.Operations.Add(operation.Copy() as CdmOperationBase);
+                copy.Operations.Add(operation.Copy(resOpt) as CdmOperationBase);
             }
 
             // Don't do anything else after this, as it may cause InDocument to become dirty

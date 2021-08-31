@@ -92,7 +92,7 @@ class _data_partition_patternTest(unittest.TestCase):
 
     @async_test
     async def test_pattern_with_different_namespace(self):
-        test_name = 'TestPatternWithDifferentNamespace'
+        test_name = 'test_pattern_with_different_namespace'
         cdm_corpus = TestHelper.get_local_corpus(self.test_subpath, test_name)
         local_adapter = cdm_corpus.storage.fetch_adapter('local')
         local_path = local_adapter._full_root

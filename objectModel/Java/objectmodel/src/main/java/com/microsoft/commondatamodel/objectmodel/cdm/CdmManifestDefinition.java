@@ -378,7 +378,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         try {
 
           final OffsetDateTime modifiedTime = getCtx().getCorpus()
-                  .computeLastModifiedTimeFromObjectAsync(this).join();
+                  .getLastModifiedTimeAsyncFromObjectAsync(this).join();
 
           setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
 

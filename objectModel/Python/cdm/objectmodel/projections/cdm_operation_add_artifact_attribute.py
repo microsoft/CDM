@@ -33,13 +33,9 @@ class CdmOperationAddArtifactAttribute(CdmOperationBase):
         if not res_opt:
             res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
-        if not host:
-            copy = CdmOperationAddArtifactAttribute(self.ctx)
-        else:
-            copy = host
-            copy.ctx = self.ctx
+        copy = CdmOperationAddArtifactAttribute(self.ctx) if not host else host
 
-        copy.new_attribute = self.new_attribute.copy(res_opt)
+        copy.new_attribute = self.new_attribute.copy(res_opt) if self.new_attribute else None
         copy.insert_at_top = self.insert_at_top
 
         self._copy_proj(res_opt, copy)

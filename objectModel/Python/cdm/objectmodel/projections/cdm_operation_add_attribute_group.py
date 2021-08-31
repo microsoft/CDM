@@ -33,8 +33,14 @@ class CdmOperationAddAttributeGroup(CdmOperationBase):
         self.type = CdmOperationType.ADD_ATTRIBUTE_GROUP  # type: CdmOperationType
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationAddAttributeGroup'] = None) -> 'CdmOperationAddAttributeGroup':
-        copy = CdmOperationAddAttributeGroup(self.ctx)
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
+
+        copy = CdmOperationAddAttributeGroup(self.ctx) if not host else host
+
         copy.attribute_group_name = self.attribute_group_name
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:

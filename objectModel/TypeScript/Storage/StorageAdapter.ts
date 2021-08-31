@@ -83,4 +83,5 @@ export interface configObjectType {
   maximumTimeout?: number;
   numberOfRetries?: number;
   sasToken?: string;
+  endpoint?: string;
 }

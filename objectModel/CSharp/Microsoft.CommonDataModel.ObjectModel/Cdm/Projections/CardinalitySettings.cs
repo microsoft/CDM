@@ -60,9 +60,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             set
             {
-                if (!CardinalitySettings.IsMinimumValid(value))
+                if (string.IsNullOrWhiteSpace(value))
                 {
-                    Logger.Error(this.Ctx, Tag, nameof(Minimum), Owner.AtCorpusPath, CdmLogCode.ErrValdnInvalidMinCardinality,value);
+                    Logger.Error(this.Ctx, Tag, nameof(Minimum), Owner.AtCorpusPath, CdmLogCode.ErrPersistCardinalityPropMissing);
+                }
+                else if (!CardinalitySettings.IsMinimumValid(value))
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(Minimum), Owner.AtCorpusPath, CdmLogCode.ErrValdnInvalidMinCardinality, value);
                 }
                 else
                 {
@@ -89,7 +93,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             set
             {
-                if (!CardinalitySettings.IsMaximumValid(value))
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    Logger.Error(this.Ctx, Tag, nameof(Maximum), Owner.AtCorpusPath, CdmLogCode.ErrPersistCardinalityPropMissing);
+                }
+                else if (!CardinalitySettings.IsMaximumValid(value))
                 {
                     Logger.Error(this.Ctx, Tag, nameof(Maximum), Owner.AtCorpusPath, CdmLogCode.ErrValdnInvalidMaxCardinality, value);
                 }

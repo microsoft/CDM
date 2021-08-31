@@ -27,8 +27,7 @@ public class ProjectionArrayTest {
     /**
      * The path between TestDataPath and TestName
      */
-    private static final String TESTS_SUBPATH = new File(new File(new File("cdm"), "projection"),
-            "testProjectionArray").toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionArrayTest").toString();
 
     /**
      * Test Array type on an entity attribute.

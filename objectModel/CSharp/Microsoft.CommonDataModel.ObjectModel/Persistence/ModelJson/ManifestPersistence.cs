@@ -230,7 +230,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
                 // import the cdm extensions into this new document that has the custom extensions
                 extensionDoc.Imports.Add("cdm:/extensions/base.extension.cdm.json");
-                extensionDoc.JsonSchemaSemanticVersion = "1.0.0";
 
                 // add the extension doc to the folder, will wire everything together as needed
                 folder.Documents.Add(extensionDoc);

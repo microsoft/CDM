@@ -7,7 +7,8 @@ import {
     CdmEntityDefinition,
     CdmEntityReference,
     CdmOperationIncludeAttributes,
-    CdmProjection
+    CdmProjection,
+    CdmTypeAttributeDefinition
 } from '../../../internal';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 import { TypeAttributeParam } from './TypeAttributeParam';
@@ -39,7 +40,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionInclude';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionIncludeTest';
 
     /**
      * Test for entity extends with resolution guidance with a SelectsSomeTakeNames
@@ -279,6 +280,35 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
+    });
+
+    /**
+     * Test for Include Attributes from a Polymorphic Source
+     */
+    it('TestReorderProj', async () => {
+        const testName: string = 'TestReorderProj'
+        const entityName: string = 'NewPerson'
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+
+        for (const resOpt of resOptsCombinations) {
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+        }
+
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
+
+        // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
+        // Renamed attribute 'age' with format 'yearsOld' and re-order all attributes removing email
+        expect(resolvedEntity.attributes.allItems.length)
+            .toEqual(4);
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+            .toEqual('address');
+        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
+            .toEqual('phoneNumber');
+        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
+            .toEqual('yearsOld');
+        expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
+            .toEqual('name');
     });
 
     /**

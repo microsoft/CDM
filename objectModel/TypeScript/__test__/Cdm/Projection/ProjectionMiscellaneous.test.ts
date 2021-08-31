@@ -38,7 +38,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionMiscellaneous';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionMiscellaneousTest';
 
     /**
      * Test case scenario for Bug #24 from the projections internal bug bash

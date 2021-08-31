@@ -33,7 +33,7 @@ export * from './TraitGroupReference';
 export * from './TypeAttribute';
 export * from './FileStatus';
 export * from './EntityDeclarationDefinition';
-export * from './Projections/CardinalitySettings';
+export * from './Projections/CardinalitySettingsData';
 export * from './Projections/OperationAddAttributeGroup';
 export * from './Projections/OperationAddCountAttribute';
 export * from './Projections/OperationAddSupportingAttribute';

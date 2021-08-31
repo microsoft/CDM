@@ -39,10 +39,16 @@ export class CdmOperationAddCountAttribute extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy: CdmOperationAddCountAttribute = new CdmOperationAddCountAttribute(this.ctx);
-        copy.countAttribute = this.countAttribute.copy(resOpt, host) as CdmTypeAttributeDefinition;
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
 
+        const copy: CdmOperationAddCountAttribute = !host ? new CdmOperationAddCountAttribute(this.ctx) : host as CdmOperationAddCountAttribute;
+
+        copy.countAttribute = this.countAttribute ? this.countAttribute.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

@@ -57,7 +57,6 @@ export class CdmPurposeDefinition extends CdmObjectDefinitionBase {
                 copy = new CdmPurposeDefinition(this.ctx, this.purposeName, undefined);
             } else {
                 copy = host as CdmPurposeDefinition;
-                copy.ctx = this.ctx;
                 copy.purposeName = this.purposeName;
             }
             copy.extendsPurpose = this.extendsPurpose

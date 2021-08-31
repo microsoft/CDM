@@ -354,7 +354,6 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
       copy = new CdmTraitDefinition(this.getCtx(), this.traitName, null);
     } else {
       copy = (CdmTraitDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setTraitName(this.getTraitName());
     }
 
@@ -362,7 +361,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
             (CdmTraitReference) (this.extendsTrait == null ? null : this.extendsTrait.copy(resOpt)));
     copy.allParameters = null;
     copy.setUgly(this.ugly);
-    copy.setAssociatedProperties(this.associatedProperties);
+    copy.setAssociatedProperties(this.associatedProperties != null ? new ArrayList<>(this.associatedProperties) : null);
     this.copyDef(resOpt, copy);
     return copy;
   }
@@ -373,6 +372,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
    * meant to be called externally at all. Please refrain from using it.
    * @param resOpt Resolved options
    * @param under attribute context
+   *
    * @return ResolvedAttributeSetBuilder
    */
   @Override

@@ -11,7 +11,7 @@ class PredefinedTokensUnitTest(unittest.TestCase):
     """Unit test for PredefinedTokens functions"""
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestPredefinedTokens')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'PredefinedTokensTest')
 
     def test_get_predefined_tokens(self):
         tokens = PredefinedTokens._get_predefined_tokens()

@@ -103,7 +103,8 @@ export class projectionTestUtils {
     /**
      * Loads an entity, resolves it, and then validates the generated attribute contexts
      */
-    public static async loadEntityForResolutionOptionAndSave(corpus: CdmCorpusDefinition, testName: string, testsSubpath: string, entityName: string, directives: string[]): Promise<CdmEntityDefinition> {
+    public static async loadEntityForResolutionOptionAndSave(corpus: CdmCorpusDefinition, testName: string, testsSubpath: string, entityName: string, 
+        directives: string[], updateExpectedOutput: boolean = false): Promise<CdmEntityDefinition> {
         const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
@@ -115,7 +116,7 @@ export class projectionTestUtils {
             .not
             .toBeUndefined();
 
-        await projectionTestUtils.validateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity);
+        await projectionTestUtils.validateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity, updateExpectedOutput);
 
         return resolvedEntity;
     }
@@ -291,7 +292,7 @@ export class projectionTestUtils {
             }
         } else {
             // Actual
-            const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', 'ActualOutput')}/AttrCtx_${entityName}.txt`;
+            const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', testHelper.getTestActualOutputFolderName())}/AttrCtx_${entityName}.txt`;
 
             // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
             fs.writeFileSync(actualStringFilePath, actualText);

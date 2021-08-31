@@ -16,7 +16,7 @@ describe('Cdm/Resolution/CircularResolution', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Resolution/CircularResolution';
+    const testsSubpath: string = 'Cdm/Resolution/CircularResolutionTest';
 
     /**
      * Test proper behavior for entities that contain circular references

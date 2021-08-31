@@ -42,9 +42,16 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy = new CdmOperationAddAttributeGroup(this.ctx);
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
+
+        const copy: CdmOperationAddAttributeGroup = !host ? new CdmOperationAddAttributeGroup(this.ctx) : host as CdmOperationAddAttributeGroup;
+
         copy.attributeGroupName = this.attributeGroupName;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

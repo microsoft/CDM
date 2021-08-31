@@ -144,18 +144,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return manifest;
         }
 
-        public static async Task<SymsManifestContent> ToDataAsync(CdmManifestDefinition instance,
-             ResolveOptions resOpt, CopyOptions options)
+        public static async Task<SymsManifestContent> ToDataAsync(CdmManifestDefinition instance,ResolveOptions resOpt, CopyOptions options, 
+            bool isDeltaSync = false, IList<TableEntity> existingSymsTables = null, IList<RelationshipEntity> existingSymsRelationships = null)
         {
             var source = CreateDataSource(instance);
             if (source == null)
                 return null; 
 
             var properties = CreateDatabasePropertyBags(instance, resOpt, options);
-            List<TableEntity> symsTables = await CreateSymsTables(instance, resOpt, options, source.Location);
+
+            Dictionary<string, TableEntity> existingTableEntities = null;
+            List<string> removedSymsTable = null;
+            if ( existingSymsTables != null && existingSymsTables.Count > 0)
+            {
+                // convert to dictionary for better searching
+                existingTableEntities = existingSymsTables.ToDictionary(x => x.Name, x => x);
+                removedSymsTable = existingSymsTables.Select(x => x.Name).Except(instance.Entities.Select(x => x.EntityName)).ToList();
+            }
+            var addedOrModifiedSymsTables = await CreateSymsTablesObjects(instance, resOpt, options, source.Location, existingTableEntities);
 
             // TODO : Submanifest
-            var relationships = CreateRelationships(instance, resOpt, options);
+
+            Dictionary<string, RelationshipEntity> existingRelationshipEntities = null;
+            List<string> removedSymsRelationships = null;
+            if (existingSymsRelationships != null && existingSymsRelationships.Count > 0)
+            {
+                existingRelationshipEntities = existingSymsRelationships.ToDictionary(x => x.Name, x => x);
+                removedSymsRelationships = existingSymsRelationships.Select(x => x.Name).Except(instance.Relationships.Select(x => x.Name)).ToList();
+            }
+            var addedOrModifiedSymsRelationships = CreateRelationships(instance, existingRelationshipEntities, resOpt, options);
+
             DatabaseProperties dbProperties = new DatabaseProperties
             {
                 Description = instance.Explanation != null ? instance.Explanation : $"{instance.ManifestName} syms database",
@@ -173,8 +191,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return new SymsManifestContent
             {
                 Database = databaseEntity,
-                Entities = symsTables,
-                Relationships = relationships
+                Entities = addedOrModifiedSymsTables,
+                Relationships = addedOrModifiedSymsRelationships,
+                IntialSync = !isDeltaSync,
+                RemovedEntities = removedSymsTable,
+                RemovedRelationships = removedSymsRelationships
             };
         }
 
@@ -252,8 +273,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return properties;
         }
 
-        public static async Task<List<TableEntity>> CreateSymsTables(CdmManifestDefinition instance,
-            ResolveOptions resOpt, CopyOptions options, string location)
+        public static async Task<List<TableEntity>> CreateSymsTablesObjects(CdmManifestDefinition instance,
+            ResolveOptions resOpt, CopyOptions options, string location, IDictionary<string, TableEntity> existingTableEntities = null)
         {
             List<TableEntity> symsTables = new List<TableEntity>();
             if (instance.Entities != null && instance.Entities.Count > 0)
@@ -265,22 +286,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                     Task createdPromise = Task.Run(async () =>
                     {
                         dynamic element = null;
-                        if (entity.ObjectType == CdmObjectType.LocalEntityDeclarationDef)
+
+                        if (entity.ObjectType == CdmObjectType.LocalEntityDeclarationDef && 
+                        Utils.IsEntityAddedorModified(entity as CdmLocalEntityDeclarationDefinition, existingTableEntities)) 
                         {
                             element = await LocalEntityDeclarationPersistence.ToDataAsync(
                                     entity as CdmLocalEntityDeclarationDefinition,
                                     instance, location, resOpt, options
                                 );
-                        }
 
-                        if (element != null)
-                        {
-                            obtainedEntities.Add(element);
+                            if (element != null)
+                            {
+                                obtainedEntities.Add(element);
+                            }
+                            else
+                            {
+                                Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToDataAsync), instance.AtCorpusPath, CdmLogCode.ErrPersistSymsEntityDeclConversionFailure, entity.EntityName);
+                            }
                         }
-                        else
-                        {
-                            Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToDataAsync), instance.AtCorpusPath, CdmLogCode.ErrPersistSymsEntityDeclConversionFailure, entity.EntityName);
-                        }
+                        
                     });
                     try
                     {
@@ -301,7 +325,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             return symsTables;
         }
 
-        private static List<RelationshipEntity> CreateRelationships(CdmManifestDefinition instance,
+        private static List<RelationshipEntity> CreateRelationships(CdmManifestDefinition instance, IDictionary<string, RelationshipEntity> existingRelationshipEntities,
              ResolveOptions resOpt, CopyOptions options)
         {
             var relationships = new Dictionary<string, RelationshipEntity>();
@@ -309,22 +333,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             {
                 foreach (var cdmRelationship in instance.Relationships)
                 {
-                    if (!relationships.ContainsKey(instance.Name))
+                    if (Utils.IsRelationshipAddedorModified(cdmRelationship, existingRelationshipEntities))
                     {
-                        var relationship = E2ERelationshipPersistence.ToData(cdmRelationship, instance.ManifestName, resOpt, options);
-                        if (relationship != null)
+                        if (!relationships.ContainsKey(instance.Name))
                         {
-                            relationships[relationship.Name] = relationship;
+                            var relationship = E2ERelationshipPersistence.ToData(cdmRelationship, instance.ManifestName, resOpt, options);
+                            if (relationship != null)
+                            {
+                                relationships[relationship.Name] = relationship;
+                            }
+                            else
+                            {
+                                Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToDataAsync), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonRelConversionError);
+                            }
                         }
                         else
                         {
-                            Logger.Error((ResolveContext)instance.Ctx, Tag, nameof(ToDataAsync), instance.AtCorpusPath, CdmLogCode.ErrPersistModelJsonRelConversionError);
+                            var relationshipEntity = relationships[instance.Name];
+                            ((RelationshipProperties)relationshipEntity.Properties).ColumnRelationshipInformations.Add(new ColumnRelationshipInformation(cdmRelationship.FromEntityAttribute, cdmRelationship.ToEntityAttribute));
                         }
-                    }
-                    else
-                    {
-                        var relationshipEntity = relationships[instance.Name];
-                        ((RelationshipProperties)relationshipEntity.Properties).ColumnRelationshipInformations.Add(new ColumnRelationshipInformation(cdmRelationship.FromEntityAttribute, cdmRelationship.ToEntityAttribute));
                     }
                 }
             }

@@ -136,12 +136,11 @@ public class ProjectionAttributeContextTreeBuilder {
         // Store this in the map as [searchFor attribute context parameter]:[found attribute context parameters]
         // We store it this way so that we can create the found nodes under their corresponding searchFor nodes.
         if (!searchForAttrCtxParamToFoundAttrCtxParam.containsKey(searchForAttrCtxParam)) {
-            searchForAttrCtxParamToFoundAttrCtxParam.put(searchForAttrCtxParam, new ArrayList<>(Arrays.asList(foundAttrCtxParam)));
-        } else {
-            List<AttributeContextParameters> foundAttrCtxParams = searchForAttrCtxParamToFoundAttrCtxParam.get(searchForAttrCtxParam);
-            foundAttrCtxParams.add(foundAttrCtxParam);
-            searchForAttrCtxParamToFoundAttrCtxParam.put(searchForAttrCtxParam, foundAttrCtxParams);
+            searchForAttrCtxParamToFoundAttrCtxParam.put(searchForAttrCtxParam, new ArrayList<>());
         }
+
+        List<AttributeContextParameters> foundAttrCtxParams = searchForAttrCtxParamToFoundAttrCtxParam.get(searchForAttrCtxParam);
+        foundAttrCtxParams.add(foundAttrCtxParam);
 
         // Create the attribute context parameter for the action node
         AttributeContextParameters actionAttrCtxParam = new AttributeContextParameters();
@@ -181,23 +180,12 @@ public class ProjectionAttributeContextTreeBuilder {
     public void constructAttributeContextTree(ProjectionContext projCtx) {
         // Iterate over all the searchFor attribute context parameters
         for (AttributeContextParameters searchForAttrCtxParam : this.searchForToSearchForAttrCtxParam.values()) {
-            CdmAttributeContext searchForAttrCtx = null;
-
             // Fetch all the found attribute context parameters associated with this searchFor
             List<AttributeContextParameters> foundAttrCtxParams = searchForAttrCtxParamToFoundAttrCtxParam.get(searchForAttrCtxParam);
 
             // Iterate over all the found attribute context parameters
             for (AttributeContextParameters foundAttrCtxParam : foundAttrCtxParams)
             {
-                // We should only create the searchFor node when searchFor and found have different names. Else collapse the nodes together.
-                if (!StringUtils.equalsWithCase(searchForAttrCtxParam.getName(), foundAttrCtxParam.getName())) {
-                    // Create the attribute context for searchFor if it hasn't been created already and set it as the parent of found
-                    if (searchForAttrCtx == null) {
-                        searchForAttrCtx = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), searchForAttrCtxParam);
-                    }
-                    foundAttrCtxParam.setUnder(searchForAttrCtx);
-                }
-
                 // Fetch the action attribute context parameter associated with this found
                 AttributeContextParameters actionAttrCtxParam = foundAttrCtxParamToActionAttrCtxParam.get(foundAttrCtxParam);
 

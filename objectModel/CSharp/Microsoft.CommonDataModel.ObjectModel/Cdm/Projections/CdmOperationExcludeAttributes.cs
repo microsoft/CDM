@@ -31,13 +31,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            List<string> excludeAttributes = new List<string>();
-            excludeAttributes.AddRange(this.ExcludeAttributes);
-
-            CdmOperationExcludeAttributes copy = new CdmOperationExcludeAttributes(this.Ctx)
+            if (resOpt == null)
             {
-                ExcludeAttributes = excludeAttributes
-            };
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var copy = host == null ? new CdmOperationExcludeAttributes(this.Ctx) : host as CdmOperationExcludeAttributes;
+
+            if (this.ExcludeAttributes != null)
+            {
+                copy.ExcludeAttributes = new List<string>(this.ExcludeAttributes);
+            }
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 
@@ -155,7 +161,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // Create the attribute context parameters and just store it in the builder for now
                     // We will create the attribute contexts at the end
                     attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.CurrentResolvedAttribute,
-                        CdmAttributeContextType.AttributeDefinition,
+                        CdmAttributeContextType.AttributeExcluded,
                         currentPAS.CurrentResolvedAttribute.AttCtx, // lineage is the included attribute
                         null); // don't know who will point here yet, excluded, so... this could be the end for you.
 

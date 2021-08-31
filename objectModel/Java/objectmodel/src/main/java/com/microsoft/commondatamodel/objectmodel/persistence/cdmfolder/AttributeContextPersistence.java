@@ -52,6 +52,7 @@ public class AttributeContextPersistence {
         case AddedAttributeExpansionTotal:
         case AddedAttributeSelectedType:
         case AttributeDefinition:
+        case AttributeExcluded:
           attributeContext.setDefinition(AttributeReferencePersistence.fromData(ctx, JMapper.MAP.valueToTree(obj.getDefinition())));
           break;
       }
@@ -131,6 +132,8 @@ public class AttributeContextPersistence {
         return CdmAttributeContextType.AttributeGroup;
       case "attributeDefinition":
         return CdmAttributeContextType.AttributeDefinition;
+      case "attributeExcluded":
+        return CdmAttributeContextType.AttributeExcluded;
       case "addedAttributeSupporting":
         return CdmAttributeContextType.AddedAttributeSupporting;
       case "addedAttributeIdentity":
@@ -190,6 +193,8 @@ public class AttributeContextPersistence {
         return "attributeGroup";
       case AttributeDefinition:
         return "attributeDefinition";
+      case AttributeExcluded:
+        return "attributeExcluded";
       case AddedAttributeSupporting:
         return "addedAttributeSupporting";
       case AddedAttributeIdentity:

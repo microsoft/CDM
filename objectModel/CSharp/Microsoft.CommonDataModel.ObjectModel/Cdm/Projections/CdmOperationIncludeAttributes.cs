@@ -32,13 +32,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            List<string> includeAttributes = new List<string>();
-            includeAttributes.AddRange(this.IncludeAttributes);
-
-            CdmOperationIncludeAttributes copy = new CdmOperationIncludeAttributes(this.Ctx)
+            if (resOpt == null)
             {
-                IncludeAttributes = includeAttributes
-            };
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var copy = host == null ? new CdmOperationIncludeAttributes(this.Ctx) : host as CdmOperationIncludeAttributes;
+
+            if (this.IncludeAttributes != null)
+            {
+                copy.IncludeAttributes = new List<string>(this.IncludeAttributes);
+            }
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 
@@ -125,39 +131,59 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // Initialize a projection attribute context tree builder with the created attribute context for the operation
             ProjectionAttributeContextTreeBuilder attrCtxTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpIncludeAttrs);
 
+            // Index that holds the current attribute name as the key and the attribute as value
+            Dictionary<string, ProjectionAttributeState> topLevelIncludeAttribute = new Dictionary<string, ProjectionAttributeState>();
+
+            // List of attributes that were not included on the final attribute list
+            List<ProjectionAttributeState> removedAttributes = new List<ProjectionAttributeState>();
+
             // Iterate through all the PAS in the PASSet generated from the projection source's resolved attributes
             foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
             {
                 // Check if the current PAS's RA is in the list of attributes to include.
                 if (topLevelIncludeAttributeNames.ContainsKey(currentPAS.CurrentResolvedAttribute.ResolvedName))
                 {
-                    // Get the attribute name the way it appears in the include list
-                    string includeAttributeName = null;
-                    topLevelIncludeAttributeNames.TryGetValue(currentPAS.CurrentResolvedAttribute.ResolvedName, out includeAttributeName);
-
-                    // Create the attribute context parameters and just store it in the builder for now
-                    // We will create the attribute contexts at the end
-                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(includeAttributeName, currentPAS, currentPAS.CurrentResolvedAttribute,
-                        CdmAttributeContextType.AttributeDefinition,
-                        currentPAS.CurrentResolvedAttribute.AttCtx, // lineage is the included attribute
-                        null); // don't know who will point here yet
-
-                    // Create a projection attribute state for the included attribute by creating a copy of the current state
-                    // Copy() sets the current state as the previous state for the new one
-                    // We only create projection attribute states for attributes in the include list
-                    ProjectionAttributeState newPAS = currentPAS.Copy();
-
-                    projOutputSet.Add(newPAS);
+                    topLevelIncludeAttribute.Add(currentPAS.CurrentResolvedAttribute.ResolvedName, currentPAS);
                 }
                 else
                 {
-                    // Create the attribute context parameters and just store it in the builder for now
-                    // We will create the attribute contexts at the end
-                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(null, currentPAS, currentPAS.CurrentResolvedAttribute,
-                        CdmAttributeContextType.AttributeDefinition,
-                        currentPAS.CurrentResolvedAttribute.AttCtx, // lineage is the excluded attribute
-                        null); // don't know who will point here, probably nobody, I mean, we got excluded
+                    removedAttributes.Add(currentPAS);
                 }
+            }
+
+            // Loop through the list of attributes in the same order that was specified by the user
+            foreach (KeyValuePair<string, string> entry in topLevelIncludeAttributeNames)
+            {
+                // Get the attribute state
+                ProjectionAttributeState currentPAS = topLevelIncludeAttribute[entry.Key];
+
+                // Get the attribute name the way it appears in the include list
+                string includeAttributeName = entry.Value;
+
+                // Create the attribute context parameters and just store it in the builder for now
+                // We will create the attribute contexts at the end
+                attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(includeAttributeName, currentPAS, currentPAS.CurrentResolvedAttribute,
+                    CdmAttributeContextType.AttributeDefinition,
+                    currentPAS.CurrentResolvedAttribute.AttCtx, // lineage is the included attribute
+                    null); // don't know who will point here yet
+
+                // Create a projection attribute state for the included attribute by creating a copy of the current state
+                // Copy() sets the current state as the previous state for the new one
+                // We only create projection attribute states for attributes in the include list
+                ProjectionAttributeState newPAS = currentPAS.Copy();
+
+                projOutputSet.Add(newPAS);
+            }
+
+            // Generate attribute context nodes for the attributes that were not included
+            foreach (ProjectionAttributeState currentPAS in removedAttributes)
+            {
+                // Create the attribute context parameters and just store it in the builder for now
+                // We will create the attribute contexts at the end
+                attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(null, currentPAS, currentPAS.CurrentResolvedAttribute,
+                    CdmAttributeContextType.AttributeExcluded,
+                    currentPAS.CurrentResolvedAttribute.AttCtx, // lineage is the included attribute
+                    null); // don't know who will point here yet
             }
 
             // Create all the attribute contexts and construct the tree

@@ -19,7 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         public async Task TestAddInSupportOf()
         {
             bool updateResults = false;
-            string testName = "TestAddInSupportOf";
+            string testName = nameof(TestAddInSupportOf);
             {
                 string entityName = "Product";
 
@@ -74,7 +74,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         public async Task TestAddInSupportOfWithIsCorrelatedWith()
         {
             bool updateResults = false;
-            string testName = "TestAddInSupportOfWithIsCorrelatedWith";
+            string testName = nameof(TestAddInSupportOfWithIsCorrelatedWith);
             {
                 string entityName = "Product";
 

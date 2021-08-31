@@ -1,6 +1,8 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
+import uuid
+
 class EventList(list):
     """
     EventList is a supporting class for the logging system and allows subset of messages
@@ -25,12 +27,14 @@ class EventList(list):
     def __init__(self) -> None:
         self.is_recording = False  # type: bool
         self.nesting_level = 0  # type: int
+        self.api_correlation_id = uuid.uuid4()  # type: uuid
         list.__init__(self)
 
     def _enable(self) -> None:
         if self.nesting_level == 0:
             super().clear()
             self.is_recording = True
+            self.api_correlation_id = uuid.uuid4()
 
         self.nesting_level += 1
 
@@ -39,6 +43,7 @@ class EventList(list):
 
         if self.nesting_level == 0:
             self.is_recording = False
+            self.api_correlation_id = uuid.uuid4()
 
     def __add__(self, x):
         return super().__add__(x)

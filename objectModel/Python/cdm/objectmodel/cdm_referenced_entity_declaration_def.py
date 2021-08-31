@@ -55,7 +55,6 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             copy = CdmReferencedEntityDeclarationDefinition(self.ctx, self.entity_name)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.entity_name = self.entity_name
 
         copy.entity_path = self.entity_path

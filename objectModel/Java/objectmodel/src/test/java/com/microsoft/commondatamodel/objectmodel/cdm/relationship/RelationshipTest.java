@@ -40,7 +40,7 @@ public class RelationshipTest {
    */
   @Test
   public void testCalculateRelationshipsAndPopulateManifests() throws IOException, InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests");
     final CdmManifestDefinition rootManifest = corpus
         .<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
     final CdmManifestDefinition subManifest = corpus
@@ -72,7 +72,7 @@ public class RelationshipTest {
   @Test
   public void TestCalculateRelationshipsAndPopulateManifestsWithExclusiveFlag()
       throws InterruptedException, ExecutionException, IOException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests");
 
     final CdmManifestDefinition rootManifest = corpus
         .<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").get();
@@ -105,7 +105,7 @@ public class RelationshipTest {
   @Test
   public void testCalculateRelationshipsAndPopulateManifestsWithNoneFlag()
       throws ExecutionException, InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsAndPopulateManifests");
 
     final CdmManifestDefinition rootManifest = corpus
         .<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").get();
@@ -248,7 +248,7 @@ public class RelationshipTest {
           "expectedRels.json"),
           new TypeReference<List<E2ERelationship>>() {
         });
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsForSelectsOneAttribute", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCalculateRelationshipsForSelectsOneAttribute");
         corpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
 
         final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/selectsOne.manifest.cdm.json").join();
@@ -266,7 +266,7 @@ public class RelationshipTest {
   @Test
   public void testExtendsEntityAndReplaceAsForeignKey() throws InterruptedException {
       String testName = "testExtendsEntityAndReplaceAsForeignKey";
-      CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+      CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
       CdmManifestDefinition manifest =  corpus.<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
 
@@ -291,7 +291,7 @@ public class RelationshipTest {
           "expectedRels.json"),
           new TypeReference<List<E2ERelationship>>() {
         });
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipsEntityAndDocumentNameDifferent", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipsEntityAndDocumentNameDifferent");
         final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
 
         corpus.calculateEntityGraphAsync(manifest).get();
@@ -314,7 +314,7 @@ public class RelationshipTest {
           "expectedRels.json"),
           new TypeReference<List<E2ERelationship>>() {
         });
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToMultipleEntities", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToMultipleEntities");
         final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
 
         corpus.calculateEntityGraphAsync(manifest).get();
@@ -337,7 +337,7 @@ public class RelationshipTest {
           "expectedRels.json"),
           new TypeReference<List<E2ERelationship>>() {
         });
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToDifferentNamespace", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToDifferentNamespace");
         // entity B will be in a different namespace
         corpus.getStorage().mount("differentNamespace", new LocalAdapter(TestHelper.getInputFolderPath(TESTS_SUBPATH, "TestRelationshipToDifferentNamespace") + "/differentNamespace"));
 
@@ -363,7 +363,7 @@ public class RelationshipTest {
           "expectedRels.json"),
           new TypeReference<List<E2ERelationship>>() {
         });
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipPointingToSubManifest", null);
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipPointingToSubManifest");
         final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
 
         corpus.calculateEntityGraphAsync(manifest).get();

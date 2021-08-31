@@ -1,0 +1,110 @@
+{
+  "jsonSchemaSemanticVersion": "1.3.0",
+  "imports": [
+    {
+      "corpusPath": "local:/Person_Structured.cdm.json",
+      "moniker": "resolvedFrom"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Person_Resolved",
+      "exhibitsTraits": [
+        {
+          "traitReference": "has.entitySchemaAbstractionLevel",
+          "arguments": [
+            {
+              "name": "level",
+              "value": "resolved"
+            }
+          ]
+        }
+      ],
+      "attributeContext": {
+        "type": "entity",
+        "name": "Person_Resolved",
+        "definition": "resolvedFrom/Person",
+        "contents": [
+          {
+            "type": "attributeDefinition",
+            "name": "ID",
+            "parent": "Person_Resolved/attributeContext/Person_Resolved",
+            "definition": "resolvedFrom/Person/hasAttributes/ID",
+            "contents": [
+              "Person_Resolved/hasAttributes/ID"
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "Address",
+            "parent": "Person_Resolved/attributeContext/Person_Resolved",
+            "definition": "resolvedFrom/Person/hasAttributes/Address",
+            "contents": [
+              {
+                "type": "entity",
+                "name": "Address",
+                "parent": "Person_Resolved/attributeContext/Person_Resolved/Address",
+                "definition": "resolvedFrom/Address",
+                "contents": [
+                  {
+                    "type": "attributeDefinition",
+                    "name": "Street",
+                    "parent": "Person_Resolved/attributeContext/Person_Resolved/Address/Address",
+                    "definition": "resolvedFrom/Address/hasAttributes/Street",
+                    "contents": [
+                      "Person_Resolved/hasAttributes/Address/members/AddressStreet"
+                    ]
+                  },
+                  {
+                    "type": "attributeDefinition",
+                    "name": "Pincode",
+                    "parent": "Person_Resolved/attributeContext/Person_Resolved/Address/Address",
+                    "definition": "resolvedFrom/Address/hasAttributes/Pincode",
+                    "contents": [
+                      "Person_Resolved/hasAttributes/Address/members/AddressPincode"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "hasAttributes": [
+        {
+          "name": "ID",
+          "appliedTraits": [
+            "is.dataFormat.integer"
+          ],
+          "attributeContext": "Person_Resolved/attributeContext/Person_Resolved/ID",
+          "dataFormat": "Int32"
+        },
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "Address",
+            "attributeContext": "Person_Resolved/attributeContext/Person_Resolved/Address",
+            "members": [
+              {
+                "name": "AddressStreet",
+                "appliedTraits": [
+                  "is.dataFormat.character",
+                  "is.dataFormat.array"
+                ],
+                "attributeContext": "Person_Resolved/attributeContext/Person_Resolved/Address/Address/Street",
+                "dataFormat": "String"
+              },
+              {
+                "name": "AddressPincode",
+                "appliedTraits": [
+                  "is.dataFormat.integer"
+                ],
+                "attributeContext": "Person_Resolved/attributeContext/Person_Resolved/Address/Address/Pincode",
+                "dataFormat": "Int32"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

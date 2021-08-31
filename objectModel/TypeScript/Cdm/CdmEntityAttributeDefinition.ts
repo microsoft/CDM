@@ -122,7 +122,6 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                 copy = new CdmEntityAttributeDefinition(this.ctx, this.name);
             } else {
                 copy = host as CdmEntityAttributeDefinition;
-                copy.ctx = this.ctx;
                 copy.name = this.name;
             }
             copy.entity = <CdmEntityReference>this.entity.copy(resOpt);
@@ -552,12 +551,9 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
 
         // this context object holds all of the info about what needs to happen to resolve these attributes.
         // make a copy and add defaults if missing
-        let resGuideWithDefault: CdmAttributeResolutionGuidance;
-        if (this.resolutionGuidance !== undefined) {
-            resGuideWithDefault = this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
-        } else {
-            resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
-        }
+        const resGuideWithDefault: CdmAttributeResolutionGuidance = this.resolutionGuidance === undefined 
+            ? new CdmAttributeResolutionGuidance(this.ctx) : this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
+            
         resGuideWithDefault.updateAttributeDefaults(this.name, this);
 
         return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);

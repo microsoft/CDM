@@ -33,6 +33,8 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
 
         self.last_file_status_check_time = None  # type: Optional[datetime]
 
+        self.last_file_modified_old_time = None  # type: Optional[datetime]
+
         # Internal
         self._data_partitions = CdmCollection(self.ctx, self, CdmObjectType.DATA_PARTITION_DEF)
         self._data_partition_patterns = CdmCollection(self.ctx, self, CdmObjectType.DATA_PARTITION_PATTERN_DEF)
@@ -82,7 +84,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
                 await partition.file_status_check_async()
 
             self.last_file_status_check_time = datetime.now(timezone.utc)
-            self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
+            self.set_last_file_modified_time(time_utils._max_time(modified_time, self.last_file_modified_time));
 
             await self.report_most_recent_time_async(self.last_file_modified_time)
         finally:
@@ -101,7 +103,6 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             copy = CdmLocalEntityDeclarationDefinition(self.ctx, self.entity_name)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.entity_name = self.entity_name
             copy.data_partition_patterns.clear()
             copy.data_partitions.clear()
@@ -112,10 +113,10 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         copy.last_child_file_modified_time = self.last_child_file_modified_time
 
         for partition in self.data_partitions:
-            copy.data_partitions.append(partition)
+            copy.data_partitions.append(partition.copy(res_opt))
 
         for pattern in self.data_partition_patterns:
-            copy.data_partition_patterns.append(pattern)
+            copy.data_partition_patterns.append(pattern.copy(res_opt))
 
         self._copy_def(res_opt, copy)
 
@@ -160,3 +161,16 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             return True
 
         return False
+
+    def get_last_file_modified_time(self) -> datetime:
+        return self.last_file_modified_time
+
+    def set_last_file_modified_time(self, value: datetime) -> None:
+        self.last_file_modified_old_time = self.last_file_modified_old_time
+        self.last_file_modified_time = value
+
+    def get_last_file_modified_old_time(self) -> datetime:
+        return self.last_file_modified_old_time
+
+    def reset_last_file_modified_old_time(self) -> None:
+       self.last_file_modified_old_time = None;

@@ -44,12 +44,7 @@ public class ProjectionExcludeTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testProjectionExclude")
-            .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionExcludeTest").toString();
 
     /**
      * Test for creating a projection with an ExcludeAttributes operation on an entity attribute using the object model

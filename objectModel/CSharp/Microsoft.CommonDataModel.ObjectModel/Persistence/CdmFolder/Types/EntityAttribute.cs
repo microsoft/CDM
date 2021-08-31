@@ -3,6 +3,7 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
 {
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types.Projections;
     using Newtonsoft.Json.Linq;
     using System.Collections.Generic;
     public class EntityAttribute
@@ -16,5 +17,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public string Name { get; set; }
         public List<JToken> AppliedTraits { get; set; }
         public JToken ResolutionGuidance { get; set; }
+        public CardinalitySettingsData Cardinality { get; set; }
     }
 }

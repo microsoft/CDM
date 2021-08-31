@@ -84,7 +84,7 @@ public class CdmEntityDefinitionTest {
    */
   @Test
   public void testFromAndToDataWithElevatedTraits() throws InterruptedException, ExecutionException {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFromAndToDataWithElevatedTraits", null);
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFromAndToDataWithElevatedTraits");
     cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
     cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
       Assert.assertFalse(message.contains("unable to resolve an entity"));
@@ -101,7 +101,7 @@ public class CdmEntityDefinitionTest {
    */
   @Test
   public void testLoadingEntityWithShallowValidation() throws InterruptedException {
-    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation", null);
+    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation");
     cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
     cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
       // When messages regarding references not being resolved or loaded are logged, check that they are warnings and not errors.
@@ -121,7 +121,7 @@ public class CdmEntityDefinitionTest {
    */
   @Test
   public void testLoadingEntityWithoutShallowValidation() throws InterruptedException, ExecutionException {
-    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation", null);
+    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation");
     cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
     cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
       // When messages regarding references not being resolved or loaded are logged, check that they are errors.

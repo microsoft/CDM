@@ -18,8 +18,8 @@ def IfRunTestsFlagNotSet():
     return (os.environ.get("SAMPLE_RUNTESTS") is None or os.environ.get("ADLS_RUNTESTS") is None)
 
 class ReadLocalSaveAdlsTest(unittest.TestCase):
-    tests_subpath = 'samples'
-    test_name = 'TestReadLocalSaveAdls'
+    tests_subpath = 'Samples'
+    test_name = 'test_read_local_save_adls'
     root_relative_path = ''
 
     @async_test

@@ -113,6 +113,7 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
      */
     @Deprecated
     public CdmOperationBase copyProj(ResolveOptions resOpt, CdmOperationBase copy) {
+        copy.setType(this.type);
         copy.setIndex(this.index);
         copy.setCondition(this.condition);
         copy.setSourceInput(this.sourceInput);

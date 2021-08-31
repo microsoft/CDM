@@ -92,7 +92,7 @@ namespace customize_manifest
             CdmTypeAttributeDefinition attNew = cdmCorpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "currentCity");
             // The attribute is a type is 'City" this is one of the predefined semantic types in meanings.cdm.json
             attNew.DataType = cdmCorpus.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "city", true);
-            attNew.Description = "The current city where the mobile care team is working";
+            attNew.Description = "The current city where the mobile care team is working.";
 
             // also apply our fancy new 'temporary' trait. they stay in a city for 90 days on average
             CdmTraitReference tr = cdmCorpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, "means.temporary");

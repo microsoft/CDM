@@ -55,7 +55,7 @@ public class ReadManifestTest extends SampleTestBase {
             FileReadWriteUtil.writeStringToFile(testActualOutputPath, actualOutputContent);
 
             TestHelper.assertFileContentEquality(
-                    FileReadWriteUtil.readFileToString(new File(TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, TEST_NAME), "output.txt").toString()),
+                    FileReadWriteUtil.readFileToString(new File(TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, TEST_NAME), "output-Java.txt").toString()),
                     actualOutputContent
             );
         } catch (InterruptedException | IOException e) {
@@ -104,7 +104,7 @@ public class ReadManifestTest extends SampleTestBase {
                     // Assume there are only local entities in this manifest for simplicity.
                     System.out.print("  " + StringUtils.rightPad(Integer.toString(index), 3));
                     System.out.print("  " + StringUtils.rightPad(entityDeclaration.getEntityName(), 35));
-                    System.out.println(entityDeclaration.getEntityPath());
+                    System.out.println("  " + entityDeclaration.getEntityPath());
                     index++;
                 }
             }
@@ -127,7 +127,7 @@ public class ReadManifestTest extends SampleTestBase {
                 break;
             }
 
-            System.out.print("Show details for Entity or Sub-manifest number (press [enter] to exit): ");
+            System.out.println("Enter a number to show details for that Entity or Sub-manifest (press [enter] to exit): ");
             // Get the user's choice.
             String input = SCANNER.nextLine();
             if (com.microsoft.commondatamodel.objectmodel.utilities.StringUtils.isNullOrEmpty(input)) {
@@ -154,7 +154,7 @@ public class ReadManifestTest extends SampleTestBase {
             index = 1;
             for (final CdmEntityDeclarationDefinition entityDeclaration : manifest.getEntities()) {
                 if (index == num) {
-                    System.out.print(
+                    System.out.println(
                             "Reading the entity schema and resolving with the standard docs, "
                                     + "first one may take a second ...");
 
@@ -167,8 +167,8 @@ public class ReadManifestTest extends SampleTestBase {
                                     .join(); // Gets the entity object from the doc.
 
                     while (true) {
-                        System.out.println("\nMetadata properties for the entity: "
-                                + entityDeclaration.getEntityName());
+                        System.out.println("\nMetadata properties for the entity "
+                                + entityDeclaration.getEntityName() + ":");
                         System.out.println("  1: Attributes");
                         System.out.println("  2: Traits");
                         System.out.println("  3: Properties");
@@ -176,7 +176,7 @@ public class ReadManifestTest extends SampleTestBase {
                         System.out.println("  5: Relationships");
 
                         System.out.println("Enter a number to show details for that metadata "
-                                +"property (press [enter] to explore other entities):");
+                                + "property (press [enter] to explore other entities):");
 
                         // Get the user's choice.
                         input = SCANNER.nextLine();
@@ -248,7 +248,7 @@ public class ReadManifestTest extends SampleTestBase {
                 // Attribute's data format.
                 printProperty("DataFormat", typeAttributeDefinition.fetchDataFormat().name());
                 // And all the traits of this attribute.
-                System.out.println("  AppliedTraits:");
+                System.out.println("AppliedTraits:");
                 typeAttributeDefinition.getAppliedTraits().forEach(ReadManifestTest::printTrait);
                 System.out.println();
             }

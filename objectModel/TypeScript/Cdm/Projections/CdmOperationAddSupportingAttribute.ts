@@ -40,10 +40,16 @@ export class CdmOperationAddSupportingAttribute extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy: CdmOperationAddSupportingAttribute = new CdmOperationAddSupportingAttribute(this.ctx);
-        copy.supportingAttribute = this.supportingAttribute?.copy() as CdmTypeAttributeDefinition;
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
 
+        const copy: CdmOperationAddSupportingAttribute = !host ? new CdmOperationAddSupportingAttribute(this.ctx) : host as CdmOperationAddSupportingAttribute;
+
+        copy.supportingAttribute = this.supportingAttribute ? this.supportingAttribute.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

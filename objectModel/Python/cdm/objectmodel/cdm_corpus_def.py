@@ -27,8 +27,8 @@ if TYPE_CHECKING:
     from cdm.objectmodel import CdmArgumentValue, CdmAttributeContext, CdmDocumentDefinition, CdmEntityDefinition, \
         CdmManifestDefinition, CdmObject, CdmObjectDefinition, \
         CdmObjectReference, CdmParameterDefinition, CdmTypeAttributeDefinition
-    from cdm.utilities import EventCallback
     from cdm.resolvedmodel import ResolvedTraitSet
+    from cdm.utilities import EventCallback, TelemetryClient
 
     TObject = TypeVar('TObject', bound=CdmObject)
     TObjectRef = TypeVar('TObjectRef', bound=CdmObjectReference)
@@ -72,6 +72,9 @@ class CdmCorpusDefinition:
         # the app ID, optional property.
         self.app_id = None  # type: Optional[str]
 
+        # The client for ingesting telemetry.
+        self.telemetry_client = None  # type: Optional[TelemetryClient]
+
         # --- internal ---
 
         # whether we are currently performing a resolution or not.
@@ -107,7 +110,7 @@ class CdmCorpusDefinition:
         return self._persistence
 
     def _add_document_objects(self, folder: 'CdmFolderDefinition', doc: 'CdmDocumentDefinition'):
-        path = self.storage.create_absolute_corpus_path('{}{}'.format(doc._folder_path, doc.name), doc).lower()
+        path = self.storage.create_absolute_corpus_path('{}{}'.format(doc._folder_path, doc.name), doc)
         self._document_library._add_document_path(path, folder, doc)
 
         return doc
@@ -116,41 +119,42 @@ class CdmCorpusDefinition:
         """Calculate the entity to entity relationships for all the entities present in the folder and its sub folder."""
         with logger._enter_scope(self._TAG, self.ctx, self.calculate_entity_graph_async.__name__):
             for entity_dec in curr_manifest.entities:
-                entity_path = await curr_manifest._get_entity_path_from_declaration(entity_dec, curr_manifest)
-                entity = await self.fetch_object_async(entity_path)  # type: Optional[CdmEntityDefinition]
+                with logger._enter_scope(self._TAG, self.ctx, self.calculate_entity_graph_async.__name__ + 'perEntity'):
+                    entity_path = await curr_manifest._get_entity_path_from_declaration(entity_dec, curr_manifest)
+                    entity = await self.fetch_object_async(entity_path)  # type: Optional[CdmEntityDefinition]
 
-                if entity is None:
-                    continue
+                    if entity is None:
+                        continue
 
-                res_entity = None  # type: Optional[CdmEntityDefinition]
-                # make options wrt this entity document and "relational" always
-                res_opt = ResolveOptions(entity.in_document,
-                                         AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'}))
+                    res_entity = None  # type: Optional[CdmEntityDefinition]
+                    # make options wrt this entity document and "relational" always
+                    res_opt = ResolveOptions(entity.in_document,
+                                            AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'}))
 
-                is_resolved_entity = entity.attribute_context is not None
+                    is_resolved_entity = entity.attribute_context is not None
 
-                # only create a resolved entity if the entity passed in was not a resolved entity
-                if not is_resolved_entity:
-                    # first get the resolved entity so that all of the references are present
-                    res_entity = await entity.create_resolved_entity_async('wrtSelf_' + entity.entity_name, res_opt)
-                else:
-                    res_entity = entity
+                    # only create a resolved entity if the entity passed in was not a resolved entity
+                    if not is_resolved_entity:
+                        # first get the resolved entity so that all of the references are present
+                        res_entity = await entity.create_resolved_entity_async('wrtSelf_' + entity.entity_name, res_opt)
+                    else:
+                        res_entity = entity
 
-                # find outgoing entity relationships using attribute context
-                outgoing_relationships = self._find_outgoing_relationships(
-                    res_opt, res_entity, res_entity.attribute_context, is_resolved_entity)  # type: List[CdmE2ERelationship]
+                    # find outgoing entity relationships using attribute context
+                    outgoing_relationships = self._find_outgoing_relationships(
+                        res_opt, res_entity, res_entity.attribute_context, is_resolved_entity)  # type: List[CdmE2ERelationship]
 
-                self._outgoing_relationships[entity] = outgoing_relationships
+                    self._outgoing_relationships[entity] = outgoing_relationships
 
-                # flip outgoing entity relationships list to get incoming relationships map
-                if outgoing_relationships:
-                    for rel in outgoing_relationships:
-                        target_ent = await self.fetch_object_async(rel.to_entity, curr_manifest)
-                        self._incoming_relationships[target_ent].append(rel)
+                    # flip outgoing entity relationships list to get incoming relationships map
+                    if outgoing_relationships:
+                        for rel in outgoing_relationships:
+                            target_ent = await self.fetch_object_async(rel.to_entity, curr_manifest)
+                            self._incoming_relationships[target_ent].append(rel)
 
-                # delete the resolved entity if we created one here
-                if not is_resolved_entity:
-                    res_entity.in_document.folder.documents.remove(res_entity.in_document.name)
+                    # delete the resolved entity if we created one here
+                    if not is_resolved_entity:
+                        res_entity.in_document.folder.documents.remove(res_entity.in_document.name)
 
             for sub_manifest_def in curr_manifest.sub_manifests:
                 sub_manifest = await self.fetch_object_async(sub_manifest_def.definition,
@@ -282,15 +286,6 @@ class CdmCorpusDefinition:
             self._root_manifest = await self.fetch_object_async(corpus_path)
             return self._root_manifest
         return None
-
-    def _find_missing_imports_from_document(self, doc: 'CdmDocumentDefinition') -> None:
-        """Find import objects for the document that have not been loaded yet"""
-        if doc.imports:
-            for imp in doc.imports:
-                if not imp._document:
-                    # no document set for this import, see if it is already loaded into the corpus
-                    path = self.storage.create_absolute_corpus_path(imp.corpus_path, doc)
-                    self._document_library._add_to_docs_not_loaded(path)
 
     def _get_attribute_name(self, named_reference):
         return named_reference[named_reference.rfind('/') + 1:]
@@ -886,38 +881,40 @@ class CdmCorpusDefinition:
 
         return None
 
-    async def _load_imports_async(self, doc: 'CdmDocumentDefinition', res_opt: 'ResolveOptions') -> None:
-        docs_now_loaded = set()  # type: Set[CdmDocumentDefinition]
-        docs_not_loaded = self._document_library._list_docs_not_loaded()
-
-        if not docs_not_loaded:
+    async def _load_docs(self, doc_path: str, res_opt: 'ResolveOptions') -> None:
+        """Loads a document and its imports recursively."""
+        if not self._document_library._need_to_load_document(doc_path):
             return
 
-        async def load_docs(missing: str) -> None:
-            if self._document_library._need_to_load_document(missing, docs_now_loaded):
-                self._document_library._concurrent_read_lock.acquire()
-                # load it
-                new_doc = await self._load_folder_or_document(missing, False, res_opt)  # type: CdmDocumentDefinition
+        self._document_library._concurrent_read_lock.acquire()
+        
+        # load it
+        document = await self._load_folder_or_document(doc_path, False, res_opt)  # type: CdmDocumentDefinition
 
-                if self._document_library._mark_document_as_loaded_or_failed(new_doc, missing, docs_now_loaded):
-                    logger.info(self.ctx, self._TAG, self._load_imports_async.__name__, doc.at_corpus_path,
-                                'resolved import for \'{}\''.format(new_doc.name))
-                else:
-                    logger.warning(self.ctx, self._TAG, CdmCorpusDefinition._load_imports_async.__name__, doc.at_corpus_path, CdmLogCode.WARN_RESOLVE_IMPORT_FAILED, missing, doc.at_corpus_path)
-                self._document_library._concurrent_read_lock.release()
+        if self._document_library._mark_document_as_loaded_or_failed(doc_path, document):
+            logger.info(self.ctx, self._TAG, self._load_imports_async.__name__, document.at_corpus_path,
+                        'resolved import for \'{}\''.format(document.name))
+        else:
+            logger.warning(self.ctx, self._TAG, CdmCorpusDefinition._load_imports_async.__name__, None, CdmLogCode.WARN_RESOLVE_IMPORT_FAILED, doc_path, doc_path)
+        self._document_library._concurrent_read_lock.release()
+        
+        await self._load_imports_async(document, res_opt)
 
-        task_list = [load_docs(missing) for missing in docs_not_loaded]
+    async def _load_imports_async(self, doc: 'CdmDocumentDefinition', res_opt: 'ResolveOptions') -> None:
+        """Recursively load all imports of a given document."""
+        if not doc:
+            return
+
+        task_list = []
+
+        for imp in doc.imports:
+            if not imp._document:
+                path = self.storage.create_absolute_corpus_path(imp.corpus_path, doc)
+                load_task = self._load_docs(path, res_opt)
+                task_list.append(load_task)
 
         # wait for all of the missing docs to finish loading
         await asyncio.gather(*task_list)
-
-        # now that we've loaded new docs, find imports from them that need loading
-        for loaded_doc in docs_now_loaded:
-            self._find_missing_imports_from_document(loaded_doc)
-
-        # repeat self process for the imports of the imports
-        import_task_list = [self._load_imports_async(loaded_doc, res_opt) for loaded_doc in docs_now_loaded]
-        await asyncio.gather(*import_task_list)
 
     def make_object(self, of_type: 'CdmObjectType', name_or_ref: str = None,
                     simple_name_ref: bool = False) -> 'TObject':
@@ -962,8 +959,7 @@ class CdmCorpusDefinition:
 
         self._symbol_definitions[symbol_def].append(in_doc)
 
-    def _remove_document_objects(self, folder: 'CdmFolderDefinition', doc_def: 'CdmDocumentDefinition') -> None:
-        doc = cast('CdmDocumentDefinition', doc_def)
+    def _remove_document_objects(self, folder: 'CdmFolderDefinition', doc: 'CdmDocumentDefinition') -> None:
         # the field defintion_wrt_tag has been removed
         # Don't worry about defintion_wrt_tag because it uses the doc ID that won't get re-used in this session unless
         # there are more than 4 billion objects every symbol defined in this document is pointing at the document, so
@@ -971,7 +967,7 @@ class CdmCorpusDefinition:
         self._remove_object_definitions(doc)
 
         # Remove from path lookup, folder lookup and global list of documents.
-        path = self.storage.create_absolute_corpus_path(doc._folder_path + doc.name, doc).lower()
+        path = self.storage.create_absolute_corpus_path(doc._folder_path + doc.name, doc)
         self._document_library._remove_document_path(path, folder, doc)
 
     def _remove_object_definitions(self, doc: CdmDocumentDefinition) -> None:
@@ -1008,8 +1004,6 @@ class CdmCorpusDefinition:
 
     async def _resolve_imports_async(self, doc: 'CdmDocumentDefinition', res_opt: 'ResolveOptions') -> None:
         """takes a callback that askes for promise to do URI resolution."""
-        # find imports for this doc
-        self._find_missing_imports_from_document(doc)
         # load imports (and imports of imports)
         await self._load_imports_async(doc, res_opt)
         # now that everything is loaded, attach import docs to this doc's import list
@@ -1426,52 +1420,52 @@ class CdmCorpusDefinition:
         """Return last modified time of the file where the object at corpus path can be found."""
         curr_object = await self.fetch_object_async(corpus_path, obj, True)
         if curr_object:
-            return await self._fetch_last_modified_time_from_object_async(curr_object)
+            return await self._get_last_modified_time_from_object_async(curr_object)
         return None
 
-    async def _fetch_last_modified_time_from_object_async(self, curr_object: 'CdmObject') -> datetime:
+    async def _get_last_modified_time_from_object_async(self, curr_object: 'CdmObject') -> datetime:
         """Return last modified time of the file where the input object can be found."""
         if isinstance(curr_object, CdmContainerDefinition):
             adapter = self.storage.fetch_adapter(cast('CdmContainerDefinition', curr_object)._namespace)
             if not adapter:
-                logger.error(self.ctx, self._TAG, self._fetch_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
+                logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
                              CdmLogCode.ERR_ADAPTER_NOT_FOUND, cast('CdmContainerDefinition', curr_object).namespace)
                 return None
             # Remove namespace from path
             path_tuple = StorageUtils.split_namespace_path(curr_object.at_corpus_path)
             if not path_tuple:
-                logger.error(self.ctx, self._TAG, self._fetch_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
+                logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
                              CdmLogCode.ERR_STORAGE_NULL_CORPUS_PATH)
                 return None
             try:
                 return await adapter.compute_last_modified_time_async(path_tuple[1])
             except Exception as e:
-                logger.error(self.ctx, self._TAG, self._fetch_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
+                logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_object_async.__name__, curr_object.at_corpus_path,
                              CdmLogCode.ERR_PARTITION_FILE_MOD_TIME_FAILURE, path_tuple[1], e)
                 return None
         else:
-            return await self._fetch_last_modified_time_from_object_async(curr_object.in_document)
+            return await self._get_last_modified_time_from_object_async(curr_object.in_document)
 
-    async def _fetch_last_modified_time_from_partition_path_async(self, corpus_path: str) -> datetime:
+    async def _get_last_modified_time_from_partition_path_async(self, corpus_path: str) -> datetime:
         """Return last modified time of a partition object."""
 
         # We do not want to load partitions from file, just check the modified times.
         path_tuple = StorageUtils.split_namespace_path(corpus_path)
         if not path_tuple:
-            logger.error(self.ctx, self._TAG, self._fetch_last_modified_time_from_partition_path_async.__name__, corpus_path,
+            logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_partition_path_async.__name__, corpus_path,
                          CdmLogCode.ERR_PATH_NULL_OBJECT_PATH)
             return None
         namespace = path_tuple[0]
         if namespace:
             adapter = self.storage.fetch_adapter(namespace)
             if not adapter:
-                logger.error(self.ctx, self._TAG, self._fetch_last_modified_time_from_partition_path_async.__name__, corpus_path,
+                logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_partition_path_async.__name__, corpus_path,
                              CdmLogCode.ERR_ADAPTER_NOT_FOUND, namespace)
                 return None
             try:
                 return await adapter.compute_last_modified_time_async(path_tuple[1])
             except Exception as e:
-                logger.error(self.ctx, self._TAG, self._fetch_last_modified_time_from_partition_path_async.__name__, corpus_path,
+                logger.error(self.ctx, self._TAG, self._get_last_modified_time_from_partition_path_async.__name__, corpus_path,
                              CdmLogCode.ERR_PARTITION_FILE_MOD_TIME_FAILURE, path_tuple, e)
         return None
 
@@ -1561,7 +1555,16 @@ class CdmCorpusDefinition:
                                  CdmLogCode.ERR_VALDN_INVALID_DOC, object_path)
                     return None
 
+            # Import here to avoid circular import
+            from .cdm_entity_def import CdmEntityDefinition
+            from .cdm_manifest_def import CdmManifestDefinition
+
             if document_path == object_path:
+                # Log the telemetry if the document is a manifest
+                if isinstance(obj, CdmManifestDefinition):
+                    logger._ingest_manifest_telemetry(obj, self.ctx, CdmCorpusDefinition.__name__,
+                                                      self.fetch_object_async.__name__, obj.at_corpus_path)
+
                 return obj
 
             if document_name_index == -1:
@@ -1575,6 +1578,16 @@ class CdmCorpusDefinition:
             if not result:
                 logger.error(self.ctx, self._TAG, self.fetch_object_async.__name__, obj.at_corpus_path, CdmLogCode.ERR_DOC_SYMBOL_NOT_FOUND,
                              remaining_object_path, obj.at_corpus_path)
+            else:
+                # Log the telemetry if the object is a manifest
+                if isinstance(result, CdmManifestDefinition):
+                    logger._ingest_manifest_telemetry(result, self.ctx, CdmCorpusDefinition.__name__,
+                                                      self.fetch_object_async.__name__, obj.at_corpus_path)
+
+                # Log the telemetry if the object is an entity
+                elif isinstance(result, CdmEntityDefinition):
+                    logger._ingest_entity_telemetry(result, self.ctx, CdmCorpusDefinition.__name__,
+                                                    self.fetch_object_async.__name__, obj.at_corpus_path)
 
             return result
 

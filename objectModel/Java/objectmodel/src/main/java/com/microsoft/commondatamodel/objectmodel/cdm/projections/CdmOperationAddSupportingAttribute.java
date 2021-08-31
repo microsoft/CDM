@@ -35,11 +35,17 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationAddSupportingAttribute copy = new CdmOperationAddSupportingAttribute(this.getCtx());
-        if (this.supportingAttribute != null) {
-            copy.supportingAttribute = (CdmTypeAttributeDefinition) this.supportingAttribute.copy();
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
         }
 
+        CdmOperationAddSupportingAttribute copy = host == null ? new CdmOperationAddSupportingAttribute(this.getCtx()) : (CdmOperationAddSupportingAttribute)host;
+
+        copy.setSupportingAttribute(
+                this.getSupportingAttribute() != null
+                        ? (CdmTypeAttributeDefinition)this.getSupportingAttribute().copy(resOpt) : null);
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

@@ -3,10 +3,13 @@
 
 from typing import Union, List, Optional, TYPE_CHECKING
 
-from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmAttributeItem, CdmObjectReference, \
-    CdmTraitReference, CdmTraitGroupReference, CdmCollection
-from cdm.utilities import JObject, IdentifierRef, ResolveOptions, CopyOptions
+from cdm.enums import CdmLogCode
+from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
+from cdm.objectmodel import CdmArgumentValue, CdmAttribute, CdmCorpusContext, CdmAttributeItem, \
+    CdmObjectReference, CdmTraitReference, CdmTraitGroupReference, CdmCollection
+from cdm.utilities import logger, JObject, IdentifierRef, ResolveOptions, CopyOptions
 
+from .types.projections.cardinality_settings_data import CardinalitySettingsData
 from .attribute_group_reference_persistence import AttributeGroupReferencePersistence
 from .data_type_reference_persistence import DataTypeReferencePersistence
 from .entity_attribute_persistence import EntityAttributePersistence
@@ -126,12 +129,14 @@ def copy_identifier_ref(obj_ref: CdmObjectReference, res_opt: ResolveOptions, op
 
     return ident_ref
 
+
 def _property_from_data_to_string(value) -> Optional[str]:
     if value is not None and value != '' and isinstance(value, str):
         return value
     if isinstance(value, int):
         return str(value)
     return None
+
 
 def _property_from_data_to_int(value) -> Optional[int]:
     if value is None or isinstance(value, int):
@@ -144,6 +149,7 @@ def _property_from_data_to_int(value) -> Optional[int]:
             pass
     return None
 
+
 def _property_from_data_to_bool(value) -> Optional[bool]:
     if value is None or isinstance(value, bool):
         return value
@@ -153,3 +159,30 @@ def _property_from_data_to_bool(value) -> Optional[bool]:
         elif value in ['False', 'false']:
             return False
     return None
+
+
+def cardinality_settings_from_data(data: CardinalitySettings, attribute: CdmAttribute) -> CardinalitySettings:
+    """Converts cardinality data into a CardinalitySettings object"""
+    if data is None:
+        return None
+
+    cardinality = CardinalitySettings(attribute)
+    cardinality.minimum = data.get('minimum')
+    cardinality.maximum = data.get('maximum')
+
+    if cardinality.minimum is not None and cardinality.maximum is not None:
+        return cardinality
+    else:
+        return None
+
+
+def cardinality_settings_to_data(instance: CardinalitySettings):
+    """Converts CardinalitySettings into a CardinalitySettingsData object"""
+    if instance is None or instance.minimum is None or instance.maximum is None:
+        return None
+
+    data = CardinalitySettingsData()
+    data.minimum = instance.minimum
+    data.maximum = instance.maximum
+
+    return data

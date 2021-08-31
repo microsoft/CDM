@@ -27,7 +27,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionAddType')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionAddTypeTest')
 
     @async_test
     async def test_entity_attribute_proj_using_object_model(self):
@@ -344,8 +344,8 @@ class ProjectionAddTypeTest(unittest.TestCase):
         # Merge ["emailId, "phoneId, "socialId"] into "contactId", type attribute: "contactType",
         # rename ["contactId", "isPrimary"] as "new_{m}", include ["contactId", "new_isPrimary", "contactType"]
         self.assertEqual(3, len(resolved_entity.attributes))
-        self.assertEqual('new_isPrimary', resolved_entity.attributes[0].name)
-        self.assertEqual('new_contactId', resolved_entity.attributes[1].name)
+        self.assertEqual('new_contactId', resolved_entity.attributes[0].name)
+        self.assertEqual('new_isPrimary', resolved_entity.attributes[1].name)
         self.assertEqual('contactType', resolved_entity.attributes[2].name)
         self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[2].applied_traits[4].named_reference)
 

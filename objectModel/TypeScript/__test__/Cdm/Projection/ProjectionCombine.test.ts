@@ -35,7 +35,7 @@ describe('Cdm/Projection/ProjectionCombineTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionCombine';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionCombineTest';
 
     /**
      * Test Entity Extends with a Resolution Guidance that selects 'one'

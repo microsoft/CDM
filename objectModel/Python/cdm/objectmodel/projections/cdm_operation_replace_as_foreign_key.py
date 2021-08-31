@@ -34,10 +34,15 @@ class CdmOperationReplaceAsForeignKey(CdmOperationBase):
         self.type = CdmOperationType.REPLACE_AS_FOREIGN_KEY  # type: CdmOperationType
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationReplaceAsForeignKey'] = None) -> 'CdmOperationReplaceAsForeignKey':
-        copy = CdmOperationReplaceAsForeignKey(self.ctx)
-        copy.reference = self.reference
-        copy.replace_with = self.replace_with.copy()
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
+        copy = CdmOperationReplaceAsForeignKey(self.ctx) if not host else host
+
+        copy.replace_with = self.replace_with.copy(res_opt) if self.replace_with else None
+        copy.reference = self.reference
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:

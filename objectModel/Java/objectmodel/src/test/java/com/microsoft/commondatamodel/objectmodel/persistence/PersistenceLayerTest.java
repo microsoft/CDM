@@ -136,7 +136,7 @@ public class PersistenceLayerTest {
    */
   @Test
   public void testModelJsonTypeAttributePersistence() throws InterruptedException, ExecutionException {
-    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, "TestModelJsonTypeAttributePersistence", null);
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, "TestModelJsonTypeAttributePersistence");
 
     // we need to create a second adapter to the output folder to fool the OM into thinking it's different
     // this is because there is a bug currently that prevents us from saving and then loading a model.json
@@ -179,7 +179,7 @@ public class PersistenceLayerTest {
    */
   @Test
   public void testMissingPersistenceFormat() throws InterruptedException{
-    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, "TestMissingPersistenceFormat", null);
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, "TestMissingPersistenceFormat");
     CdmFolderDefinition folder = corpus.getStorage().fetchRootFolder(corpus.getStorage().getDefaultNamespace());
 
     CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>makeObject(CdmObjectType.ManifestDef, "someManifest");
