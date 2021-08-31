@@ -34,14 +34,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            CdmOperationCombineAttributes copy = new CdmOperationCombineAttributes(this.Ctx);
-            copy.Select = null;
+            if (resOpt == null)
+            {
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var copy = host == null ? new CdmOperationCombineAttributes(this.Ctx) : host as CdmOperationCombineAttributes;
+
             if (this.Select != null)
             {
-                copy.Select = new List<string>();
-                copy.Select.AddRange(this.Select);
+                copy.Select = new List<string>(this.Select);
             }
-            copy.MergeInto = (this.MergeInto != null) ? this.MergeInto.Copy(resOpt, host) as CdmTypeAttributeDefinition : null;
+            copy.MergeInto = this.MergeInto?.Copy(resOpt) as CdmTypeAttributeDefinition;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 

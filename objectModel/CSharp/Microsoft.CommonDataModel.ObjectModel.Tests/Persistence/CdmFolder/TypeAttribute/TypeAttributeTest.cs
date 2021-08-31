@@ -395,6 +395,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.IsTrue(qTraitNamedReferences.Contains("means.content.text.JSON"));
         }
 
+        /// <summary>
+        /// Testing that cardinality settings are loaded and saved correctly
+        /// </summary>
+        [TestMethod]
+        public async Task TestCardinalityPersistence()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestCardinalityPersistence", null);
+
+            // test FromData
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/someEntity.cdm.json/someEntity");
+            var attribute = (CdmTypeAttributeDefinition)entity.Attributes[0];
+
+            Assert.IsNotNull(attribute.Cardinality);
+            Assert.AreEqual(attribute.Cardinality.Minimum, "0");
+            Assert.AreEqual(attribute.Cardinality.Maximum, "1");
+
+            // test ToData
+            var attributeData = TypeAttributePersistence.ToData(attribute, new ResolveOptions(entity.InDocument), new CopyOptions());
+            Assert.IsNotNull(attributeData.Cardinality);
+            Assert.IsNotNull(attributeData.Cardinality.Minimum, "0");
+            Assert.IsNotNull(attributeData.Cardinality.Maximum, "1");
+        }
+
         private static HashSet<string> FetchTraitNamedReferences(CdmTraitCollection traits)
         {
             HashSet<string> namedReferences = new HashSet<string>();

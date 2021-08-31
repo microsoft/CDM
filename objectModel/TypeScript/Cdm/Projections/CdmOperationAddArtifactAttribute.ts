@@ -46,15 +46,9 @@ export class CdmOperationAddArtifactAttribute extends CdmOperationBase {
             resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
-        let copy: CdmOperationAddArtifactAttribute;
-        if (!host) {
-            copy = new CdmOperationAddArtifactAttribute(this.ctx);
-        } else {
-            copy = host as CdmOperationAddArtifactAttribute;
-            copy.ctx = this.ctx;    
-        }
+        const copy: CdmOperationAddArtifactAttribute = !host ? new CdmOperationAddArtifactAttribute(this.ctx) : host as CdmOperationAddArtifactAttribute;
 
-        copy.newAttribute = this.newAttribute.copy(resOpt) as CdmAttributeItem;
+        copy.newAttribute = this.newAttribute ? this.newAttribute.copy(resOpt) as CdmAttributeItem : undefined;
         copy.insertAtTop = this.insertAtTop;
         
         this.copyProj(resOpt, copy);

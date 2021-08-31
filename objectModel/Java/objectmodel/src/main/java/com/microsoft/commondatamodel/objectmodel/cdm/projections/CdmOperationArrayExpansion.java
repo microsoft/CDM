@@ -54,9 +54,16 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationArrayExpansion copy = new CdmOperationArrayExpansion(this.getCtx());
-        copy.startOrdinal = this.startOrdinal;
-        copy.endOrdinal = this.endOrdinal;
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationArrayExpansion copy = host == null ? new CdmOperationArrayExpansion(this.getCtx()) : (CdmOperationArrayExpansion)host;
+
+        copy.setStartOrdinal(this.getStartOrdinal());
+        copy.setEndOrdinal(this.getEndOrdinal());
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

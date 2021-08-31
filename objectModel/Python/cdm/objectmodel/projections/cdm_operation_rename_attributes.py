@@ -33,11 +33,17 @@ class CdmOperationRenameAttributes(CdmOperationBase):
         self.apply_to = None  # type: List[str]
         self.type = CdmOperationType.RENAME_ATTRIBUTES  # type: CdmOperationType
 
-    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationrename_attributes'] = None) -> 'CdmOperationrename_attributes':
-        copy = CdmOperationRenameAttributes(self.ctx)
-        copy.rename_format = self.rename_format
+    def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationRenameAttributes'] = None) -> 'CdmOperationRenameAttributes':
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
+
+        copy = CdmOperationRenameAttributes(self.ctx) if not host else host
+
         if self.apply_to is not None:
-            copy.apply_to = self.apply_to[:]
+            copy.apply_to = self.apply_to.copy()
+        copy.rename_format = self.rename_format
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:

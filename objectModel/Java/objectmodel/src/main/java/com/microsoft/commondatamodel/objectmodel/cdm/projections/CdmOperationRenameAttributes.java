@@ -38,14 +38,18 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        List<String> applyTo = null;
-        if (this.applyTo != null) {
-            applyTo = new ArrayList<String>(this.applyTo);
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
         }
 
-        CdmOperationRenameAttributes copy = new CdmOperationRenameAttributes(this.getCtx());
+        CdmOperationRenameAttributes copy = host == null ? new CdmOperationRenameAttributes(this.getCtx()) : (CdmOperationRenameAttributes)host;
+
+        if (this.applyTo != null) {
+            copy.setApplyTo(new ArrayList<String>(this.applyTo));
+        }
         copy.renameFormat = this.renameFormat;
-        copy.applyTo = applyTo;
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

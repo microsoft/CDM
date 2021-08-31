@@ -42,6 +42,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal CdmOperationBase CopyProj(ResolveOptions resOpt, CdmOperationBase copy)
         {
+            copy.Type = this.Type;
             copy.Index = this.Index;
             copy.Condition = this.Condition;
             copy.SourceInput = this.SourceInput;

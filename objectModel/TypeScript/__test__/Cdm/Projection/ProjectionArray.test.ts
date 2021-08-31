@@ -18,7 +18,7 @@ describe('Cdm/Projection/TestProjectionArray', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionArray';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionArrayTest';
 
     /**
      * All possible combinations of the different resolution directives

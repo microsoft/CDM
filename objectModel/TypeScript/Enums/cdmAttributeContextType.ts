@@ -5,6 +5,7 @@ export enum cdmAttributeContextType {
     entity,
     entityReferenceExtends,
     attributeDefinition,
+    attributeExcluded,
     attributeGroup,
     generatedSet,
     generatedRound,

@@ -13,23 +13,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     /// </summary>
     internal class DocumentLibrary
     {
-        internal IDictionary<string, byte> docsNotLoaded;
+        internal List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>> allDocuments;
+        internal ConcurrentSemaphore concurrentReadLock;
         internal IDictionary<string, byte> docsCurrentlyLoading;
         internal IDictionary<CdmDocumentDefinition, byte> docsNotIndexed;
         internal IDictionary<string, byte> docsNotFound;
-        internal List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>> allDocuments;
-        internal IDictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup;
-        internal ConcurrentSemaphore concurrentReadLock;
+        private IDictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup;
 
         internal DocumentLibrary()
         {
             this.allDocuments = new List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>>();
+            this.concurrentReadLock = new ConcurrentSemaphore();
             this.pathLookup = new Dictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>>();
-            this.docsNotLoaded = new Dictionary<string, byte>();
-            this.docsCurrentlyLoading = new Dictionary<string, byte>();
             this.docsNotFound = new Dictionary<string, byte>();
             this.docsNotIndexed = new Dictionary<CdmDocumentDefinition, byte>();
-            this.concurrentReadLock = new ConcurrentSemaphore();
+            this.docsCurrentlyLoading = new Dictionary<string, byte>();
         }
 
         /// <summary>
@@ -46,6 +44,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     this.allDocuments.Add(Tuple.Create(folder, doc));
                     this.pathLookup.Add(path, Tuple.Create(folder, doc));
+                    folder.DocumentLookup.Add(doc.Name, doc);
                 }
             }
         }
@@ -88,17 +87,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Returns a list of all the documents that are not loaded.
-        /// </summary>
-        internal List<String> ListDocsNotLoaded()
-        {
-            lock (this.allDocuments)
-            {
-                return new List<String>(this.docsNotLoaded.Keys);
-            }
-        }
-
-        /// <summary>
         /// Returns a list of all the documents in the corpus.
         /// </summary>
         internal List<CdmDocumentDefinition> ListAllDocuments()
@@ -115,26 +103,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Adds a document to the list of documents that are not loaded if its path does not exist in the path lookup.
-        /// </summary>
-        /// <param name="path">The document path.</param>
-        internal void AddToDocsNotLoaded(string path)
-        {
-            lock (this.allDocuments)
-            {
-                if (!this.docsNotFound.ContainsKey(path))
-                {
-                    this.pathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
-                    // If the imports were not indexed yet there might be documents imported that weren't loaded.
-                    if (lookup == null || (!lookup.Item2.ImportsIndexed && !lookup.Item2.CurrentlyIndexing))
-                    {
-                        this.docsNotLoaded[path] = 1;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Fetches a document from the path lookup.
         /// </summary>
         /// <param name="path">The document path.</param>
@@ -145,7 +113,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 if (!this.docsNotFound.ContainsKey(path))
                 {
-                    this.pathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
+                    this.pathLookup.TryGetValue(path, out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
                     if (lookup != null)
                     {
                         return lookup.Item2;
@@ -158,59 +126,43 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Sets a document's status to loading if the document needs to be loaded.
         /// </summary>
-        /// <param name="docName">The document name.</param>
+        /// <param name="docPath">The document path.</param>
         /// <returns>Whether a document needs to be loaded.</returns>
-        internal bool NeedToLoadDocument(string docName, ConcurrentDictionary<CdmDocumentDefinition, byte> docsNowLoaded)
+        internal bool NeedToLoadDocument(string docPath)
         {
-            bool needToLoad = false;
-            CdmDocumentDefinition doc = null;
-
             lock (this.allDocuments)
             {
-                if (this.docsNotLoaded.ContainsKey(docName) && !this.docsNotFound.ContainsKey(docName) && !this.docsCurrentlyLoading.ContainsKey(docName))
+                this.pathLookup.TryGetValue(docPath, out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
+                var document = lookup?.Item2;
+
+                // first check if the document was not found or is currently loading already.
+                // if the document was loaded previously, check if its imports were not indexed and it's not being indexed currently.
+                var needToLoad = !this.docsNotFound.ContainsKey(docPath) && !this.docsCurrentlyLoading.ContainsKey(docPath) && (document == null || (!document.ImportsIndexed && !document.CurrentlyIndexing));
+
+                if (needToLoad)
                 {
-                    // Set status to loading.
-                    this.docsNotLoaded.Remove(docName);
+                    docsCurrentlyLoading.Add(docPath, 1);
+                }
 
-                    // The document was loaded already, skip it.
-                    if (this.pathLookup.TryGetValue(docName.ToLower(), out var lookup))
-                    {
-                        doc = lookup.Item2;
-                    }
-                    else
-                    {
-                        this.docsCurrentlyLoading.Add(docName, 1);
-                        needToLoad = true;
-                    }
-                }                
+                return needToLoad;
             }
-
-            if (doc != null)
-            {
-                MarkDocumentAsLoadedOrFailed(doc, docName, docsNowLoaded);
-            }
-
-            return needToLoad;
         }
 
         /// <summary>
         /// Marks a document for indexing if it has loaded successfully, or adds it to the list of documents not found if it failed to load.
         /// </summary>
+        /// <param name="docPath">The document path.</param>
         /// <param name="doc">The document that was loaded.</param>
-        /// <param name="docName">The document name.</param>
-        /// <param name="docsNowLoaded">The dictionary of documents that are now loaded.</param>
         /// <returns>Returns true if the document has loaded, false if it failed to load.</returns>
-        internal bool MarkDocumentAsLoadedOrFailed(CdmDocumentDefinition doc, string docName, ConcurrentDictionary<CdmDocumentDefinition, byte> docsNowLoaded)
+        internal bool MarkDocumentAsLoadedOrFailed(string docPath, CdmDocumentDefinition doc)
         {
             lock (this.allDocuments)
             {
                 // Doc is no longer loading.
-                this.docsCurrentlyLoading.Remove(docName);
+                this.docsCurrentlyLoading.Remove(docPath);
 
                 if (doc != null)
                 {
-                    // Doc is now loaded.
-                    docsNowLoaded.TryAdd(doc, 1);
                     // Doc needs to be indexed.
                     this.docsNotIndexed.Add(doc, 1);
                     doc.CurrentlyIndexing = true;
@@ -220,7 +172,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 else
                 {
                     // The doc failed to load, so set doc as not found.
-                    this.docsNotFound.Add(docName, 1);
+                    this.docsNotFound.Add(docPath, 1);
 
                     return false;
                 }

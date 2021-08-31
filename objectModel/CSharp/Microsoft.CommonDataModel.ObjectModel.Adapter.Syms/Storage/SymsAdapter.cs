@@ -18,7 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
     public class SymsAdapter : NetworkAdapter
     {
-        private const double SymsDefaultTimeout = 30000; 
+        private const double SymsDefaultTimeout = 30000;
         private const double SymsMaximumTimeout = 100000;
         private const string ApiVersion = "api-version=2021-04-01";
         private const string DatabasesManifest = "databases.manifest.cdm.json";
@@ -61,7 +61,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The user-defined token provider.
         /// </summary>
         public TokenProvider TokenProvider { get; set; }
-        
+
         /// <summary>
         /// The user-defined token provider ( Async ).
         /// </summary>
@@ -155,10 +155,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public override async Task WriteAsync(string corpusPath, string data)
         {
-            string adapterpath = this.CreateAdapterPath(corpusPath);
-            string url = $"https://{this.Endpoint}/databases/ExecuteChange?{ApiVersion}";
-
-            var request = await this.BuildRequest($"{url}", HttpMethod.Post, data, "application/json");
+            string url = this.CreateAdapterPath(corpusPath);
+            CdmHttpRequest request;
+            if (data == null)
+            {
+                request = await this.BuildRequest($"{url}", HttpMethod.Delete, data, "application/json");
+            }
+            else
+            {
+                request = await this.BuildRequest($"{url}", HttpMethod.Put, data, "application/json");
+            }
             await this.ExecuteRequest(request);
         }
 
@@ -170,12 +176,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 if (formattedCorpusPath.Equals("/"))
                 {
-                    return $"https://{this.Endpoint}/databases?{ApiVersion}";
+                    return $"https://{this.Endpoint}?{ApiVersion}";
                 }
                 if (formattedCorpusPath.Equals($"/{DatabasesManifest}")
                    || formattedCorpusPath.Equals(DatabasesManifest))
                 {
-                    return $"https://{this.Endpoint}/databases?{ApiVersion}";
+                    return $"https://{this.Endpoint}?{ApiVersion}";
                 }
 
                 formattedCorpusPath = formattedCorpusPath.TrimStart('/');
@@ -186,33 +192,53 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     //paths[1] : filename
                     if (paths[1].EndsWith(".manifest.cdm.json"))
                     {
-                        return $"https://{this.Endpoint}/databases/{paths[0]}?{ApiVersion}";
+                        return $"https://{this.Endpoint}/{paths[0]}?{ApiVersion}";
                     }
                     else if (paths[1].EndsWith(".cdm.json"))
                     {
-                        return $"https://{this.Endpoint}/databases/{paths[0]}/tables/{paths[1].Replace(".cdm.json", "")}?{ApiVersion}";
+                        return $"https://{this.Endpoint}/{paths[0]}/tables/{paths[1].Replace(".cdm.json", "")}?{ApiVersion}";
                     }
                     else
                     {
                         throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path. Invalid corpus path : {corpusPath}. Supported file format are manifest.cdm.json and .cdm.json");
                     }
                 }
-                else if (paths.Length == 3) // 3 level is supported for relationship
+                else if (paths.Length == 3) // 3 level is supported for relationship and entitydefinitions
                 {
                     //paths[0] : database name
                     //paths[1] : filename
                     if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("relationships"))
                     {
-                        return $"https://{this.Endpoint}/databases/{paths[0]}/relationships?{ApiVersion}";
+                        return $"https://{this.Endpoint}/{paths[0]}/relationships?{ApiVersion}";
+                    }
+                    else if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("entitydefinition"))
+                    {
+                        return $"https://{this.Endpoint}/{paths[0]}/tables?{ApiVersion}";
                     }
                     else
                     {
-                        throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path {corpusPath}. Corpus path must be in following form: /<databasename>/<filename>.");
+                        throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path {corpusPath}. " +
+                            $"Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition.");
+                    }
+                }
+                else if (paths.Length == 4) // 4 level is supported for relationship
+                {
+                    //paths[0] : database name
+                    //paths[1] : filename
+                    if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("relationships"))
+                    {
+                        return $"https://{this.Endpoint}/{paths[0]}/relationships/{paths[3]}?{ApiVersion}";
+                    }
+                    else
+                    {
+                        throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path {corpusPath}." +
+                            $"Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>.");
                     }
                 }
                 else
                 {
-                    throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path {corpusPath}. Corpus path must be in following form: /<databasename>/<filename>.");
+                    throw new Exception($"Syms adapter: Failed to convert to adapter path from corpus path {corpusPath}. " +
+                        $"Corpus path must be in following form: /<databasename>/<filename>.manifest.cdm.json/relationships/<relationshipname>, /<databasename>/<filename>.manifest.cdm.json/relationships or /<databasename>/<filename>.manifest.cdm.json/entitydefinition>.");
                 }
             }
             return null;
@@ -289,7 +315,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 throw new Exception($"Syms adapter: Conversion from corpus path {folderCorpusPath} to adpater is failed. Path must be in format : <databasename>/.");
             }
 
-            var url = $"https://{this.Endpoint}/databases/{paths[0]}/tables?{ApiVersion}";
+            var url = $"https://{this.Endpoint}/{paths[0]}/tables?{ApiVersion}";
             string continuationToken = null;
             do
             {
@@ -459,12 +485,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <returns>The formatted workspaceurl.</returns>
         private string FormatEndpoint(string endpoint)
         {
-            if (!endpoint.StartsWith(@"https://"))
+            if (endpoint.StartsWith("https://"))
             {
-                endpoint = endpoint.Replace(@"https://", "");
+                endpoint = endpoint.Replace("https://", "");
             }
 
-            return endpoint;
+            return $"{endpoint.TrimEnd('/')}/databases";
         }
 
         private async Task<AuthenticationResult> GenerateBearerToken()

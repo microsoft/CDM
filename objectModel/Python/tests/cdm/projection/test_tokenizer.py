@@ -11,7 +11,7 @@ class TokenizerUnitTest(unittest.TestCase):
     """Unit test for Tokenizer functions"""
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestTokenizer')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'TokenizerTest')
 
     def test_get_expression_as_token_list(self):
         expr_and_expected_list = []

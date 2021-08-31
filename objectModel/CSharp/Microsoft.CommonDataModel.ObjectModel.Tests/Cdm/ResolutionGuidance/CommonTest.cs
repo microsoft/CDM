@@ -184,7 +184,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// </summary>
         protected static async Task SaveActualEntityAndValidateWithExpected(string expectedPath, CdmEntityDefinition actualResolvedEntityDef, bool updateExpectedOutput)
         {
-            await actualResolvedEntityDef.InDocument.SaveAsAsync(actualResolvedEntityDef.InDocument.Name);
+            await actualResolvedEntityDef.InDocument.SaveAsAsync(actualResolvedEntityDef.InDocument.Name, options: new CopyOptions() { IsTopLevelDocument = false });
             string actualPath = actualResolvedEntityDef.Ctx.Corpus.Storage.CorpusPathToAdapterPath(actualResolvedEntityDef.InDocument.AtCorpusPath);
             if (updateExpectedOutput)
             {

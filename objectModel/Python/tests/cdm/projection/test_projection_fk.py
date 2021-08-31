@@ -25,7 +25,7 @@ class ProjectionFKTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionFK')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionFKTest')
 
     @async_test
     async def test_entity_attribute(self):

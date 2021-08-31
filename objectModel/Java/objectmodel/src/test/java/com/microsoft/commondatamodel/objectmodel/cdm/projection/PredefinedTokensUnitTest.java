@@ -19,9 +19,9 @@ public class PredefinedTokensUnitTest {
      */
     private static final String TESTS_SUBPATH =
         new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testPredefinedTokens")
+            "Cdm"),
+            "Projection"),
+            "PredefinedTokensUnitTest")
             .toString();
 
     @Test

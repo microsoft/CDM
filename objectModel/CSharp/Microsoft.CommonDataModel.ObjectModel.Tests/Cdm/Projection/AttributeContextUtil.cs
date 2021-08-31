@@ -179,7 +179,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
                 AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
 
                 // Actual
-                string actualStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, "..", "ActualOutput", $"AttrCtx_{entityName}.txt"));
+                string actualStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, "..", TestHelper.GetTestActualOutputFolderName(), $"AttrCtx_{entityName}.txt"));
 
                 // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
                 string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity);

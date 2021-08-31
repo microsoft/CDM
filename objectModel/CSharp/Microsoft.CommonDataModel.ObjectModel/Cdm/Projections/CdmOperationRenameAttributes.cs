@@ -32,19 +32,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            List<string> applyTo = null;
-            
-            if (this.ApplyTo != null)
+            if (resOpt == null)
             {
-                applyTo = new List<string>();
-                applyTo.AddRange(this.ApplyTo);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            CdmOperationRenameAttributes copy = new CdmOperationRenameAttributes(this.Ctx)
+            var copy = host == null ? new CdmOperationRenameAttributes(this.Ctx) : host as CdmOperationRenameAttributes;
+
+            if (this.ApplyTo != null)
             {
-                RenameFormat = this.RenameFormat,
-                ApplyTo = applyTo
-            };
+                copy.ApplyTo = new List<string>(this.ApplyTo);
+            }
+            copy.RenameFormat = this.RenameFormat;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 

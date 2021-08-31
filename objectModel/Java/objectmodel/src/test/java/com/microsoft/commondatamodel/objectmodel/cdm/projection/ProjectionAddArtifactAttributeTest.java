@@ -39,8 +39,8 @@ public class ProjectionAddArtifactAttributeTest {
     /**
      * The path between TestDataPath and TestName
      */
-    private static final String TESTS_SUBPATH = new File(new File(new File("cdm"), "projection"),
-            "testProjectionAddArtifactAttribute").toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"),
+            "ProjectionAddArtifactAttributeTest").toString();
 
     /**
      * Test AddArtifactAttribute to add an entity attribute on an entity attribute.

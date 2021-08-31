@@ -288,13 +288,12 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             copy = CdmEntityDefinition(self.ctx, self.entity_name, None)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.entity_name = self.entity_name
             copy.attributes.clear()
 
-        copy.extends_entity = cast('CdmEntityReference', self.extends_entity.copy(res_opt)) if self.extends_entity else None
+        copy.extends_entity = self.extends_entity.copy(res_opt) if self.extends_entity else None
         copy.extends_entity_resolution_guidance = self.extends_entity_resolution_guidance.copy(res_opt) if self.extends_entity_resolution_guidance else None
-        copy.attribute_context = cast('CdmAttributeContext', self.attribute_context.copy(res_opt)) if self.attribute_context else None
+        copy.attribute_context = self.attribute_context.copy(res_opt) if self.attribute_context else None
 
         for att in self.attributes:
             copy.attributes.append(att.copy(res_opt))

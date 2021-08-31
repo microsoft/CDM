@@ -3,12 +3,12 @@
 
 package com.microsoft.commondatamodel.objectmodel.storage;
 
-import com.microsoft.aad.msal4j.AzureCloudEndpoint;
 import com.microsoft.aad.msal4j.ClientCredentialFactory;
 import com.microsoft.aad.msal4j.ClientCredentialParameters;
 import com.microsoft.aad.msal4j.ConfidentialClientApplication;
 import com.microsoft.aad.msal4j.IAuthenticationResult;
 import com.microsoft.aad.msal4j.IClientCredential;
+import com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpointConvertor;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
 import org.apache.commons.codec.binary.Base64;
@@ -54,6 +54,7 @@ class AdlsAdapterAuthenticator {
   private String sasToken;
   private IAuthenticationResult lastAuthenticationResult;
   private TokenProvider tokenProvider;
+  private com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint endpoint;
 
   AdlsAdapterAuthenticator() {
     this.sharedKey = null;
@@ -61,6 +62,7 @@ class AdlsAdapterAuthenticator {
     this.secret = null;
     this.tenant = null;
     this.tokenProvider = null;
+    this.endpoint = null;
   }
 
   /**
@@ -220,7 +222,7 @@ class AdlsAdapterAuthenticator {
       try {
         this.context = ConfidentialClientApplication
                 .builder(this.clientId, credential)
-                .authority(AzureCloudEndpoint.AzurePublic.endpoint + this.tenant)
+                .authority(AzureCloudEndpointConvertor.azureCloudEndpointToInstance(this.endpoint).endpoint + this.tenant)
                 .build();
       } catch (MalformedURLException e) {
         throw new StorageAdapterException("There was an error while building context. Exception: ", e);
@@ -262,6 +264,14 @@ class AdlsAdapterAuthenticator {
 
   String getSasToken() {
     return sasToken;
+  }
+
+  void setEndpoint(final com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint endpoint) {
+    this.endpoint = endpoint;
+  }
+
+  com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint getEndpoint() {
+    return endpoint;
   }
 
   /**

@@ -77,9 +77,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 RelationshipType = RelationshipType.MANYTOONE
             };
 
-            var relationshipName = instance.Name;
-            if (instance.Name == null || instance.Name == "")
-                relationshipName = $"{instance.FromEntity} to {instance.ToEntity} relationship";
+             var relationshipName = instance.Name;
+            if (string.IsNullOrEmpty(instance.Name))
+                relationshipName = $"{relationshipProperties.FromTableName}_{relationshipProperties.ToTableName}_relationship";
 
             relationshipProperties.ColumnRelationshipInformations = new List<ColumnRelationshipInformation>();
             relationshipProperties.ColumnRelationshipInformations.Add( new ColumnRelationshipInformation(instance.FromEntityAttribute, instance.ToEntityAttribute));

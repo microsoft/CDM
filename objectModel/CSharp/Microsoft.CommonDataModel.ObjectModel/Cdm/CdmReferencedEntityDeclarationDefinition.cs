@@ -91,7 +91,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmReferencedEntityDeclarationDefinition;
-                copy.Ctx = this.Ctx;
                 copy.EntityName = this.EntityName;
             }
 

@@ -19,17 +19,17 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
 
     res_opts_combinations = [
         set([]),
-        set(['referenceOnly']),
-        set(['normalized']),
-        set(['structured']),
-        set(['referenceOnly', 'normalized']),
-        set(['referenceOnly', 'structured']),
-        set(['normalized', 'structured']),
-        set(['referenceOnly', 'normalized', 'structured'])
+        {'referenceOnly'},
+        {'normalized'},
+        {'structured'},
+        {'referenceOnly', 'normalized'},
+        {'referenceOnly', 'structured'},
+        {'normalized', 'structured'},
+        {'referenceOnly', 'normalized', 'structured'}
     ]
 
     # The path between TestDataPath and Test_name.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionMiscellaneous')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionMiscellaneousTest')
 
     @async_test
     async def test_invalid_operation_type(self):

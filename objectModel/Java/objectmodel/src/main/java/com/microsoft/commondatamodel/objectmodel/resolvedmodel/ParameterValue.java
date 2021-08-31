@@ -153,21 +153,6 @@ public class ParameterValue {
     return newValue;
   }
 
-  private static void sortRows(final List<Map<String, String>> rows) {
-    final Iterator<String> it = rows.get(0).keySet().iterator();
-    final String firstKey = it.next();
-    final String secondKey = it.hasNext() ? it.next() : null;
-
-    rows.sort((left, right) -> {
-      final int firstCompare = ObjectUtils.compare(left.get(firstKey), right.get(firstKey));
-      if (firstCompare != 0 || secondKey == null) {
-        return firstCompare;
-      }
-
-      return ObjectUtils.compare(left.get(secondKey), right.get(secondKey));
-    });
-  }
-
   public void setValue(final ResolveOptions resOpt, final Object newValue) {
     value = ParameterValue.fetchReplacementValue(resOpt, value, newValue, true);
   }
@@ -217,8 +202,6 @@ public class ParameterValue {
             }
           }
         }
-
-        sortRows(rows);
 
         return JMapper.MAPPER_FOR_SPEW.writeValueAsString(rows);
       }

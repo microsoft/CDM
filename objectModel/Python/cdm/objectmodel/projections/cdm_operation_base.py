@@ -40,6 +40,7 @@ class CdmOperationBase(CdmObjectDefinition):
         self._index = None  # type: int
 
     def _copy_proj(self, res_opt: 'ResolveOptions', copy: 'CdmOperationBase') -> 'CdmOperationBase':
+        copy.type = self.type
         copy._index = self._index
         copy.condition = self.condition
         copy.source_input = self.source_input

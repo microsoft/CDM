@@ -78,7 +78,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
                  inputContent);
 
             // Update expected content and save to ActualOutput/Expected
-            string expectedContent = TestHelper.GetExpectedOutputFileContent(testSubPath, testName, fileName);
+            string expectedContent = TestHelper.GetExpectedOutputFileContent(testSubPath, testName, fileName, true);
             expectedContent = ReplacePlaceholder(expectedContent, rootPath, stringToAddSuffix, suffix);
 
             string expectedFolderPath = GetActualSubFolderPath(testSubPath, testName, expectedFolderName);

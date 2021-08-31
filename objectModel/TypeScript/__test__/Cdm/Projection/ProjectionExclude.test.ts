@@ -41,7 +41,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionExclude';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionExcludeTest';
 
     /**
      * Test for creating a projection with an ExcludeAttributes operation on an entity attribute using the object model

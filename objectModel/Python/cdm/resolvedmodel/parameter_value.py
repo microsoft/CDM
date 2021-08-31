@@ -132,21 +132,13 @@ class ParameterValue():
                         if not row_data:
                             continue
 
-                        row = {}
+                        row = OrderedDict()
                         for (c, tvalue) in enumerate(row_data):
                             col_att = shape_atts._set[c]
                             if col_att is not None and tvalue is not None:
                                 row[col_att.resolved_name] = tvalue
 
                         rows.append(row)
-
-                if rows:
-                    keys = list(rows[0].keys())
-                    keys.sort()
-                    first_key = keys[0]
-                    second_key = keys[1] if len(keys) > 1 else keys[0]
-
-                    rows.sort(key=lambda row: (row[first_key].lower(), row[second_key].lower()))
 
                 rows_string = [self._spew_dict(row) for row in rows]
 

@@ -28,37 +28,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             typeAttribute.Purpose = PurposeReferencePersistence.FromData(ctx, obj["purpose"]);
             typeAttribute.DataType = DataTypeReferencePersistence.FromData(ctx, obj["dataType"]);
-            if (obj["cardinality"] != null)
-            {
-                string minCardinality = null;
-                if (obj["cardinality"]["minimum"] != null)
-                    minCardinality = (string)obj["cardinality"]["minimum"];
 
-                string maxCardinality = null;
-                if (obj["cardinality"]["maximum"] != null)
-                    maxCardinality = (string)obj["cardinality"]["maximum"];
+            typeAttribute.Cardinality = Utils.CardinalitySettingsFromData(obj["cardinality"], typeAttribute);
 
-                if (string.IsNullOrWhiteSpace(minCardinality) || string.IsNullOrWhiteSpace(maxCardinality))
-                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistCardinalityPropMissing);
-
-                if (!CardinalitySettings.IsMinimumValid(minCardinality))
-                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrValdnInvalidMinCardinality, minCardinality);
-
-                if (!CardinalitySettings.IsMaximumValid(maxCardinality))
-                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrValdnInvalidMaxCardinality, maxCardinality);
-
-                if (!string.IsNullOrWhiteSpace(minCardinality) &&
-                    !string.IsNullOrWhiteSpace(maxCardinality) &&
-                    CardinalitySettings.IsMinimumValid(minCardinality) &&
-                    CardinalitySettings.IsMinimumValid(maxCardinality))
-                {
-                    typeAttribute.Cardinality = new CardinalitySettings(typeAttribute)
-                    {
-                        Minimum = minCardinality,
-                        Maximum = maxCardinality
-                    };
-                }
-            }
             typeAttribute.AttributeContext = AttributeContextReferencePersistence.FromData(ctx, obj["attributeContext"]);
             Utils.AddListToCdmCollection(typeAttribute.AppliedTraits, Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]));
             typeAttribute.ResolutionGuidance = AttributeResolutionGuidancePersistence.FromData(ctx, obj["resolutionGuidance"]);
@@ -117,7 +89,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?
                     .Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty), options),
                 AttributeContext = Utils.JsonForm(instance.AttributeContext, resOpt, options),
-                ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options)
+                ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options),
+                Cardinality = Utils.CardinalitySettingsToData(instance.Cardinality)
             };
 
             obj.Projection = ProjectionPersistence.ToData(instance.Projection, resOpt, options);

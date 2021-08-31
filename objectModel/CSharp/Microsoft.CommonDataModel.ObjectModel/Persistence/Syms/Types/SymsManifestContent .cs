@@ -12,13 +12,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Types
         public DatabaseEntity Database { get; set; }
         public List<TableEntity> Entities { get; set; }
         public List<RelationshipEntity> Relationships { get; set; }
+        public bool IntialSync { get; set; }
+        public List<string> RemovedEntities { get; set; }
+        public List<string> RemovedRelationships { get; set; }
     }
     public class SymsDatabasesResponse
     {
         [JsonProperty("items")]
         public List<DatabaseEntity> Databases { get; set; }
     }
-
+    public class SymsTableResponse
+    {
+        [JsonProperty("items")]
+        public List<TableEntity> Tables { get; set; }
+    }
     public class SymsRelationshipResponse
     {
         [JsonProperty("items")]

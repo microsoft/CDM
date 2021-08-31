@@ -13,7 +13,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Types;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
-    using System.Net.Http.Headers;
 
     class DataPartitionPersistence
     {
@@ -71,10 +70,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 obj.Properties["cdm:lastFileModifiedTime"] = instance.LastFileModifiedTime;
             }
 
-            if (instance.ExhibitsTraits != null && instance.ExhibitsTraits.Count > 0 )
+            if (instance.ExhibitsTraits != null)
             {
-                obj.Properties["cdm:traits"] = JToken.FromObject(Utils.ListCopyData<TraitReferenceDefinition>(resOpt, instance.ExhibitsTraits, options),
-                   new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                TraitToPropertyMap tpm = new TraitToPropertyMap(instance);
+                var csvTrait = tpm.FetchTraitReference("is.partition.format.CSV");
+                if (csvTrait != null)
+                {
+                    instance.ExhibitsTraits.Remove("is.partition.format.CSV");
+                }
+
+                if (instance.ExhibitsTraits.Count > 0)
+                {
+                    obj.Properties["cdm:traits"] = JToken.FromObject(Utils.ListCopyData<TraitReferenceDefinition>(resOpt, instance.ExhibitsTraits, options),
+                       new JsonSerializer { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                }
+                if (csvTrait != null)
+                {
+                    instance.ExhibitsTraits.Add(csvTrait);
+                }
             }
 
             var properties = FillPropertyBagFromCsvTrait(instance);

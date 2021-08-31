@@ -34,11 +34,16 @@ class CdmOperationCombineAttributes(CdmOperationBase):
         self.type = CdmOperationType.COMBINE_ATTRIBUTES  # type: CdmOperationType
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationCombineAttributes'] = None) -> 'CdmOperationCombineAttributes':
-        copy = CdmOperationCombineAttributes(self.ctx)
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
+
+        copy = CdmOperationCombineAttributes(self.ctx) if not host else host
+
         if self.select is not None:
-            copy.select = self.select[:]
-        if self.merge_into is not None:
-            copy.merge_into = self.merge_into.copy(res_opt, host)   # type: CdmTypeAttributeDefinition
+            copy.select = self.select.copy()
+        copy.merge_into = self.merge_into.copy(res_opt) if self.merge_into else None
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:

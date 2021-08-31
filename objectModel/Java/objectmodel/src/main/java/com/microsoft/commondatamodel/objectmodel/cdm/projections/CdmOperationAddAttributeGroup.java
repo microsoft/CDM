@@ -3,10 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -38,9 +35,15 @@ public class CdmOperationAddAttributeGroup extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        final CdmOperationAddAttributeGroup copy = new CdmOperationAddAttributeGroup(this.getCtx());
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationAddAttributeGroup copy = host == null ?  new CdmOperationAddAttributeGroup(this.getCtx()) : (CdmOperationAddAttributeGroup)host;
+
         copy.setAttributeGroupName(this.getAttributeGroupName());
 
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

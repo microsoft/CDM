@@ -72,7 +72,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             watch.Stop();
             Assert.Performance(9800, watch.ElapsedMilliseconds, "Parsing to data");
 
-            this.HandleOutput(nameof(TestLoadingCdmFolderAndModelJsonToData), PersistenceLayer.ModelJsonExtension, obtainedModelJson);
+            this.HandleOutput(nameof(TestLoadingCdmFolderAndModelJsonToData), "model.json", obtainedModelJson, isLanguageSpecific: true);
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             // the corpus path in the imports are relative to the document where it was defined.
             // when saving in model.json the documents are flattened to the manifest level
             // so it is necessary to recalculate the path to be relative to the manifest.
-            var corpus = TestHelper.GetLocalCorpus("notImportant", "notImportantLocation");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "notImportantLocation");
             var folder = corpus.Storage.FetchRootFolder("local");
 
             var manifest = new CdmManifestDefinition(corpus.Ctx, "manifest");
@@ -345,8 +345,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
         /// <param name="testName"> The name of the test.</param>
         /// <param name="outputFileName"> The name of the output file. Used both for expected and actual output.</param>
         /// <param name="actualOutput"> The output obtaind through operations, that is to be compared with the expected output.</param>
-        /// <parameter name="doesWriteDebuggingFiles"> Whether debugging files should be written or not. </parameter>
-        private void HandleOutput<T>(string testName, string outputFileName, T actualOutput, bool doesWriteTestDebuggingFiles = false)
+        /// <parameter name="doesWriteTestDebuggingFiles"> Whether debugging files should be written or not. </parameter>
+        /// <param name="isLanguageSpecific">There is a subfolder called CSharp.</param>
+        private void HandleOutput<T>(string testName, string outputFileName, T actualOutput, bool doesWriteTestDebuggingFiles = false, bool isLanguageSpecific = false)
         {
             var serializedOutput = Serialize(actualOutput);
             if (doesWriteTestDebuggingFiles)
@@ -354,7 +355,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
                 TestHelper.WriteActualOutputFileContent(testsSubpath, testName, outputFileName, serializedOutput);
             }
 
-            var expectedOutput = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, outputFileName);
+            var expectedOutput = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, outputFileName, isLanguageSpecific: isLanguageSpecific);
 
             TestHelper.AssertSameObjectWasSerialized(expectedOutput, serializedOutput);
         }

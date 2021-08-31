@@ -28,9 +28,14 @@ class CdmOperationAddSupportingAttribute(CdmOperationBase):
         self.type = CdmOperationType.ADD_SUPPORTING_ATTRIBUTE  # type: CdmOperationType
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationAddSupportingAttribute'] = None) -> 'CdmOperationAddSupportingAttribute':
-        copy = CdmOperationAddSupportingAttribute(self.ctx)
-        if self.supporting_attribute:
-            copy.supporting_attribute = self.supporting_attribute.copy()
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
+
+        copy = CdmOperationAddSupportingAttribute(self.ctx) if not host else host
+
+        copy.supporting_attribute = self.supporting_attribute.copy(res_opt) if self.supporting_attribute else None
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:

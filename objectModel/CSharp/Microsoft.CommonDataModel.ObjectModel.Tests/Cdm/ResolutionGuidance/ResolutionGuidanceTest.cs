@@ -34,7 +34,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestResolutionGuidanceDeprecation()
         {
-            var corpus = TestHelper.GetLocalCorpus(TestsSubpath, "TestResolutionGuidanceDeprecation");
+            var corpus = TestHelper.GetLocalCorpus(TestsSubpath, nameof(TestResolutionGuidanceDeprecation));
 
             // Tests warning log when resolution guidance is used on a data typed attribute.
             var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TypeAttribute.cdm.json/Entity");

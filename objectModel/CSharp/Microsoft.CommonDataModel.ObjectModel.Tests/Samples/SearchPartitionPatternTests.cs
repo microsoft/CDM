@@ -52,7 +52,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
 
             TestHelper.AssertFolderFilesEquality(
                 TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestSearchPartitionPattern)),
-                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestSearchPartitionPattern)));
+                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestSearchPartitionPattern)), true);
         }
 
         private CdmCorpusDefinition SetupCdmCorpus()

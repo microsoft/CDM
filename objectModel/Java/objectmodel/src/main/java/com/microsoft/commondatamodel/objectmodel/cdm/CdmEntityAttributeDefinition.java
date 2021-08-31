@@ -268,7 +268,6 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
       copy = new CdmEntityAttributeDefinition(this.getCtx(), this.getName());
     } else {
       copy = (CdmEntityAttributeDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setName(this.getName());
     }
 
@@ -298,13 +297,9 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
     // this context object holds all of the info about what needs to happen to resolve these attributes.
     // make a copy and add defaults if missing
-    final CdmAttributeResolutionGuidance resGuideWithDefault;
-    if (this.getResolutionGuidance() != null) {
-      resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance()
-              .copy(resOpt);
-    } else {
-      resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
-    }
+    final CdmAttributeResolutionGuidance resGuideWithDefault = this.getResolutionGuidance() == null
+            ? new CdmAttributeResolutionGuidance(this.getCtx()) :(CdmAttributeResolutionGuidance) this.getResolutionGuidance().copy(resOpt);
+
     resGuideWithDefault.updateAttributeDefaults(this.getName(), this);
 
     return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);

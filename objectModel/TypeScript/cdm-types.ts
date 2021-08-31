@@ -5,6 +5,7 @@
 
 export {
     ArgumentValue,
+    CardinalitySettings,
     CdmCorpusContext,
     CdmCorpusDefinition,
     CdmDataPartitionDefinition,

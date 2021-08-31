@@ -47,12 +47,7 @@ public class SearchStructureUnitTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testSearchStructure")
-            .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "SearchStructureUnitTest").toString();
 
     /**
      * Unit test for building a tree

@@ -221,7 +221,7 @@ class CdmObjectReference(CdmObject):
         copy.applied_traits.clear()
         if self.applied_traits:
             for trait in self.applied_traits:
-                copy.applied_traits.append(trait)
+                copy.applied_traits.append(trait.copy(res_opt))
 
         # Don't do anything else after this, as it may cause InDocument to become dirty
         copy.in_document = self.in_document

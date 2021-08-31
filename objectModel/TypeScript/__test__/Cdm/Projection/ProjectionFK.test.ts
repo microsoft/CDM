@@ -29,7 +29,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionFK';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionFKTest';
 
     it('TestEntityAttribute', async () => {
         const testName: string = 'TestEntityAttribute';

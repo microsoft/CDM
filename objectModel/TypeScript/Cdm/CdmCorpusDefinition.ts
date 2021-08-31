@@ -77,6 +77,7 @@ import {
     StorageAdapter,
     StorageManager,
     SymbolSet,
+    TelemetryClient,
     CdmTraitGroupDefinition,
     CdmTraitGroupReference,
     CdmTraitReferenceBase
@@ -122,6 +123,9 @@ export class CdmCorpusDefinition {
     // tslint:disable-next-line:variable-name
     public static _nextID: number = 0;
     public appId: string;
+
+    public telemetryClient: TelemetryClient;
+
     /**
      * @internal
      */
@@ -663,6 +667,9 @@ export class CdmCorpusDefinition {
                     break;
                 case cdmObjectType.manifestDef:
                     newObj = new CdmManifestDefinition(this.ctx, nameOrRef);
+
+                    // Log and ingest a message when a new manifest is created
+                    Logger.debug(this.ctx, this.TAG, this.MakeObject.name, newObj.atCorpusPath, "New Manifest created.", true);
                     break;
                 case cdmObjectType.entityAttributeDef:
                     newObj = new CdmEntityAttributeDefinition(this.ctx, nameOrRef);
@@ -783,12 +790,10 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public addDocumentObjects(folder: CdmFolderDefinition, docDef: CdmDocumentDefinition): CdmDocumentDefinition {
+    public addDocumentObjects(folder: CdmFolderDefinition, doc: CdmDocumentDefinition): CdmDocumentDefinition {
         // let bodyCode = () =>
         {
-            const doc: CdmDocumentDefinition = docDef;
-            const path: string = this.storage.createAbsoluteCorpusPath(`${doc.folderPath}${doc.name}`, doc)
-                .toLowerCase();
+            const path: string = this.storage.createAbsoluteCorpusPath(`${doc.folderPath}${doc.name}`, doc);
             this.documentLibrary.addDocumentPath(path, folder, doc);
 
             return doc;
@@ -799,18 +804,16 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public removeDocumentObjects(folder: CdmFolderDefinition, docDef: CdmDocumentDefinition): void {
+    public removeDocumentObjects(folder: CdmFolderDefinition, doc: CdmDocumentDefinition): void {
         // let bodyCode = () =>
         {
-            const doc: CdmDocumentDefinition = docDef;
 
             // every symbol defined in this document is pointing at the document, so remove from cache.
             // also remove the list of docs that it depends on
             this.removeObjectDefinitions(doc);
 
             // remove from path lookup, folder lookup and global list of documents
-            const path: string = this.storage.createAbsoluteCorpusPath(`${doc.folderPath}${doc.name}`, doc)
-                .toLowerCase();
+            const path: string = this.storage.createAbsoluteCorpusPath(`${doc.folderPath}${doc.name}`, doc);
             this.documentLibrary.removeDocumentPath(path, folder, doc);
         }
         // return p.measure(bodyCode);
@@ -990,6 +993,10 @@ export class CdmCorpusDefinition {
                 }
 
                 if (documentPath === objectPath) {
+                    if (newObj instanceof CdmManifestDefinition) {
+                        Logger.ingestManifestTelemetry(newObj as CdmManifestDefinition, this.ctx, this.TAG, this.fetchObjectAsync.name, newObj.atCorpusPath);
+                    }
+
                     return newObj as unknown as T;
                 }
 
@@ -1004,6 +1011,16 @@ export class CdmCorpusDefinition {
                 const result: CdmObject = (newObj as CdmDocumentDefinition).fetchObjectFromDocumentPath(remainingObjectPath, resOpt);
                 if (result === undefined) {
                     Logger.error(this.ctx, this.TAG, this.fetchObjectAsync.name, newObj.atCorpusPath, cdmLogCode.ErrDocSymbolNotFound, objectPath, newObj.atCorpusPath);
+                } else {
+                    // Log the telemetry if the object is a manifest
+                    if (result instanceof CdmManifestDefinition) {
+                        Logger.ingestManifestTelemetry(result as CdmManifestDefinition, this.ctx, this.TAG, this.fetchObjectAsync.name, result.atCorpusPath);
+                    }
+
+                    // Log the telemetry if the object is an entity
+                    else if (result instanceof CdmEntityDefinition) {
+                        Logger.ingestEntityTelemetry(result as CdmEntityDefinition, this.ctx, this.TAG, this.fetchObjectAsync.name, result.atCorpusPath);
+                    }
                 }
 
                 return result as unknown as T;
@@ -1020,25 +1037,6 @@ export class CdmCorpusDefinition {
         ctx.statusEvent = status;
         ctx.reportAtLevel = reportAtLevel;
         ctx.correlationId = correlationId;
-    }
-
-    /**
-     * @internal
-     */
-    public findMissingImportsFromDocument(doc: CdmDocumentDefinition): void {
-        // let bodyCode = () =>
-        {
-            if (doc.imports) {
-                for (const imp of doc.imports) {
-                    if (!imp.document) {
-                        // no document set for this import, see if it is already loaded into the corpus
-                        const path: string = this.storage.createAbsoluteCorpusPath(imp.corpusPath, doc);
-                        this.documentLibrary.addToDocsNotLoaded(path);
-                    }
-                }
-            }
-        }
-        // return p.measure(bodyCode);
     }
 
     /**
@@ -1064,48 +1062,48 @@ export class CdmCorpusDefinition {
      * @internal
      */
     public async loadImportsAsync(doc: CdmDocumentDefinition, resOpt: resolveOptions): Promise<void> {
-        const docsNowLoaded: Set<CdmDocumentDefinition> = new Set<CdmDocumentDefinition>();
-        const docsNotLoaded: Set<string> = this.documentLibrary.listDocsNotLoaded();
-
-        if (docsNotLoaded.size === 0) {
+        if (!doc) {
+            // if there's not document, our job here is done.
             return;
         }
 
-        await Promise.all(Array.from(docsNotLoaded)
-            .map(async (missing: string) => {
-                if (this.documentLibrary.needToLoadDocument(missing, docsNowLoaded)) {
-                    await this.documentLibrary.concurrentReadLock.acquire();
-                    // load it
-                    const newDoc: CdmDocumentDefinition = await this.loadFolderOrDocument(missing, false, resOpt) as CdmDocumentDefinition;
+        const loadDocs = async (docPath: string) => {
+            if (!this.documentLibrary.needToLoadDocument(docPath)) {
+                return;
+            }
 
-                    if (this.documentLibrary.markDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded)) {
-                        Logger.info(this.ctx, this.TAG, this.loadImportsAsync.name, doc.atCorpusPath, `resolved import for '${newDoc.name}'`);
-                    } else {
-                        Logger.warning(this.ctx, this.TAG, this.loadImportsAsync.name, doc.atCorpusPath, cdmLogCode.WarnResolveImportFailed, missing, doc.atCorpusPath);
-                    }
-                    this.documentLibrary.concurrentReadLock.release();
-                }
-            }));
+            await this.documentLibrary.concurrentReadLock.acquire();
+            // load it
+            const loadedDoc: CdmDocumentDefinition = await this.loadFolderOrDocument(docPath, false, resOpt) as CdmDocumentDefinition;
 
-        // now that we've loaded new docs, find imports from them that need loading
-        for (const loadedDoc of docsNowLoaded) {
-            this.findMissingImportsFromDocument(loadedDoc);
+            if (this.documentLibrary.markDocumentAsLoadedOrFailed(docPath, loadedDoc)) {
+                Logger.info(this.ctx, this.TAG, this.loadImportsAsync.name, doc.atCorpusPath, `resolved import for '${loadedDoc.name}'`);
+            } else {
+                Logger.warning(this.ctx, this.TAG, this.loadImportsAsync.name, doc.atCorpusPath, cdmLogCode.WarnResolveImportFailed, docPath, doc.atCorpusPath);
+            }
+            this.documentLibrary.concurrentReadLock.release();
+
+            await this.loadImportsAsync(loadedDoc, resOpt);
         }
 
-        // repeat this process for the imports of the imports
-        await Promise.all(Array.from(docsNowLoaded)
-            .map(async (loadedDoc: CdmDocumentDefinition) => {
-                await this.loadImportsAsync(loadedDoc, resOpt);
-            })
-        );
+        // Loop through all of the document's imports and load them recursively.
+        const taskList: Promise<void>[] = [];
+        for (const imp of doc.imports) {
+            if (!imp.document) {
+                const docPath = this.storage.createAbsoluteCorpusPath(imp.corpusPath, doc);
+                const loadTask: Promise<void> = loadDocs(docPath);
+                taskList.push(loadTask);
+            }
+        }
+
+        // Wait for all of the missing docs to finish loading.
+        await Promise.all(taskList);
     }
 
     /**
      * @internal
      */
     public async resolveImportsAsync(doc: CdmDocumentDefinition, resOpt: resolveOptions): Promise<void> {
-        // find imports for this doc
-        this.findMissingImportsFromDocument(doc);
         // load imports (and imports of imports)
         await this.loadImportsAsync(doc, resOpt);
         // now that everything is loaded, attach import docs to this doc's import list
@@ -1515,7 +1513,7 @@ export class CdmCorpusDefinition {
     public async computeLastModifiedTimeAsync(corpusPath: string, obj?: CdmObject): Promise<Date> {
         const currObject: CdmObject = await this.fetchObjectAsync(corpusPath, obj, true);
         if (currObject) {
-            return this.getLastModifiedTimeAsyncFromObject(currObject);
+            return this.getLastModifiedTimeFromObjectAsync(currObject);
         }
     }
 
@@ -1524,19 +1522,19 @@ export class CdmCorpusDefinition {
      * Returns the last modified time of the file where the input object can be found
      * @param currObject A CDM object
      */
-    public async getLastModifiedTimeAsyncFromObject(currObject: CdmObject): Promise<Date> {
+    public async getLastModifiedTimeFromObjectAsync(currObject: CdmObject): Promise<Date> {
         if ("namespace" in currObject) {
             const adapter: StorageAdapter = this.storage.fetchAdapter((currObject as CdmContainerDefinition).namespace);
 
             if (adapter === undefined) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPath.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrAdapterNotFound, (currObject as CdmContainerDefinition).namespace);
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrAdapterNotFound, (currObject as CdmContainerDefinition).namespace);
 
                 return undefined;
             }
             // Remove namespace from path
             const pathTuple: [string, string] = StorageUtils.splitNamespacePath((currObject as CdmContainerDefinition).atCorpusPath);
             if (!pathTuple) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeAsyncFromObject.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrStorageNullCorpusPath);
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrStorageNullCorpusPath);
 
                 return undefined;
             }
@@ -1544,11 +1542,11 @@ export class CdmCorpusDefinition {
             try {
                 return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
             } catch (e) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeAsyncFromObject.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
                 return null;
             }
         } else {
-            return this.getLastModifiedTimeAsyncFromObject(currObject.inDocument);
+            return this.getLastModifiedTimeFromObjectAsync(currObject.inDocument);
         }
     }
 
@@ -1558,11 +1556,11 @@ export class CdmCorpusDefinition {
      * as getLastModifiedTime does
      * @param corpusPath The corpus path to a CDM object
      */
-    public async getLastModifiedTimeFromPartitionPath(corpusPath: string): Promise<Date> {
+    public async getLastModifiedTimeFromPartitionPathAsync(corpusPath: string): Promise<Date> {
         // we do not want to load partitions from file, just check the modified times
         const pathTuple: [string, string] = StorageUtils.splitNamespacePath(corpusPath);
         if (!pathTuple) {
-            Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPath.name, corpusPath, cdmLogCode.ErrPathNullObjectPath);
+            Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrPathNullObjectPath);
 
             return undefined;
         }
@@ -1571,7 +1569,7 @@ export class CdmCorpusDefinition {
             const adapter: StorageAdapter = this.storage.fetchAdapter(namespace);
 
             if (adapter === undefined) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPath.name, corpusPath, cdmLogCode.ErrAdapterNotFound);
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrAdapterNotFound);
                
                 return undefined;
             }
@@ -1579,7 +1577,7 @@ export class CdmCorpusDefinition {
             try {
                 return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
             } catch (e) {
-                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPath.name, corpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
+                Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrPartitionFileModTimeFailure, pathTuple[1], (e as Error).toString());
             }
         }
         return null;

@@ -27,7 +27,7 @@ class ProjectionRenameTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and test_name.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionRename')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionRenameTest')
 
     @async_test
     async def test_entity_attribute_proj_using_object_model(self):

@@ -80,7 +80,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmDataTypeDefinition;
-                copy.Ctx = this.Ctx;
                 copy.DataTypeName = this.DataTypeName;
             }
 

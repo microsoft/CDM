@@ -76,7 +76,7 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
             copy.explanation = this.explanation;
             copy.defaultValue = defVal;
             copy.required = this.required;
-            copy.dataTypeRef = (this.dataTypeRef ? this.dataTypeRef.copy(resOpt) : undefined) as CdmDataTypeReference;
+            copy.dataTypeRef = this.dataTypeRef ? this.dataTypeRef.copy(resOpt) as CdmDataTypeReference : undefined;
 
             return copy;
         }

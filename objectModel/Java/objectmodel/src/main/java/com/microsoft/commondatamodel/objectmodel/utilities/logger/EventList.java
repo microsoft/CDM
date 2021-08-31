@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.utilities.logger;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -37,6 +38,8 @@ public class EventList extends ArrayList<Map<String, String>> {
    */
   private int nestingLevel = 0;
 
+  private UUID apiCorrelationId;
+
   /**
    * Lock to be used to enter and leave scope.
    */
@@ -54,6 +57,7 @@ public class EventList extends ArrayList<Map<String, String>> {
     if (nestingLevel == 0) {
       clear();
       isRecording = true;
+      apiCorrelationId = UUID.randomUUID();
     }
 
     nestingLevel++;
@@ -73,6 +77,7 @@ public class EventList extends ArrayList<Map<String, String>> {
 
     if (nestingLevel == 0) {
       isRecording = false;
+      apiCorrelationId = UUID.randomUUID();
     }
 
     lock.unlock();
@@ -97,5 +102,21 @@ public class EventList extends ArrayList<Map<String, String>> {
    */
   public boolean isRecording() {
     return isRecording;
+  }
+
+  /**
+   * Gets the apiCorrelationId of the event.
+   * @return The API correlation ID.
+   */
+  public UUID getApiCorrelationId() {
+    return this.apiCorrelationId;
+  }
+
+  /**
+   * Gets the nestingLevel of the event.
+   * @return The nesting level.
+   */
+  public int getNestingLevel() {
+    return this.nestingLevel;
   }
 }

@@ -36,7 +36,7 @@ public class CreateManifestTest extends SampleTestBase {
             createManifest(setupCdmCorpus());
             TestHelper.assertFolderFilesEquality(
                     TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, TEST_NAME),
-                    TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, TEST_NAME));
+                    TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, TEST_NAME), true);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }

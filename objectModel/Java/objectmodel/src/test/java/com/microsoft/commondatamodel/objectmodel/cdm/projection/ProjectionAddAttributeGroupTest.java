@@ -35,8 +35,8 @@ public class ProjectionAddAttributeGroupTest {
     /**
      * The path between TestDataPath and TestName
      */
-    private static final String TESTS_SUBPATH = new File(new File(new File("cdm"), "projection"),
-            "testProjectionAddAttributeGroup").toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"),
+            "ProjectionAddAttributeGroupTest").toString();
 
     /**
      * Test AddAttributeGroup operation nested with ExcludeAttributes

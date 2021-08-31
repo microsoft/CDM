@@ -405,7 +405,6 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
       copy = new CdmTypeAttributeDefinition(this.getCtx(), this.getName());
     } else {
       copy = (CdmTypeAttributeDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setName(this.getName());
     }
 

@@ -581,7 +581,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     copy.getAppliedTraits().clear();
     if (this.getAppliedTraits() != null) {
       for (final CdmTraitReferenceBase appliedTrait : this.appliedTraits) {
-        copy.getAppliedTraits().add(appliedTrait);
+        copy.getAppliedTraits().add((CdmTraitReferenceBase) appliedTrait.copy(resOpt));
       }
     }
 

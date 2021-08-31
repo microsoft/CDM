@@ -153,7 +153,7 @@ export class ProjectionPersistence {
         else if (instance.source && !StringUtils.isNullOrWhiteSpace(instance.source.namedReference) && instance.source.explicitReference === undefined) {
             source = instance.source.namedReference;
         }
-        else if (instance.source && typeof instance.source === typeof (CdmEntityReference)) {
+        else if (instance.source && instance.source.getObjectType() === cdmObjectType.entityRef) {
             source = EntityReferencePersistence.toData(instance.source as CdmEntityReference, resOpt, options) as EntityReferenceDefinition;
         }
 

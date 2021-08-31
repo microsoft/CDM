@@ -33,79 +33,14 @@ describe('Samples.LogicalManipulationUsingProjections', () => {
 
     sampleIt('TestLogicalManipulationUsingProjections', async (done) => {
         jest.setTimeout(100000);
+        testHelper.deleteFilesFromActualOutput(testHelper.getActualOutputFolderPath(testsSubpath, testName));
 
         const corpus: CdmCorpusDefinition = setupCdmCorpus();
-
-        console.log('Create logical entity definition.');
-
-        const logicalFolder = await corpus.fetchObjectAsync<CdmFolderDefinition>('output:/');
+        await logicalManipulationUsingProjections(corpus);
+        testHelper.assertFolderFilesEquality(
+            testHelper.getExpectedOutputFolderPath(testsSubpath, testName), 
+            testHelper.getActualOutputFolderPath(testsSubpath, testName), true);
         
-        const logicalDoc: CdmDocumentDefinition = logicalFolder.documents.push('Person.cdm.json');
-        logicalDoc.imports.push('local:/Address.cdm.json');
-
-        const entity = logicalDoc.definitions.push('Person') as CdmEntityDefinition;
-
-        // Add 'name' data typed attribute.
-        const nameAttr = entity.attributes.push('name') as CdmTypeAttributeDefinition;
-        nameAttr.dataType = new CdmDataTypeReference(corpus.ctx, 'string', true);
-
-        // Add 'age' data typed attribute.
-        const ageAttr = entity.attributes.push('age') as CdmTypeAttributeDefinition;
-        ageAttr.dataType = new CdmDataTypeReference(corpus.ctx, 'string', true);
-
-        // Add 'address' entity typed attribute.
-        const entityAttr = new CdmEntityAttributeDefinition(corpus.ctx, 'address');
-        entityAttr.entity = new CdmEntityReference(corpus.ctx, 'Address', true);
-        applyArrayExpansion(entityAttr, 1, 3, '{m}{A}{o}', 'countAttribute');
-        applyDefaultBehavior(entityAttr, 'addressFK', 'address');
-
-        entity.attributes.push(entityAttr);
-
-        // Add 'email' data typed attribute.
-        const emailAttr = entity.attributes.push('email') as CdmTypeAttributeDefinition;
-        emailAttr.dataType = new CdmDataTypeReference(corpus.ctx, 'string', true);
-
-        // Save the logical definition of Person.
-        await entity.inDocument.saveAsAsync('Person.cdm.json');
-
-        console.log('Get \'resolved\' folder where the resolved entities will be saved.');
-
-        const resolvedFolder = await corpus.fetchObjectAsync<CdmFolderDefinition>('output:/');
-
-        const resOpt = new resolveOptions(entity);
-
-        // To get more information about directives and their meaning refer to 
-        // https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#directives-guidance-and-the-resulting-resolved-shapes
-
-        // We will start by resolving this entity with the 'normalized' direcitve. 
-        // This directive will be used on this and the next two examples so we can analize the resolved entity
-        // without the array expansion.
-        console.log('Resolving logical entity with normalized directive.');
-        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>([ 'normalized' ]));
-        const resNormalizedEntity = await entity.createResolvedEntityAsync(`normalized_${entity.entityName}`, resOpt, resolvedFolder);
-        await resNormalizedEntity.inDocument.saveAsAsync(`${resNormalizedEntity.entityName}.cdm.json`);
-
-        // Another common scenario is to resolve an entity using the 'referenceOnly' directive. 
-        // This directives is used to replace the relationships with a foreign key.
-        console.log('Resolving logical entity with referenceOnly directive.');
-        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>([ 'normalized', 'referenceOnly' ]));
-        const resReferenceOnlyEntity = await entity.createResolvedEntityAsync(`referenceOnly_${entity.entityName}`, resOpt, resolvedFolder);
-        await resReferenceOnlyEntity.inDocument.saveAsAsync(`${resReferenceOnlyEntity.entityName}.cdm.json`);
-
-        // When dealing with structured data, like Json or parquet, it sometimes necessary to represent the idea that 
-        // a property can hold a complex object. The shape of the complex object is defined by the source entity pointed by the 
-        // entity attribute and we use the 'structured' directive to resolve the entity attribute as an attribute group.
-        console.log('Resolving logical entity with structured directive.');
-        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>([ 'normalized', 'structured' ]));
-        const resStructuredEntity = await entity.createResolvedEntityAsync(`structured_${entity.entityName}`, resOpt, resolvedFolder);
-        await resStructuredEntity.inDocument.saveAsAsync(`${resStructuredEntity.entityName}.cdm.json`);
-
-        // Now let us remove the 'normalized' directive so the array expansion operation can run.
-        console.log('Resolving logical entity without directives (array expansion).');
-        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>([ ]));
-        const resArrayEntity = await entity.createResolvedEntityAsync(`array_expansion_${entity.entityName}`, resOpt, resolvedFolder);
-        await resArrayEntity.inDocument.saveAsAsync(`${resArrayEntity.entityName}.cdm.json`);
-
         done();
     });
 
@@ -208,5 +143,77 @@ describe('Samples.LogicalManipulationUsingProjections', () => {
             addCountAttrOperation.countAttribute = countAttribute;
             projection.operations.push(addCountAttrOperation);
         }
+    }
+
+    async function logicalManipulationUsingProjections(corpus: CdmCorpusDefinition): Promise<void> {
+        console.log('Create logical entity definition.');
+
+        const logicalFolder = await corpus.fetchObjectAsync<CdmFolderDefinition>('output:/');
+        
+        const logicalDoc: CdmDocumentDefinition = logicalFolder.documents.push('Person.cdm.json');
+        logicalDoc.imports.push('local:/Address.cdm.json');
+
+        const entity = logicalDoc.definitions.push('Person') as CdmEntityDefinition;
+
+        // Add 'name' data typed attribute.
+        const nameAttr = entity.attributes.push('name') as CdmTypeAttributeDefinition;
+        nameAttr.dataType = new CdmDataTypeReference(corpus.ctx, 'string', true);
+
+        // Add 'age' data typed attribute.
+        const ageAttr = entity.attributes.push('age') as CdmTypeAttributeDefinition;
+        ageAttr.dataType = new CdmDataTypeReference(corpus.ctx, 'string', true);
+
+        // Add 'address' entity typed attribute.
+        const entityAttr = new CdmEntityAttributeDefinition(corpus.ctx, 'address');
+        entityAttr.entity = new CdmEntityReference(corpus.ctx, 'Address', true);
+        applyArrayExpansion(entityAttr, 1, 3, '{m}{A}{o}', 'countAttribute');
+        applyDefaultBehavior(entityAttr, 'addressFK', 'address');
+
+        entity.attributes.push(entityAttr);
+
+        // Add 'email' data typed attribute.
+        const emailAttr = entity.attributes.push('email') as CdmTypeAttributeDefinition;
+        emailAttr.dataType = new CdmDataTypeReference(corpus.ctx, 'string', true);
+
+        // Save the logical definition of Person.
+        await entity.inDocument.saveAsAsync('Person.cdm.json');
+
+        console.log('Get \'resolved\' folder where the resolved entities will be saved.');
+
+        const resolvedFolder = await corpus.fetchObjectAsync<CdmFolderDefinition>('output:/');
+
+        const resOpt = new resolveOptions(entity);
+
+        // To get more information about directives and their meaning refer to 
+        // https://docs.microsoft.com/en-us/common-data-model/sdk/convert-logical-entities-resolved-entities#directives-guidance-and-the-resulting-resolved-shapes
+
+        // We will start by resolving this entity with the 'normalized' direcitve. 
+        // This directive will be used on this and the next two examples so we can analize the resolved entity
+        // without the array expansion.
+        console.log('Resolving logical entity with normalized directive.');
+        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>([ 'normalized' ]));
+        const resNormalizedEntity = await entity.createResolvedEntityAsync(`normalized_${entity.entityName}`, resOpt, resolvedFolder);
+        await resNormalizedEntity.inDocument.saveAsAsync(`${resNormalizedEntity.entityName}.cdm.json`);
+
+        // Another common scenario is to resolve an entity using the 'referenceOnly' directive. 
+        // This directives is used to replace the relationships with a foreign key.
+        console.log('Resolving logical entity with referenceOnly directive.');
+        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>([ 'normalized', 'referenceOnly' ]));
+        const resReferenceOnlyEntity = await entity.createResolvedEntityAsync(`referenceOnly_${entity.entityName}`, resOpt, resolvedFolder);
+        await resReferenceOnlyEntity.inDocument.saveAsAsync(`${resReferenceOnlyEntity.entityName}.cdm.json`);
+
+        // When dealing with structured data, like Json or parquet, it sometimes necessary to represent the idea that 
+        // a property can hold a complex object. The shape of the complex object is defined by the source entity pointed by the 
+        // entity attribute and we use the 'structured' directive to resolve the entity attribute as an attribute group.
+        console.log('Resolving logical entity with structured directive.');
+        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>([ 'normalized', 'structured' ]));
+        const resStructuredEntity = await entity.createResolvedEntityAsync(`structured_${entity.entityName}`, resOpt, resolvedFolder);
+        await resStructuredEntity.inDocument.saveAsAsync(`${resStructuredEntity.entityName}.cdm.json`);
+
+        // Now let us remove the 'normalized' directive so the array expansion operation can run.
+        console.log('Resolving logical entity without directives (array expansion).');
+        resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>([ ]));
+        const resArrayEntity = await entity.createResolvedEntityAsync(`array_expansion_${entity.entityName}`, resOpt, resolvedFolder);
+        await resArrayEntity.inDocument.saveAsAsync(`${resArrayEntity.entityName}.cdm.json`);
     }
 });

@@ -118,7 +118,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         public async Task TestFilterInSomeWithAttributeGroupRef()
         {
             bool updateResults = false;
-            string testName = "TestFilterInSomeWithAttributeGroupRef";
+            string testName = nameof(TestFilterInSomeWithAttributeGroupRef);
             {
                 string entityName = "Employee";
 
@@ -218,7 +218,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         public async Task TestFilterInAll()
         {
             bool updateResults = false;
-            string testName = "TestFilterInAll";
+            string testName = nameof(TestFilterInAll);
             {
                 string entityName = "Employee";
 
@@ -318,7 +318,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         public async Task TestFilterInAllWithAttributeGroupRef()
         {
             bool updateResults = false;
-            string testName = "TestFilterInAllWithAttributeGroupRef";
+            string testName = nameof(TestFilterInAllWithAttributeGroupRef);
             {
                 string entityName = "Employee";
 

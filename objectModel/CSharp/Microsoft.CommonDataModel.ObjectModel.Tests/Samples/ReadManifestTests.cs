@@ -57,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             File.WriteAllText(testActualOutputPath, actualOutputContent);
 
             TestHelper.AssertFileContentEquality(
-                File.ReadAllText(Path.Combine(TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestReadManifest)), "output.txt")),
+                File.ReadAllText(Path.Combine(TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestReadManifest)), "output-CSharp.txt")),
                 actualOutputContent
             );
         }
@@ -135,7 +135,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
                     break;
                 }
 
-                Console.Write("Enter a number to show details for that Entity or Sub-manifest (press [enter] to exit): ");
+                Console.WriteLine("Enter a number to show details for that Entity or Sub-manifest (press [enter] to exit): ");
 
                 // Get the user's choice.
                 string input = Console.ReadLine();
@@ -181,13 +181,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
                             Console.WriteLine("  4: Data partition locations");
                             Console.WriteLine("  5: Relationships");
 
-                            Console.Write("Enter a number to show details for that metadata property (press [enter] to explore other entities): ");
+                            Console.WriteLine("Enter a number to show details for that metadata property (press [enter] to explore other entities):");
 
                             // Get the user's choice. 
                             input = Console.ReadLine();
                             if (string.IsNullOrEmpty(input))
                             {
-                                Console.WriteLine();
                                 break;
                             }
 

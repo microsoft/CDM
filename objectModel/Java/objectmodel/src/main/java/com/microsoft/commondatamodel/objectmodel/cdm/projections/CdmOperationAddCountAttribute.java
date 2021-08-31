@@ -35,8 +35,17 @@ public class CdmOperationAddCountAttribute extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationAddCountAttribute copy = new CdmOperationAddCountAttribute(this.getCtx());
-        copy.countAttribute = (CdmTypeAttributeDefinition) this.countAttribute.copy(resOpt, host);
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationAddCountAttribute copy = host == null ? new CdmOperationAddCountAttribute(this.getCtx()) : (CdmOperationAddCountAttribute)host;
+
+        copy.setCountAttribute(
+                this.getCountAttribute() != null
+                        ? (CdmTypeAttributeDefinition)this.getCountAttribute().copy(resOpt) : null);
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

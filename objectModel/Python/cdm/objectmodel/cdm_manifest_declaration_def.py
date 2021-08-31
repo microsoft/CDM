@@ -46,7 +46,6 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
             copy = CdmManifestDeclarationDefinition(self.ctx, self.manifest_name)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.manifest_name = self.get_name()
 
         copy.definition = self.definition

@@ -144,5 +144,6 @@ export enum cdmLogCode {
     WarnValdnEntityNotDefined,
     WarnValdnMaxOrdinalTooHigh,
     WarnValdnPrimaryKeyMissing,
-    WarnValdnOrdinalStartEndOrder
+    WarnValdnOrdinalStartEndOrder,
+    WarnTelemetryIngestionFailed
 }

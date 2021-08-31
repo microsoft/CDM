@@ -8,26 +8,21 @@ import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence;
-import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.KeyValuePair;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
+import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ModelJsonTestBase;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
-import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -38,6 +33,7 @@ public class DataPartitionTest {
    */
   private static final String TESTS_SUBPATH = new File(new File("persistence", "cdmfolder"), "datapartition").toString();
   private static final ResolveContext RESOLVE_CONTEXT = new ResolveContext(new CdmCorpusDefinition());
+  private final boolean doesWriteTestDebuggingFiles = false;
 
   /*
    * Testing for manifest with local entity declaration having data partitions.
@@ -79,10 +75,29 @@ public class DataPartitionTest {
   }
 
   /*
+   * Manifest.DataPartitions.Arguments can be read in multiple forms,
+   * but should always be serialized as {name: 'theName', value: 'theValue'}.
+   */
+  @Test
+  public void testDataPartitionArgumentsAreSerializedAppropriately() throws IOException, InterruptedException {
+    final String readFile = TestHelper.getInputFileContent(TESTS_SUBPATH, "testDataPartitionArgumentsAreSerializedAppropriately", "entities.manifest.cdm.json");
+    final CdmManifestDefinition cdmManifest = ManifestPersistence.fromObject(
+            new ResolveContext(new CdmCorpusDefinition(), null), "entities", "testNamespace", "/", JMapper.MAP.readValue(readFile, ManifestContent.class));
+    final ManifestContent obtainedCdmFolder = ManifestPersistence.toData(cdmManifest, null, null);
+    if (true) {
+      TestHelper.writeActualOutputFileContent(TESTS_SUBPATH, "testDataPartitionArgumentsAreSerializedAppropriately",
+              "savedManifest.manifest.cdm.json", ModelJsonTestBase.serialize(obtainedCdmFolder));
+    }
+    final String expectedOutput = TestHelper.getExpectedOutputFileContent(TESTS_SUBPATH, "testDataPartitionArgumentsAreSerializedAppropriately", "savedManifest-Java.manifest.cdm.json");
+    TestHelper.assertSameObjectWasSerialized(expectedOutput, ModelJsonTestBase.serialize(obtainedCdmFolder));
+  }
+
+
+  /*
    * Testing programmatically creating manifest with partitions and persisting.
    */
   @Test
-  public void testProgrammaticallyCreatePartitions() throws IOException, InterruptedException {
+  public void testProgrammaticallyCreatePartitions() {
     final CdmCorpusDefinition corpus = new CdmCorpusDefinition();
     final CdmManifestDefinition manifest =
         corpus.makeObject(CdmObjectType.ManifestDef, "manifest");

@@ -1,6 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
+from collections import OrderedDict
 from typing import Optional, Dict, List
 
 from cdm.enums import CdmAttributeContextType, CdmLogCode, CdmObjectType
@@ -104,7 +105,7 @@ class ProjectionResolutionCommonUtil:
         """Gets the names of the top-level nodes in the projection state tree (for non-polymorphic scenarios) that match a set of attribute names """
         # This dictionary contains a mapping from the top-level name of an attribute
         # to the attribute name the top-level name was derived from (the name contained in the given list)
-        top_level_attribute_names = {}
+        top_level_attribute_names = OrderedDict()
 
         # Iterate through each attribute name in the list and search for their top-level names
         for attr_name in attr_names:

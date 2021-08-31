@@ -146,7 +146,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             document.Namespace = this.Owner.Namespace;
             MakeDocumentDirty(); // set the document to dirty so it will get saved in the new folder location if saved
             this.Owner.Corpus.AddDocumentObjects(this.Owner, document);
-            this.Owner.DocumentLookup.Add(document.Name, document);
         }
 
         /// <summary>

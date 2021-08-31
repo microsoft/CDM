@@ -17,7 +17,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class CacheTest {
-    private static final String TESTS_SUBPATH = new File(new File("cdm", "resolution"), "cache").toString();
+    private static final String TESTS_SUBPATH = new File(new File("Cdm", "Resolution"), "CacheTest").toString();
 
     /**
      * Test when cached value hit the max depth, we are now getting
@@ -25,7 +25,7 @@ public class CacheTest {
      */
     @Test
     public void testMaxDepthCached() throws InterruptedException {
-        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testMaxDepth", null);
+        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testMaxDepth");
         CdmEntityDefinition aEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("A.cdm.json/A").join();
         CdmEntityDefinition bEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("B.cdm.json/B").join();
         CdmEntityDefinition cEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("C.cdm.json/C").join();
@@ -68,7 +68,7 @@ public class CacheTest {
      */
     @Test
     public void testNonMaxDepthCached() throws InterruptedException {
-        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testMaxDepth", null);
+        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testMaxDepth");
         CdmEntityDefinition aEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("A.cdm.json/A").join();
         CdmEntityDefinition bEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("B.cdm.json/B").join();
         CdmEntityDefinition cEnt = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("C.cdm.json/C").join();

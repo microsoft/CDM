@@ -23,12 +23,7 @@ public class ProjectionAttributeContextTest {
     /**
      * The path between TestDataPath and TestName.
      */
-    private static final String TESTS_SUBPATH =
-        new File(new File(new File(
-            "cdm"),
-            "projection"),
-            "testProjectionAttributeContext")
-            .toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionAttributeContextTest").toString();
 
     /**
      * Extends entity with a string reference

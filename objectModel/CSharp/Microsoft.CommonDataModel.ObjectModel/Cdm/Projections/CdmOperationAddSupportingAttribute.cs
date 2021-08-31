@@ -29,10 +29,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            CdmOperationAddSupportingAttribute copy = new CdmOperationAddSupportingAttribute(this.Ctx)
+            if (resOpt == null)
             {
-                SupportingAttribute = this.SupportingAttribute?.Copy(resOpt) as CdmTypeAttributeDefinition
-            };
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var copy = host == null ? new CdmOperationAddSupportingAttribute(this.Ctx) : host as CdmOperationAddSupportingAttribute;
+
+            copy.SupportingAttribute = this.SupportingAttribute?.Copy(resOpt) as CdmTypeAttributeDefinition;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 

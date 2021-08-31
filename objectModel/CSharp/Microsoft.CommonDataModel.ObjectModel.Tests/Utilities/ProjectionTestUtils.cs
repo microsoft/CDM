@@ -297,7 +297,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             else
             {
                 // Actual
-                string actualStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, "..", "ActualOutput", $"{fileNamePrefix}{fileNameSuffix}.txt"));
+                string actualStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, "..", TestHelper.GetTestActualOutputFolderName(), $"{fileNamePrefix}{fileNameSuffix}.txt"));
 
                 // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
                 File.WriteAllText(actualStringFilePath, actualText);

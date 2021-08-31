@@ -3,6 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -163,7 +164,7 @@ public final class AttributeContextUtil {
 
             try {
                 // Actual
-                Path actualStringFilePath = new File(expectedOutputPath.replace("ExpectedOutput", "ActualOutput"), "AttrCtx_" + entityName + ".txt").toPath();
+                Path actualStringFilePath = new File(expectedOutputPath.replace("ExpectedOutput", TestHelper.getTestActualOutputFolderName()), "AttrCtx_" + entityName + ".txt").toPath();
 
                 // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
                 String actualText = attrCtxUtil.getAttributeContextStrings(resolvedEntity);

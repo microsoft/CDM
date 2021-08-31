@@ -35,9 +35,9 @@ public class CalculateRelationshipTest {
      * The path between TestDataPath and TestName.
      */
     private static final String TESTS_SUBPATH =
-        new File(new File(new File("cdm"),
-            "relationship"),
-            "testCalculateRelationship")
+        new File(new File(new File("Cdm"),
+            "Relationship"),
+            "TestCalculateRelationship")
             .toString();
 
     /**
@@ -149,7 +149,7 @@ public class CalculateRelationshipTest {
      * Common test code for these test cases
      */
     private void testRun(String testName, String entityName, boolean isEntitySet, boolean updateExpectedOutput) throws InterruptedException, IOException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
         String inputFolder = TestHelper.getInputFolderPath(TESTS_SUBPATH, testName);
         String expectedOutputFolder = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
         String actualOutputFolder = TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, testName);

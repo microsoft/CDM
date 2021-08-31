@@ -4,11 +4,19 @@
 package com.microsoft.commondatamodel.objectmodel.utilities.logger;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionPatternDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 
-import java.io.Console;
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
@@ -29,11 +37,17 @@ public class Logger {
    * @param method The method, usually denotes method calling this
    * @param corpuspath The corpuspath, usually denotes corpus path of document.
    * @param message The message.
+   * @param ingestTelemetry Whether the log is required to be ingested.
+   */
+  public static void debug(CdmCorpusContext ctx, String classname, String method, String corpuspath, String message, boolean ingestTelemetry) {
+    log(CdmStatusLevel.Progress, ctx, classname, message, method, System.out::println, corpuspath, CdmLogCode.None, ingestTelemetry);
+  }
+
+  /**
+   * Log to DEBUG level. Set ingestTelemetry to false by default.
    */
   public static void debug(CdmCorpusContext ctx, String classname, String method, String corpuspath, String message) {
-    if (CdmStatusLevel.Progress.compareTo(ctx.getReportAtLevel()) >= 0) {
-      log(CdmStatusLevel.Progress, ctx, classname, message, method, System.out::println, corpuspath, CdmLogCode.None);
-    }
+    debug(ctx, classname, method, corpuspath, message, false);
   }
 
    /**
@@ -45,9 +59,7 @@ public class Logger {
     * @param message The message.
     */
   public static void info(CdmCorpusContext ctx, String classname, String method, String corpuspath, String message) {
-    if (CdmStatusLevel.Info.compareTo(ctx.getReportAtLevel()) >= 0) {
-      log(CdmStatusLevel.Info, ctx, classname, message, method, System.out::println, corpuspath, CdmLogCode.None);
-    }
+    log(CdmStatusLevel.Info, ctx, classname, message, method, System.out::println, corpuspath, CdmLogCode.None);
   }
 
   /**
@@ -63,11 +75,9 @@ public class Logger {
    *       message.
    */
   public static void warning(CdmCorpusContext ctx, String classname, String method, String corpuspath, CdmLogCode code, String... args) {
-    if (CdmStatusLevel.Warning.compareTo(ctx.getReportAtLevel()) >= 0) {
-      // Get message from resource for the code enum.
-      String message = getMessagefromResourceFile(code, args);
-      log(CdmStatusLevel.Warning, ctx, classname, message, method, System.out::println, corpuspath, code);
-    }
+    // Get message from resource for the code enum.
+    String message = getMessagefromResourceFile(code, args);
+    log(CdmStatusLevel.Warning, ctx, classname, message, method, System.out::println, corpuspath, code);
   }
 
   /**
@@ -82,11 +92,9 @@ public class Logger {
    * @param args The args, denotes the arguments inserts into the
    */
   public static void error(CdmCorpusContext ctx, String classname, String method, String corpuspath, CdmLogCode code, String... args) {
-    if (CdmStatusLevel.Error.compareTo(ctx.getReportAtLevel()) >= 0) {
-      // Get message from resource for the code enum.
-      String message = getMessagefromResourceFile(code, args);
-      log(CdmStatusLevel.Error, ctx, classname, message, method, System.err::println, corpuspath, code);
-    }
+    // Get message from resource for the code enum.
+    String message = getMessagefromResourceFile(code, args);
+    log(CdmStatusLevel.Error, ctx, classname, message, method, System.err::println, corpuspath, code);
   }
 
   /**
@@ -157,47 +165,68 @@ public class Logger {
    * @param defaultStatusEvent The default status event (log using the default
    *       logger).
    * @param code The code, denotes the code enum for a message..
+   * @param ingestTelemetry Whether the log is required to be ingested.
    */
   private static void log(CdmStatusLevel level, CdmCorpusContext ctx, String classname, String message, String method,
-      Consumer<String> defaultStatusEvent, String corpuspath, CdmLogCode code) {
+      Consumer<String> defaultStatusEvent, String corpuspath, CdmLogCode code, boolean ingestTelemetry) {
     if (ctx.getSuppressedLogCodes().contains(code))
       return;
 
     // Write message to the configured logger
+    if (level.compareTo(ctx.getReportAtLevel()) >= 0) {
+      final String timestamp = TimeUtils.formatDateStringIfNotNull(OffsetDateTime.now(ZoneOffset.UTC));
 
-    // Store a record of the event.
-    // Save some dict init and string formatting cycles by checking
-    // whether the recording is actually enabled.
-    if (ctx.getEvents().isRecording()) {
-      Map<String, String> theEvent = new HashMap<>();
-      theEvent.put("timestamp", TimeUtils.formatDateStringIfNotNull(OffsetDateTime.now(ZoneOffset.UTC)));
-      theEvent.put("level", level.name());
-      theEvent.put("class", classname);
-      theEvent.put("message", message);
-      theEvent.put("method", method);
+      // Store a record of the event.
+      // Save some dict init and string formatting cycles by checking
+      // whether the recording is actually enabled.
+      if (ctx.getEvents().isRecording()) {
+        Map<String, String> theEvent = new HashMap<>();
+        theEvent.put("timestamp", timestamp);
+        theEvent.put("level", level.name());
+        theEvent.put("class", classname);
+        theEvent.put("message", message);
+        theEvent.put("method", method);
 
-      if (level == CdmStatusLevel.Error || level == CdmStatusLevel.Warning) {
-        theEvent.put("code", code.name());
+        if (level == CdmStatusLevel.Error || level == CdmStatusLevel.Warning) {
+          theEvent.put("code", code.name());
+        }
+
+        if (ctx.getCorrelationId() != null) {
+          theEvent.put("cid", ctx.getCorrelationId());
+        }
+
+        if (corpuspath != null) {
+          theEvent.put("path", corpuspath);
+        }
+
+        ctx.getEvents().add(theEvent);
       }
 
-      if (ctx.getCorrelationId() != null) {
-        theEvent.put("cid", ctx.getCorrelationId());
+      String formattedMessage = formatMessage(classname, message, method, ctx.getCorrelationId(), corpuspath);
+
+      if (ctx.getStatusEvent() != null) {
+        ctx.getStatusEvent().apply(level, formattedMessage);
+      } else {
+        defaultStatusEvent.accept(message);
       }
 
-      if (corpuspath != null) {
-        theEvent.put("path", corpuspath);
+      // Ingest the logs into telemetry database
+      if (ctx.getCorpus().getTelemetryClient() != null) {
+        ctx.getCorpus().getTelemetryClient().addToIngestionQueue
+          (timestamp, level, classname, method, corpuspath, message, ingestTelemetry, code);
       }
-
-      ctx.getEvents().add(theEvent);
     }
+  }
 
-    String formattedMessage = formatMessage(classname, message, method, ctx.getCorrelationId(), corpuspath);
-
-    if (ctx.getStatusEvent() != null) {
-      ctx.getStatusEvent().apply(level, formattedMessage);
-    } else {
-      defaultStatusEvent.accept(message);
-    }
+  /**
+   * Log to the specified status level by using the status event on the corpus
+   * context (if it exists) or the default logger. The log level, classname, message and
+   * path values are also added as part of a new entry to the log recorder.
+   * Set ingestTelemetry to false by default.
+   */
+  private static void log(CdmStatusLevel level, CdmCorpusContext ctx, String classname, String message, String method,
+    Consumer<String> defaultStatusEvent, String corpuspath, CdmLogCode code) {
+    log(level, ctx, classname, message, method, defaultStatusEvent, corpuspath, code, false);
   }
 
   /**
@@ -213,7 +242,7 @@ public class Logger {
       int i = 0;
       for (String x : args) {
         String from = "{" + i + "}";
-        builder = builder.replace(builder.indexOf(from), builder.indexOf(from) + from.length(), x);
+        builder = builder.replace(builder.indexOf(from), builder.indexOf(from) + from.length(), x == null ? "" : x);
         i++;
       }
     return builder.toString();
@@ -283,18 +312,194 @@ public class Logger {
   public static class LoggerScope implements AutoCloseable {
     private final TState state;
     private Instant time;
+    private boolean isTopLevelMethod = false;
 
     public LoggerScope(TState state) {
       time = Instant.now();
       this.state = state;
       state.ctx.getEvents().enable();
+
+      // check if the method is at the outermost level
+      if (state.ctx.getEvents().getNestingLevel() == 1) {
+        isTopLevelMethod = true;
+      }
+
       debug(state.ctx, state.classname, state.path, null, "Entering scope");
     }
 
     @Override
     public void close() {
-      debug(state.ctx, state.classname, state.path, null, Logger.format("Leaving scope. Time Elapsed: {0} ms :", String.valueOf(Duration.between(time, Instant.now()).toMillis())));
+      String message = Logger.format("Leaving scope. Time Elapsed: {0} ms; Cache memory used: {1}",
+        String.valueOf(Duration.between(time, Instant.now()).toMillis()), ((ResolveContext)state.ctx).getCache().size());
+
+      debug(state.ctx, state.classname, state.path, null, message, isTopLevelMethod);
+
       state.ctx.getEvents().disable();
     }
+  }
+
+  /**
+   * Construct a message for the input manifest info and log the message.
+   * 
+   * @param manifest The manifest to be logged.
+   * @param ctx The CDM corpus context.
+   * @param className Usually the class that is calling the method.
+   * @param method Usually denotes method calling this method.
+   * @param corpusPath Usually denotes corpus path of document.
+   */
+  public static void ingestManifestTelemetry(final CdmManifestDefinition manifest,
+    final CdmCorpusContext ctx, final String className, final String method, final String corpusPath) {
+
+    // Get the namespace of the storage for the manifest
+    String storageNamespace = manifest.getNamespace();
+
+    if (StringUtils.isNullOrEmpty(storageNamespace)) {
+      storageNamespace = manifest.getCtx().getCorpus().getStorage().getDefaultNamespace();
+    }
+
+    // Get storage adapter type
+    final StorageAdapter adapter = manifest.getCtx().getCorpus().getStorage().fetchAdapter(storageNamespace);
+    final String adapterType = adapter.getClass().getSimpleName();
+
+    String message = Logger.format("ManifestStorage:{0};", adapterType);
+
+    final Map<String, Integer> manifestInfo = new HashMap<>();
+
+    manifestInfo.put("RelationshipNum", manifest.getRelationships().getCount());
+
+    final int entityNum = manifest.getEntities().getCount();
+    manifestInfo.put("EntityNum", entityNum);
+
+    // Counts the total number partitions in the manifest
+    int partitionNum = 0;
+
+    // Counts the number of different partition patterns in all the entities
+    int partitionGlobPatternNum = 0;
+    int partitionRegExPatternNum = 0;
+
+    // Counts the number of standard entities
+    int standardEntityNum = 0;
+
+    // Get detailed info for each entity
+    for (final CdmEntityDeclarationDefinition entityDec : manifest.getEntities()) {
+      // Get data partition info, if any
+      if (entityDec.getDataPartitions() != null) {
+        partitionNum += entityDec.getDataPartitions().getCount();
+
+        for (final CdmDataPartitionPatternDefinition pattern : entityDec.getDataPartitionPatterns()) {
+          // If both globPattern and regularExpression is set, globPattern will be used.
+          if (pattern.getGlobPattern() != null) {
+            partitionGlobPatternNum++;
+          }
+          else if (pattern.getRegularExpression() != null) {
+            partitionRegExPatternNum++;
+          }
+        }
+      }
+
+      // Check if entity is standard
+      final String entityNamespace = StorageUtils.splitNamespacePath(entityDec.getEntityPath()).left;
+
+      if (entityNamespace == "cdm") {
+        standardEntityNum++;
+      }
+    }
+
+    // Add all cumulated entity info
+    manifestInfo.put("PartitionNum", partitionNum);
+    manifestInfo.put("PartitionGlobPatternNum", partitionGlobPatternNum);
+    manifestInfo.put("PartitionRegExPatternNum", partitionRegExPatternNum);
+    manifestInfo.put("StandardEntityNum", standardEntityNum);
+    manifestInfo.put("CustomEntityNum", entityNum - standardEntityNum);
+
+    // Serialize manifest info dictionary
+    message += serializeMap(manifestInfo);
+
+    debug(ctx, className, method, corpusPath, MessageFormat.format("Manifest Info: '{'{0}'}'", message), true);
+  }
+
+  /**
+   * Construct a message for the input entity data and log the message.
+   * 
+   * @param entity The entity to be logged.
+   * @param ctx The CDM corpus context.
+   * @param className Usually the class that is calling the method.
+   * @param method Usually denotes method calling this method.
+   * @param corpusPath Usually denotes corpus path of document.
+   */
+  public static void ingestEntityTelemetry(final CdmEntityDefinition entity,
+    final CdmCorpusContext ctx, final String className, final String method, final String corpusPath) {
+
+    // Get entity storage namespace
+    String entityNamespace = entity.getInDocument().getNamespace();
+
+    if (StringUtils.isNullOrEmpty(entityNamespace)) {
+      entityNamespace = entity.getCtx().getCorpus().getStorage().getDefaultNamespace();
+    }
+
+    // Get storage adapter type
+    final StorageAdapter adapter = entity.getCtx().getCorpus().getStorage().fetchAdapter(entityNamespace);
+    final String adapterType = adapter.getClass().getSimpleName();
+
+    String message = Logger.format("EntityStorage:{0};EntityNamespace:{1};", adapterType, entityNamespace);
+
+    // Collect all entity info
+    final Map<String, Integer> entityInfo = formEntityInfoDict(entity);
+
+    message += serializeMap(entityInfo);
+
+    debug(ctx, className, method, corpusPath, MessageFormat.format("Entity Info: '{'{0}'}'", message), true);
+  }
+
+  /**
+   * Construct a message consisting of all the information about the input entity.
+   * 
+   * @param entity The entity to be logged.
+   * 
+   * @return A dictionary containing all entity info.
+   */
+  private static Map<String, Integer> formEntityInfoDict(final CdmEntityDefinition entity) {
+    Map<String, Integer> entityInfo = new HashMap<String, Integer>();
+
+    // Check whether entity is resolved
+    int isResolved = 0;
+
+    if (entity.getAttributeContext() != null) {
+      isResolved = 1;
+    }
+
+    entityInfo.put("ResolvedEntity", isResolved);
+    entityInfo.put("ExhibitsTraitNum", entity.getExhibitsTraits().getCount());
+    entityInfo.put("AttributeNum", entity.getAttributes().getCount());
+
+    // The number of traits whose name starts with "means."
+    int semanticsTraitNum = 0;
+
+    for (final CdmTraitReferenceBase trait : entity.getExhibitsTraits()) {
+      if (trait.fetchObjectDefinitionName().startsWith("means.")) {
+        semanticsTraitNum++;
+      }
+    }
+
+    entityInfo.put("SemanticsTraitNum", semanticsTraitNum);
+
+    return entityInfo;
+  }
+
+  /**
+   * Serialize the map and return a string.
+   * 
+   * @param map The map object to be serialized.
+   * 
+   * @return The serialized map.
+   */
+  private static String serializeMap(final Map<String, Integer> map) {
+    final StringBuilder mapAsString = new StringBuilder();
+
+    for (final String key : map.keySet()) {
+      mapAsString.append(key + ":" + map.get(key) + ";");
+    }
+
+    return mapAsString.toString();
   }
 }

@@ -26,6 +26,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Ent
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ConstantEntity;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -113,7 +114,7 @@ public class TypeAttributeTest {
    */
   @Test
   public void testReadingIsPrimaryKey() throws InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testReadingIsPrimaryKey", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testReadingIsPrimaryKey");
 
     final ResolveOptions resOpt = new ResolveOptions();
     resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
@@ -170,7 +171,7 @@ public class TypeAttributeTest {
   @Test
   public void testPropertyPersistence() throws InterruptedException, ExecutionException, JsonProcessingException {
     final ObjectMapper mapper = new ObjectMapper();
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestPropertyPersistence", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestPropertyPersistence");
 
     HashMap<String, String> functionParameters = new HashMap<>();
     final EventCallback callback = (CdmStatusLevel statusLevel, String message1) -> {
@@ -340,7 +341,7 @@ public class TypeAttributeTest {
    */
   @Test
   public void testDataFormatToTraitMappings() throws InterruptedException, ExecutionException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testDataFormatToTraitMappings", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testDataFormatToTraitMappings");
     final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").get();
 
     // Check that the traits we expect for each DataFormat are found in the type attribute's applied traits.
@@ -441,6 +442,28 @@ public class TypeAttributeTest {
     Set<String> qTraitNamedReferences = fetchTraitNamedReferences(attributeQ.getAppliedTraits());
     Assert.assertTrue(qTraitNamedReferences.contains("is.dataFormat.array"));
     Assert.assertTrue(qTraitNamedReferences.contains("means.content.text.JSON"));
+  }
+
+  /**
+   * Testing that cardinality settings are loaded and saved correctly
+   */
+  @Test
+  public void testCardinalityPersistence() throws InterruptedException, ExecutionException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testCardinalityPersistence");
+
+    // test fromData
+    final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/someEntity.cdm.json/someEntity").get();
+    final CdmTypeAttributeDefinition attribute = (CdmTypeAttributeDefinition)entity.getAttributes().get(0);
+
+    Assert.assertNotNull(attribute.getCardinality());
+    Assert.assertEquals((attribute.getCardinality().getMinimum()), "0");
+    Assert.assertEquals((attribute.getCardinality().getMaximum()), "1");
+
+    // test toData
+    final TypeAttribute attributeData = TypeAttributePersistence.toData(attribute, new ResolveOptions(entity.getInDocument()), new CopyOptions());
+    Assert.assertNotNull(attributeData.getCardinalitySettings());
+    Assert.assertEquals((attributeData.getCardinalitySettings().get("minimum").asText()), "0");
+    Assert.assertEquals((attributeData.getCardinalitySettings().get("maximum").asText()), "1");
   }
 
   private Set<String> fetchTraitNamedReferences(CdmTraitCollection traits) {

@@ -755,7 +755,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     inGenerated = true; // special mode where we hate everything except the removed att notes
                 }
 
-                if (inGenerated && (ac.Type == CdmAttributeContextType.OperationExcludeAttributes || ac.Type == CdmAttributeContextType.OperationIncludeAttributes))
+                if (inGenerated && ac.Type == CdmAttributeContextType.OperationExcludeAttributes)
                 {
                     inRemove = true; // triggers us to know what to do in the next code block.
                 }
@@ -773,6 +773,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         return true;
                     }
+                }
+
+                // this attribute was removed by a projection operation, but we want to keep the node to indicate what the operation did
+                if (ac.Type == CdmAttributeContextType.AttributeExcluded)
+                {
+                    removedAttribute = true;
                 }
 
                 if (!inGenerated || removedAttribute)

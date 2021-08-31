@@ -143,9 +143,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             // Rename attribute ["newName" -> "renaming-{m}" ]
             // alter traits on ["renaming-newName", + { "means.TraitG4(precision:5, scale:15)" } ]
             Assert.AreEqual(4, resolvedEntity.Attributes.Count);
-            ValidateTrait((CdmTypeAttributeDefinition)resolvedEntity.Attributes[0], "name");
-            ValidateTrait((CdmTypeAttributeDefinition)resolvedEntity.Attributes[1], "age", doesNotExist: true);
-            ValidateTrait((CdmTypeAttributeDefinition)resolvedEntity.Attributes[2], "phoneNumber", doesNotExist: true);
+            ValidateTrait((CdmTypeAttributeDefinition)resolvedEntity.Attributes[0], "age", doesNotExist: true);
+            ValidateTrait((CdmTypeAttributeDefinition)resolvedEntity.Attributes[1], "phoneNumber", doesNotExist: true);
+            ValidateTrait((CdmTypeAttributeDefinition)resolvedEntity.Attributes[2], "name");
             ValidateTrait((CdmTypeAttributeDefinition)resolvedEntity.Attributes[3], "renaming-newName", true);
         }
 

@@ -87,7 +87,9 @@ public class CardinalitySettings {
     }
 
     public void setMinimum(final String minimum) {
-        if (!CardinalitySettings.isMinimumValid(minimum)) {
+        if (StringUtils.isNullOrTrimEmpty(minimum)) {
+            Logger.error(this.ctx, TAG, "setMinimum", owner.getAtCorpusPath(), CdmLogCode.ErrPersistCardinalityPropMissing);
+        } else if (!CardinalitySettings.isMinimumValid(minimum)) {
             Logger.error(this.ctx, TAG, "setMinimum", owner.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMinCardinality, minimum);
         } else {
             _minimum = minimum;
@@ -105,7 +107,9 @@ public class CardinalitySettings {
     }
 
     public void setMaximum(final String maximum) {
-        if (!CardinalitySettings.isMaximumValid(maximum)) {
+        if (StringUtils.isNullOrTrimEmpty(maximum)) {
+            Logger.error(this.ctx, TAG, "setMaximum", owner.getAtCorpusPath(), CdmLogCode.ErrPersistCardinalityPropMissing);
+        } else if (!CardinalitySettings.isMaximumValid(maximum)) {
             Logger.error(this.ctx, TAG, "setMaximum", owner.getAtCorpusPath(), CdmLogCode.ErrValdnInvalidMaxCardinality, maximum);
         } else {
             _maximum = maximum;

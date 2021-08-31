@@ -41,12 +41,17 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy = new CdmOperationRenameAttributes(this.ctx);
-        copy.renameFormat = this.renameFormat;
-        if (this.applyTo !== undefined) {
-            copy.applyTo = Object.assign(this.applyTo);
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
+
+        const copy: CdmOperationRenameAttributes = !host ? new CdmOperationRenameAttributes(this.ctx) : host as CdmOperationRenameAttributes;
+
+        copy.applyTo = this.applyTo ? this.applyTo.slice() : undefined;
+        copy.renameFormat = this.renameFormat;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

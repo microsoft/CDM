@@ -13,11 +13,11 @@ class CardinalitySettingUnitTest(unittest.TestCase):
     """Unit test for CardinalitySetting functions"""
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestCardinalitySetting')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'CardinalitySettingTest')
 
     def test_minimum(self):
         """Unit test for CardinalitySetting.IsMinimumValid"""
-        test_name = 'TestMinimum'
+        test_name = 'test_minimum'
 
         corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
@@ -33,7 +33,7 @@ class CardinalitySettingUnitTest(unittest.TestCase):
 
     def test_maximum(self):
         """Unit test for CardinalitySetting.IsMaximumValid"""
-        test_name = 'TestMaximum'
+        test_name = 'test_maximum'
 
         corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 

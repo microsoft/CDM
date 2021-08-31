@@ -70,7 +70,7 @@ public class AdlsModelJsonTestHelper {
                 inputContent);
 
         // Update expected content and save to ActualOutput/Expected
-        String expectedContent = TestHelper.getExpectedOutputFileContent(testSubPath, testName, fileName);
+        String expectedContent = TestHelper.getExpectedOutputFileContent(testSubPath, testName, fileName,true);
         expectedContent = replacePlaceholders(expectedContent, rootPath, stringToAddSuffix, suffix);
 
         String expectedFolderPath = getActualSubFolderPath(testSubPath, testName, EXPECTED_FOLDER_NAME);

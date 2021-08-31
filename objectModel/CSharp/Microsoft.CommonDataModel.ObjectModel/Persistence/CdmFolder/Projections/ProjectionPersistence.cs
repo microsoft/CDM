@@ -121,7 +121,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 source = instance.Source.NamedReference;
             }
-            else if (instance.Source != null && instance.Source.GetType() == typeof(CdmEntityReference))
+            else if (instance.Source != null && instance.Source.ObjectType == CdmObjectType.EntityRef)
             {
                 source = EntityReferencePersistence.ToData(instance.Source, resOpt, options);
             }

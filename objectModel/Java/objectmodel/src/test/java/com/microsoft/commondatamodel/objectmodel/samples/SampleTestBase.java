@@ -10,7 +10,7 @@ import org.testng.SkipException;
  * The base class for sample test classes.
  */
 public abstract class SampleTestBase {
-    protected static final String TESTS_SUBPATH = "samples";
+    protected static final String TESTS_SUBPATH = "Samples";
 
     /**
      * Check the environment variable and throws SkipException which marks

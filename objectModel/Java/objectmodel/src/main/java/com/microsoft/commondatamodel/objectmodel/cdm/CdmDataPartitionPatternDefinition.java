@@ -78,14 +78,15 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
       copy = new CdmDataPartitionPatternDefinition(getCtx(), getName());
     } else {
       copy = (CdmDataPartitionPatternDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setName(this.getName());
     }
 
     copy.setRootLocation(this.getRootLocation());
     copy.setGlobPattern(this.getGlobPattern());
     copy.setRegularExpression(this.getRegularExpression());
-    copy.setParameters(this.getParameters());
+    copy.setParameters(
+            this.getParameters() != null
+                    ? new ArrayList<>(this.getParameters()) : null);
     copy.setLastFileStatusCheckTime(this.getLastFileStatusCheckTime());
     copy.setLastFileModifiedTime(this.getLastFileModifiedTime());
 
@@ -281,7 +282,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
           // Remove namespace from path
           final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(rootCorpus);
           if (pathTuple == null) {
-            Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", rootCorpus, CdmLogCode.ErrStorageNullCorpusPath, this.getAtCorpusPath());
+            Logger.error(this.getCtx(), TAG, "fileStatusCheckAsync", this.getAtCorpusPath(), CdmLogCode.ErrStorageNullCorpusPath);
             return;
           }
 

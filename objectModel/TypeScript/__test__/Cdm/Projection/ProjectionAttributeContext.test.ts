@@ -15,7 +15,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionAttributeContext';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionAttributeContextTest';
 
     /**
      * Extends entity with a string reference

@@ -42,7 +42,6 @@ class CdmTraitGroupDefinition(CdmObjectDefinition):
             copy = CdmTraitGroupDefinition(self.ctx, self.trait_group_name)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.trait_group_name = self.trait_group_name
 
         self._copy_def(res_opt, copy)

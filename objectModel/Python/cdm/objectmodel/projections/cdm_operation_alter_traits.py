@@ -38,11 +38,7 @@ class CdmOperationAlterTraits(CdmOperationBase):
         if not res_opt:
             res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
-        if not host:
-            copy = CdmOperationAlterTraits(self.ctx)
-        else:
-            copy = host
-            copy.ctx = self.ctx
+        copy = CdmOperationAlterTraits(self.ctx) if not host else host
 
         traits_to_add = []
         if self.traits_to_add is not None:
@@ -54,13 +50,11 @@ class CdmOperationAlterTraits(CdmOperationBase):
             for trait in self.traits_to_remove:
                 traits_to_remove.append(cast(CdmTraitReferenceBase, trait.copy(res_opt)))
 
-        apply_to = []
-        if apply_to is not None:
-            apply_to.extend(self.apply_to)
+        if self.apply_to is not None:
+            copy.apply_to = self.apply_to.copy()
 
         copy.traits_to_add = traits_to_add
         copy.traits_to_remove = traits_to_remove
-        copy.apply_to = apply_to
         copy.arguments_contain_wildcards = self.arguments_contain_wildcards
 
         self._copy_proj(res_opt, copy)

@@ -16,7 +16,6 @@ class DocumentLibrary:
         # --- internal ---
 
         self._document_library_lock = threading.Lock()
-        self._docs_not_loaded = set()  # type: Set[str]
         self._docs_currently_loading = set()  # type: Set[str]
         self._docs_not_indexed = set()  # type: Set[CdmDocumentDefinition]
         self._docs_not_found = set()  # type: Set[str]
@@ -30,6 +29,7 @@ class DocumentLibrary:
             if path not in self._path_lookup:
                 self._all_documents.append((folder, doc))
                 self._path_lookup[path] = (folder, doc)
+                folder._document_lookup[doc.name] = doc
 
     def _remove_document_path(self, path: str, folder: 'CdmFolderDefinition', doc: 'CdmDocumentDefinition'):
         """Removes a folder and document from the list of all documents in the corpus. Also removes the document path from the path lookup."""
@@ -48,73 +48,50 @@ class DocumentLibrary:
                 docs_not_indexed.append(doc)
         return docs_not_indexed
 
-    def _list_docs_not_loaded(self) -> Set[str]:
-        """Returns a list of all the documents that are not loaded."""
-        with self._document_library_lock:
-            return self._docs_not_loaded.copy()
-
     def _list_all_documents(self) -> List['CdmDocumentDefinition']:
         """Returns a list of all the documents in the corpus."""
         with self._document_library_lock:
             return [fd[1] for fd in self._all_documents]
 
-    def _add_to_docs_not_loaded(self, path: str):
-        """Adds a document to the list of documents that are not loaded if its path does not exist in the path lookup."""
-        with self._document_library_lock:
-            if path not in self._docs_not_found:
-                lookup = self._path_lookup.get(path.lower())  # type: Tuple[CdmFolderDefinition, CdmDocumentDefinition]
-                # If the imports were not indexed yet there might be documents imported that weren't loaded.
-                if not lookup or (not lookup[1]._imports_indexed and not lookup[1]._currently_indexing):
-                    self._docs_not_loaded.add(path)
-
     def _fetch_document(self, path: str) -> Optional['CdmDocumentDefinition']:
         """Fetches a document from the path lookup."""
         with self._document_library_lock:
             if path not in self._docs_not_found:
-                lookup = self._path_lookup.get(path.lower())  # type: Tuple[CdmFolderDefinition, CdmDocumentDefinition]
+                lookup = self._path_lookup.get(path)  # type: Tuple[CdmFolderDefinition, CdmDocumentDefinition]
                 if lookup:
                     inner_doc = lookup[1]  # type: CdmDocumentDefinition
                     return inner_doc
         return None
 
-    def _need_to_load_document(self, doc_name: str, docs_now_loaded: Set['CdmDocumentDefinition']) -> bool:
+    def _need_to_load_document(self, doc_path: str) -> bool:
         """Sets a document's status to loading if the document needs to be loaded."""
 
-        need_to_load = False
-        doc = None  # type: Optional[CdmDocumentDefinition]
         with self._document_library_lock:
-            if doc_name in self._docs_not_loaded and doc_name not in self._docs_not_found and doc_name not in self._docs_currently_loading:
-                # set status to loading
-                self._docs_not_loaded.remove(doc_name)
+            document = self._path_lookup[doc_path][1] if doc_path in self._path_lookup else None
 
-                # The document was loaded already, skip it.
-                if doc_name.lower() in self._path_lookup:
-                    lookup = self._path_lookup[doc_name.lower()]
-                    doc = lookup[1]
-                else:
-                    self._docs_currently_loading.add(doc_name)
-                    need_to_load = True
-        
-        if doc:
-            # _mark_document_as_loaded_or_failed needs to because it also requires the lock.
-            self._mark_document_as_loaded_or_failed(doc, doc_name, docs_now_loaded)
-        return need_to_load
+            # first check if the document was not found or is currently loading already.
+            # if the document was loaded previously, check if its imports were not indexed and it's not being indexed currently.
+            need_to_load = doc_path not in self._docs_not_found and doc_path not in self._docs_currently_loading and \
+                (not document or (not document._imports_indexed and not document._currently_indexing))
 
-    def _mark_document_as_loaded_or_failed(self, doc: 'CdmDocumentDefinition', doc_name: str, docs_now_loaded: Set['CdmDocumentDefinition']) -> bool:
+            if need_to_load:
+                self._docs_currently_loading.add(doc_path)
+
+            return need_to_load
+
+    def _mark_document_as_loaded_or_failed(self, doc_path: str, doc: 'CdmDocumentDefinition') -> bool:
         """Marks a document for indexing if it has loaded successfully, or adds it to the list of documents not found if it failed to load."""
         with self._document_library_lock:
             # doc is no longer loading
-            self._docs_currently_loading.discard(doc_name)
+            self._docs_currently_loading.discard(doc_path)
             if doc:
-                # doc is now loaded
-                docs_now_loaded.add(doc)
                 # the doc needs to be indexed
                 self._docs_not_indexed.add(doc)
                 doc._currently_indexing = True
                 return True
             else:
                 # the doc failed to load, so set doc as not found
-                self._docs_not_found.add(doc_name)
+                self._docs_not_found.add(doc_path)
                 return False
 
     def _mark_document_as_indexed(self, doc: 'CdmDocumentDefinition'):

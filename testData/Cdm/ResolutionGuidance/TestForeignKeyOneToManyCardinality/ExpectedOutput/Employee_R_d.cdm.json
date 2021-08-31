@@ -1,0 +1,189 @@
+{
+  "jsonSchemaSemanticVersion": "1.3.0",
+  "imports": [
+    {
+      "corpusPath": "/Input/Employee.cdm.json",
+      "moniker": "resolvedFrom"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Employee_R_d",
+      "exhibitsTraits": [
+        {
+          "traitReference": "has.entitySchemaAbstractionLevel",
+          "arguments": [
+            {
+              "name": "level",
+              "value": "resolved"
+            }
+          ]
+        }
+      ],
+      "attributeContext": {
+        "type": "entity",
+        "name": "Employee_R_d",
+        "definition": "resolvedFrom/Employee",
+        "contents": [
+          {
+            "type": "entityReferenceExtends",
+            "name": "extends",
+            "parent": "Employee_R_d/attributeContext/Employee_R_d",
+            "contents": [
+              {
+                "type": "entity",
+                "name": "CdmEntity",
+                "parent": "Employee_R_d/attributeContext/Employee_R_d/extends",
+                "definition": "resolvedFrom/CdmEntity"
+              }
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "attributesAddedAtThisScope",
+            "parent": "Employee_R_d/attributeContext/Employee_R_d",
+            "definition": "resolvedFrom/Employee/hasAttributes/attributesAddedAtThisScope",
+            "contents": [
+              {
+                "type": "attributeGroup",
+                "name": "attributesAddedAtThisScope",
+                "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope",
+                "definition": "resolvedFrom/Employee/hasAttributes/attributesAddedAtThisScope",
+                "contents": [
+                  {
+                    "type": "attributeDefinition",
+                    "name": "ID",
+                    "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope",
+                    "definition": "resolvedFrom/Employee/hasAttributes/attributesAddedAtThisScope/members/ID",
+                    "contents": [
+                      "Employee_R_d/hasAttributes/ID"
+                    ]
+                  },
+                  {
+                    "type": "attributeDefinition",
+                    "name": "FullName",
+                    "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope",
+                    "definition": "resolvedFrom/Employee/hasAttributes/attributesAddedAtThisScope/members/FullName",
+                    "contents": [
+                      "Employee_R_d/hasAttributes/FullName"
+                    ]
+                  },
+                  {
+                    "type": "attributeDefinition",
+                    "name": "TeamID",
+                    "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope",
+                    "definition": "resolvedFrom/Employee/hasAttributes/attributesAddedAtThisScope/members/TeamID",
+                    "contents": [
+                      {
+                        "type": "entity",
+                        "name": "Team",
+                        "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope/TeamID",
+                        "definition": "resolvedFrom/Team",
+                        "contents": [
+                          {
+                            "type": "entityReferenceExtends",
+                            "name": "extends",
+                            "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope/TeamID/Team",
+                            "contents": [
+                              {
+                                "type": "entity",
+                                "name": "CdmEntity",
+                                "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope/TeamID/Team/extends",
+                                "definition": "resolvedFrom/CdmEntity"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "attributeDefinition",
+                            "name": "attributesAddedAtThisScope",
+                            "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope/TeamID/Team",
+                            "definition": "resolvedFrom/Team/hasAttributes/attributesAddedAtThisScope",
+                            "contents": [
+                              {
+                                "type": "attributeGroup",
+                                "name": "attributesAddedAtThisScope",
+                                "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope/TeamID/Team/attributesAddedAtThisScope",
+                                "definition": "resolvedFrom/Team/hasAttributes/attributesAddedAtThisScope"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "generatedSet",
+                        "name": "_generatedAttributeSet",
+                        "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope/TeamID",
+                        "contents": [
+                          {
+                            "type": "addedAttributeExpansionTotal",
+                            "name": "TeamIDTeamCount",
+                            "parent": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope/TeamID/_generatedAttributeSet",
+                            "definition": "resolvedFrom/Employee/hasAttributes/attributesAddedAtThisScope/members/TeamID/resolutionGuidance/countAttribute/TeamCount",
+                            "contents": [
+                              "Employee_R_d/hasAttributes/TeamIDTeamCount"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "hasAttributes": [
+        {
+          "name": "ID",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            {
+              "traitReference": "is.requiredAtLevel",
+              "arguments": [
+                "required"
+              ]
+            }
+          ],
+          "attributeContext": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope/ID",
+          "isPrimaryKey": true,
+          "dataFormat": "Guid",
+          "sourceName": "ID",
+          "displayName": "ID"
+        },
+        {
+          "name": "FullName",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope/FullName",
+          "dataFormat": "String",
+          "sourceName": "FullName",
+          "displayName": "FullName"
+        },
+        {
+          "name": "TeamIDTeamCount",
+          "appliedTraits": [
+            "is.dataFormat.integer",
+            "is.linkedEntity.array.count"
+          ],
+          "attributeContext": "Employee_R_d/attributeContext/Employee_R_d/attributesAddedAtThisScope/attributesAddedAtThisScope/TeamID/_generatedAttributeSet/TeamIDTeamCount",
+          "dataFormat": "Int32"
+        }
+      ],
+      "sourceName": "Employee",
+      "displayName": "Employee",
+      "description": "Employee information.",
+      "version": "1.1",
+      "cdmSchemas": [
+        "/Employee.cdm.json/Employee/hasAttributes/attributesAddedAtThisScope"
+      ]
+    }
+  ]
+}

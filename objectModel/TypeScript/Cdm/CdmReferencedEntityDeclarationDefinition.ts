@@ -85,7 +85,6 @@ export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
             copy = new CdmReferencedEntityDeclarationDefinition(this.ctx, this.entityName);
         } else {
             copy = host as CdmReferencedEntityDeclarationDefinition;
-            copy.ctx = this.ctx;
             copy.entityName = this.entityName;
         }
         copy.entityPath = this.entityPath;

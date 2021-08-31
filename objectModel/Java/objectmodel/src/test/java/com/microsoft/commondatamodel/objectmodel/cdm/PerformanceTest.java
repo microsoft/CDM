@@ -32,7 +32,7 @@ public class PerformanceTest {
   /**
    * The path between TestDataPath and TestName.
    */
-  private static final String TESTS_SUBPATH = new File("cdm", "performance").toString();
+  private static final String TESTS_SUBPATH = new File("Cdm", "Performance").toString();
 
   /**
    * Test the time taken to resolve all the entities

@@ -1,15 +1,7 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from enum import Enum
-
-
-class AutoNumber(Enum):
-    def __new__(cls):
-        value = len(cls.__members__)
-        obj = object.__new__(cls)
-        obj._value_ = value
-        return obj
+from .utils import AutoNumber
 
 
 class CdmLogCode(AutoNumber):
@@ -159,3 +151,4 @@ class CdmLogCode(AutoNumber):
     WARN_VALDN_MAX_ORDINAL = ()
     WARN_VALDN_PRIMARY_KEY_MISSING = ()
     WARN_VALDN_ORDINAL_START_END_ORDER = ()
+    WARN_TELEMETRY_INGESTION_FAILED = ()

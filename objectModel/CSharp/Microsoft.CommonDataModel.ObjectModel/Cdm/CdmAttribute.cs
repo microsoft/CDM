@@ -54,12 +54,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal CdmAttribute CopyAtt(ResolveOptions resOpt, CdmAttribute copy)
         {
-            copy.Purpose = this.Purpose != null ? (CdmPurposeReference)this.Purpose.Copy(resOpt) : null;
-            copy.ResolutionGuidance = this.ResolutionGuidance != null ? (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt) : null;
+            copy.Purpose = this.Purpose?.Copy(resOpt) as CdmPurposeReference;
+            copy.ResolutionGuidance = this.ResolutionGuidance?.Copy(resOpt) as CdmAttributeResolutionGuidance;
             copy.AppliedTraits.Clear();
             foreach (var trait in this.AppliedTraits)
             {
-                copy.AppliedTraits.Add(trait);
+                copy.AppliedTraits.Add(trait.Copy(resOpt) as CdmTraitReferenceBase);
             }
             this.CopyDef(resOpt, copy);
             return copy;

@@ -126,7 +126,7 @@ public class ProjectionPersistence {
                 !StringUtils.isNullOrEmpty(instance.getSource().getNamedReference()) &&
                 instance.getSource().getExplicitReference() == null) {
             source = instance.getSource().getNamedReference();
-        } else if (instance.getSource() != null && instance.getSource() instanceof CdmEntityReference) {
+        } else if (instance.getSource() != null && instance.getSource().getObjectType() == CdmObjectType.EntityRef) {
             source = EntityReferencePersistence.toData(instance.getSource(), resOpt, options);
         } else if (instance.getSource() != null) {
             source = instance.getSource();

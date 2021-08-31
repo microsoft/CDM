@@ -75,6 +75,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         ErrPersistSymsEntityDeclConversionFailure,
         ErrPersistSymsEntityDeclConversionException,
         ErrPersistSymsNotSupported,
+        ErrPersistSymsMultipleOrZeroTableDefinition,
         ErrPersistSymsInvalidDbPropObject,
         ErrPersistSymsInvalidDbObject,
         ErrPersistSymsStorageSourceTraitError,

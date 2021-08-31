@@ -29,6 +29,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.EntityName = entityName;
             this.DataPartitions = new CdmCollection<CdmDataPartitionDefinition>(this.Ctx, this, CdmObjectType.DataPartitionDef);
             this.DataPartitionPatterns = new CdmCollection<CdmDataPartitionPatternDefinition>(this.Ctx, this, CdmObjectType.DataPartitionPatternDef);
+            this.LastFileModifiedTime = null;
+            this.LastFileModifiedOldTime = null;
         }
 
         /// <summary>
@@ -46,10 +48,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public DateTimeOffset? LastFileStatusCheckTime { get; set; }
 
+        private DateTimeOffset? lastFileModifiedTime;
         /// <summary>
         /// Gets or sets the last file modified time.
         /// </summary>
-        public DateTimeOffset? LastFileModifiedTime { get; set; }
+        public DateTimeOffset? LastFileModifiedTime { get { return lastFileModifiedTime; } 
+            set { LastFileModifiedOldTime = lastFileModifiedTime; lastFileModifiedTime = value; } }
+
+        internal DateTimeOffset? LastFileModifiedOldTime { get; private set; }
 
         /// <summary>
         /// Gets or sets the last child file modified time.
@@ -101,7 +107,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmLocalEntityDeclarationDefinition;
-                copy.Ctx = this.Ctx;
                 copy.EntityName = this.EntityName;
                 copy.DataPartitionPatterns.Clear();
                 copy.DataPartitions.Clear();
@@ -113,9 +118,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.LastChildFileModifiedTime = this.LastChildFileModifiedTime;
 
             foreach (var partition in this.DataPartitions)
-                copy.DataPartitions.Add(partition);
+                copy.DataPartitions.Add(partition.Copy(resOpt) as CdmDataPartitionDefinition);
             foreach (var pattern in this.DataPartitionPatterns)
-                copy.DataPartitionPatterns.Add(pattern);
+                copy.DataPartitionPatterns.Add(pattern.Copy(resOpt) as CdmDataPartitionPatternDefinition);
             this.CopyDef(resOpt, copy);
 
             return copy;
@@ -235,6 +240,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 this.DataPartitions.Add(newPartition);
             }
+        }
+
+        /// <summary>
+        /// Reset LastFileModifiedOldTime.
+        /// </summary>
+        internal void ResetLastFileModifiedOldTime()
+        {
+            this.LastFileModifiedOldTime = null;
         }
     }
 }

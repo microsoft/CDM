@@ -82,6 +82,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
    */
   @Deprecated
   public void copyDef(final ResolveOptions resOpt, final CdmObjectDefinitionBase copy) {
+    copy.setCtx(this.getCtx());
     copy.setDeclaredPath(this.getDeclaredPath());
     copy.setExplanation(this.getExplanation());
     copy.getExhibitsTraits().clear();

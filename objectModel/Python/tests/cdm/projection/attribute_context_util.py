@@ -9,6 +9,7 @@ from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmEntityDefinition, CdmAttributeContext, CdmAttributeReference, \
     CdmArgumentDefinition, CdmTraitReference, CdmCollection, CdmAttributeItem, CdmAttributeGroupDefinition, \
     CdmTraitCollection
+from tests.common import TestHelper
 
 
 class AttributeContextUtil:
@@ -119,7 +120,7 @@ class AttributeContextUtil:
             attr_ctx_util = AttributeContextUtil()
 
             # Actual
-            actual_file_path = os.path.join(expected_output_path.replace('ExpectedOutput', 'ActualOutput'), 'AttrCtx_{}.txt'.format(entity_name))
+            actual_file_path = os.path.join(expected_output_path.replace('ExpectedOutput', TestHelper.get_test_actual_output_folder_name()), 'AttrCtx_{}.txt'.format(entity_name))
 
             # Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
             actual_text = attr_ctx_util.get_attribute_context_strings(resolved_entity)

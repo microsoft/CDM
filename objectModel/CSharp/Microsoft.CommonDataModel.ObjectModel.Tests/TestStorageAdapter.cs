@@ -5,9 +5,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 {
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using System;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     public class TestStorageAdapter : StorageAdapterBase

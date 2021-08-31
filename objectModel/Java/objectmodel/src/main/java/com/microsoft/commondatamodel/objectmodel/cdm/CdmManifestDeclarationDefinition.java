@@ -190,7 +190,6 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
       copy = new CdmManifestDeclarationDefinition(this.getCtx(), this.getManifestName());
     } else {
       copy = (CdmManifestDeclarationDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setManifestName(this.getManifestName());
     }
 

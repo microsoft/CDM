@@ -43,6 +43,7 @@ class CdmObjectDefinition(CdmObject):
                 rtsb.merge_traits(et._fetch_resolved_traits(res_opt))
 
     def _copy_def(self, res_opt: 'ResolveOptions', copy: 'CdmObjectDefinition') -> None:
+        copy.ctx = self.ctx
         copy._declared_path = self._declared_path
         copy.explanation = self.explanation
         copy.exhibits_traits.clear()

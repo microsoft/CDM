@@ -30,9 +30,9 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and test_name.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionAlterTraits')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionAlterTraitsTest')
 
-    trait_group_file_path = os.path.join('tests', 'testdata','Cdm', 'Projection', 'TestProjectionAlterTraits')
+    trait_group_file_path = os.path.join('..', '..', 'testData', 'Cdm', 'Projection', 'ProjectionAlterTraitsTest')
 
     @async_test
     async def test_alter_traits_on_type_attr_proj(self):
@@ -120,9 +120,9 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
         # Rename attribute ["newName" -> "renaming-{m}" ]
         # alter traits on ["renaming-newName", + { "means.TraitG4(precision:5, scale:15)" } ]
         self.assertEqual(4, len(resolved_entity.attributes))
-        self.validate_trait(resolved_entity.attributes[0], 'name')
-        self.validate_trait(resolved_entity.attributes[1], 'age', False, True)
-        self.validate_trait(resolved_entity.attributes[2], 'phoneNumber', False, True)
+        self.validate_trait(resolved_entity.attributes[0], 'age', False, True)
+        self.validate_trait(resolved_entity.attributes[1], 'phoneNumber', False, True)
+        self.validate_trait(resolved_entity.attributes[2], 'name')
         self.validate_trait(resolved_entity.attributes[3], 'renaming-newName', True)
 
     @async_test

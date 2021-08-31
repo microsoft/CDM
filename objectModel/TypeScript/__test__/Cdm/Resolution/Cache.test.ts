@@ -14,7 +14,7 @@ describe('Cdm/Resolution/Cache', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Resolution/Cache';
+    const testsSubpath: string = 'Cdm/Resolution/CacheTest';
 
     /**
      * use the same test data for all tests

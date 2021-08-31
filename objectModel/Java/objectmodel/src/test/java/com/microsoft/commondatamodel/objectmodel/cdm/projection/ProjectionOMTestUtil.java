@@ -168,7 +168,7 @@ public class ProjectionOMTestUtil {
         setClassName(className);
         setTestName(testName);
 
-        testsSubPath = new File(new File(new File("cdm"), "projection"), getClassName()).toString();
+        testsSubPath = new File(new File(new File("Cdm"), "Projection"), getClassName()).toString();
 
         setInputPath(TestHelper.getInputFolderPath(testsSubPath, getTestName()));
         setExpectedOutputPath(TestHelper.getExpectedOutputFolderPath(testsSubPath, getTestName()));

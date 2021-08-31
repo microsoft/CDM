@@ -35,7 +35,7 @@ describe('Cdm/CdmDocumentDefinition', () => {
      * In this case, although A imports B with a moniker, B should be in the priorityImports because it is imported by C.
      */
     it('testCircularImportWithMoniker', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'testCircularImportWithMoniker');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const docA: CdmDocumentDefinition = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
@@ -73,7 +73,7 @@ describe('Cdm/CdmDocumentDefinition', () => {
      * In this case, although B imports C with a moniker, C should be in the A's priorityImports because it is imported by D.
      */
     it('testDeeperCircularImportWithMoniker', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'testDeeperCircularImportWithMoniker');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const docA: CdmDocumentDefinition = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
@@ -131,7 +131,7 @@ describe('Cdm/CdmDocumentDefinition', () => {
      * Index docB first then docA. Make sure that C does not appear in docA priority list.
      */
     it('testReadingCachedImportPriority', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'testReadingCachedImportPriority');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const docA: CdmDocumentDefinition = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
@@ -171,7 +171,7 @@ describe('Cdm/CdmDocumentDefinition', () => {
      * Test if monikered imports are added to the end of the priority list.
      */
     it('testMonikeredImportIsAddedToEnd', async () => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'testMonikeredImportIsAddedToEnd');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         const docA: CdmDocumentDefinition = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');

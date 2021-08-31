@@ -44,7 +44,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         let modelJsonAsString: string = readFile;
         modelJsonAsString = modelJsonAsString.replace(/\r\n/g, '\n');
         modelJsonAsString = modelJsonAsString.replace(/\s/g, '');
-        modelJsonAsString = modelJsonAsString.replace('C:\\\\cdm\\\\CDM.ObjectModel.CSharp\\\\Microsoft.CommonDataModel\\\\Microsoft.CommonDataModel.ObjectModel.Tests\\\\TestData\\\\Persistence\\\\ModelJson\\\\DataPartition\\\\TestModelJsonDataPartitionLocationConsistency\\\\Input\\\\EpisodeOfCare\\\\partition-data.csv',
+        modelJsonAsString = modelJsonAsString.replace('C:\\\\cdm\\\\testData\\\\Persistence\\\\ModelJson\\\\DataPartition\\\\TestModelJsonDataPartitionLocationConsistency\\\\Input\\\\EpisodeOfCare\\\\partition-data.csv',
             location.replace(new RegExp('\\\\', 'g'), '\\\\'));
         modelJsonAsString = modelJsonAsString.replace(new RegExp('/', 'g'), '\\\\');
 

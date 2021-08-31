@@ -24,7 +24,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestCircularImportWithMoniker()
         {
-            var corpus = TestHelper.GetLocalCorpus("", "");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestCircularImportWithMoniker));
             var folder = corpus.Storage.FetchRootFolder("local");
 
             var docA = new CdmDocumentDefinition(corpus.Ctx, "A.cdm.json");
@@ -60,7 +60,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestDeeperCircularImportWithMoniker()
         {
-            var corpus = TestHelper.GetLocalCorpus("", "");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestDeeperCircularImportWithMoniker));
             var folder = corpus.Storage.FetchRootFolder("local");
 
             var docA = new CdmDocumentDefinition(corpus.Ctx, "A.cdm.json");
@@ -114,7 +114,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestReadingCachedImportPriority()
         {
-            var corpus = TestHelper.GetLocalCorpus("", "");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestReadingCachedImportPriority));
             var folder = corpus.Storage.FetchRootFolder("local");
 
             var docA = new CdmDocumentDefinition(corpus.Ctx, "A.cdm.json");
@@ -155,7 +155,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestMonikeredImportIsAddedToEnd()
         {
-            var corpus = TestHelper.GetLocalCorpus("", "");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestMonikeredImportIsAddedToEnd));
             var folder = corpus.Storage.FetchRootFolder("local");
 
             var docA = new CdmDocumentDefinition(corpus.Ctx, "A.cdm.json");

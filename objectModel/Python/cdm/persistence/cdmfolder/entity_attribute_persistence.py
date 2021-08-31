@@ -2,7 +2,6 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from cdm.objectmodel import CdmCorpusContext, CdmEntityAttributeDefinition, CdmTraitGroupReference
-from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
 from cdm.enums import CdmObjectType
 from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils, logger
 from cdm.enums import CdmLogCode
@@ -26,30 +25,7 @@ class EntityAttributePersistence:
         entity_attribute.display_name = data.displayName
         entity_attribute.explanation = data.explanation
 
-        if data.get('cardinality'):
-            min_cardinality = None
-            if data.get('cardinality').get('minimum'):
-                min_cardinality = data.get('cardinality').get('minimum')
-
-            max_cardinality = None
-            if data.get('cardinality').get('maximum'):
-                max_cardinality = data.get('cardinality').get('maximum')
-
-            if not min_cardinality or not max_cardinality:
-                logger.error(ctx, _TAG, EntityAttributePersistence.from_data.__name__, None, CdmLogCode.ERR_PERSIST_CARDINALITY_PROP_MISSING)
-
-            if not CardinalitySettings._is_minimum_valid(min_cardinality):
-                logger.error(ctx, _TAG, EntityAttributePersistence.from_data.__name__, None,
-                             CdmLogCode.ERR_PERSIST_INVALID_MIN_CARDINALITY, min_cardinality)
-
-            if not CardinalitySettings._is_maximum_valid(max_cardinality):
-                logger.error(ctx, _TAG, EntityAttributePersistence.from_data.__name__, None,
-                             CdmLogCode.ERR_PERSIST_INVALID_MAX_CARDINALITY, max_cardinality)
-
-            if min_cardinality and max_cardinality and CardinalitySettings._is_minimum_valid(min_cardinality) and CardinalitySettings._is_maximum_valid(max_cardinality):
-                entity_attribute.cardinality = CardinalitySettings(entity_attribute)
-                entity_attribute.cardinality.minimum = min_cardinality
-                entity_attribute.cardinality.maximum = max_cardinality
+        entity_attribute.cardinality = utils.cardinality_settings_from_data(data.get('cardinality'), entity_attribute)
 
         entity_attribute.is_polymorphic_source = data.get('isPolymorphicSource')
 
@@ -95,5 +71,6 @@ class EntityAttributePersistence:
         entity_attribute.appliedTraits = copy_data_utils._array_copy_data(res_opt, applied_traits, options)
         entity_attribute.resolutionGuidance = AttributeResolutionGuidancePersistence.to_data(
             instance.resolution_guidance, res_opt, options) if instance.resolution_guidance else None
+        entity_attribute.cardinality = utils.cardinality_settings_to_data(instance.cardinality)
 
         return entity_attribute

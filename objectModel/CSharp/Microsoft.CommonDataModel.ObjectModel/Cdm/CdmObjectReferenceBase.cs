@@ -227,7 +227,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.AppliedTraits != null)
             {
                 foreach (var trait in this.AppliedTraits)
-                    copy.AppliedTraits.Add(trait);
+                    copy.AppliedTraits.Add(trait.Copy(resOpt) as CdmTraitReferenceBase);
             }
 
             // Don't do anything else after this, as it may cause InDocument to become dirty

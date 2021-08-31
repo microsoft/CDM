@@ -126,7 +126,6 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             copy = new CdmDataPartitionPatternDefinition(this.ctx, this.name);
         } else {
             copy = host as CdmDataPartitionPatternDefinition;
-            copy.ctx = this.ctx;
             copy.name = this.name;
         }
         copy.rootLocation = this.rootLocation;
@@ -134,7 +133,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         copy.regularExpression = this.regularExpression;
         copy.lastFileStatusCheckTime = this.lastFileStatusCheckTime;
         copy.lastFileModifiedTime = this.lastFileModifiedTime;
-        copy.parameters = this.parameters;
+        copy.parameters = this.parameters ? this.parameters.slice() : undefined;
         if (this.specializedSchema) {
             copy.specializedSchema = this.specializedSchema;
         }

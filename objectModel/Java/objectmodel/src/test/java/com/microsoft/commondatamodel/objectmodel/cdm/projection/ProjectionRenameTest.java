@@ -41,8 +41,7 @@ public class ProjectionRenameTest {
     /**
      * The path between TestDataPath and TestName
      */
-    private static final String TESTS_SUBPATH = new File(new File(new File("cdm"), "projection"),
-            "testProjectionRename").toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionRenameTest").toString();
 
     @Test
     public void testEntityAttributeProjUsingObjectModel() throws InterruptedException, ExecutionException {

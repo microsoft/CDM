@@ -47,7 +47,6 @@ class CdmPurposeDefinition(CdmObjectDefinition):
             copy = CdmPurposeDefinition(self.ctx, self.purpose_name, None)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.purpose_name = self.purpose_name
 
         if self.extends_purpose:

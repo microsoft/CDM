@@ -11,10 +11,12 @@ import {
     CdmDefinitionCollection,
     CdmE2ERelationship,
     CdmEntityDeclarationDefinition,
+    CdmEntityDefinition,
     CdmFolderDefinition,
     CdmImport,
     CdmImportCollection,
     CdmManifestDeclarationDefinition,
+    CdmManifestDefinition,
     CdmObject,
     CdmObjectBase,
     CdmObjectDefinition,
@@ -31,7 +33,8 @@ import {
     ResolvedTraitSetBuilder,
     resolveOptions,
     StringUtils,
-    VisitCallback
+    VisitCallback,
+    CdmLocalEntityDeclarationDefinition
 } from '../internal';
 import { using } from "using-statement";
 import { enterScope } from '../Utilities/Logging/Logger';
@@ -132,7 +135,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     /**
      * The maximum json semantic version supported by this ObjectModel version.
      */
-    public static currentJsonSchemaSemanticVersion = '1.2.0';
+    public static currentJsonSchemaSemanticVersion = '1.3.0';
 
     constructor(ctx: CdmCorpusContext, name: string, hasImports: boolean = false) {
         super(ctx);
@@ -163,6 +166,8 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
      */
     public clearCaches(): void {
         this.internalDeclarations = new Map<string, CdmObjectDefinitionBase>();
+        // reset the list before indexing
+        this.importPriorities = undefined;
         // remove all of the cached paths
         this.visit('', undefined, (iObject: CdmObject, path: string) => {
             (iObject as CdmObjectBase).declaredPath = undefined;
@@ -480,6 +485,26 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
 
             if (await this.ctx.corpus.persistence.saveDocumentAsAsync(this, options, newName, saveReferenced) === false) {
                 return false;
+            }
+
+            if (this instanceof CdmManifestDefinition) {
+                for (const entity of (this as CdmManifestDefinition).entities) {
+                    if (entity instanceof CdmLocalEntityDeclarationDefinition) {
+                      (entity as CdmLocalEntityDeclarationDefinition).resetLastFileModifiedOldTime();
+                    }
+                    for (const relationship of (this as CdmManifestDefinition).relationships) {
+                      relationship.resetLastFileModifiedOldTime();
+                    }
+                }
+                // Log the telemetry if the document is a manifest
+                Logger.ingestManifestTelemetry(this as CdmManifestDefinition, this.ctx, this.TAG, this.saveAsAsync.name, this.atCorpusPath);
+            } else {
+                // Log the telemetry of all entities contained in the document
+                for (const obj of this.definitions) {
+                    if (obj instanceof CdmEntityDefinition) {
+                        Logger.ingestEntityTelemetry(obj as CdmEntityDefinition, this.ctx, this.TAG, this.saveAsAsync.name, obj.atCorpusPath);
+                    }
+                }
             }
 
             return true;
@@ -828,7 +853,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 if (docCheck.importPriorities && docCheck.importPriorities.importPriority && docCheck.importPriorities.importPriority.size > 0) {
                     for (const impInfoPair of docCheck.importPriorities.importPriority) {
                         if (!impInfoPair[1].isMoniker) {
-                            const pathFound: string  = internalImportPathToDoc(impInfoPair[0], path);
+                            const pathFound: string = internalImportPathToDoc(impInfoPair[0], path);
                             if (pathFound) {
                                 return pathFound;
                             }

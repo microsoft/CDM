@@ -50,6 +50,7 @@ export class AttributeContextPersistence {
                 case cdmAttributeContextType.addedAttributeExpansionTotal:
                 case cdmAttributeContextType.addedAttributeSelectedType:
                 case cdmAttributeContextType.attributeDefinition:
+                case cdmAttributeContextType.attributeExcluded:
                     attributeContext.definition = CdmFolder.AttributeReferencePersistence.fromData(ctx, object.definition);
                     break;
                 default:
@@ -105,6 +106,8 @@ export class AttributeContextPersistence {
                 return cdmAttributeContextType.attributeGroup;
             case 'attributeDefinition':
                 return cdmAttributeContextType.attributeDefinition;
+            case 'attributeExcluded':
+                return cdmAttributeContextType.attributeExcluded;
             case 'addedAttributeNewArtifact':
                 return cdmAttributeContextType.addedAttributeNewArtifact;
             case 'addedAttributeSupporting':
@@ -166,6 +169,8 @@ export class AttributeContextPersistence {
                 return 'attributeGroup';
             case cdmAttributeContextType.attributeDefinition:
                 return 'attributeDefinition';
+            case cdmAttributeContextType.attributeExcluded:
+                return 'attributeExcluded';
             case cdmAttributeContextType.addedAttributeNewArtifact:
                 return 'addedAttributeNewArtifact';
             case cdmAttributeContextType.addedAttributeSupporting:

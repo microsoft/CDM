@@ -38,9 +38,18 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationCombineAttributes copy = new CdmOperationCombineAttributes(this.getCtx());
-        copy.select = (this.select != null) ? new ArrayList<String>(this.select) :  null;
-        copy.mergeInto = (this.mergeInto != null) ? (CdmTypeAttributeDefinition) this.mergeInto.copy(resOpt, host) : null;
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationCombineAttributes copy = host == null ? new CdmOperationCombineAttributes(this.getCtx()) : (CdmOperationCombineAttributes)host;
+
+        if (this.select != null) {
+            copy.setSelect(new ArrayList<String>(this.select));
+        }
+        copy.setMergeInto((CdmTypeAttributeDefinition)this.getMergeInto().copy(resOpt));
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

@@ -18,7 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     {
         internal IDictionary<CdmDocumentDefinition, ImportInfo> ImportPriority;
         internal IDictionary<string, CdmDocumentDefinition> MonikerPriorityMap;
-        
+
         /// <summary>
         /// True if one of the document's imports import this document back.
         /// Ex.: A.cdm.json -> B.cdm.json -> A.cdm.json
@@ -65,7 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// The maximum json semantic version supported by this ObjectModel version.
         /// </summary>
-        public static string CurrentJsonSchemaSemanticVersion = "1.2.0";
+        public static string CurrentJsonSchemaSemanticVersion = "1.3.0";
 
         [Obsolete("Only for internal use")]
         public string FolderPath { get; set; }
@@ -140,6 +140,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal void ClearCaches()
         {
             this.InternalDeclarations = new ConcurrentDictionary<string, CdmObjectBase>();
+            // reset the list before indexing
+            this.ImportPriorities = null;
             // remove all of the cached paths
             this.Visit("", null, new VisitCallback
             {
@@ -391,7 +393,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (string.IsNullOrWhiteSpace(this.Name))
             {
                 IEnumerable<string> missingFields = new List<string> { "Name" };
-                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) =>$"'{s}'")));
+                Logger.Error(this.Ctx, Tag, nameof(Validate), this.AtCorpusPath, CdmLogCode.ErrValdnIntegrityCheckFailure, this.AtCorpusPath, string.Join(", ", missingFields.Select((s) => $"'{s}'")));
                 return false;
             }
             return true;
@@ -411,7 +413,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     return this.Folder.AtCorpusPath + this.Name;
                 }
             }
-        }        
+        }
 
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
@@ -459,9 +461,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     return false;
                 }
 
-                // Log the telemetry if the document is a manifest
+                // Log the telemetry if the document is a manifest and reset LastFileModifiedOldTime
                 if (this is CdmManifestDefinition)
                 {
+                    foreach (var entity in (this as CdmManifestDefinition).Entities)
+                    {
+                        if (entity is CdmLocalEntityDeclarationDefinition)
+                        {
+                            (entity as CdmLocalEntityDeclarationDefinition).ResetLastFileModifiedOldTime();
+                        }
+                    }
+                    foreach (var relationship in (this as CdmManifestDefinition).Relationships)
+                    {
+                        relationship.ResetLastFileModifiedOldTime();
+                    }
                     Logger.IngestManifestTelemetry(this as CdmManifestDefinition, this.Ctx, nameof(CdmDocumentDefinition), nameof(SaveAsAsync), this.AtCorpusPath);
                 }
 
@@ -509,7 +522,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
 
                 var corpus = this.Folder.Corpus;
-                
+
                 // If the imports load strategy is "LazyLoad", loadImports value will be the one sent by the called function.
                 if (resOpt.ImportsLoadStrategy == ImportsLoadStrategy.DoNotLoad)
                 {
@@ -614,10 +627,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         {
                             monikerImports.Add(impDoc);
                         }
-                    } 
+                    }
                     else
                     {
-                        Logger.Warning(this.Ctx, Tag, nameof(PrioritizeImports), this.AtCorpusPath, CdmLogCode.WarnDocImportNotLoaded ,imp.CorpusPath);
+                        Logger.Warning(this.Ctx, Tag, nameof(PrioritizeImports), this.AtCorpusPath, CdmLogCode.WarnDocImportNotLoaded, imp.CorpusPath);
                     }
                 }
 
@@ -704,7 +717,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             HashSet<CdmDocumentDefinition> avoidLoop = new HashSet<CdmDocumentDefinition>();
             Func<CdmDocumentDefinition, string, string> InternalImportPathToDoc = null;
-            InternalImportPathToDoc = (docCheck, path) => 
+            InternalImportPathToDoc = (docCheck, path) =>
             {
                 if (docCheck == docDest)
                 {
@@ -718,7 +731,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // if the docDest is one of the monikered imports of docCheck, then add the moniker and we are cool
                 if (docCheck.ImportPriorities?.MonikerPriorityMap?.Count > 0)
                 {
-                    foreach(var monPair in docCheck.ImportPriorities?.MonikerPriorityMap)
+                    foreach (var monPair in docCheck.ImportPriorities?.MonikerPriorityMap)
                     {
                         if (monPair.Value == docDest)
                         {
@@ -741,7 +754,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // still nothing, now we need to check those docs deeper
                 if (docCheck.ImportPriorities?.MonikerPriorityMap?.Count > 0)
                 {
-                    foreach(var monPair in docCheck.ImportPriorities?.MonikerPriorityMap)
+                    foreach (var monPair in docCheck.ImportPriorities?.MonikerPriorityMap)
                     {
                         string pathFound = InternalImportPathToDoc(monPair.Value, $"{path}{monPair.Key}/");
                         if (pathFound != null)
@@ -752,7 +765,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
                 if (docCheck.ImportPriorities?.ImportPriority?.Count > 0)
                 {
-                    foreach(var impInfoPair in docCheck.ImportPriorities.ImportPriority)
+                    foreach (var impInfoPair in docCheck.ImportPriorities.ImportPriority)
                     {
                         if (!impInfoPair.Value.IsMoniker)
                         {
@@ -765,7 +778,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
                 return null;
-               
+
             };
 
             return InternalImportPathToDoc(this, "");

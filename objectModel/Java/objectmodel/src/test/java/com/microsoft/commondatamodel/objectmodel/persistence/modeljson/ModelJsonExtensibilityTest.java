@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.UUID;
-import org.json.JSONException;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,8 +34,8 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
   private final boolean doesWriteTestDebuggingFiles = false;
   private final String TESTS_SUBPATH =
       new File(
-          new File("persistence", "modeljson"),
-          "modeljsonextensibility"
+          new File("Persistence", "ModelJson"),
+          "ModelJsonExtensibility"
       ).toString();
 
   /**
@@ -50,7 +48,7 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
    * C# only test. This test does not have a Typescript equivalent.
    */
   @Test
-  public void testSerializer() throws IOException, InterruptedException, JSONException {
+  public void testSerializer() throws IOException, InterruptedException {
     final String originalModelJson =
         TestHelper.getInputFileContent(
             TESTS_SUBPATH,
@@ -66,7 +64,7 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
           serialized);
     }
 
-    JSONAssert.assertEquals(originalModelJson, serialized, false);
+    TestHelper.assertSameObjectWasSerialized(originalModelJson, serialized);
   }
 
   /**
@@ -120,9 +118,8 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
    * results in a similar content (up to a different order of serialization)
    */
   @Test
-  public void testModelJsonExtensibility() throws IOException, InterruptedException, JSONException {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH,
-            "testModelJsonExtensibility", null);
+  public void testModelJsonExtensibility() throws IOException, InterruptedException {
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonExtensibility");
     final CdmManifestDefinition cdmManifest =
         cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
             "model.json",
@@ -146,17 +143,16 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
         "testModelJsonExtensibility",
         "SerializerTesting-model.json");
 
-    JSONAssert.assertEquals(originalModelJson, obtainedModelJson, false);
+    TestHelper.assertSameObjectWasSerialized(originalModelJson, obtainedModelJson);
   }
 
   /**
    * Reads Model.Json, converts to manifest and compares files from obtained manifest to stored files.
    */
   @Test
-  public void modelJsonExtensibilityManifestDocumentsTest()
-      throws InterruptedException, IOException, JSONException {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH,
-            "ModelJsonExtensibilityManifestDocuments", null);
+  public void testModelJsonExtensibilityManifestDocs()
+      throws InterruptedException, IOException {
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testModelJsonExtensibilityManifestDocs");
     final CdmManifestDefinition manifest =
         cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
             "model.json",
@@ -186,14 +182,14 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
 
         TestHelper.writeActualOutputFileContent(
             TESTS_SUBPATH,
-            "ModelJsonExtensibilityManifestDocuments",
+            "testModelJsonExtensibilityManifestDocs",
             document.getName(),
             serializedDocument);
       }
 
       TestHelper.writeActualOutputFileContent(
           TESTS_SUBPATH,
-          "ModelJsonExtensibilityManifestDocuments",
+          "testModelJsonExtensibilityManifestDocs",
           manifest.getName(),
           serializedManifest);
     }
@@ -207,17 +203,17 @@ public class ModelJsonExtensibilityTest extends ModelJsonTestBase {
       final String serializedDocument = serialize(DocumentPersistence.toData(document, null, null));
       final String expectedOutputDocument = TestHelper.getExpectedOutputFileContent(
           TESTS_SUBPATH,
-          "ModelJsonExtensibilityManifestDocuments",
+          "testModelJsonExtensibilityManifestDocs",
           document.getName());
 
-      JSONAssert.assertEquals(expectedOutputDocument, serializedDocument, false);
+      TestHelper.assertSameObjectWasSerialized(expectedOutputDocument, serializedDocument);
     }
 
     final String expectedOutputManifest = TestHelper.getExpectedOutputFileContent(
         TESTS_SUBPATH,
-        "ModelJsonExtensibilityManifestDocuments",
+        "testModelJsonExtensibilityManifestDocs",
         manifest.getName());
-    JSONAssert.assertEquals(expectedOutputManifest, serializedManifest, false);
+    TestHelper.assertSameObjectWasSerialized(expectedOutputManifest, serializedManifest);
   }
 
   /**

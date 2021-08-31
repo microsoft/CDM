@@ -6,7 +6,6 @@ import {
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmCorpusContext,
-    CdmEntityReference,
     cdmLogCode,
     CdmObject,
     cdmObjectType,
@@ -20,9 +19,7 @@ import {
     ProjectionContext,
     ProjectionResolutionCommonUtil,
     ResolvedAttribute,
-    ResolvedTrait,
     resolveOptions,
-    StringUtils,
     VisitCallback
 } from '../../internal';
 
@@ -46,14 +43,17 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy = new CdmOperationCombineAttributes(this.ctx);
-        if (this.select !== undefined) {
-            copy.select = Object.assign(this.select);
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
-        if (this.mergeInto) {
-            copy.mergeInto = this.mergeInto.copy(resOpt, host) as CdmTypeAttributeDefinition;
-        }
+
+        const copy: CdmOperationCombineAttributes = !host ? new CdmOperationCombineAttributes(this.ctx) : host as CdmOperationCombineAttributes;
+
+        copy.select = this.select ? this.select.slice() : undefined;
+        copy.mergeInto = this.mergeInto ? this.mergeInto.copy(resOpt) as CdmTypeAttributeDefinition : undefined;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

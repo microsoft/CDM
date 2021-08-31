@@ -30,8 +30,14 @@ class CdmOperationAddTypeAttribute(CdmOperationBase):
         self.type = CdmOperationType.ADD_TYPE_ATTRIBUTE  # type: CdmOperationType
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationAddTypeAttribute'] = None) -> 'CdmOperationAddTypeAttribute':
-        copy = CdmOperationAddTypeAttribute(self.ctx)
-        copy.type_attribute = self.type_attribute.copy(res_opt, host)
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
+
+        copy = CdmOperationAddTypeAttribute(self.ctx) if not host else host
+
+        copy.type_attribute = self.type_attribute.copy(res_opt) if self.type_attribute else None
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:

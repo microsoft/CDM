@@ -47,7 +47,6 @@ public class CdmTraitGroupDefinition extends CdmObjectDefinitionBase {
             copy = new CdmTraitGroupDefinition(getCtx(), getTraitGroupName());
         } else {
             copy = (CdmTraitGroupDefinition) host;
-            copy.setCtx(getCtx());
             copy.setTraitGroupName(getTraitGroupName());
         }
 

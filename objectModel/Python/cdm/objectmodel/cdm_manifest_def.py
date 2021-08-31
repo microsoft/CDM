@@ -180,7 +180,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 ent_def = await self.ctx.corpus.fetch_object_async(entity_path)  # type: CdmEntityDefinition
 
                 if ent_def is None:
-                    logger.error(self.ctx, self._TAG, self._get_entity_from_reference.__name__, None, CdmLogCode.ERR_RESOLVE_ENTITY_FAILURE, entity_path)
+                    logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, None, CdmLogCode.ERR_RESOLVE_ENTITY_FAILURE, entity_path)
 
                 if not ent_def.in_document.folder:
                     logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_DOC_IS_NOT_FOLDERformat, ent_def.entity_name)
@@ -243,7 +243,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             if adapter:
                 context = adapter.create_file_query_cache_context()
                 try:
-                    modified_time = await self.ctx.corpus._fetch_last_modified_time_from_object_async(self)
+                    modified_time = await self.ctx.corpus._get_last_modified_time_from_object_async(self)
 
                     self.last_file_status_check_time = datetime.now(timezone.utc)
                     if not self.last_file_modified_time:

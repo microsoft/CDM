@@ -409,7 +409,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
                     Assert.AreEqual(statusLevel, CdmStatusLevel.Error, "Error level message should have been reported");
                     Assert.IsTrue(
                         message == "StorageManager | The object path cannot be null or empty. | CreateAbsoluteCorpusPath" ||
-                        message == "CdmCorpusDefinition | The object path cannot be null or empty. | GetLastModifiedTimeAsyncFromPartitionPath",
+                        message == "CdmCorpusDefinition | The object path cannot be null or empty. | GetLastModifiedTimeFromPartitionPathAsync",
                        "Unexpected error message received");
                 }
             }, CdmStatusLevel.Warning);

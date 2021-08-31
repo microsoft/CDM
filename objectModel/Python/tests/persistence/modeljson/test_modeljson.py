@@ -36,7 +36,7 @@ class ModelJsonTest(unittest.TestCase):
         manifest = await cdm_corpus.fetch_object_async('default.manifest{}'.format(PersistenceLayer.CDM_EXTENSION), cdm_corpus.storage.fetch_root_folder('local'))
 
         actual_data = json.loads((await ManifestPersistence.to_data(manifest, None, None)).encode())
-        self._validate_output(test_name, PersistenceLayer.MODEL_JSON_EXTENSION, actual_data)
+        self._validate_output(test_name, PersistenceLayer.MODEL_JSON_EXTENSION, actual_data, is_language_specific=True)
 
     @async_test
     async def test_loading_model_json_result_and_cdm_folder_to_data(self):
@@ -71,7 +71,7 @@ class ModelJsonTest(unittest.TestCase):
         # the corpus path in the imports are relative to the document where it was defined.
         # when saving in model.json the documents are flattened to the manifest level
         # so it is necessary to recalculate the path to be relative to the manifest.
-        corpus = TestHelper.get_local_corpus('notImportant', 'notImportantLocation')
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_imports_relative_path')
         folder = corpus.storage.fetch_root_folder('local')
 
         manifest = CdmManifestDefinition(corpus.ctx, 'manifest')
@@ -200,7 +200,9 @@ class ModelJsonTest(unittest.TestCase):
         self.assertEqual(CdmDataFormat.DATE, entity.attributes[0].data_format)
         self.assertEqual(CdmDataFormat.TIME, entity.attributes[1].data_format)
 
-    def _validate_output(self, test_name: str, output_file_name: str, actual_output: 'JObject', does_write_test_debugging_files: Optional[bool] = False):
+    def _validate_output(self, test_name: str, output_file_name: str, actual_output: 'JObject',
+                         does_write_test_debugging_files: Optional[bool] = False,
+                         is_language_specific: Optional[bool] = False):
         """
         Handles the obtained output.
         If needed, writes the output to a test debugging file.
@@ -209,7 +211,7 @@ class ModelJsonTest(unittest.TestCase):
         serialized_output = json.dumps(actual_output, sort_keys=True, indent=2)
         if does_write_test_debugging_files:
             TestHelper.write_actual_output_file_content(self.tests_subpath, test_name, output_file_name, serialized_output)
-        expected_output = TestHelper.get_expected_output_data(self.tests_subpath, test_name, output_file_name)
+        expected_output = TestHelper.get_expected_output_data(self.tests_subpath, test_name, output_file_name, is_language_specific)
         error_msg = TestHelper.compare_same_object(expected_output, actual_output)
         self.assertEqual('', error_msg, error_msg)
 

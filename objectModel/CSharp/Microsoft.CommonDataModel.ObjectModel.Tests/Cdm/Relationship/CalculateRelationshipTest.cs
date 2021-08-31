@@ -22,7 +22,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// <summary>
         /// The path between TestDataPath and TestName.
         /// </summary>
-        private string testsSubpath = Path.Combine("Cdm", "Relationship", "CalculateRelationshipTest");
+        private string testsSubpath = Path.Combine("Cdm", "Relationship", "TestCalculateRelationship");
 
         /// <summary>
         /// Non projection scenario with the referenced entity having a primary key

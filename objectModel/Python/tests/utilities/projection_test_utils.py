@@ -218,7 +218,7 @@ class ProjectionTestUtils:
                     expected_file.write(actual_text)
         else:
             # Actual
-            actual_string_file_path = os.path.join(expected_output_path, '..', 'ActualOutput', file_name_prefix + file_name_suffix + '.txt')
+            actual_string_file_path = os.path.join(expected_output_path, '..', TestHelper.get_test_actual_output_folder_name(), file_name_prefix + file_name_suffix + '.txt')
 
             # Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
             with open(actual_string_file_path, 'w') as expected_file:

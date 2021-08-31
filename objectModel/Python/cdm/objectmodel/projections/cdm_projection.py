@@ -55,10 +55,10 @@ class CdmProjection(CdmObjectDefinition):
             copy.operations.clear()
         
         copy.condition = self.condition
-        copy.source = self.source.copy() if self.source else None
+        copy.source = self.source.copy(res_opt) if self.source else None
 
         for operation in self.operations:
-            copy.operations.append(operation.copy())
+            copy.operations.append(operation.copy(res_opt))
 
         # Don't do anything else after this, as it may cause InDocument to become dirty
         copy.in_document = self.in_document

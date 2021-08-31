@@ -29,6 +29,7 @@ from .visit_callback import VisitCallback
 from .logging import logger
 from .logging.logger import _LoggerScope
 from .logging import event_list
+from .logging.telemetry_client import TelemetryClient
 from .storage_utils import StorageUtils
 
 
@@ -60,6 +61,7 @@ __all__ = [
     'StorageUtils',
     'SymbolSet',
     'time_utils',
+    'TelemetryClient',
     'TraitToPropertyMap',
     'VisitCallback',
 ]

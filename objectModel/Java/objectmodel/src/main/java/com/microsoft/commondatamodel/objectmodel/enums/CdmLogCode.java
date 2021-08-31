@@ -151,5 +151,6 @@ public enum CdmLogCode
     WarnValdnEntityNotDefined,
     WarnValdnMaxOrdinalTooHigh,
     WarnValdnPrimaryKeyMissing,
-    WarnValdnOrdinalStartEndOrder
+    WarnValdnOrdinalStartEndOrder,
+    WarnTelemetryIngestionFailed
 }

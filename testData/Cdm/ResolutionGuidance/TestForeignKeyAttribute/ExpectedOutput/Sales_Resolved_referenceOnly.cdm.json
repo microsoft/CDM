@@ -1,0 +1,163 @@
+{
+  "jsonSchemaSemanticVersion": "1.3.0",
+  "imports": [
+    {
+      "corpusPath": "localInput:/Sales.cdm.json",
+      "moniker": "resolvedFrom"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Sales_Resolved_referenceOnly.cdm.json",
+      "exhibitsTraits": [
+        {
+          "traitReference": "has.entitySchemaAbstractionLevel",
+          "arguments": [
+            {
+              "name": "level",
+              "value": "resolved"
+            }
+          ]
+        }
+      ],
+      "attributeContext": {
+        "type": "entity",
+        "name": "Sales_Resolved_referenceOnly.cdm.json",
+        "definition": "resolvedFrom/Sales",
+        "contents": [
+          {
+            "type": "entityReferenceExtends",
+            "name": "extends",
+            "parent": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json",
+            "contents": [
+              {
+                "type": "entity",
+                "name": "CdmEntity",
+                "parent": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json/extends",
+                "definition": "resolvedFrom/CdmEntity"
+              }
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "SalesId",
+            "parent": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json",
+            "definition": "resolvedFrom/Sales/hasAttributes/SalesId",
+            "contents": [
+              "Sales_Resolved_referenceOnly.cdm.json/hasAttributes/SalesId"
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "SalesNumberOfUnits",
+            "parent": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json",
+            "definition": "resolvedFrom/Sales/hasAttributes/SalesNumberOfUnits",
+            "contents": [
+              "Sales_Resolved_referenceOnly.cdm.json/hasAttributes/SalesNumberOfUnits"
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "SalesAmount",
+            "parent": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json",
+            "definition": "resolvedFrom/Sales/hasAttributes/SalesAmount",
+            "contents": [
+              "Sales_Resolved_referenceOnly.cdm.json/hasAttributes/SalesAmount"
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "SalesProductId",
+            "parent": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json",
+            "definition": "resolvedFrom/Sales/hasAttributes/SalesProductId",
+            "contents": [
+              {
+                "type": "entity",
+                "name": "Product",
+                "parent": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json/SalesProductId",
+                "definition": "resolvedFrom/Product"
+              },
+              {
+                "type": "generatedSet",
+                "name": "_generatedAttributeSet",
+                "parent": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json/SalesProductId",
+                "contents": [
+                  {
+                    "type": "generatedRound",
+                    "name": "_generatedAttributeRound0",
+                    "parent": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json/SalesProductId/_generatedAttributeSet",
+                    "contents": [
+                      {
+                        "type": "addedAttributeIdentity",
+                        "name": "_foreignKey",
+                        "parent": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json/SalesProductId/_generatedAttributeSet/_generatedAttributeRound0",
+                        "definition": "resolvedFrom/Sales/hasAttributes/SalesProductId/resolutionGuidance/foreignKeyAttribute/identityId",
+                        "contents": [
+                          "Sales_Resolved_referenceOnly.cdm.json/hasAttributes/identityId"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "hasAttributes": [
+        {
+          "name": "SalesId",
+          "appliedTraits": [
+            "is.dataFormat.integer"
+          ],
+          "attributeContext": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json/SalesId",
+          "isPrimaryKey": true,
+          "dataFormat": "Int32"
+        },
+        {
+          "name": "SalesNumberOfUnits",
+          "appliedTraits": [
+            "is.dataFormat.integer"
+          ],
+          "attributeContext": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json/SalesNumberOfUnits",
+          "dataFormat": "Int32"
+        },
+        {
+          "name": "SalesAmount",
+          "appliedTraits": [
+            {
+              "traitReference": "is.dataFormat.numeric.shaped"
+            }
+          ],
+          "attributeContext": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json/SalesAmount",
+          "dataFormat": "Decimal"
+        },
+        {
+          "name": "identityId",
+          "appliedTraits": [
+            "is.dataFormat.integer",
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "localInput:/Product.cdm.json/Product",
+                        "ProductId"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "attributeContext": "Sales_Resolved_referenceOnly.cdm.json/attributeContext/Sales_Resolved_referenceOnly.cdm.json/SalesProductId/_generatedAttributeSet/_generatedAttributeRound0/_foreignKey",
+          "dataFormat": "Int32"
+        }
+      ],
+      "version": "1.0"
+    }
+  ]
+}

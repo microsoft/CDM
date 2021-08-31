@@ -14,9 +14,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
@@ -71,7 +69,6 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
       copy = new CdmDataPartitionDefinition(getCtx(), getName());
     } else {
       copy = (CdmDataPartitionDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setName(this.getName());
     }
 
@@ -80,7 +77,14 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     copy.setLastFileStatusCheckTime(getLastFileStatusCheckTime());
     copy.setLastFileModifiedTime(getLastFileModifiedTime());
     copy.setInferred(isInferred());
-    copy.setArguments(getArguments());
+    if (this.getArguments() != null)
+    {
+      // deep copy the content
+      copy.setArguments(new HashMap<>());
+      for (final String key : this.getArguments().keySet()) {
+        copy.getArguments().put(key, new ArrayList<>(this.getArguments().get(key)));
+      }
+    }
     copy.setSpecializedSchema(getSpecializedSchema());
 
     copyDef(resOpt, copy);
@@ -274,7 +278,7 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
                       .createAbsoluteCorpusPath(this.getLocation(), this.getInDocument());
 
       final OffsetDateTime modifiedTime =
-              this.getCtx().getCorpus().computeLastModifiedTimeFromPartitionPathAsync(fullPath).join();
+              this.getCtx().getCorpus().getLastModifiedTimeFromPartitionPathAsync(fullPath).join();
 
       // update modified times
       setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));

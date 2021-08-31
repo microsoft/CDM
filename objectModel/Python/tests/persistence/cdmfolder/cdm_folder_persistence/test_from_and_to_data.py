@@ -17,11 +17,9 @@ class CdmFolderPersistenceTest(unittest.TestCase):
     @async_test
     async def test_from_and_to_data(self):
         test_name = 'test_from_and_to_data'
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
-        corpus.ctx.report_at_level = CdmStatusLevel.WARNING
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name, is_language_specific=True)
 
         folder = corpus.storage.fetch_root_folder('local')
-
         manifest = await corpus.fetch_object_async('default.manifest.cdm.json', folder)
         actual_data = ManifestPersistence.to_data(manifest, None, None)
 

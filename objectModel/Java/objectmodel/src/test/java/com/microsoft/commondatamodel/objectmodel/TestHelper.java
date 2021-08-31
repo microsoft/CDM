@@ -34,7 +34,7 @@ public class TestHelper {
    * The path of the TestDataFolder.
    * Here will be found input files and expected output files used by tests.
    */
-  public static final String TEST_DATA_PATH = "src/test/java/com/microsoft/commondatamodel/objectmodel/testdata";
+  public static final String TEST_DATA_PATH = "../../../testData";
 
   private static final String LOCAL = "local";
   private static final String CDM = "cdm";
@@ -60,6 +60,11 @@ public class TestHelper {
    */
   public static final String CDM_STANDARDS_SCHEMA_PATH = "local:/core/applicationCommon/applicationCommon.manifest.cdm.json";
 
+  public static String getInputFolderPath(final String testSubpath, final String testName) throws InterruptedException {
+    return getInputFolderPath(testSubpath, testName, false);
+  }
+
+
   /**
    * Gets the input folder path associated with specified test.
    *
@@ -67,8 +72,8 @@ public class TestHelper {
    * @param testName    The name of the test this path is associated with.
    * @return Input folder path.
    */
-  public static String getInputFolderPath(final String testSubpath, final String testName) throws InterruptedException {
-    return getTestFolderPath(testSubpath, testName, TestHelper.TestFolders.Input);
+  public static String getInputFolderPath(final String testSubpath, final String testName, Boolean isLanguageSpecific) throws InterruptedException {
+    return getTestFolderPath(testSubpath, testName, TestHelper.TestFolders.Input, isLanguageSpecific);
   }
 
   /**
@@ -87,7 +92,7 @@ public class TestHelper {
    *
    * @param testSubpath The subpath of the test. Path is formed from {TestDataPath}{TestSubpath}{TestName}{FolderUse}
    * @param testName    The name of the test this path is associated with.
-   * @return
+   * @return Actual Output folder path.
    */
   public static String getActualOutputFolderPath(final String testSubpath, final String testName) throws InterruptedException {
     return getTestFolderPath(testSubpath, testName, TestHelper.TestFolders.ActualOutput);
@@ -109,7 +114,7 @@ public class TestHelper {
     Assert.assertTrue(new File(pathOfInputFile).exists(),
             String.format("Was unable to find the input file for test %s, file name = %s", testName, fileName));
 
-    return FileReadWriteUtil.readFileToString(pathOfInputFile);
+    return FileReadWriteUtil.readFileToString(pathOfInputFile).replace("\uFEFF", "");
   }
 
   /**
@@ -118,20 +123,27 @@ public class TestHelper {
    * @param testSubpath The subpath of the test. Path is formed from {TestDataPath}{TestSubpath}{TestName}{FolderUse}
    * @param testName    The name of the test this file is an expected output for.
    * @param fileName    The name of the file to be read.
+   * @param isLanguageSpecific  There is a subfolder called Java.
    * @return The content of the file
    */
-  public static String getExpectedOutputFileContent(final String testSubpath, final String testName, final String fileName)
+  public static String getExpectedOutputFileContent(final String testSubpath, final String testName, final String fileName, final boolean isLanguageSpecific)
           throws IOException, InterruptedException {
-    final String pathOfExpectedOutputFolder = getExpectedOutputFolderPath(testSubpath, testName);
+    final String pathOfExpectedOutputFolder = isLanguageSpecific
+            ? new File(getExpectedOutputFolderPath(testSubpath, testName), "Java").toString() : getExpectedOutputFolderPath(testSubpath, testName);
     try {
       return readFileContent(pathOfExpectedOutputFolder, fileName);
     } catch (IllegalArgumentException e) {
       throw new RuntimeException(
-          "Was unable to find the output file for test "
-              + testName
-              + ", file name = "
-              + fileName);
+              "Was unable to find the output file for test "
+                      + testName
+                      + ", file name = "
+                      + fileName);
     }
+  }
+
+  public static String getExpectedOutputFileContent(final String testSubpath, final String testName, final String fileName)
+          throws IOException, InterruptedException {
+    return getExpectedOutputFileContent(testSubpath, testName, fileName, false);
   }
 
   public static String readFileContent(final String filePath, final String fileName)
@@ -142,7 +154,7 @@ public class TestHelper {
       throw new IllegalArgumentException("Was unable to find the file name = " + fileName);
     }
 
-    return FileReadWriteUtil.readFileToString(pathOfExpectedOutputFile.toString());
+    return FileReadWriteUtil.readFileToString(pathOfExpectedOutputFile.toString()).replace("\uFEFF", "");
   }
 
   /**
@@ -173,27 +185,48 @@ public class TestHelper {
     Assert.assertEquals(actual, expected);
   }
 
+  public static void assertFolderFilesEquality(String expectedFolderPath, String actualFolderPath) {
+    assertFolderFilesEquality(expectedFolderPath, actualFolderPath, false);
+  }
+
   /**
    * Asserts the files in actualFolderPath and their content are the same as the files in expectedFolderPath.
    *
    * @param expectedFolderPath Expected folder path.
    * @param actualFolderPath   Actual folder path.
+   * @param differentConfig    Indicate whether the config file is different with other languages.
    */
-  public static void assertFolderFilesEquality(String expectedFolderPath, String actualFolderPath) {
+  public static void assertFolderFilesEquality(String expectedFolderPath, String actualFolderPath, Boolean differentConfig) {
     try {
       List<Path> expectedPaths = Files.list(Paths.get(expectedFolderPath)).collect(Collectors.toList());
       List<Path> actualPaths = Files.list(Paths.get(actualFolderPath)).collect(Collectors.toList());
+      if (!differentConfig) {
+        Assert.assertEquals(expectedPaths.size(), actualPaths.size());
+      }
+
       expectedPaths.forEach(expectedPath -> {
+        final boolean isSpecialConfig = expectedPath.getFileName().toString().equals("config-Java.json");
+        if (expectedPath.getFileName().toString().endsWith("-CSharp.json")
+                || expectedPath.getFileName().toString().endsWith("-Python.json")
+                || expectedPath.getFileName().toString().endsWith("-TypeScript.json")) {
+          return;
+        }
         Path actualPath = actualPaths.stream()
-                .filter(f -> f.getFileName().equals(expectedPath.getFileName()))
+                .filter(f -> f.getFileName().toString().equals(isSpecialConfig && differentConfig ? "config.json" : expectedPath.getFileName().toString()))
                 .findFirst().get();
         if (Files.isDirectory(expectedPath) && Files.isDirectory(actualPath)) {
           assertFolderFilesEquality(expectedPath.toString(), actualPath.toString());
         } else if (!Files.isDirectory(expectedPath) && !Files.isDirectory(actualPath)) {
           try {
-            assertFileContentEquality(
-                    FileReadWriteUtil.readFileToString(expectedPath.toString()),
-                    FileReadWriteUtil.readFileToString(actualPath.toString()));
+            if (expectedPath.toString().endsWith(".csv") && actualPath.toString().endsWith(".csv")) {
+              assertFileContentEquality(
+                      FileReadWriteUtil.readFileToString(expectedPath.toString()).replace("\uFEFF", ""),
+                      FileReadWriteUtil.readFileToString(actualPath.toString()).replace("\uFEFF", ""));
+            } else {
+                assertSameObjectWasSerialized(
+                        FileReadWriteUtil.readFileToString(expectedPath.toString()).replace("\uFEFF", ""),
+                        FileReadWriteUtil.readFileToString(actualPath.toString()).replace("\uFEFF", ""));
+            }
           } catch (IOException e) {
             Assert.fail(e.getMessage());
           }
@@ -399,7 +432,25 @@ public class TestHelper {
    * @return {@link CdmCorpusDefinition}
    */
   public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName) throws InterruptedException {
-    return getLocalCorpus(testSubpath, testName, null);
+    return getLocalCorpus(testSubpath, testName, null, false);
+  }
+
+  /**
+   * Gets local corpus.
+   *
+   * @return {@link CdmCorpusDefinition}
+   */
+  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, String testInputDir) throws InterruptedException {
+    return getLocalCorpus(testSubpath, testName, testInputDir, false);
+  }
+
+  /**
+   * Gets local corpus.
+   *
+   * @return {@link CdmCorpusDefinition}
+   */
+  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, Boolean isLanguageSpecific) throws InterruptedException {
+    return getLocalCorpus(testSubpath, testName, null, isLanguageSpecific);
   }
 
     /**
@@ -407,8 +458,9 @@ public class TestHelper {
      *
      * @return {@link CdmCorpusDefinition}
      */
-  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, String testInputDir) throws InterruptedException {
-    testInputDir = (testInputDir != null) ? testInputDir : TestHelper.getInputFolderPath(testSubpath, testName);
+  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, String testName, String testInputDir, Boolean isLanguageSpecific) throws InterruptedException {
+    testName = (testName == null || testName.equals("")) ? testName : testName.substring(0, 1).toUpperCase() + testName.substring(1);
+    testInputDir = (testInputDir != null) ? testInputDir : TestHelper.getInputFolderPath(testSubpath, testName, isLanguageSpecific);
 
     final String testOutputDir = getActualOutputFolderPath(testSubpath, testName);
 
@@ -450,18 +502,25 @@ public class TestHelper {
     ActualOutput
   }
 
+  private static String getTestFolderPath(final String testSubpath, final String testName, final TestHelper.TestFolders use) throws InterruptedException {
+    return getTestFolderPath(testSubpath, testName, use, false);
+  }
+
   /**
    * Gets the path of the folder used by the test.
    *
-   * @param testSubpath The name of test currently running that will used created path.
-   * @param testName
-   * @param use         Whether the path is for Input, Expected Output or ActualOutput.
+   * @param testSubpath         The name of test currently running that will used created path.
+   * @param testName            The test name.
+   * @param use                 Whether the path is for Input, Expected Output or ActualOutput.
+   * @param isLanguageSpecific  Indicate whether there is subfolder called Java.
    * @return
    */
-  private static String getTestFolderPath(final String testSubpath, final String testName, final TestHelper.TestFolders use)
+  private static String getTestFolderPath(final String testSubpath, final String testName, final TestHelper.TestFolders use, Boolean isLanguageSpecific)
           throws InterruptedException {
-    final String folderName = use.name();
-    final String testFolderPath = new File(new File(new File(TEST_DATA_PATH, testSubpath), testName), folderName).toString();
+    final String folderName = use == TestFolders.ActualOutput ? getTestActualOutputFolderName() : use.name();
+    final String testFolderPath = isLanguageSpecific
+                                    ? new File(new File(new File(new File(TEST_DATA_PATH, testSubpath), testName), folderName), "Java").toString()
+                                    : new File(new File(new File(TEST_DATA_PATH, testSubpath), testName), folderName).toString();
     final File folder = new File(testFolderPath);
 
     if (use == TestFolders.ActualOutput && !folder.exists()) {
@@ -472,6 +531,10 @@ public class TestHelper {
     }
 
     return testFolderPath;
+  }
+
+  public static String getTestActualOutputFolderName() {
+    return TestFolders.ActualOutput.name() + "-Java";
   }
 
   /**
@@ -504,5 +567,4 @@ public class TestHelper {
     }
   }
  }
-
 }

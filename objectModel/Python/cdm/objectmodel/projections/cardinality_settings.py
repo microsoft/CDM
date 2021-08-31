@@ -42,7 +42,9 @@ class CardinalitySettings:
     def minimum(self, val: str) -> None:
         from cdm.objectmodel import CdmTypeAttributeDefinition
 
-        if not CardinalitySettings._is_minimum_valid(val):
+        if StringUtils.is_null_or_white_space(val):
+            logger.error(self._ctx, self._TAG, 'minimum', self._owner.at_corpus_path, CdmLogCode.ERR_PERSIST_CARDINALITY_PROP_MISSING)
+        elif not CardinalitySettings._is_minimum_valid(val):
             logger.error(self._ctx, self._TAG, 'minimum', self._owner.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_MIN_CARDINALITY, val)
         else:
             self._minimum = val
@@ -58,7 +60,9 @@ class CardinalitySettings:
 
     @maximum.setter
     def maximum(self, val: str) -> None:
-        if not CardinalitySettings._is_maximum_valid(val):
+        if StringUtils.is_null_or_white_space(val):
+            logger.error(self._ctx, self._TAG, 'maximum', self._owner.at_corpus_path, CdmLogCode.ERR_PERSIST_CARDINALITY_PROP_MISSING)
+        elif not CardinalitySettings._is_maximum_valid(val):
             logger.error(self._ctx, self._TAG, 'maximum', self._owner.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_MAX_CARDINALITY, val)
         else:
             self._maximum = val

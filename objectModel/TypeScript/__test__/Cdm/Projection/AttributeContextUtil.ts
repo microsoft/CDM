@@ -18,6 +18,7 @@ import {
     CdmTraitCollection,
     CdmTraitReference
 } from '../../../internal';
+import { testHelper } from '../../testHelper';
 
 /**
  * Multiple test classes in projections test the attribute context tree generated for various scenarios.
@@ -163,7 +164,7 @@ export class AttributeContextUtil {
     public static async validateAttributeContext(expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition, updateExpectedOutput: boolean = false): Promise<void> {
         if (resolvedEntity.attributeContext) {
             // Actual
-            const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', 'ActualOutput')}/AttrCtx_${entityName}.txt`;
+            const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', testHelper.getTestActualOutputFolderName())}/AttrCtx_${entityName}.txt`;
             
             // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
             const attrCtxUtil: AttributeContextUtil = new AttributeContextUtil();

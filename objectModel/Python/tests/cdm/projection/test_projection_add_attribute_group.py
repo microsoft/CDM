@@ -29,7 +29,7 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and test_name.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionAddAttributeGroup')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionAddAttributeGroupTest')
 
     @async_test
     async def test_combine_ops_nested_proj(self):

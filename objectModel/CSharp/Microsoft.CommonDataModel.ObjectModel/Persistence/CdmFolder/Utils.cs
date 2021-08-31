@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types.Projections;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Newtonsoft.Json.Linq;
     using System.Collections.Generic;
@@ -137,7 +138,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             if (obj.GetType() == typeof(List<JToken>))
             {
                 traitRefObj = JArray.FromObject(obj);
-            } 
+            }
             else if (obj.GetType() != typeof(JArray) && obj["value"] != null && obj["value"].GetType() == typeof(JArray))
             {
                 traitRefObj = obj["value"];
@@ -246,6 +247,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             if (bool.TryParse((string)value, out bool boolValue))
                 return boolValue;
             return null;
+        }
+
+        /// <summary>
+        /// Converts cardinality data in JToken form into a CardinalitySettings object
+        /// </summary>
+        /// <param name="obj">The JToken representation of CardinalitySettings.</param>
+        /// <param name="attribute">The attribute object where the cardinality object belongs.</param>
+        internal static CardinalitySettings CardinalitySettingsFromData(JToken obj, CdmAttribute attribute)
+        {
+            if (obj == null)
+                return null;
+
+            CardinalitySettings cardinality = new CardinalitySettings(attribute)
+            {
+                Minimum = obj["minimum"]?.ToString(),
+                Maximum = obj["maximum"]?.ToString()
+            };
+
+            return cardinality.Minimum != null && cardinality.Maximum != null ? cardinality : null;
+        }
+
+        /// <summary>
+        /// Converts CardinalitySettings into a JToken object
+        /// </summary>
+        /// <param name="instance">The CardinalitySettings object.</param>
+        internal static dynamic CardinalitySettingsToData(CardinalitySettings instance)
+        {
+            if (instance == null || instance.Minimum == null || instance.Maximum == null)
+                return null;
+
+            return new CardinalitySettingsData
+            {
+                Minimum = instance.Minimum,
+                Maximum = instance.Maximum
+            };
         }
     }
 }

@@ -47,7 +47,9 @@ export class CardinalitySettings {
     }
 
     public set minimum(value: string) {
-        if (!CardinalitySettings.isMinimumValid(value)) {
+        if (StringUtils.isNullOrWhiteSpace(value)) {
+            Logger.error(this.ctx, this.TAG, 'minimum', this.owner.atCorpusPath, cdmLogCode.ErrPersistCardinalityPropMissing);
+        } else if (!CardinalitySettings.isMinimumValid(value)) {
             Logger.error(this.ctx, this.TAG, 'minimum', this.owner.atCorpusPath, cdmLogCode.ErrValdnInvalidMinCardinality, value);
         } else {
             this._minimum = value;
@@ -68,7 +70,9 @@ export class CardinalitySettings {
     }
 
     public set maximum(value: string) {
-        if (!CardinalitySettings.isMaximumValid(value)) {
+        if (StringUtils.isNullOrWhiteSpace(value)) {
+            Logger.error(this.ctx, this.TAG, 'maximum', this.owner.atCorpusPath, cdmLogCode.ErrPersistCardinalityPropMissing);
+        } else if (!CardinalitySettings.isMaximumValid(value)) {
             Logger.error(this.ctx, this.TAG, 'maximum', this.owner.atCorpusPath, cdmLogCode.ErrValdnInvalidMaxCardinality, value);
         } else {
             this._maximum = value;

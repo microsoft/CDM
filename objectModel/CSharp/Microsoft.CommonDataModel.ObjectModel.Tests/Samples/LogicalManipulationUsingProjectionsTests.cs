@@ -37,7 +37,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             await this.LogicalManipulationUsingProjections(this.SetupCdmCorpus());
             TestHelper.AssertFolderFilesEquality(
                 TestHelper.GetExpectedOutputFolderPath(testsSubpath, nameof(TestLogicalManipulationUsingProjections)),
-                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestLogicalManipulationUsingProjections)));
+                TestHelper.GetActualOutputFolderPath(testsSubpath, nameof(TestLogicalManipulationUsingProjections)), true);
         }
 
         private CdmCorpusDefinition SetupCdmCorpus()

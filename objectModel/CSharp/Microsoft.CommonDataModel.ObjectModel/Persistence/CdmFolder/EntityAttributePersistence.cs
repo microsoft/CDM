@@ -23,37 +23,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             entityAttribute.DisplayName = Utils.PropertyFromDataToString(obj["displayName"]);
             entityAttribute.Explanation = Utils.PropertyFromDataToString(obj["explanation"]);
 
-            if (obj["cardinality"] != null)
-            {
-                string minCardinality = null;
-                if (obj["cardinality"]["minimum"] != null)
-                    minCardinality = (string)obj["cardinality"]["minimum"];
-
-                string maxCardinality = null;
-                if (obj["cardinality"]["maximum"] != null)
-                    maxCardinality = (string)obj["cardinality"]["maximum"];
-
-                if (string.IsNullOrWhiteSpace(minCardinality) || string.IsNullOrWhiteSpace(maxCardinality))
-                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistCardinalityPropMissing);
-
-                if (!CardinalitySettings.IsMinimumValid(minCardinality))
-                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistInvalidMinCardinality, minCardinality);
-
-                if (!CardinalitySettings.IsMaximumValid(maxCardinality))
-                    Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistInvalidMaxCardinality, maxCardinality);
-
-                if (!string.IsNullOrWhiteSpace(minCardinality) &&
-                    !string.IsNullOrWhiteSpace(maxCardinality) &&
-                    CardinalitySettings.IsMinimumValid(minCardinality) &&
-                    CardinalitySettings.IsMinimumValid(maxCardinality))
-                {
-                    entityAttribute.Cardinality = new CardinalitySettings(entityAttribute)
-                    {
-                        Minimum = minCardinality,
-                        Maximum = maxCardinality
-                    };
-                }
-            }
+            entityAttribute.Cardinality = Utils.CardinalitySettingsFromData(obj["cardinality"], entityAttribute);
 
             entityAttribute.IsPolymorphicSource = (bool?)obj["isPolymorphicSource"];
 
@@ -87,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
         public static EntityAttribute ToData(CdmEntityAttributeDefinition instance, ResolveOptions resOpt, CopyOptions options)
         {
-            return new EntityAttribute
+            EntityAttribute obj = new EntityAttribute
             {
                 Explanation = instance.Explanation,
                 Name = instance.Name,
@@ -98,8 +68,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     .Where(trait => trait is CdmTraitGroupReference || !(trait as CdmTraitReference).IsFromProperty), options),
                 ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options),
                 DisplayName = instance.GetProperty("displayName"),
-                Description = instance.GetProperty("description")
+                Description = instance.GetProperty("description"),
+                Cardinality = Utils.CardinalitySettingsToData(instance.Cardinality)
             };
+
+            return obj;
         }
     }
 }

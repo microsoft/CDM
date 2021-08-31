@@ -60,7 +60,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             var outputConfig = await cdmCorpus.Storage.FetchAdapter("target").ReadAsync("/config.json");
 
-            Assert.AreEqual(outputConfig.Replace("\r\n  ", "\n"), resultConfig.Replace("\r\n", "\n"));
+            TestHelper.AssertSameObjectWasSerialized(outputConfig, resultConfig);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             // Create a corpus to load the config.
             var cdmCorpus = this.GetLocalCorpus(testInputPath);
 
-            var config = await cdmCorpus.Storage.FetchAdapter("local").ReadAsync("/config.json");
+            var config = await cdmCorpus.Storage.FetchAdapter("local").ReadAsync("/config-CSharp.json");
 
             var differentCorpus = new CdmCorpusDefinition();
 
@@ -107,7 +107,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             var outputConfig = await cdmCorpus.Storage.NamespaceAdapters["local"].ReadAsync("/config.json");
 
-            Assert.AreEqual(outputConfig, resultConfig);
+            TestHelper.AssertSameObjectWasSerialized(outputConfig, resultConfig);
         }
     }
 }

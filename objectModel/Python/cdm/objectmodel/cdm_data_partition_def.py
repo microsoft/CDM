@@ -75,7 +75,6 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
             copy = CdmDataPartitionDefinition(self.ctx, self.name)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.name = self.name
 
         copy.description = self.description
@@ -83,7 +82,11 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
         copy.last_file_status_check_time = self.last_file_status_check_time
         copy.last_file_modified_time = self.last_file_modified_time
         copy.inferred = self.inferred
-        copy.arguments = self.arguments
+        if self.arguments:
+            # deep copy the content
+            copy.arguments = dict()
+            for key in self.arguments.keys():
+                copy.arguments[key] = list(self.arguments[key])
         copy.specialized_schema = self.specialized_schema
         self._copy_def(res_opt, copy)
 
@@ -93,7 +96,7 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
         """Check the modified time for this object and any children."""
         with logger._enter_scope(self._TAG, self.ctx, self.file_status_check_async.__name__):
             full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.location, self.in_document)
-            modified_time = await self.ctx.corpus._fetch_last_modified_time_from_partition_path_async(full_path)
+            modified_time = await self.ctx.corpus._get_last_modified_time_from_partition_path_async(full_path)
 
             # Update modified times.
             self.last_file_status_check_time = datetime.now(timezone.utc)

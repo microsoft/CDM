@@ -72,7 +72,6 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
       copy = new CdmDataTypeDefinition(this.getCtx(), this.getDataTypeName(), null);
     } else {
       copy = (CdmDataTypeDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setDataTypeName(this.getDataTypeName());
     }
 

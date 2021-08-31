@@ -35,7 +35,7 @@ public class DataPartitionPatternTest {
    */
   @Test
   public void TestRefreshesDataPartitionPatterns() throws InterruptedException {
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRefreshDataPartitionPatterns", null);
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRefreshDataPartitionPatterns");
     final CdmManifestDefinition cdmManifest = cdmCorpus.<CdmManifestDefinition>fetchObjectAsync("local:/patternManifest.manifest.cdm.json").join();
 
     final CdmLocalEntityDeclarationDefinition partitionEntity = (CdmLocalEntityDeclarationDefinition)cdmManifest.getEntities().get(1);
@@ -115,7 +115,7 @@ public class DataPartitionPatternTest {
    */
   @Test
   public void testPatternWithNonExistingFolder() throws IOException, InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternWithNonExistingFolder", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternWithNonExistingFolder");
     final String content = TestHelper.getInputFileContent(TESTS_SUBPATH, "testPatternWithNonExistingFolder", "entities.manifest.cdm.json");
     final CdmManifestDefinition cdmManifest = ManifestPersistence.fromObject(new ResolveContext(corpus), "entities", "local", "/", JMapper.MAP.readValue(content, ManifestContent.class));
     cdmManifest.fileStatusCheckAsync().join();
@@ -130,7 +130,7 @@ public class DataPartitionPatternTest {
   @Test
   public void TestPatternWithDifferentNamespace() throws IOException, InterruptedException {
     final String testName = "TestPatternWithDifferentNamespace";
-    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
     LocalAdapter localAdapter = (LocalAdapter)cdmCorpus.getStorage().fetchAdapter("local");
     final String localPath = localAdapter.getFullRoot();
     cdmCorpus.getStorage().mount("other", new LocalAdapter(new File(localPath, "other").toString()));
@@ -146,7 +146,7 @@ public class DataPartitionPatternTest {
    */
   @Test
   public void testVariationsInRootLocation() throws IOException, InterruptedException {
-    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestVariationsInRootLocation", null);
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestVariationsInRootLocation");
     CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("pattern.manifest.cdm.json").join();
     manifest.fileStatusCheckAsync().join();
 
@@ -171,7 +171,7 @@ public class DataPartitionPatternTest {
    */
   @Test
   public void testPartitionPatternWithGlob() throws InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionPatternWithGlob", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPartitionPatternWithGlob");
 
     HashMap<String, String> patternWithGlobAndRegex = new HashMap<>();
     corpus.setEventCallback((CdmStatusLevel level, String message) -> {
@@ -340,7 +340,7 @@ public class DataPartitionPatternTest {
    */
   @Test
   public void testGlobPathVariation() throws InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testGlobPathVariation", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testGlobPathVariation");
 
     final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("pattern.manifest.cdm.json").join();
     manifest.fileStatusCheckAsync().join();
@@ -402,7 +402,7 @@ public class DataPartitionPatternTest {
       Assert.assertEquals(level, CdmStatusLevel.Error, "Error level message should have been reported");
       Assert.assertTrue(
               message.equals("StorageManager | The object path cannot be null or empty. | createAbsoluteCorpusPath") ||
-                      message.equals("CdmCorpusDefinition | The object path cannot be null or empty. | computeLastModifiedTimeFromPartitionPathAsync"),
+                      message.equals("CdmCorpusDefinition | The object path cannot be null or empty. | getLastModifiedTimeFromPartitionPathAsync"),
               "Unexpected error message received");
     }, CdmStatusLevel.Warning);
 

@@ -157,7 +157,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
         {
             // Get the list of hosts from the user.
             Dictionary<string, string> hosts = new Dictionary<string, string>();
-            Console.WriteLine("The RemoteAdapter contains a dictionary of hosts. The mapping is from a key to a host. (Ex. { \"contoso\": \"http://contoso.com\" }");
+            Console.WriteLine("The RemoteAdapter contains a dictionary of hosts. The mapping is from a key to a host. (Ex. { \"contoso\": \"http://contoso.com\" })");
             // The RemoteAdapter can have multiple hosts, so keep asking for values until the user is done.
             while (true)
             {
@@ -274,7 +274,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
 
                 // List the newly configured adapter's properties.
                 Console.WriteLine("\nADLSAdapter configured. Properties of this ADLSAdapter are:");
-                Console.WriteLine("  Hostname: " + adapter.Hostname);
+                Console.WriteLine($"  {nameof(adapter.Hostname)}: " + adapter.Hostname);
                 Console.WriteLine("  Root: " + adapter.Root);
                 Console.WriteLine("  SharedKey: " + adapter.SharedKey);
                 Console.WriteLine("  Timeout: " + adapter.Timeout.Value.TotalMilliseconds);

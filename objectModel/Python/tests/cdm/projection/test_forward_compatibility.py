@@ -15,13 +15,13 @@ class ForwardCompatibilityTest(unittest.TestCase):
     """Tests all the projections will not break the OM even if not implemented."""
 
     # The path between TestDataPath and TestName
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestForwardCompatibility')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ForwardCompatibilityTest')
 
     @async_test
     async def test_all_operations(self):
         """Tests running all the projections (includes projections that are not implemented)."""
-        test_name = 'TestAllOperations'
-        entity_name = test_name
+        test_name = 'test_all_operations'
+        entity_name = 'TestAllOperations'
         corpus = ProjectionTestUtils.get_local_corpus(self.tests_subpath, test_name)
 
         def callback(level: CdmStatusLevel, message: str):

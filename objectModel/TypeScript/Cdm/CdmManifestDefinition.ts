@@ -28,7 +28,7 @@ import {
     VisitCallback
 } from '../internal';
 import { isLocalEntityDeclarationDefinition, isReferencedEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
-import { StorageAdapterBase, StorageAdapterCacheContext } from 'Storage/StorageAdapterBase';
+import { StorageAdapterBase, StorageAdapterCacheContext } from '../Storage/StorageAdapterBase';
 import * as timeUtils from '../Utilities/timeUtils';
 import { using } from "using-statement";
 import { enterScope } from '../Utilities/Logging/Logger';
@@ -403,7 +403,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
             let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace) as StorageAdapterBase;
             let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
             try {
-                const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeAsyncFromObject(this);
+                const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeFromObjectAsync(this);
 
                 this.lastFileStatusCheckTime = new Date();
                 if (!this.lastFileModifiedTime) {

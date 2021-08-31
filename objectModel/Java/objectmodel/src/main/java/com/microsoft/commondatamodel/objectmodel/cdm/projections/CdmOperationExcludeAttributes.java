@@ -37,8 +37,17 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        CdmOperationExcludeAttributes copy = new CdmOperationExcludeAttributes(this.getCtx());
-        copy.excludeAttributes = new ArrayList<String>(this.excludeAttributes);
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
+
+        CdmOperationExcludeAttributes copy = host == null ? new CdmOperationExcludeAttributes(this.getCtx()) : (CdmOperationExcludeAttributes)host;
+
+        if (this.excludeAttributes != null) {
+            copy.setExcludeAttributes(new ArrayList<String>(this.excludeAttributes));
+        }
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -161,7 +170,7 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
                 // Create the attribute context parameters and just store it in the builder for now
                 // We will create the attribute contexts at the end
                 attrCtxTreeBuilder.createAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.getCurrentResolvedAttribute(),
-                        CdmAttributeContextType.AttributeDefinition,
+                        CdmAttributeContextType.AttributeExcluded,
                         currentPAS.getCurrentResolvedAttribute().getAttCtx(), // lineage is the included attribute
                         null);
             }

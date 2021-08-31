@@ -37,7 +37,7 @@ public class EntityResolutionTest {
   /**
    * The path between TestDataPath and TestName.
    */
-  private static final String TESTS_SUBPATH = new File(new File(CDM, "resolution"), "entityresolution").toString();
+  private static final String TESTS_SUBPATH = new File(new File(CDM, "Resolution"), "EntityResolutionTest").toString();
 
   /**
    * Whether debugging files should be written or not.
@@ -50,7 +50,7 @@ public class EntityResolutionTest {
   @Test
   public void testOwnerNotChanged() throws InterruptedException
   {
-    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testOwnerNotChanged", null);
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testOwnerNotChanged");
 
     CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").join();
     CdmDocumentDefinition document = corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/Entity.cdm.json").join();
@@ -69,7 +69,7 @@ public class EntityResolutionTest {
   @Test
   public void testResolvingResolvedEntity() throws InterruptedException
   {
-    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvingResolvedEntity", null);
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvingResolvedEntity");
     CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").join();
     CdmEntityDefinition resEntity = entity.createResolvedEntityAsync("resEntity").join();
     CdmEntityDefinition resResEntity = resEntity.createResolvedEntityAsync("resResEntity").join();
@@ -142,7 +142,7 @@ public class EntityResolutionTest {
    */
   @Test
   public void testResolveWithExtended() throws InterruptedException, ExecutionException {
-    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveWithExtended", null);
+    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveWithExtended");
 
     cdmCorpus.setEventCallback(new EventCallback() {
       @Override
@@ -163,7 +163,7 @@ public class EntityResolutionTest {
    */
   @Test
   public void testAttributesThatAreReplaced() throws InterruptedException, ExecutionException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testAttributesThatAreReplaced", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testAttributesThatAreReplaced");
     corpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
 
     CdmEntityDefinition extendedEntity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/extended.cdm.json/extended").get();
@@ -193,7 +193,7 @@ public class EntityResolutionTest {
    */
   @Test
   public void TestResolvedAttributeLimit() throws InterruptedException, ExecutionException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvedAttributeLimit", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvedAttributeLimit");
 
     CdmEntityDefinition mainEntity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/mainEntity.cdm.json/mainEntity").join();
     ResolveOptions resOpt = new ResolveOptions(mainEntity.getInDocument(), null);
@@ -252,7 +252,7 @@ public class EntityResolutionTest {
    */
   @Test
   public void testSettingTraitsForResolutionGuidanceAttributes() throws InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSettingTraitsForResolutionGuidanceAttributes", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSettingTraitsForResolutionGuidanceAttributes");
     CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Customer.cdm.json/Customer").join();
 
     // Resolve with default directives to get "is.linkedEntity.name" trait.
@@ -300,7 +300,7 @@ public class EntityResolutionTest {
    */
   @Test
   public void testAppliedTraitsInAttributes() throws Exception {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testAppliedTraitsInAttributes", null);
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testAppliedTraitsInAttributes");
     String expectedOutputFolder = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, "testAppliedTraitsInAttributes");
     CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Sales.cdm.json/Sales").join();
     CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();

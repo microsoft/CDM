@@ -33,7 +33,7 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
 
         TestHelper.assertFolderFilesEquality(
                 TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, TEST_NAME),
-                TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, TEST_NAME));
+                TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, TEST_NAME), true);
     }
 
     private CdmCorpusDefinition setupCdmCorpus() throws InterruptedException {
@@ -226,7 +226,7 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
 
         // Creating an entity reference for the associated entity - simple name reference
         entityAttributeDef.setEntity(cdmCorpus.makeRef(CdmObjectType.EntityRef, associatedEntityName, true));
-        entityAttributeDef.setPurpose(CreateRelationshipMeanings(cdmCorpus, "Non-simple resolution guidance sample"));
+        entityAttributeDef.setPurpose(CreateRelationshipMeanings(cdmCorpus, "Simple resolution guidance sample"));
 
         // Add resolution guidance - enable reference
         final CdmAttributeResolutionGuidance attributeResolution = cdmCorpus.makeObject(CdmObjectType.AttributeResolutionGuidanceDef);
@@ -265,7 +265,7 @@ public class CreateNetNewEntitiesTest extends SampleTestBase {
         // Add the trait to the attribute's entity reference
         associatedEntityRef.getAppliedTraits().add(traitReference);
         entityAttributeDef.setEntity(associatedEntityRef);
-        entityAttributeDef.setPurpose(CreateRelationshipMeanings(cdmCorpus, "Simple resolution guidance sample"));
+        entityAttributeDef.setPurpose(CreateRelationshipMeanings(cdmCorpus, "Non-simple resolution guidance sample"));
 
         // Add resolution guidance
         CdmAttributeResolutionGuidance attributeResolution = cdmCorpus.makeObject(CdmObjectType.AttributeResolutionGuidanceDef);

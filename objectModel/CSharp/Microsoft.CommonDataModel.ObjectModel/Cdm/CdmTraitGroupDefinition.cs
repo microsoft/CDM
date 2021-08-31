@@ -57,7 +57,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmTraitGroupDefinition;
-                copy.Ctx = this.Ctx;
                 copy.TraitGroupName = this.TraitGroupName;
             }
 

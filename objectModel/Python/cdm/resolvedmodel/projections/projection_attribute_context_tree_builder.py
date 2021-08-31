@@ -103,11 +103,10 @@ class ProjectionAttributeContextTreeBuilder:
         # Store this in the map as [search_for attribute context parameter]:[found attribute context parameters]
         # We store it this way so that we can create the found nodes under their corresponding search_for nodes.
         if search_for_attr_ctx_param not in self._search_for_attr_ctx_param_to_found_attr_ctx_param:
-            self._search_for_attr_ctx_param_to_found_attr_ctx_param[search_for_attr_ctx_param] = [found_attr_ctx_param]
-        else:
-            found_attr_ctx_params = self._search_for_attr_ctx_param_to_found_attr_ctx_param[search_for_attr_ctx_param]
-            found_attr_ctx_params.append(found_attr_ctx_param)
-            self._search_for_attr_ctx_param_to_found_attr_ctx_param[search_for_attr_ctx_param] = found_attr_ctx_params
+            self._search_for_attr_ctx_param_to_found_attr_ctx_param[search_for_attr_ctx_param] = []
+
+        found_attr_ctx_params = self._search_for_attr_ctx_param_to_found_attr_ctx_param[search_for_attr_ctx_param]
+        found_attr_ctx_params.append(found_attr_ctx_param)
 
         # Create the attribute context parameter for the action node
         action_attr_ctx_param = AttributeContextParameters()
@@ -142,20 +141,11 @@ class ProjectionAttributeContextTreeBuilder:
 
         # Iterate over all the search_for attribute context parameters
         for search_for_attr_ctx_param in self._search_for_to_search_for_attr_ctx_param.values():
-            search_for_attr_ctx = None
-
             # Fetch all the found attribute context parameters associated with this search_for
             found_attr_ctx_params = self._search_for_attr_ctx_param_to_found_attr_ctx_param[search_for_attr_ctx_param]
 
             # Iterate over all the found attribute context parameters
             for found_attr_ctx_param in found_attr_ctx_params:
-                # We should only create the search_for node when search_for and found have different names. Else collapse the nodes together.
-                if not StringUtils.equals_with_case(search_for_attr_ctx_param._name, found_attr_ctx_param._name):
-                    # Create the attribute context for searchFor if it hasn't been created already and set it as the parent of found
-                    if search_for_attr_ctx is None:
-                        search_for_attr_ctx = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, search_for_attr_ctx_param)
-                    found_attr_ctx_param._under = search_for_attr_ctx
-
                 # Fetch the action attribute context parameter associated with this found
                 action_attr_ctx_param = self._found_attr_ctx_param_to_action_attr_ctx_param[found_attr_ctx_param]
 

@@ -98,7 +98,7 @@ export const resolutionTestUtils = {
                     const newEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(corpusPath, null, resOpt);
                     resOpt.wrtDoc = newEnt.inDocument;
                     resOpt.directives = directives;
-                    const resEnt: ResolvedEntity = newEnt.getResolvedEntity(resOpt);
+                    const resEnt: ResolvedEntity = new ResolvedEntity(resOpt, newEnt);
                     if (spew) {
                         resEnt.spew(resOpt, spew, ' ', true);
                     }

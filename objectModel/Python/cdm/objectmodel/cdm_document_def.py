@@ -15,6 +15,7 @@ from .cdm_container_def import CdmContainerDefinition
 from .cdm_definition_collection import CdmDefinitionCollection
 from .cdm_import_collection import CdmImportCollection
 from .cdm_object_simple import CdmObjectSimple
+from .cdm_local_entity_declaration_def import CdmLocalEntityDeclarationDefinition
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmDataTypeDefinition, CdmImport, CdmFolderDefinition, CdmObject, \
@@ -44,7 +45,7 @@ class ImportPriorities:
 
 class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     # The maximum json semantic version supported by this ObjectModel version.
-    current_json_schema_semantic_version = '1.2.0'
+    current_json_schema_semantic_version = '1.3.0'
 
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
@@ -478,6 +479,27 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             if new_name == self.name:
                 self._is_dirty = False
 
+            # Import here to avoid circular import
+            from .cdm_entity_def import CdmEntityDefinition
+            from .cdm_manifest_def import CdmManifestDefinition
+
+            # Log the telemetry if the document is a manifest
+            if isinstance(self, CdmManifestDefinition):
+                for entity in self.entities:
+                    if isinstance(entity, CdmLocalEntityDeclarationDefinition):
+                        entity.reset_last_file_modified_old_time()
+                for relationship in self.relationships:
+                    relationship.reset_last_file_modified_old_time()               
+                logger._ingest_manifest_telemetry(self, self.ctx, CdmDocumentDefinition.__name__,
+                                                  self.save_as_async.__name__, self.at_corpus_path)
+
+            # Log the telemetry of all entities contained in the document
+            else:
+                for obj in self.definitions:
+                    if isinstance(obj, CdmEntityDefinition):
+                        logger._ingest_entity_telemetry(obj, self.ctx, CdmDocumentDefinition.__name__,
+                                                        self.save_as_async.__name__, obj.at_corpus_path)
+
             return await self.ctx.corpus.persistence._save_document_as_async(self, options, new_name, save_referenced)
 
     async def _save_linked_documents_async(self, options: 'CopyOptions') -> bool:
@@ -522,6 +544,9 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
     def _clear_caches(self):
         self.internal_declarations = {}
+
+        # reset the list before indexing
+        self._import_priorities = None
 
         def post_visit(obj: 'CdmObject', path: str) -> bool:
             obj.declared_path = None

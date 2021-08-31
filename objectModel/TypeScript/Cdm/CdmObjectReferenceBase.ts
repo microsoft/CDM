@@ -28,7 +28,8 @@ import {
     ResolvedTraitSetBuilder,
     resolveOptions,
     SymbolSet,
-    VisitCallback
+    VisitCallback,
+    CdmTraitReferenceBase
 } from '../internal';
 
 export abstract class CdmObjectReferenceBase extends CdmObjectBase implements CdmObjectReference {
@@ -248,7 +249,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         }
         copy.appliedTraits.clear();
         for (const trait of this.appliedTraits) {
-            copy.appliedTraits.push(trait);
+            copy.appliedTraits.push(trait.copy(resOpt) as CdmTraitReferenceBase);
         }
 
         // Don't do anything else after this, as it may cause InDocument to become dirty

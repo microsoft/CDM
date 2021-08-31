@@ -191,7 +191,6 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
       copy = new CdmConstantEntityDefinition(this.getCtx(), this.getConstantEntityName());
     } else {
       copy = (CdmConstantEntityDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setConstantEntityName(this.getConstantEntityName());
     }
 

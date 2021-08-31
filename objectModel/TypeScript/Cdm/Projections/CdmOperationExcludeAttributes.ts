@@ -39,11 +39,16 @@ export class CdmOperationExcludeAttributes extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        const copy = new CdmOperationExcludeAttributes(this.ctx);
-        for (const excludeAttribute in this.excludeAttributes) {
-            copy.excludeAttributes.push(excludeAttribute);
+     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
+        if (!resOpt) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
+
+        const copy: CdmOperationExcludeAttributes = !host ? new CdmOperationExcludeAttributes(this.ctx) : host as CdmOperationExcludeAttributes;
+
+        copy.excludeAttributes = this.excludeAttributes ? this.excludeAttributes.slice() : undefined;
+        
+        this.copyProj(resOpt, copy);
         return copy;
     }
 
@@ -158,7 +163,7 @@ export class CdmOperationExcludeAttributes extends CdmOperationBase {
                     excludeAttributeName,
                     currentPAS,
                     currentPAS.currentResolvedAttribute,
-                    cdmAttributeContextType.attributeDefinition,
+                    cdmAttributeContextType.attributeExcluded,
                     currentPAS.currentResolvedAttribute.attCtx, // lineage is the included attribute
                     undefined // don't know who will point here yet, excluded, so... this could be the end for you.
                 );

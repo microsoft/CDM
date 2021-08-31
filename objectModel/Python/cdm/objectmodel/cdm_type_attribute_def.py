@@ -9,6 +9,7 @@ from cdm.utilities import ResolveOptions, TraitToPropertyMap, logger
 from cdm.enums import CdmLogCode
 from cdm.utilities.string_utils import StringUtils
 
+from .projections.cardinality_settings import CardinalitySettings
 from .cdm_attribute_def import CdmAttribute
 
 if TYPE_CHECKING:
@@ -244,7 +245,6 @@ class CdmTypeAttributeDefinition(CdmAttribute):
 
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.name = self.name
 
         if self.data_type:

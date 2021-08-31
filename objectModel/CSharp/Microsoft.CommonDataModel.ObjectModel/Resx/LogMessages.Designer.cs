@@ -583,7 +583,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unsupported: applyTo property type should be string or List string..
+        ///   Looks up a localized string similar to Unsupported: &apos;{0}&apos; property type should be &apos;{1}&apos;..
         /// </summary>
         internal static string ErrPersistProjUnsupportedProp {
             get {
@@ -705,6 +705,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string ErrPersistSymsInvalidDbPropObject {
             get {
                 return ResourceManager.GetString("ErrPersistSymsInvalidDbPropObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cdm entity document {0} either has zero or multiple entity definitions for SyMS table..
+        /// </summary>
+        internal static string ErrPersistSymsMultipleOrZeroTableDefinition {
+            get {
+                return ResourceManager.GetString("ErrPersistSymsMultipleOrZeroTableDefinition", resourceCulture);
             }
         }
         
@@ -1483,7 +1492,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to RenameAttributes is not supported on an attribute group yet..
+        ///   Looks up a localized string similar to Operation RenameAttributes is not supported on an attribute group yet..
         /// </summary>
         internal static string WarnProjRenameAttrNotSupported {
             get {

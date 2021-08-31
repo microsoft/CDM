@@ -87,16 +87,13 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
                 copy = new CdmTraitDefinition(this.ctx, this.traitName, undefined);
             } else {
                 copy = host as CdmTraitDefinition;
-                copy.ctx = this.ctx;
                 copy.traitName = this.traitName;
             }
-            copy.extendsTrait = this.extendsTrait
-                ? <CdmTraitReference>this.extendsTrait.copy(resOpt)
-                : undefined;
+            copy.extendsTrait = this.extendsTrait ? this.extendsTrait.copy(resOpt) as CdmTraitReference : undefined;
             copy.allParameters = undefined;
             copy.elevated = this.elevated;
             copy.ugly = this.ugly;
-            copy.associatedProperties = this.associatedProperties;
+            copy.associatedProperties = this.associatedProperties ? this.associatedProperties.slice() : undefined;
             this.copyDef(resOpt, copy);
 
             return copy;

@@ -37,7 +37,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             var convertedToModelJson = await modelJsonPersistence.ManifestPersistence.ToData(manifestRead, null, null);
             string location = (convertedToModelJson.Entities[0]["partitions"][0]["location"] as JValue).Value<string>();
             // Model Json uses absolute adapter path.
-            Assert.IsTrue(location.Contains("\\Microsoft.CommonDataModel.ObjectModel.Tests\\TestData\\Persistence\\ModelJson\\DataPartition\\TestModelJsonDataPartitionLocationConsistency\\Input\\EpisodeOfCare\\partition-data.csv"));
+            Assert.IsTrue(location.Contains("\\testData\\Persistence\\ModelJson\\DataPartition\\TestModelJsonDataPartitionLocationConsistency\\Input\\EpisodeOfCare\\partition-data.csv"));
 
             var cdmCorpus2 = TestHelper.GetLocalCorpus(testsSubpath, "TestModelJsonDataPartitionLocationConsistency");
             var manifestAfterConvertion = await modelJsonPersistence.ManifestPersistence.FromObject(cdmCorpus2.Ctx, convertedToModelJson, cdmCorpus2.Storage.FetchRootFolder("local"));

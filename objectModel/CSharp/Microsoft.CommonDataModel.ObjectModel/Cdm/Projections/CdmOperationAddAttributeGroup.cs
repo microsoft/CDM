@@ -32,10 +32,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            var copy = new CdmOperationAddAttributeGroup(this.Ctx)
+            if (resOpt == null)
             {
-                AttributeGroupName = this.AttributeGroupName
-            };
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
+            var copy = host == null ? new CdmOperationAddAttributeGroup(this.Ctx) : host as CdmOperationAddAttributeGroup;
+
+            copy.AttributeGroupName = this.AttributeGroupName;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 

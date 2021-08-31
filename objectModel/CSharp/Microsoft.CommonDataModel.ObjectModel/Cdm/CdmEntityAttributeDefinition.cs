@@ -124,7 +124,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmEntityAttributeDefinition;
-                copy.Ctx = this.Ctx;
                 copy.Name = this.Name;
             }
 
@@ -213,11 +212,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             // this context object holds all of the info about what needs to happen to resolve these attributes.
             // make a copy and add defaults if missing
-            CdmAttributeResolutionGuidance resGuideWithDefault;
-            if (this.ResolutionGuidance != null)
-                resGuideWithDefault = (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt);
-            else
-                resGuideWithDefault = new CdmAttributeResolutionGuidance(this.Ctx);
+            CdmAttributeResolutionGuidance resGuideWithDefault = this.ResolutionGuidance == null 
+                ? new CdmAttributeResolutionGuidance(this.Ctx) : this.ResolutionGuidance?.Copy(resOpt) as CdmAttributeResolutionGuidance;
+
             resGuideWithDefault.UpdateAttributeDefaults(this.Name, this);
 
             return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);

@@ -68,13 +68,12 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
             copy = CdmDataPartitionPatternDefinition(self.ctx, self.name)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.name = self.name
 
         copy.root_location = self.root_location
         copy.glob_pattern = self.glob_pattern
         copy.regular_expression = self.regular_expression
-        copy.parameters = self.parameters
+        copy.parameters = list(self.parameters) if self.parameters else None
         copy.last_file_status_check_time = self.last_file_status_check_time
         copy.last_file_modified_time = self.last_file_modified_time
         if self.specialized_schema:

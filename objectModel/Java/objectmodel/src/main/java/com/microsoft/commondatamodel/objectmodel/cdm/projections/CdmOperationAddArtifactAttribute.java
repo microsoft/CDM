@@ -54,15 +54,11 @@ public class CdmOperationAddArtifactAttribute extends CdmOperationBase {
             resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
         }
 
-        CdmOperationAddArtifactAttribute copy;
-        if (host == null) {
-            copy = new CdmOperationAddArtifactAttribute(this.getCtx());
-        }
-        else {
-            copy = (CdmOperationAddArtifactAttribute)host;
-            copy.setCtx(this.getCtx());
-        }
-        copy.setNewAttribute((CdmAttributeItem)this.getNewAttribute().copy(resOpt));
+        CdmOperationAddArtifactAttribute copy = host == null ? new CdmOperationAddArtifactAttribute(this.getCtx()) :  (CdmOperationAddArtifactAttribute)host;
+
+        copy.setNewAttribute(
+                this.getNewAttribute() != null
+                        ? (CdmAttributeItem)this.getNewAttribute().copy(resOpt): null);
         copy.setInsertAtTop(this.getInsertAtTop());
 
         this.copyProj(resOpt, copy);

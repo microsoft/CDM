@@ -31,7 +31,7 @@ class ProjectionAddArtifactAttributeTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and test_name.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionAddArtifactAttribute')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionAddArtifactAttributeTest')
 
     @async_test
     async def test_add_ent_attr_on_ent_attr_proj(self):

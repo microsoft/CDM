@@ -22,7 +22,7 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionAddAttributeGroup';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionAddAttributeGroupTest';
 
     /**
      * All possible combinations of the different resolution directives

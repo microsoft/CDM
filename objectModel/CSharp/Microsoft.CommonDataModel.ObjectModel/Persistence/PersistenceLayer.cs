@@ -29,7 +29,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Types;
-    using System.IO;
     using Newtonsoft.Json.Linq;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models;
 
@@ -214,44 +213,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                 {
                     if (docName.EqualsWithIgnoreCase(SymsDatabases))
                     {
-                        // List of Databases
                         SymsDatabasesResponse databases = JsonConvert.DeserializeObject<SymsDatabasesResponse>(jsonData);
                         docContent = Persistence.Syms.ManifestDatabasesPersistence.FromObject(Ctx,docName, folder.Namespace, folder.FolderPath, databases) as CdmDocumentDefinition;
                     }
                     else if (docName.Contains(ManifestExtension))
                     {
-                        // Specific database
-                        var database = JsonConvert.DeserializeObject<DatabaseEntity>(jsonData);
-
-                        // Get all tables
-                        List<TableEntity> tablesEntity = new List<TableEntity>();
-                        try
-                        {
-                            // TO DO : these calls must be optimised.
-                            List<string> tables = await adapter.FetchAllFilesAsync($"/{database.Name}/");
-                            foreach (var table in tables)
-                            {
-                                var jsonTable = await adapter.ReadAsync($"/{database.Name}/{table}");
-                                tablesEntity.Add(JsonConvert.DeserializeObject<TableEntity>(jsonTable));
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistSymsTablesReadFailed, docName, e.Message);
-                            return null;
-                        }
-
-                        var jsonRelationships = await adapter.ReadAsync($"{docPath}/relationships");
-                        var symsRelationshipResponse = JsonConvert.DeserializeObject<SymsRelationshipResponse>(jsonRelationships);
-
-                        var syms = new SymsManifestContent 
-                        {
-                            Database = database, 
-                            Entities = tablesEntity,
-                            Relationships = symsRelationshipResponse.Relationships
-                        };
-
-                        docContent = Persistence.Syms.ManifestPersistence.FromObject(Ctx, docName, folder.Namespace, folder.FolderPath, syms) as CdmDocumentDefinition;
+                        SymsManifestContent manifestContent =await Persistence.Syms.Utils.GetSymsModel(adapter, jsonData, docPath);
+                        docContent = Persistence.Syms.ManifestPersistence.FromObject(Ctx, docName, folder.Namespace, folder.FolderPath, manifestContent) as CdmDocumentDefinition;
                     }
                     else if (docName.Contains(CdmExtension))
                     {
@@ -264,7 +232,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                         Logger.Error((ResolveContext)this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), docPath, CdmLogCode.ErrPersistSymsUnsupportedCdmConversion, docName);
                         return null;
                     }
-
                 }
                 // Check file extensions, which performs a case-insensitive ordinal string comparison
                 else if (docName.EndWithOrdinalIgnoreCase(ManifestExtension) || docName.EndWithOrdinalIgnoreCase(FolioExtension))
@@ -324,9 +291,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
         internal async Task<bool> SaveDocumentAsAsync(CdmDocumentDefinition doc, CopyOptions options, string newName, bool saveReferenced = false)
         {
             // Find out if the storage adapter is able to write.
-            string ns = doc.Namespace;
+            string ns = StorageUtils.SplitNamespacePath(newName).Item1;
             if (string.IsNullOrWhiteSpace(ns))
-                ns = this.Corpus.Storage.DefaultNamespace;
+            {
+                ns = doc.Namespace;
+                if (string.IsNullOrWhiteSpace(ns))
+                {
+                    ns = this.Corpus.Storage.DefaultNamespace;
+                }
+            }
+
             var adapter = this.Corpus.Storage.FetchAdapter(ns);
 
             if (adapter == null)
@@ -399,7 +373,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                         }
                         else if (persistenceType == Syms)
                         {
-                            persistedDoc = await Persistence.Syms.ManifestPersistence.ToDataAsync(doc as CdmManifestDefinition, resOpt, options);
+                            persistedDoc = await ConvertManifestToSyms(doc as CdmManifestDefinition, adapter, newName, resOpt, options);
                         }
                         else
                         {
@@ -420,9 +394,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                         }
                         else if (persistenceType == Syms)
                         {
-                            //not supproted currently Why?. Because tables must data partition details in sms.
-                            Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistSymsNotSupported, newName);
-                            return false;
+                            persistedDoc = await ConvertDocToSymsTable(Corpus.Ctx, doc, adapter, newName, resOpt, options);
                         }
                         
                     }
@@ -457,57 +429,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                     {
                         if (newName.EndWithOrdinalIgnoreCase(ManifestExtension))
                         {
-                            string payload = "";
-                            try
-                            {
-                                // Create DB
-                                payload = Persistence.Syms.Utils.GetDBPayload(persistedDoc, DDLType.CREATE);
-                                Logger.Debug(this.Ctx, Tag, nameof(LoadDocumentFromPathAsync), null, $"payload to create file: {payload}");
-                                await adapter.WriteAsync(newPath, payload);
-                                if (((SymsManifestContent)persistedDoc).Entities.Count > 0)
-                                {
-                                    try
-                                    {
-                                        // Create tables
-                                        payload = Persistence.Syms.Utils.GetTablesPayload(((SymsManifestContent)persistedDoc).Entities, DDLType.CREATE);
-                                        await adapter.WriteAsync(newPath, payload);
-
-                                        payload = Persistence.Syms.Utils.GetRelationshipPayload(((SymsManifestContent)persistedDoc).Relationships, DDLType.CREATE);
-                                        await adapter.WriteAsync(newPath, payload);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistSymsTableWriteFailed, newName, e.Message);
-                                        Logger.Debug((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, $"Error mesg: {e.Message} payload = { payload}");
-
-                                        //Rollback: try to delete DB
-                                        await adapter.WriteAsync(newPath, Persistence.Syms.Utils.GetDBPayload(persistedDoc, DDLType.DROP));
-                                        return false;
-                                    }
-                                }
-                                else
-                                {
-                                    // warning
-                                    Logger.Warning((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.WarnPersistSymsDbCreatedWithoutTables, newName);
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                Logger.Error((ResolveContext)this.Ctx, Tag, nameof(SaveDocumentAsAsync), doc.AtCorpusPath, CdmLogCode.ErrPersistSymsDbWriteFailed, newName, e.Message, payload);
-                                return false;
-                            }
-
+                            await Persistence.Syms.Utils.CreateOrUpdateSymsEntities(persistedDoc, adapter);
                         }
                         else if (newName.EndWithOrdinalIgnoreCase(CdmExtension))
                         {
-                            try
-                            {
-                                // Create tables
-                                await adapter.WriteAsync(newPath, Persistence.Syms.Utils.GetTablesPayload(persistedDoc, DDLType.CREATE));
-                            } catch (Exception)
-                            {
-                                return false;
-                            }
+                            TableEntity tableEntity = (TableEntity)persistedDoc;
+                            await Persistence.Syms.Utils.CreateOrUpdateTableEntity(tableEntity, adapter);
                         }
                     }
                     else
@@ -545,6 +472,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                     }
                 }
 
+                if (newName.EndWithOrdinalIgnoreCase(ManifestExtension))
+                {
+                    foreach (var entity in (doc as CdmManifestDefinition).Entities)
+                    {
+                        (entity as CdmLocalEntityDeclarationDefinition).ResetLastFileModifiedOldTime();
+                    }
+                    foreach (var relationship in (doc as CdmManifestDefinition).Relationships)
+                    {
+                        (relationship as CdmE2ERelationship).ResetLastFileModifiedOldTime();
+                    }
+                }
+
                 return true;
             }
         }
@@ -569,6 +508,54 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                     return registeredPersistenceFormat;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Convert to SyMs object from Manifest object.
+        /// </summary>
+        internal static async Task<SymsManifestContent> ConvertManifestToSyms(CdmManifestDefinition doc, StorageAdapter adapter, string path,
+            ResolveOptions resOpt, CopyOptions options)
+        {
+            DatabaseEntity databaseEntity = null;
+            bool isDeltaSync = true;
+            IList<TableEntity> existingSymsTables = null;
+            IList<RelationshipEntity> existingSymsRelationshipEntities = null;
+            try
+            {
+                databaseEntity = JsonConvert.DeserializeObject<DatabaseEntity>(await adapter.ReadAsync(path));
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("NotFound"))
+                {
+                    isDeltaSync = false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            if (isDeltaSync)
+            {
+                var entities = await adapter.ReadAsync($"/{databaseEntity.Name}/{databaseEntity.Name}.manifest.cdm.json/entitydefinition");
+                existingSymsTables = JsonConvert.DeserializeObject<SymsTableResponse>(entities).Tables;
+
+                var realtionships = await adapter.ReadAsync($"/{databaseEntity.Name}/{databaseEntity.Name}.manifest.cdm.json/relationships");
+                existingSymsRelationshipEntities = JsonConvert.DeserializeObject<SymsRelationshipResponse>(realtionships).Relationships;
+            }
+
+            return await Persistence.Syms.ManifestPersistence.ToDataAsync(doc, resOpt, options, isDeltaSync, existingSymsTables, existingSymsRelationshipEntities);
+        }
+
+        /// <summary>
+        /// Convert to SyMs table object from CDM object.
+        /// </summary>
+        internal static async Task<TableEntity> ConvertDocToSymsTable(CdmCorpusContext ctx, CdmDocumentDefinition doc, StorageAdapter adapter, string name,
+            ResolveOptions resOpt, CopyOptions options)
+        {
+            TableEntity existingTableEntity = JsonConvert.DeserializeObject<TableEntity>(await adapter.ReadAsync(name));
+            return Persistence.Syms.DocumentPersistence.ToData(ctx, doc, ((JToken)existingTableEntity.Properties).ToObject<TableProperties>(), resOpt, options);
         }
     }
 }

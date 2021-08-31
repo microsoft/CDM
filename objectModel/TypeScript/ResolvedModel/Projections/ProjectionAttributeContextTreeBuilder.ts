@@ -133,12 +133,11 @@ export class ProjectionAttributeContextTreeBuilder {
         // Store this in the map as [searchFor attribute context parameter]:[found attribute context parameters]
         // We store it this way so that we can create the found nodes under their corresponding searchFor nodes.
         if (!this.searchForAttrCtxParamToFoundAttrCtxParam.has(searchForAttrCtxParam)) {
-            this.searchForAttrCtxParamToFoundAttrCtxParam.set(searchForAttrCtxParam, [foundAttrCtxParam]);
-        } else {
-            const foundAttrCtxParams: AttributeContextParameters[] = this.searchForAttrCtxParamToFoundAttrCtxParam.get(searchForAttrCtxParam);
-            foundAttrCtxParams.push(foundAttrCtxParam);
-            this.searchForAttrCtxParamToFoundAttrCtxParam.set(searchForAttrCtxParam, foundAttrCtxParams);
+            this.searchForAttrCtxParamToFoundAttrCtxParam.set(searchForAttrCtxParam, []);
         }
+
+        const foundAttrCtxParams: AttributeContextParameters[] = this.searchForAttrCtxParamToFoundAttrCtxParam.get(searchForAttrCtxParam);
+        foundAttrCtxParams.push(foundAttrCtxParam);
 
         // Create the attribute context parameter for the action node
         const actionAttrCtxParam: AttributeContextParameters = {
@@ -177,22 +176,11 @@ export class ProjectionAttributeContextTreeBuilder {
     public constructAttributeContextTree(projCtx: ProjectionContext): void {
         // Iterate over all the searchFor attribute context parameters
         for (const searchForAttrCtxParam of this.searchForToSearchForAttrCtxParam.values()) {
-            let searchForAttrCtx: CdmAttributeContext;
-
             // Fetch all the found attribute context parameters associated with this searchFor
             const foundAttrCtxParams: AttributeContextParameters[] = this.searchForAttrCtxParamToFoundAttrCtxParam.get(searchForAttrCtxParam);
 
             // Iterate over all the found attribute context parameters
             for (const foundAttrCtxParam of foundAttrCtxParams) {
-                // We should only create the searchFor node when searchFor and found have different names. Else collapse the nodes together.
-                if (!StringUtils.equalsWithCase(searchForAttrCtxParam.name, foundAttrCtxParam.name)) {
-                    // Create the attribute context for searchFor if it hasn't been created already and set it as the parent of found
-                    if (!searchForAttrCtx) {
-                        searchForAttrCtx = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, searchForAttrCtxParam);
-                    }
-                    foundAttrCtxParam.under = searchForAttrCtx;
-                }
-
                 // Fetch the action attribute context parameter associated with this found
                 const actionAttrCtxParam: AttributeContextParameters = this.foundAttrCtxParamToActionAttrCtxParam.get(foundAttrCtxParam);
 

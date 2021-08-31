@@ -33,9 +33,15 @@ class CdmOperationArrayExpansion(CdmOperationBase):
 
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationArrayExpansion'] = None) -> 'CdmOperationArrayExpansion':
-        copy = CdmOperationArrayExpansion(self.ctx)
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
+
+        copy = CdmOperationArrayExpansion(self.ctx) if not host else host
+
         copy.start_ordinal = self.start_ordinal
         copy.end_ordinal = self.end_ordinal
+
+        self._copy_proj(res_opt, copy)
         return copy
 
     def get_name(self) -> str:

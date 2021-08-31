@@ -15,7 +15,7 @@ import { resolutionTestUtils } from './ResolutionTestUtils';
  * Tests to verify if resolution of trait groups performs as expected.
  */
 describe('Cdm/Resolution/EntityResolutionTraitGroupTest', () => {
-    const testsSubpath: string = 'Cdm/Resolution/EntityResolution';
+    const testsSubpath: string = 'Cdm/Resolution/EntityResolutionTest';
 
     /**
      * Verify success case and make sure the entities are resolved

@@ -52,7 +52,6 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
                 copy = new CdmConstantEntityDefinition(this.ctx, this.constantEntityName);
             } else {
                 copy = host as CdmConstantEntityDefinition;
-                copy.ctx = this.ctx;
                 copy.constantEntityName = this.constantEntityName;
             }
 
@@ -61,7 +60,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
                 // deep copy the content
                 copy.constantValues = [];
                 for (const row of this.constantValues) {
-                    copy.constantValues.push(Object.assign([], row));
+                    copy.constantValues.push(row.slice());
                 }
             }
             this.copyDef(resOpt, copy);

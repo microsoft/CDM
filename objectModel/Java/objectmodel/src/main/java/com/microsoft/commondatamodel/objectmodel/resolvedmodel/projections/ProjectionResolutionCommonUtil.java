@@ -188,7 +188,7 @@ public final class ProjectionResolutionCommonUtil {
     public static Map<String, String> getTopList(ProjectionContext projCtx, List<String> attrNames) {
         // This dictionary contains a mapping from the top-level name of an attribute
         // to the attribute name the top-level name was derived from (the name contained in the given list)
-        Map<String, String> topLevelAttributeNames = new HashMap<>();
+        Map<String, String> topLevelAttributeNames = new LinkedHashMap<>();
 
         // Iterate through each attribute name in the list and search for their top-level names
         for (String attrName : attrNames) {

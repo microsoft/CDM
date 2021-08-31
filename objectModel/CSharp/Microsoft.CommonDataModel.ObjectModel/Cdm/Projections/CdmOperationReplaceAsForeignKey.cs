@@ -31,12 +31,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            CdmOperationReplaceAsForeignKey copy = new CdmOperationReplaceAsForeignKey(this.Ctx)
+            if (resOpt == null)
             {
-                Reference = this.Reference,
-                ReplaceWith = this.ReplaceWith?.Copy() as CdmTypeAttributeDefinition
-            };
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
 
+            var copy = host == null ?  new CdmOperationReplaceAsForeignKey(this.Ctx) : host as CdmOperationReplaceAsForeignKey;
+
+            copy.ReplaceWith = this.ReplaceWith?.Copy(resOpt) as CdmTypeAttributeDefinition;
+            copy.Reference = this.Reference;
+
+            this.CopyProj(resOpt, copy);
             return copy;
         }
 

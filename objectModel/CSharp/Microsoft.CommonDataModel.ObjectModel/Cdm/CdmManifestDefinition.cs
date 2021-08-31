@@ -476,7 +476,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
                 {
-                    DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromObject(this);
+                    DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeFromObjectAsync(this);
 
                     this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
                     if (this.LastFileModifiedTime == null)

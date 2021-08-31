@@ -39,6 +39,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public string ToEntityAttribute { get; set; }
 
+        private DateTimeOffset? lastFileModifiedTime;
+        /// <summary>
+        /// Gets or sets the last file modified time.
+        /// </summary>
+        public DateTimeOffset? LastFileModifiedTime
+        {
+            get { return lastFileModifiedTime; }
+            set { LastFileModifiedOldTime = lastFileModifiedTime; lastFileModifiedTime = value; }
+        }
+
+        internal DateTimeOffset? LastFileModifiedOldTime { get; private set; }
+
         /// <summary>
         /// Constructs a CdmE2ERelationship.
         /// </summary>
@@ -49,6 +61,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             this.Name = name;
             this.ObjectType = CdmObjectType.E2ERelationshipDef;
+            this.LastFileModifiedOldTime = null;
+            this.lastFileModifiedTime = null;
         }
 
         /// <inheritdoc />
@@ -79,7 +93,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 copy = host as CdmE2ERelationship;
-                copy.Ctx = this.Ctx;
                 copy.Name = this.Name;
             }
 
@@ -153,6 +166,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Reset LastFileModifiedOldTime.
+        /// </summary>
+        internal void ResetLastFileModifiedOldTime()
+        {
+            this.LastFileModifiedOldTime = null;
         }
     }
 }

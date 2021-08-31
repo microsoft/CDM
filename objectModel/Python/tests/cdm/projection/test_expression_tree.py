@@ -12,7 +12,7 @@ class ExpressionTreeUnitTest(unittest.TestCase):
     """Unit test for ExpressionTree functions"""
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestExpressionTree')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ExpressionTreeTest')
 
     def test_entity_string_reference(self):
         """Test evaluate_expression function"""

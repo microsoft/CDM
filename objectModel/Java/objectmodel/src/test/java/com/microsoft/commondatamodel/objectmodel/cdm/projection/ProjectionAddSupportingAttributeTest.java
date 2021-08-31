@@ -38,8 +38,7 @@ public class ProjectionAddSupportingAttributeTest {
   /**
    * The path between TestDataPath and TestName.
    */
-  private static final String TESTS_SUBPATH = new File(new File(new File("cdm"), "projection"),
-      "testProjectionAddSupportingAttribute").toString();
+  private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionAddSupportingAttributeTest").toString();
 
   /**
    * AddSupportingAttribute with replaceAsForeignKey operation in the same

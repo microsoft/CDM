@@ -15,6 +15,7 @@ public class EntityAttribute {
     private String displayName;
     private ArrayNode appliedTraits;
     private JsonNode resolutionGuidance;
+    private JsonNode cardinalitySettings;
     private Boolean isPolymorphicSource;
 
     public String getExplanation() {
@@ -79,6 +80,12 @@ public class EntityAttribute {
 
     public void setResolutionGuidance(final JsonNode resolutionGuidance) {
         this.resolutionGuidance = resolutionGuidance;
+    }
+
+    public JsonNode getCardinalitySettings() { return cardinalitySettings; }
+
+    public void setCardinalitySettings(final JsonNode cardinalitySettings) {
+        this.cardinalitySettings = cardinalitySettings;
     }
 
     public Boolean getIsPolymorphicSource() {

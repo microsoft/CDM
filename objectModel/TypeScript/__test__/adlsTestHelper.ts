@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { StringUtils } from '../internal';
+import { azureCloudEndpoint, StringUtils } from '../internal';
 import { ADLSAdapter } from '../Storage';
 
 export const adlsTestHelper = {
-    createAdapterWithSharedKey(rootRelativePath?: string): ADLSAdapter {
-        const hostname: string = process.env['ADLS_HOSTNAME'];
+    createAdapterWithSharedKey(rootRelativePath?: string, testBlobHostname: boolean = false): ADLSAdapter {
+        let hostname: string = process.env['ADLS_HOSTNAME'];
         const rootPath: string = process.env['ADLS_ROOTPATH'];
         const sharedKey: string = process.env['ADLS_SHAREDKEY'];
 
@@ -17,11 +17,15 @@ export const adlsTestHelper = {
         expect(StringUtils.isNullOrWhiteSpace(sharedKey))
             .toBe(false);
 
+        if (testBlobHostname) {
+            hostname = hostname.replace('dfs', 'blob');
+        }
+
         return new ADLSAdapter(hostname, adlsTestHelper.getFullRootPath(rootPath, rootRelativePath), sharedKey);
     },
 
-    createAdapterWithClientId(rootRelativePath?: string): ADLSAdapter {
-        const hostname: string = process.env['ADLS_HOSTNAME'];
+    createAdapterWithClientId(rootRelativePath?: string, specifyEndpoint: boolean = false, testBlobHostname: boolean = false): ADLSAdapter {
+        let hostname: string = process.env['ADLS_HOSTNAME'];
         const rootPath: string = process.env['ADLS_ROOTPATH'];
         const tenant: string = process.env['ADLS_TENANT'];
         const clientId: string = process.env['ADLS_CLIENTID'];
@@ -37,6 +41,14 @@ export const adlsTestHelper = {
             .toBe(false);
         expect(StringUtils.isNullOrWhiteSpace(clientSecret))
             .toBe(false);
+
+        if (testBlobHostname) {
+            hostname = hostname.replace('dfs', 'blob');
+        }
+
+        if (specifyEndpoint) {
+            return new ADLSAdapter(hostname, adlsTestHelper.getFullRootPath(rootPath, rootRelativePath), tenant, clientId, clientSecret, azureCloudEndpoint.AzurePublic);
+        }
 
         return new ADLSAdapter(hostname, adlsTestHelper.getFullRootPath(rootPath, rootRelativePath), tenant, clientId, clientSecret);
     },

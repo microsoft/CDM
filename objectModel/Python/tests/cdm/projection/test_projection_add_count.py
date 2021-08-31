@@ -27,7 +27,7 @@ class ProjectionAddCountTest(unittest.TestCase):
     ]
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionAddCount')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionAddCountTest')
 
     @async_test
     async def test_entity_attribute_proj_using_object_model(self):

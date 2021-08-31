@@ -213,7 +213,6 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
       copy = new CdmAttributeGroupDefinition(this.getCtx(), this.getAttributeGroupName());
     } else {
       copy = (CdmAttributeGroupDefinition) host;
-      copy.setCtx(this.getCtx());
       copy.setAttributeGroupName(this.getAttributeGroupName());
       copy.getMembers().clear();
     }
@@ -223,7 +222,7 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
       copy.setAttributeContext((CdmAttributeContextReference) this.getAttributeContext().copy(resOpt));
     }
     for (final CdmAttributeItem newMember : this.getMembers()) {
-      copy.getMembers().add(newMember);
+      copy.getMembers().add((CdmAttributeItem) newMember.copy(resOpt));
     }
     this.copyDef(resOpt, copy);
     return copy;

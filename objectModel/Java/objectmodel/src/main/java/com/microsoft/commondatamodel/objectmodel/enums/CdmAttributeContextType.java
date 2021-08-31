@@ -13,6 +13,7 @@ public enum CdmAttributeContextType {
   AddedAttributeSupporting,
   AddedAttributeNewArtifact,
   AttributeDefinition,
+  AttributeExcluded,
   AttributeGroup,
   Entity,
   EntityReferenceAsAttribute,

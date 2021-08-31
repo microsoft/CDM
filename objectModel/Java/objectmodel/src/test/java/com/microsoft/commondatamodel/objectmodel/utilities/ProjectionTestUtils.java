@@ -222,7 +222,7 @@ public class ProjectionTestUtils {
                 }
             } else {
                 // Actual
-                Path actualStringFilePath = new File(expectedOutputPath.replace("ExpectedOutput", "ActualOutput"), fileNamePrefix + fileNameSuffix + ".txt").toPath();
+                Path actualStringFilePath = new File(expectedOutputPath.replace("ExpectedOutput", TestHelper.getTestActualOutputFolderName()), fileNamePrefix + fileNameSuffix + ".txt").toPath();
 
                 // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
                 try (final BufferedWriter actualFileWriter = Files.newBufferedWriter(actualStringFilePath, StandardCharsets.UTF_8, StandardOpenOption.CREATE);) {
@@ -254,7 +254,7 @@ public class ProjectionTestUtils {
      * Creates a corpus
      */
     public static CdmCorpusDefinition getLocalCorpus(final String testsSubpath, final String testName) throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, testName, null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(testsSubpath, testName);
 
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             EventList events = corpus.getCtx().getEvents();

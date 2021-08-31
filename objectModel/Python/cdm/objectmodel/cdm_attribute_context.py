@@ -421,7 +421,7 @@ class CdmAttributeContext(CdmObjectDefinition):
             if ac.type == CdmAttributeContextType.GENERATED_SET:
                 in_generated = True # special mode where we hate everything except the removed att notes
 
-            if in_generated and (ac.type == CdmAttributeContextType.OPERATION_EXCLUDE_ATTRIBUTES or ac.type == CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES):
+            if in_generated and ac.type == CdmAttributeContextType.OPERATION_EXCLUDE_ATTRIBUTES:
                 in_remove = True # triggers us to know what to do in the next code block.
             removed_attribute = False
             if ac.type == CdmAttributeContextType.ATTRIBUTE_DEFINITION:
@@ -433,6 +433,10 @@ class CdmAttributeContext(CdmObjectDefinition):
                 else:
                     if ac.contents is None or len(ac.contents) == 0:
                         return True
+
+            # this attribute was removed by a projection operation, but we want to keep the node to indicate what the operation did
+            if ac.type == CdmAttributeContextType.ATTRIBUTE_EXCLUDED:
+                removed_attribute = True
 
             if not in_generated or removed_attribute:
                 # mark this as something worth saving, sometimes 
@@ -563,9 +567,9 @@ class CdmAttributeContext(CdmObjectDefinition):
 
     def validate(self) -> bool:
         missing_fields = []
-        if not bool(self.name):
+        if not self.name:
             missing_fields.append('name')
-        if not bool(self.type):
+        if self.type is None:
             missing_fields.append('type')
 
         if missing_fields:

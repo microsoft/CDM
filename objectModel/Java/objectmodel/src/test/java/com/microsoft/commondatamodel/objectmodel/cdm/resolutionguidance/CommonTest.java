@@ -32,7 +32,7 @@ public class CommonTest {
     /**
      * The test's data path.
      */
-    protected static final String TESTS_SUBPATH = new File("cdm", "resolutionguidance").toString();
+    protected static final String TESTS_SUBPATH = new File("Cdm", "ResolutionGuidance").toString();
 
     /**
      * This method runs the tests with a set expected attributes & attribute context values and validated the actual result.
@@ -222,7 +222,9 @@ public class CommonTest {
             final String expectedPath, final CdmEntityDefinition actualResolvedEntityDef) throws IOException {
         return CompletableFuture.runAsync(() -> {
             try {
-                actualResolvedEntityDef.getInDocument().saveAsAsync(actualResolvedEntityDef.getInDocument().getName());
+                final CopyOptions options = new CopyOptions();
+                options.setTopLevelDocument(false);
+                actualResolvedEntityDef.getInDocument().saveAsAsync(actualResolvedEntityDef.getInDocument().getName(), false, options);
                 final String actualPath = actualResolvedEntityDef.getCtx().getCorpus().getStorage().corpusPathToAdapterPath(actualResolvedEntityDef.getInDocument().getAtCorpusPath());
                 Assert.assertEquals(new String(Files.readAllBytes(new File(expectedPath).toPath()), StandardCharsets.UTF_8),
                         new String(Files.readAllBytes(new File(actualPath).toPath()), StandardCharsets.UTF_8));

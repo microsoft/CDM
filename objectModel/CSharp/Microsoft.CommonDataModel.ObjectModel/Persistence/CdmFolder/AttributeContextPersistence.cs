@@ -43,6 +43,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     case CdmAttributeContextType.AddedAttributeSelectedType:
                     case CdmAttributeContextType.AddedAttributeNewArtifact:
                     case CdmAttributeContextType.AttributeDefinition:
+                    case CdmAttributeContextType.AttributeExcluded:
                         attributeContext.Definition = AttributeReferencePersistence.FromData(ctx, obj.Value<string>("definition"));
                         break;
                 }
@@ -101,6 +102,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return CdmAttributeContextType.AttributeGroup;
                 case "attributeDefinition":
                     return CdmAttributeContextType.AttributeDefinition;
+                case "attributeExcluded":
+                    return CdmAttributeContextType.AttributeExcluded;
                 case "addedAttributeSupporting":
                     return CdmAttributeContextType.AddedAttributeSupporting;
                 case "addedAttributeIdentity":
@@ -162,6 +165,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return "attributeGroup";
                 case CdmAttributeContextType.AttributeDefinition:
                     return "attributeDefinition";
+                case CdmAttributeContextType.AttributeExcluded:
+                    return "attributeExcluded";
                 case CdmAttributeContextType.AddedAttributeSupporting:
                     return "addedAttributeSupporting";
                 case CdmAttributeContextType.AddedAttributeIdentity:

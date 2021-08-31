@@ -45,7 +45,6 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
             copy = CdmDataTypeDefinition(self.ctx, self.data_type_name, None)
         else:
             copy = host
-            copy.ctx = self.ctx
             copy.data_type_name = self.data_type_name
 
         if self.extends_data_type:

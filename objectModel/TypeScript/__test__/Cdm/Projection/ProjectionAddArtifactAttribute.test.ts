@@ -26,7 +26,7 @@ describe('Cdm/Projection/TestProjectionAddArtifactAttribute', () => {
     /**
      * The path between TestDataPath and TestName.
      */
-    const testsSubpath: string = 'Cdm/Projection/TestProjectionAddArtifactAttribute';
+    const testsSubpath: string = 'Cdm/Projection/ProjectionAddArtifactAttributeTest';
 
     /**
      * All possible combinations of the different resolution directives

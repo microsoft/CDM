@@ -37,10 +37,18 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        final CdmOperationReplaceAsForeignKey copy = new CdmOperationReplaceAsForeignKey(this.getCtx());
-        copy.setReference(this.getReference());
-        copy.setReplaceWith((CdmTypeAttributeDefinition) this.getReplaceWith().copy());
+        if (resOpt == null) {
+            resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+        }
 
+        CdmOperationReplaceAsForeignKey copy = host == null ? new CdmOperationReplaceAsForeignKey(this.getCtx()) : (CdmOperationReplaceAsForeignKey)host;
+
+        copy.setReplaceWith(
+                this.getReplaceWith() != null
+                        ? (CdmTypeAttributeDefinition)this.getReplaceWith().copy(resOpt) : null);
+        copy.reference = this.reference;
+
+        this.copyProj(resOpt, copy);
         return copy;
     }
 

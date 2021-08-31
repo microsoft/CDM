@@ -14,7 +14,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
     given a default resolution option/directive."""
 
     # The path between TestDataPath and TestName.
-    tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionAttributeContext')
+    tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionAttributeContextTest')
 
     @async_test
     async def test_entity_string_reference(self):

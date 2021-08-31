@@ -31,8 +31,7 @@ public class ProjectionMapTest {
     /**
      * The path between TestDataPath and TestName
      */
-    private static final String TESTS_SUBPATH = new File(new File(new File("cdm"), "projection"),
-            "testProjectionMap").toString();
+    private static final String TESTS_SUBPATH = new File(new File(new File("Cdm"), "Projection"), "ProjectionMapTest").toString();
 
     /**
      * Test Map type on an entity attribute.

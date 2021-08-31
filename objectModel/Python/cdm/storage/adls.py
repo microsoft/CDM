@@ -21,7 +21,9 @@ import dateutil.parser
 
 from cdm.utilities import StorageUtils
 from cdm.utilities.network.cdm_http_client import CdmHttpClient
+from cdm.utilities.string_utils import StringUtils
 from cdm.storage.network import NetworkAdapter
+from cdm.enums.azure_cloud_endpoint import AzureCloudEndpoint
 
 from .base import StorageAdapterBase
 
@@ -65,6 +67,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             self.shared_key = kwargs.get('shared_key', None)  # type: Optional[str]
             self.sas_token = kwargs.get('sas_token', None)  # type: Optional[str]
             self.token_provider = kwargs.get('token_provider', None)  # type: Optional[TokenProvider]
+            self.endpoint = kwargs.get('endpoint', AzureCloudEndpoint.AZURE_PUBLIC)  # type: AzureCloudEndpoint
 
             # --- internal ---
             self._tenant = kwargs.get('tenant', None)  # type: Optional[str]
@@ -124,7 +127,8 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if cachedValue is not None:
             return cachedValue
         else:
-            adapter_path = self.create_adapter_path(corpus_path)
+            adapter_path = self._create_formatted_adapter_path(corpus_path)
+
             request = self._build_request(adapter_path, 'HEAD')
 
             cdm_response = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
@@ -137,7 +141,10 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             return None
 
     def create_adapter_path(self, corpus_path: str) -> str:
-        if corpus_path and corpus_path.startswith('//'):
+        if corpus_path is None:
+            return None
+
+        if corpus_path.startswith('//'):
             corpus_path = corpus_path[1:]
 
         formatted_corpus_path = self._format_corpus_path(corpus_path)
@@ -243,12 +250,16 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if self.location_hint:
             config_object['locationHint'] = self.location_hint
 
+        if self.endpoint:
+            config_object['endpoint'] = StringUtils.snake_case_to_pascal_case(self.endpoint.name)
+
         result_config['config'] = config_object
 
         return json.dumps(result_config)
 
     async def read_async(self, corpus_path: str) -> str:
-        url = self.create_adapter_path(corpus_path)
+        url = self._create_formatted_adapter_path(corpus_path)
+
         request = self._build_request(url, 'GET')
 
         return await super()._read(request)
@@ -272,11 +283,22 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             self._tenant = configs_json['tenant']
             self.client_id = configs_json['clientId']
 
+            # To keep backwards compatibility with config files that were generated before the introduction of the `endpoint` property.
+            if not hasattr(self, 'endpoint') or not self.endpoint:
+                self.endpoint = AzureCloudEndpoint.AZURE_PUBLIC
+
         if configs_json.get('locationHint'):
             self.location_hint = configs_json['locationHint']
 
+        if configs_json.get('endpoint'):
+            endpoint_from_config = StringUtils.pascal_case_to_snake_case(configs_json['endpoint'])
+            if endpoint_from_config in AzureCloudEndpoint.__members__.keys():
+                self.endpoint = AzureCloudEndpoint[endpoint_from_config]
+            else:
+                raise Exception('Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.')
+
     async def write_async(self, corpus_path: str, data: str) -> None:
-        url = self.create_adapter_path(corpus_path)
+        url = self._create_formatted_adapter_path(corpus_path)
 
         request = self._build_request(url + '?resource=file', 'PUT')
 
@@ -381,6 +403,14 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         return request
 
+    def _create_formatted_adapter_path(self, corpus_path: str) -> str:
+        adapter_path = self.create_adapter_path(corpus_path)
+
+        if adapter_path is None:
+            return None
+
+        return adapter_path.replace(self.hostname, self._formatted_hostname)
+
     def _escape_path(self, unescaped_path: str):
         return urllib.parse.quote(unescaped_path).replace('%2F', '/')
 
@@ -457,4 +487,4 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         """Build context when users make the first call. Also need to ensure client Id, tenant and secret are not null."""
         if self._auth_context is None:
             self._auth_context = msal.ConfidentialClientApplication(
-                self.client_id, authority='https://login.microsoftonline.com/' + self.tenant, client_credential=self.secret)
+                self.client_id, authority=self.endpoint.value + self.tenant, client_credential=self.secret)
