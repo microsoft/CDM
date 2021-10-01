@@ -151,14 +151,7 @@ public class CdmTraitReference extends CdmTraitReferenceBase {
       rtsTrait = trait.fetchResolvedTraits(resOpt);
     }
 
-    final boolean cacheByPath = trait.thisIsKnownToHaveParameters == null || !trait.thisIsKnownToHaveParameters;
-    String cacheTag = ctx.getCorpus()
-        .createDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.getAtCorpusPath());
-    Object rtsResult = null;
-
-    if (cacheTag != null) {
-      rtsResult = ctx.getCache().get(cacheTag);
-    }
+    ResolvedTraitSet rtsResult = null;
 
     // Store the previous reference symbol set, we will need to add it with
     // children found from the constructResolvedTraits call.
@@ -169,87 +162,64 @@ public class CdmTraitReference extends CdmTraitReferenceBase {
 
     resOpt.setSymbolRefSet(new SymbolSet());
 
-    // If not, then make one and save it.
-    if (rtsResult == null) {
-      // Get the set of resolutions, should just be this one trait.
-      if (rtsTrait == null) {
-        // Store current symbol ref set.
-        final SymbolSet newSymbolRefSet = resOpt.getSymbolRefSet();
-        resOpt.setSymbolRefSet(new SymbolSet());
+    // Get the set of resolutions, should just be this one trait.
+    if (rtsTrait == null) {
+      // Store current symbol ref set.
+      final SymbolSet newSymbolRefSet = resOpt.getSymbolRefSet();
+      resOpt.setSymbolRefSet(new SymbolSet());
 
-        rtsTrait = trait.fetchResolvedTraits(resOpt);
+      rtsTrait = trait.fetchResolvedTraits(resOpt);
 
-        // Bubble up symbol reference set from children.
-        if (newSymbolRefSet != null) {
-          newSymbolRefSet.merge(resOpt.getSymbolRefSet());
-        }
-
-        resOpt.setSymbolRefSet(newSymbolRefSet);
+      // Bubble up symbol reference set from children.
+      if (newSymbolRefSet != null) {
+        newSymbolRefSet.merge(resOpt.getSymbolRefSet());
       }
 
-      if (rtsTrait != null) {
-        rtsResult = rtsTrait.deepCopy();
-      }
-
-      // Now if there are argument for this application, set the values in the array.
-      if (this.getArguments() != null && rtsResult != null) {
-        // If never tried to line up arguments with parameters, do that.
-        if (!this.resolvedArguments) {
-          this.resolvedArguments = true;
-          final ParameterCollection param = trait.fetchAllParameters(resOpt);
-          CdmParameterDefinition paramFound;
-          Object aValue;
-
-          int iArg = 0;
-          if (this.getArguments() != null) {
-            for (final CdmArgumentDefinition argumentDef : this.getArguments()) {
-              try {
-                paramFound = param.resolveParameter(iArg, argumentDef.getName());
-              } catch (final CdmException e) {
-                throw new RuntimeException();
-              }
-
-              argumentDef.setResolvedParameter(paramFound);
-              aValue = argumentDef.getValue();
-              ctx.getCorpus().constTypeCheck(resOpt, this.getInDocument(), paramFound, aValue);
-              argumentDef.setValue(aValue);
-              iArg++;
-            }
-          }
-        }
-        if (this.getArguments() != null) {
-          for (final CdmArgumentDefinition argumentDef : this.getArguments()) {
-            ((ResolvedTraitSet) rtsResult).setParameterValueFromArgument(trait, argumentDef);
-          }
-        }
-      }
-
-      // Register set of possible symbols.
-      ctx.getCorpus()
-          .registerDefinitionReferenceSymbols(this.fetchObjectDefinition(resOpt), kind,
-              resOpt.getSymbolRefSet());
-
-      // Get the new getCache() tag now that we have the list of symbols.
-      cacheTag = ctx.getCorpus()
-          .createDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.getAtCorpusPath());
-      if (cacheTag != null && cacheTag.trim().length() > 0) {
-        ctx.getCache().put(cacheTag, rtsResult);
-      }
-    } else {
-      // Cache was found.
-      // Get the SymbolSet for this cached object.
-      final String key = CdmCorpusDefinition.createCacheKeyFromObject(this, kind);
-      final SymbolSet tempDocRefSet = ctx.getCorpus().getDefinitionReferenceSymbols()
-          .get(key);
-
-      resOpt.setSymbolRefSet(tempDocRefSet);
+      resOpt.setSymbolRefSet(newSymbolRefSet);
     }
+
+    if (rtsTrait != null) {
+      rtsResult = rtsTrait.deepCopy();
+    }
+
+    // Now if there are argument for this application, set the values in the array.
+    if (this.getArguments() != null && rtsResult != null) {
+      // If never tried to line up arguments with parameters, do that.
+      if (!this.resolvedArguments) {
+        this.resolvedArguments = true;
+        final ParameterCollection param = trait.fetchAllParameters(resOpt);
+        CdmParameterDefinition paramFound;
+
+        int argumentIndex = 0;
+        for (final CdmArgumentDefinition argumentDef : this.getArguments()) {
+          try {
+            paramFound = param.resolveParameter(argumentIndex, argumentDef.getName());
+          } catch (final CdmException e) {
+            throw new RuntimeException();
+          }
+
+          argumentDef.setResolvedParameter(paramFound);
+          Object argumentValue = paramFound.constTypeCheck(resOpt, this.getInDocument(), argumentDef.getValue());
+          argumentDef.setValue(argumentValue);
+          argumentIndex++;
+        }
+      }
+
+      for (final CdmArgumentDefinition argumentDef : this.getArguments()) {
+        rtsResult.setParameterValueFromArgument(trait, argumentDef);
+      }
+    }
+
+    // Register set of possible symbols.
+    ctx.getCorpus()
+        .registerDefinitionReferenceSymbols(this.fetchObjectDefinition(resOpt), kind,
+            resOpt.getSymbolRefSet());
 
     // Merge child document set with current.
     currSymRefSet.merge(resOpt.getSymbolRefSet());
     resOpt.setSymbolRefSet(currSymRefSet);
 
-    return (ResolvedTraitSet) rtsResult;
+    return rtsResult;
   }
 
   /**

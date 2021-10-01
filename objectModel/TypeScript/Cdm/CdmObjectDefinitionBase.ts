@@ -97,6 +97,14 @@ export abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
     }
 
     /**
+     * Given an initial path, returns this object's declared path
+     * @internal
+     */
+    public fetchDeclaredPath(pathFrom: string): string {
+        return pathFrom + this.getName() ?? '';
+    }
+
+    /**
      * @internal
      */
     public isDerivedFromDef(resOpt: resolveOptions, baseCdmObjectRef: CdmObjectReference, name: string, seek: string): boolean {

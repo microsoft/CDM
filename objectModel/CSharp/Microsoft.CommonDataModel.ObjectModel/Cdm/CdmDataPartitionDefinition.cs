@@ -151,16 +151,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (path == null)
-                {
-                    path = pathFrom + (this.GetName() ?? "UNNAMED");
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
@@ -171,6 +162,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;
+        }
+
+        /// <inheritdoc />
+        internal override string UpdateDeclaredPath(string pathFrom)
+        {
+            return pathFrom + this.GetName() ?? "UNNAMED";
         }
 
         /// <inheritdoc />

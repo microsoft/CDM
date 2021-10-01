@@ -133,6 +133,17 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
             && exhibitsTraits.visitList(pathFrom + "/exhibitsTraits/", preChildren, postChildren);
   }
 
+  /**
+   * Given an initial path, returns this object's declared path
+   * @param pathFrom
+   * @return
+   * @deprecated
+   */
+  @Deprecated
+  public String fetchDeclaredPath(String pathFrom) {
+    return pathFrom + this.getName();
+  }
+
   // Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed into some final document.
   @Override
   @Deprecated

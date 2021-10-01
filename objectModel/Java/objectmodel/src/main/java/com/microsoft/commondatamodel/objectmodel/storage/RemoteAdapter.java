@@ -58,15 +58,18 @@ public class RemoteAdapter extends NetworkAdapter {
     final ArrayNode hostsArray = JsonNodeFactory.instance.arrayNode();
     final ObjectNode configObject = JsonNodeFactory.instance.objectNode();
 
-    // Go through the Hosts dictionary and build a JObject for each item.
-    for (final Map.Entry<String, String> stringStringEntry : this.hosts.entrySet()) {
-      final ObjectNode hostItem = JsonNodeFactory.instance.objectNode();
-      hostItem.put(stringStringEntry.getKey(), stringStringEntry.getValue());
-      hostsArray.add(hostItem);
+    if (this.hosts != null) {
+      // Go through the Hosts dictionary and build a JObject for each item.
+      for (final Map.Entry<String, String> stringStringEntry : this.hosts.entrySet()) {
+        final ObjectNode hostItem = JsonNodeFactory.instance.objectNode();
+        hostItem.put(stringStringEntry.getKey(), stringStringEntry.getValue());
+        hostsArray.add(hostItem);
+      }
+
+      configObject.put("hosts", hostsArray);
     }
 
     // Try constructing network configs.
-    configObject.put("hosts", hostsArray);
     for (final Map.Entry<String, JsonNode> stringJsonNodeEntry : this.fetchNetworkConfig().entrySet()) {
       configObject.set(stringJsonNodeEntry.getKey(), stringJsonNodeEntry.getValue());
     }

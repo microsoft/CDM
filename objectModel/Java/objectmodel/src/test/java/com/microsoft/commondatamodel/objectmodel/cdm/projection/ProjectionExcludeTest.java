@@ -16,10 +16,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * A test class for testing the ExcludeAttributes operation in a projection as well as SelectsSomeAvoidNames in a resolution guidance
@@ -63,8 +60,7 @@ public class ProjectionExcludeTest {
 
         // Create an ExcludeAttributes operation
         CdmOperationExcludeAttributes excludeAttrsOp = corpus.makeObject(CdmObjectType.OperationExcludeAttributesDef);
-        excludeAttrsOp.getExcludeAttributes().add("id");
-        excludeAttrsOp.getExcludeAttributes().add("date");
+        excludeAttrsOp.setExcludeAttributes(Arrays.asList("id", "date"));
         projection.getOperations().add(excludeAttrsOp);
 
         // Create an entity reference to hold this projection
@@ -104,8 +100,7 @@ public class ProjectionExcludeTest {
 
         // Create an ExcludeAttributes operation
         CdmOperationExcludeAttributes excludeAttrsOp = corpus.makeObject(CdmObjectType.OperationExcludeAttributesDef);
-        excludeAttrsOp.getExcludeAttributes().add("name");
-        excludeAttrsOp.getExcludeAttributes().add("value");
+        excludeAttrsOp.setExcludeAttributes(Arrays.asList("name", "value"));
         projection.getOperations().add(excludeAttrsOp);
 
         // Create an entity reference to hold this projection
@@ -143,8 +138,7 @@ public class ProjectionExcludeTest {
 
         // Create an ExcludeAttributes operation
         CdmOperationExcludeAttributes excludeAttrsOp = corpus.makeObject(CdmObjectType.OperationExcludeAttributesDef);
-        excludeAttrsOp.getExcludeAttributes().add("id");
-        excludeAttrsOp.getExcludeAttributes().add("date");
+        excludeAttrsOp.setExcludeAttributes(Arrays.asList("id", "date"));
         projection.getOperations().add(excludeAttrsOp);
 
         // Create an entity reference to hold this projection
@@ -157,7 +151,7 @@ public class ProjectionExcludeTest {
 
         // Create an ExcludeAttributes operation
         CdmOperationExcludeAttributes excludeAttrsOp2 = corpus.makeObject(CdmObjectType.OperationExcludeAttributesDef);
-        excludeAttrsOp2.getExcludeAttributes().add("value");
+        excludeAttrsOp2.setExcludeAttributes(Collections.singletonList("value"));
         projection2.getOperations().add(excludeAttrsOp2);
 
         // Create an entity reference to hold this projection
@@ -197,8 +191,7 @@ public class ProjectionExcludeTest {
 
         // Create an ExcludeAttributes operation
         CdmOperationExcludeAttributes excludeAttrsOp = corpus.makeObject(CdmObjectType.OperationExcludeAttributesDef);
-        excludeAttrsOp.getExcludeAttributes().add("id");
-        excludeAttrsOp.getExcludeAttributes().add("date");
+        excludeAttrsOp.setExcludeAttributes(Arrays.asList("id", "date"));
         projection.getOperations().add(excludeAttrsOp);
 
         // Create an entity reference to hold this projection

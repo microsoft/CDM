@@ -10,7 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// <summary>
         /// The max depth set if the user specified to not use max depth
         /// </summary>
-        internal static int MaxDepthLimit = 32;
+        internal static readonly int MaxDepthLimit = 32;
 
         /// <summary>
         /// The maximum depth that we can resolve entity attributes.

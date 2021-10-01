@@ -29,6 +29,14 @@ class JObject(OrderedDict):
                 self.__setstate__(json.loads(value))
             else:
                 raise ValueError('Only dict, list or json strings are supported')
+        else:
+            return None
+
+    def __new__(cls, *args, **kwargs):
+        if len(args) > 0 and args[0] is None:
+            return None
+
+        return super().__new__(cls, *args, **kwargs)
 
     def json_ignore(self, keys):
         self.__json_ignored.update(keys)

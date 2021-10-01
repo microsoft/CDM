@@ -20,7 +20,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public override T FetchObjectDefinition<T>(ResolveOptions resOpt = null) 
+        public override T FetchObjectDefinition<T>(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
             {
@@ -40,6 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             return null;
         }
+
         internal override CdmObjectReference CreatePortableReference(ResolveOptions resOpt)
         {
             return null;

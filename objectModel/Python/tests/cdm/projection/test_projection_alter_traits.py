@@ -32,7 +32,7 @@ class ProjectionAlterTraitsTest(unittest.TestCase):
     # The path between TestDataPath and test_name.
     tests_subpath = os.path.join('Cdm', 'Projection', 'ProjectionAlterTraitsTest')
 
-    trait_group_file_path = os.path.join('..', '..', 'testData', 'Cdm', 'Projection', 'ProjectionAlterTraitsTest')
+    trait_group_file_path = os.path.join('..', 'TestData', 'Cdm', 'Projection', 'ProjectionAlterTraitsTest')
 
     @async_test
     async def test_alter_traits_on_type_attr_proj(self):

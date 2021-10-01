@@ -96,14 +96,7 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = pathFrom + 'operationReplaceAsForeignKey';
-                this.declaredPath = path;
-            }
-        }
+        const path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -166,7 +159,7 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         refAttrName: string
     ): ProjectionAttributeStateSet {
         const pasList: ProjectionAttributeState[] = ProjectionResolutionCommonUtil.getLeafList(projCtx, refAttrName);
-        const sourceEntity = projCtx.projectionDirective.originalSourceEntityAttributeName;
+        const sourceEntity = projCtx.projectionDirective.originalSourceAttributeName;
 
         if (!sourceEntity) {
             Logger.warning(projOutputSet.ctx, CdmOperationReplaceAsForeignKey.name, this.createNewProjectionAttributeStateSet.name, null, cdmLogCode.WarnProjFKWithoutSourceEntity, refAttrName);

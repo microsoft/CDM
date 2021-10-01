@@ -94,7 +94,7 @@ export * from './Cdm/CdmManifestDeclarationDefinition';
 export * from './Cdm/CdmDocumentDefinition';
 export * from './Cdm/CdmFolderDefinition';
 export * from './Cdm/DocumentLibrary';
-export * from './Utilities/resolveContextScope';
+export * from './Cdm/ImportPriorities';
 export * from './Utilities/resolveContext';
 export * from './Utilities/docsResult';
 export * from './Cdm/CdmCorpusDefinition';

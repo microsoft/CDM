@@ -31,8 +31,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
-import org.mockito.internal.util.StringUtil;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,10 +120,6 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     this.attributeContext = attributeContext;
   }
 
-  public CdmObjectReference getExtendsEntityRef() {
-    return this.extendsEntity;
-  }
-
   public void setExtendsEntityRef(CdmEntityReference extendsEntityRef) {
     this.extendsEntity = extendsEntityRef;
   }
@@ -141,7 +135,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
-    return this.isDerivedFromDef(resOpt, this.getExtendsEntityRef(), this.getName(), baseDef);
+    return this.isDerivedFromDef(resOpt, this.getExtendsEntity(), this.getName(), baseDef);
   }
 
   public List<String> getCdmSchemas() {
@@ -197,7 +191,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
   @Override
   void constructResolvedTraits(final ResolvedTraitSetBuilder rtsb, final ResolveOptions resOpt) {
     // base traits then add any elevated from attributes then add things exhibited by the att.
-    final CdmObjectReference baseClass = this.getExtendsEntityRef();
+    final CdmObjectReference baseClass = this.getExtendsEntity();
     if (baseClass != null) {
       // merge in all from base class
       rtsb.mergeTraits(baseClass.fetchResolvedTraits(resOpt));
@@ -291,7 +285,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
           acpExtEnt.setIncludeTraits(true);  // "Entity" is the thing with traits - That perches in the tree - And sings the tune and never waits - To see what it should be.
         }
 
-        rasb.mergeAttributes((this.getExtendsEntityRef()).fetchResolvedAttributes(resOpt, acpExtEnt));
+        rasb.mergeAttributes((this.getExtendsEntity()).fetchResolvedAttributes(resOpt, acpExtEnt));
 
         if (!resOpt.checkAttributeCount(rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
           Logger.error(this.getCtx(), TAG, "constructResolvedAttributes", this.getAtCorpusPath(), CdmLogCode.ErrRelMaxResolvedAttrReached, this.entityName);
@@ -649,27 +643,23 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
 
       String attRefPath = path + ra.getResolvedName();
       // the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
-      try {
-        if (ra.getTarget() instanceof CdmAttribute && ((CdmAttribute)ra.getTarget()).getClass().getMethod("getObjectType") != null) {
-          // it was an attribute, add to the content of the context, also, keep track of the ordering for all of the att paths we make up
-          // as we go through the resolved attributes, this is the order of atts in the final resolved entity
-          if (!attPath2Order.containsKey(attRefPath)) {
-            final CdmObjectReference attRef = this.getCtx().getCorpus().makeObject(CdmObjectType.AttributeRef, attRefPath, true);
-            // only need one explanation for this path to the insert order
-            attPath2Order.put(attRef.getNamedReference(), ra.getInsertOrder());
-            raCtx.getContents().add(attRef);
-          }
-        } else {
-          // a group, so we know an attribute group will get created later with the name of the group and the things it contains will be in
-          // the members of that group
-          attRefPath += "/members/";
-          if (!finishedGroups.contains(attRefPath)) {
-            pointContextAtResolvedAtts((ResolvedAttributeSet)ra.getTarget(), attRefPath, allPrimaryCtx, attPath2Order, finishedGroups);
-            finishedGroups.add(attRefPath);
-          }
+      if (ra.getTarget() instanceof CdmAttribute) {
+        // it was an attribute, add to the content of the context, also, keep track of the ordering for all of the att paths we make up
+        // as we go through the resolved attributes, this is the order of atts in the final resolved entity
+        if (!attPath2Order.containsKey(attRefPath)) {
+          final CdmObjectReference attRef = this.getCtx().getCorpus().makeObject(CdmObjectType.AttributeRef, attRefPath, true);
+          // only need one explanation for this path to the insert order
+          attPath2Order.put(attRef.getNamedReference(), ra.getInsertOrder());
+          raCtx.getContents().add(attRef);
         }
-      } catch (NoSuchMethodException e) {
-        throw new RuntimeException("The method 'getObjectType' doesn't exist.", e);
+      } else {
+        // a group, so we know an attribute group will get created later with the name of the group and the things it contains will be in
+        // the members of that group
+        attRefPath += "/members/";
+        if (!finishedGroups.contains(attRefPath)) {
+          pointContextAtResolvedAtts((ResolvedAttributeSet)ra.getTarget(), attRefPath, allPrimaryCtx, attPath2Order, finishedGroups);
+          finishedGroups.add(attRefPath);
+        }
       }
     });
   }
@@ -949,6 +939,10 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     return (String) this.t2pm.fetchPropertyValue(CdmPropertyName.PRIMARY_KEY);
   }
 
+  boolean getIsResolved() {
+    return (boolean) this.t2pm.fetchPropertyValue(CdmPropertyName.IS_RESOLVED);
+  }
+
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
@@ -975,16 +969,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-      if (StringUtils.isNullOrEmpty(path)) {
-        path = pathFrom + this.getEntityName();
-        this.setDeclaredPath(path);
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -1096,51 +1081,42 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     resOpt = resOpt.copy();
     resOpt.setDirectives(new AttributeResolutionDirectiveSet(LinkedHashSet));
 
-    final ResolveContext ctx = (ResolveContext) this.getCtx(); // what it actually is
-    ResolvedEntityReferenceSet entRefSetCache = (ResolvedEntityReferenceSet) ctx
-            .fetchCache(this, "entRefSet", resOpt);
-    if (entRefSetCache == null) {
-      entRefSetCache = new ResolvedEntityReferenceSet(resOpt);
-      if (!resolvingEntityReferences) {
-        resolvingEntityReferences = true;
-        // get from dynamic base public class and then 'fix' those to point here instead.
-        final CdmObjectReference extRef = this.extendsEntity;
-        if (extRef != null) {
-          CdmEntityDefinition extDef = extRef.fetchObjectDefinition(resOpt);
-          if (extDef != null) {
-            if (extDef == this) {
-              extDef = extRef.fetchObjectDefinition(resOpt);
-            }
-            final ResolvedEntityReferenceSet inherited = extDef.fetchResolvedEntityReferences(resOpt);
-            if (inherited != null) {
-              for (final ResolvedEntityReference res : inherited.getSet()) {
-                final ResolvedEntityReference resolvedEntityReference = res.copy();
-                resolvedEntityReference.getReferencing().setEntity(this);
-                entRefSetCache.getSet().add(resolvedEntityReference);
-              }
+    ResolvedEntityReferenceSet entRefSet = new ResolvedEntityReferenceSet(resOpt);
+    if (!resolvingEntityReferences) {
+      resolvingEntityReferences = true;
+      // get from dynamic base public class and then 'fix' those to point here instead.
+      final CdmObjectReference extRef = this.extendsEntity;
+      if (extRef != null) {
+        CdmEntityDefinition extDef = extRef.fetchObjectDefinition(resOpt);
+        if (extDef != null) {
+          final ResolvedEntityReferenceSet inherited = extDef.fetchResolvedEntityReferences(resOpt);
+          if (inherited != null) {
+            for (final ResolvedEntityReference res : inherited.getSet()) {
+              final ResolvedEntityReference resolvedEntityReference = res.copy();
+              resolvedEntityReference.getReferencing().setEntity(this);
+              entRefSet.getSet().add(resolvedEntityReference);
             }
           }
         }
-        if (this.getAttributes() != null) {
-          for (int i = 0; i < this.getAttributes().getCount(); i++) {
-            // if dynamic refs come back from attributes, they don't know who we are, so they don't set the entity
-            final ResolvedEntityReferenceSet sub = this.getAttributes().getAllItems().get(i)
-                    .fetchResolvedEntityReferences(resOpt);
-            if (sub != null) {
-              for (final ResolvedEntityReference res : sub.getSet()) {
-                res.getReferencing().setEntity(this);
-              }
-              entRefSetCache.add(sub);
-            }
-          }
-        }
-        ctx.updateCache(this, "entRefSet", entRefSetCache, resOpt);
-        this.resolvingEntityReferences = false;
       }
+      if (this.getAttributes() != null) {
+        for (int i = 0; i < this.getAttributes().getCount(); i++) {
+          // if dynamic refs come back from attributes, they don't know who we are, so they don't set the entity
+          final ResolvedEntityReferenceSet sub = this.getAttributes().getAllItems().get(i)
+                  .fetchResolvedEntityReferences(resOpt);
+          if (sub != null) {
+            for (final ResolvedEntityReference res : sub.getSet()) {
+              res.getReferencing().setEntity(this);
+            }
+            entRefSet.add(sub);
+          }
+        }
+      }
+      this.resolvingEntityReferences = false;
     }
 
     this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
-    return entRefSetCache;
+    return entRefSet;
   }
 
   CdmAttributeItem addAttributeDef(CdmAttributeItem attributeDef) {

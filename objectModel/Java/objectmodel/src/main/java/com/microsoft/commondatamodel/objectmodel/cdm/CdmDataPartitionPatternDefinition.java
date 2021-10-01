@@ -109,18 +109,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
       final String pathFrom,
       final VisitCallback preChildren,
       final VisitCallback postChildren) {
-    String path = "";
-    if (!this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-      if (path == null) {
-        String thisName = this.getName();
-        if (thisName == null) {
-          thisName = "UNNAMED";
-        }
-        path = pathFrom + thisName;
-        this.setDeclaredPath(path);
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -135,6 +124,11 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     }
 
     return false;
+  }
+
+  @Deprecated
+  public String fetchDeclaredPath(String pathFrom) {
+    return pathFrom + (this.getName() == null ? "UNNAMED": this.getName());
   }
 
   /**

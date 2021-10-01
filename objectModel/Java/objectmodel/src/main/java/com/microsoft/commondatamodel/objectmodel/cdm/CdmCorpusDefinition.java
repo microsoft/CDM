@@ -24,7 +24,6 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmValidationStep;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ParameterCollection;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
@@ -43,20 +42,11 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.TelemetryClient;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -73,8 +63,8 @@ public class CdmCorpusDefinition {
   private final StorageManager storage;
   private final PersistenceLayer persistence;
   private CdmCorpusContext ctx;
-  final private Map<CdmObjectDefinition, ArrayList<CdmE2ERelationship>> outgoingRelationships;
-  final private Map<CdmObjectDefinition, ArrayList<CdmE2ERelationship>> incomingRelationships;
+  final private Map<String, ArrayList<CdmE2ERelationship>> outgoingRelationships;
+  final private Map<String, ArrayList<CdmE2ERelationship>> incomingRelationships;
   Map<String, String> resEntMap;
 
   private String appId;
@@ -84,18 +74,13 @@ public class CdmCorpusDefinition {
   private Map<String, SymbolSet> definitionReferenceSymbols;
   private Map<String, ResolvedTraitSet> emptyRts;
   private Map<String, CdmTypeAttributeDefinition> knownArtifactAttributes;
-  private DocumentLibrary documentLibrary;
+  DocumentLibrary documentLibrary;
 
   /**
    * Whether we are currently performing a resolution or not.
    * Used to stop making documents dirty during CdmCollections operations.
    */
   boolean isCurrentlyResolving = false;
-
-  /**
-   * Used by Visit functions of CdmObjects to skip calculating the declaredPath.
-   */
-  boolean blockDeclaredPathChanges = false;
 
   /**
    * The set of resolution directives that will be used by default by the object model when it is resolving
@@ -115,7 +100,7 @@ public class CdmCorpusDefinition {
     this.outgoingRelationships = new LinkedHashMap<>();
     this.incomingRelationships = new LinkedHashMap<>();
     this.resEntMap = new LinkedHashMap<>();
-    this.documentLibrary = new DocumentLibrary();
+    this.documentLibrary = new DocumentLibrary(this);
 
     // the default for the default is to make entity attributes into foreign key references when they point at one other instance and
     // to ignore the other entities when there are an array of them
@@ -269,15 +254,6 @@ public class CdmCorpusDefinition {
     this.defaultResolutionDirectives = defaultResolutionDirectives;
   }
 
-  /**
-   * @deprecated Only for internal use.
-   * @return boolean
-   */
-  @Deprecated
-  public boolean getBlockDeclaredPathChanges() {
-    return this.blockDeclaredPathChanges;
-  }
-
   public <T extends CdmObject> T makeObject(final CdmObjectType ofType, final String nameOrRef) {
     return this.makeObject(ofType, nameOrRef, false);
   }
@@ -292,15 +268,15 @@ public class CdmCorpusDefinition {
     }
   }
 
-  String createDefinitionCacheTag(final ResolveOptions resOpt, final CdmObjectBase definition, final String kind) {
-    return createDefinitionCacheTag(resOpt, definition, kind, "", false);
-  }
-
   CdmDocumentDefinition addDocumentObjects(final CdmFolderDefinition cdmFolderDefinition, final CdmDocumentDefinition doc) {
     final String path = this.storage.createAbsoluteCorpusPath(doc.getFolderPath() + doc.getName(), doc);
     this.documentLibrary.addDocumentPath(path, cdmFolderDefinition, doc);
 
     return doc;
+  }
+
+  String createDefinitionCacheTag(final ResolveOptions resOpt, final CdmObjectBase definition, final String kind) {
+    return createDefinitionCacheTag(resOpt, definition, kind, "", false);
   }
 
   String createDefinitionCacheTag(final ResolveOptions resOpt, final CdmObjectBase definition, final String kind,
@@ -339,10 +315,26 @@ public class CdmCorpusDefinition {
 
     final StringBuilder tagSuffix = new StringBuilder();
     tagSuffix.append(String.format("-%s-%s", kind, thisId));
-    tagSuffix.append(String
-        .format("-(%s)", resOpt.getDirectives() != null ? resOpt.getDirectives().getTag() : ""));
+
+    // Some object types like traits don't change their resolved from depending on the directives.
+    // This optimization is only useful when the same corpus is used to resolve objects using different directives.
+    boolean simpleCacheTag = false;
+    switch (definition.getObjectType()) {
+      case DataTypeDef:
+      case PurposeDef:
+      case TraitDef:
+      case TraitGroupDef: {
+        simpleCacheTag = true;
+        break;
+      }
+    }
+    if (!simpleCacheTag) {
+      tagSuffix.append(String
+              .format("-(%s)", resOpt.getDirectives() != null ? resOpt.getDirectives().getTag() : ""));
+    }
+
     // only for attributes
-    if (kind == "rasb") {
+    if ("rasb".equals(kind)) {
       // if MaxDepth was not initialized before, initialize it now
       if (resOpt.depthInfo.getMaxDepth() == null) {
         resOpt.depthInfo.setMaxDepth(resOpt.getMaxDepth());
@@ -577,7 +569,8 @@ public class CdmCorpusDefinition {
     return (T) newObj;
   }
 
-  private void registerSymbol(final String symbol, final CdmDocumentDefinition inDoc) {
+  @Deprecated
+  public void registerSymbol(final String symbol, final CdmDocumentDefinition inDoc) {
     final List<CdmDocumentDefinition> docs = this.symbolDefinitions.computeIfAbsent(symbol, k -> new ArrayList<>());
     docs.add(inDoc);
   }
@@ -636,23 +629,23 @@ public class CdmCorpusDefinition {
    * @param resOpt
    * @return
    */
-  CompletableFuture<Void> loadImportsAsync(CdmDocumentDefinition doc, ResolveOptions resOpt) {
+  CompletableFuture<Void> loadImportsAsync(CdmDocumentDefinition doc, Set<String> docsLoading, ResolveOptions resOpt) {
     if (doc == null) {
       return CompletableFuture.completedFuture(null);
     }
 
     Function<String, CompletableFuture<Void>> loadDocs = (docPath) ->
       this.documentLibrary.concurrentReadLock.acquire().thenRun(() -> {
-        if (!this.documentLibrary.needToLoadDocument(docPath)) {
+        if (!this.documentLibrary.needToLoadDocument(docPath, docsLoading)) {
           this.documentLibrary.concurrentReadLock.release();
           return;
         }
 
         // Load it.
         final CdmDocumentDefinition loadedDoc =
-                (CdmDocumentDefinition) this.loadFolderOrDocumentAsync(docPath, false, resOpt).join();
+                (CdmDocumentDefinition) this.documentLibrary.loadFolderOrDocumentAsync(docPath, false, resOpt).join();
 
-        if (this.documentLibrary.markDocumentAsLoadedOrFailed(docPath, loadedDoc)) {
+        if (loadedDoc != null) {
           Logger.info(this.ctx, TAG, "loadImportsAsync", loadedDoc.getAtCorpusPath(), Logger.format("Resolved import for '{0}'.", loadedDoc.getName()));
         } else {
           Logger.warning(this.ctx, TAG, "loadImportsAsync", null, CdmLogCode.WarnResolveImportFailed, docPath);
@@ -660,7 +653,7 @@ public class CdmCorpusDefinition {
 
         this.documentLibrary.concurrentReadLock.release();
 
-        loadImportsAsync(loadedDoc, resOpt).join();
+        loadImportsAsync(loadedDoc, docsLoading, resOpt).join();
       });
 
     // Loop through all of the document's imports and load them recursively.
@@ -677,9 +670,9 @@ public class CdmCorpusDefinition {
     return CompletableFuture.allOf(taskList.toArray(new CompletableFuture[0]));
   }
 
-  CompletableFuture<Void> resolveImportsAsync(final CdmDocumentDefinition doc, ResolveOptions resOpt) {
+  CompletableFuture<Void> resolveImportsAsync(final CdmDocumentDefinition doc, Set<String> docsLoading, ResolveOptions resOpt) {
     // load imports (and imports of imports)
-    return this.loadImportsAsync(doc, resOpt).thenRun(() -> {
+    return this.loadImportsAsync(doc, docsLoading, resOpt).thenRun(() -> {
 
       // now that everything is loaded, attach import docs to this doc's import list
       this.setImportDocuments(doc);
@@ -781,7 +774,7 @@ public class CdmCorpusDefinition {
     // of view of a given document (with respect to, wrtDoc) (meaning given a document and the
     // things it defines and the files it imports and the files they import, where is the 'last'
     // definition found).
-    if ((resOpt == null || resOpt.getWrtDoc() == null)) {
+    if (resOpt == null || resOpt.getWrtDoc() == null || symbolDef == null) {
       // No way to figure this out.
       return null;
     }
@@ -800,11 +793,27 @@ public class CdmCorpusDefinition {
       return null;
     }
 
+    // save the symbol name as it got here
+    String initialSymbol = symbolDef;
+
+    // when trying to find a reference, first find the definition that contains it
+    // and then look for the reference inside it.
+    boolean isReference = symbolDef != null && symbolDef.endsWith("(ref)");
+    if (isReference) {
+      int defIndex = symbolDef.indexOf("/");
+      symbolDef = symbolDef.substring(0, defIndex);
+    }
+
     // Get the array of documents where the symbol is defined.
     final DocsResult symbolDocsResult = this.docsForSymbol(resOpt, wrtDoc, fromDoc, symbolDef);
 
     CdmDocumentDefinition docBest = symbolDocsResult.getDocBest();
     symbolDef = symbolDocsResult.getNewSymbol();
+
+    if (!isReference) {
+      initialSymbol = symbolDef;
+    }
+
     final List<CdmDocumentDefinition> docs = symbolDocsResult.getDocList();
     if (null != docs) {
       // Add this symbol to the set being collected in resOpt, we will need this when caching.
@@ -839,15 +848,32 @@ public class CdmCorpusDefinition {
 
     // Return the definition found in the best document
     CdmObjectBase found = docBest.internalDeclarations.get(symbolDef);
-    if (null == found && retry) {
+
+    // in case we are trying to find a reference, the object we found previously is the definition that contains the reference.
+    // look inside the definition now.
+    if (found != null && isReference) {
+      AtomicReference<CdmObjectBase> foundRef = new AtomicReference<>();
+      // try to find the reference
+      final String symbol = initialSymbol;
+      found.visit("", (obj, objPath) -> {
+          if (symbol.equals(objPath)) {
+            foundRef.set((CdmObjectBase) obj);
+            return true;
+          }
+          return false;
+        }, null);
+      found = foundRef.get();
+    }
+
+    if (found == null && retry) {
       // Maybe just locatable from here not defined here.
       // This happens when the symbol is monikered, but the moniker path doesn't lead to the document where the symbol is defined.
       // It leads to the document from where the symbol can be found. 
       // Ex.: resolvedFrom/Owner, while resolvedFrom is the Account that imports Owner.
-      found = this.resolveSymbolReference(resOpt, docBest, symbolDef, expectedType, false);
+      found = this.resolveSymbolReference(resOpt, docBest, initialSymbol, expectedType, false);
     }
 
-    if (null != found && expectedType != CdmObjectType.Error) {
+    if (found != null && expectedType != CdmObjectType.Error) {
       switch (expectedType) {
         case TraitRef: {
           if (found.getObjectType() != CdmObjectType.TraitDef) {
@@ -1015,120 +1041,65 @@ public class CdmCorpusDefinition {
     }
   }
 
-  private CompletableFuture<? extends CdmContainerDefinition> loadFolderOrDocumentAsync(final String objectPath) {
-    return loadFolderOrDocumentAsync(objectPath, false);
-  }
+  boolean indexDocuments(final ResolveOptions resOpt, final boolean loadImports, final CdmDocumentDefinition rootDoc, final Set<String> docsLoaded) {
+    List<CdmDocumentDefinition> docsNotIndexed = this.documentLibrary.listDocsNotIndexed(rootDoc, docsLoaded);
 
-  boolean indexDocuments(final ResolveOptions resOpt, final boolean loadImports) {
-    List<CdmDocumentDefinition> docsNotIndexed = this.documentLibrary.listDocsNotIndexed();
-
-    if (docsNotIndexed.size() == 0) {
-      return true;
-    }
-
+    // Step: clear document caches.
     for (final CdmDocumentDefinition doc : docsNotIndexed) {
-      if (!doc.declarationsIndexed) {
+      if (!doc.declarationsIndexed || loadImports) {
         Logger.debug(this.ctx, TAG, "indexDocuments", doc.getAtCorpusPath(), Logger.format("index start: {0}"));
         doc.clearCaches();
       }
     }
 
-    // Check basic integrity.
+    // Step: check basic integrity
     for (final CdmDocumentDefinition doc : docsNotIndexed) {
-      if (!doc.declarationsIndexed) {
-        doc.isValid = this.checkObjectIntegrity(doc);
+      if (!doc.declarationsIndexed || loadImports) {
+        doc.checkIntegrity();
       }
     }
 
-    // Declare definitions in objects in this doc.
+    // Step: declare definitions in objects in this doc.
     for (final CdmDocumentDefinition doc : docsNotIndexed) {
-      if (!doc.declarationsIndexed && doc.isValid) {
-        this.declareObjectDefinitions(doc, "");
+      if ((!doc.declarationsIndexed || loadImports) && doc.isValid) {
+        doc.declareObjectDefinitions();
       }
     }
 
     if (loadImports) {
-      // Index any imports.
-      for (final CdmDocumentDefinition doc : docsNotIndexed) {
-        doc.getImportPriorities();
-      }
-
-      // Make sure we can find everything that is named by reference.
+      // Step: Index import priorities
       for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.isValid) {
-          final ResolveOptions resOptLocal = resOpt.copy();
-          resOptLocal.setWrtDoc(doc);
-          this.resolveObjectDefinitions(doc, resOptLocal);
+          // index any imports.
+          doc.getImportPriorities();
         }
       }
 
-      // Now resolve any trait arguments that are type object.
+      // Step: make sure we can find everything that is named by reference.
       for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.isValid) {
           final ResolveOptions resOptLocal = resOpt.copy();
           resOptLocal.setWrtDoc(doc);
-          this.resolveTraitArguments(resOptLocal, doc);
+          doc.resolveObjectDefinitions(resOptLocal);
+        }
+      }
+
+      // Step: now resolve any trait arguments that are type object.
+      for (final CdmDocumentDefinition doc : docsNotIndexed) {
+        if (doc.isValid) {
+          final ResolveOptions resOptLocal = resOpt.copy();
+          resOptLocal.setWrtDoc(doc);
+          doc.resolveTraitArguments(resOptLocal);
         }
       }
     }
 
-    // Finish up.
+    // Step: finish up.
     for (final CdmDocumentDefinition doc : docsNotIndexed) {
-      Logger.debug(this.ctx, TAG, "indexDocuments", doc.getAtCorpusPath(), Logger.format("index finish: {0}"));
-      this.finishDocumentResolve(doc, loadImports);
+      doc.finishIndexing(loadImports);
     }
 
     return true;
-  }
-
-  private CompletableFuture<? extends CdmContainerDefinition> loadFolderOrDocumentAsync(String objectPath,
-                                                                              final boolean forceReload) {
-    return loadFolderOrDocumentAsync(objectPath, forceReload, null);
-  }
-
-  private CompletableFuture<? extends CdmContainerDefinition> loadFolderOrDocumentAsync(String objectPath,
-                                                                              final boolean forceReload,
-                                                                              final ResolveOptions resOpt) {
-    if (!StringUtils.isNullOrTrimEmpty(objectPath)) {
-      // first check for namespace
-      final Map.Entry<String, String> pathTuple = StorageUtils.splitNamespacePath(objectPath);
-      if (pathTuple == null) {
-        Logger.error(this.ctx, TAG, "loadFolderOrDocumentAsync", objectPath, CdmLogCode.ErrPathNullObjectPath);
-        return CompletableFuture.completedFuture(null);
-      }
-      final String nameSpace = !StringUtils.isNullOrTrimEmpty(pathTuple.getKey()) ? pathTuple.getKey()
-          : this.getStorage().getDefaultNamespace();
-      objectPath = pathTuple.getValue();
-
-      if (objectPath.startsWith("/")) {
-        final CdmFolderDefinition namespaceFolder = this.storage.fetchRootFolder(nameSpace);
-        final StorageAdapter namespaceAdapter = this.storage.fetchAdapter(nameSpace);
-
-        if (namespaceFolder == null || namespaceAdapter == null) {
-          Logger.error(this.ctx, TAG, "loadFolderOrDocumentAsync", objectPath, CdmLogCode.ErrStorageNamespaceNotRegistered, nameSpace);
-          return CompletableFuture.completedFuture(null);
-        }
-
-        final CdmFolderDefinition lastFolder = namespaceFolder
-            .fetchChildFolderFromPath(objectPath, false);
-
-        // don't create new folders, just go as far as possible
-        if (lastFolder != null) {
-          // maybe the search is for a folder?
-          final String lastPath = lastFolder.getFolderPath();
-          if (lastPath.equals(objectPath)) {
-            return CompletableFuture.completedFuture(lastFolder);
-          }
-
-          // remove path to folder and then look in the folder
-          final String newObjectPath = StringUtils.slice(objectPath, lastPath.length());
-
-          return lastFolder.fetchDocumentFromFolderPathAsync(newObjectPath, namespaceAdapter, forceReload, resOpt);
-        }
-      }
-    }
-
-    return CompletableFuture.completedFuture(null);
   }
 
   /**
@@ -1231,7 +1202,7 @@ public class CdmCorpusDefinition {
       }
 
       Logger.debug(this.ctx, TAG, "fetchObjectAsync", documentPath, Logger.format("request object: {0}", objectPath));
-      final CdmContainerDefinition newObj = this.loadFolderOrDocumentAsync(documentPath, forceReload).join();
+      final CdmContainerDefinition newObj = this.documentLibrary.loadFolderOrDocumentAsync(documentPath, forceReload).join();
 
       if (newObj != null) {
         // get imports and index each document that is loaded
@@ -1391,8 +1362,8 @@ public class CdmCorpusDefinition {
    * @return ArrayList of CdmE2ERelationship
    */
   public ArrayList<CdmE2ERelationship> fetchIncomingRelationships(final CdmEntityDefinition entity) {
-    if (this.incomingRelationships != null && this.incomingRelationships.containsKey(entity)) {
-      return this.incomingRelationships.get(entity);
+    if (this.incomingRelationships != null && this.incomingRelationships.containsKey(entity.getAtCorpusPath())) {
+      return this.incomingRelationships.get(entity.getAtCorpusPath());
     }
     return new ArrayList<>();
   }
@@ -1404,8 +1375,8 @@ public class CdmCorpusDefinition {
    * @return ArrayList of CdmE2ERelationship
    */
   public ArrayList<CdmE2ERelationship> fetchOutgoingRelationships(final CdmEntityDefinition entity) {
-    if (this.outgoingRelationships != null && this.outgoingRelationships.containsKey(entity)) {
-      return this.outgoingRelationships.get(entity);
+    if (this.outgoingRelationships != null && this.outgoingRelationships.containsKey(entity.getAtCorpusPath())) {
+      return this.outgoingRelationships.get(entity.getAtCorpusPath());
     }
     return new ArrayList<>();
   }
@@ -1440,7 +1411,7 @@ public class CdmCorpusDefinition {
               directives.add("normalized");
               directives.add("referenceOnly");
               final ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), new AttributeResolutionDirectiveSet(directives));
-              final boolean isResolvedEntity = entity.getAttributeContext() != null;
+              final boolean isResolvedEntity = entity.getIsResolved();
 
               // only create a resolved entity if the entity passed in was not a resolved entity
               if (!isResolvedEntity) {
@@ -1451,28 +1422,52 @@ public class CdmCorpusDefinition {
               }
 
               // find outgoing entity relationships using attribute context
-              final ArrayList<CdmE2ERelationship> outgoingRelationships =
+              final ArrayList<CdmE2ERelationship> newOutgoingRelationships =
                       this.findOutgoingRelationships(resOpt, resEntity, resEntity.getAttributeContext(), isResolvedEntity);
 
-              this.outgoingRelationships.put(entity, outgoingRelationships);
+              final ArrayList<CdmE2ERelationship> oldOutgoingRelationships = this.outgoingRelationships.get(entity.getAtCorpusPath());
+
+              // fix incoming rels based on any changes made to the outgoing rels
+              if (oldOutgoingRelationships != null) {
+                oldOutgoingRelationships.forEach((CdmE2ERelationship rel) -> {
+                  String relString = rel.createCacheKey();
+                  Boolean hasRel = newOutgoingRelationships.parallelStream().anyMatch(x -> x.createCacheKey().equals(relString));
+
+                  // remove any relationships that no longer exist
+                  if (!hasRel) {
+                    final CdmEntityDefinition targetEnt = this.<CdmEntityDefinition>fetchObjectAsync(rel.getToEntity(), currManifest).join();
+                    if (targetEnt != null) {
+                      final ArrayList<CdmE2ERelationship> currIncoming = this.incomingRelationships.get(targetEnt.getAtCorpusPath());
+                      if (currIncoming != null) {
+                        currIncoming.remove(rel);
+                      }
+                    } else {
+                      final String absolutePath = this.getStorage().createAbsoluteCorpusPath(rel.getToEntity(), rel.getInDocument());
+                      this.incomingRelationships.remove(absolutePath);
+                    }
+                  }
+                });
+              }
+
+              this.outgoingRelationships.put(entity.getAtCorpusPath(), newOutgoingRelationships);
 
               // flip outgoing entity relationships list to get incoming relationships map
-              if (outgoingRelationships != null) {
-                for (final CdmE2ERelationship outgoingRelationship : outgoingRelationships) {
+              if (newOutgoingRelationships != null) {
+                for (final CdmE2ERelationship outgoingRelationship : newOutgoingRelationships) {
                   final CdmEntityDefinition targetEnt =
                           this.<CdmEntityDefinition>fetchObjectAsync(
                                   outgoingRelationship.getToEntity(),
                                   currManifest
                           ).join();
                   if (targetEnt != null) {
-                    if (!this.incomingRelationships.containsKey(targetEnt)) {
+                    if (!this.incomingRelationships.containsKey(targetEnt.getAtCorpusPath())) {
                       this.incomingRelationships.put(
-                              targetEnt,
+                              targetEnt.getAtCorpusPath(),
                               new ArrayList<>()
                       );
                     }
 
-                    this.incomingRelationships.get(targetEnt).add(outgoingRelationship);
+                    this.incomingRelationships.get(targetEnt.getAtCorpusPath()).add(outgoingRelationship);
                   }
                 }
               }
@@ -2065,136 +2060,6 @@ public class CdmCorpusDefinition {
     });
   }
 
-  Object constTypeCheck(
-      final ResolveOptions resOpt,
-      final CdmDocumentDefinition currentDoc,
-      final CdmParameterDefinition paramDef,
-      final Object aValue) {
-    final ResolveContext ctx = (ResolveContext) this.ctx;
-    Object replacement = aValue;
-
-    // If parameter type is entity, then the value should be an entity or ref to one
-    // same is true of 'dataType' data type.
-    if (null != paramDef.getDataTypeRef()) {
-      CdmDataTypeDefinition dt = paramDef.getDataTypeRef().fetchObjectDefinition(resOpt);
-      if (null == dt) {
-        dt = paramDef.getDataTypeRef().fetchObjectDefinition(resOpt);
-        Logger.error(ctx, TAG, "constTypeCheck", currentDoc.getFolderPath() + currentDoc.getName(), CdmLogCode.ErrUnrecognizedDataType, paramDef.getName());
-        return null;
-      }
-
-      // Compare with passed in value or default for parameter.
-      Object pValue = aValue;
-      if (null == pValue) {
-        pValue = paramDef.getDefaultValue();
-        replacement = pValue;
-      }
-
-      if (null != pValue) {
-        if (dt.isDerivedFrom("cdmObject", resOpt)) {
-          final List<CdmObjectType> expectedTypes = new ArrayList<>();
-          String expected = null;
-          if (dt.isDerivedFrom("entity", resOpt)) {
-            expectedTypes.add(CdmObjectType.ConstantEntityDef);
-            expectedTypes.add(CdmObjectType.EntityRef);
-            expectedTypes.add(CdmObjectType.EntityDef);
-            expectedTypes.add(CdmObjectType.ProjectionDef);
-            expected = "entity";
-          } else if (dt.isDerivedFrom("attribute", resOpt)) {
-            expectedTypes.add(CdmObjectType.AttributeRef);
-            expectedTypes.add(CdmObjectType.TypeAttributeDef);
-            expectedTypes.add(CdmObjectType.EntityAttributeDef);
-            expected = "attribute";
-          } else if (dt.isDerivedFrom("dataType", resOpt)) {
-            expectedTypes.add(CdmObjectType.DataTypeRef);
-            expectedTypes.add(CdmObjectType.DataTypeDef);
-            expected = "dataType";
-          } else if (dt.isDerivedFrom("purpose", resOpt)) {
-            expectedTypes.add(CdmObjectType.PurposeRef);
-            expectedTypes.add(CdmObjectType.PurposeDef);
-            expected = "purpose";
-          } else if (dt.isDerivedFrom("traitGroup", resOpt)) {
-            expectedTypes.add(CdmObjectType.TraitGroupRef);
-            expectedTypes.add(CdmObjectType.TraitGroupDef);
-            expected = "traitGroup";
-          } else if (dt.isDerivedFrom("trait", resOpt)) {
-            expectedTypes.add(CdmObjectType.TraitRef);
-            expectedTypes.add(CdmObjectType.TraitDef);
-            expected = "trait";
-          } else if (dt.isDerivedFrom("attributeGroup", resOpt)) {
-            expectedTypes.add(CdmObjectType.AttributeGroupRef);
-            expectedTypes.add(CdmObjectType.AttributeGroupDef);
-            expected = "attributeGroup";
-          }
-
-          if (expectedTypes.size() == 0) {
-            Logger.error(ctx, TAG,"constTypeCheck", currentDoc.getFolderPath() + currentDoc.getName(), CdmLogCode.ErrUnexpectedDataType, paramDef.getName());
-          }
-
-          // If a string constant, resolve to an object ref.
-          CdmObjectType foundType = CdmObjectType.Error;
-          final Class pValueType = pValue.getClass();
-
-          if (CdmObject.class.isAssignableFrom(pValueType)) {
-            foundType = ((CdmObject) pValue).getObjectType();
-          }
-
-          String foundDesc = ctx.getRelativePath();
-
-          String pValueAsString = "";
-          if (!(pValue instanceof CdmObject)) {
-            pValueAsString = (String) pValue;
-          }
-
-          if (!pValueAsString.isEmpty()) {
-            if (pValueAsString.equalsIgnoreCase("this.attribute")
-                && expected.equalsIgnoreCase("attribute")) {
-              // Will get sorted out later when resolving traits.
-              foundType = CdmObjectType.AttributeRef;
-            } else {
-              foundDesc = pValueAsString;
-              final int seekResAtt = CdmObjectReferenceBase.offsetAttributePromise(pValueAsString);
-              if (seekResAtt >= 0) {
-                // Get an object there that will get resolved later after resolved attributes.
-                replacement = new CdmAttributeReference(ctx, pValueAsString, true);
-                ((CdmAttributeReference) replacement).setCtx(ctx);
-                ((CdmAttributeReference) replacement).setInDocument(currentDoc);
-                foundType = CdmObjectType.AttributeRef;
-              } else {
-                final CdmObjectBase lu = ctx.getCorpus()
-                    .resolveSymbolReference(
-                        resOpt,
-                        currentDoc,
-                        pValueAsString,
-                        CdmObjectType.Error,
-                        true);
-                if (null != lu) {
-                  if (expected.equalsIgnoreCase("attribute")) {
-                    replacement = new CdmAttributeReference(ctx, pValueAsString, true);
-                    ((CdmAttributeReference) replacement).setCtx(ctx);
-                    ((CdmAttributeReference) replacement).setInDocument(currentDoc);
-                    foundType = CdmObjectType.AttributeRef;
-                  } else {
-                    replacement = lu;
-                    foundType = ((CdmObject) replacement).getObjectType();
-                  }
-                }
-              }
-            }
-          }
-
-          if (expectedTypes.indexOf(foundType) == -1) {
-            Logger.error(ctx, TAG, "constTypeCheck", currentDoc.getAtCorpusPath(), CdmLogCode.ErrResolutionFailure, paramDef.getName(), expected, foundDesc, expected);
-          } else {
-            Logger.info(ctx, TAG, "constTypeCheck", currentDoc.getAtCorpusPath(), Logger.format("Resolved '{0}'", foundDesc));
-          }
-        }
-      }
-    }
-
-    return replacement;
-  }
-
   private CdmValidationStep resolveReferencesStep(
       final String statusMessage,
       final ResolveAction resolveAction,
@@ -2224,200 +2089,6 @@ public class CdmCorpusDefinition {
     }
 
     return nextStage;
-  }
-
-  private boolean checkObjectIntegrity(final CdmDocumentDefinition currentDoc) {
-    final ResolveContext ctx = (ResolveContext) this.ctx;
-    final AtomicInteger errorCount = new AtomicInteger();
-    final VisitCallback preChildren = (iObject, path) -> {
-      if (!iObject.validate()) {
-        errorCount.getAndIncrement();
-      } else {
-        iObject.setCtx(ctx);
-      }
-
-      Logger.info(ctx, TAG, "checkObjectIntegrity", null, Logger.format("Checked, folderPath: '{0}', path: '{1}'", currentDoc.getFolderPath(), path));
-      return false;
-    };
-
-    currentDoc.visit("", preChildren, null);
-    return Objects.equals(errorCount.get(), 0);
-  }
-
-  private void declareObjectDefinitions(
-      final CdmDocumentDefinition currentDoc,
-      final String relativePath) {
-    final ResolveContext ctx = (ResolveContext) this.ctx;
-    final String corpusPathRoot = currentDoc.getFolderPath() + currentDoc.getName();
-    currentDoc.visit(relativePath, (iObject, path) -> {
-      // I can't think of a better time than now to make sure any recently changed or added things have an in doc
-      iObject.setInDocument(currentDoc);
-
-      if (path.indexOf("(unspecified)") > 0) {
-        return true;
-      }
-
-      boolean skipDuplicates = false;
-      switch (iObject.getObjectType()) {
-        case AttributeGroupRef:
-        case AttributeContextRef:
-        case DataTypeRef:
-        case EntityRef:
-        case PurposeRef:
-        case TraitRef:
-        case TraitGroupRef:
-        case ConstantEntityDef:
-          // these are all references
-          // we will now allow looking up a reference object based on path, so they get indexed too
-          // if there is a duplicate, don't complain, the path just finds the first one
-          skipDuplicates = true;
-        case AttributeGroupDef:
-        case EntityDef:
-        case ParameterDef:
-        case TraitDef:
-        case PurposeDef:
-        case TraitGroupDef:
-        case AttributeContextDef:
-        case DataTypeDef:
-        case TypeAttributeDef:
-        case EntityAttributeDef:
-        case LocalEntityDeclarationDef:
-        case ReferencedEntityDeclarationDef:
-        case ProjectionDef:
-        case OperationAddCountAttributeDef:
-        case OperationAddSupportingAttributeDef:
-        case OperationAddTypeAttributeDef:
-        case OperationExcludeAttributesDef:
-        case OperationArrayExpansionDef:
-        case OperationCombineAttributesDef:
-        case OperationRenameAttributesDef:
-        case OperationReplaceAsForeignKeyDef:
-        case OperationIncludeAttributesDef:
-        case OperationAddAttributeGroupDef:
-        case OperationAlterTraitsDef:
-        case OperationAddArtifactAttributeDef:{
-          ctx.setRelativePath(relativePath);
-          final String corpusPath;
-          if (corpusPathRoot.endsWith("/") || path.startsWith("/")) {
-            corpusPath = corpusPathRoot + path;
-          } else {
-            corpusPath = corpusPathRoot + "/" + path;
-          }
-          if (currentDoc.internalDeclarations.containsKey(path) && !skipDuplicates) {
-            Logger.error(ctx, TAG, "declareObjectDefinitions", corpusPath, CdmLogCode.ErrPathIsDuplicate, path);
-            return false;
-          } else {
-            currentDoc.internalDeclarations.putIfAbsent(path, (CdmObjectBase)iObject);
-
-            this.registerSymbol(path, currentDoc);
-            Logger.info(ctx, TAG, "declareObjectDefinitions", corpusPath, Logger.format("Declared: '{0}'", corpusPath));
-          }
-          break;
-        }
-
-        default: {
-          Logger.debug(ctx, TAG, "declareObjectDefinitions", currentDoc.getAtCorpusPath(), Logger.format("ObjectType not recognized: '{0}'", iObject.getObjectType().name()));
-          break;
-        }
-      }
-
-      return false;
-    }, null);
-  }
-
-  private void resolveObjectDefinitions(
-      final CdmDocumentDefinition currentDoc,
-      final ResolveOptions resOpt) {
-    final ResolveContext ctx = (ResolveContext) this.ctx;
-    resOpt.setIndexingDoc(currentDoc);
-
-    currentDoc.visit("", (iObject, path) -> {
-      final CdmObjectType objectType = iObject.getObjectType();
-      switch (objectType) {
-        case AttributeRef:
-        case AttributeGroupRef:
-        case AttributeContextRef:
-        case DataTypeRef:
-        case EntityRef:
-        case PurposeRef:
-        case TraitRef: {
-          ctx.setRelativePath(path);
-          final CdmObjectReferenceBase objectRef = (CdmObjectReferenceBase) iObject;
-
-          if (CdmObjectReferenceBase.offsetAttributePromise(objectRef.getNamedReference()) < 0) {
-            final CdmObject resNew = objectRef.fetchResolvedReference(resOpt);
-
-            if (null == resNew) {
-              String message = Logger.format(
-                  "Unable to resolve the reference '{0}' to a known object",
-                  objectRef.getNamedReference(),
-                  currentDoc.getFolderPath(),
-                  path
-              );
-              String messagePath = currentDoc.getFolderPath() + path;
-              // It's okay if references can't be resolved when shallow validation is enabled.
-              if (resOpt.getShallowValidation()) {
-                Logger.warning(ctx, TAG, "resolveObjectDefinitions", currentDoc.getAtCorpusPath(), CdmLogCode.WarnResolveReferenceFailure, objectRef.getNamedReference());
-              } else {
-                Logger.error(ctx, TAG, "resolveObjectDefinitions", currentDoc.getAtCorpusPath(), CdmLogCode.ErrResolveReferenceFailure, objectRef.getNamedReference());
-              }
-              // don't check in this file without both of these comments. handy for debug of failed lookups
-              // final CdmObjectDefinition resTest = objectRef.fetchObjectDefinition(resOpt);
-            } else {
-              Logger.info(ctx, TAG, "resolveObjectDefinitions", resNew.getAtCorpusPath(), Logger.format("Resolved folderPath: '{0}', path: '{1}'", currentDoc.getFolderPath(), path));
-            }
-          }
-
-          break;
-        }
-
-        default: {
-          Logger.debug(ctx, TAG, "resolveObjectDefinitions", null, Logger.format("ObjectType not recognized: '{0}'", iObject.getObjectType().name()));
-          break;
-        }
-      }
-
-      return false;
-    }, (iObject, path) -> {
-      final CdmObjectType objectType = iObject.getObjectType();
-      switch (objectType) {
-        case ParameterDef: {
-          // When a parameter has a data type that is a cdm object, validate that any default value
-          // is the right kind object.
-          final CdmParameterDefinition parameterDef = (CdmParameterDefinition) iObject;
-          this.constTypeCheck(resOpt, currentDoc, parameterDef, null);
-          break;
-        }
-
-        default: {
-          Logger.debug(ctx, TAG, "resolveObjectDefinitions", iObject.getAtCorpusPath(), Logger.format("ObjectType not recognized: '{0}'", iObject.getObjectType().name()));
-          break;
-        }
-      }
-
-      return false;
-    });
-
-    resOpt.setIndexingDoc(null);
-  }
-
-  private void finishDocumentResolve(final CdmDocumentDefinition doc, final boolean importsLoaded) {
-    boolean wasIndexedPreviously = doc.declarationsIndexed;
-
-    doc.setCurrentlyIndexing(false);
-    doc.declarationsIndexed = true;
-    doc.setImportsIndexed(doc.isImportsIndexed() || importsLoaded);
-    doc.setNeedsIndexing(!importsLoaded);
-    this.documentLibrary.markDocumentAsIndexed(doc);
-
-    // if the document declarations were indexed previously, do not log again.
-    if (!wasIndexedPreviously && doc.isValid) {
-      doc.getDefinitions().forEach(def -> {
-        if (def.getObjectType() == CdmObjectType.EntityDef) {
-          Logger.debug(this.ctx, TAG, "finishDocumentResolve", def.getAtCorpusPath(), Logger.format("indexed: '{0}'", def.getAtCorpusPath()));
-        }
-      });
-    }
   }
 
   private void resolveTraits(
@@ -2615,75 +2286,6 @@ public class CdmCorpusDefinition {
     });
   }
 
-  private void resolveTraitArguments(
-      final ResolveOptions resOpt,
-      final CdmDocumentDefinition currentDoc) {
-    final ResolveContext ctx = (ResolveContext) this.ctx;
-    currentDoc.visit("", (iObject, path) -> {
-      final CdmObjectType objectType = iObject.getObjectType();
-      switch (objectType) {
-        case TraitRef: {
-          ctx.pushScope(iObject.fetchObjectDefinition(resOpt));
-          break;
-        }
-
-        case ArgumentDef: {
-          try {
-            if (null != ctx.getCurrentScope().getCurrentTrait()) {
-              ctx.setRelativePath(path);
-              final ParameterCollection parameterCollection =
-                  ctx.getCurrentScope().getCurrentTrait().fetchAllParameters(resOpt);
-              Object aValue;
-
-              if (objectType == CdmObjectType.ArgumentDef) {
-                final CdmParameterDefinition paramFound = parameterCollection
-                    .resolveParameter(ctx.getCurrentScope().getCurrentParameter(),
-                        ((CdmArgumentDefinition) iObject).getName());
-                ((CdmArgumentDefinition) iObject).setResolvedParameter(paramFound);
-                aValue = ((CdmArgumentDefinition) iObject).getValue();
-
-                // If parameter type is entity, then the value should be an entity or ref to one
-                // same is true of 'dataType' data type.
-                aValue = this.constTypeCheck(resOpt, currentDoc, paramFound, aValue);
-                if (aValue != null) {
-                  ((CdmArgumentDefinition) iObject).setValue(aValue);
-                }
-              }
-            }
-          } catch (final Exception e) {
-            Logger.error(ctx, TAG, "resolveTraitArguments", currentDoc.getAtCorpusPath(), CdmLogCode.ErrTraitResolutionFailure, ctx.getCurrentScope().getCurrentTrait() != null ? ctx.getCurrentScope().getCurrentTrait().getName() : null);
-          }
-
-          ctx.getCurrentScope().setCurrentParameter(ctx.getCurrentScope().getCurrentParameter() + 1);
-          break;
-        }
-
-        default: {
-          Logger.debug(ctx, TAG, "resolveTraitArguments", currentDoc.getAtCorpusPath(), Logger.format("ObjectType not recognized: '{0}'", iObject.getObjectType().name()));
-          break;
-        }
-      }
-
-      return false;
-    }, (iObject, path) -> {
-      final CdmObjectType objectType = iObject.getObjectType();
-      switch (objectType) {
-        case TraitRef: {
-          ((CdmTraitReference) iObject).resolvedArguments = true;
-          ctx.popScope();
-          break;
-        }
-
-        default: {
-          Logger.debug(ctx, TAG, "resolveTraitArguments", iObject.getAtCorpusPath(), Logger.format("ObjectType not recognized: '{0}'", iObject.getObjectType().name()));
-          break;
-        }
-      }
-
-      return false;
-    });
-  }
-
   private void finishResolve() {
     final ResolveContext ctx = (ResolveContext) this.ctx;
 
@@ -2694,7 +2296,7 @@ public class CdmCorpusDefinition {
     // everything is resolved.
     List<CdmDocumentDefinition> allDocuments = this.documentLibrary.listAllDocuments();
     for (final CdmDocumentDefinition doc : allDocuments) {
-      this.finishDocumentResolve(doc, false);
+      doc.finishIndexing(false);
     }
   }
 
@@ -2858,7 +2460,7 @@ public class CdmCorpusDefinition {
 
     @Override
     public boolean invoke(final CdmObject iObject, final String path) {
-      if (path.indexOf("(unspecified") > 0) {
+      if (path.contains("(unspecified)")) {
         return true;
       }
       switch (iObject.getObjectType()) {

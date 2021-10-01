@@ -199,7 +199,7 @@ public class AdlsAdapter extends NetworkAdapter {
     }
 
     try {
-      return "https://" + hostname + this.getEscapedRoot() + this.escapePath(formattedCorpusPath);
+      return "https://" + this.removeProtocolFromHostname(this.hostname) + this.getEscapedRoot() + this.escapePath(formattedCorpusPath);
     }
     catch (UnsupportedEncodingException e) {
       // Default logger is not available in adapters, send to standard stream.
@@ -562,12 +562,12 @@ public class AdlsAdapter extends NetworkAdapter {
     if (configsJson.has("root")) {
       this.updateRoot(configsJson.get("root").asText());
     } else {
-      throw new RuntimeException("Root has to be set for ADLS adapter.");
+      throw new StorageAdapterException("Root has to be set for ADLS adapter.");
     }
     if (configsJson.has("hostname")) {
       this.updateHostname(configsJson.get("hostname").asText());
     } else {
-      throw new RuntimeException("Hostname has to be set for ADLS adapter.");
+      throw new StorageAdapterException("Hostname has to be set for ADLS adapter.");
     }
 
     if (configsJson.has("tenant") && configsJson.has("clientId")) {
@@ -589,7 +589,7 @@ public class AdlsAdapter extends NetworkAdapter {
         endpoint = com.microsoft.commondatamodel.objectmodel.enums.AzureCloudEndpoint.valueOf(endpointStr);
         this.adlsAdapterAuthenticator.setEndpoint(endpoint);
       } catch (IllegalArgumentException ex) {
-        throw new RuntimeException("Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.");
+        throw new StorageAdapterException("Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.");
       }
     }
   }
@@ -598,6 +598,30 @@ public class AdlsAdapter extends NetworkAdapter {
     return StringUtils.isNullOrEmpty(this.escapedRootSubPath) ?
             "/" + this.rootBlobContainer
             : "/" + this.rootBlobContainer + "/" + this.escapedRootSubPath;
+  }
+
+  /**
+   * Check if the hostname has a leading protocol.
+   * if it doesn't have, return the hostname
+   * if the leading protocol is not "https://", throw an error
+   * otherwise, return the hostname with no leading protocol.
+   * @param hostname The hostname.
+   * @return The hostname without the leading protocol "https://" if original hostname has it, otherwise it is same as hostname.
+   */
+  private String removeProtocolFromHostname(final String hostname) {
+    if (!hostname.contains("://")) {
+      return hostname;
+    }
+
+    try {
+      final URL outUri = new URL(hostname);
+      if (outUri.getProtocol().equals("https")) {
+        return hostname.substring("https://".length());
+      }
+      throw new IllegalArgumentException("ADLS Adapter only supports HTTPS, please provide a leading \"https://\" hostname or a non-protocol-relative hostname.");
+    } catch (MalformedURLException e) {
+      throw new IllegalArgumentException("Please provide a valid hostname.");
+    }
   }
 
   private void updateRoot(String value) {
@@ -620,8 +644,11 @@ public class AdlsAdapter extends NetworkAdapter {
   }
 
   private void updateHostname(String value) {
+    if (StringUtils.isNullOrTrimEmpty(value)) {
+      throw new IllegalArgumentException("Hostname cannot be null or whitespace.");
+    }
     this.hostname = value;
-    this.formattedHostname = this.formatHostname(this.hostname);
+    this.formattedHostname = this.formatHostname(this.removeProtocolFromHostname(this.hostname));
   }
 
   public String getHostname() {

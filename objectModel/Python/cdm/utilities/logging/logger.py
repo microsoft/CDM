@@ -144,8 +144,12 @@ class _LoggerScope:
         debug(self.state.ctx, self.state.class_name, self.state.path, None, 'Entering scope')
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        message = 'Leaving scope. Time elapsed: {0} ms; Cache memory used: {1}'\
-            .format((datetime.utcnow() - self.time).microseconds / 1000, len(self.state.ctx._cache))
+        message = 'Leaving scope. Time elapsed: {0} ms.'\
+            .format((datetime.utcnow() - self.time).microseconds / 1000)
+        # Commenting out to keep consistent with C#
+        # In C# - Cache is a concurrent dict, and getting the Count on it is getting blocked by other cache updates
+        # message = 'Leaving scope. Time elapsed: {0} ms; Cache memory used: {1}.'\
+        #     .format((datetime.utcnow() - self.time).microseconds / 1000, len(self.state.ctx._attribute_cache))
 
         debug(self.state.ctx, self.state.class_name, self.state.path, None, message, self.is_top_level_method)
         self.state.ctx.events._disable()
@@ -161,6 +165,9 @@ def _enter_scope(class_name: str, ctx: 'CdmCorpusContext', path: str) -> _Logger
 
 def _ingest_manifest_telemetry(manifest: 'CdmManifestDefinition', ctx: 'CdmCorpusContext',
                                class_name: str, method: str, corpus_path: str) -> None:
+    if ctx.corpus.telemetry_client is None:
+        return
+
     # Get the namespace of the storage for the manifest
     storage_namespace = manifest.namespace or manifest.ctx.corpus.storage.default_namespace
 
@@ -217,6 +224,9 @@ def _ingest_manifest_telemetry(manifest: 'CdmManifestDefinition', ctx: 'CdmCorpu
 
 def _ingest_entity_telemetry(entity: 'CdmEntityDefinition', ctx: 'CdmCorpusContext',
                              class_name: str, method: str, corpus_path: str) -> None:
+    if ctx.corpus.telemetry_client is None:
+        return
+
     # Get entity storage namespace
     entity_namespace = entity.in_document.namespace or entity.ctx.corpus.storage.default_namespace
 

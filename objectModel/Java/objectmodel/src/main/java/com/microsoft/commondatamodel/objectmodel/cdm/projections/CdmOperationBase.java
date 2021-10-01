@@ -7,6 +7,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.*;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeState;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeStateSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
@@ -295,23 +296,28 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      * @param format format
-     * @param baseAttributeName source attribute
-     * @param ordinal ordinal
-     * @param memberAttributeName String
+     * @param projectionOwnerName The attribute name of projection owner (only available when the owner is an entity attribute or type attribute)
+     * @param currentPAS The attribute state.
      * @return String
      */
     @Deprecated
-    public static String replaceWildcardCharacters(String format, String baseAttributeName, String ordinal, String memberAttributeName)
+    public static String replaceWildcardCharacters(final String format, final String projectionOwnerName, final ProjectionAttributeState currentPAS)
     {
         if (StringUtils.isNullOrEmpty(format))
         {
             return "";
         }
 
-        String attributeName = StringUtils.replace(format, 'a', baseAttributeName);
-        attributeName = StringUtils.replace(attributeName, 'o', ordinal);
-        attributeName = StringUtils.replace(attributeName, 'm', memberAttributeName);
+        final String ordinal = currentPAS.getOrdinal() != null ? currentPAS.getOrdinal().toString() : "";
+        final String originalMemberAttributeName = currentPAS.getCurrentResolvedAttribute().getTarget() instanceof CdmAttribute
+                ? ((CdmAttribute) currentPAS.getCurrentResolvedAttribute().getTarget()).getName() : "";
+        final String resolvedMemberAttributeName = currentPAS.getCurrentResolvedAttribute().getResolvedName() != null ? currentPAS.getCurrentResolvedAttribute().getResolvedName() : "";
 
-        return attributeName;
+        String value = StringUtils.replace(format, "a", projectionOwnerName);
+        value = StringUtils.replace(value, "o", ordinal);
+        value = StringUtils.replace(value, "mo", originalMemberAttributeName);
+        value = StringUtils.replace(value, "m", resolvedMemberAttributeName);
+
+        return value;
     }
 }

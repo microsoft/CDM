@@ -12,13 +12,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using System;
+    using System.Collections;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public static class Utils
     {
+        private static int NsNameIndex = 0;
+
         /// <summary>
         /// Create a copy of the reference object
         /// </summary>
@@ -567,13 +572,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
             if (strgMgr != null)
             {
                 int count = 0;
+                const int maxRetry = 100;
                 string ns;
                 do
                 {
-                    ns = $"adls{new Random().Next(1, 100)}";
+                    Interlocked.Increment(ref NsNameIndex);
+                    ns = $"adls{NsNameIndex}";
                     if (null == strgMgr.FetchAdapter(ns))
                         return ns; // lucky got it!!
-                } while (++count < 10);
+                } while (++count < maxRetry);
             }
             return null;
         }
@@ -611,7 +618,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         {
             var corpuspPath = FormatCorpusPath(enitityPath);
             if (corpuspPath == null)
-            { 
+            {
                 return null;
             }
 
@@ -775,7 +782,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 Database = database,
                 Entities = JsonConvert.DeserializeObject<SymsTableResponse>(entities).Tables,
                 Relationships = JsonConvert.DeserializeObject<SymsRelationshipResponse>(relationships).Relationships,
-                IntialSync = false,
+                InitialSync = false,
                 RemovedEntities = null,
                 RemovedRelationships = null
             };
@@ -809,107 +816,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         }
 
         /// <summary>
-        /// Create or add/update or remove Syms Entities. Throws exception on failure.
+        /// Create or update Syms Table Entity. Throws exception on failure.
         /// </summary>
-        internal static async Task CreateOrUpdateSymsEntities(SymsManifestContent symsManifestContent, StorageAdapter adapter)
+        private static async Task CreateOrUpdateTableEntity(TableEntity tableEntity, string databaseName, StorageAdapter adapter)
         {
-            IDictionary<string,string> failedUpdatedTables = new Dictionary<string, string>();
-            IDictionary<string, string> failedUpdatedRelatopnships = new Dictionary<string, string>();
-            IDictionary<string, string> failedRemovedTables = new Dictionary<string, string>();
-            IDictionary<string, string> failedRemovedRelationships = new Dictionary<string, string>();
-            string errorMesg = string.Empty;
+            await adapter.WriteAsync($"{databaseName}/{tableEntity.Name}.cdm.json",
+                                                JsonConvertSerializeObject(tableEntity));
+        }
 
-            if (symsManifestContent.IntialSync == true)
-            {
-                await CreateOrUpdateDatabase(symsManifestContent.Database, adapter);
-            }
-
-            if (symsManifestContent.RemovedEntities != null)
-            {
-                foreach (var removeTable in symsManifestContent.RemovedEntities)
-                {
-                    try
-                    {
-                        await RemoveTableEntity(removeTable, symsManifestContent.Database.Name, adapter);
-                    }
-                    catch (Exception e)
-                    {
-                        failedRemovedTables[removeTable] = e.Message;
-                    }
-                }
-                if (failedRemovedTables.Count > 0)
-                {
-                    errorMesg += $"Failed removed tables : {string.Join(",", failedRemovedTables.Select(kv => kv.Key + "Reason: " + kv.Value).ToArray())}";
-                }
-            }
-
-            if (symsManifestContent.RemovedRelationships != null)
-            {
-                foreach (var removeRelationship in symsManifestContent.RemovedRelationships)
-                {
-                    try
-                    {
-                        await RemoveRelationshipEntity(removeRelationship, symsManifestContent.Database.Name, adapter);
-                    }
-                    catch (Exception e)
-                    {
-                        failedRemovedRelationships[removeRelationship] = e.Message;
-                    }
-                }
-                if (failedRemovedRelationships.Count > 0)
-                {
-                    errorMesg += $"Failed removed relationships : {string.Join(",", failedRemovedRelationships.Select(kv => kv.Key + "Reason: " + kv.Value).ToArray())}";
-                }
-            }
-
-            if (symsManifestContent.Entities != null)
-            {
-                foreach (var table in symsManifestContent.Entities)
-                {
-                    try
-                    {
-                        await CreateOrUpdateTableEntity(table, adapter);
-                    }
-                    catch (Exception e)
-                    {
-                        failedUpdatedTables[table.Name] = e.Message;
-                    }
-                }
-                if (failedUpdatedTables.Count > 0)
-                {
-                    errorMesg += $"Failed updated tables : {string.Join(",", failedUpdatedTables.Select(kv => kv.Key + "Reason: " + kv.Value).ToArray())}";
-                }
-            }
-
-            if (symsManifestContent.Relationships != null)
-            {
-                foreach (var relationship in symsManifestContent.Relationships)
-                {
-                    try
-                    {
-                        await CreateOrUpdateRelationshipEntity(relationship, adapter);
-                    }
-                    catch (Exception e)
-                    {
-                        failedUpdatedTables[relationship.Name] = e.Message;
-                    }
-                }
-                if (failedUpdatedTables.Count > 0)
-                {
-                    errorMesg += $"Failed updated relationships : {string.Join(",", failedUpdatedRelatopnships.Select(kv => kv.Key + "Reason: " + kv.Value).ToArray())}";
-                }
-            }
-
-            if (!string.IsNullOrEmpty(errorMesg))
-            {
-                throw new Exception(errorMesg);
-            }
+        /// <summary>
+        /// Create or update Syms RelationshipEntity. Throws exception on failure.
+        /// </summary>
+        private static async Task CreateOrUpdateRelationshipEntity(RelationshipEntity relationshipEntity, string databaseName, StorageAdapter adapter)
+        {
+            await adapter.WriteAsync($"{databaseName}/{databaseName}.manifest.cdm.json/relationships/{relationshipEntity.Name}",
+                JsonConvertSerializeObject(relationshipEntity));
         }
 
         /// <summary>
         /// Remove Table Entity. Throws exception on failure.
         /// </summary>
-        internal static async Task RemoveTableEntity(string tableName, string databaseName, StorageAdapter adapter)
+        private static async Task RemoveTableEntity(string tableName, string databaseName, StorageAdapter adapter)
         {
             await adapter.WriteAsync($"{databaseName}/{tableName}.cdm.json", null);
         }
@@ -917,7 +844,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Remove Relationship Entity. Throws exception on failure.
         /// </summary>
-        internal static async Task RemoveRelationshipEntity(string relationship, string databaseName, StorageAdapter adapter)
+        private static async Task RemoveRelationshipEntity(string relationship, string databaseName, StorageAdapter adapter)
         {
             await adapter.WriteAsync($"{databaseName}/{databaseName}.manifest.cdm.json/relationships/{relationship}", null);
         }
@@ -925,7 +852,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
         /// <summary>
         /// Check if entity added or modified.
         /// </summary>
-        internal static bool IsEntityAddedorModified(CdmLocalEntityDeclarationDefinition entity, IDictionary<string, TableEntity> existingSymsTables)
+        internal static bool IsEntityAddedOrModified(CdmLocalEntityDeclarationDefinition entity, IDictionary<string, TableEntity> existingSymsTables)
         {
             if (existingSymsTables == null || existingSymsTables.Count == 0 || !existingSymsTables.ContainsKey(entity.EntityName))
             {
@@ -952,6 +879,77 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Create or add/update or remove Syms Entities. Throws exception on failure.
+        /// </summary>
+        internal static async Task CreateOrUpdateSymsEntities(SymsManifestContent symsManifestContent, StorageAdapter adapter)
+        {
+            string errorMesg = string.Empty;
+
+            if (symsManifestContent.InitialSync == true)
+            {
+                await CreateOrUpdateDatabase(symsManifestContent.Database, adapter);
+            }
+
+            errorMesg = await InvokeMethod(RemoveTableEntity, symsManifestContent.RemovedEntities, symsManifestContent.Database.Name, adapter);
+            errorMesg += await InvokeMethod(RemoveRelationshipEntity, symsManifestContent.RemovedRelationships, symsManifestContent.Database.Name, adapter);
+            errorMesg += await InvokeMethod(CreateOrUpdateTableEntity, symsManifestContent.Entities, symsManifestContent.Database.Name, adapter);
+            errorMesg += await InvokeMethod(CreateOrUpdateRelationshipEntity, symsManifestContent.Relationships, symsManifestContent.Database.Name, adapter);
+
+            if (!string.IsNullOrEmpty(errorMesg))
+            {
+                throw new Exception(errorMesg);
+            }
+        }
+
+        /// <summary>
+        /// Invoke specific functions to update Syms database through syms adapter.
+        /// </summary>
+        private static async Task<string> InvokeMethod<T>(Func<T, string, StorageAdapter, Task> func, List<T> entities, string dBName, StorageAdapter adapter)
+        {
+            ConcurrentDictionary<string, string> errorMesgsHash = new ConcurrentDictionary<string, string>();
+            string errorMesgs = string.Empty;
+            if (entities != null)
+            {
+
+                if (entities != null && entities.Count > 0)
+                {
+                    var tasks = entities.Select(async entity =>
+                    {
+                        try
+                        {
+                            await func(entity, dBName, adapter);
+                        }
+                        catch (Exception e)
+                        {
+                            string key = string.Empty;
+                            if (entity is string)
+                            {
+                                key = (string)(object)entity;
+                            }
+                            else if (entity is TableEntity)
+                            {
+                                key = ((TableEntity)(object)entity).Name;
+                            }
+                            else if (entity is RelationshipEntity)
+                            {
+                                key = ((RelationshipEntity)(object)entity).Name;
+                            }
+                            errorMesgsHash[key] = e.Message;
+                        }
+                    });
+
+                    await Task.WhenAll(tasks);
+
+                    foreach (var index in errorMesgsHash)
+                    {
+                        errorMesgs += $"Failed to update table {index.Key} with exception {index.Value} \n";
+                    }
+                }
+            }
+            return errorMesgs;
         }
     }
 }

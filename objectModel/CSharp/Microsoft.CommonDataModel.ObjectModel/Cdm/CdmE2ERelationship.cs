@@ -142,16 +142,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                if (string.IsNullOrEmpty(this.DeclaredPath))
-                {
-                    this.DeclaredPath = pathFrom + this.Name;
-                }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
-                path = this.DeclaredPath;
-            }
             if (preChildren != null && preChildren.Invoke(this, path))
             {
                 return false;
@@ -174,6 +166,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal void ResetLastFileModifiedOldTime()
         {
             this.LastFileModifiedOldTime = null;
+        }
+        
+        /// <summary>
+        /// Standardized way of turning a relationship object into a key for caching
+        /// without using the object itself as a key (could be duplicate relationship objects).
+        /// </summary>
+        /// <returns></returns>
+        internal string CreateCacheKey()
+        {
+            string nameAndPipe = string.Empty;
+            if (!string.IsNullOrWhiteSpace(this.Name))
+            {
+                nameAndPipe = $"{this.Name}|";
+            }
+            return $"{nameAndPipe}{this.ToEntity}|{this.ToEntityAttribute}|{this.FromEntity}|{this.FromEntityAttribute}";
         }
     }
 }

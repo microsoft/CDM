@@ -43,6 +43,7 @@ import {
 
 export type CdmJsonType = (
     string |
+    number |
     object |
     Argument |
     AttributeContext |

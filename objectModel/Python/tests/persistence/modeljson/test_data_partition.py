@@ -29,7 +29,7 @@ class DataPartitionTest(unittest.TestCase):
 
         converted_to_model_json = await ManifestPersistence.to_data(manifest_read, None, None)
         location = converted_to_model_json.entities[0]['partitions'][0]['location']  # type: str
-        location_path = os.path.join('testData', 'Persistence', 'ModelJson', 'DataPartition', test_name_in_pascal_case, 'Input', 'EpisodeOfCare', 'partition-data.csv')
+        location_path = os.path.join('TestData', 'Persistence', 'ModelJson', 'DataPartition', test_name_in_pascal_case, 'Input', 'EpisodeOfCare', 'partition-data.csv')
         # Model Json uses absolute adapter path.
         self.assertTrue(location.find(location_path) != -1)
 

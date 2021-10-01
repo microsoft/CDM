@@ -113,14 +113,7 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrEmpty(path)) {
-                path = pathFrom + "operationCombineAttributes";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;

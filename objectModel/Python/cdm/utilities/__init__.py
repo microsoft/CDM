@@ -21,7 +21,6 @@ from .identifier_ref import IdentifierRef
 from .import_info import ImportInfo
 from .jobject import JObject
 from .ref_counted import RefCounted
-from .resolve_context_scope import ResolveContextScope
 from .resolve_options import ResolveOptions
 from .symbol_set import SymbolSet
 from .trait_to_property_map import TraitToPropertyMap
@@ -55,7 +54,6 @@ __all__ = [
     'event_list',
     'primitive_appliers',
     'RefCounted',
-    'ResolveContextScope',
     'ResolveOptions',
     'string_utils',
     'StorageUtils',

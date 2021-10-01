@@ -10,6 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -19,12 +20,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     {
         private static readonly string Tag = nameof(Utils);
 
-        private static readonly Dictionary<string, string> annotationToTraitMap = new Dictionary<string, string>
+        private static IReadOnlyDictionary<string, string> annotationToTraitMap => new Dictionary<string, string>
         {
             { "version", "is.CDM.entityVersion" }
         };
 
-        internal static readonly HashSet<string> ignoredTraits = new HashSet<string>
+        internal static ReadOnlySet<string> ignoredTraits = new ReadOnlySet<string>(new HashSet<string>
         {
             "is.propertyContent.multiTrait",
             "is.modelConversion.referenceModelMap",
@@ -35,15 +36,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             "is.partition.culture",
             "is.managedBy",
             "is.hidden"
-        };
+        });
 
         // Traits to ignore if they come from properties.
         // These traits become properties on the model.json. To avoid persisting both a trait
         // and a property on the model.json, we filter these traits out.
-        internal static readonly HashSet<string> modelJsonPropertyTraits = new HashSet<string>
-        {
+        internal static ReadOnlySet<string> modelJsonPropertyTraits = new ReadOnlySet<string>(new HashSet<string> {
+
             "is.localized.describedAs"
-        };
+        });
+
 
         internal static async Task ProcessAnnotationsFromData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
         {

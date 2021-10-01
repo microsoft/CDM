@@ -143,14 +143,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = `${pathFrom}${this.entityName}`;
-                this.declaredPath = path;
-            }
-        }
+        const path: string = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;

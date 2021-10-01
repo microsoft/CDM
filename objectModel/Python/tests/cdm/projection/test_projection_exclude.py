@@ -47,8 +47,7 @@ class ProjectionExcludeTest(unittest.TestCase):
 
         # Create an ExcludeAttributes operation
         exclude_attrs_op = corpus.make_object(CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF)
-        exclude_attrs_op.exclude_attributes.append('id')
-        exclude_attrs_op.exclude_attributes.append('date')
+        exclude_attrs_op.exclude_attributes = ['id', 'date']
         projection.operations.append(exclude_attrs_op)
 
         # Create an entity reference to hold this projection
@@ -85,8 +84,7 @@ class ProjectionExcludeTest(unittest.TestCase):
 
         # Create an ExcludeAttributes operation
         exclude_attrs_op = corpus.make_object(CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF)
-        exclude_attrs_op.exclude_attributes.append('name')
-        exclude_attrs_op.exclude_attributes.append('value')
+        exclude_attrs_op.exclude_attributes = ['name', 'value']
         projection.operations.append(exclude_attrs_op)
 
         # Create an entity reference to hold this projection
@@ -121,8 +119,7 @@ class ProjectionExcludeTest(unittest.TestCase):
 
         # Create an ExcludeAttributes operation
         exclude_attrs_op = corpus.make_object(CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF)
-        exclude_attrs_op.exclude_attributes.append('id')
-        exclude_attrs_op.exclude_attributes.append('date')
+        exclude_attrs_op.exclude_attributes = ['id', 'date']
         projection.operations.append(exclude_attrs_op)
 
         # Create an entity reference to hold this projection
@@ -135,7 +132,7 @@ class ProjectionExcludeTest(unittest.TestCase):
 
         # Create an ExcludeAttributes operation
         exclude_attrs_op2 = corpus.make_object(CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF)
-        exclude_attrs_op2.exclude_attributes.append('value')
+        exclude_attrs_op2.exclude_attributes = ['value']
         projection2.operations.append(exclude_attrs_op2)
 
         # Create an entity reference to hold this projection
@@ -172,8 +169,7 @@ class ProjectionExcludeTest(unittest.TestCase):
 
         # Create an ExcludeAttributes operation
         exclude_attrs_op = corpus.make_object(CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF)
-        exclude_attrs_op.exclude_attributes.append('id')
-        exclude_attrs_op.exclude_attributes.append('date')
+        exclude_attrs_op.exclude_attributes = ['id', 'date']
         projection.operations.append(exclude_attrs_op)
 
         # Create an entity reference to hold this projection

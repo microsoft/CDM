@@ -167,7 +167,7 @@ public class Utils {
     }
 
     if (obj instanceof JsonNode && ((JsonNode) obj).isValueNode()) {
-      return ((JsonNode) obj).asText();
+      return JsonNodeToNative((JsonNode) obj);
     } else if (obj instanceof JsonNode && ((JsonNode) obj).isObject()) {
       final JsonNode newObj = (JsonNode) obj;
       if (newObj.has("purpose") || newObj.has("dataType") || newObj.has("entity")) {
@@ -195,6 +195,31 @@ public class Utils {
     }
 
     return obj;
+  }
+
+  /**
+   * Converts a JsonNode to its correspondent native value.
+   * @param node
+   * @return
+   */
+  private static Object JsonNodeToNative(JsonNode node) {
+    if (node.isBigDecimal()) {
+      return node.decimalValue();
+    } else if (node.isBoolean()) {
+      return node.asBoolean();
+    } else if (node.isDouble()) {
+      return node.doubleValue();
+    } else if (node.isFloat()) {
+      return node.floatValue();
+    } else if (node.isInt()) {
+      return node.asInt();
+    } else if (node.isLong()) {
+      return node.asLong();
+    } else if (node.isTextual()) {
+      return node.asText();
+    }
+
+    return null;
   }
 
   /**

@@ -42,7 +42,6 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         # --- internal ---
         self._adapter_paths = {}  # type: Dict[str, str]
         self._root_blob_contrainer = None  # type: Optional[str]
-        self._formatted_hostname = None  # type: Optional[str]
         self._http_authorization = 'Authorization'
         self._http_client = CdmHttpClient()  # type: CdmHttpClient
         self._http_xms_continuation = 'x-ms-continuation'
@@ -79,8 +78,11 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
     @hostname.setter
     def hostname(self, value: str):
+        if StringUtils.is_null_or_white_space(value):
+            raise ValueError('Hostname cannot be null or whitespace.')
+
         self._hostname = value
-        self._formatted_hostname = self._format_hostname(self._hostname)
+        self._formatted_hostname = self._format_hostname(self._remove_protocol_from_hostname(self._hostname))
 
     @property
     def root(self) -> str:
@@ -154,7 +156,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if formatted_corpus_path in self._adapter_paths:
             return self._adapter_paths[formatted_corpus_path]
         else:
-            return 'https://' + self.hostname + self._get_escaped_root() + self._escape_path(formatted_corpus_path)
+            return 'https://' + self._remove_protocol_from_hostname(self.hostname) + self._get_escaped_root() + self._escape_path(formatted_corpus_path)
 
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:
         if adapter_path:
@@ -270,12 +272,12 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if configs_json.get('root'):
             self.root = configs_json['root']
         else:
-            raise Exception('Root has to be set for ADLS adapter.')
+            raise ValueError('Root has to be set for ADLS adapter.')
 
         if configs_json.get('hostname'):
             self.hostname = configs_json['hostname']
         else:
-            raise Exception('Hostname has to be set for ADLS adapter.')
+            raise ValueError('Hostname has to be set for ADLS adapter.')
 
         self.update_network_config(config)
 
@@ -295,7 +297,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             if endpoint_from_config in AzureCloudEndpoint.__members__.keys():
                 self.endpoint = AzureCloudEndpoint[endpoint_from_config]
             else:
-                raise Exception('Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.')
+                raise ValueError('Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.')
 
     async def write_async(self, corpus_path: str, data: str) -> None:
         url = self._create_formatted_adapter_path(corpus_path)
@@ -488,3 +490,23 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if self._auth_context is None:
             self._auth_context = msal.ConfidentialClientApplication(
                 self.client_id, authority=self.endpoint.value + self.tenant, client_credential=self.secret)
+
+    def _remove_protocol_from_hostname(self, hostname: str) -> str:
+        """
+        Check if the hostname has a leading protocol.
+        if it doesn't have, return the hostname
+        if the leading protocol is not "https://", throw an error
+        otherwise, return the hostname with no leading protocol.
+        """
+        if hostname.find('://') == -1:
+            return hostname
+
+        try:
+            url = urllib.parse.urlsplit(hostname)
+            if url.scheme == 'https':
+                return hostname[len('https://'):]
+        except Exception:
+            raise ValueError('Please provide a valid hostname.')
+
+        raise ValueError('ADLS Adapter only supports HTTPS, please provide a leading \"https://\" hostname or a non-protocol-relative hostname.')
+

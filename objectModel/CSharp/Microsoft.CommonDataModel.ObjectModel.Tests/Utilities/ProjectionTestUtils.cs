@@ -28,10 +28,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// <summary>
         /// The log codes that are allowed to be logged without failing the test
         /// </summary>
-        private static readonly HashSet<string> allowedLogs = new HashSet<string>() 
+        private static ReadOnlySet<string> allowedLogs = new ReadOnlySet<string>(new HashSet<string>
         { 
             CdmLogCode.WarnDeprecatedResolutionGuidance.ToString()
-        };
+        });
 
         /// <summary>
         /// Resolves an entity

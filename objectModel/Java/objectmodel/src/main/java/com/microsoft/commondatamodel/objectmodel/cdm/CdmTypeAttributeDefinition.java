@@ -219,18 +219,8 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
+    String path = this.fetchDeclaredPath(pathFrom);
 
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-
-      if (StringUtils.isNullOrEmpty(path)) {
-        path = pathFrom + this.getName();
-        this.setDeclaredPath(path);
-      }
-    }
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
     }

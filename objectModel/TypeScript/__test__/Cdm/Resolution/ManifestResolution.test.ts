@@ -6,6 +6,7 @@ import {
     CdmCorpusDefinition,
     CdmDocumentDefinition,
     CdmEntityDefinition,
+    cdmLogCode,
     CdmManifestDefinition,
     cdmObjectType,
     CdmReferencedEntityDeclarationDefinition,
@@ -69,12 +70,6 @@ describe('Cdm/Resolution/ManifestResolution', () => {
             const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
             cdmCorpus.storage.mount('local', new LocalAdapter('C:\\path'));
             cdmCorpus.storage.defaultNamespace = 'local';
-            cdmCorpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
-                // We should see the following error message be logged. If not, fail.
-                if (message.indexOf('Cannot resolve the manifest \'test\' because it has not been added to a folder') === -1) {
-                    failed = true;
-                }
-            }, cdmStatusLevel.warning);
 
             const manifest: CdmManifestDefinition = cdmCorpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'test');
             const entity: CdmEntityDefinition = cdmCorpus.MakeObject<CdmEntityDefinition>(cdmObjectType.entityDef, 'entity');
@@ -83,8 +78,9 @@ describe('Cdm/Resolution/ManifestResolution', () => {
 
             // Don't add the document containing the entity to a folder either.
             manifest.entities.push(entity);
-
             await manifest.createResolvedManifestAsync('resolved', undefined);
+
+            testHelper.expectCdmLogCodeEquality(cdmCorpus, cdmLogCode.ErrResolveManifestFailed, true);
         } catch (e) {
             failed = true;
         }
@@ -94,7 +90,7 @@ describe('Cdm/Resolution/ManifestResolution', () => {
     });
 
     /**
-     * 
+     * Test that saving a resolved manifest will not cause original logical entity doc to be marked dirty.
      */
     it('TestLinkedResolvedDocSavingNotDirtyingLogicalEntities', async () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubPath, 'TestLinkedResolvedDocSavingNotDirtyingLogicalEntities');
@@ -110,5 +106,20 @@ describe('Cdm/Resolution/ManifestResolution', () => {
         expect(!corpus.storage.namespaceFolders.get('local').documents.allItems[0].isDirty
             && !corpus.storage.namespaceFolders.get('local').documents.allItems[1].isDirty)
             .toBeTruthy();
+    });
+
+    /**
+     * Test that correct error is shown when trying to create a resolved manifest with a name that already exists
+     */
+    it('TestResolvingManifestWithSameName', async () => {
+        var corpus = testHelper.getLocalCorpus(testsSubPath, 'TestResolvingManifestWithSameName')
+
+        const manifest: CdmManifestDefinition = corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'test');
+        corpus.storage.namespaceFolders.get('local').documents.push(manifest);
+        const resManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync(manifest.name, '{n}/{n}.cdm.json');
+
+        expect(resManifest)
+            .toBeUndefined();
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrResolveManifestExists, true);
     });
 });

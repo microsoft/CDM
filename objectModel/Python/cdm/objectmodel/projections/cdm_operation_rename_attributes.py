@@ -66,12 +66,7 @@ class CdmOperationRenameAttributes(CdmOperationBase):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if not self.ctx.corpus._block_declared_path_changes:
-            path = self._declared_path
-            if not path:
-                path = path_from + 'operationRenameAttributes'
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -104,8 +99,6 @@ class CdmOperationRenameAttributes(CdmOperationBase):
         # We use the top-level names because the rename list may contain a previous name our current resolved attributes had
         top_level_rename_attribute_names = ProjectionResolutionCommonUtil._get_top_list(proj_ctx, rename_attributes)  # type: Dict[str, str]
 
-        source_attribute_name = proj_ctx._projection_directive._original_source_entity_attribute_name  # type: str
-
         # Initialize a projection attribute context tree builder with the created attribute context for the operation
         attr_ctx_tree_builder = ProjectionAttributeContextTreeBuilder(attr_ctx_op_rename_attrs)
 
@@ -118,7 +111,7 @@ class CdmOperationRenameAttributes(CdmOperationBase):
                 if isinstance(current_PAS._current_resolved_attribute.target, CdmAttribute):
                     # The current attribute should be renamed
 
-                    new_attribute_name = self._get_new_attribute_name(current_PAS, source_attribute_name)  # type: str
+                    new_attribute_name = self._get_new_attribute_name(proj_ctx._projection_directive._original_source_attribute_name, current_PAS)  # type: str
 
                     # Create new resolved attribute with the new name, set the new attribute as target
                     res_attr_new = self._create_new_resolved_attribute(proj_ctx, None, current_PAS._current_resolved_attribute, new_attribute_name)  # type: ResolvedAttribute
@@ -158,12 +151,9 @@ class CdmOperationRenameAttributes(CdmOperationBase):
 
         return proj_output_set
 
-    def _get_new_attribute_name(self, attribute_state: 'ProjectionAttributeState', source_attribute_name: str):
-        current_attribute_name = attribute_state._current_resolved_attribute._resolved_name
-        ordinal = str(attribute_state._ordinal) if attribute_state._ordinal is not None else ''
-
+    def _get_new_attribute_name(self, projection_owner_name: str, current_PAS: 'ProjectionAttributeState'):
         if not self.rename_format:
             logger.error(self.ctx, self._TAG, self.getNewAttributeName.__name__, self.at_corpus_path, CdmLogCode.ERR_PROJ_RENAME_FORMAT_IS_NOT_SET)
             return ''
 
-        return self._replace_wildcard_characters(self.rename_format, source_attribute_name, ordinal, current_attribute_name)
+        return self._replace_wildcard_characters(self.rename_format, projection_owner_name, current_PAS)

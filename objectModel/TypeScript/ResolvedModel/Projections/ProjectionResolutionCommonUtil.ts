@@ -219,7 +219,7 @@ export class ProjectionResolutionCommonUtil {
 
             const constantValues: string[][] = [];
             for (const entRefAndAttrName of entRefAndAttrNameList) {
-                const originalSourceEntityAttributeName = projDir.originalSourceEntityAttributeName || '';
+                const originalSourceEntityAttributeName = projDir.originalSourceAttributeName || '';
                 constantValues.push([entRefAndAttrName[0], entRefAndAttrName[1], `${originalSourceEntityAttributeName}_${entRefAndAttrName[0].substring(entRefAndAttrName[0].lastIndexOf('/') + 1)}`]);
             }
             constantEntity.constantValues = constantValues;

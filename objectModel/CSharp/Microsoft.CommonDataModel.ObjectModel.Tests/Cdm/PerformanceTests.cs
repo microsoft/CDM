@@ -36,13 +36,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task ResolveEntities()
         {
-            var cdmCorpus = new CdmCorpusDefinition();
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, "TestResolveEntities");
+            cdmCorpus.RootPath = TestHelper.GetInputFolderPath(testsSubpath, "TestResolveEntities");
 
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestResolveEntities");
-
-            cdmCorpus.RootPath = testInputPath;
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(testInputPath));
-            cdmCorpus.Storage.DefaultNamespace = "local";
             var entities = await this.GetAllEntities(cdmCorpus);
             var entityResolutionTimes = new List<Tuple<string, long>>();
             foreach (var data in entities)

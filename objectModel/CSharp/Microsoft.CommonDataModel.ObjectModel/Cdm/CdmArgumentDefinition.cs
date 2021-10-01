@@ -112,16 +112,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
-                    this.DeclaredPath = path;
-                }
-            }
+            // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
+            string path = pathFrom;
             //trackVisits(path);
 
             if (preChildren != null && preChildren.Invoke(this, path))
@@ -137,25 +129,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;
-        }
-
-        internal string CacheTag()
-        {
-            string tag = "";
-            dynamic val = this.Value;
-            if (val != null)
-            {
-                if (this.Value is CdmObject)
-                {
-                    tag = (string)val.Id;
-                }
-                else
-                {
-                    // val is a string or JValue
-                    tag = (string)val;
-                }
-            }
-            return tag;
         }
     }
 }

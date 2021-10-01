@@ -177,7 +177,7 @@ class ProjectionResolutionCommonUtil:
 
             constant_values = []
             for ent_and_attr_name in ent_ref_and_attr_name_list:
-                original_source_entity_attribute_name = proj_dir._original_source_entity_attribute_name or ''
+                original_source_entity_attribute_name = proj_dir._original_source_attribute_name or ''
                 constant_values.append([
                     ent_and_attr_name[0],
                     ent_and_attr_name[1],

@@ -62,12 +62,7 @@ class CdmOperationAddArtifactAttribute(CdmOperationBase):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if not self.ctx.corpus._block_declared_path_changes:
-            path = self._declared_path
-            if not path:
-                path = path_from + self.get_name()
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False

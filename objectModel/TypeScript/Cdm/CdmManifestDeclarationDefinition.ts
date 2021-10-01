@@ -121,14 +121,7 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (this.ctx.corpus.blockDeclaredPathChanges === false) {
-            path = this.declaredPath;
-            if (path === undefined) {
-                path = pathFrom + this.getName();
-                this.declaredPath = path;
-            }
-        }
+        const path: string = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;

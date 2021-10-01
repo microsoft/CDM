@@ -172,7 +172,7 @@ export class resolveOptions {
         resOptCopy.mapOldCtxToNewCtx = this.mapOldCtxToNewCtx; // ok to share this map
         resOptCopy.importsLoadStrategy = this.importsLoadStrategy;
         resOptCopy.saveResolutionsOnCopy = this.saveResolutionsOnCopy;
-        resOptCopy.currentlyResolvingEntities = new Set(this.currentlyResolvingEntities);
+        resOptCopy.currentlyResolvingEntities = this.currentlyResolvingEntities; // ok to share this map
         resOptCopy.usedResolutionGuidance = this.usedResolutionGuidance;
 
         return resOptCopy;

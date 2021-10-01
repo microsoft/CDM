@@ -394,6 +394,47 @@ public class AdlsAdapterTest {
   }
 
   /**
+   * Test hostname with leading protocol.
+   */
+  @Test
+  public void TestHostnameWithLeadingProtocol() {
+    try {
+      String host1 = "https://storageaccount.dfs.core.windows.net";
+      AdlsAdapter adlsAdapter1 = new AdlsAdapter(host1, "root-without-slash", "");
+      String adapterPath = "https://storageaccount.dfs.core.windows.net/root-without-slash/a/1.csv";
+      String corpusPath1 = adlsAdapter1.createCorpusPath(adapterPath);
+      assertEquals(adlsAdapter1.getHostname(), "https://storageaccount.dfs.core.windows.net");
+      assertEquals(corpusPath1, "/a/1.csv");
+      assertEquals(adlsAdapter1.createAdapterPath(corpusPath1), adapterPath);
+
+      String host2 = "HttPs://storageaccount.dfs.core.windows.net";
+      AdlsAdapter adlsAdapter2 = new AdlsAdapter(host2, "root-without-slash", "");
+      String corpusPath2 = adlsAdapter2.createCorpusPath(adapterPath);
+      assertEquals(adlsAdapter2.getHostname(), "HttPs://storageaccount.dfs.core.windows.net");
+      assertEquals(corpusPath2, "/a/1.csv");
+      assertEquals(adlsAdapter2.createAdapterPath(corpusPath2), adapterPath);
+
+      try {
+        String host3 = "http://storageaccount.dfs.core.windows.net";
+        AdlsAdapter adlsAdapter3 = new AdlsAdapter(host3, "root-without-slash", "");
+        Assert.fail("Expected Exception for using a http:// hostname.");
+      } catch (Exception ex) {
+        Assert.assertTrue(ex instanceof IllegalArgumentException);
+      }
+
+      try {
+        String host4 = "https://bar:baz::]/foo/";
+        AdlsAdapter adlsAdapter4 = new AdlsAdapter(host4, "root-without-slash", "");
+        Assert.fail("Expected Exception for using an invalid hostname.");
+      } catch (IllegalArgumentException ex) {
+        Assert.assertNotNull(ex);
+      }
+    } catch (Exception ex) {
+      Assert.assertTrue(ex instanceof IllegalArgumentException);
+    }
+  }
+
+  /**
    * Test azure cloud endpoint in config.
    */
   @Test
@@ -414,7 +455,7 @@ public class AdlsAdapterTest {
         CdmCorpusDefinition corpusSnakeCase = new CdmCorpusDefinition();
         corpusSnakeCase.getStorage().mountFromConfig(configSnakeCase);
         fail("Expected RuntimeException for config.json using endpoint value in snake case.");
-      } catch (RuntimeException re){
+      } catch (RuntimeException re) {
         String message = "Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.";
         assertEquals(re.getMessage(), message);
       }

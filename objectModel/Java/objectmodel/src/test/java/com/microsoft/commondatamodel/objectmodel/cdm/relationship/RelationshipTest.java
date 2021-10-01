@@ -6,12 +6,9 @@ package com.microsoft.commondatamodel.objectmodel.cdm.relationship;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import java.util.concurrent.CompletableFuture;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmE2ERelationship;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDeclarationDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryStyle;
@@ -27,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -350,6 +348,13 @@ public class RelationshipTest {
         verifyRelationships(manifest, expectedRels);
   }
 
+  private CompletableFuture<Void> reloadFromEntity(CdmCorpusDefinition corpus, CdmEntityDefinition fromEnt, String tempFromFilePath, String tempFromEntityPath) {
+      fromEnt.getInDocument().saveAsAsync(tempFromFilePath).join();
+      // fetch gain to reset the cache
+      corpus.<CdmEntityDefinition>fetchObjectAsync(tempFromEntityPath, null, null, true).join();
+      return CompletableFuture.completedFuture(null);
+  };
+
   /**
    * Test that relationships pointing from a manifest to an entity in a submanifest create correct paths
    */
@@ -373,6 +378,79 @@ public class RelationshipTest {
         verifyRelationships(manifest, expectedRels);
   }
 
+    /**
+     * Test that ensures relationships are updated correctly after entities are changed
+     */
+    @Test
+    public void testUpdateRelationships()
+            throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels =
+                JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+                                TESTS_SUBPATH,
+                                "testUpdateRelationships",
+                                "expectedRels.json"),
+                        new TypeReference<List<E2ERelationship>>() {
+                        });
+        final String tempFromFilePath = "fromEntTemp.cdm.json";
+        final String tempFromEntityPath = "local:/fromEntTemp.cdm.json/fromEnt";
+        final String tempToEntityPath = "local:/toEnt.cdm.json/toEnt";
+
+        // Initialize corpus and entity files
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testUpdateRelationships");
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
+        final CdmManifestDefinition manifestNoToEnt = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/mainNoToEnt.manifest.cdm.json").join();
+        final CdmEntityDefinition fromEnt = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/fromEnt.cdm.json/fromEnt").join();
+        fromEnt.getInDocument().saveAsAsync(tempFromFilePath).join();
+
+        try {
+            // 1. test when entity attribute is removed
+            corpus.calculateEntityGraphAsync(manifest).join();
+            manifest.populateManifestRelationshipsAsync().join();
+
+            // check that the relationship has been created correctly
+            verifyRelationships(manifest, expectedRels);
+
+            // now remove the entity attribute, which removes the relationship
+            CdmAttributeItem removedAttribute = fromEnt.getAttributes().get(0);
+            fromEnt.getAttributes().removeAt(0);
+            reloadFromEntity(corpus, fromEnt, tempFromFilePath, tempFromEntityPath).join();
+
+            corpus.calculateEntityGraphAsync(manifest).join();
+            manifest.populateManifestRelationshipsAsync().join();
+
+            // check that the relationship has been removed
+            verifyRelationships(manifest, new ArrayList<E2ERelationship>());
+
+            // 2. test when the to entity is removed
+            // restore the entity to the original state
+            fromEnt.getAttributes().add(removedAttribute);
+            reloadFromEntity(corpus, fromEnt, tempFromFilePath, tempFromEntityPath).join();
+
+            corpus.calculateEntityGraphAsync(manifest).join();
+            manifest.populateManifestRelationshipsAsync().join();
+
+            // check that the relationship has been created correctly
+            verifyRelationships(manifest, expectedRels);
+
+            // remove the to entity
+            fromEnt.getAttributes().removeAt(0);
+            reloadFromEntity(corpus, fromEnt, tempFromFilePath, tempFromEntityPath).join();
+            // fetch again to reset the cache
+            corpus.<CdmEntityDefinition>fetchObjectAsync(tempToEntityPath, null, null, true).join();
+
+            corpus.calculateEntityGraphAsync(manifestNoToEnt).join();
+            manifestNoToEnt.populateManifestRelationshipsAsync().join();
+
+            // check that the relationship has been removed
+            verifyRelationships(manifestNoToEnt, new ArrayList<E2ERelationship>());
+        } finally {
+            // clean up created file created
+            final String fromFilePath = corpus.getStorage().corpusPathToAdapterPath("local:/" + tempFromFilePath);
+            final File fromFile = new File(fromFilePath);
+            fromFile.delete();
+        }
+    }
+
   private static void verifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships) {
     Assert.assertEquals(manifest.getRelationships().size(), expectedRelationships.size());
 
@@ -383,9 +461,7 @@ public class RelationshipTest {
           Objects.equals(expectedRel.getFromEntity(), x.getFromEntity())
           && Objects.equals(expectedRel.getFromEntityAttribute(), x.getFromEntityAttribute())
           && Objects.equals(expectedRel.getToEntity(), x.getToEntity())
-          && Objects.equals(expectedRel.getToEntityAttribute(), x.getToEntityAttribute())
-          && ((StringUtils.isNullOrTrimEmpty(expectedRel.getName()) && StringUtils.isNullOrTrimEmpty(x.getName()))
-          || (expectedRel.getName().equals(x.getName()))))
+          && Objects.equals(expectedRel.getToEntityAttribute(), x.getToEntityAttribute()))
         .collect(Collectors.toList());
       Assert.assertEquals(found.size(), 1);
    }

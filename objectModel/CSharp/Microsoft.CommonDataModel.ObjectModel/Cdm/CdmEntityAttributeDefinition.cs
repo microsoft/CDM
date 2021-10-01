@@ -177,16 +177,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return false;
             }
 
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + this.Name;
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
             //trackVisits(path);
 
             if (preChildren != null && preChildren.Invoke(this, path))
@@ -243,9 +234,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
 
-            dynamic rasbCache = null;
+            ResolvedAttributeSetBuilder rasbCache = null;
             if (cacheTag != null)
-                ctx.Cache.TryGetValue(cacheTag, out rasbCache);
+            {
+                ctx.AttributeCache.TryGetValue(cacheTag, out rasbCache);
+            }
             return rasbCache;
         }
 
@@ -311,7 +304,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             // look through the attribute context hierarchy for non-nested entityReferenceAsAttribute nodes
                             // that seems like a disaster waiting to happen given endless looping, etc.
                             // for now, just insist that only the top level entity attributes declared in the ref entity will work
-                            CdmEntityDefinition entPickFrom = (this.Entity as CdmEntityReference).FetchObjectDefinition<CdmEntityDefinition>(resOpt) as CdmEntityDefinition;
+                            CdmEntityDefinition entPickFrom = this.Entity.FetchObjectDefinition<CdmEntityDefinition>(resOpt);
                             CdmCollection<CdmAttributeItem> attsPick = entPickFrom?.Attributes;
                             if (entPickFrom != null && attsPick != null)
                             {

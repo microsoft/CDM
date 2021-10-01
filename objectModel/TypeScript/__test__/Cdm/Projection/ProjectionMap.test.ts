@@ -58,20 +58,20 @@ describe('Cdm/Projection/TestProjectionMap', () => {
         // renameAttributes = { {a}_{o}_key, apply to "key" }
         // renameAttributes = { {a}_{m}_{o}_value, apply to "name", "age", "address" }
         // alterTraits = { indicates.expansionInfo.mapKey(expansionName: "{a}", ordinal: "{o}") , apply to "key" , "argumentsContainWildcards" : true }
-        // alterTraits = { has.expansionInfo.mapValue(expansionName: "{a}", ordinal: "{o}", memberAttribute: "{m}") , apply to "name", "age", "address"  , "argumentsContainWildcards" : true }
+        // alterTraits = { has.expansionInfo.mapValue(expansionName: "{a}", ordinal: "{o}", memberAttribute: "{mo}") , apply to "name", "age", "address"  , "argumentsContainWildcards" : true }
         // addArtifactAttribute : "personCount"
         // alterTraits = { indicates.expansionInfo.count(expansionName: "{a}") , apply to "personCount" , "argumentsContainWildcards" : true }
         expect(nonStructuredResolvedEntity.attributes.length)
             .toEqual(13);
-        validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition, 'ThreePeople_1_key', 1, 'ThreePeople', undefined, true);
+        validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition, 'key_1_key', 1, 'ThreePeople', undefined, true);
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition, "ThreePeople_name_1_value", 1, "ThreePeople", "name");
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition, "ThreePeople_age_1_value", 1, "ThreePeople", "age");
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition, "ThreePeople_address_1_value", 1, "ThreePeople", "address");
-        validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition, 'ThreePeople_2_key', 2, 'ThreePeople', undefined, true);
+        validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition, 'key_2_key', 2, 'ThreePeople', undefined, true);
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition, "ThreePeople_name_2_value", 2, "ThreePeople", "name");
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[6] as CdmTypeAttributeDefinition, "ThreePeople_age_2_value", 2, "ThreePeople", "age");
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[7] as CdmTypeAttributeDefinition, "ThreePeople_address_2_value", 2, "ThreePeople", "address");
-        validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[8] as CdmTypeAttributeDefinition, 'ThreePeople_3_key', 3, 'ThreePeople', undefined, true);
+        validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[8] as CdmTypeAttributeDefinition, 'key_3_key', 3, 'ThreePeople', undefined, true);
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[9] as CdmTypeAttributeDefinition, "ThreePeople_name_3_value", 3, "ThreePeople", "name");
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[10] as CdmTypeAttributeDefinition, "ThreePeople_age_3_value", 3, "ThreePeople", "age");
         validateAttributeTrait(nonStructuredResolvedEntity.attributes.allItems[11] as CdmTypeAttributeDefinition, "ThreePeople_address_3_value", 3, "ThreePeople", "address");
@@ -136,7 +136,7 @@ describe('Cdm/Projection/TestProjectionMap', () => {
         // renameAttributes = { {m}_{o}_key, apply to "Term key" }
         // renameAttributes = { {m}_{o}_value, apply to "FavoriteTerms" }
         // alterTraits = { indicates.expansionInfo.mapKey(expansionName: "{a}", ordinal: "{o}") , apply to "Term key" , "argumentsContainWildcards" : true }
-        // alterTraits = { has.expansionInfo.mapValue(expansionName: "{m}", ordinal: "{o}") , apply to "FavoriteTerms"  , "argumentsContainWildcards" : true }
+        // alterTraits = { has.expansionInfo.mapValue(expansionName: "{a}", ordinal: "{o}") , apply to "FavoriteTerms"  , "argumentsContainWildcards" : true }
         // addArtifactAttribute : number of favorite terms"
         // alterTraits = { indicates.expansionInfo.count(expansionName: "{a}") , apply to "number of favorite terms" , "argumentsContainWildcards" : true }
         expect(nonStructuredResolvedEntity.attributes.length)

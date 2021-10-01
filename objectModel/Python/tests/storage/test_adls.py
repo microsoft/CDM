@@ -317,6 +317,41 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(corpus.storage.fetch_adapter('adlsadapter4').root, '/root-ends-with-slash/folder1/folder2')
         self.assertEqual(corpus.storage.fetch_adapter('adlsadapter5').root, '/root-with-slashes/folder1/folder2')
 
+    def test_hostname_with_leading_protocol(self):
+        """
+        Test hostname with leading protocol.
+        """
+        host1 = 'https://storageaccount.dfs.core.windows.net'
+        adlsAdapter1 = ADLSAdapter(hostname=host1, root='root-without-slash', shared_key='')
+        adapterPath = 'https://storageaccount.dfs.core.windows.net/root-without-slash/a/1.csv'
+        corpusPath1 = adlsAdapter1.create_corpus_path(adapterPath)
+        self.assertEqual(adlsAdapter1.hostname, 'https://storageaccount.dfs.core.windows.net')
+        self.assertEqual(adlsAdapter1.root, '/root-without-slash')
+        self.assertEqual(corpusPath1, '/a/1.csv')
+        self.assertEqual(adlsAdapter1.create_adapter_path(corpusPath1), adapterPath)
+
+        host2 = 'Https://storageaccount.dfs.core.windows.net'
+        adlsAdapter2 = ADLSAdapter(hostname=host2, root='root-without-slash', shared_key='')
+        corpusPath2 = adlsAdapter2.create_corpus_path(adapterPath)
+        self.assertEqual(adlsAdapter2.hostname, 'Https://storageaccount.dfs.core.windows.net')
+        self.assertEqual(adlsAdapter2.root, '/root-without-slash')
+        self.assertEqual(corpusPath2, '/a/1.csv')
+        self.assertEqual(adlsAdapter2.create_adapter_path(corpusPath2), adapterPath)
+
+        try:
+            host3 = 'http://storageaccount.dfs.core.windows.net'
+            adlsAdapter3 = ADLSAdapter(hostname=host3, root='root-without-slash', shared_key='')
+            self.fail('Expected Exception for using a http:// hostname.')
+        except Exception as ex:
+            self.assertTrue(isinstance(ex, ValueError))
+
+        try:
+            host4 = 'https://bar:baz::]/foo/'
+            adlsAdapter4 = ADLSAdapter(hostname=host4, root='root-without-slash', shared_key='')
+            self.fail('Expected Exception for using an invalid hostname.')
+        except Exception as ex:
+            self.assertTrue(isinstance(ex, ValueError))
+
     def test_loading_and_saving_endpoint_in_config(self):
         """
         Test azure cloud endpoint in config.

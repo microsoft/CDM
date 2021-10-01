@@ -99,18 +99,7 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
-
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-
-      if (StringUtils.isNullOrEmpty(path)) {
-        path = pathFrom + this.getDataTypeName();
-        this.setDeclaredPath(path);
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;

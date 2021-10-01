@@ -99,6 +99,13 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
         return this.traitToPropertyMap.fetchPropertyValue('primaryKey') as string;
     }
 
+    /**
+     * @internal
+     */
+    public get isResolved(): boolean {
+        return this.traitToPropertyMap.fetchPropertyValue('isResolved') as boolean;
+    }
+
     public entityName: string;
     private _extendsEntity?: CdmEntityReference;
     get extendsEntity(): CdmEntityReference | undefined {
@@ -209,30 +216,6 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
     /**
      * @internal
      */
-    public getExtendsEntityRef(): CdmObjectReference {
-        // let bodyCode = () =>
-        {
-            return this.extendsEntity;
-        }
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public setExtendsEntityRef(ref: CdmObjectReference): CdmObjectReference {
-        // let bodyCode = () =>
-        {
-            this.extendsEntity = ref as CdmEntityReference;
-
-            return this.extendsEntity;
-        }
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
     public addAttributeDef(
         attDef: CdmAttributeItem)
         : CdmAttributeItem {
@@ -251,14 +234,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + this.entityName;
-                    this.declaredPath = path;
-                }
-            }
+            const path: string = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;
@@ -302,7 +278,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
-            return this.isDerivedFromDef(resOpt, this.getExtendsEntityRef(), this.getName(), base);
+            return this.isDerivedFromDef(resOpt, this.extendsEntity, this.getName(), base);
         }
         // return p.measure(bodyCode);
     }
@@ -314,7 +290,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             // base traits then add any elevated from attributes then add things exhibited by the att.
-            const base: CdmObjectReference = this.getExtendsEntityRef();
+            const base: CdmObjectReference = this.extendsEntity;
             if (base) {
                 // merge in all from base class
                 rtsb.mergeTraits(base.fetchResolvedTraits(resOpt));
@@ -354,7 +330,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
             rasb.ras.setAttributeContext(under);
 
             if (this.extendsEntity) {
-                const extRef: CdmObjectReference = this.getExtendsEntityRef();
+                const extRef: CdmObjectReference = this.extendsEntity;
                 let extendsRefUnder: CdmAttributeContext;
                 let acpExtEnt: AttributeContextParameters;
 
@@ -400,7 +376,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                         };
                     }
 
-                    rasb.mergeAttributes(this.getExtendsEntityRef()
+                    rasb.mergeAttributes(this.extendsEntity
                         .fetchResolvedAttributes(resOpt, acpExtEnt));
 
                     if (!resOpt.checkAttributeCount(rasb.ras.resolvedAttributeCount)) {
@@ -522,51 +498,43 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
             resOpt = resOpt.copy();
             resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly']));
 
-            const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
-            let entRefSetCache: ResolvedEntityReferenceSet = ctx.fetchCache(this, resOpt, 'entRefSet') as ResolvedEntityReferenceSet;
-            if (!entRefSetCache) {
-                entRefSetCache = new ResolvedEntityReferenceSet(resOpt);
+            const entRefSet = new ResolvedEntityReferenceSet(resOpt);
 
-                if (!this.resolvingEntityReferences) {
-                    this.resolvingEntityReferences = true;
-                    // get from any base class and then 'fix' those to point here instead.
-                    const extRef: CdmObjectReference = this.getExtendsEntityRef();
-                    if (extRef) {
-                        let extDef: CdmEntityDefinition = extRef.fetchObjectDefinition(resOpt);
-                        if (extDef) {
-                            if (extDef === this) {
-                                extDef = extRef.fetchObjectDefinition(resOpt);
-                            }
-                            const inherited: ResolvedEntityReferenceSet = extDef.fetchResolvedEntityReference(resOpt);
-                            if (inherited) {
-                                inherited.set.forEach((res: ResolvedEntityReference) => {
-                                    res = res.copy();
-                                    res.referencing.entity = this;
-                                    entRefSetCache.set.push(res);
-                                });
-                            }
+            if (!this.resolvingEntityReferences) {
+                this.resolvingEntityReferences = true;
+                // get from any base class and then 'fix' those to point here instead.
+                const extRef: CdmObjectReference = this.extendsEntity;
+                if (extRef) {
+                    let extDef: CdmEntityDefinition = extRef.fetchObjectDefinition(resOpt);
+                    if (extDef) {
+                        const inherited: ResolvedEntityReferenceSet = extDef.fetchResolvedEntityReference(resOpt);
+                        if (inherited) {
+                            inherited.set.forEach((res: ResolvedEntityReference) => {
+                                res = res.copy();
+                                res.referencing.entity = this;
+                                entRefSet.set.push(res);
+                            });
                         }
                     }
-                    if (this.attributes) {
-                        for (const attribute of this.attributes) {
-                            // if any refs come back from attributes, they don't know who we are, so they don't set the entity
-                            const sub: ResolvedEntityReferenceSet = attribute.fetchResolvedEntityReference(resOpt);
-                            if (sub) {
-                                sub.set.forEach((res: ResolvedEntityReference) => {
-                                    res.referencing.entity = this;
-                                });
-
-                                entRefSetCache.add(sub);
-                            }
-                        }
-                    }
-                    ctx.updateCache(this, resOpt, 'entRefSet', entRefSetCache);
-                    this.resolvingEntityReferences = false;
                 }
+                if (this.attributes) {
+                    for (const attribute of this.attributes) {
+                        // if any refs come back from attributes, they don't know who we are, so they don't set the entity
+                        const sub: ResolvedEntityReferenceSet = attribute.fetchResolvedEntityReference(resOpt);
+                        if (sub) {
+                            sub.set.forEach((res: ResolvedEntityReference) => {
+                                res.referencing.entity = this;
+                            });
+
+                            entRefSet.add(sub);
+                        }
+                    }
+                }
+                this.resolvingEntityReferences = false;
             }
             this.ctx.corpus.isCurrentlyResolving = wasPreviouslyResolving;
 
-            return entRefSetCache;
+            return entRefSet;
         }
         // return p.measure(bodyCode);
     }

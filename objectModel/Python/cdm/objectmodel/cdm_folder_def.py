@@ -125,31 +125,20 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
             else:
                 # the last part of the path will be considered part of the part depending on the make_folder flag.
                 break
-
-            # check children folders
-            result = None
-            if child_folder.child_folders:
-                for folder in child_folder.child_folders:
-                    if child_folder_name == folder.name:
-                        result = folder
-                        break
-            if not result:
-                result = child_folder.child_folders.append(child_folder_name)
-
-            child_folder = result
+            
+            # get next child folder.
+            child_folder = child_folder.child_folders._get_or_create(child_folder_name)
 
         if make_folder:
             child_folder = child_folder.child_folders.append(remaining_path)
 
         return child_folder
 
-    async def _fetch_document_from_folder_path_async(self, document_path: str, adapter: 'StorageAdapterBase',
-                                                     force_reload: bool, res_opt: Optional['ResolveOptions'] = None) -> 'CdmDocumentDefinition':
+    async def _fetch_document_from_folder_path_async(self, document_path: str, force_reload: bool, res_opt: Optional['ResolveOptions'] = None) -> 'CdmDocumentDefinition':
         """Gets the document from folder path.
 
         arguments:
-        path: The path.
-        adapter: The storage adapter where the document can be found."""
+        path: The path."""
 
         doc_name = None
         first = document_path.find('/')

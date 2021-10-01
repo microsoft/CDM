@@ -331,16 +331,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + this.Name;
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
             //trackVisits(path);
 
             if (preChildren?.Invoke(this, path) == true)
@@ -395,7 +386,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             // add this attribute to the set
             // make a new one and apply dynamic traits
-            ResolvedAttribute newAtt = new ResolvedAttribute(resOpt, this, this.Name, under as CdmAttributeContext);
+            ResolvedAttribute newAtt = new ResolvedAttribute(resOpt, this, this.Name, under);
             rasb.OwnOne(newAtt);
 
             ResolvedTraitSet rts = this.FetchResolvedTraits(resOpt);

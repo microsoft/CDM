@@ -16,7 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 
         public ResolvedTraitSet(ResolveOptions resOpt)
         {
-            this.ResOpt = resOpt.Copy();
+            this.ResOpt = resOpt;
             this.Set = new List<ResolvedTrait>();
             this.LookupByTrait = new Dictionary<CdmTraitDefinition, ResolvedTrait>();
             this.HasElevated = false;

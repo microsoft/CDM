@@ -180,22 +180,8 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
                 break
             }
 
-            // check children folders
-            let result: CdmFolderDefinition;
-            if (childFolder.childFolders) {
-                for (const folder of childFolder.childFolders) {
-                    if (childFolderName.toLowerCase() == folder.name.toLowerCase()) {
-                        result = folder;
-                        break;
-                    }
-                }
-            }
-
-            if (!result) {
-                result = childFolder.childFolders.push(childFolderName);
-            }
-
-            childFolder = result;
+            // get next child folder.
+            childFolder = childFolder.childFolders.getOrCreate(childFolderName);
         }
 
         if (makeFolder) {
@@ -211,7 +197,6 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      */
     public async fetchDocumentFromFolderPathAsync(
         objectPath: string,
-        adapter: StorageAdapter,
         forceReload: boolean = false,
         resOpt: resolveOptions = null): Promise<CdmDocumentDefinition> {
         let docName: string;

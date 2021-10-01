@@ -27,30 +27,24 @@ export class ProjectionDirective {
     public resOpt: resolveOptions;
 
     /**
-     * The calling referencing EntityDef or the EntityAttributeDef that contains this projection
+     * The calling referencing EntityDef, the EntityAttributeDef, or the TypeAttributeDef that contains this projection
      * @internal
      */
     public owner: CdmObjectDefinitionBase;
 
     /**
-     * The EntityRef to the owning EntityDef or EntityAttributeDef
+     * The EntityRef to the owning EntityDef, EntityAttributeDef, or TypeAttributeDef
      * @internal
      */
     public ownerRef: CdmObjectReference;
 
     /**
-     * Is Owner EntityDef or EntityAttributeDef
-     * @internal
-     */
-    public ownerType: cdmObjectType;
-
-    /**
-     * The entity attribute name or "{a/A}"
+     * The entity/type attribute name or "{a/A}"
      * This may pass through at each operation action/transformation
      * @internal
      */
-    public get originalSourceEntityAttributeName(): string {
-        return (this.owner?.objectType === cdmObjectType.entityAttributeDef) ? this.owner.getName() : undefined;
+    public get originalSourceAttributeName(): string {
+        return (this.owner?.objectType === cdmObjectType.entityAttributeDef || this.owner?.objectType === cdmObjectType.typeAttributeDef) ? this.owner.getName() : undefined;
     }
 
     /**
@@ -114,7 +108,6 @@ export class ProjectionDirective {
         // Owner information
         this.owner = owner;
         this.ownerRef = ownerRef;
-        this.ownerType = owner ? owner.objectType : cdmObjectType.error;
 
         if (owner?.objectType === cdmObjectType.entityAttributeDef) {
             // Entity Attribute
@@ -123,7 +116,7 @@ export class ProjectionDirective {
             this.cardinality = _owner.cardinality ? _owner.cardinality : new CardinalitySettings(_owner);
             this.isSourcePolymorphic = (_owner.isPolymorphicSource !== undefined && _owner.isPolymorphicSource !== null && _owner.isPolymorphicSource === true);
         } else {
-            // Entity Def
+            // Entity Def pr Type Attribute
 
             this.cardinality = undefined;
             this.isSourcePolymorphic = false;

@@ -93,7 +93,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         res_opt._depth_info._update_to_next_level(res_opt, self.is_polymorphic_source, arc)
         cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
 
-        return ctx._cache.get(cache_tag) if cache_tag else None
+        return ctx._attribute_cache.get(cache_tag) if cache_tag else None
 
     def _construct_resolved_attributes(self, res_opt: 'ResolveOptions', under: Optional['CdmAttributeContext'] = None) -> 'ResolvedAttributeSetBuilder':
         from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttribute, ResolvedAttributeSetBuilder, ResolvedTrait
@@ -385,12 +385,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         if self.entity is None:
             return False
 
-        path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if not path:
-                path = path_from + self.name
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False

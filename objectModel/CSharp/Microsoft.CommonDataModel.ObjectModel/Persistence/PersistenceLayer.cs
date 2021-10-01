@@ -31,6 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Types;
     using Newtonsoft.Json.Linq;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models;
+    using System.Collections.ObjectModel;
 
     public class PersistenceLayer
     {
@@ -51,7 +52,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
         internal CdmCorpusDefinition Corpus { get; }
         internal CdmCorpusContext Ctx => this.Corpus.Ctx;
 
-        private static readonly IDictionary<string, IPersistenceType> persistenceTypes = new Dictionary<string, IPersistenceType>
+        private static IReadOnlyDictionary<string, IPersistenceType> persistenceTypes => new Dictionary<string, IPersistenceType>
         {
             { CdmFolder, new CdmFolderType() },
             { ModelJson, new ModelJsonType() },
@@ -78,7 +79,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             this.registeredPersistenceFormats = new ConcurrentDictionary<string, Type>();
             this.isRegisteredPersistenceAsync = new ConcurrentDictionary<Type, bool>();
         }
-
 
         public static T FromData<T, U>(CdmCorpusContext ctx, U obj, string persistenceTypeName)
             where T : CdmObject

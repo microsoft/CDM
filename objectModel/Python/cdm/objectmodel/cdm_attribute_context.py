@@ -512,8 +512,7 @@ class CdmAttributeContext(CdmObjectDefinition):
             return acp._under
 
         # This flag makes sure we hold on to any resolved object refs when things get copied.
-        res_opt_copy = res_opt.copy()
-        res_opt_copy._save_resolutions_on_copy = True
+        res_opt._save_resolutions_on_copy = True
 
         definition = None  # type: CdmObjectReference
         rts_applied = None  # type: ResolvedTraitSet
@@ -522,11 +521,11 @@ class CdmAttributeContext(CdmObjectDefinition):
         # included in the link to the definition.
         if acp._regarding:
             # make a portable reference. this MUST be fixed up when the context node lands in the final document
-            definition = cast(CdmObject, acp._regarding)._create_portable_reference(res_opt_copy)
+            definition = cast(CdmObject, acp._regarding)._create_portable_reference(res_opt)
             # Now get the traits applied at this reference (applied only, not the ones that are part of the definition
             # of the object) and make them the traits for this context.
             if acp._include_traits:
-                rts_applied = acp._regarding._fetch_resolved_traits(res_opt_copy)
+                rts_applied = acp._regarding._fetch_resolved_traits(res_opt)
 
         under_child = acp._under.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_DEF, acp._name)  # type: CdmAttributeContext
         # Need context to make this a 'live' object.
@@ -537,14 +536,14 @@ class CdmAttributeContext(CdmObjectDefinition):
         # Add traits if there are any.
         if rts_applied and rts_applied.rt_set:
             for rt in rts_applied.rt_set:
-                trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt_copy, rt)
+                trait_ref = CdmObject._resolved_trait_to_trait_ref(res_opt, rt)
                 under_child.exhibits_traits.append(trait_ref, isinstance(trait_ref, str))
 
         # Add to parent.
-        under_child._update_parent(res_opt_copy, acp._under)
+        under_child._update_parent(res_opt, acp._under)
 
-        if res_opt_copy._map_old_ctx_to_new_ctx is not None:
-            res_opt_copy._map_old_ctx_to_new_ctx[under_child] = under_child  # so we can find every node, not only the replaced ones
+        if res_opt._map_old_ctx_to_new_ctx is not None:
+            res_opt._map_old_ctx_to_new_ctx[under_child] = under_child  # so we can find every node, not only the replaced ones
 
         return under_child
 
@@ -578,12 +577,7 @@ class CdmAttributeContext(CdmObjectDefinition):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if not path:
-                path = path_from + self.name
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False

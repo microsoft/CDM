@@ -2,9 +2,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    CdmCorpusDefinition,
+    CdmContainerDefinition,
     CdmDocumentDefinition,
-    CdmFolderDefinition
+    cdmLogCode,
+    CdmFolderDefinition,
+    Logger,
+    StorageAdapter,
+    resolveOptions
 } from '../internal';
+import { StorageUtils } from '../Utilities/StorageUtils';
 
 import { ConcurrentSemaphore } from '../Utilities/Concurrent/concurrentSemaphore';
 
@@ -13,38 +20,29 @@ import { ConcurrentSemaphore } from '../Utilities/Concurrent/concurrentSemaphore
  * Synchronizes all dictionaries relating to the documents (and their statuses) in the corpus.
  */
 export class DocumentLibrary {
-    /**
-     * @internal
-     */
-    public docsCurrentlyLoading: Set<string>;
-    /**
-     * @internal
-     */
-    public docsNotIndexed: Set<CdmDocumentDefinition>;
-    /**
-     * @internal
-     */
-    public docsNotFound: Set<string>;
-    /**
-     * @internal
-     */
-    public allDocuments: [CdmFolderDefinition, CdmDocumentDefinition][];
-    /**
-     * @internal
-     */
-    public pathLookup: Map<string, [CdmFolderDefinition, CdmDocumentDefinition]>;
+    private allDocuments: [CdmFolderDefinition, CdmDocumentDefinition][];
+    private corpus: CdmCorpusDefinition;
+    private docsCurrentlyIndexing: Set<CdmDocumentDefinition>;
+    private docsCurrentlyLoading: Set<string>;
+    private docsNotFound: Set<string>;
+    private pathLookup: Map<string, [CdmFolderDefinition, CdmDocumentDefinition]>;
+    
+    private readonly TAG: string = DocumentLibrary.name;
+
     /**
      * @internal
      */
     public concurrentReadLock: ConcurrentSemaphore;
 
-    constructor() {
+
+    constructor(corpus: CdmCorpusDefinition) {
         this.allDocuments = [];
-        this.pathLookup = new Map<string, [CdmFolderDefinition, CdmDocumentDefinition]>();
+        this.concurrentReadLock = new ConcurrentSemaphore();
+        this.corpus = corpus;
+        this.docsCurrentlyIndexing = new Set<CdmDocumentDefinition>();
         this.docsCurrentlyLoading = new Set<string>();
         this.docsNotFound = new Set<string>();
-        this.docsNotIndexed = new Set<CdmDocumentDefinition>();
-        this.concurrentReadLock = new ConcurrentSemaphore();
+        this.pathLookup = new Map<string, [CdmFolderDefinition, CdmDocumentDefinition]>();
     }
 
     /**
@@ -84,12 +82,23 @@ export class DocumentLibrary {
      *
      * Returns a list of all the documents that are not loaded.
      */
-    public listDocsNotIndexed(): Set<CdmDocumentDefinition> {
+    public listDocsNotIndexed(rootDoc: CdmDocumentDefinition, docsLoaded: Set<string>): Set<CdmDocumentDefinition> {
         const docsNotIndexed: Set<CdmDocumentDefinition> = new Set();
         // gets all the documents that needs indexing and set the currentlyIndexing flag to true.
-        this.docsNotIndexed.forEach(doc => {
-            doc.currentlyIndexing = true;
-            docsNotIndexed.add(doc);
+        docsLoaded.forEach(docPath => {
+            const doc: CdmDocumentDefinition = this.fetchDocument(docPath);
+            if (!doc) {
+                return;
+            }
+
+            // The root document that started this indexing process is already masked for indexing, don't mark it again.
+            if (doc != rootDoc) {
+                if (this.markDocumentForIndexing(doc)) {
+                    docsNotIndexed.add(doc);
+                }
+            } else {
+                docsNotIndexed.add(doc);
+            }
         });
         return docsNotIndexed;
     }
@@ -129,15 +138,15 @@ export class DocumentLibrary {
      * Sets a document's status to loading if the document needs to be loaded.
      * @param docPath The document path.
      */
-    public needToLoadDocument(docPath: string): boolean {
+    public needToLoadDocument(docPath: string, docsLoading: Set<string>): boolean {
         const doc: CdmDocumentDefinition = this.pathLookup.has(docPath) ? this.pathLookup.get(docPath)[1] : undefined;
 
-        // first check if the document was not found or is currently loading already.
+        // first check if the document was not found or is currently loading.
         // if the document was loaded previously, check if its imports were not indexed and it's not being indexed currently.
-        const needToLoad: boolean = !this.docsNotFound.has(docPath) && !this.docsCurrentlyLoading.has(docPath) && (!doc || (!doc.importsIndexed && !doc.currentlyIndexing));
+        const needToLoad: boolean = !this.docsNotFound.has(docPath) && !docsLoading.has(docPath) && (!doc || (!doc.importsIndexed && !doc.currentlyIndexing));
 
         if (needToLoad) {
-            this.docsCurrentlyLoading.add(docPath);
+            docsLoading.add(docPath);
         }
 
         return needToLoad;
@@ -151,21 +160,13 @@ export class DocumentLibrary {
      * @param docPath The document path.
      * @param docsNowLoaded The dictionary of documents that are now loaded.
      */
-    public markDocumentAsLoadedOrFailed(docPath: string, doc: CdmDocumentDefinition): boolean {
+    public markAsLoadedOrFailed(docPath: string, doc: CdmContainerDefinition): void {
         // Doc is no longer loading.
         this.docsCurrentlyLoading.delete(docPath);
 
-        if (doc) {
-            // Doc needs to be indexed.
-            this.docsNotIndexed.add(doc);
-            doc.currentlyIndexing = true;
-
-            return true;
-        } else {
+        if (!doc) {
             // The doc failed to load, so set doc as not found.
             this.docsNotFound.add(docPath);
-
-            return false;
         }
     }
 
@@ -176,7 +177,8 @@ export class DocumentLibrary {
      * @param doc The document.
      */
     public markDocumentAsIndexed(doc: CdmDocumentDefinition) {
-        this.docsNotIndexed.delete(doc);
+        doc.currentlyIndexing = false;
+        this.docsCurrentlyIndexing.delete(doc);
     }
 
     /**
@@ -185,8 +187,14 @@ export class DocumentLibrary {
      * Adds a document to the list of documents that are not indexed to mark it for indexing.
      * @param doc The document.
      */
-    public markDocumentForIndexing(doc: CdmDocumentDefinition) {
-        this.docsNotIndexed.add(doc);
+    public markDocumentForIndexing(doc: CdmDocumentDefinition): boolean {
+        if (doc.needsIndexing && !doc.currentlyIndexing) {
+            // If the document was not indexed before and it's not currently being indexed.
+            this.docsCurrentlyIndexing.add(doc);
+            doc.currentlyIndexing = true;
+        }
+
+        return doc.needsIndexing;
     }
 
     /**
@@ -202,5 +210,82 @@ export class DocumentLibrary {
             }
         }
         return false;
+    }
+
+    /**
+     * @internal
+     */
+     public async loadFolderOrDocument(objectPath: string, forceReload: boolean = false, resOpt: resolveOptions = null): Promise<CdmContainerDefinition> {
+        // If the document is already loaded and the user do not want to force a reload, return the document previously loaded.
+        if (!forceReload && this.pathLookup.has(objectPath)) {
+            const doc: CdmContainerDefinition = this.pathLookup.get(objectPath)[1];
+            return doc;
+        }
+
+        // Mark as loading.
+        this.docsCurrentlyLoading.add(objectPath);
+
+        // The document needs to be loaded. Create a task to load it and add to the list of documents currently loading.
+        var task = async () =>
+        {
+            var result = await this._loadFolderOrDocument(objectPath, forceReload, resOpt);
+            this.markAsLoadedOrFailed(objectPath, result);
+            return result;
+        };
+
+        return await task();
+     }
+
+    /**
+     * @internal
+     */
+     private async _loadFolderOrDocument(objectPath: string, forceReload: boolean = false, resOpt: resolveOptions = null): Promise<CdmContainerDefinition> {
+        // let bodyCode = () =>
+        {
+            if (!objectPath) {
+                return undefined;
+            }
+
+            // first check for namespace
+            const pathTuple: [string, string] = StorageUtils.splitNamespacePath(objectPath);
+            if (!pathTuple) {
+                Logger.error(this.corpus.ctx, this.TAG, this.loadFolderOrDocument.name, objectPath, cdmLogCode.ErrPathNullObjectPath);
+
+                return undefined;
+            }
+
+            const namespace: string = pathTuple[0] || this.corpus.storage.defaultNamespace;
+            objectPath = pathTuple[1];
+
+            if (!objectPath.startsWith('/')) {
+                return undefined;
+            }
+
+            const namespaceFolder: CdmFolderDefinition = this.corpus.storage.fetchRootFolder(namespace);
+            const namespaceAdapter: StorageAdapter = this.corpus.storage.fetchAdapter(namespace);
+            if (!namespaceFolder || !namespaceAdapter) {
+                Logger.error(this.corpus.ctx, this.TAG, this.loadFolderOrDocument.name, objectPath, cdmLogCode.ErrStorageNamespaceNotRegistered, namespace, objectPath);
+
+                return;
+            }
+            const lastFolder: CdmFolderDefinition = namespaceFolder.fetchChildFolderFromPath(objectPath, false);
+
+            // don't create new folders, just go as far as possible
+            if (!lastFolder) {
+                return undefined;
+            }
+
+            // maybe the search is for a folder?
+            const lastPath: string = lastFolder.folderPath;
+            if (lastPath === objectPath) {
+                return lastFolder;
+            }
+
+            // remove path to folder and then look in the folder
+            objectPath = objectPath.slice(lastPath.length);
+
+            return lastFolder.fetchDocumentFromFolderPathAsync(objectPath, forceReload, resOpt);
+        }
+        // return p.measure(bodyCode);
     }
 }

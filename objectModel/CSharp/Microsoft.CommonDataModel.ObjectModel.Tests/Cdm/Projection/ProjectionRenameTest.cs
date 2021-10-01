@@ -415,13 +415,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-            // Rename all attributes attributes with format {A}.{o}.{M}, then rename "age" with format "{a}-{o}-{m}"
+            // Rename all attributes attributes with format {A}.{o}.{M}, then rename "age" with format "{a}-{o}-{m}", finally rename "email" with format "{a}-{o}-{mo}"
             Assert.AreEqual(5, resolvedEntity.Attributes.Count);
             Assert.AreEqual("PersonInfo..Name", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("PersonInfo--PersonInfo..Age", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("PersonInfo..Address", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("PersonInfo..PhoneNumber", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("PersonInfo..Email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("PersonInfo--email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
         }
 
         /// <summary>
@@ -937,12 +937,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Rename with format "n{a}e{o}w{M}" attributes ["address"]
-            Assert.AreEqual(5, resolvedEntity.Attributes.Count);
+            // Add new attribute realNewAddress with rename format "n{a}e{o}w{M}"
+            Assert.AreEqual(6, resolvedEntity.Attributes.Count);
             Assert.AreEqual("name", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("age", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("newAddress", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
-            Assert.AreEqual("email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("naddressewAddress", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("naddressewRealNewAddress", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("email", (resolvedEntity.Attributes[5] as CdmTypeAttributeDefinition).Name);
         }
     }
 }

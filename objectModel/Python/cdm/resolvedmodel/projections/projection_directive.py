@@ -26,14 +26,11 @@ class ProjectionDirective:
         # Resolution option used
         self._res_opt = res_opt  # type: ResolveOptions
 
-        # The calling referencing EntityDef or the EntityAttributeDef that contains this projection
+        # The calling referencing EntityDef, the EntityAttributeDef, or the TypeAttributeDef that contains this projection
         self._owner = owner  # type: CdmObjectDefinition
 
-        # The EntityRef to the owning EntityDef or EntityAttributeDef
+        # The EntityRef to the owning EntityDef, EntityAttributeDef, or TypeAttributeDef
         self._owner_ref = owner_ref  # type: CdmObjectReference
-
-        # Is Owner EntityDef or EntityAttributeDef
-        self._owner_type = owner.object_type if owner else CdmObjectType.ERROR  # type: CdmObjectType
 
         if owner and owner.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
             # If EntityAttributeDef - then the Cardinality from the Owner EntityAttributeDef
@@ -69,9 +66,10 @@ class ProjectionDirective:
         self._maximum_depth = DepthInfo.MAX_DEPTH_LIMIT if self._has_no_maximum_depth else res_opt.max_depth  # type: Optional[int]
 
     @property
-    def _original_source_entity_attribute_name(self) -> str:
+    def _original_source_attribute_name(self) -> str:
         """
         The entity attribute name or "{a/A}"
         This may pass through at each operation action/transformation
         """
-        return self._owner.get_name() if self._owner.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF else None
+        return self._owner.get_name() if self._owner.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF \
+                                         or self._owner.object_type == CdmObjectType.TYPE_ATTRIBUTE_DEF else None

@@ -9,7 +9,6 @@ import {
     cdmLogCode,
     Logger,
     resolveOptions,
-    StringUtils,
     VisitCallback
 } from '../internal';
 
@@ -92,13 +91,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     }
 
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            if (!this.declaredPath) {
-                this.declaredPath = pathFrom + this.name;
-            }
-            path = this.declaredPath;
-        }
+        const path: string = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -117,15 +110,15 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
         return false;
     }
 
-    public setLastFileModifiedTime(value : Date): void {
+    public setLastFileModifiedTime(value: Date): void {
         this.setLastFileModifiedOldTime(this.lastFileModifiedTime);
         this.lastFileModifiedTime = value;
     }
-    
+
     public getlastFileModifiedTime(): Date {
         return this.lastFileModifiedTime;
     }
-    
+
     private setLastFileModifiedOldTime(value: Date): void {
         this.lastFileModifiedOldTime = value;
     }
@@ -137,4 +130,13 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     public resetLastFileModifiedOldTime(): void {
         this.setLastFileModifiedOldTime(null);
     }
+
+    public createCacheKey(): string {
+        let nameAndPipe: string = '';
+        if (this.name) {
+            nameAndPipe = `${this.name}|`;
+        }
+
+        return `${nameAndPipe}${this.toEntity}|${this.toEntityAttribute}|${this.fromEntity}|${this.fromEntityAttribute}`;
+    };
 }

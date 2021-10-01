@@ -16,7 +16,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +31,6 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
         super(ctx);
         this.setObjectType(CdmObjectType.OperationExcludeAttributesDef);
         this.setType(CdmOperationType.ExcludeAttributes);
-        this.excludeAttributes = new ArrayList<>();
     }
 
     @Override
@@ -100,14 +98,7 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrEmpty(path)) {
-                path = pathFrom + "operationExcludeAttributes";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;

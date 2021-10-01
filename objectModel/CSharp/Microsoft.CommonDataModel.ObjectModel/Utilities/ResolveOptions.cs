@@ -120,7 +120,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 MapOldCtxToNewCtx = this.MapOldCtxToNewCtx, // ok to share this map
                 ImportsLoadStrategy = this.ImportsLoadStrategy,
                 SaveResolutionsOnCopy = this.SaveResolutionsOnCopy,
-                CurrentlyResolvingEntities = new HashSet<CdmEntityDefinition>(this.CurrentlyResolvingEntities),
+                CurrentlyResolvingEntities = this.CurrentlyResolvingEntities, // ok to share this map
                 UsedResolutionGuidance = this.UsedResolutionGuidance
             };
 

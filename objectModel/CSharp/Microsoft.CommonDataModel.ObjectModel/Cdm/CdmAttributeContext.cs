@@ -221,16 +221,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + this.Name;
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
@@ -269,14 +260,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal static CdmAttributeContext CreateChildUnder(ResolveOptions resOpt, AttributeContextParameters acp)
         {
             if (acp == null)
+            {
                 return null;
+            }
 
             if (acp.type == CdmAttributeContextType.PassThrough)
+            {
                 return acp.under;
+            }
 
             // this flag makes sure we hold on to any resolved object refs when things get copied
-            ResolveOptions resOptCopy = resOpt.Copy();
-            resOptCopy.SaveResolutionsOnCopy = true;
+            resOpt.SaveResolutionsOnCopy = true;
 
             CdmObjectReference definition = null;
             ResolvedTraitSet rtsApplied = null;
@@ -285,11 +279,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (acp.Regarding != null)
             {
                 // make a portable reference. this MUST be fixed up when the context node lands in the final document
-                definition = (acp.Regarding as CdmObjectBase).CreatePortableReference(resOptCopy);
+                definition = (acp.Regarding as CdmObjectBase).CreatePortableReference(resOpt);
                 // now get the traits applied at this reference (applied only, not the ones that are part of the definition of the object)
                 // and make them the traits for this context
                 if (acp.IncludeTraits)
-                    rtsApplied = (acp.Regarding as CdmObjectBase).FetchResolvedTraits(resOptCopy);
+                {
+                    rtsApplied = (acp.Regarding as CdmObjectBase).FetchResolvedTraits(resOpt);
+                }
             }
 
             CdmAttributeContext underChild = acp.under.Ctx.Corpus.MakeObject<CdmAttributeContext>(CdmObjectType.AttributeContextDef, acp.Name);
@@ -303,17 +299,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 rtsApplied.Set.ForEach(rt =>
                 {
-                    var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
+                    var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOpt, rt);
                     underChild.ExhibitsTraits.Add(traitRef);
                 });
             }
 
             // add to parent
-            underChild.SetParent(resOptCopy, acp.under as CdmAttributeContext);
+            underChild.SetParent(resOpt, acp.under);
 
-            if (resOptCopy.MapOldCtxToNewCtx != null)
+            if (resOpt.MapOldCtxToNewCtx != null)
             {
-                resOptCopy.MapOldCtxToNewCtx[underChild] = underChild; // so we can find every node, not only the replaced ones
+                resOpt.MapOldCtxToNewCtx[underChild] = underChild; // so we can find every node, not only the replaced ones
             }
 
             return underChild;

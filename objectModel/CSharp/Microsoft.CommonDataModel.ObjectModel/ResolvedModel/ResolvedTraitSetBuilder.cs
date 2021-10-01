@@ -9,7 +9,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     internal class ResolvedTraitSetBuilder
     {
         internal ResolvedTraitSet ResolvedTraitSet { get; set; }
-        // public ResolveOptions ResOpt { get; set; }
 
         public void Clear()
         {

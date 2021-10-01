@@ -86,7 +86,6 @@ class CdmCollection(list, Generic[T]):
     def _propagate_in_document(self, cdm_object: 'CdmObject', document: 'CdmDocumentDefinition'):
         """Propagate document through all objects."""
         if self.ctx.corpus._is_currently_resolving is False:
-            self.ctx.corpus._block_declared_path_changes = True
 
             def visit_callback(obj: 'CdmObject', path: str) -> bool:
                 # If object's document is already the same as the one we're trying to set
@@ -97,7 +96,6 @@ class CdmCollection(list, Generic[T]):
                 return False
 
             cdm_object.visit('', visit_callback, None)
-            self.ctx.corpus._block_declared_path_changes = False
 
     def _visit_array(self, path: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         result = False

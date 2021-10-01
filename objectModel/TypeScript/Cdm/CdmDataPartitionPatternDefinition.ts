@@ -153,18 +153,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (this.ctx.corpus.blockDeclaredPathChanges === false) {
-            path = this.declaredPath;
-            if (!path) {
-                let thisName: string = this.getName();
-                if (!thisName) {
-                    thisName = 'UNNAMED';
-                }
-                path = pathFrom + thisName;
-                this.declaredPath = path;
-            }
-        }
+        const path: string = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -179,6 +168,13 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         }
 
         return false;
+    }
+
+    /**
+     * @internal
+     */
+     public fetchDeclaredPath(pathFrom: string): string {
+        return pathFrom + (this.getName() || 'UNNAMED');
     }
 
     /**

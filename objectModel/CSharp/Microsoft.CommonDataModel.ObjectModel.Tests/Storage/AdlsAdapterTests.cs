@@ -350,6 +350,50 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         }
 
         /// <summary>
+        /// Test hostname with leading protocol.
+        /// </summary>
+        [TestMethod]
+        public void TestHostnameWithLeadingProtocol()
+        {
+            var host1 = "https://storageaccount.dfs.core.windows.net";
+            var adlsAdapter1 = new ADLSAdapter(host1, "root-without-slash", string.Empty);
+            var adapterPath = "https://storageaccount.dfs.core.windows.net/root-without-slash/a/1.csv";
+            var corpusPath1 = adlsAdapter1.CreateCorpusPath(adapterPath);
+            Assert.AreEqual("https://storageaccount.dfs.core.windows.net", adlsAdapter1.Hostname);
+            Assert.AreEqual("/a/1.csv", corpusPath1);
+            Assert.AreEqual(adapterPath, adlsAdapter1.CreateAdapterPath(corpusPath1));
+
+            var host2 = "HttPs://storageaccount.dfs.core.windows.net";
+            var adlsAdapter2 = new ADLSAdapter(host2, "root-without-slash", string.Empty);
+            var corpusPath2 = adlsAdapter2.CreateCorpusPath(adapterPath);
+            Assert.AreEqual("HttPs://storageaccount.dfs.core.windows.net", adlsAdapter2.Hostname);
+            Assert.AreEqual("/a/1.csv", corpusPath2);
+            Assert.AreEqual(adapterPath, adlsAdapter2.CreateAdapterPath(corpusPath2));
+
+            try
+            {
+                var host3 = "http://storageaccount.dfs.core.windows.net";
+                var adlsAdapter3 = new ADLSAdapter(host3, "root-without-slash", string.Empty);
+                Assert.Fail("Expected Exception for using a http:// hostname.");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is ArgumentException);
+            }
+
+            try
+            {
+                var host4 = "https://bar:baz::]/foo/";
+                var adlsAdapter4 = new ADLSAdapter(host4, "root-without-slash", string.Empty);
+                Assert.Fail("Expected Exception for using and invalid hostname.");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is ArgumentException);
+            }
+        }
+
+        /// <summary>
         /// Test azure cloud endpoint in config.
         /// </summary>
         [TestMethod]

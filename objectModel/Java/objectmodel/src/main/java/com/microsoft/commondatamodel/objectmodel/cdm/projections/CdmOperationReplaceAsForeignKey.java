@@ -112,15 +112,7 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrTrimEmpty(path))
-            {
-                path = pathFrom + "operationReplaceAsForeignKey";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;
@@ -178,7 +170,7 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
         ResolvedAttribute newResAttrFK,
         String refAttrName) {
         List<ProjectionAttributeState> pasList = ProjectionResolutionCommonUtil.getLeafList(projCtx, refAttrName);
-        String sourceEntity = projCtx.getProjectionDirective().getOriginalSourceEntityAttributeName();
+        String sourceEntity = projCtx.getProjectionDirective().getOriginalSourceAttributeName();
 
         if (sourceEntity == null) {
             Logger.warning(projOutputSet.getCtx(), TAG, "createNewProjectionAttributeStateSet", null,

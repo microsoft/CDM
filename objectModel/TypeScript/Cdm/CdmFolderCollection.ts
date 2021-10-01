@@ -47,4 +47,24 @@ export class CdmFolderCollection extends CdmCollection<CdmFolderDefinition> {
         // and all its sub-folders and contained documents. For now, don't add things to the
         // folder unless it's tied to an adapter root.
     }
+
+    /**
+     * @internal
+     */
+    public getOrCreate(name: string): CdmFolderDefinition {
+        let result: CdmFolderDefinition;
+        for (const folder of this.allItems) {
+            if (name.toLowerCase() == folder.name.toLowerCase()) {
+                // found our folder.
+                result = folder;
+                break;
+            }
+        }
+
+        if (!result) {
+            result = this.push(name);
+        }
+
+        return result;
+    }
 }

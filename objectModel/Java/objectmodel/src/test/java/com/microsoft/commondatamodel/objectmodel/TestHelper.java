@@ -34,7 +34,7 @@ public class TestHelper {
    * The path of the TestDataFolder.
    * Here will be found input files and expected output files used by tests.
    */
-  public static final String TEST_DATA_PATH = "../../../testData";
+  public static final String TEST_DATA_PATH = "../../TestData";
 
   private static final String LOCAL = "local";
   private static final String CDM = "cdm";

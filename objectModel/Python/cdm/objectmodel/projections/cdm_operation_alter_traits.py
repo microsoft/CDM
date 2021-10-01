@@ -83,12 +83,7 @@ class CdmOperationAlterTraits(CdmOperationBase):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if not self.ctx.corpus._block_declared_path_changes:
-            path = self._declared_path
-            if not path:
-                path = path_from + self.get_name()
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -167,25 +162,23 @@ class CdmOperationAlterTraits(CdmOperationBase):
 
     def _resolved_new_traits(self, proj_ctx: 'ProjectionContext', current_PAS: 'ProjectionAttributeState'):
         resolved_trait_set = ResolvedTraitSet(proj_ctx._projection_directive._res_opt)
-        base_attribute_name = proj_ctx._projection_directive._original_source_entity_attribute_name or proj_ctx._projection_directive._owner.get_name() or ''
-        ordinal = str(current_PAS._ordinal) if current_PAS._ordinal else ''
-        current_attribute_name = current_PAS._current_resolved_attribute.target.name if isinstance(current_PAS._current_resolved_attribute.target, CdmAttribute) else '' or ''
+        projection_owner_name = proj_ctx._projection_directive._original_source_attribute_name if proj_ctx._projection_directive._original_source_attribute_name is not None else ''
 
         for trait_ref in self.traits_to_add:
             trait_ref_copy = trait_ref._fetch_resolved_traits(proj_ctx._projection_directive._res_opt).deep_copy()
-            self._replace_wildcard_characters(proj_ctx._projection_directive._res_opt, trait_ref_copy, base_attribute_name, ordinal, current_attribute_name)
+            self._replace_wildcard_characters(proj_ctx._projection_directive._res_opt, trait_ref_copy, projection_owner_name, current_PAS)
             resolved_trait_set = resolved_trait_set.merge_set(trait_ref_copy)
 
         return resolved_trait_set
 
-    def _replace_wildcard_characters(self, res_opt: 'ResolveOptions', resolved_trait_set: ResolvedTraitSet, base_attribute_name: str, ordinal: str,  current_attribute_name: str) -> None:
+    def _replace_wildcard_characters(self, res_opt: 'ResolveOptions', resolved_trait_set: ResolvedTraitSet, projection_owner_name: str, current_PAS: 'ProjectionAttributeState') -> None:
         if self.arguments_contain_wildcards is not None and self.arguments_contain_wildcards is True:
             for resolved_trait in resolved_trait_set.rt_set:
                 parameter_value_set = resolved_trait.parameter_values  # type: ParameterValueSet
                 for i in range(parameter_value_set.length):
                     value = parameter_value_set.fetch_value(i)
                     if isinstance(value, str):
-                        new_val = super()._replace_wildcard_characters(value, base_attribute_name, ordinal, current_attribute_name)
+                        new_val = super()._replace_wildcard_characters(value, projection_owner_name, current_PAS)
                         if new_val != value:
                             parameter_value_set.update_parameter_value(res_opt, parameter_value_set.fetch_parameter_at_index(i).get_name(), new_val)
 

@@ -53,7 +53,7 @@ describe('Cdm/Projection/TestProjectionArray', () => {
         // in non-structured form 
         // Expand 1...3;
         // renameFormat = {m}{o};
-        // alterTraits = { has.expansionInfo.list(expansionName: "{a}", ordinal: "{o}", memberAttribute: "{m}") , "argumentsContainWildcards" : true }
+        // alterTraits = { has.expansionInfo.list(expansionName: "{a}", ordinal: "{o}", memberAttribute: "{mo}") , "argumentsContainWildcards" : true }
         // addArtifactAttribute : "personCount"
         // alterTraits = { indicates.expansionInfo.count(expansionName: "{a}") , apply to "personCount" , "argumentsContainWildcards" : true }
         expect(nonStructuredResolvedEntity.attributes.length)
@@ -106,7 +106,7 @@ describe('Cdm/Projection/TestProjectionArray', () => {
         // in non-structured form 
         // Expand 1...2;
         // renameFormat = Term {o};
-        // alterTraits = { has.expansionInfo.list(expansionName: "{m}", ordinal: "{o}") , "argumentsContainWildcards" : true }
+        // alterTraits = { has.expansionInfo.list(expansionName: "{a}", ordinal: "{o}") , "argumentsContainWildcards" : true }
         // addArtifactAttribute : "number of favorite terms"
         // alterTraits = { indicates.expansionInfo.count(expansionName: "{a}") , apply to "number of favorite terms" , "argumentsContainWildcards" : true }
         expect(nonStructuredResolvedEntity.attributes.length)

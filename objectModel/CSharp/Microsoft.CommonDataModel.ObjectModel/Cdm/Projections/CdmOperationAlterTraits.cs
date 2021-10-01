@@ -115,16 +115,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + this.GetName();
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren?.Invoke(this, path) == true)
             {
@@ -228,14 +219,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         private ResolvedTraitSet ResolvedNewTraits(ProjectionContext projCtx, ProjectionAttributeState currentPAS)
         {
             ResolvedTraitSet resolvedTraitSet = new ResolvedTraitSet(projCtx.ProjectionDirective.ResOpt);
-            string baseAttributeName = projCtx.ProjectionDirective.OriginalSourceEntityAttributeName ?? projCtx.ProjectionDirective.Owner.GetName() ?? "";
-            string ordinal = currentPAS.Ordinal != null ? currentPAS.Ordinal.ToString() : "";
-            string currentAttributeName = (currentPAS.CurrentResolvedAttribute.Target as CdmAttribute)?.Name ?? "";
+            string projectionOwnerName = projCtx.ProjectionDirective.OriginalSourceAttributeName ?? "";
 
             foreach (var traitRef in this.TraitsToAdd)
             {
                 var traitRefCopy = traitRef.FetchResolvedTraits(projCtx.ProjectionDirective.ResOpt).DeepCopy();
-                ReplaceWildcardCharacters(projCtx.ProjectionDirective.ResOpt, traitRefCopy, baseAttributeName, ordinal, currentAttributeName);
+                ReplaceWildcardCharacters(projCtx.ProjectionDirective.ResOpt, traitRefCopy, projectionOwnerName, currentPAS);
                 resolvedTraitSet = resolvedTraitSet.MergeSet(traitRefCopy);
             }
 
@@ -247,10 +236,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         /// <param name="resOpt">The resolve options.</param>
         /// <param name="resolvedTraitSet">The current attribute state set.</param>
-        /// <param name="baseAttributeName">The base attribute name, it may be empty string if it's not available(type attribute).</param>
-        /// <param name="ordinal">The ordinal number, it may be empty string if it's not available.</param>
-        /// <param name="currentAttributeName">The current attribute name, It may be empty string if the source is a ResolvedAttributeSet (attribute group reference).</param>
-        private void ReplaceWildcardCharacters(ResolveOptions resOpt, ResolvedTraitSet resolvedTraitSet, string baseAttributeName, string ordinal, string currentAttributeName)
+        /// <param name="projectionOwnerName">The attribute name of projection owner (only available when the owner is an entity attribute or type attribute).</param>
+        /// <param name="currentPAS">The attribute state.</param>
+        private void ReplaceWildcardCharacters(ResolveOptions resOpt, ResolvedTraitSet resolvedTraitSet, string projectionOwnerName, ProjectionAttributeState currentPAS)
         {
             if (this.ArgumentsContainWildcards.HasValue && this.ArgumentsContainWildcards.Value == true)
             {
@@ -262,7 +250,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         var value = parameterValueSet.FetchValue(i);
                         if (value is string v)
                         {
-                            var newVal = ReplaceWildcardCharacters(v, baseAttributeName, ordinal, currentAttributeName);
+                            var newVal = ReplaceWildcardCharacters(v, projectionOwnerName, currentPAS);
                             if (newVal != value)
                             {
                                 parameterValueSet.SetParameterValue(resOpt, parameterValueSet.FetchParameterAtIndex(i).GetName(), newVal);

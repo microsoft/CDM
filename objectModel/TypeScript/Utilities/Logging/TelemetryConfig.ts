@@ -189,7 +189,7 @@ export class TelemetryConfig {
             const clientConfig = {
                 auth: {
                     clientId: this.clientId,
-                    authority: `${AzureCloudEndpointConvertor.azureCloudEndpointToURL(this.cloudInstance)}/${this.tenantId}`,
+                    authority: `${AzureCloudEndpointConvertor.azureCloudEndpointToURL(this.cloudInstance)}${this.tenantId}`,
                     clientSecret: this.secret
                 }
             };

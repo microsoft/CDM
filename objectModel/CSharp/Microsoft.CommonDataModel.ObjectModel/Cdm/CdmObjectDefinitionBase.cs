@@ -71,6 +71,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
+        /// <summary>
+        /// Given an initial path, returns this object's declared path
+        /// </summary>
+        /// <param name="pathFrom"></param>
+        /// <returns></returns>
+        internal virtual string UpdateDeclaredPath(string pathFrom)
+        {
+            return pathFrom + this.GetName();
+        }
+
         internal bool IsDerivedFromDef(ResolveOptions resOpt, CdmObjectReference baseCdmObjectRef, string name, string seek)
         {
             if (seek == name)

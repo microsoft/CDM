@@ -9,7 +9,8 @@ from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
 from cdm.objectmodel import CdmEntityDefinition, CdmCorpusDefinition, CdmDocumentDefinition
 
 from tests.common import async_test, TestHelper
-   
+
+
 class CorpusTests(unittest.TestCase):
     tests_subpath = os.path.join('Cdm', 'Corpus')
 

@@ -224,7 +224,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 CdmConstantEntityDefinition constantEntity = corpus.MakeObject<CdmConstantEntityDefinition>(CdmObjectType.ConstantEntityDef);
                 constantEntity.EntityShape = corpus.MakeRef<CdmEntityReference>(CdmObjectType.EntityRef, "entitySet", true);
-                string originalSourceEntityAttributeName = projDir.OriginalSourceEntityAttributeName;
+                string originalSourceEntityAttributeName = projDir.OriginalSourceAttributeName;
                 if (originalSourceEntityAttributeName == null)
                 {
                     originalSourceEntityAttributeName = "";

@@ -24,7 +24,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// The path of the TestDataFolder.
         /// Here will be found input files and expected output files used by tests
         /// </summary>
-        public const string TestDataPath = "../../../../../../testData";
+        public const string TestDataPath = "../../../../../TestData";
 
         /// <summary>
         /// The path of the sample schema documents folder.

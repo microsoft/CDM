@@ -135,6 +135,11 @@ class TraitToPropertyMap:
             return self._fetch_trait_reference('is.nullable', only_from_property) is not None
         elif property_name == 'isReadOnly':
             return self._fetch_trait_reference('is.readOnly', only_from_property) is not None
+        elif property_name == 'isResolved':
+            trait = self._fetch_trait_reference('has.entitySchemaAbstractionLevel', only_from_property)
+            if trait is None or trait.arguments is None:
+                return False
+            return trait.arguments.fetch_value('level') == 'resolved'
         elif property_name == 'valueConstrainedToList':
             return self._fetch_trait_reference('is.constrainedList', only_from_property) is not None
         elif property_name == 'maximumValue':

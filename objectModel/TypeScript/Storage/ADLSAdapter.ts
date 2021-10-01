@@ -9,6 +9,7 @@ import { StorageUtils } from '../Utilities/StorageUtils';
 import { NetworkAdapter } from './NetworkAdapter';
 import { configObjectType } from './StorageAdapter';
 import { azureCloudEndpoint, AzureCloudEndpointConvertor } from '../Enums/azureCloudEndpoint';
+import { StringUtils } from '../Utilities/StringUtils';
 
 export class ADLSAdapter extends NetworkAdapter {
     /**
@@ -34,8 +35,11 @@ export class ADLSAdapter extends NetworkAdapter {
     }
 
     public set hostname(val: string) {
+        if (StringUtils.isNullOrWhiteSpace(val)) {
+            throw new URIError('Hostname cannot be null or whitespace.');
+        }
         this._hostname = val;
-        this.formattedHostname = this.formatHostname(this._hostname);
+        this.formattedHostname = this.formatHostname(this.removeProtocolFromHostname(this._hostname));
     }
 
     public get sasToken(): string {
@@ -172,7 +176,7 @@ export class ADLSAdapter extends NetworkAdapter {
         if (this.adapterPaths.has(formattedCorpusPath)) {
             return this.adapterPaths.get(formattedCorpusPath);
         } else {
-            return `https://${this.hostname}${this.getEscapedRoot()}${this.escapePath(formattedCorpusPath)}`;
+            return `https://${this.removeProtocolFromHostname(this.hostname)}${this.getEscapedRoot()}${this.escapePath(formattedCorpusPath)}`;
         }
     }
 
@@ -327,7 +331,7 @@ export class ADLSAdapter extends NetworkAdapter {
 
     public updateConfig(config: string): void {
         if (!config) {
-            throw new Error('ADLS adapter needs a config.');
+            throw new TypeError('ADLS adapter needs a config.');
         }
 
         const configJson: configObjectType = JSON.parse(config);
@@ -335,13 +339,13 @@ export class ADLSAdapter extends NetworkAdapter {
         if (configJson.root) {
             this.root = configJson.root;
         } else {
-            throw new Error('Root has to be set for ADLS adapter.');
+            throw new TypeError('Root has to be set for ADLS adapter.');
         }
 
         if (configJson.hostname) {
             this.hostname = configJson.hostname;
         } else {
-            throw new Error('Hostname has to be set for ADLS adapter.');
+            throw new TypeError('Hostname has to be set for ADLS adapter.');
         }
 
         this.updateNetworkConfig(config);
@@ -365,7 +369,7 @@ export class ADLSAdapter extends NetworkAdapter {
             if (Object.values(azureCloudEndpoint).includes(endpointStr)) {
                 this.endpoint = azureCloudEndpoint[endpointStr as unknown as keyof azureCloudEndpoint];
             } else {
-                throw new Error('Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.');
+                throw new TypeError('Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.');
             }
         }
     }
@@ -584,11 +588,35 @@ export class ADLSAdapter extends NetworkAdapter {
             const clientConfig = {
                 auth: {
                     clientId: this.clientId,
-                    authority: `${AzureCloudEndpointConvertor.azureCloudEndpointToURL(this.endpoint)}/${this.tenant}`,
+                    authority: `${AzureCloudEndpointConvertor.azureCloudEndpointToURL(this.endpoint)}${this.tenant}`,
                     clientSecret: this.secret
                 }
             };
             this.context = new msal.ConfidentialClientApplication(clientConfig);
         }
+    }
+
+    /**
+     * Check if the hostname has a leading protocol. 
+     * if it doesn't have, return the hostname
+     * if the leading protocol is not "https://", throw an error
+     * otherwise, return the hostname with no leading protocol.
+     * @param {string} hostname The hostname.
+     * @return The hostname without the leading protocol "https://" if original hostname has it, otherwise it is same as hostname.
+     */
+    private removeProtocolFromHostname(hostname: string): string {
+        if (hostname.indexOf('://') == -1) {
+            return hostname;
+        }
+
+        try {
+            const url = new URL(hostname);
+            if (url.protocol === 'https:') {
+                return hostname.substring('https://'.length);
+            } 
+        } catch (error) {
+            throw new URIError('Please provide a valid hostname.');
+        }
+        throw new URIError('ADLS Adapter only supports HTTPS, please provide a leading \"https://\" hostname or a non-protocol-relative hostname.');
     }
 }

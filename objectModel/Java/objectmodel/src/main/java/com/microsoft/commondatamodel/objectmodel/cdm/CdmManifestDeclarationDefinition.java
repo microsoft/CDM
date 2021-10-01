@@ -123,14 +123,7 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
       final String pathFrom,
       final VisitCallback preChildren,
       final VisitCallback postChildren) {
-    String path = "";
-    if (!this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-      if (path == null) {
-        path = pathFrom + this.getName();
-        this.setDeclaredPath(path);
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;

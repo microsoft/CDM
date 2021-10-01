@@ -180,8 +180,8 @@ class TestHelper:
     def get_test_folder_path(test_subpath: str, test_name: str, folder_name: str,
                              is_language_specific: Optional[bool] = False):
         test_name = StringUtils.snake_case_to_pascal_case(test_name)
-        test_folder_path = os.path.join('..', '..', 'testData', test_subpath, test_name, folder_name, 'Python') \
-            if is_language_specific else os.path.join('..', '..', 'testData', test_subpath, test_name,
+        test_folder_path = os.path.join('..', 'TestData', test_subpath, test_name, folder_name, 'Python') \
+            if is_language_specific else os.path.join('..', 'TestData', test_subpath, test_name,
                                                       folder_name)
 
         if folder_name == ACTUAL_OUTPUT_FOLDER_NAME and not os.path.isdir(test_folder_path):

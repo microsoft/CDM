@@ -145,14 +145,7 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrEmpty(path)) {
-                path = pathFrom + this.getName();
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;
@@ -243,16 +236,11 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
      */
     private ResolvedTraitSet resolvedNewTraits(ProjectionContext projCtx, ProjectionAttributeState currentPAS) {
         ResolvedTraitSet resolvedTraitSet = new ResolvedTraitSet(projCtx.getProjectionDirective().getResOpt());
-        final String baseAttributeName = projCtx.getProjectionDirective().getOriginalSourceEntityAttributeName() != null
-                ? projCtx.getProjectionDirective().getOriginalSourceEntityAttributeName()
-                : (projCtx.getProjectionDirective().getOwner().getName() != null ? projCtx.getProjectionDirective().getOwner().getName() : "" );
-        final String ordinal = currentPAS.getOrdinal() != null ? currentPAS.getOrdinal().toString() : "";
-        final String currentAttributeName = currentPAS.getCurrentResolvedAttribute().getTarget() instanceof  CdmAttribute
-                ? ((CdmAttribute) currentPAS.getCurrentResolvedAttribute().getTarget()).getName() : "";
+        final String projectionOwnerName = projCtx.getProjectionDirective().getOriginalSourceAttributeName() != null ? projCtx.getProjectionDirective().getOriginalSourceAttributeName() : "";
 
         for (CdmTraitReferenceBase traitRef : this.traitsToAdd) {
             final ResolvedTraitSet traitRefCopy = traitRef.fetchResolvedTraits(projCtx.getProjectionDirective().getResOpt()).deepCopy();
-            this.replaceWildcardCharacters(projCtx.getProjectionDirective().getResOpt(), traitRefCopy, baseAttributeName, ordinal, currentAttributeName);
+            this.replaceWildcardCharacters(projCtx.getProjectionDirective().getResOpt(), traitRefCopy, projectionOwnerName, currentPAS);
             resolvedTraitSet = resolvedTraitSet.mergeSet(traitRefCopy);
         }
 
@@ -264,18 +252,17 @@ public class CdmOperationAlterTraits extends CdmOperationBase {
      *
      * @param resOpt The resolve options.
      * @param resolvedTraitSet The new resolved attribute.
-     * @param baseAttributeName The base attribute name, it may be empty string if it's not available(type attribute).
-     * @param ordinal The ordinal number, it may be empty string if it's not available.
-     * @param currentAttributeName The current attribute name, It may be empty string if the source is a ResolvedAttributeSet.
+     * @param projectionOwnerName The attribute name of projection owner (only available when the owner is an entity attribute or type attribute)
+     * @param currentPAS The attribute state.
      */
-    private void replaceWildcardCharacters(ResolveOptions resOpt, ResolvedTraitSet resolvedTraitSet, String baseAttributeName, String ordinal, String currentAttributeName) {
+    private void replaceWildcardCharacters(ResolveOptions resOpt, ResolvedTraitSet resolvedTraitSet, final String projectionOwnerName, final ProjectionAttributeState currentPAS) {
         if (this.argumentsContainWildcards != null && this.argumentsContainWildcards) {
             for (ResolvedTrait resolvedTrait :resolvedTraitSet.getSet()) {
                 ParameterValueSet parameterValueSet = resolvedTrait.getParameterValues();
                 for (int i = 0; i < parameterValueSet.length(); ++i) {
                     Object value = parameterValueSet.fetchValue(i);
                     if (value instanceof String) {
-                        String newVal = replaceWildcardCharacters((String)value, baseAttributeName, ordinal, currentAttributeName);
+                        String newVal = replaceWildcardCharacters((String)value, projectionOwnerName, currentPAS);
                         if (!value.equals(newVal)){
                             parameterValueSet.setParameterValue(resOpt, parameterValueSet.fetchParameter(i).getName(), newVal);
                         }

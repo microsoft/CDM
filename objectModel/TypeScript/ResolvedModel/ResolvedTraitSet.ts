@@ -50,7 +50,7 @@ export class ResolvedTraitSet {
     constructor(resOpt: resolveOptions) {
         // let bodyCode = () =>
         {
-            this.resOpt = resOpt.copy();
+            this.resOpt = resOpt;
             this.set = [];
             this.lookupByTrait = new Map<CdmTraitDefinition, ResolvedTrait>();
             this.hasElevated = false;

@@ -91,6 +91,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         /// <inheritdoc />
         public virtual CdmDocumentDefinition InDocument { get; set; }
+
         internal virtual void ConstructResolvedTraits(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)
         {
             return;
@@ -117,9 +118,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string cacheTagA = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind);
             ResolvedTraitSetBuilder rtsbAll = null;
             if (this.TraitCache == null)
+            {
                 this.TraitCache = new Dictionary<string, ResolvedTraitSetBuilder>();
+            }
             else if (!string.IsNullOrWhiteSpace(cacheTagA))
+            {
                 this.TraitCache.TryGetValue(cacheTagA, out rtsbAll);
+            }
 
             // store the previous document set, we will need to add it with
             // children found from the constructResolvedTraits call
@@ -155,7 +160,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // get the new cache tag now that we have the list of docs
                     cacheTagA = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind);
                     if (!string.IsNullOrWhiteSpace(cacheTagA))
+                    {
                         this.TraitCache[cacheTagA] = rtsbAll;
+                    }
                 }
             }
             else
@@ -181,11 +188,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ResolveContext ctx = this.Ctx as ResolveContext;
             string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
 
-            dynamic rasbCache = null;
+            ResolvedAttributeSetBuilder rasbCache = null;
             if (cacheTag != null)
             {
-                ctx.Cache.TryGetValue(cacheTag, out rasbCache);
+                ctx.AttributeCache.TryGetValue(cacheTag, out rasbCache);
             }
+
             return rasbCache;
         }
 
@@ -274,7 +282,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                         // save this as the cached version
                         if (!string.IsNullOrWhiteSpace(cacheTag))
-                            ctx.Cache[cacheTag] = rasbCache;
+                        {
+                            ctx.AttributeCache[cacheTag] = rasbCache;
+                        }
                     }
                     // get the 'underCtx' of the attribute set from the acp that is wired into
                     // the target tree
@@ -337,6 +347,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             resOpt.SymbolRefSet = currDocRefSet;
 
             this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
+
             return rasbResult?.ResolvedAttributeSet;
         }
 

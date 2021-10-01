@@ -1,0 +1,251 @@
+{
+  "documentVersion": "1.3.2",
+  "$schema": "CdmManifest.cdm.json",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [],
+  "manifestName": "Supporting Entities",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "Address",
+      "entityPath": "/core/applicationCommon/Address.1.2.1.cdm.json/Address"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "BusinessUnit",
+      "entityPath": "/core/applicationCommon/BusinessUnit.1.2.1.cdm.json/BusinessUnit"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "Currency",
+      "entityPath": "/core/applicationCommon/Currency.1.2.1.cdm.json/Currency"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "SLA",
+      "entityPath": "/core/applicationCommon/SLA.1.2.1.cdm.json/SLA"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "Team",
+      "entityPath": "/core/applicationCommon/Team.1.2.1.cdm.json/Team"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "Territory",
+      "entityPath": "/core/applicationCommon/Territory.1.2.1.cdm.json/Territory"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "CampaignResponse",
+      "entityPath": "/core/applicationCommon/foundationCommon/crmCommon/CampaignResponse.1.3.2.cdm.json/CampaignResponse"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "Case",
+      "entityPath": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "FacilityEquipment",
+      "entityPath": "/core/applicationCommon/foundationCommon/crmCommon/service/FacilityEquipment.1.2.1.cdm.json/FacilityEquipment"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "Service",
+      "entityPath": "/core/applicationCommon/foundationCommon/crmCommon/service/Service.1.2.1.cdm.json/Service"
+    }
+  ],
+  "subManifests": [
+    {
+      "manifestName": "NonProfit",
+      "definition": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfit.1.0.6.manifest.cdm.json"
+    },
+    {
+      "manifestName": "Project Common",
+      "definition": "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/projectCommon.1.3.2.manifest.cdm.json"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "/core/applicationCommon/Address.1.2.1.cdm.json/Address",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.1.2.1.cdm.json/Team",
+      "toEntityAttribute": "teamId",
+      "exhibitsTraits": [
+        "is.CDS.owner"
+      ]
+    },
+    {
+      "fromEntity": "/core/applicationCommon/Address.1.2.1.cdm.json/Address",
+      "fromEntityAttribute": "transactionCurrencyId",
+      "toEntity": "/core/applicationCommon/Currency.1.2.1.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/BusinessUnit.1.2.1.cdm.json/BusinessUnit",
+      "fromEntityAttribute": "parentBusinessUnitId",
+      "toEntity": "/core/applicationCommon/BusinessUnit.1.2.1.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/BusinessUnit.1.2.1.cdm.json/BusinessUnit",
+      "fromEntityAttribute": "transactionCurrencyId",
+      "toEntity": "/core/applicationCommon/Currency.1.2.1.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/SLA.1.2.1.cdm.json/SLA",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.1.2.1.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/Team.1.2.1.cdm.json/Team",
+      "fromEntityAttribute": "businessUnitId",
+      "toEntity": "/core/applicationCommon/BusinessUnit.1.2.1.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/CampaignResponse.1.3.2.cdm.json/CampaignResponse",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.1.2.1.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.1.2.1.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/FacilityEquipment.1.2.1.cdm.json/FacilityEquipment",
+      "fromEntityAttribute": "businessUnitId",
+      "toEntity": "/core/applicationCommon/BusinessUnit.1.2.1.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/SLA.1.2.1.cdm.json/SLA",
+      "fromEntityAttribute": "transactionCurrencyId",
+      "toEntity": "/core/applicationCommon/Currency.1.2.1.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/Team.1.2.1.cdm.json/Team",
+      "fromEntityAttribute": "transactionCurrencyId",
+      "toEntity": "/core/applicationCommon/Currency.1.2.1.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/Territory.1.2.1.cdm.json/Territory",
+      "fromEntityAttribute": "transactionCurrencyId",
+      "toEntity": "/core/applicationCommon/Currency.1.2.1.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/CampaignResponse.1.3.2.cdm.json/CampaignResponse",
+      "fromEntityAttribute": "transactionCurrencyId",
+      "toEntity": "/core/applicationCommon/Currency.1.2.1.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "fromEntityAttribute": "transactionCurrencyId",
+      "toEntity": "/core/applicationCommon/Currency.1.2.1.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/FacilityEquipment.1.2.1.cdm.json/FacilityEquipment",
+      "fromEntityAttribute": "transactionCurrencyId",
+      "toEntity": "/core/applicationCommon/Currency.1.2.1.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/SLA.1.2.1.cdm.json/SLA",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.1.2.1.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/SLA.1.2.1.cdm.json/SLA",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.1.2.1.cdm.json/Team",
+      "toEntityAttribute": "teamId",
+      "exhibitsTraits": [
+        "is.CDS.owner"
+      ]
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/CampaignResponse.1.3.2.cdm.json/CampaignResponse",
+      "fromEntityAttribute": "SLAId",
+      "toEntity": "/core/applicationCommon/SLA.1.2.1.cdm.json/SLA",
+      "toEntityAttribute": "SLAId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/CampaignResponse.1.3.2.cdm.json/CampaignResponse",
+      "fromEntityAttribute": "SLAInvokedId",
+      "toEntity": "/core/applicationCommon/SLA.1.2.1.cdm.json/SLA",
+      "toEntityAttribute": "SLAId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "fromEntityAttribute": "SLAId",
+      "toEntity": "/core/applicationCommon/SLA.1.2.1.cdm.json/SLA",
+      "toEntityAttribute": "SLAId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "fromEntityAttribute": "SLAInvokedId",
+      "toEntity": "/core/applicationCommon/SLA.1.2.1.cdm.json/SLA",
+      "toEntityAttribute": "SLAId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/CampaignResponse.1.3.2.cdm.json/CampaignResponse",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.1.2.1.cdm.json/Team",
+      "toEntityAttribute": "teamId",
+      "exhibitsTraits": [
+        "is.CDS.owner"
+      ]
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/CampaignResponse.1.3.2.cdm.json/CampaignResponse",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.1.2.1.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.1.2.1.cdm.json/Team",
+      "toEntityAttribute": "teamId",
+      "exhibitsTraits": [
+        "is.CDS.owner"
+      ]
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.1.2.1.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "fromEntityAttribute": "existingCase",
+      "toEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "toEntityAttribute": "incidentId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "fromEntityAttribute": "masterId",
+      "toEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "toEntityAttribute": "incidentId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "fromEntityAttribute": "parentCaseId",
+      "toEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Case.1.3.2.cdm.json/Case",
+      "toEntityAttribute": "incidentId"
+    }
+  ]
+}

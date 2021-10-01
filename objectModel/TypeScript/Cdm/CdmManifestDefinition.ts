@@ -33,15 +33,6 @@ import * as timeUtils from '../Utilities/timeUtils';
 import { using } from "using-statement";
 import { enterScope } from '../Utilities/Logging/Logger';
 
-const rel2CacheKey = (rel: CdmE2ERelationship): string => {
-    let nameAndPipe: string = '';
-    if (rel.name) {
-        nameAndPipe = `${rel.name}|`;
-    }
-
-    return `${nameAndPipe}${rel.toEntity}|${rel.toEntityAttribute}|${rel.fromEntity}|${rel.fromEntityAttribute}`;
-};
-
 export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmObjectDefinition, CdmFileStatus {
     private _TAG: string = CdmManifestDefinition.name;
 
@@ -201,6 +192,11 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 resolvedManifestFolder = this.owner as CdmFolderDefinition;
             }
 
+            if (resolvedManifestFolder.documents.item(newManifestName) !== undefined) {
+                Logger.error(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, cdmLogCode.ErrResolveManifestExists, newManifestName, resolvedManifestFolder.atCorpusPath);
+                return undefined;
+            }
+
             Logger.debug(this.ctx, this._TAG, this.createResolvedManifestAsync.name, this.atCorpusPath, `resolving manifest ${this.manifestName}`);
 
             // Using the references present in the resolved entities, get an entity
@@ -322,7 +318,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 const outgoingRels: CdmE2ERelationship[] = this.ctx.corpus.fetchOutgoingRelationships(currEntity);
                 if (outgoingRels) {
                     for (const rel of outgoingRels) {
-                        const cacheKey: string = rel2CacheKey(rel);
+                        const cacheKey: string = rel.createCacheKey();
                         if (!relCache.has(cacheKey) && this.isRelAllowed(rel, option)) {
                             this.relationships.push(this.localizeRelToManifest(rel));
                             relCache.add(cacheKey);
@@ -356,7 +352,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                         }
 
                         // add current incoming relationship
-                        const cacheKey: string = rel2CacheKey(inRel);
+                        const cacheKey: string = inRel.createCacheKey();
                         if (!relCache.has(cacheKey) && this.isRelAllowed(inRel, option)) {
                             this.relationships.push(this.localizeRelToManifest(inRel));
                             relCache.add(cacheKey);
@@ -375,7 +371,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                                     newRel.toEntity = inRel.toEntity;
                                     newRel.toEntityAttribute = inRel.toEntityAttribute;
 
-                                    const baseRelCacheKey: string = rel2CacheKey(newRel);
+                                    const baseRelCacheKey: string = newRel.createCacheKey();
                                     if (!relCache.has(baseRelCacheKey) && this.isRelAllowed(newRel, option)) {
                                         this.relationships.push(this.localizeRelToManifest(newRel));
                                         relCache.add(baseRelCacheKey);
@@ -480,13 +476,12 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
      * Created from saveDirtyLink in order to be able to save docs in parallel.
      * Represents the part of saveDirtyLink that could not be parallelized.
      */
-    public async fetchDocumentDefinition(relativePath: string): Promise<[CdmDocumentDefinition, boolean]> {
+    public async fetchDocumentDefinition(relativePath: string): Promise<CdmDocumentDefinition> {
         // get the document object from the import
-        let ans: [CdmDocumentDefinition, boolean] = [null, false];
         const docPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(relativePath, this);
         if (!docPath) {
             Logger.error(this.ctx, this._TAG, this.fetchDocumentDefinition.name, this.atCorpusPath, cdmLogCode.ErrValdnInvalidCorpusPath, relativePath);
-            return ans;
+            return undefined;
         }
 
         const resOpt = new resolveOptions();
@@ -494,9 +489,9 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         const objAt: CdmObject = await this.ctx.corpus.fetchObjectAsync(relativePath, this);
         if (!objAt) {
             Logger.error(this.ctx, this._TAG, this.fetchDocumentDefinition.name, this.atCorpusPath, cdmLogCode.ErrPersistObjectNotFound, docPath);
-            return ans;
+            return undefined;
         }
-        return [objAt.inDocument, true];
+        return objAt.inDocument;
     }
 
     /**
@@ -557,29 +552,33 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
                 }
             }
         }
-        if (this.subManifests !== undefined) {
-            for (const sub of this.subManifests) {
-                links.add(sub.definition);
-            }
-        }
-        let docs: CdmDocumentDefinition[] = [];
+
+        const docs: CdmDocumentDefinition[] = [];
         for (var link of links) {
-            let doc: [CdmDocumentDefinition, boolean];
-            doc = await this.fetchDocumentDefinition(link);
-            if (doc[1] == false) {
-                Logger.error(this.ctx, this._TAG, this.saveLinkedDocuments.name, this.atCorpusPath, cdmLogCode.ErrPersistObjectNotFound, link);
+            const doc: CdmDocumentDefinition = await this.fetchDocumentDefinition(link);
+            if (!doc) {
                 return false;
             }
-            docs.push(doc[0]);
+            docs.push(doc);
         }
-        await Promise.all(Array.from(docs)
-                              .map(async (doc: CdmDocumentDefinition) => {
-                                  if (doc != undefined && doc != null) {
-                                      if (!await this.saveDocumentIfDirty(doc, options)) {
-                                          return false;
-                                      }
-                                  }
-                              }));
+
+        await Promise.all(docs.map(async (doc: CdmDocumentDefinition) => {
+            if (doc) {
+                if (!await this.saveDocumentIfDirty(doc, options)) {
+                    return false;
+                }
+            }
+        }));
+
+        if (this.subManifests !== undefined) {
+            for (const subDeclaration of this.subManifests) {
+                const subManifest: CdmManifestDefinition  = await this.fetchDocumentDefinition(subDeclaration.definition) as CdmManifestDefinition;
+                if (!subManifest || !await this.saveDocumentIfDirty(subManifest, options)) {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 

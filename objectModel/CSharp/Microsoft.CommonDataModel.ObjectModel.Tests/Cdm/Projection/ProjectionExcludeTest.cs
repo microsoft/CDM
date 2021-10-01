@@ -55,8 +55,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-            excludeAttrsOp.ExcludeAttributes.Add("id");
-            excludeAttrsOp.ExcludeAttributes.Add("date");
+            excludeAttrsOp.ExcludeAttributes = new List<string>() { "id", "date" };
             projection.Operations.Add(excludeAttrsOp);
 
             // Create an entity reference to hold this projection
@@ -97,8 +96,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-            excludeAttrsOp.ExcludeAttributes.Add("name");
-            excludeAttrsOp.ExcludeAttributes.Add("value");
+            excludeAttrsOp.ExcludeAttributes = new List<string>() { "name", "value" };
             projection.Operations.Add(excludeAttrsOp);
 
             // Create an entity reference to hold this projection
@@ -137,8 +135,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-            excludeAttrsOp.ExcludeAttributes.Add("id");
-            excludeAttrsOp.ExcludeAttributes.Add("date");
+            excludeAttrsOp.ExcludeAttributes = new List<string>() { "id", "date" };
             projection.Operations.Add(excludeAttrsOp);
 
             // Create an entity reference to hold this projection
@@ -151,7 +148,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp2 = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-            excludeAttrsOp2.ExcludeAttributes.Add("value");
+            excludeAttrsOp2.ExcludeAttributes = new List<string>() { "value" };
             projection2.Operations.Add(excludeAttrsOp2);
 
             // Create an entity reference to hold this projection
@@ -192,8 +189,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-            excludeAttrsOp.ExcludeAttributes.Add("id");
-            excludeAttrsOp.ExcludeAttributes.Add("date");
+            excludeAttrsOp.ExcludeAttributes = new List<string>() { "id", "date" };
             projection.Operations.Add(excludeAttrsOp);
 
             // Create an entity reference to hold this projection

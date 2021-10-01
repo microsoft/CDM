@@ -12,7 +12,6 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
@@ -111,18 +110,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
-
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.declaredPath;
-
-      if (StringUtils.isNullOrTrimEmpty(path)) {
-        path = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
-        this.declaredPath = path;
-      }
-    }
+    String path = pathFrom;
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;

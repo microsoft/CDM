@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
@@ -75,12 +76,6 @@ public class ManifestResolutionTest {
             final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
             cdmCorpus.getStorage().mount("local", new LocalAdapter("C:\\path"));
             cdmCorpus.getStorage().setDefaultNamespace("local");
-            cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
-                // We should see the following error message be logged. If not, fail.
-                if (!message.contains("Cannot resolve the manifest 'test' because it has not been added to a folder")) {
-                    Assert.fail();
-                }
-            }, CdmStatusLevel.Warning);
 
             CdmManifestDefinition manifest = cdmCorpus.makeObject(CdmObjectType.ManifestDef, "test");
             CdmEntityDefinition entity = cdmCorpus.makeObject(CdmObjectType.EntityDef, "entity");
@@ -90,6 +85,8 @@ public class ManifestResolutionTest {
             // Don't add the document containing the entity to a folder either.
             manifest.getEntities().add(entity);
             manifest.createResolvedManifestAsync("resolved", null).join();
+
+           TestHelper.assertCdmLogCodeEquality(cdmCorpus, CdmLogCode.ErrResolveManifestFailed, true);
        } catch (Exception e) {
             Assert.fail("Exception should not be thrown when resolving a manifest that is not in a folder.");
        }
@@ -118,4 +115,23 @@ public class ManifestResolutionTest {
             e.printStackTrace();
         }
     }
+
+    /**
+     *  Test that correct error is shown when trying to create a resolved manifest with a name that already exists
+     */
+    @Test
+    public void testResolvingManifestWithSameName()
+    {
+        try {
+            final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolvingManifestWithSameName");
+
+            final CdmManifestDefinition manifest = corpus.makeObject(CdmObjectType.ManifestDef, "test");
+            corpus.getStorage().getNamespaceFolders().get("local").getDocuments().add(manifest);
+            final CdmManifestDefinition resManifest = manifest.createResolvedManifestAsync(manifest.getName(), "{n}/{n}").join();
+            Assert.assertNull(resManifest);
+            TestHelper.assertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveManifestExists, true);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+}
 }

@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CdmAttributeContext extends CdmObjectDefinitionBase {
@@ -80,8 +78,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     }
 
     // this flag makes sure we hold on to any resolved object refs when things get copied
-    final ResolveOptions resOptCopy = resOpt.copy();
-    resOptCopy.setSaveResolutionsOnCopy(true);
+    resOpt.setSaveResolutionsOnCopy(true);
 
     CdmObjectReference definition = null;
     ResolvedTraitSet rtsApplied = null;
@@ -90,11 +87,11 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     // included in the link to the definition.
     if (acp.getRegarding() != null) {
       // make a portable reference. this MUST be fixed up when the context node lands in the final document
-      definition = ((CdmObjectBase)acp.getRegarding()).createPortableReference(resOptCopy);
+      definition = ((CdmObjectBase)acp.getRegarding()).createPortableReference(resOpt);
       // now get the traits applied at this reference (applied only, not the ones that are part of the definition of the object)
       // and make them the traits for this context
       if (acp.isIncludeTraits()) {
-        rtsApplied = acp.getRegarding().fetchResolvedTraits(resOptCopy);
+        rtsApplied = acp.getRegarding().fetchResolvedTraits(resOpt);
       }
     }
 
@@ -110,15 +107,15 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     // add traits if there are any
     if (rtsApplied != null && rtsApplied.getSet() != null) {
       rtsApplied.getSet().forEach((ResolvedTrait rt) -> {
-        final CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
+        final CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
         underChild.getExhibitsTraits().add(traitRef);
       });
     }
 
     // add to parent
-    underChild.setParent(resOptCopy, acp.getUnder());
-    if (resOptCopy.getMapOldCtxToNewCtx() != null) {
-      resOptCopy.getMapOldCtxToNewCtx().put(underChild, underChild); // so we can find every node, not only the replaced ones
+    underChild.setParent(resOpt, acp.getUnder());
+    if (resOpt.getMapOldCtxToNewCtx() != null) {
+      resOpt.getMapOldCtxToNewCtx().put(underChild, underChild); // so we can find every node, not only the replaced ones
     }
 
     return underChild;
@@ -246,18 +243,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
 
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
-
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.declaredPath;
-
-      if (StringUtils.isNullOrTrimEmpty(path)) {
-        path = pathFrom + this.getName();
-        this.declaredPath = path;
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;

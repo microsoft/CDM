@@ -4,8 +4,6 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
     internal static class StringUtils
     {
@@ -45,27 +43,34 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         }
 
         /// <summary>
+        /// Capitalizes first letter of the given string.
+        /// </summary>
+        /// <param name="str">The source string to be capitalized.</param>
+        /// <returns>The capitalized string which the first letter is upper-cased.</returns>
+        public static string CapitalizeValue(this string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) 
+                return str;
+            return char.ToUpper(str[0]) + (str.Length > 1 ? str.Slice(1) : "");
+        }
+
+        /// <summary>
         /// Replaces in the pattern in the source with the value.
         /// </summary>
         /// <param name="source">The source string.</param>
         /// <param name="pattern">A pattern in the format {p}. The code will try to find {p} and {P}.</param>
         /// <param name="value">The value to be replaced instead of the pattern.</param>
         /// <returns></returns>
-        public static string Replace(string source, char pattern, string value)
+        public static string Replace(string source, string pattern, string value)
         {
             if (value == null)
             {
                 value = "";
             }
 
-            char lowerCasePattern = char.ToLower(pattern);
-            char upperCasePattern = char.ToUpper(pattern);
-            string upperCaseValue = "";
-            
-            if (!string.IsNullOrEmpty(value))
-            {
-                upperCaseValue = char.ToUpper(value[0]) + (value.Length > 1 ? value.Slice(1) : "");
-            }
+            string lowerCasePattern = pattern.ToLower();
+            string upperCasePattern = pattern.CapitalizeValue();
+            string upperCaseValue = !string.IsNullOrEmpty(value) ? value.CapitalizeValue() : "";
 
             string result = source.Replace($"{{{lowerCasePattern}}}", value);
             return result.Replace($"{{{upperCasePattern}}}", upperCaseValue);

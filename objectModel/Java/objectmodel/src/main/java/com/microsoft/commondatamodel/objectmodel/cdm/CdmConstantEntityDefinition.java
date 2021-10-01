@@ -59,21 +59,7 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
    */
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
-
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      path = this.getDeclaredPath();
-
-      if (StringUtils.isNullOrTrimEmpty(path)) {
-        path = pathFrom + (!StringUtils.isNullOrEmpty(this.getConstantEntityName())
-            ? this.getConstantEntityName()
-            : "(unspecified)");
-        this.setDeclaredPath(path);
-      }
-    }
-
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -85,6 +71,13 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
       }
     }
     return postChildren != null && postChildren.invoke(this, path);
+  }
+
+  @Deprecated
+  public String fetchDeclaredPath(String pathFrom) {
+    return pathFrom + (!StringUtils.isNullOrEmpty(this.getConstantEntityName())
+            ? this.getConstantEntityName()
+            : "(unspecified)");
   }
 
   

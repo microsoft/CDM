@@ -6,6 +6,8 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ParameterCollection;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -16,14 +18,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -50,6 +45,12 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   private String documentVersion;
   private OffsetDateTime _fileSystemModifiedTime;
 
+  /**
+   * A list of all objects contained by this document.
+   * Only using during indexing and cleared after indexing is done.
+   */
+  private List<CdmObjectBase> internalObjects;
+
   public CdmDocumentDefinition() {
   }
 
@@ -65,8 +66,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.importsIndexed = false;
     this.currentlyIndexing = false;
     this.isValid = true;
-
-    this.clearCaches();
 
     this.imports = new CdmImportCollection(this.getCtx(), this);
     this.definitions = new CdmDefinitionCollection(this.getCtx(), this);
@@ -140,7 +139,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    * The maximum json semantic version supported by this ObjectModel version.
    */
   public static String getCurrentJsonSchemaSemanticVersion() {
-    return "1.3.0";
+    return "1.4.0";
   }
 
   @Deprecated
@@ -215,15 +214,23 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.documentVersion = documentVersion;
   }
 
+  /**
+   * Clear all document's internal caches and update the declared path of every object contained by this document.
+   */
   void clearCaches() {
+    // Clean all internal caches and flags
     this.internalDeclarations = new LinkedHashMap<>();
-
-    // reset the list before indexing
+    this.internalObjects = new ArrayList<CdmObjectBase>();
+    this.declarationsIndexed = false;
+    this.importsIndexed = false;
     this.setImportPriorities(null);
 
-    // Remove all of the cached paths and resolved pointers.
-    this.visit("", null, (iObject, path) -> {
-      ((CdmObjectBase) iObject).setDeclaredPath(null);
+    // Collects all the objects contained by this document and updates their DeclaredPath.
+    this.visit("", null, (obj, objPath) -> {
+      CdmObjectBase objectBase = (CdmObjectBase) obj;
+      // Update the DeclaredPath property.
+      ((CdmObjectBase) obj).setDeclaredPath(objPath);
+      this.internalObjects.add(objectBase);
       return false;
     });
   }
@@ -236,8 +243,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    */
   boolean localizeCorpusPaths(CdmFolderDefinition newFolder) {
     final AtomicBoolean allWentWell = new AtomicBoolean(true);
-    boolean wasBlocking = this.getCtx().getCorpus().blockDeclaredPathChanges;
-    this.getCtx().getCorpus().blockDeclaredPathChanges = true;
 
     // shout into the void
     Logger.info(this.getCtx(), TAG, "localizeCorpusPaths", newFolder.getAtCorpusPath(), Logger.format("Localizing corpus paths in document '{0}'.", this.getName()));
@@ -336,8 +341,6 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
       return false;
     }, null);
 
-    this.getCtx().getCorpus().blockDeclaredPathChanges = wasBlocking;
-
     return allWentWell.get();
   }
 
@@ -420,32 +423,37 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    */
   @Deprecated
   public CompletableFuture<Boolean> indexIfNeededAsync(final ResolveOptions resOpt, final boolean finalLoadImports) {
+    if (this.getFolder() == null) {
+      Logger.error(this.getCtx(), TAG, "indexIfNeededAsync", this.getAtCorpusPath(), CdmLogCode.ErrValdnMissingDoc, this.name);
+      return CompletableFuture.completedFuture(false);
+    }
+
+    final CdmCorpusDefinition corpus = this.getFolder().getCorpus();
+    boolean needsIndexing = corpus.documentLibrary.markDocumentForIndexing(this);
+
+    if (!needsIndexing) {
+      return CompletableFuture.completedFuture(true);
+    }
 
     return CompletableFuture.supplyAsync(() -> {
-      if (this.getNeedsIndexing() && !this.currentlyIndexing) {
-        if (this.getFolder() == null) {
-          Logger.error(this.getCtx(), TAG, "indexIfNeededAsync", this.getAtCorpusPath(), CdmLogCode.ErrValdnMissingDoc, this.name);
-          return false;
-        }
-
-        final CdmCorpusDefinition corpus = this.getFolder().getCorpus();
-
-        boolean loadImports = finalLoadImports;
-        // If the imports load strategy is "LazyLoad", loadImports value will be the one sent by the called function.
-        if (resOpt.getImportsLoadStrategy() == ImportsLoadStrategy.DoNotLoad) {
-          loadImports = false;
-        } else if (resOpt.getImportsLoadStrategy() == ImportsLoadStrategy.Load) {
-          loadImports = true;
-        }
-
-        if (loadImports) {
-          corpus.resolveImportsAsync(this, resOpt).join();
-        }
-
-        corpus.getDocumentLibrary().markDocumentForIndexing(this);
-        return corpus.indexDocuments(resOpt, loadImports);
+      boolean loadImports = finalLoadImports;
+      // If the imports load strategy is "LazyLoad", loadImports value will be the one sent by the called function.
+      if (resOpt.getImportsLoadStrategy() == ImportsLoadStrategy.DoNotLoad) {
+        loadImports = false;
+      } else if (resOpt.getImportsLoadStrategy() == ImportsLoadStrategy.Load) {
+        loadImports = true;
       }
-      return true;
+
+      Set<String> docsLoading = new HashSet<String>();
+
+      // make the internal machinery pay attention to this document for this call.
+      docsLoading.add(this.getAtCorpusPath());
+
+      if (loadImports) {
+        corpus.resolveImportsAsync(this, docsLoading, resOpt).join();
+      }
+
+      return corpus.indexDocuments(resOpt, loadImports, this, docsLoading);
     });
   }
 
@@ -530,9 +538,8 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
       // work backward until we find something in this document
       int lastObj = objectPath.lastIndexOf("/(object)");
-      String thisDocPart = objectPath;
       while (lastObj > 0) {
-        thisDocPart = objectPath.substring(0, lastObj);
+        String thisDocPart = thisDocPart = objectPath.substring(0, lastObj);
         if (this.internalDeclarations.containsKey(thisDocPart)) {
           CdmObjectReferenceBase thisDocObjRef = (CdmObjectReferenceBase)this.internalDeclarations.get(thisDocPart);
           CdmObjectDefinitionBase thatDocObjDef = thisDocObjRef.fetchObjectDefinition(resOpt);
@@ -704,6 +711,228 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   @Deprecated
   public void setFileSystemModifiedTime(final OffsetDateTime _fileSystemModifiedTime) {
     this._fileSystemModifiedTime = _fileSystemModifiedTime;
+  }
+
+  /**
+   * Validates all the objects in this document.
+   */
+  void checkIntegrity() {
+    int errorCount = 0;
+
+    for (CdmObjectBase obj : this.internalObjects) {
+      if (!obj.validate()) {
+        errorCount++;
+      } else {
+        obj.setCtx(this.getCtx());
+      }
+
+      Logger.info(this.getCtx(), TAG, "checkObjectIntegrity", null,
+              Logger.format("Checked, folderPath: '{0}', path: '{1}'", this.getFolderPath(), obj.getDeclaredPath()));
+    }
+
+    this.isValid = Objects.equals(errorCount, 0);
+  }
+
+  /**
+   * Indexes all definitions contained by this document.
+   */
+  void declareObjectDefinitions() {
+
+    final String corpusPathRoot = this.getFolderPath() + this.getName();
+    for (CdmObjectBase obj : this.internalObjects) {
+      // I can't think of a better time than now to make sure any recently changed or added things have an in doc
+      obj.setInDocument(this);
+      String objPath = obj.getDeclaredPath();
+
+      if (objPath.contains("(unspecified)")) {
+        continue;
+      }
+
+      boolean skipDuplicates = false;
+      switch (obj.getObjectType()) {
+        case ConstantEntityDef:
+          // if there is a duplicate, don't complain, the path just finds the first one
+          skipDuplicates = true;
+        case AttributeGroupDef:
+        case EntityDef:
+        case ParameterDef:
+        case TraitDef:
+        case PurposeDef:
+        case TraitGroupDef:
+        case AttributeContextDef:
+        case DataTypeDef:
+        case TypeAttributeDef:
+        case EntityAttributeDef:
+        case LocalEntityDeclarationDef:
+        case ReferencedEntityDeclarationDef:
+        case ProjectionDef:
+        case OperationAddCountAttributeDef:
+        case OperationAddSupportingAttributeDef:
+        case OperationAddTypeAttributeDef:
+        case OperationExcludeAttributesDef:
+        case OperationArrayExpansionDef:
+        case OperationCombineAttributesDef:
+        case OperationRenameAttributesDef:
+        case OperationReplaceAsForeignKeyDef:
+        case OperationIncludeAttributesDef:
+        case OperationAddAttributeGroupDef:
+        case OperationAlterTraitsDef:
+        case OperationAddArtifactAttributeDef:{
+          final String corpusPath;
+          if (corpusPathRoot.endsWith("/") || objPath.startsWith("/")) {
+            corpusPath = corpusPathRoot + objPath;
+          } else {
+            corpusPath = corpusPathRoot + "/" + objPath;
+          }
+          if (this.internalDeclarations.containsKey(objPath) && !skipDuplicates) {
+            Logger.error(this.getCtx(), TAG, "declareObjectDefinitions", corpusPath, CdmLogCode.ErrPathIsDuplicate, objPath);
+            continue;
+          } else {
+            this.internalDeclarations.putIfAbsent(objPath, (CdmObjectBase)obj);
+
+            this.getCtx().getCorpus().registerSymbol(objPath, this);
+            Logger.info(this.getCtx(), TAG, "declareObjectDefinitions", corpusPath, Logger.format("Declared: '{0}'", corpusPath));
+          }
+          break;
+        }
+
+        default: {
+          Logger.debug(this.getCtx(), TAG, "declareObjectDefinitions", this.getAtCorpusPath(), Logger.format("ObjectType not recognized: '{0}'", obj.getObjectType().name()));
+          break;
+        }
+      }
+    }
+  }
+
+  /**
+   * Fetches the corresponding object definition for every object reference.
+   * @param resOpt
+   */
+  void resolveObjectDefinitions(final ResolveOptions resOpt) {
+    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    resOpt.setIndexingDoc(this);
+
+    for (CdmObjectBase obj : this.internalObjects) {
+      switch (obj.getObjectType()) {
+        case AttributeRef:
+        case AttributeGroupRef:
+        case AttributeContextRef:
+        case DataTypeRef:
+        case EntityRef:
+        case PurposeRef:
+        case TraitRef: {
+          ctx.setRelativePath(obj.getDeclaredPath());
+          final CdmObjectReferenceBase objectRef = (CdmObjectReferenceBase) obj;
+
+          if (CdmObjectReferenceBase.offsetAttributePromise(objectRef.getNamedReference()) < 0) {
+            final CdmObject resNew = objectRef.fetchResolvedReference(resOpt);
+
+            if (null == resNew) {
+              String message = Logger.format(
+                      "Unable to resolve the reference '{0}' to a known object",
+                      this.getAtCorpusPath(),
+                      this.getFolderPath(),
+                      objectRef.getNamedReference()
+              );
+              String messagePath = obj.getAtCorpusPath();
+              // It's okay if references can't be resolved when shallow validation is enabled.
+              if (resOpt.getShallowValidation()) {
+                Logger.warning(ctx, TAG, "resolveObjectDefinitions", this.getAtCorpusPath(), CdmLogCode.WarnResolveReferenceFailure, objectRef.getNamedReference());
+              } else {
+                Logger.error(ctx, TAG, "resolveObjectDefinitions", this.getAtCorpusPath(), CdmLogCode.ErrResolveReferenceFailure, objectRef.getNamedReference());
+              }
+              // don't check in this file without both of these comments. handy for debug of failed lookups
+              // final CdmObjectDefinition resTest = objectRef.fetchObjectDefinition(resOpt);
+            } else {
+              Logger.info(ctx, TAG, "resolveObjectDefinitions", resNew.getAtCorpusPath(), Logger.format("Resolved folderPath: '{0}', path: '{1}'", this.getFolderPath(), obj.getDeclaredPath()));
+            }
+          }
+
+          break;
+        }
+
+        case ParameterDef: {
+          // When a parameter has a data type that is a cdm object, validate that any default value
+          // is the right kind object.
+          final CdmParameterDefinition parameterDef = (CdmParameterDefinition) obj;
+          parameterDef.constTypeCheck(resOpt, this, null);
+          break;
+        }
+
+        default: {
+          Logger.debug(ctx, TAG, "resolveObjectDefinitions", null, Logger.format("ObjectType not recognized: '{0}'", obj.getObjectType().name()));
+          break;
+        }
+      }
+    }
+
+    resOpt.setIndexingDoc(null);
+  }
+
+  /**
+   * Verifies if the trait argument data type matches what is specified on the trait definition.
+   * @param resOpt
+   */
+  void resolveTraitArguments(
+          final ResolveOptions resOpt) {
+    final ResolveContext ctx = (ResolveContext) this.getCtx();
+
+    for (CdmObjectBase obj : this.internalObjects) {
+      if (obj.getObjectType() == CdmObjectType.TraitRef) {
+        CdmTraitDefinition traitDef = obj.fetchObjectDefinition(resOpt);
+        if (traitDef == null) {
+          continue;
+        }
+
+        CdmTraitReference traitRef = (CdmTraitReference) obj;
+        for (int argumentIndex = 0; argumentIndex < traitRef.getArguments().getCount(); ++argumentIndex) {
+          CdmArgumentDefinition argument = traitRef.getArguments().get(argumentIndex);
+
+          try {
+            ctx.setRelativePath(argument.getDeclaredPath());
+            final ParameterCollection parameterCollection = traitDef.fetchAllParameters(resOpt);
+            final CdmParameterDefinition paramFound = parameterCollection.resolveParameter(argumentIndex, argument.getName());
+            argument.setResolvedParameter(paramFound);
+
+            // If parameter type is entity, then the value should be an entity or ref to one
+            // same is true of 'dataType' data type.
+            Object argumentValue = paramFound.constTypeCheck(resOpt, this, argument.getValue());
+            if (argumentValue != null) {
+              argument.setValue(argumentValue);
+            }
+          } catch (final Exception e) {
+            Logger.error(ctx, TAG, "resolveTraitArguments", this.getAtCorpusPath(), CdmLogCode.ErrTraitResolutionFailure, traitDef.getName());
+          }
+        }
+
+        traitRef.resolvedArguments = true;
+      }
+    }
+  }
+
+  /**
+   * Marks that the document was indexed.
+   * @param importsLoaded
+   */
+  void finishIndexing(final boolean importsLoaded) {
+    Logger.debug(this.getCtx(), TAG, "indexDocuments", this.getAtCorpusPath(), Logger.format("index finish: {0}"));
+
+    boolean wasIndexedPreviously = this.declarationsIndexed;
+
+    this.getCtx().getCorpus().documentLibrary.markDocumentAsIndexed(this);
+    this.setImportsIndexed(this.isImportsIndexed() || importsLoaded);
+    this.declarationsIndexed = true;
+    this.setNeedsIndexing(!importsLoaded);
+    this.internalObjects = null;
+
+    // if the document declarations were indexed previously, do not log again.
+    if (!wasIndexedPreviously && this.isValid) {
+      this.getDefinitions().forEach(def -> {
+        if (def.getObjectType() == CdmObjectType.EntityDef) {
+          Logger.debug(this.getCtx(), TAG, "finishDocumentResolve", def.getAtCorpusPath(), Logger.format("indexed: '{0}'", def.getAtCorpusPath()));
+        }
+      });
+    }
   }
 
   private int prioritizeImports(final LinkedHashSet<CdmDocumentDefinition> processedSet, final ImportPriorities importPriorities,

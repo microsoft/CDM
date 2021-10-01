@@ -134,13 +134,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets the entity primary key.
         /// </summary>
-        public string PrimaryKey
-        {
-            get
-            {
-                return this.TraitToPropertyMap.FetchPropertyValue("primaryKey");
-            }
-        }
+        public string PrimaryKey { get => this.TraitToPropertyMap.FetchPropertyValue("primaryKey"); }
+
+        /// <summary>
+        /// Gets if this entity is resolved or not.
+        /// </summary>
+        internal bool IsResolved { get => this.TraitToPropertyMap.FetchPropertyValue("isResolved"); }
 
         internal dynamic GetProperty(string propertyName)
         {
@@ -148,15 +147,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         internal TraitToPropertyMap TraitToPropertyMap { get; }
-
-        internal CdmObjectReference ExtendsEntityRef
-        {
-            get { return ExtendsEntity; }
-            set
-            {
-                this.ExtendsEntity = value as CdmEntityReference;
-            }
-        }
 
         /// <inheritdoc />
         public override string GetName()
@@ -264,57 +254,50 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             resOpt = resOpt.Copy();
             resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" });
 
-            ResolveContext ctx = this.Ctx as ResolveContext; // what it actually is
-            ResolvedEntityReferenceSet entRefSetCache = ctx.FetchCache(this, resOpt, "entRefSet") as ResolvedEntityReferenceSet;
-            if (entRefSetCache == null)
+            ResolvedEntityReferenceSet entRefSet = new ResolvedEntityReferenceSet(resOpt);
+            if (resolvingEntityReferences == false)
             {
-                entRefSetCache = new ResolvedEntityReferenceSet(resOpt);
-                if (resolvingEntityReferences == false)
+                resolvingEntityReferences = true;
+                // get from dynamic base public class and then 'fix' those to point here instead.
+                CdmObjectReference extRef = this.ExtendsEntity;
+                if (extRef != null)
                 {
-                    resolvingEntityReferences = true;
-                    // get from dynamic base public class and then 'fix' those to point here instead.
-                    CdmObjectReference extRef = this.ExtendsEntityRef;
-                    if (extRef != null)
+                    var extDef = extRef.FetchObjectDefinition<CdmEntityDefinition>(resOpt);
+                    if (extDef != null)
                     {
-                        var extDef = extRef.FetchObjectDefinition<CdmEntityDefinition>(resOpt);
-                        if (extDef != null)
+                        ResolvedEntityReferenceSet inherited = extDef.FetchResolvedEntityReferences(resOpt);
+                        if (inherited != null)
                         {
-                            if (extDef == this)
-                                extDef = extRef.FetchObjectDefinition<CdmEntityDefinition>(resOpt);
-                            ResolvedEntityReferenceSet inherited = extDef.FetchResolvedEntityReferences(resOpt);
-                            if (inherited != null)
+                            foreach (var res in inherited.Set)
                             {
-                                foreach (var res in inherited.Set)
-                                {
-                                    ResolvedEntityReference resolvedEntityReference = res.Copy();
-                                    resolvedEntityReference.Referencing.Entity = this;
-                                    entRefSetCache.Set.Add(resolvedEntityReference);
-                                }
+                                ResolvedEntityReference resolvedEntityReference = res.Copy();
+                                resolvedEntityReference.Referencing.Entity = this;
+                                entRefSet.Set.Add(resolvedEntityReference);
                             }
                         }
                     }
-                    if (this.Attributes != null)
-                    {
-                        for (int i = 0; i < this.Attributes.Count; i++)
-                        {
-                            // if dynamic refs come back from attributes, they don't know who we are, so they don't set the entity
-                            dynamic sub = this.Attributes[i].FetchResolvedEntityReferences(resOpt);
-                            if (sub != null)
-                            {
-                                foreach (var res in sub.Set)
-                                {
-                                    res.Referencing.Entity = this;
-                                }
-                                entRefSetCache.Add(sub);
-                            }
-                        }
-                    }
-                    ctx.UpdateCache(this, resOpt, "entRefSet", entRefSetCache);
-                    this.resolvingEntityReferences = false;
                 }
+                if (this.Attributes != null)
+                {
+                    for (int i = 0; i < this.Attributes.Count; i++)
+                    {
+                        // if dynamic refs come back from attributes, they don't know who we are, so they don't set the entity
+                        dynamic sub = this.Attributes[i].FetchResolvedEntityReferences(resOpt);
+                        if (sub != null)
+                        {
+                            foreach (var res in sub.Set)
+                            {
+                                res.Referencing.Entity = this;
+                            }
+                            entRefSet.Add(sub);
+                        }
+                    }
+                }
+                this.resolvingEntityReferences = false;
             }
+
             this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
-            return entRefSetCache;
+            return entRefSet;
         }
 
         /// <inheritdoc />
@@ -325,7 +308,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            return this.IsDerivedFromDef(resOpt, this.ExtendsEntityRef, this.GetName(), baseDef);
+            return this.IsDerivedFromDef(resOpt, this.ExtendsEntity, this.GetName(), baseDef);
         }
 
         /// <inheritdoc />
@@ -343,16 +326,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + this.EntityName;
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
             //trackVisits(path);
 
             if (preChildren?.Invoke(this, path) == true)
@@ -378,7 +352,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal override void ConstructResolvedTraits(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)
         {
             // base traits then add any elevated from attributes then add things exhibited by the att.
-            CdmObjectReference baseClass = this.ExtendsEntityRef;
+            CdmObjectReference baseClass = this.ExtendsEntity;
             if (baseClass != null)
             {
                 // merge in all from base class
@@ -425,7 +399,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (this.ExtendsEntity != null)
             {
-                CdmObjectReference extRef = this.ExtendsEntityRef;
+                CdmObjectReference extRef = this.ExtendsEntity;
                 CdmAttributeContext extendsRefUnder = null;
                 AttributeContextParameters acpExtEnt = null;
 
@@ -483,7 +457,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         };
                     }
 
-                    rasb.MergeAttributes((this.ExtendsEntityRef as CdmObjectReferenceBase).FetchResolvedAttributes(resOpt, acpExtEnt));
+                    rasb.MergeAttributes(this.ExtendsEntity.FetchResolvedAttributes(resOpt, acpExtEnt));
 
                     if (!resOpt.CheckAttributeCount(rasb.ResolvedAttributeSet.ResolvedAttributeCount))
                     {
@@ -759,7 +733,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                             string attRefPath = path + ra.ResolvedName;
                             // the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
-                            if ((ra.Target as CdmAttribute)?.GetType().GetMethod("GetObjectType") != null)
+                            if (ra.Target is CdmAttribute)
                             {
                                 // it was an attribute, add to the content of the context, also, keep track of the ordering for all of the att paths we make up
                                 // as we go through the resolved attributes, this is the order of atts in the final resolved entity
@@ -1136,7 +1110,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal void IndicateAbstractionLevel(string level, ResolveOptions resOpt)
         {
             // see if entitySchemaAbstractionLevel is a known trait to this entity
-            if (resOpt!= null && 
+            if (resOpt != null && 
                 this.Ctx.Corpus.ResolveSymbolReference(resOpt, this.InDocument, "has.entitySchemaAbstractionLevel", CdmObjectType.TraitDef, retry: false) == null)
             {
                 return;

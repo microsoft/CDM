@@ -57,7 +57,7 @@ def add_list_to_cdm_collection(cdm_collection: CdmCollection, the_list: List) ->
 
 def create_constant(ctx: CdmCorpusContext, obj: CdmJsonType) -> Optional[CdmArgumentValue]:
     """Creates a CDM object from a JSON object"""
-    if not obj:
+    if obj is None:
         return None
 
     if isinstance(obj, str) or not isinstance(obj, JObject):
