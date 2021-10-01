@@ -142,7 +142,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="adapter">The storage adapter where the document can be found.</param>
         /// <param name="forceReload">If true, reload the object from file and replace the current object with it.</param>
         /// <returns>The <see cref="CdmDocumentDefinition"/>.</returns>
-        internal async Task<CdmDocumentDefinition> FetchDocumentFromFolderPathAsync(string objectPath, StorageAdapter adapter, bool forceReload = false, ResolveOptions resOpt = null)
+        internal async Task<CdmDocumentDefinition> FetchDocumentFromFolderPathAsync(string objectPath, bool forceReload = false, ResolveOptions resOpt = null)
         {
             string docName;
             string remainingPath;
@@ -251,27 +251,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     break;
                 }
 
-                // check children folders
-                CdmFolderDefinition result = null;
-                if (this.ChildFolders != null)
-                {
-                    foreach (var folder in childFolder.ChildFolders)
-                    {
-                        if (childFolderName.ToLowerInvariant() == folder.Name.ToLowerInvariant())
-                        {
-                            // found our folder.
-                            result = folder;
-                            break;
-                        }
-                    }
-                }
-
-                if (result == null)
-                {
-                    result = childFolder.ChildFolders.Add(childFolderName);
-                }
-
-                childFolder = result;
+                // get next child folder.
+                childFolder = childFolder.ChildFolders.GetOrCreate(childFolderName);
             }
 
             if (makeFolder)

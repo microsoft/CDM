@@ -91,14 +91,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = pathFrom + 'operationRenameAttributes';
-                this.declaredPath = path;
-            }
-        }
+        const path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -140,8 +133,6 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
         // We use the top-level names because the rename list may contain a previous name our current resolved attributes had
         const topLevelRenameAttributeNames: Map<string, string> = ProjectionResolutionCommonUtil.getTopList(projCtx, renameAttributes);
 
-        const sourceAttributeName: string = projCtx.projectionDirective.originalSourceEntityAttributeName;
-
         // Initialize a projection attribute context tree builder with the created attribute context for the operation
         const attrCtxTreeBuilder: ProjectionAttributeContextTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpRenameAttrs);
 
@@ -154,7 +145,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
                 if ((currentPAS.currentResolvedAttribute.target as CdmAttribute).getObjectType) {
                     // The current attribute should be renamed
 
-                    const newAttributeName: string = this.getNewAttributeName(currentPAS, sourceAttributeName);
+                    const newAttributeName: string = this.getNewAttributeName(projCtx.projectionDirective.originalSourceAttributeName, currentPAS);
 
                     // Create new resolved attribute with the new name, set the new attribute as target
                     const resAttrNew: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, undefined, currentPAS.currentResolvedAttribute, newAttributeName);
@@ -201,18 +192,14 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
 
     /**
      * Renames an attribute with the current renameFormat
+     * @param projectionOwnerName The attribute name of projection owner (only available when the owner is an entity attribute or type attribute).
      * @param attributeState The attribute state
-     * @params sourceAttributeName parent attribute name (if any)
      */
-    getNewAttributeName(attributeState: ProjectionAttributeState, sourceAttributeName: string): string {
-        const currentAttributeName: string = attributeState.currentResolvedAttribute.resolvedName;
-        const ordinal: string = attributeState.ordinal !== undefined ? attributeState.ordinal.toString() : '';
-        const format: string = this.renameFormat;
-
-        if (!format) {
+    getNewAttributeName(projectionOwnerName: string, currentPAS: ProjectionAttributeState): string {
+        if (!this.renameFormat) {
             Logger.error(this.ctx, this.TAG, this.getNewAttributeName.name, null, cdmLogCode.ErrProjRenameFormatIsNotSet);
         }
 
-        return CdmOperationBase.replaceWildcardCharacters(format, sourceAttributeName, ordinal, currentAttributeName)
+        return CdmOperationBase.replaceWildcardCharacters(this.renameFormat, projectionOwnerName, currentPAS)
     }
 }

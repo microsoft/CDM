@@ -209,6 +209,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     resolvedManifestFolder = this.Owner as CdmFolderDefinition;
                 }
 
+                if (resolvedManifestFolder.Documents.Item(newManifestName) != null)
+                {
+                    Logger.Error(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveManifestExists, newManifestName, resolvedManifestFolder.AtCorpusPath);
+                    return null;
+                }
+
                 Logger.Debug(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, $"resolving manifest {sourceManifestPath}");
 
                 // Using the references present in the resolved entities, get an entity
@@ -266,7 +272,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     string newDocumentName = newDocumentFullPath.Substring(newDocumentPathSplit);
 
                     // make sure the new folder exists
-                    var folder = await this.Ctx.Corpus.FetchObjectAsync<CdmFolderDefinition>(newDocumentPath) as CdmFolderDefinition;
+                    var folder = await this.Ctx.Corpus.FetchObjectAsync<CdmFolderDefinition>(newDocumentPath);
                     if (folder == null)
                     {
                         Logger.Error(this.Ctx as ResolveContext, Tag, nameof(CreateResolvedManifestAsync), this.AtCorpusPath, CdmLogCode.ErrResolveFolderNotFound, newDocumentPath);
@@ -339,7 +345,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         {
                             foreach (CdmE2ERelationship rel in outgoingRels)
                             {
-                                string cacheKey = rel2CacheKey(rel);
+                                string cacheKey = rel.CreateCacheKey();
                                 if (!relCache.Contains(cacheKey) && this.IsRelAllowed(rel, option))
                                 {
                                     this.Relationships.Add(this.LocalizeRelToManifest(rel));
@@ -375,7 +381,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 }
 
                                 // add current incoming relationship
-                                string cacheKey = rel2CacheKey(inRel);
+                                string cacheKey = inRel.CreateCacheKey();
                                 if (!relCache.Contains(cacheKey) && this.IsRelAllowed(inRel, option))
                                 {
                                     this.Relationships.Add(this.LocalizeRelToManifest(inRel));
@@ -399,7 +405,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                                 ToEntityAttribute = inRel.ToEntityAttribute
                                             };
 
-                                            string baseRelCacheKey = rel2CacheKey(newRel);
+                                            string baseRelCacheKey = newRel.CreateCacheKey();
                                             if (!relCache.Contains(baseRelCacheKey) && this.IsRelAllowed(newRel, option))
                                             {
                                                 this.Relationships.Add(this.LocalizeRelToManifest(newRel));
@@ -570,14 +576,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         /// <param name="relativePath"></param>
         /// <returns></returns>
-        private async Task<Tuple<CdmDocumentDefinition, bool>> FetchDocumentDefinition(string relativePath)
+        private async Task<CdmDocumentDefinition> FetchDocumentDefinition(string relativePath)
         {
             // get the document object from the import
             string docPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(relativePath, this);
             if (docPath == null)
             {
                 Logger.Error(this.Ctx as ResolveContext, Tag, nameof(FetchDocumentDefinition), this.AtCorpusPath, CdmLogCode.ErrValdnInvalidCorpusPath, relativePath);
-                return Tuple.Create((CdmDocumentDefinition)null, false);
+                return null;
             }
 
             ResolveOptions resOpt = new ResolveOptions
@@ -588,11 +594,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (objAt == null)
             {
                 Logger.Error(this.Ctx as ResolveContext, Tag, nameof(FetchDocumentDefinition), this.AtCorpusPath, CdmLogCode.ErrPersistObjectNotFound, docPath);
-                return Tuple.Create((CdmDocumentDefinition)null, false);
+                return null;
             }
 
-            CdmDocumentDefinition docImp = objAt.InDocument;
-            return Tuple.Create(docImp, true);
+            CdmDocumentDefinition document = objAt.InDocument;
+            return document;
         }
 
         /// <summary>
@@ -664,30 +670,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
             }
-            if (this.SubManifests != null)
-            {
-                this.SubManifests.ToList().ForEach(x => links.Add(x.Definition));
-            }
 
             // Get all Cdm documents sequentially
             List<CdmDocumentDefinition> docs = new List<CdmDocumentDefinition>();
             foreach (var link in links)
             {
-                Tuple<CdmDocumentDefinition, bool> doc = await FetchDocumentDefinition(link);
-                if (doc.Item2 == false)
+                CdmDocumentDefinition document = await FetchDocumentDefinition(link);
+                if (document == null)
                 {
-                    Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrPersistObjectNotFound, link);
                     return false;
                 }
-                else
-                {
-                    docs.Add(doc.Item1);
-                }
+                docs.Add(document);
             }
 
             // Save all dirty Cdm documents in parallel
-            List<Task<bool>> tasks = new List<Task<bool>>(); 
-            docs.ForEach(x => tasks.Add(SaveDocumentIfDirty(x, options)));
+            IEnumerable<Task<bool>> tasks = docs.Select(doc => SaveDocumentIfDirty(doc, options));
             var results = await Task.WhenAll(tasks);
             for (int i = 0; i < results.Length; ++i)
             {
@@ -698,23 +695,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
             }
 
-            return true;
-        }
-
-        /// <summary>
-        ///Standardized way of turning a relationship object into a key for caching
-        /// without using the object itself as a key (could be duplicate relationship objects).
-        /// </summary>
-        /// <param name="rel"></param>
-        /// <returns></returns>
-        internal string rel2CacheKey(CdmE2ERelationship rel)
-        {
-            string nameAndPipe = string.Empty;
-            if (!string.IsNullOrWhiteSpace(rel.Name))
+            if (this.SubManifests != null)
             {
-                nameAndPipe = $"{rel.Name}|";
+                foreach (var subDeclaration in this.SubManifests)
+                {
+                    CdmManifestDefinition subManifest = await FetchDocumentDefinition(subDeclaration.Definition) as CdmManifestDefinition;
+                    if (subManifest == null || !await SaveDocumentIfDirty(subManifest, options))
+                    {
+                        return false;
+                    }
+                }
             }
-            return $"{nameAndPipe}{rel.ToEntity}|{rel.ToEntityAttribute}|{rel.FromEntity}|{rel.FromEntityAttribute}";
+
+            return true;
         }
 
         internal CdmE2ERelationship LocalizeRelToManifest(CdmE2ERelationship rel)

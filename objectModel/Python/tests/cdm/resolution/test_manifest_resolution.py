@@ -5,7 +5,7 @@ import os
 import unittest
 from typing import cast
 
-from cdm.enums import CdmStatusLevel, CdmObjectType
+from cdm.enums import CdmStatusLevel, CdmLogCode, CdmObjectType
 from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition
 from cdm.persistence import PersistenceLayer
 from cdm.storage import LocalAdapter
@@ -51,13 +51,6 @@ class ManifestResolution(unittest.TestCase):
             corpus.storage.mount('local', LocalAdapter('C:\\path'))
             corpus.storage.default_namespace = 'local'
 
-            def callback(level, message):
-                # We should see the following error message be logged. If not, fail.
-                if 'Cannot resolve the manifest \'test\' because it has not been added to a folder' not in message:
-                    self.fail()
-
-            corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
-
             manifest = corpus.make_object(CdmObjectType.MANIFEST_DEF, 'test')
             entity = corpus.make_object(CdmObjectType.ENTITY_DEF, 'entity')
             document = corpus.make_object(CdmObjectType.DOCUMENT_DEF, 'entity{}'.format(PersistenceLayer.CDM_EXTENSION))
@@ -65,8 +58,9 @@ class ManifestResolution(unittest.TestCase):
 
             # Don't add the document containing the entity to a folder either.
             manifest.entities.append(entity)
-
             await manifest.create_resolved_manifest_async('resolved', None)
+
+            TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_RESOLVE_MANIFEST_FAILED, True, self)
         except Exception:
             self.fail('Exception should not be thrown when resolving a manifest that is not in a folder.')
 
@@ -87,3 +81,17 @@ class ManifestResolution(unittest.TestCase):
         self.assertTrue(not corpus.storage._namespace_folders['local'].documents[0]._is_dirty
                         and not corpus.storage._namespace_folders['local'].documents[1]._is_dirty,
                         'Referenced logical document should not become dirty when manifest is resolved')
+
+    @async_test
+    async def test_resolving_manifest_with_same_name(self):
+        """
+        Test that correct error is shown when trying to create a resolved manifest with a name that already exists
+        """
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_resolving_manifest_with_same_name')
+
+        manifest = corpus.make_object(CdmObjectType.MANIFEST_DEF, 'test')  # type: CdmManifestDefinition
+        corpus.storage._namespace_folders['local'].documents.append(manifest)
+        res_manifest = await manifest.create_resolved_manifest_async(manifest.name, '{n}/{n}.cdm.json')
+
+        self.assertIsNone(res_manifest)
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_RESOLVE_MANIFEST_EXISTS, True, self)

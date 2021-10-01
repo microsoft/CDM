@@ -59,7 +59,7 @@ export class ParameterValue {
                 return oldValue;
             }
 
-            if (typeof oldValue === 'string' || (typeof oldValue === 'object' && !('getObjectType' in oldValue))) {
+            if (typeof oldValue === 'string' || typeof oldValue === 'number' || (typeof oldValue === 'object' && !('getObjectType' in oldValue))) {
                 return newValue;
             }
 
@@ -157,8 +157,8 @@ export class ParameterValue {
     public fetchValueString(resOpt: resolveOptions): string {
         // const bodyCode = () =>
         {
-            if (typeof this.value === 'string') {
-                return this.value;
+            if (typeof this.value === 'string' || typeof this.value === 'number' ) {
+                return this.value.toString();
             } else if (typeof this.value === 'object' && !('getObjectType' in this.value)) {
                 return this.serializeFieldsInAlphabeticalOrder(this.value);
             }

@@ -142,6 +142,9 @@ public class TraitToPropertyMap {
         return this.fetchTraitReference(CdmTraitName.IS_NULLABLE.toString(), onlyFromProperty) != null;
       case IS_READ_ONLY:
         return this.fetchTraitReference(CdmTraitName.IS_READ_ONLY.toString(), onlyFromProperty) != null;
+      case IS_RESOLVED:
+        CdmTraitReference trait = this.fetchTraitReference(CdmTraitName.IS_RESOLVED.toString(), onlyFromProperty);
+        return trait != null && trait.getArguments() != null && "resolved".equals(trait.getArguments().fetchValue("level"));
       case VALUE_CONSTRAINED_TO_LIST:
         return this.fetchTraitReference(CdmTraitName.VALUE_CONSTRAINED_TO_LIST.toString(), onlyFromProperty) != null;
       case MAXIMUM_VALUE:

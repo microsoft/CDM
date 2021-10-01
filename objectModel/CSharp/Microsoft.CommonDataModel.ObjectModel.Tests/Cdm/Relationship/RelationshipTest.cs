@@ -296,6 +296,82 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             VerifyRelationships(manifest, expectedRels);
         }
 
+        /// <summary>
+        ///  Test that ensures relationships are updated correctly after entities are changed
+        /// </summary>
+        [TestMethod]
+        public async Task TestUpdateRelationships()
+        {
+            var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestUpdateRelationships", "expectedRels.json")).ToObject<List<E2ERelationship>>();
+            string tempFromFilePath = "fromEntTemp.cdm.json";
+            string tempFromEntityPath = "local:/fromEntTemp.cdm.json/fromEnt";
+            string tempToEntityPath = "local:/toEnt.cdm.json/toEnt";
+
+            // Initialize corpus and entity files
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestUpdateRelationships");
+            CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
+            CdmManifestDefinition manifestNoToEnt = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/mainNoToEnt.manifest.cdm.json");
+            CdmEntityDefinition fromEnt = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/fromEnt.cdm.json/fromEnt");
+            await fromEnt.InDocument.SaveAsAsync(tempFromFilePath);
+
+            async Task reloadFromEntity()
+            {
+                await fromEnt.InDocument.SaveAsAsync(tempFromFilePath);
+                // fetch again to reset the cache
+                await corpus.FetchObjectAsync<CdmEntityDefinition>(tempFromEntityPath, null, false, true);
+            }
+
+            try
+            {
+                // 1. test when entity attribute is removed
+                await corpus.CalculateEntityGraphAsync(manifest);
+                await manifest.PopulateManifestRelationshipsAsync();
+
+                // check that the relationship has been created correctly
+                VerifyRelationships(manifest, expectedRels);
+
+                // now remove the entity attribute, which removes the relationship
+                CdmAttributeItem removedAttribute = fromEnt.Attributes[0];
+                fromEnt.Attributes.RemoveAt(0);
+                await reloadFromEntity();
+
+                await corpus.CalculateEntityGraphAsync(manifest);
+                await manifest.PopulateManifestRelationshipsAsync();
+
+                // check that the relationship has been removed
+                VerifyRelationships(manifest, new List<E2ERelationship>());
+
+                // 2. test when the to entity is removed
+                // restore the entity to the original state
+                fromEnt.Attributes.Add(removedAttribute);
+                await reloadFromEntity();
+
+                await corpus.CalculateEntityGraphAsync(manifest);
+                await manifest.PopulateManifestRelationshipsAsync();
+
+                // check that the relationship has been created correctly
+                VerifyRelationships(manifest, expectedRels);
+
+                // remove the to entity
+                fromEnt.Attributes.RemoveAt(0);
+                await reloadFromEntity();
+                // fetch again to reset the cache
+                await corpus.FetchObjectAsync<CdmEntityDefinition>(tempToEntityPath, null, false, true);
+
+                await corpus.CalculateEntityGraphAsync(manifestNoToEnt);
+                await manifestNoToEnt.PopulateManifestRelationshipsAsync();
+
+                // check that the relationship has been removed
+                VerifyRelationships(manifestNoToEnt, new List<E2ERelationship>());
+            }
+            finally
+            {
+                // clean up created files created
+                string fromPath = corpus.Storage.CorpusPathToAdapterPath($"local:/{tempFromFilePath}");
+                File.Delete(fromPath);
+            }
+        }
+
         private static void VerifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships)
         {
             Assert.AreEqual(manifest.Relationships.Count, expectedRelationships.Count);
@@ -307,8 +383,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 && x.FromEntityAttribute == expectedRel.FromEntityAttribute
                 && x.ToEntity == expectedRel.ToEntity
                 && x.ToEntityAttribute == expectedRel.ToEntityAttribute
-                && ((string.IsNullOrWhiteSpace(x.Name) && string.IsNullOrWhiteSpace(expectedRel.Name))
-                || x.Name == expectedRel.Name)
                 ).ToList();
                 Assert.AreEqual(1, found.Count);
             }

@@ -19,7 +19,7 @@ export const testHelper = {
      * The path of the TestDataFolder.
      * Here will be found input files and expected output files used by tests
      */
-    testDataPath: '../../testData',
+    testDataPath: '../TestData',
     /**
      * The path of the CDM Schema Documents Folder.
      */

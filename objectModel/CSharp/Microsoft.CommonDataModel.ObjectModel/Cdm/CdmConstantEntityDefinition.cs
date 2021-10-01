@@ -149,16 +149,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + (!string.IsNullOrEmpty(this.ConstantEntityName) ? this.ConstantEntityName : "(unspecified)");
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
             //trackVisits(path);
 
             if (preChildren != null && preChildren.Invoke(this, path))
@@ -172,6 +163,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;
+        }
+
+        /// <inheritdoc />
+        internal override string UpdateDeclaredPath(string pathFrom)
+        {
+            return pathFrom + (!string.IsNullOrEmpty(this.ConstantEntityName) ? this.ConstantEntityName : "(unspecified)");
         }
 
         internal override void ConstructResolvedTraits(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)

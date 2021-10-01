@@ -122,18 +122,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal ParameterCollection FetchAllParameters(ResolveOptions resOpt)
         {
             if (this.AllParameters != null)
+            {
                 return this.AllParameters;
+            }
 
             // get parameters from base if there is one
             ParameterCollection prior = null;
             if (this.ExtendsTrait != null)
+            {
                 prior = this.ExtendsTrait.FetchObjectDefinition<CdmTraitDefinition>(resOpt).FetchAllParameters(resOpt);
+            }
             this.AllParameters = new ParameterCollection(prior);
             if (this.Parameters != null)
             {
-                foreach (CdmParameterDefinition element in this.Parameters)
+                foreach (CdmParameterDefinition parameter in this.Parameters)
                 {
-                    this.AllParameters.Add(element as CdmParameterDefinition);
+                    this.AllParameters.Add(parameter);
                 }
             }
             return this.AllParameters;
@@ -173,16 +177,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + this.TraitName;
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
@@ -211,9 +206,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ResolveContext ctx = this.Ctx as ResolveContext;
             // this may happen 0, 1 or 2 times. so make it fast
             CdmTraitDefinition baseTrait = null;
-            ResolvedTraitSet baseRts = null;
+            ResolvedTraitSet baseRts;
             List<dynamic> baseValues = null;
-            System.Action GetBaseInfo = () =>
+            Action GetBaseInfo = () =>
             {
                 if (this.ExtendsTrait != null)
                 {
@@ -225,7 +220,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         {
                             ParameterValueSet basePv = baseRts.Get(baseTrait)?.ParameterValues;
                             if (basePv != null)
+                            {
                                 baseValues = basePv.Values;
+                            }
                         }
                     }
                 }
@@ -248,13 +245,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 cacheTagExtra = this.ExtendsTrait.Id.ToString();
 
             string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
-            dynamic rtsResultDynamic = null;
+            ResolvedTraitSet rtsResult = null;
             if (cacheTag != null)
-                ctx.Cache.TryGetValue(cacheTag, out rtsResultDynamic);
-            ResolvedTraitSet rtsResult = rtsResultDynamic as ResolvedTraitSet;
+            {
+                ctx.TraitCache.TryGetValue(cacheTag, out rtsResult);
+            }
 
             // store the previous reference symbol set, we will need to add it with
-            // children found from the constructResolvedTraits call 
+            // children found from the constructResolvedTraits call
             SymbolSet currSymbolRefSet = resOpt.SymbolRefSet;
             if (currSymbolRefSet == null)
                 currSymbolRefSet = new SymbolSet();
@@ -279,27 +277,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
                 this.HasSetFlags = true;
-                ParameterCollection pc = this.FetchAllParameters(resOpt);
-                List<dynamic> av = new List<dynamic>();
+                ParameterCollection parameterCollection = this.FetchAllParameters(resOpt);
+                List<dynamic> argumentValues = new List<dynamic>();
                 List<bool> wasSet = new List<bool>();
-                this.ThisIsKnownToHaveParameters = pc.Sequence.Count > 0;
-                for (int i = 0; i < pc.Sequence.Count; i++)
+                this.ThisIsKnownToHaveParameters = parameterCollection.Sequence.Count > 0;
+                for (int i = 0; i < parameterCollection.Sequence.Count; i++)
                 {
                     // either use the default value or (higher precidence) the value taken from the base reference
-                    dynamic value = (pc.Sequence[i] as CdmParameterDefinition).DefaultValue;
-                    dynamic baseValue = null;
+                    dynamic value = parameterCollection.Sequence[i].DefaultValue;
                     if (baseValues != null && i < baseValues.Count)
                     {
-                        baseValue = baseValues[i];
+                        dynamic baseValue = baseValues[i];
                         if (baseValue != null)
+                        {
                             value = baseValue;
+                        }
                     }
-                    av.Add(value);
+                    argumentValues.Add(value);
                     wasSet.Add(false);
                 }
 
                 // save it
-                ResolvedTrait resTrait = new ResolvedTrait(this, pc, av, wasSet);
+                ResolvedTrait resTrait = new ResolvedTrait(this, parameterCollection, argumentValues, wasSet);
                 rtsResult = new ResolvedTraitSet(resOpt);
                 rtsResult.Merge(resTrait, false);
 
@@ -308,14 +307,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // get the new cache tag now that we have the list of docs
                 cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
                 if (!string.IsNullOrWhiteSpace(cacheTag))
-                    ctx.Cache[cacheTag] = rtsResult;
+                {
+                    ctx.TraitCache[cacheTag] = rtsResult;
+                }
             }
             else
             {
                 // cache found
                 // get the SymbolSet for this cached object
                 string key = CdmCorpusDefinition.CreateCacheKeyFromObject(this, kind);
-                ((CdmCorpusDefinition)ctx.Corpus).DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempSymbolRefSet);
+                ctx.Corpus.DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempSymbolRefSet);
                 resOpt.SymbolRefSet = tempSymbolRefSet;
             }
             // merge child document set with current

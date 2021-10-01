@@ -351,13 +351,13 @@ class ProjectionRenameTest(unittest.TestCase):
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])  # type: CdmEntityDefinition
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
-        # Rename all attributes attributes with format {A}.{o}.{M}, then rename 'age' with format '{a}-{o}-{m}'
+        # Rename all attributes attributes with format {A}.{o}.{M}, then rename 'age' with format '{a}-{o}-{m}', finally rename 'email' with format '{a}-{o}-{mo}'
         self.assertEqual(5, len(resolved_entity.attributes))
         self.assertEqual('PersonInfo..Name', resolved_entity.attributes[0].name)
         self.assertEqual('PersonInfo--PersonInfo..Age', resolved_entity.attributes[1].name)
         self.assertEqual('PersonInfo..Address', resolved_entity.attributes[2].name)
         self.assertEqual('PersonInfo..PhoneNumber', resolved_entity.attributes[3].name)
-        self.assertEqual('PersonInfo..Email', resolved_entity.attributes[4].name)
+        self.assertEqual('PersonInfo--email', resolved_entity.attributes[4].name)
 
     @async_test
     async def test_multiple_rename(self):
@@ -777,9 +777,11 @@ class ProjectionRenameTest(unittest.TestCase):
 
         # Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         # Rename with format "n{a}e{o}w{M}" attributes ["address"]
-        self.assertEqual(5, len(resolved_entity.attributes))
+        # Add new attribute realNewAddress with rename format "n{a}e{o}w{M}"
+        self.assertEqual(6, len(resolved_entity.attributes))
         self.assertEqual('name', resolved_entity.attributes[0].name)
         self.assertEqual('age', resolved_entity.attributes[1].name)
-        self.assertEqual('newAddress', resolved_entity.attributes[2].name)
-        self.assertEqual('phoneNumber', resolved_entity.attributes[3].name)
-        self.assertEqual('email', resolved_entity.attributes[4].name)
+        self.assertEqual('naddressewAddress', resolved_entity.attributes[2].name)
+        self.assertEqual('naddressewRealNewAddress', resolved_entity.attributes[3].name)
+        self.assertEqual('phoneNumber', resolved_entity.attributes[4].name)
+        self.assertEqual('email', resolved_entity.attributes[5].name)

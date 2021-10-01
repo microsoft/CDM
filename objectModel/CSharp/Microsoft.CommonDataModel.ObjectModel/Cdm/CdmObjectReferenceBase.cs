@@ -313,47 +313,42 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
+            string path;
+
+            if (!string.IsNullOrEmpty(this.NamedReference))
             {
-                path = this.DeclaredPath;
-                if (!string.IsNullOrEmpty(this.NamedReference))
-                    path = pathFrom + this.NamedReference;
+                path = pathFrom + this.NamedReference;
+            }
+            else
+            {
+                // when an object is defined inline inside a reference, we need a path to the reference
+                // AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
+                // defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
+                // gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
+                // entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
+                // object at the same level, like anywhere there is a collection of references or the collection of attributes.
+                // so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
+                // extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
+                // the inline defined object.
+                // ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
+                // the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
+                // ANY reference, not just inline ones
+                if (this.ExplicitReference != null)
+                {
+                    // ref path is name of defined object
+                    path = (this.ExplicitReference as CdmObjectDefinitionBase).UpdateDeclaredPath(pathFrom);
+                }
                 else
                 {
-                    // when an object is defined inline inside a reference, we need a path to the reference
-                    // AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
-                    // defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
-                    // gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
-                    // entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
-                    // object at the same level, like anywhere there is a collection of references or the collection of attributes.
-                    // so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
-                    // extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
-                    // the inline defined object.
-                    // ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
-                    // the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
-                    // ANY reference, not just inline ones
-                    if (this.ExplicitReference != null)
-                    {
-                        // ref path is name of defined object
-                        path = $"{pathFrom}{this.ExplicitReference.GetName()}";
-                        // inline object path is a request for the defintion. setting the declaredPath
-                        // keeps the visit on the explcitReference from using the defined object name
-                        // as the path to that object
-                        (this.ExplicitReference as CdmObjectDefinitionBase).DeclaredPath = path;
-                    }
-                    else
-                    {
-                        path = pathFrom;
-                    }
+                    path = pathFrom;
                 }
-                this.DeclaredPath = $"{path}/(ref)";
             }
-            string refPath = this.DeclaredPath;
+
+            string refPath = $"{path}/(ref)";
 
             if (preChildren != null && preChildren.Invoke(this, refPath))
                 return false;
-            if (this.ExplicitReference != null && string.IsNullOrEmpty(this.NamedReference) && this.ExplicitReference.Visit(path, preChildren, postChildren))
+            if (this.ExplicitReference != null && string.IsNullOrEmpty(this.NamedReference) && this.ExplicitReference.Visit(pathFrom, preChildren, postChildren))
                 return true;
             if (this.VisitRef(path, preChildren, postChildren))
                 return true;
@@ -403,83 +398,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return rasb;
         }
 
-        internal override ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)
-        {
-            bool wasPreviouslyResolving = this.Ctx.Corpus.isCurrentlyResolving;
-            this.Ctx.Corpus.isCurrentlyResolving = true;
-            var ret = this._fetchResolvedTraits(resOpt);
-            this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
-            return ret;
-        }
-
-        internal ResolvedTraitSet _fetchResolvedTraits(ResolveOptions resOpt = null)
-        {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
-            }
-
-            if (this.NamedReference != null && this.AppliedTraits == null)
-            {
-                const string kind = "rts";
-                ResolveContext ctx = this.Ctx as ResolveContext;
-                var objDef = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
-                string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", true, objDef != null ? objDef.AtCorpusPath : null);
-                dynamic rtsResultDynamic = null;
-                if (cacheTag != null)
-                    ctx.Cache.TryGetValue(cacheTag, out rtsResultDynamic);
-                ResolvedTraitSet rtsResult = rtsResultDynamic as ResolvedTraitSet;
-
-                // store the previous document set, we will need to add it with
-                // children found from the constructResolvedTraits call
-                SymbolSet currSymRefSet = resOpt.SymbolRefSet;
-                if (currSymRefSet == null)
-                    currSymRefSet = new SymbolSet();
-                resOpt.SymbolRefSet = new SymbolSet();
-
-                if (rtsResult == null)
-                {
-                    if (objDef != null)
-                    {
-                        rtsResult = (objDef as CdmObjectDefinitionBase).FetchResolvedTraits(resOpt);
-                        if (rtsResult != null)
-                            rtsResult = rtsResult.DeepCopy();
-
-                        // register set of possible docs
-                        ctx.Corpus.RegisterDefinitionReferenceSymbols(objDef, kind, resOpt.SymbolRefSet);
-
-                        // get the new cache tag now that we have the list of docs
-                        cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", true, objDef.AtCorpusPath);
-                        if (!string.IsNullOrWhiteSpace(cacheTag))
-                            ctx.Cache[cacheTag] = rtsResult;
-                    }
-                }
-                else
-                {
-                    // cache was found
-                    // get the SymbolSet for this cached object
-                    string key = CdmCorpusDefinition.CreateCacheKeyFromObject(this, kind);
-                    ctx.Corpus.DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
-                    resOpt.SymbolRefSet = tempDocRefSet;
-                }
-
-                // merge child document set with current
-                currSymRefSet.Merge(resOpt.SymbolRefSet);
-                resOpt.SymbolRefSet = currSymRefSet;
-
-                return rtsResult;
-            }
-            else
-                return base.FetchResolvedTraits(resOpt);
-        }
-
         internal override void ConstructResolvedTraits(ResolvedTraitSetBuilder rtsb, ResolveOptions resOpt)
         {
-            CdmObjectDefinition objDef = this.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
+            CdmObjectDefinitionBase objDef = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
 
             if (objDef != null)
             {
-                ResolvedTraitSet rtsInh = (objDef as CdmObjectDefinitionBase).FetchResolvedTraits(resOpt);
+                ResolvedTraitSet rtsInh = objDef.FetchResolvedTraits(resOpt);
                 if (rtsInh != null)
                 {
                     rtsInh = rtsInh.DeepCopy();
@@ -493,9 +418,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (this.AppliedTraits != null)
             {
-                foreach (CdmTraitReference at in this.AppliedTraits)
+                foreach (CdmTraitReference trait in this.AppliedTraits)
                 {
-                    rtsb.MergeTraits(at.FetchResolvedTraits(resOpt));
+                    rtsb.MergeTraits(trait.FetchResolvedTraits(resOpt));
                 }
             }
         }

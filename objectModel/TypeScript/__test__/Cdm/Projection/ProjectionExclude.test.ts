@@ -59,8 +59,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
-        excludeAttrsOp.excludeAttributes.push('id');
-        excludeAttrsOp.excludeAttributes.push('date');
+        excludeAttrsOp.excludeAttributes = ['id', 'date'];
         projection.operations.push(excludeAttrsOp);
 
         // Create an entity reference to hold this projection
@@ -102,8 +101,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
-        excludeAttrsOp.excludeAttributes.push('name');
-        excludeAttrsOp.excludeAttributes.push('value');
+        excludeAttrsOp.excludeAttributes = ['name', 'value'];
         projection.operations.push(excludeAttrsOp);
 
         // Create an entity reference to hold this projection
@@ -143,8 +141,8 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
-        excludeAttrsOp.excludeAttributes.push('id');
-        excludeAttrsOp.excludeAttributes.push('date');
+        excludeAttrsOp.excludeAttributes = ['id', 'date'];
+
         projection.operations.push(excludeAttrsOp);
 
         // Create an entity reference to hold this projection
@@ -157,7 +155,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp2: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
-        excludeAttrsOp2.excludeAttributes.push('value');
+        excludeAttrsOp2.excludeAttributes = ['value'];
         projection2.operations.push(excludeAttrsOp2);
 
         // Create an entity reference to hold this projection
@@ -198,8 +196,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
-        excludeAttrsOp.excludeAttributes.push('id');
-        excludeAttrsOp.excludeAttributes.push('date');
+        excludeAttrsOp.excludeAttributes = ['id', 'date'];
         projection.operations.push(excludeAttrsOp);
 
         // Create an entity reference to hold this projection

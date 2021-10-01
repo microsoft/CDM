@@ -85,12 +85,7 @@ class CdmE2ERelationship(CdmObjectDefinition):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            if not self._declared_path:
-                self._declared_path = '{}{}'.format(path_from, self.get_name())
-
-            path = self._declared_path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -114,4 +109,12 @@ class CdmE2ERelationship(CdmObjectDefinition):
         return self.last_file_modified_old_time
 
     def reset_last_file_modified_old_time(self) -> None:
-        self.last_file_modified_old_time = None;
+        self.last_file_modified_old_time = None
+
+    def create_cache_key(self) -> str:
+        """"standardized way of turning a relationship object into a key for caching
+        without using the object itself as a key (could be duplicate relationship objects)"""
+        name_and_pipe = ''
+        if self.name:
+            name_and_pipe = '{}|'.format(self.name)
+        return '{}{}|{}|{}|{}'.format(name_and_pipe, self.to_entity, self.to_entity_attribute, self.from_entity, self.from_entity_attribute)

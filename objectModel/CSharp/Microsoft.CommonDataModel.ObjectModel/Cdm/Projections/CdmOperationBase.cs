@@ -183,22 +183,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Replace the wildcard character. {a/A} will be replaced with the current attribute name. {m/M} will be replaced with the entity attribute name. {o} will be replaced with the index of the attribute after an array expansion
         /// </summary>
         /// <param name="format">The original text.</param>
-        /// <param name="baseAttributeName">The entity attribute name, it may be empty string if it's not avaialble (type attribute).</param>
-        /// <param name="ordinal">The ordinal number, it may be empty string if it's not available (not expanded).</param>
-        /// <param name="memberAttributeName">The current attribute name, It may be empty string if the source is a ResolvedAttributeSet.</param>
+        /// <param name="projectionOwnerName">The attribute name of projection owner (only available when the owner is an entity attribute or type attribute).</param>
+        /// <param name="currentPAS">The attribute state.</param>
         /// <returns></returns>
-        internal static string ReplaceWildcardCharacters(string format, string baseAttributeName, string ordinal, string memberAttributeName)
+        internal static string ReplaceWildcardCharacters(string format, string projectionOwnerName, ProjectionAttributeState currentPAS)
         {
             if (string.IsNullOrEmpty(format))
             {
                 return "";
             }
 
-            string attributeName = StringUtils.Replace(format, 'a', baseAttributeName);
-            attributeName = StringUtils.Replace(attributeName, 'o', ordinal);
-            attributeName = StringUtils.Replace(attributeName, 'm', memberAttributeName);
+            string ordinal = currentPAS.Ordinal != null ? currentPAS.Ordinal.ToString() : "";
+            string originalMemberAttributeName = (currentPAS.CurrentResolvedAttribute.Target as CdmAttribute)?.Name ?? "";
+            string resolvedMemberAttributeName = currentPAS.CurrentResolvedAttribute.ResolvedName ?? "";
 
-            return attributeName;
+
+            string value = StringUtils.Replace(format, "a", projectionOwnerName);
+            value = StringUtils.Replace(value, "o", ordinal);
+            value = StringUtils.Replace(value, "mo", originalMemberAttributeName);
+            value = StringUtils.Replace(value, "m", resolvedMemberAttributeName);
+
+            return value;
         }
     }
 }

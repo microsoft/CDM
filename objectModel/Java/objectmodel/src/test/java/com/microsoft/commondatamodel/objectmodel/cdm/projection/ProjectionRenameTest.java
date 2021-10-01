@@ -417,13 +417,13 @@ public class ProjectionRenameTest {
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
-        // Rename all attributes attributes with format {A}.{o}.{M}, then rename "age" with format "{a}-{o}-{m}"
+        // Rename all attributes attributes with format {A}.{o}.{M}, then rename "age" with format "{a}-{o}-{m}, finally rename "email" with format "{a}-{o}-{mo}"
         Assert.assertEquals(5, resolvedEntity.getAttributes().getCount());
         Assert.assertEquals("PersonInfo..Name", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName());
         Assert.assertEquals("PersonInfo--PersonInfo..Age", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName());
         Assert.assertEquals("PersonInfo..Address", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName());
         Assert.assertEquals("PersonInfo..PhoneNumber", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName());
-        Assert.assertEquals("PersonInfo..Email", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName());
+        Assert.assertEquals("PersonInfo--email", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName());
     }
 
     
@@ -912,11 +912,13 @@ public class ProjectionRenameTest {
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Rename with format "n{a}e{o}w{M}" attributes ["address"]
-        Assert.assertEquals(resolvedEntity.getAttributes().size(), 5);
+        // Add new attribute realNewAddress with rename format "n{a}e{o}w{M}"
+        Assert.assertEquals(resolvedEntity.getAttributes().size(), 6);
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "name");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "age");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "newAddress");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
-        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "naddressewAddress");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "naddressewRealNewAddress");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "phoneNumber");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "email");
     }
 }

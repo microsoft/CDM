@@ -36,6 +36,9 @@ Typescript SDK for Common Data Model.
 
 # Build
 
+1. To download packages and their dependencies type `npm ci`.
+    > **__Note:__** Use **`npm ci`** instead of **`npm install`**. One of the biggest downside of the `npm install` command is its unexpected behavior that it may mutate the `package-lock.json`, whereas `npm ci` only uses the version in the lockfile and produces an error if the `package-lock.json` and `package.json` are out of sync.
+
 1. To build the project type `npm run build`
 
 # Unit tests

@@ -42,18 +42,8 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean visit(final String pathRoot, final VisitCallback preChildren, final VisitCallback postChildren) {
-    String path = "";
-
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      if (StringUtils.isNullOrEmpty(this.getDeclaredPath())) {
-        this.setDeclaredPath(pathRoot + this.getName());
-      }
-
-      path = this.getDeclaredPath();
-    }
+  public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -201,5 +191,18 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
   public void resetLastFileModifiedOldTime()
   {
       this.setlastFileModifiedOldTime(null);
+  }
+
+  /**
+   * standardized way of turning a relationship object into a key for caching
+   * without using the object itself as a key (could be duplicate relationship objects)
+   * @return String
+   */
+  public String createCacheKey() {
+    String nameAndPipe = "";
+    if (!StringUtils.isNullOrTrimEmpty(this.getName())) {
+      nameAndPipe = this.getName() + "|";
+    }
+    return nameAndPipe + this.getToEntity() + "|" + this.getToEntityAttribute() + "|" + this.getFromEntity() + "|" + this.getFromEntityAttribute();
   }
 }

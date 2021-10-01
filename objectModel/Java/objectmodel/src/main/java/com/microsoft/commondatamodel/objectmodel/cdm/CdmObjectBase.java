@@ -13,15 +13,12 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public abstract class CdmObjectBase implements CdmObject {
 
@@ -367,11 +364,11 @@ public abstract class CdmObjectBase implements CdmObject {
     final ResolveContext ctx = (ResolveContext) this.getCtx();
     String cacheTag = ctx.getCorpus().createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
 
-    Object rasbCache = null;
+    ResolvedAttributeSetBuilder rasbCache = null;
     if (cacheTag != null) {
-      rasbCache = ctx.getCache().get(cacheTag);
+      rasbCache = ctx.getAttributeCache().get(cacheTag);
     }
-    return (ResolvedAttributeSetBuilder)rasbCache;
+    return rasbCache;
   }
 
   /**
@@ -476,7 +473,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
           // save this as the cached version
           if (!StringUtils.isNullOrTrimEmpty(cacheTag) && rasbCache != null) {
-            ctx.getCache().put(cacheTag, rasbCache);
+            ctx.getAttributeCache().put(cacheTag, rasbCache);
           }
           // get the 'underCtx' of the attribute set from the acp that is wired into
           // the target tree

@@ -122,7 +122,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                     if (entityObj.Type == SASEntityType.TABLE)
                     {
                         var entity = LocalEntityDeclarationPersistence.FromData(ctx, entityObj, manifest, databaseProperties.Source.Location);
-                        manifest.Entities.Add(entity);
+                        if (entity != null)
+                        {
+                            manifest.Entities.Add(entity);
+                        }
+                        else
+                        {
+                            Logger.Warning((ResolveContext)ctx, Tag, nameof(FromObject), null, CdmLogCode.WarnPersistSymsEntitySkipped, entityObj.Name);
+                        }
                     }
                 }
             }
@@ -193,7 +200,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 Database = databaseEntity,
                 Entities = addedOrModifiedSymsTables,
                 Relationships = addedOrModifiedSymsRelationships,
-                IntialSync = !isDeltaSync,
+                InitialSync = !isDeltaSync,
                 RemovedEntities = removedSymsTable,
                 RemovedRelationships = removedSymsRelationships
             };
@@ -288,7 +295,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                         dynamic element = null;
 
                         if (entity.ObjectType == CdmObjectType.LocalEntityDeclarationDef && 
-                        Utils.IsEntityAddedorModified(entity as CdmLocalEntityDeclarationDefinition, existingTableEntities)) 
+                        Utils.IsEntityAddedOrModified(entity as CdmLocalEntityDeclarationDefinition, existingTableEntities)) 
                         {
                             element = await LocalEntityDeclarationPersistence.ToDataAsync(
                                     entity as CdmLocalEntityDeclarationDefinition,

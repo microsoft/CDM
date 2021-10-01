@@ -23,7 +23,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         {
             get
             {
-                return (this.Trait as CdmTraitDefinition)?.DeclaredPath;
+                return this.Trait?.DeclaredPath;
             }
         }
 

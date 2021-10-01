@@ -82,8 +82,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
             }
 
             // this flag makes sure we hold on to any resolved object refs when things get copied
-            const resOptCopy: resolveOptions = resOpt.copy();
-            resOptCopy.saveResolutionsOnCopy = true;
+            resOpt.saveResolutionsOnCopy = true;
 
             let definition: CdmObjectReference;
             let rtsApplied: ResolvedTraitSet;
@@ -91,11 +90,11 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
             // included in the link to the definition.
             if (acp.regarding) {
                 // make a portable reference. this MUST be fixed up when the context node lands in the final document
-                definition = (acp.regarding as CdmObjectBase).createPortableReference(resOptCopy);
+                definition = (acp.regarding as CdmObjectBase).createPortableReference(resOpt);
                 // now get the traits applied at this reference (applied only, not the ones that are part of the definition of the object)
                 // and make them the traits for this context
                 if (acp.includeTraits) {
-                    rtsApplied = acp.regarding.fetchResolvedTraits(resOptCopy);
+                    rtsApplied = acp.regarding.fetchResolvedTraits(resOpt);
                 }
             }
 
@@ -108,16 +107,16 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
             // add traits if there are any
             if (rtsApplied && rtsApplied.set) {
                 rtsApplied.set.forEach((rt: ResolvedTrait) => {
-                    const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
+                    const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOpt, rt);
                     underChild.exhibitsTraits.push(traitRef, typeof (traitRef) === 'string');
                 });
             }
 
             // add to parent
-            underChild.setParent(resOptCopy, acp.under);
+            underChild.setParent(resOpt, acp.under);
 
-            if (resOptCopy.mapOldCtxToNewCtx) {
-                resOptCopy.mapOldCtxToNewCtx.set(underChild, underChild); // so we can find every node, not only the replaced ones
+            if (resOpt.mapOldCtxToNewCtx) {
+                resOpt.mapOldCtxToNewCtx.set(underChild, underChild); // so we can find every node, not only the replaced ones
             }
 
             return underChild;
@@ -786,14 +785,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + this.name;
-                    this.declaredPath = path;
-                }
-            }
+            const path = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;

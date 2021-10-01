@@ -99,7 +99,7 @@ class CdmObject(abc.ABC):
         kind = 'rasb'
         ctx = self.ctx
         cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
-        return ctx._cache.get(cache_tag) if cache_tag else None
+        return ctx._attribute_cache.get(cache_tag) if cache_tag else None
 
     def _fetch_resolved_attributes(self, res_opt: 'ResolveOptions', acp_in_context: Optional['AttributeContextParameters'] = None) -> 'ResolvedAttributeSet':
         from cdm.resolvedmodel import ResolvedAttributeSet
@@ -175,7 +175,7 @@ class CdmObject(abc.ABC):
 
                     # save this as the cached version
                     if cache_tag:
-                        ctx._cache[cache_tag] = rasb_cache
+                        ctx._attribute_cache[cache_tag] = rasb_cache
                 # get the 'under_ctx' of the attribute set from the acp that is wired into the target tree
                 under_ctx = rasb_cache._resolved_attribute_set.attribute_context \
                     ._get_under_context_from_cache_context(res_opt, acp_in_context) \

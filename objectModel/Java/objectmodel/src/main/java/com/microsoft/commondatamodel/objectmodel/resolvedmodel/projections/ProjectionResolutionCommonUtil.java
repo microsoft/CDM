@@ -281,7 +281,7 @@ public final class ProjectionResolutionCommonUtil {
 
             List<List<String>> constantValues = new ArrayList<>();
             for (List<String> entAndAttrName : entRefAndAttrNameList) {
-                String originalSourceEntityAttributeName = projDir.getOriginalSourceEntityAttributeName();
+                String originalSourceEntityAttributeName = projDir.getOriginalSourceAttributeName();
                 if (originalSourceEntityAttributeName == null) {
                     originalSourceEntityAttributeName = "";
                 }

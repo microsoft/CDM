@@ -20,17 +20,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
     internal class ResolutionTestUtils
     {
         /// <summary>
-        /// Creates a storage adapter used to retrieve input files associated with test.
-        /// </summary>
-        /// <param name="testsSubPath">Tests sub-folder name</param>
-        /// <param name="testName">The name of the test we should retrieve input files for. </param>
-        /// <returns>The storage adapter to be used by the named test method. </returns>
-        internal static StorageAdapterBase CreateStorageAdapterConfigForTest(string testsSubPath, string testName)
-        {
-            return new LocalAdapter(TestHelper.GetInputFolderPath(testsSubPath, testName));
-        }
-
-        /// <summary>
         /// Function used to test resolving an environment.
         /// Writes a helper function used for debugging.
         /// Asserts the result matches the expected result stored in a file.
@@ -64,11 +53,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
         /// <returns> The resolved entities. </returns>
         internal static async Task<string> ResolveEnvironment(string testsSubPath, string testName, string manifestName)
         {
-            var cdmCorpus = new CdmCorpusDefinition();
-            cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-            var testLocalAdapter = CreateStorageAdapterConfigForTest(testsSubPath, testName);
-            cdmCorpus.Storage.Mount("local", testLocalAdapter);
-
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubPath, testName);
             var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>($"local:/{manifestName}.manifest.cdm.json");
             var directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" });
             return await ListAllResolved(cdmCorpus, directives, manifest, new StringSpewCatcher());

@@ -309,7 +309,7 @@ public class ResolveOptions {
     resOptCopy.setMapOldCtxToNewCtx(this.mapOldCtxToNewCtx); // ok to share this map
     resOptCopy.importsLoadStrategy = this.importsLoadStrategy;
     resOptCopy.saveResolutionsOnCopy = this.saveResolutionsOnCopy;
-    resOptCopy.currentlyResolvingEntities = new HashSet<>(this.currentlyResolvingEntities);
+    resOptCopy.currentlyResolvingEntities = this.currentlyResolvingEntities; // ok to share this map
     resOptCopy.usedResolutionGuidance = this.usedResolutionGuidance;
 
     if (this.directives != null) {

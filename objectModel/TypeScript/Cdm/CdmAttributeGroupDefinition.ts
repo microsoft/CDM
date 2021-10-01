@@ -138,14 +138,7 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + this.attributeGroupName;
-                    this.declaredPath = path;
-                }
-            }
+            const path = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;

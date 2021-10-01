@@ -83,6 +83,7 @@ public enum CdmLogCode
     ErrResolveEntityFailure,
     ErrResolveNewEntityNameNotSet,
     ErrResolveFolderNotFound,
+    ErrResolveManifestExists,
     ErrResolveManifestFailed,
     ErrResolveReferenceFailure,
     ErrStorageAdapterNotFound,

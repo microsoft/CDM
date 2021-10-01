@@ -68,12 +68,7 @@ class CdmOperationReplaceAsForeignKey(CdmOperationBase):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if not self.ctx.corpus._block_declared_path_changes:
-            path = self._declared_path
-            if not path:
-                path = path_from + 'operationReplaceAsForeignKey'
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -121,7 +116,7 @@ class CdmOperationReplaceAsForeignKey(CdmOperationBase):
             ref_attr_name: str
     ) -> 'ProjectionAttributeStateSet':
         pas_list = ProjectionResolutionCommonUtil._get_leaf_list(proj_ctx, ref_attr_name)
-        source_entity = proj_ctx._projection_directive._original_source_entity_attribute_name
+        source_entity = proj_ctx._projection_directive._original_source_attribute_name
 
         if not source_entity:
             logger.warning(proj_output_set._ctx, CdmOperationReplaceAsForeignKey.__name__, \

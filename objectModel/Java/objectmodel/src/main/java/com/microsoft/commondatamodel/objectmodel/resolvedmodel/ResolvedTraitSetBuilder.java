@@ -14,7 +14,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 public class ResolvedTraitSetBuilder {
 
   private ResolvedTraitSet resolvedTraitSet;
-  // public ResolveOptions ResOpt { get; set; }
 
   public void clear() {
     resolvedTraitSet = null;

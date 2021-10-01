@@ -932,7 +932,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
                 return ResourceManager.GetString("ErrResolveFolderNotFound", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create the resolved manifest &apos;{0}&apos; because a manifest with that name already exists.
+        /// </summary>
+        internal static string ErrResolveManifestExists {
+            get {
+                return ResourceManager.GetString("ErrResolveManifestExists", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot resolve the manifest &apos;{0}&apos; because it has not been added to a folder.
         /// </summary>
@@ -1443,6 +1452,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Resx {
         internal static string WarnPersistSymsEntityMissing {
             get {
                 return ResourceManager.GetString("WarnPersistSymsEntityMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Entity {0} has been skipped. This may occur if entity format type not supported..
+        /// </summary>
+        internal static string WarnPersistSymsEntitySkipped {
+            get {
+                return ResourceManager.GetString("WarnPersistSymsEntitySkipped", resourceCulture);
             }
         }
         

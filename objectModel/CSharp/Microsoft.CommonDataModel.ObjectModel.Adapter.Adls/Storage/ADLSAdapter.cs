@@ -55,8 +55,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             private set
             {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Hostname cannot be null or whitespace.");
+                }
                 this._hostname = value;
-                this.formattedHostname = this.FormatHostname(this._hostname);
+                this.formattedHostname = this.FormatHostname(this.RemoveProtocolFromHostname(this._hostname));
             }
         }
 
@@ -315,7 +319,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             else
             {
-                return $"https://{this.Hostname}{this.GetEscapedRoot()}{this.EscapePath(formattedCorpusPath)}";
+                return $"https://{this.RemoveProtocolFromHostname(this.Hostname)}{this.GetEscapedRoot()}{this.EscapePath(formattedCorpusPath)}";
             }
         }
 
@@ -506,7 +510,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             if (config == null)
             {
-                throw new Exception("ADLS adapter needs a config.");
+                throw new ArgumentNullException("ADLS adapter needs a config.");
             }
 
             var configJson = JsonConvert.DeserializeObject<JObject>(config);
@@ -517,7 +521,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             else
             {
-                throw new Exception("Root has to be set for ADLS adapter.");
+                throw new ArgumentException("Root has to be set for ADLS adapter.");
             }
 
             if (configJson["hostname"] != null)
@@ -526,7 +530,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
             else
             {
-                throw new Exception("Hostname has to be set for ADLS adapter.");
+                throw new ArgumentException("Hostname has to be set for ADLS adapter.");
             }
 
             this.UpdateNetworkConfig(config);
@@ -555,7 +559,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 } 
                 else
                 {
-                    throw new Exception("Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.");
+                    throw new ArgumentException("Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.");
                 }
             }
         }
@@ -869,6 +873,34 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     .WithClientSecret(this.Secret)
                     .Build();
             }
+        }
+
+        /// <summary>
+        /// Check if the hostname has a leading protocol. 
+        /// if it doesn't have, return the hostname
+        /// if the leading protocol is not "https://", throw an error
+        /// otherwise, return the hostname with no leading protocol.
+        /// </summary>
+        /// <returns>The hostname without the leading protocol "https://" if original hostname has it, otherwise it is same as hostname.</returns>
+        private string RemoveProtocolFromHostname(string hostname)
+        {
+            if (!hostname.Contains("://"))
+            {
+                return hostname;
+            }
+
+            Uri outUri;
+
+            if (Uri.TryCreate(hostname, UriKind.Absolute, out outUri))
+            {
+                if (outUri.Scheme == Uri.UriSchemeHttps)
+                {
+                    return hostname.Substring("https://".Length);
+                } 
+                throw new ArgumentException("ADLS Adapter only supports HTTPS, please provide a leading \"https://\" hostname or a non-protocol-relative hostname.");
+            }
+
+            throw new ArgumentException("Please provide a valid hostname.");
         }
     }
 }

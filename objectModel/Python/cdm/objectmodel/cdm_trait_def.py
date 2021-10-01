@@ -131,7 +131,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
             cache_tag_extra = str(self.extends_trait.id)
 
         cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
-        rts_result = ctx._cache.get(cache_tag) if cache_tag else None
+        rts_result = ctx._trait_cache.get(cache_tag) if cache_tag else None
 
         # store the previous reference symbol set, we will need to add it with
         # children found from the _construct_resolved_traits call
@@ -153,23 +153,23 @@ class CdmTraitDefinition(CdmObjectDefinition):
                         self.associated_properties = base_trait.associated_properties
 
             self._has_set_flags = True
-            pc = self._fetch_all_parameters(res_opt)
-            av = []  # type: List[CdmArgumentValue]
+            parameter_collection = self._fetch_all_parameters(res_opt)
+            argument_values = []  # type: List[CdmArgumentValue]
             was_set = []  # type: List[bool]
 
-            self._this_is_known_to_have_parameters = bool(pc.sequence)
-            for i in range(len(pc.sequence)):
+            self._this_is_known_to_have_parameters = bool(parameter_collection.sequence)
+            for i in range(len(parameter_collection.sequence)):
                 # either use the default value or (higher precidence) the value taken from the base reference
-                value = pc.sequence[i].default_value
+                value = parameter_collection.sequence[i].default_value
                 if base_values and i < len(base_values):
                     base_value = base_values[i]
                     if base_value:
                         value = base_value
-                av.append(value)
+                argument_values.append(value)
                 was_set.append(False)
 
             # save it
-            res_trait = ResolvedTrait(self, pc, av, was_set)
+            res_trait = ResolvedTrait(self, parameter_collection, argument_values, was_set)
             rts_result = ResolvedTraitSet(res_opt)
             rts_result.merge(res_trait, False)
 
@@ -178,7 +178,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
             # get the new cache tag now that we have the list of docs
             cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
             if cache_tag:
-                ctx._cache[cache_tag] = rts_result
+                ctx._trait_cache[cache_tag] = rts_result
         else:
             # cache found
             # get the SymbolSet for this cached object
@@ -205,12 +205,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if not path:
-                path = path_from + self.trait_name
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -239,7 +234,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
         self._all_parameters = ParameterCollection(prior)
         if self.parameters:
-            for element in self.parameters:
-                self._all_parameters.add(element)
+            for paramter in self.parameters:
+                self._all_parameters.add(paramter)
 
         return self._all_parameters

@@ -33,7 +33,7 @@ public class ResolvedTraitSet {
   private Map<CdmTraitDefinition, ResolvedTrait> lookupByTrait;
 
   public ResolvedTraitSet(final ResolveOptions resOpt) {
-    this.resOpt = resOpt.copy();
+    this.resOpt = resOpt;
     this.set = new ArrayList<>();
     this.lookupByTrait = new LinkedHashMap<>();
     this.hasElevated = false;

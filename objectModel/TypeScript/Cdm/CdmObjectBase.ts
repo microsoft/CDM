@@ -9,7 +9,6 @@ import {
     CdmCorpusContext,
     CdmCorpusDefinition,
     CdmDocumentDefinition,
-    CdmEntityDefinition,
     CdmEntityReference,
     CdmObject,
     CdmObjectDefinition,
@@ -19,7 +18,6 @@ import {
     CdmTraitDefinition,
     CdmTraitReference,
     copyOptions,
-    DepthInfo,
     isEntityAttributeDefinition,
     isEntityDefinition,
     resolveContext,
@@ -272,7 +270,7 @@ export abstract class CdmObjectBase implements CdmObject {
         const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
         const cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
 
-        return cacheTag ? ctx.cache.get(cacheTag) : undefined;
+        return cacheTag ? ctx.attributeCache.get(cacheTag) : undefined;
     }
 
     /**
@@ -349,7 +347,7 @@ export abstract class CdmObjectBase implements CdmObject {
                         const cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : undefined);
                         // save this as the cached version
                         if (cacheTag) {
-                            ctx.cache.set(cacheTag, rasbCache);
+                            ctx.attributeCache.set(cacheTag, rasbCache);
                         }
                     }
 

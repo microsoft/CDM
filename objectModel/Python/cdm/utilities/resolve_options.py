@@ -120,10 +120,10 @@ class ResolveOptions:
         res_opt_copy._indexing_doc = self._indexing_doc
         res_opt_copy.shallow_validation = self.shallow_validation
         res_opt_copy._resolved_attribute_limit = self._resolved_attribute_limit
-        res_opt_copy._map_old_ctx_to_new_ctx = self._map_old_ctx_to_new_ctx  # ok to share self map
+        res_opt_copy._map_old_ctx_to_new_ctx = self._map_old_ctx_to_new_ctx  # ok to share this map
         res_opt_copy.imports_load_strategy = self.imports_load_strategy
         res_opt_copy._save_resolutions_on_copy = self._save_resolutions_on_copy
-        res_opt_copy._currently_resolving_entities = set(self._currently_resolving_entities)
+        res_opt_copy._currently_resolving_entities = self._currently_resolving_entities # ok to share this map
         res_opt_copy._used_resolution_guidance = self._used_resolution_guidance
 
         if self.directives:

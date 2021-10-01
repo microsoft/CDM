@@ -448,7 +448,7 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
-        // Rename all attributes attributes with format {A}.{o}.{M}, then rename 'age' with format '{a}-{o}-{m}'
+        // Rename all attributes attributes with format {A}.{o}.{M}, then rename 'age' with format '{a}-{o}-{m}', finally rename "email" with format '{a}-{o}-{mo}'
         expect(resolvedEntity.attributes.length)
             .toEqual(5);
         expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -460,7 +460,7 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
             .toEqual('PersonInfo..PhoneNumber');
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
-            .toEqual('PersonInfo..Email');
+            .toEqual('PersonInfo--email');
     });
 
     /**
@@ -1068,17 +1068,20 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Rename with format "n{a}e{o}w{M}" attributes ["address"]
+        // Add new attribute realNewAddress with rename format "n{a}e{o}w{M}"
         expect(resolvedEntity.attributes.length)
-            .toEqual(5);
+            .toEqual(6);
         expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
             .toEqual('name');
         expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
             .toEqual('age');
         expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
-            .toEqual('newAddress');
+            .toEqual('naddressewAddress');
         expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
-            .toEqual('phoneNumber');
+            .toEqual('naddressewRealNewAddress');
         expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
+            .toEqual('phoneNumber');
+        expect((resolvedEntity.attributes.allItems[5] as CdmTypeAttributeDefinition).name)
             .toEqual('email');
     });
 });

@@ -91,7 +91,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             {
                 await (corpus.TelemetryClient as TelemetryKustoClient).PostKustoQuery("some random query");
             };
-            func.Should().Throw<Identity.Client.MsalClientException>("Kusto cluster authentication failed.");
+            func.Should().Throw<System.Exception>("Kusto cluster authentication failed.");
         }
 
         /// <summary>

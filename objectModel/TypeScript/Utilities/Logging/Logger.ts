@@ -4,7 +4,7 @@
 import { CdmCorpusContext, CdmEntityDefinition, cdmLogCode, CdmManifestDefinition, cdmStatusLevel, resolveContext, StorageAdapter } from '../../internal';
 import * as timeUtils from '../timeUtils';
 import { StorageUtils } from '../StorageUtils';
-const data = require('../../resx/logMessages.json');
+import * as data from '../../resx/logMessages.json';
 
 /**
  * The logger class which contains logic to help format logging messages in a consistent way.
@@ -138,6 +138,9 @@ export class Logger {
 
     public static ingestManifestTelemetry(manifest: CdmManifestDefinition, ctx: CdmCorpusContext, className: string, 
         method: string, corpusPath: string): void {
+        if (ctx.corpus.telemetryClient === undefined) {
+            return;
+        }
 
         // Get the namespace of the storage for the manifest
         let storageNamespace: string = manifest.namespace;
@@ -215,6 +218,10 @@ export class Logger {
      * @param corpusPath Usually denotes corpus path of document.
      */
     public static ingestEntityTelemetry(entity: CdmEntityDefinition, ctx: CdmCorpusContext, className: string, method: string, corpusPath: string): void {
+        if (ctx.corpus.telemetryClient === undefined) {
+            return;
+        }
+
         // Get entity storage namespace
         let entityNamespace: string = entity.inDocument.namespace;
 
@@ -328,8 +335,13 @@ export class LoggerScope {
      * @override
      */
     dispose(): void {
-        Logger.debug(this.state.ctx, this.state.className, this.state.path, null, 
-            `Leaving scope. Time elapsed: ${(new Date()).valueOf() - this.Time.valueOf()} ms; Cache memory used: ${(this.state.ctx as resolveContext).cache.size}`, this.isTopLevelMethod);
+        const message: string = `Leaving scope. Time elapsed: ${(new Date()).valueOf() - this.Time.valueOf()} ms.`;
+
+        // Commenting out to keep consistent with C#
+        // In C# - Cache is a concurrent dict, and getting the Count on it is getting blocked by other cache updates
+        // const message: string = `Leaving scope. Time elapsed: ${(new Date()).valueOf() - this.Time.valueOf()} ms; Cache memory used: ${(this.state.ctx as resolveContext).attributeCache.size}.`;
+        
+        Logger.debug(this.state.ctx, this.state.className, this.state.path, null, message, this.isTopLevelMethod);
         
         this.state.ctx.events.disable();
     }

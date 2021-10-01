@@ -87,17 +87,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
       return false;
     }
 
-    String path = "";
-    if (this.getCtx() != null
-            && this.getCtx().getCorpus() != null
-            && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      this.getDeclaredPath();
-
-      if (StringUtils.isNullOrEmpty(path)) {
-        path = pathFrom + this.getName();
-        this.setDeclaredPath(path);
-      }
-    }
+    String path = this.fetchDeclaredPath(pathFrom);
 
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
@@ -322,7 +312,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
     Object rasbCache = null;
     if (cacheTag != null) {
-      rasbCache = ctx.getCache().get(cacheTag);
+      rasbCache = ctx.getAttributeCache().get(cacheTag);
     }
     return (ResolvedAttributeSetBuilder)rasbCache;
   }

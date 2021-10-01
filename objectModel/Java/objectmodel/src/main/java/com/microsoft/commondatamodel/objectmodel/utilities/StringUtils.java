@@ -64,7 +64,7 @@ public class StringUtils {
    * @return Capitalized string
    */
   public static String capitalize(final String str) {
-    if (str == null || isNullOrEmpty(str))
+    if (isNullOrTrimEmpty(str))
       return str;
 
     if (str.length() == 1)
@@ -88,18 +88,14 @@ public class StringUtils {
    * @param value The value to be replaced instead of the pattern
    * @return string
    */
-  public static String replace(String source, char pattern, String value) {
+  public static String replace(final String source, final String pattern, String value) {
     if (value == null) {
       value = "";
     }
 
-    char lowerCasePattern = Character.toLowerCase(pattern);
-    char upperCasePattern = Character.toUpperCase(pattern);
-    String upperCaseValue = "";
-    
-    if (!isNullOrEmpty(value)) {
-        upperCaseValue = capitalize(value);
-    }
+    final String lowerCasePattern = pattern.toLowerCase();
+    final String upperCasePattern = StringUtils.capitalize(pattern);
+    final String upperCaseValue = !StringUtils.isNullOrTrimEmpty(value) ? StringUtils.capitalize(value) : "";
 
     String result = source.replace("{" + lowerCasePattern + "}", value);
     return result.replace("{" + upperCasePattern + "}", upperCaseValue);

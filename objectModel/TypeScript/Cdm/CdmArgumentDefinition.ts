@@ -156,14 +156,7 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
-                    this.declaredPath = path;
-                }
-            }
+            const path: string = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
 
             if (preChildren && preChildren(this, path)) {
                 return false;
@@ -180,29 +173,6 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
             }
 
             return false;
-        }
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public cacheTag(): string {
-        // let bodyCode = () =>
-        {
-            let tag: string;
-            const val: ArgumentValue = this.value;
-            if (val) {
-                if (this.value instanceof CdmObjectBase) {
-                    if (this.value.ID) {
-                        tag = this.value.ID.toString();
-                    }
-                } else {
-                    tag = JSON.stringify(val);
-                }
-            }
-
-            return tag;
         }
         // return p.measure(bodyCode);
     }

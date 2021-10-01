@@ -60,19 +60,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             // renameAttributes = { {a}_{o}_key, apply to "key" }
             // renameAttributes = { {a}_{m}_{o}_value, apply to "name", "age", "address" }
             // alterTraits = { indicates.expansionInfo.mapKey(expansionName: "{a}", ordinal: "{o}") , apply to "key" , "argumentsContainWildcards" : true }
-            // alterTraits = { has.expansionInfo.mapValue(expansionName: "{a}", ordinal: "{o}", memberAttribute: "{m}") , apply to "name", "age", "address"  , "argumentsContainWildcards" : true }
+            // alterTraits = { has.expansionInfo.mapValue(expansionName: "{a}", ordinal: "{o}", memberAttribute: "{mo}") , apply to "name", "age", "address"  , "argumentsContainWildcards" : true }
             // addArtifactAttribute : "personCount"
             // alterTraits = { indicates.expansionInfo.count(expansionName: "{a}") , apply to "personCount" , "argumentsContainWildcards" : true }
             Assert.AreEqual(13, nonStructuredResolvedEntity.Attributes.Count);
-            ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[0] as CdmTypeAttributeDefinition, "ThreePeople_1_key", 1, "ThreePeople", isKey: true);
+            ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[0] as CdmTypeAttributeDefinition, "key_1_key", 1, "ThreePeople", isKey: true);
             ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[1] as CdmTypeAttributeDefinition, "ThreePeople_name_1_value", 1, "ThreePeople", "name");
             ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[2] as CdmTypeAttributeDefinition, "ThreePeople_age_1_value", 1, "ThreePeople", "age");
             ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[3] as CdmTypeAttributeDefinition, "ThreePeople_address_1_value", 1, "ThreePeople", "address");
-            ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[4] as CdmTypeAttributeDefinition, "ThreePeople_2_key", 2, "ThreePeople", isKey: true);
+            ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[4] as CdmTypeAttributeDefinition, "key_2_key", 2, "ThreePeople", isKey: true);
             ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[5] as CdmTypeAttributeDefinition, "ThreePeople_name_2_value", 2, "ThreePeople", "name");
             ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[6] as CdmTypeAttributeDefinition, "ThreePeople_age_2_value", 2, "ThreePeople", "age");
             ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[7] as CdmTypeAttributeDefinition, "ThreePeople_address_2_value", 2, "ThreePeople", "address");
-            ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[8] as CdmTypeAttributeDefinition, "ThreePeople_3_key", 3, "ThreePeople", isKey: true);
+            ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[8] as CdmTypeAttributeDefinition, "key_3_key", 3, "ThreePeople", isKey: true);
             ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[9] as CdmTypeAttributeDefinition, "ThreePeople_name_3_value", 3, "ThreePeople", "name");
             ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[10] as CdmTypeAttributeDefinition, "ThreePeople_age_3_value", 3, "ThreePeople", "age");
             ValidateAttributeTrait(nonStructuredResolvedEntity.Attributes[11] as CdmTypeAttributeDefinition, "ThreePeople_address_3_value", 3, "ThreePeople", "address");
@@ -126,7 +126,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             // renameAttributes = { {m}_{o}_key, apply to "Term key" }
             // renameAttributes = { {m}_{o}_value, apply to "FavoriteTerms" }
             // alterTraits = { indicates.expansionInfo.mapKey(expansionName: "{a}", ordinal: "{o}") , apply to "Term key" , "argumentsContainWildcards" : true }
-            // alterTraits = { has.expansionInfo.mapValue(expansionName: "{m}", ordinal: "{o}") , apply to "FavoriteTerms"  , "argumentsContainWildcards" : true }
+            // alterTraits = { has.expansionInfo.mapValue(expansionName: "{a}", ordinal: "{o}") , apply to "FavoriteTerms"  , "argumentsContainWildcards" : true }
             // addArtifactAttribute : number of favorite terms"
             // alterTraits = { indicates.expansionInfo.count(expansionName: "{a}") , apply to "number of favorite terms" , "argumentsContainWildcards" : true }
             Assert.AreEqual(5, nonStructuredResolvedEntity.Attributes.Count);

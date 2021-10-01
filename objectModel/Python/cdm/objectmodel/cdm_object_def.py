@@ -86,6 +86,11 @@ class CdmObjectDefinition(CdmObject):
             res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         return self
 
+    def _fetch_declared_path(self, path_from: str) -> str:
+        """Given an initial path, returns this object's declared path"""
+        name = self.get_name()
+        return path_from + (name if name is not None else '')
+
     def _is_derived_from_def(self, res_opt: 'ResolveOptions', base: 'CdmObjectReference', name: str, seek: str) -> bool:
         if seek == name:
             return True

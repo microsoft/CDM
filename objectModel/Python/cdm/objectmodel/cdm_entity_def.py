@@ -117,20 +117,16 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         return cast(str, self._trait_to_property_map._fetch_property_value('primaryKey'))
 
     @property
+    def _is_resolved(self):
+        return cast(bool, self._trait_to_property_map._fetch_property_value('isResolved'))
+
+    @property
     def _trait_to_property_map(self) -> 'TraitToPropertyMap':
         from cdm.utilities import TraitToPropertyMap
 
         if not self._ttpm:
             self._ttpm = TraitToPropertyMap(self)
         return self._ttpm
-
-    @property
-    def _extends_entity_ref(self) -> 'CdmObjectReference':
-        return self.extends_entity
-
-    @_extends_entity_ref.setter
-    def _extends_entity_ref(self, val: 'CdmObjectReference') -> None:
-        self.extends_entity = cast(CdmEntityReference, val)
 
     def _add_attribute_def(self, attribute_def: 'CdmAttributeItem') -> 'CdmAttributeItem':
         self.attributes.append(attribute_def)
@@ -456,14 +452,13 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                         att_ref_path = path + ra.resolved_name
                         # the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
                         if isinstance(ra.target, CdmAttribute):
-                            if 'object_type' in dir(ra.target):
-                                # It was an attribute, add to the content of the context, also, keep track of the ordering for all of the att paths we make up
-                                # as we go through the resolved attributes, this is the order of atts in the final resolved entity
-                                if att_ref_path not in att_path_to_order:
-                                    att_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_REF, att_ref_path, True)  # type: CdmObjectReference
-                                    # only need one explanation for this path to the insert order
-                                    att_path_to_order[att_ref.named_reference] = ra.insert_order
-                                    ra_ctx.contents.append(att_ref)
+                            # It was an attribute, add to the content of the context, also, keep track of the ordering for all of the att paths we make up
+                            # as we go through the resolved attributes, this is the order of atts in the final resolved entity
+                            if att_ref_path not in att_path_to_order:
+                                att_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_REF, att_ref_path, True)  # type: CdmObjectReference
+                                # only need one explanation for this path to the insert order
+                                att_path_to_order[att_ref.named_reference] = ra.insert_order
+                                ra_ctx.contents.append(att_ref)
                         else:
                             # A group, so we know an attribute group will get created later with the name of the group
                             # and the things it contains will be in the members of that group
@@ -746,38 +741,34 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         res_opt = res_opt.copy()
         res_opt.directives = AttributeResolutionDirectiveSet(set(['normalized', 'referenceOnly']))
 
-        ctx = self.ctx
-        ent_ref_set_cache = ctx.fetch_cache(self, res_opt, 'entRefSet')
-        if not ent_ref_set_cache:
-            ent_ref_set_cache = ResolvedEntityReferenceSet(res_opt)
+        ent_ref_set = ResolvedEntityReferenceSet(res_opt)
 
-            if not self._resolving_entity_references:
-                self._resolving_entity_references = True
-                # get from any base class and then 'fix' those to point here instead.
-                ext_ref = self.extends_entity
-                if ext_ref:
-                    ext_def = cast('CdmEntityDefinition', ext_ref.fetch_object_definition(res_opt))
-                    if ext_def:
-                        inherited = ext_def.fetch_resolved_entity_references(res_opt)
-                        if inherited:
-                            for res in inherited.rer_set:
-                                res = res.copy()
-                                res.referencing.entity = self
-                                ent_ref_set_cache.rer_set.append(res)
-                if self.attributes:
-                    for attribute in self.attributes:
-                        # if any refs come back from attributes, they don't know who we are, so they don't set the entity
-                        sub = attribute.fetch_resolved_entity_references(res_opt)
-                        if sub:
-                            for res in sub.rer_set:
-                                res.referencing.entity = self
+        if not self._resolving_entity_references:
+            self._resolving_entity_references = True
+            # get from any base class and then 'fix' those to point here instead.
+            ext_ref = self.extends_entity
+            if ext_ref:
+                ext_def = cast('CdmEntityDefinition', ext_ref.fetch_object_definition(res_opt))
+                if ext_def:
+                    inherited = ext_def.fetch_resolved_entity_references(res_opt)
+                    if inherited:
+                        for res in inherited.rer_set:
+                            res = res.copy()
+                            res.referencing.entity = self
+                            ent_ref_set.rer_set.append(res)
+            if self.attributes:
+                for attribute in self.attributes:
+                    # if any refs come back from attributes, they don't know who we are, so they don't set the entity
+                    sub = attribute.fetch_resolved_entity_references(res_opt)
+                    if sub:
+                        for res in sub.rer_set:
+                            res.referencing.entity = self
 
-                            ent_ref_set_cache.add(sub)
-                ctx.update_cache(self, res_opt, 'entRefSet', ent_ref_set_cache)
-                self._resolving_entity_references = False
-
+                        ent_ref_set.add(sub)
+            self._resolving_entity_references = False
         self.ctx.corpus._is_currently_resolving = was_previously_resolving
-        return ent_ref_set_cache
+
+        return ent_ref_set
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
@@ -799,12 +790,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if not path:
-                path = path_from + self.entity_name
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False

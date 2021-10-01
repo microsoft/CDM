@@ -56,15 +56,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
                 var cdmCorpus = new CdmCorpusDefinition();
                 cdmCorpus.Storage.Mount("local", new LocalAdapter("C:\\path"));
                 cdmCorpus.Storage.DefaultNamespace = "local";
-                cdmCorpus.SetEventCallback(new EventCallback
-                {
-                    Invoke = (CdmStatusLevel statusLevel, string message) =>
-                    {
-                        // We should see the following error message be logged. If not, fail.
-                        if (!message.Contains("Cannot resolve the manifest 'test' because it has not been added to a folder"))
-                            Assert.Fail();
-                    }
-                }, CdmStatusLevel.Warning);
 
                 var manifest = cdmCorpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "test");
                 var entity = cdmCorpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, "entity");
@@ -73,8 +64,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
 
                 // Don't add the document containing the entity to a folder either.
                 manifest.Entities.Add(entity);
-
                 await manifest.CreateResolvedManifestAsync("resolved", null);
+
+                TestHelper.AssertCdmLogCodeEquality(cdmCorpus, CdmLogCode.ErrResolveManifestFailed, true);
             }
             catch (Exception)
             {
@@ -101,6 +93,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
             Assert.IsTrue(!corpus.Storage.NamespaceFolders["local"].Documents[0].IsDirty
                             && !corpus.Storage.NamespaceFolders["local"].Documents[1].IsDirty,
                             "Referenced logical document should not become dirty when manifest is resolved");
+        }
+
+        /// <summary>
+        /// Test that correct error is shown when trying to create a resolved manifest with a name that already exists
+        /// </summary>
+        [TestMethod]
+        public async Task TestResolvingManifestWithSameName()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestResolvingManifestWithSameName");
+
+            var manifest = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "test");
+            corpus.Storage.NamespaceFolders["local"].Documents.Add(manifest);
+            var resManifest = await manifest.CreateResolvedManifestAsync(manifest.Name, "{n}/{n}.cdm.json");
+
+            Assert.IsNull(resManifest);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrResolveManifestExists, true);
         }
     }
 }

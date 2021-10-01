@@ -191,7 +191,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 File.WriteAllText(expectedPath, File.ReadAllText(actualPath));
             }
 
-            Assert.AreEqual( File.ReadAllText(expectedPath),
+            Assert.AreEqual(File.ReadAllText(expectedPath),
                             File.ReadAllText(actualPath));
         }
     }

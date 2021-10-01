@@ -16,8 +16,7 @@ import {
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    VisitCallback,
-    StringUtils
+    VisitCallback
 } from '../internal';
 
 export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
@@ -162,14 +161,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + (this.constantEntityName ? this.constantEntityName : '(unspecified)');
-                    this.declaredPath = path;
-                }
-            }
+            const path = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;
@@ -187,6 +179,13 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
             return false;
         }
         // return p.measure(bodyCode);
+    }
+
+    /**
+     * @internal
+     */
+    public fetchDeclaredPath(pathFrom: string): string {
+        return pathFrom + (this.constantEntityName ? this.constantEntityName : '(unspecified)');
     }
 
     /**

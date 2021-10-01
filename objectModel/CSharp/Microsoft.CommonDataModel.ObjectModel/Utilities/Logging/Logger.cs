@@ -242,8 +242,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
 
             public void Dispose()
             {
-                string message = $"Leaving scope. Time elapsed: {(DateTime.UtcNow - time).TotalMilliseconds} ms"
-                    + $"; Cache memory used: {(state.Ctx as ResolveContext).Cache.Count}";
+                string message = $"Leaving scope. Time elapsed: {(DateTime.UtcNow - time).TotalMilliseconds} ms";
+                // Cache is a concurrent dict, and getting the Count on it is getting blocked by other cache updates
+                // + $"; Cache memory used: {(state.Ctx as ResolveContext).AttributeCache.Count}";
+
                 Debug(state.Ctx, state.Tag, state.Path, null, message: message, isTopLevelMethod);
 
                 state.Ctx.Events.Disable();
@@ -261,6 +263,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         internal static void IngestManifestTelemetry(CdmManifestDefinition manifest,
             CdmCorpusContext ctx, string className, string method, string corpusPath)
         {
+            if (ctx.Corpus.TelemetryClient == null)
+            {
+                return;
+            }
+
             // Get the namespace of the storage for the manifest
             string storageNamespace = manifest.Namespace;
             if (string.IsNullOrWhiteSpace(storageNamespace))
@@ -345,6 +352,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         internal static void IngestEntityTelemetry(CdmEntityDefinition entity,
             CdmCorpusContext ctx, string className, string method, string corpusPath)
         {
+            if (ctx.Corpus.TelemetryClient == null)
+            {
+                return;
+            }
+
             // Get entity storage namespace
             string entityNamespace = entity.InDocument.Namespace;
 

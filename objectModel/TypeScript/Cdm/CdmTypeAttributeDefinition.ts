@@ -225,41 +225,10 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
         // return p.measure(bodyCode);
     }
 
-    /**
-     * @internal
-     */
-    public getDataTypeRef(): CdmDataTypeReference {
-        // let bodyCode = () =>
-        {
-            return this.dataType;
-        }
-        // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public setDataTypeRef(dataType: CdmDataTypeReference): CdmDataTypeReference {
-        // let bodyCode = () =>
-        {
-            this.dataType = dataType;
-
-            return this.dataType;
-        }
-        // return p.measure(bodyCode);
-    }
-
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + this.name;
-                    this.declaredPath = path;
-                }
-            }
+            const path: string = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;

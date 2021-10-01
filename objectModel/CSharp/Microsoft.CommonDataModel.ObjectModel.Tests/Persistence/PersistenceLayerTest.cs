@@ -240,7 +240,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
         /// <summary>
         /// Test that a manifest document is fetched using the syms persistence class.
         /// </summary>
-        internal async Task TestSymsFetchManifest(CdmCorpusDefinition corpus, CdmManifestDefinition manifestExpected, string filename)
+        internal async Task TestSymsFetchManifest(CdmCorpusDefinition corpus, CdmManifestDefinition manifestExpected, string filename, string threadnumber = "")
         {
             var manifestReadDatabases = await corpus.FetchObjectAsync<CdmManifestDefinition>($"syms:/databases.manifest.cdm.json");
             Assert.IsNotNull(manifestReadDatabases);
@@ -248,8 +248,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             Assert.AreEqual(manifestReadDatabases.SubManifests[0].ManifestName, manifestExpected.ManifestName);
 
             var manifestActual = await corpus.FetchObjectAsync<CdmManifestDefinition>($"syms:/{manifestExpected.ManifestName}/{manifestExpected.ManifestName}.manifest.cdm.json", manifestReadDatabases, null, true);
-            await manifestActual.SaveAsAsync($"localActOutput:/{filename}");
-            await manifestExpected.SaveAsAsync($"localExpOutput:/{filename}");
+            await manifestActual.SaveAsAsync($"localActOutput:/{filename}{threadnumber}");
+            await manifestExpected.SaveAsAsync($"localExpOutput:/{filename}{threadnumber}");
 
             var actualContent = TestHelper.GetActualOutputFileContent(testsSubpath, nameof(TestSymsSavingAndFetchingDocument), filename);
             var expectedContent = TestHelper.GetExpectedOutputFileContent(testsSubpath, nameof(TestSymsSavingAndFetchingDocument), filename);
@@ -267,6 +267,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
                 Assert.IsNotNull(doc);
                 Assert.IsTrue(string.Equals($"{ent.EntityName}.cdm.json", doc.Name));
             }
+        }
+
+        /// <summary>
+        /// Test automatic mounting of adls adapter in syms if does not exist.
+        /// </summary>
+        internal async Task TestSymsSmartADLSAdapterMountLogic()
+        {
+            var symsAdapter = SymsTestHelper.CreateAdapterWithClientId();
+            var corpus = new CdmCorpusDefinition();
+            corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
+            corpus.Storage.Mount("syms", symsAdapter);
+
+            var adlsAdapter1 = SymsTestHelper.CreateADLSAdapterWithClientIdWithSharedKey(1);
+            var adlsAdapter2 = SymsTestHelper.CreateADLSAdapterWithClientIdWithSharedKey(2);
+
+            int countAdapterCountBefore = corpus.Storage.NamespaceAdapters.Count;
+            var manifestReadDatabases = await corpus.FetchObjectAsync<CdmManifestDefinition>($"syms:/databases.manifest.cdm.json");
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"syms:/{manifestReadDatabases.SubManifests[0].ManifestName}/{manifestReadDatabases.SubManifests[0].ManifestName}.manifest.cdm.json", manifestReadDatabases, null, true);
+            
+            int countAdapterCountAfter = corpus.Storage.NamespaceAdapters.Count;
+            
+            Assert.AreEqual(countAdapterCountBefore + 2, countAdapterCountAfter);
+            Assert.IsNotNull(corpus.Storage.AdapterPathToCorpusPath($"https://{adlsAdapter1.Hostname}{adlsAdapter1.Root}"));
+            Assert.IsNotNull(corpus.Storage.AdapterPathToCorpusPath($"https://{adlsAdapter2.Hostname}{adlsAdapter2.Root}"));
         }
 
         /// <summary>
@@ -288,6 +312,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
 
             var adlsAdapter1 = SymsTestHelper.CreateADLSAdapterWithClientIdWithSharedKey(1);
             var adlsAdapter2 = SymsTestHelper.CreateADLSAdapterWithClientIdWithSharedKey(2);
+
             var localInputAdapter = new LocalAdapter(testInputPath);
             var localActOutputAdapter = new LocalAdapter(testActOutputPath);
             var localExpOutputAdapter = new LocalAdapter(testExpOutputPath);
@@ -314,6 +339,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             await TestSymsSaveManifest(manifestModified);
             await TestSymsFetchManifest(corpus, manifestModified, "defaultmodified.manifest.cdm.json");
             await TestSymsFetchDocument(corpus, manifestModified);
+
+            var tasks = new List<Func<Task>>
+            {
+                TestSymsSmartADLSAdapterMountLogic,
+                TestSymsSmartADLSAdapterMountLogic,
+                TestSymsSmartADLSAdapterMountLogic,
+                TestSymsSmartADLSAdapterMountLogic
+            };
+            await Task.WhenAll(tasks.AsParallel().Select(async task => await task()));
+
             await SymsTestHelper.CleanDatabase(symsAdapter, SymsTestHelper.DatabaseName);
         }
     }

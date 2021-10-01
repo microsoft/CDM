@@ -180,14 +180,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                 return false;
             }
 
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + this.name;
-                    this.declaredPath = path;
-                }
-            }
+            const path: string = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;
@@ -238,7 +231,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
         resOpt.depthInfo.updateToNextLevel(resOpt, this.isPolymorphicSource, arc);
 
         const cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
-        return cacheTag ? ctx.cache.get(cacheTag) : undefined;
+        return cacheTag ? ctx.attributeCache.get(cacheTag) : undefined;
     }
 
     /**

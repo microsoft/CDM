@@ -28,7 +28,6 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
         super().__init__(ctx)
 
         self._TAG = CdmOperationExcludeAttributes.__name__
-        self.exclude_attributes = []  # type: List[str]
         self.type = CdmOperationType.EXCLUDE_ATTRIBUTES  # type: CdmOperationType
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationExcludeAttributes'] = None) -> 'CdmOperationExcludeAttributes':
@@ -62,12 +61,7 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if not self.ctx.corpus._block_declared_path_changes:
-            path = self._declared_path
-            if not path:
-                path = path_from + 'operationExcludeAttributes'
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False

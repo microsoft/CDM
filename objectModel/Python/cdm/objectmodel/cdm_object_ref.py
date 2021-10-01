@@ -124,8 +124,8 @@ class CdmObjectReference(CdmObject):
                            self.fetch_object_definition_name())
 
         if self.applied_traits:
-            for at in self.applied_traits:
-                rtsb.merge_traits(at._fetch_resolved_traits(res_opt))
+            for trait in self.applied_traits:
+                rtsb.merge_traits(trait._fetch_resolved_traits(res_opt))
 
     def _fetch_resolved_reference(self, res_opt: 'ResolveOptions') -> 'CdmObject':
         res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
@@ -252,58 +252,6 @@ class CdmObjectReference(CdmObject):
             return definition
         return None
 
-    def _fetch_resolved_traits(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
-        was_previously_resolving = self.ctx.corpus._is_currently_resolving
-        self.ctx.corpus._is_currently_resolving = True
-        ret = self._fetch_resolved_traits_internal(res_opt)
-        self.ctx.corpus._is_currently_resolving = was_previously_resolving
-        return ret
-
-    def _fetch_resolved_traits_internal(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
-        from cdm.utilities import SymbolSet
-        from .cdm_corpus_def import CdmCorpusDefinition
-
-        kind = 'rts'
-        # TODO: check the applied traits comparison
-        if self.named_reference and self.applied_traits is None:
-            ctx = self.ctx
-            obj_def = self.fetch_object_definition(res_opt)
-            cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, '', True, obj_def.at_corpus_path if obj_def else None)
-            rts_result = ctx._cache.get(cache_tag) if cache_tag else None
-
-            # store the previous reference symbol set, we will need to add it with
-            # children found from the _construct_resolved_traits call
-            curr_sym_ref_set = res_opt._symbol_ref_set or SymbolSet()
-            res_opt._symbol_ref_set = SymbolSet()
-
-            if rts_result is None:
-                if obj_def:
-                    rts_result = obj_def._fetch_resolved_traits(res_opt)
-                    if rts_result:
-                        rts_result = rts_result.deep_copy()
-
-                    # register set of possible docs
-                    ctx.corpus._register_definition_reference_symbols(obj_def, kind, res_opt._symbol_ref_set)
-
-                    # get the new cache tag now that we have the list of docs
-                    cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, '', True, obj_def.at_corpus_path)
-                    if cache_tag:
-                        ctx._cache[cache_tag] = rts_result
-            else:
-                # cache was found
-                # get the SymbolSet for this cached object
-                key = CdmCorpusDefinition._fetch_cache_key_from_object(self, kind)
-                res_opt._symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
-
-            # merge child symbol references set with current
-            curr_sym_ref_set._merge(res_opt._symbol_ref_set)
-            res_opt._symbol_ref_set = curr_sym_ref_set
-
-            return rts_result
-
-        return super()._fetch_resolved_traits(res_opt)
-
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         definition = self.fetch_object_definition(res_opt)  # type: CdmObjectDefinition
         if definition:
@@ -319,39 +267,32 @@ class CdmObjectReference(CdmObject):
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if self.named_reference:
-                path = path_from + self.named_reference
+        if self.named_reference:
+            path = path_from + self.named_reference
+        else:
+            # when an object is defined inline inside a reference, we need a path to the reference
+            # AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
+            # defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
+            # gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
+            # entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
+            # object at the same level, like anywhere there is a collection of references or the collection of attributes.
+            # so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
+            # extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
+            # the inline defined object.
+            # ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
+            # the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
+            # ANY reference, not just inline ones
+            if self.explicit_reference:
+                # ref path is name of defined object
+                path = self.explicit_reference._fetch_declared_path(path_from)
             else:
-                # when an object is defined inline inside a reference, we need a path to the reference
-                # AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
-                # defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
-                # gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
-                # entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
-                # object at the same level, like anywhere there is a collection of references or the collection of attributes.
-                # so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
-                # extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
-                # the inline defined object.
-                # ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
-                # the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
-                # ANY reference, not just inline ones
-                if self.explicit_reference:
-                    # ref path is name of defined object
-                    path = path_from + self.explicit_reference.get_name()
-                    # inline object path is a request for the defintion. setting the declaredPath
-                    # keeps the visit on the explcitReference from using the defined object name
-                    # as the path to that object
-                    self.explicit_reference._declared_path = path
-                else:
-                    path = path_from
-            self._declared_path = path + '/(ref)'
-        ref_path = self._declared_path
+                path = path_from
+        ref_path = path + '/(ref)'
 
         if pre_children and pre_children(self, ref_path):
             return False
 
-        if self.explicit_reference and not self.named_reference and self.explicit_reference.visit(path, pre_children, post_children):
+        if self.explicit_reference and not self.named_reference and self.explicit_reference.visit(path_from, pre_children, post_children):
             return True
 
         if self._visit_ref(path, pre_children, post_children):

@@ -234,12 +234,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if not path:
-                path = '{}{}'.format(path_from, (self.get_name() or 'UNNAMED'))
-                self._declared_path = path
+        path = self._fetch_declared_path(path_from)
 
         if pre_children and pre_children(self, path):
             return False
@@ -251,3 +246,6 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
             return True
 
         return False
+
+    def _fetch_declared_path(self, path_from: str) -> str:
+        return '{}{}'.format(path_from, (self.get_name() or 'UNNAMED'))

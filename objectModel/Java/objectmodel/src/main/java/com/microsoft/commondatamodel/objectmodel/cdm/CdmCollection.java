@@ -326,7 +326,6 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
    */
   void propagateInDocument(CdmObject cdmObject, CdmDocumentDefinition document) {
     if (!this.getCtx().getCorpus().isCurrentlyResolving)  {
-      this.getCtx().getCorpus().blockDeclaredPathChanges = true;
       cdmObject.visit("", (obj, path) -> {
         // If object's document is already the same as the one we're trying to set
         // then we're assuming that every sub-object is also set to it, so bail out.
@@ -337,7 +336,6 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
         obj.setInDocument(document);
         return false;
       }, null);
-      this.getCtx().getCorpus().blockDeclaredPathChanges = false;
     }
   }
 }

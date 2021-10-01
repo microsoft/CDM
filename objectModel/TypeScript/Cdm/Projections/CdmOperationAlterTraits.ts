@@ -109,14 +109,7 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = pathFrom + this.getName();
-                this.declaredPath = path;
-            }
-        }
+        const path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;
@@ -201,14 +194,12 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
 
     private resolvedNewTraits(projCtx: ProjectionContext, currentPAS: ProjectionAttributeState) {
         let resolvedTraitSet: ResolvedTraitSet = new ResolvedTraitSet(projCtx.projectionDirective.resOpt);
-        const baseAttributeName: string = projCtx.projectionDirective.originalSourceEntityAttributeName ?? projCtx.projectionDirective.owner.getName() ?? "";
-        const ordinal: string = currentPAS.ordinal != null ? currentPAS.ordinal.toString() : "";
-        const currentAttributeName: string = (currentPAS.currentResolvedAttribute.target as CdmAttribute)?.name ?? "";
+        const projectionOwnerName: string = projCtx.projectionDirective.originalSourceAttributeName ?? "";
 
         for (const traitRef of this.traitsToAdd)
         {
             const traitRefCopy: ResolvedTraitSet = traitRef.fetchResolvedTraits(projCtx.projectionDirective.resOpt).deepCopy();
-            this.replaceWildcardCharacters(projCtx.projectionDirective.resOpt, traitRefCopy, baseAttributeName, ordinal, currentAttributeName);
+            this.replaceWildcardCharacters(projCtx.projectionDirective.resOpt, traitRefCopy, projectionOwnerName, currentPAS);
             resolvedTraitSet = resolvedTraitSet.mergeSet(traitRefCopy);
         }
 
@@ -218,7 +209,7 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
     /**
      * Replace wild characters in the arguments if argumentsContainWildcards is true.
      */
-    private replaceWildcardCharacters(resOpt: resolveOptions, resolvedTraitSet: ResolvedTraitSet, baseAttributeName: string, ordinal: string, currentAttributeName: string): void {
+    private replaceWildcardCharacters(resOpt: resolveOptions, resolvedTraitSet: ResolvedTraitSet, projectionOwnerName: string, currentPAS: ProjectionAttributeState): void {
         if (this.argumentsContainWildcards !== undefined && this.argumentsContainWildcards == true) {
             resolvedTraitSet.set.forEach(resolvedTrait => {
 
@@ -226,7 +217,7 @@ export class CdmOperationAlterTraits extends CdmOperationBase {
                 for (let i: number = 0; i < parameterValueSet.length; ++i) {
                     var value = parameterValueSet.fetchValue(i);
                     if (typeof value === 'string'){
-                        var newVal = CdmOperationBase.replaceWildcardCharacters(value, baseAttributeName, ordinal, currentAttributeName);
+                        var newVal = CdmOperationBase.replaceWildcardCharacters(value, projectionOwnerName, currentPAS);
                         if (newVal != value) {
                             parameterValueSet.setParameterValue(resOpt, parameterValueSet.fetchParameterAtIndex(i).getName(), newVal);
                         }

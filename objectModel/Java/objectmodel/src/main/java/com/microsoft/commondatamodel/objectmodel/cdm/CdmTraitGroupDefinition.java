@@ -79,14 +79,7 @@ public class CdmTraitGroupDefinition extends CdmObjectDefinitionBase {
 
     @Override
     public boolean visit(String pathFrom, VisitCallback preChildren, VisitCallback postChildren) {
-        String path = "";
-        if (!getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = getDeclaredPath();
-            if (StringUtils.isNullOrTrimEmpty(path)) {
-                path = pathFrom + getTraitGroupName();
-                setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;

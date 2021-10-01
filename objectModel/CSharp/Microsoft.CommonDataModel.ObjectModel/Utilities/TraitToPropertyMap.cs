@@ -179,6 +179,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                     return this.FetchTraitReference("is.nullable", onlyFromProperty) != null;
                 case "isReadOnly":
                     return this.FetchTraitReference("is.readOnly", onlyFromProperty) != null;
+                case "isResolved":
+                    var trait = this.FetchTraitReference("has.entitySchemaAbstractionLevel", onlyFromProperty);
+                    return string.Equals(trait?.Arguments?.FetchValue("level"), "resolved");
                 case "valueConstrainedToList":
                     return this.FetchTraitReference("is.constrainedList", onlyFromProperty) != null;
                 case "maximumValue":

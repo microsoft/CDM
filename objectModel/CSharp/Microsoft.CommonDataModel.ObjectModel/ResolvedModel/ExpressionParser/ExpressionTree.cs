@@ -12,7 +12,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     /// <unitTest>ExpressionTreeUnitTest</unitTest>
     internal static class ExpressionTree
     {
-        internal static Dictionary<string, PredefinedTokenEnum> textToTokenHash = PredefinedTokens.InitializeTextToTokenHash();
+        internal static IReadOnlyDictionary<string, PredefinedTokenEnum> textToTokenHash = PredefinedTokens.InitializeTextToTokenHash();
 
         /// <summary>
         /// Create a new node of the expression tree

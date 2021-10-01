@@ -87,10 +87,11 @@ class RemoteAdapter(NetworkAdapter, StorageAdapterBase):
         result_config = {'type': self._type}
         config_object = {}
 
-        # Go through the hosts dictionary and build a dictionary for each item.
-        hosts_array = [{key: value} for key, value in self.hosts.items()]
+        if self.hosts is not None:
+            # Go through the hosts dictionary and build a dictionary for each item.
+            hosts_array = [{key: value} for key, value in self.hosts.items()]
 
-        config_object['hosts'] = hosts_array
+            config_object['hosts'] = hosts_array
 
         # Try constructing network configs.
         config_object.update(self.fetch_network_config())

@@ -81,20 +81,17 @@ class CdmCorpusDefinition:
         # used to stop making documents dirty during CdmCollections operations.
         self._is_currently_resolving = False  # type: bool
 
-        # used by visit functions of CdmObjects to skip calculating the declaredPath.
-        self._block_declared_path_changes = False  # type: bool
-
         # The set of resolution directives that will be used by default by the object model when it is resolving
         # entities and when no per-call set of directives is provided.
         self.default_resolution_directives = AttributeResolutionDirectiveSet(
             {'normalized', 'referenceOnly'})  # type: AttributeResolutionDirectiveSet
 
         self._symbol_definitions = {}  # type: Dict[str, List[CdmDocumentDefinition]]
-        self._incoming_relationships = defaultdict(list)  # type: Dict[CdmObjectDefinition, List[CdmE2ERelationship]]
-        self._outgoing_relationships = defaultdict(list)  # type: Dict[CdmObjectDefinition, List[CdmE2ERelationship]]
+        self._incoming_relationships = defaultdict(list)  # type: Dict[string, List[CdmE2ERelationship]]
+        self._outgoing_relationships = defaultdict(list)  # type: Dict[string, List[CdmE2ERelationship]]
         self._definition_reference_symbols = {}  # type: Dict[str, SymbolSet]
         self._empty_rts = {}  # type: Dict[str, ResolvedTraitSet]
-        self._document_library = DocumentLibrary()
+        self._document_library = DocumentLibrary(self)
         self._storage = StorageManager(self)
         self._persistence = PersistenceLayer(self)
         self._res_ent_map = defaultdict(str)  # type: Dict[str, str]
@@ -131,7 +128,7 @@ class CdmCorpusDefinition:
                     res_opt = ResolveOptions(entity.in_document,
                                             AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'}))
 
-                    is_resolved_entity = entity.attribute_context is not None
+                    is_resolved_entity = entity._is_resolved
 
                     # only create a resolved entity if the entity passed in was not a resolved entity
                     if not is_resolved_entity:
@@ -141,16 +138,36 @@ class CdmCorpusDefinition:
                         res_entity = entity
 
                     # find outgoing entity relationships using attribute context
-                    outgoing_relationships = self._find_outgoing_relationships(
+                    new_outgoing_relationships = self._find_outgoing_relationships(
                         res_opt, res_entity, res_entity.attribute_context, is_resolved_entity)  # type: List[CdmE2ERelationship]
 
-                    self._outgoing_relationships[entity] = outgoing_relationships
+                    old_outgoing_relationships = self._outgoing_relationships.get(entity.at_corpus_path)  # type: List[CdmE2ERelationship]
+
+                    # fix incoming rels based on any changes made to the outgoing rels
+                    if old_outgoing_relationships is not None:
+                        for rel in old_outgoing_relationships:
+                            rel_string = rel.create_cache_key()
+                            has_rel = any(x.create_cache_key() == rel_string for x in new_outgoing_relationships)
+
+                            # remove any relationships that no longer exist
+                            if not has_rel:
+                                target_ent = await self.fetch_object_async(rel.to_entity, curr_manifest)  # type: CdmEntityDefinition
+                                if target_ent is not None:
+                                    currIncoming = self._incoming_relationships.get(target_ent.at_corpus_path)  # type: List[CdmE2ERelationship]
+                                    if currIncoming is not None:
+                                        currIncoming.pop(currIncoming.index(rel))
+                                    else:
+                                        absolute_path = self.storage.create_absolute_corpus_path(rel.to_entity, rel.in_document)
+                                        self._incoming_relationships.pop(absolute_path)
+
+                    self._outgoing_relationships[entity.at_corpus_path] = new_outgoing_relationships
 
                     # flip outgoing entity relationships list to get incoming relationships map
-                    if outgoing_relationships:
-                        for rel in outgoing_relationships:
+                    if new_outgoing_relationships:
+                        for rel in new_outgoing_relationships:
                             target_ent = await self.fetch_object_async(rel.to_entity, curr_manifest)
-                            self._incoming_relationships[target_ent].append(rel)
+                            if target_ent is not None:
+                                self._incoming_relationships[target_ent.at_corpus_path].append(rel)
 
                     # delete the resolved entity if we created one here
                     if not is_resolved_entity:
@@ -160,126 +177,6 @@ class CdmCorpusDefinition:
                 sub_manifest = await self.fetch_object_async(sub_manifest_def.definition,
                                                              curr_manifest)  # type: Optional[CdmManifestDefinition]
                 await self.calculate_entity_graph_async(sub_manifest)
-
-    def _check_object_integrity(self, current_doc: 'CdmDocumentDefinition') -> bool:
-        ctx = self.ctx
-        error_count = 0
-
-        def callback(obj: 'CdmObject', path: str) -> bool:
-            nonlocal error_count
-            if not obj.validate():
-                error_count += 1
-            else:
-                obj.ctx = ctx
-
-            logger.info(self.ctx, self._TAG, self._check_object_integrity.__name__, current_doc.at_corpus_path,
-                        'checked \'{}\''.format(current_doc._folder_path + path))
-
-            return False
-
-        current_doc.visit('', callback, None)
-
-        return error_count == 0
-
-    def _const_type_check(self, res_opt: 'ResolveOptions', current_doc: 'CdmDocumentDefinition',
-                          param_def: 'CdmParameterDefinition', a_value: 'CdmArgumentValue') -> 'CdmArgumentValue':
-        ctx = self.ctx
-        replacement = a_value
-        # if parameter type is entity, then the value should be an entity or ref to one
-        # same is true of 'dataType' dataType
-        ref = param_def.data_type_ref
-        if not ref:
-            return replacement
-
-        dt = ref.fetch_object_definition(res_opt)
-
-        # compare with passed in value or default for parameter
-        p_value = a_value
-        if p_value is None:
-            p_value = param_def.default_value
-            replacement = p_value
-
-        if p_value is not None:
-            if dt.is_derived_from('cdmObject', res_opt):
-                expected_types = []
-                expected = None
-                if dt.is_derived_from('entity', res_opt):
-                    expected_types.append(CdmObjectType.CONSTANT_ENTITY_DEF)
-                    expected_types.append(CdmObjectType.ENTITY_REF)
-                    expected_types.append(CdmObjectType.ENTITY_DEF)
-                    expected_types.append(CdmObjectType.PROJECTION_DEF)
-                    expected = 'entity'
-                elif dt.is_derived_from('attribute', res_opt):
-                    expected_types.append(CdmObjectType.ATTRIBUTE_REF)
-                    expected_types.append(CdmObjectType.TYPE_ATTRIBUTE_DEF)
-                    expected_types.append(CdmObjectType.ENTITY_ATTRIBUTE_DEF)
-                    expected = 'attribute'
-                elif dt.is_derived_from('dataType', res_opt):
-                    expected_types.append(CdmObjectType.DATA_TYPE_REF)
-                    expected_types.append(CdmObjectType.DATA_TYPE_DEF)
-                    expected = 'dataType'
-                elif dt.is_derived_from('purpose', res_opt):
-                    expected_types.append(CdmObjectType.PURPOSE_REF)
-                    expected_types.append(CdmObjectType.PURPOSE_DEF)
-                    expected = 'purpose'
-                elif dt.is_derived_from('trait', res_opt):
-                    expected_types.append(CdmObjectType.TRAIT_REF)
-                    expected_types.append(CdmObjectType.TRAIT_DEF)
-                    expected = 'trait'
-                elif dt.is_derived_from('traitGroup', res_opt):
-                    expected_types.append(CdmObjectType.TRAIT_GROUP_REF)
-                    expected_types.append(CdmObjectType.TRAIT_GROUP_DEF)
-                    expected = 'traitGroup'
-                elif dt.is_derived_from('attributeGroup', res_opt):
-                    expected_types.append(CdmObjectType.ATTRIBUTE_GROUP_REF)
-                    expected_types.append(CdmObjectType.ATTRIBUTE_GROUP_DEF)
-                    expected = 'attributeGroup'
-
-                if not expected_types:
-                    logger.error(self.ctx, self._TAG, '_const_type_check', current_doc.at_corpus_path, CdmLogCode.ERR_UNEXPECTED_DATA_TYPE,
-                                 param_def.name)
-
-                # if a string constant, resolve to an object ref.
-                found_type = CdmObjectType.ERROR
-                if isinstance(p_value, CdmObject):
-                    found_type = p_value.object_type
-
-                found_desc = ctx._relative_path
-                if isinstance(p_value, str):
-                    if p_value == 'this.attribute' and expected == 'attribute':
-                        # will get sorted out later when resolving traits
-                        found_type = CdmObjectType.ATTRIBUTE_REF
-                    else:
-                        found_desc = p_value
-                        from cdm.objectmodel import CdmObjectReference
-                        seek_res_att = CdmObjectReference._offset_attribute_promise(p_value)
-                        if seek_res_att >= 0:
-                            # get an object there that will get resolved later after resolved attributes
-                            replacement = CdmAttributeReference(self.ctx, p_value, True)
-                            replacement.in_document = current_doc
-                            found_type = CdmObjectType.ATTRIBUTE_REF
-                        else:
-                            lu = ctx.corpus._resolve_symbol_reference(res_opt, current_doc, p_value,
-                                                                      CdmObjectType.ERROR, True)
-                            if lu:
-                                if expected == 'attribute':
-                                    replacement = CdmAttributeReference(self.ctx, p_value, True)
-                                    replacement.in_document = current_doc
-                                    found_type = CdmObjectType.ATTRIBUTE_REF
-                                else:
-                                    replacement = lu
-                                    if isinstance(replacement, CdmObject):
-                                        found_type = replacement.object_type
-
-                if expected_types.index(found_type) == -1:
-                    logger.error(self.ctx, self._TAG, current_doc.at_corpus_path,
-                                 CdmLogCode.ERR_RESOLUTION_FAILURE,
-                                 param_def.get_name(), expected, found_desc)
-                else:
-                    logger.info(self.ctx, self._TAG, self._resolve_object_definitions.__name__,
-                                current_doc.at_corpus_path, 'resolved \'{}\''.format(found_desc))
-
-        return replacement
 
     async def create_root_manifest_async(self, corpus_path: str) -> Optional['CdmManifestDefinition']:
         if self._is_path_manifest_document(corpus_path):
@@ -577,7 +474,14 @@ class CdmCorpusDefinition:
             this_id = str(definition.id)
 
         tag_suffix = '-{}-{}'.format(kind, this_id)
-        tag_suffix += '-({})'.format(res_opt.directives.get_tag() if res_opt.directives else '')
+        # Some object types like traits don't change their resolved from depending on the directives.
+        # This optimization is only useful when the same corpus is used to resolve objects using different directives.
+        SIMPLE_CACHE_TAG_TYPES = { CdmObjectType.DATA_TYPE_DEF, CdmObjectType.PURPOSE_DEF, CdmObjectType.TRAIT_DEF, CdmObjectType.TRAIT_GROUP_DEF }
+        simple_cache_tag = definition.object_type in SIMPLE_CACHE_TAG_TYPES
+
+        if not simple_cache_tag:
+            tag_suffix += '-({})'.format(res_opt.directives.get_tag() if res_opt.directives else '')
+
         # only for attributes
         if kind == 'rasb':
             # if MaxDepth was not initialized before, initialize it now
@@ -633,118 +537,51 @@ class CdmCorpusDefinition:
 
         return None
 
-    def _index_documents(self, res_opt: 'ResolveOptions', load_imports: bool) -> bool:
-        docs_not_indexed = self._document_library._list_docs_not_indexed()  # type: Set[CdmDocumentDefinition]
+    def _index_documents(self, res_opt: 'ResolveOptions', load_imports: bool, root_doc: 'CdmDocumentDefinition', docs_loaded: Set[str]) -> bool:
+        docs_not_indexed = self._document_library._list_docs_not_indexed(root_doc, docs_loaded)  # type: Set[CdmDocumentDefinition]
 
-        if not docs_not_indexed:
-            return True
-
+        # Step: clear document caches.
         for doc in docs_not_indexed:
-            if not doc._declarations_indexed:
+            if not doc._declarations_indexed or load_imports:
                 logger.debug(self.ctx, self._TAG, self._index_documents.__name__, doc.at_corpus_path,
                              'index start: {}'.format(doc.at_corpus_path))
                 doc._clear_caches()
 
-        # check basic integrity
+        # Step: check basic integrity.
         for doc in docs_not_indexed:
-            if not doc._declarations_indexed:
-                doc._is_valid = self._check_object_integrity(doc)
+            if not doc._declarations_indexed or load_imports:
+                doc._check_integrity()
 
-        # declare definitions of objects in this doc
+        # Step: declare definitions of objects in this doc.
         for doc in docs_not_indexed:
-            if not doc._declarations_indexed and doc._is_valid:
-                self._declare_object_definitions(doc, '')
+            if (not doc._declarations_indexed or load_imports) and doc._is_valid:
+                doc._declare_object_definitions()
 
         if load_imports:
-            # index any imports
+            # Step: index import priorities.
             for doc in docs_not_indexed:
-                doc._get_import_priorities()
+                if doc._is_valid:
+                    # index any imports.
+                    doc._get_import_priorities()
 
-            # make sure we can find everything that is named by reference
+            # Step: make sure we can find everything that is named by reference.
             for doc in docs_not_indexed:
                 if doc._is_valid:
                     res_opt_local = res_opt.copy()
                     res_opt_local.wrt_doc = doc
-                    self._resolve_object_definitions(res_opt_local, doc)
+                    doc._resolve_object_definitions(res_opt_local)
 
-            # now resolve any trait arguments that are type object
+           # Step: now resolve any trait arguments that are type object.
             for doc in docs_not_indexed:
                 res_opt_local = res_opt.copy()
                 res_opt_local.wrt_doc = doc
-                self._resolve_trait_arguments(res_opt_local, doc)
+                doc._resolve_trait_arguments(res_opt_local)
 
-        # finish up
-        # make a copy to avoid error iterating over set that is modified in loop
-        for doc in docs_not_indexed.copy():
-            logger.debug(self.ctx, self._TAG, self._index_documents.__name__, doc.at_corpus_path,
-                         'index finish: {}'.format(doc.at_corpus_path))
-            self._finish_document_resolve(doc, load_imports)
+        # Step: finish up
+        for doc in docs_not_indexed:
+            doc._finish_indexing(load_imports)
 
         return True
-
-    def _declare_object_definitions(self, current_doc: 'CdmDocumentDefinition', relative_path: str) -> None:
-        ctx = self.ctx
-        # TODO: find a better solution for this set
-        skip_duplicate_types = {CdmObjectType.ATTRIBUTE_GROUP_REF, CdmObjectType.ATTRIBUTE_CONTEXT_REF,
-                                CdmObjectType.DATA_TYPE_REF, CdmObjectType.ENTITY_REF, CdmObjectType.PURPOSE_REF,
-                                CdmObjectType.TRAIT_REF, CdmObjectType.TRAIT_GROUP_REF,
-                                CdmObjectType.CONSTANT_ENTITY_DEF}
-        internal_declaration_types = {CdmObjectType.ENTITY_DEF, CdmObjectType.PARAMETER_DEF,
-                                      CdmObjectType.TRAIT_DEF, CdmObjectType.TRAIT_GROUP_DEF,
-                                      CdmObjectType.PURPOSE_DEF, CdmObjectType.DATA_TYPE_DEF,
-                                      CdmObjectType.TYPE_ATTRIBUTE_DEF, CdmObjectType.ENTITY_ATTRIBUTE_DEF,
-                                      CdmObjectType.ATTRIBUTE_GROUP_DEF, CdmObjectType.CONSTANT_ENTITY_DEF,
-                                      CdmObjectType.ATTRIBUTE_CONTEXT_DEF, CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF,
-                                      CdmObjectType.REFERENCED_ENTITY_DECLARATION_DEF,
-                                      CdmObjectType.ATTRIBUTE_GROUP_REF, CdmObjectType.ATTRIBUTE_CONTEXT_REF,
-                                      CdmObjectType.DATA_TYPE_REF, CdmObjectType.ENTITY_REF, CdmObjectType.PURPOSE_REF,
-                                      CdmObjectType.TRAIT_REF, CdmObjectType.TRAIT_GROUP_REF,
-                                      CdmObjectType.ATTRIBUTE_GROUP_DEF,
-                                      CdmObjectType.PROJECTION_DEF, CdmObjectType.OPERATION_ADD_COUNT_ATTRIBUTE_DEF,
-                                      CdmObjectType.OPERATION_ADD_SUPPORTING_ATTRIBUTE_DEF,
-                                      CdmObjectType.OPERATION_ADD_TYPE_ATTRIBUTE_DEF,
-                                      CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF,
-                                      CdmObjectType.OPERATION_ARRAY_EXPANSION_DEF,
-                                      CdmObjectType.OPERATION_COMBINE_ATTRIBUTES_DEF,
-                                      CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF,
-                                      CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF,
-                                      CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF,
-                                      CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF,
-                                      CdmObjectType.OPERATION_ALTER_TRAITS_DEF,
-                                      CdmObjectType.OPERATION_ADD_ARTIFACT_ATTRIBUTE_DEF}
-
-        def callback(obj: 'CdmObject', path: str) -> bool:
-            # I can't think of a better time than now to make sure any recently changed or added things have an in doc
-            obj.in_document = current_doc
-
-            if path.find('(unspecified)') > 0:
-                return True
-
-            skip_duplicates = False
-            if obj.object_type in skip_duplicate_types:
-                # these are all references
-                # we will now allow looking up a reference object based on path, so they get indexed too
-                # if there is a duplicate, don't complain, the path just finds the first one
-                skip_duplicates = True
-            if obj.object_type in internal_declaration_types:
-                ctx._relative_path = relative_path
-
-                corpus_path = '{}/{}'.format(corpus_path_root, path)
-                if path in current_doc.internal_declarations and not skip_duplicates:
-                    logger.error(self.ctx, self._TAG, '_declare_object_definitions', corpus_path, CdmLogCode.ERR_PATH_IS_DUPLICATE,
-                                 corpus_path)
-                    return False
-                else:
-                    current_doc.internal_declarations[path] = obj
-                    self._register_symbol(path, current_doc)
-
-                    logger.info(self.ctx, self._TAG, self._declare_object_definitions.__name__, corpus_path,
-                                'declared \'{}\''.format(path))
-
-            return False
-
-        corpus_path_root = current_doc._folder_path + current_doc.name
-        current_doc.visit(relative_path, callback, None)
 
     def _docs_for_symbol(self, res_opt: 'ResolveOptions', wrt_doc: 'CdmDocumentDefinition',
                          from_doc: 'CdmDocumentDefinition', symbol_def: str) -> DocsResult:
@@ -816,101 +653,42 @@ class CdmCorpusDefinition:
 
         return rts
 
-    def _finish_document_resolve(self, doc: 'CdmDocumentDetinition', loaded_imports: bool) -> None:
-        was_indexed_previously = doc._declarations_indexed
-
-        doc._currently_indexing = False
-        doc._imports_indexed = doc._imports_indexed or loaded_imports
-        doc._declarations_indexed = True
-        doc._needs_indexing = not loaded_imports
-        self._document_library._mark_document_as_indexed(doc)
-
-        # if the document declarations were indexed previously, do not log again.
-        if not was_indexed_previously and doc._is_valid:
-            for definition in doc.definitions:
-                if definition.object_type == CdmObjectType.ENTITY_DEF:
-                    logger.debug(self.ctx, self._TAG, self._finish_document_resolve.__name__, definition.at_corpus_path,
-                                 'indexed entity: {}'.format(definition.at_corpus_path))
-
     def _finish_resolve(self) -> None:
         #  cleanup references
         logger.debug(self.ctx, self._TAG, self._finish_resolve.__name__, None, 'finishing...')
 
         # turn elevated traits back on, they are off by default and should work fully now that everything is resolved
         all_documents = self._document_library._list_all_documents()
-        for fd in all_documents:
-            self._finish_document_resolve(fd[1], False)
+        for doc in all_documents:
+            doc._finish_indexing(False)
 
-    async def _load_folder_or_document(self, object_path: str, force_reload: Optional[bool] = False,
-                                       res_opt: Optional['ResolveOptions'] = None) -> Optional[
-        'CdmContainerDefinition']:
-        if not object_path:
-            return None
-
-        # first check for namespace
-        path_tuple = StorageUtils.split_namespace_path(object_path)
-        if not path_tuple:
-            logger.error(self.ctx, self._TAG, self._load_folder_or_document.__name__, object_path,
-                         CdmLogCode.ERR_PATH_NULL_OBJECT_PATH)
-            return None
-        namespace = path_tuple[0] or self.storage.default_namespace
-        object_path = path_tuple[1]
-
-        if object_path.find('/') == 0:
-            namespace_folder = self.storage.fetch_root_folder(namespace)
-            namespace_adapter = self.storage.fetch_adapter(namespace)
-            if not namespace_folder or not namespace_adapter:
-                logger.error(self.ctx, self._TAG, self._load_folder_or_document.__name__, object_path,
-                             CdmLogCode.ERR_STORAGE_NAMESPACE_NOT_REGISTERED, namespace)
-                return None
-
-            last_folder = namespace_folder._fetch_child_folder_from_path(object_path, False)
-
-            # don't create new folders, just go as far as possible
-            if last_folder:
-                # maybe the search is for a folder?
-                last_path = last_folder._folder_path
-                if last_path == object_path:
-                    return last_folder
-
-                # remove path to folder and then look in the folder
-                object_path = object_path[len(last_path):]
-
-                return await last_folder._fetch_document_from_folder_path_async(object_path, namespace_adapter,
-                                                                                force_reload, res_opt)
-
-        return None
-
-    async def _load_docs(self, doc_path: str, res_opt: 'ResolveOptions') -> None:
-        """Loads a document and its imports recursively."""
-        if not self._document_library._need_to_load_document(doc_path):
-            return
-
-        self._document_library._concurrent_read_lock.acquire()
-        
-        # load it
-        document = await self._load_folder_or_document(doc_path, False, res_opt)  # type: CdmDocumentDefinition
-
-        if self._document_library._mark_document_as_loaded_or_failed(doc_path, document):
-            logger.info(self.ctx, self._TAG, self._load_imports_async.__name__, document.at_corpus_path,
-                        'resolved import for \'{}\''.format(document.name))
-        else:
-            logger.warning(self.ctx, self._TAG, CdmCorpusDefinition._load_imports_async.__name__, None, CdmLogCode.WARN_RESOLVE_IMPORT_FAILED, doc_path, doc_path)
-        self._document_library._concurrent_read_lock.release()
-        
-        await self._load_imports_async(document, res_opt)
-
-    async def _load_imports_async(self, doc: 'CdmDocumentDefinition', res_opt: 'ResolveOptions') -> None:
+    async def _load_imports_async(self, doc: 'CdmDocumentDefinition', docs_loading: Set[str], res_opt: 'ResolveOptions') -> None:
         """Recursively load all imports of a given document."""
         if not doc:
+            # if there's not document, our job here is done.
             return
 
-        task_list = []
+        async def _load_docs(doc_path: str) -> None:
+            """Loads a document and its imports recursively."""
+            if not self._document_library._need_to_load_document(doc_path, docs_loading):
+                return
+            # load it
+            loaded_doc = await self._document_library._load_folder_or_document(doc_path, False, res_opt)  # type: CdmDocumentDefinition
 
+            if loaded_doc:
+                logger.info(self.ctx, self._TAG, self._load_imports_async.__name__, loaded_doc.at_corpus_path,
+                            'resolved import for \'{}\''.format(loaded_doc.name))
+            else:
+                logger.warning(self.ctx, self._TAG, CdmCorpusDefinition._load_imports_async.__name__, None, CdmLogCode.WARN_RESOLVE_IMPORT_FAILED, doc_path, doc_path)
+
+            await self._load_imports_async(loaded_doc, docs_loading, res_opt)
+
+        # Loop through all of the document's imports and load them recursively.
+        task_list = []
         for imp in doc.imports:
             if not imp._document:
                 path = self.storage.create_absolute_corpus_path(imp.corpus_path, doc)
-                load_task = self._load_docs(path, res_opt)
+                load_task = _load_docs(path)
                 task_list.append(load_task)
 
         # wait for all of the missing docs to finish loading
@@ -972,7 +750,7 @@ class CdmCorpusDefinition:
 
     def _remove_object_definitions(self, doc: CdmDocumentDefinition) -> None:
         def visit_callback(i_object: 'CdmObject', path: str) -> bool:
-            if path.find('(unspecified)') > 0:
+            if '(unspecified)' in path:
                 return True
 
             if i_object.object_type in [CdmObjectType.ENTITY_DEF, CdmObjectType.PARAMETER_DEF,
@@ -1002,10 +780,10 @@ class CdmCorpusDefinition:
 
         doc.visit('', visit_callback, None)
 
-    async def _resolve_imports_async(self, doc: 'CdmDocumentDefinition', res_opt: 'ResolveOptions') -> None:
+    async def _resolve_imports_async(self, doc: 'CdmDocumentDefinition', docs_loading: Set[CdmDocumentDefinition], res_opt: 'ResolveOptions') -> None:
         """takes a callback that askes for promise to do URI resolution."""
         # load imports (and imports of imports)
-        await self._load_imports_async(doc, res_opt)
+        await self._load_imports_async(doc, docs_loading, res_opt)
         # now that everything is loaded, attach import docs to this doc's import list
         self._set_import_documents(doc)
 
@@ -1230,7 +1008,7 @@ class CdmCorpusDefinition:
         (meaning given a document and the things it defines and the files it imports and the files they import,
         where is the 'last' definition found)"""
 
-        if not res_opt or not res_opt.wrt_doc:
+        if not res_opt or not res_opt.wrt_doc or not symbol_def:
             # no way to figure this out
             return None
 
@@ -1248,10 +1026,24 @@ class CdmCorpusDefinition:
                             'because the ImportsLoadStrategy is set to DO_NOT_LOAD')
             return None
 
+        # save the symbol name as it got here
+        initial_symbol = symbol_def
+
+        # when trying to find a reference, first find the definition that contains it
+        # and then look for the reference inside it.
+        is_reference = symbol_def.endswith('(ref)')
+        if is_reference:
+            def_index = symbol_def.find('/')
+            symbol_def = symbol_def[0 : def_index]
+
         # get the array of documents where the symbol is defined
         symbol_docs_result = self._docs_for_symbol(res_opt, wrt_doc, from_doc, symbol_def)
         doc_best = symbol_docs_result.doc_best
         symbol_def = symbol_docs_result.new_symbol
+
+        if not is_reference:
+            initial_symbol = symbol_def
+
         docs = symbol_docs_result.doc_list  # type: List[CdmDocumentDefinition]
 
         if docs:
@@ -1278,12 +1070,27 @@ class CdmCorpusDefinition:
 
         # return the definition found in the best document
         found = doc_best.internal_declarations.get(symbol_def)
+
+        # in case we are trying to find a reference, the object we found previously is the definition that contains the reference.
+        # look inside the definition now.
+        if found and is_reference:
+            found_ref = None  # type: Optional[CdmObjectBase]
+            # try to find the reference
+            def find_ref_callback(obj: CdmObject, obj_path: str):
+                nonlocal found_ref
+                if initial_symbol == obj_path:
+                    found_ref = obj
+                    return True
+                return False
+            found.visit('', find_ref_callback, None)
+            found = found_ref
+
         if not found and retry:
             # maybe just locatable from here not defined here.
             # this happens when the symbol is monikered, but the moniker path doesn't lead to the document where
             # the symbol is defined. it leads to the document from where the symbol can be found.
             # Ex.: resolvedFrom/Owner, while resolvedFrom is the Account that imports Owner.
-            found = self._resolve_symbol_reference(res_opt, doc_best, symbol_def, expected_type, False)
+            found = self._resolve_symbol_reference(res_opt, doc_best, initial_symbol, expected_type, False)
 
         if found and expected_type != CdmObjectType.ERROR:
             if expected_type in SYMBOL_TYPE_CHECK and SYMBOL_TYPE_CHECK[expected_type] != found.object_type:
@@ -1298,89 +1105,6 @@ class CdmCorpusDefinition:
                 found = None
 
         return found
-
-    def _resolve_object_definitions(self, res_opt: 'ResolveOptions', current_doc: 'CdmDocumentDefinition') -> None:
-        ctx = self.ctx
-        res_opt._indexing_doc = current_doc
-        reference_type_set = {CdmObjectType.ATTRIBUTE_REF, CdmObjectType.ATTRIBUTE_GROUP_REF,
-                              CdmObjectType.ATTRIBUTE_CONTEXT_REF, CdmObjectType.DATA_TYPE_REF,
-                              CdmObjectType.ENTITY_REF, CdmObjectType.PURPOSE_REF, CdmObjectType.TRAIT_REF}
-
-        def pre_callback(obj: 'CdmObjectReference', path: str) -> bool:
-            if obj.object_type in reference_type_set:
-                ctx._relative_path = path
-
-                if obj._offset_attribute_promise(obj.named_reference) < 0:
-                    res_new = obj._fetch_resolved_reference(res_opt)
-
-                    if not res_new:
-
-                        # it's okay if references can't be resolved when shallow validation is enabled.
-                        if res_opt.shallow_validation:
-                            logger.warning(self.ctx, self._TAG,
-                                           CdmCorpusDefinition._resolve_object_definitions.__name__, current_doc.at_corpus_path,
-                                           CdmLogCode.WARN_RESOLVE_REFERENCE_FAILURE, obj.named_reference)
-                        else:
-                            logger.error(self.ctx, self._TAG, CdmCorpusDefinition._resolve_object_definitions.__name__, current_doc.at_corpus_path,
-                                         CdmLogCode.ERR_RESOLVE_REFERENCE_FAILURE, obj.named_reference)
-                        # don't check in this file without both of these comments. handy for debug of failed lookups
-                        # res_test = obj.fetch_object_definition(res_opt)
-                    else:
-                        logger.info(self.ctx, self._TAG, CdmCorpusDefinition._resolve_object_definitions.__name__,
-                                    current_doc.at_corpus_path, 'resolved \'{}\''.format(obj.named_reference))
-
-            return False
-
-        def pos_callback(obj: 'CdmObject', path: str) -> bool:
-            if obj.object_type == CdmObjectType.PARAMETER_DEF:
-                # when a parameter has a datatype that is a cdm object, validate that any default value is the
-                # right kind object
-                self._const_type_check(res_opt, current_doc, obj, None)
-            return False
-
-        current_doc.visit('', pre_callback, pos_callback)
-        res_opt._indexing_doc = None
-
-    def _resolve_trait_arguments(self, res_opt: 'ResolveOptions', current_doc: 'CdmDocumentDefinition') -> None:
-        ctx = self.ctx
-
-        def pre_visit(obj: 'CdmObject', path: str) -> bool:
-            if obj.object_type == CdmObjectType.TRAIT_REF:
-                ctx.push_scope(obj.fetch_object_definition(res_opt))
-            elif obj.object_type == CdmObjectType.ARGUMENT_DEF:
-                try:
-                    if ctx._current_scope._current_trait:
-                        ctx._relative_path = path
-                        params = ctx._current_scope._current_trait._fetch_all_parameters(res_opt)
-
-                        param_found = params.resolve_parameter(
-                            ctx._current_scope._current_parameter,
-                            cast('CdmArgumentDefinition', obj).get_name())
-
-                        obj._resolved_parameter = param_found
-                        a_value = obj.value
-
-                        # if parameter type is entity, then the value should be an entity or ref to one
-                        # same is true of 'dataType' dataType
-                        a_value = self._const_type_check(res_opt, current_doc, param_found, a_value)
-                        if a_value:
-                            obj.value = a_value
-                except Exception as e:
-                    logger.error(self.ctx, self._TAG, '_resolve_trait_arguments', current_doc.at_corpus_path, CdmLogCode.ERR_TRAIT_RESOLUTION_FAILURE,
-                        ctx._current_scope._current_trait.get_name(), e)
-
-                ctx._current_scope._current_parameter += 1
-
-            return False
-
-        def post_visit(obj: 'CdmObject', path: str) -> bool:
-            if obj.object_type == CdmObjectType.TRAIT_REF:
-                obj._resolved_arguments = True
-                ctx.pop_scope()
-
-            return False
-
-        current_doc.visit('', pre_visit, post_visit)
 
     def set_event_callback(self, status: 'EventCallback', report_at_level: 'CdmStatusLevel' = CdmStatusLevel.INFO,
                            correlation_id: Optional[str] = None):
@@ -1518,8 +1242,7 @@ class CdmCorpusDefinition:
 
     async def fetch_object_async(self, object_path: str, relative_object: Optional['CdmObject'] = None,
                                  shallow_validation: Optional[bool] = False,
-                                 force_reload: Optional[bool] = False, res_opt: Optional['ResolveOptions'] = None) -> \
-    Optional['CdmObject']:
+                                 force_reload: Optional[bool] = False, res_opt: Optional['ResolveOptions'] = None) -> Optional['CdmObject']:
         """gets an object by the path from the Corpus."""
         from cdm.persistence import PersistenceLayer
 
@@ -1539,7 +1262,7 @@ class CdmCorpusDefinition:
 
             logger.debug(self.ctx, self._TAG, self.fetch_object_async.__name__, object_path,
                          'request object: {}'.format(object_path))
-            obj = await self._load_folder_or_document(document_path, force_reload)
+            obj = await self._document_library._load_folder_or_document(document_path, force_reload)
 
             if not obj:
                 return None
@@ -1597,11 +1320,11 @@ class CdmCorpusDefinition:
         return path.endswith(PersistenceLayer.FOLIO_EXTENSION) or path.endswith(PersistenceLayer.MANIFEST_EXTENSION) \
                or path.endswith(PersistenceLayer.MODEL_JSON_EXTENSION)
 
-    def fetch_incoming_relationships(self, path: str) -> List['E2ERelationshipDef']:
-        return self._incoming_relationships.get(path, [])
+    def fetch_incoming_relationships(self, entity: 'CdmEntityDefinition') -> List['E2ERelationshipDef']:
+        return self._incoming_relationships.get(entity.at_corpus_path, [])
 
-    def fetch_outgoing_relationships(self, path: str) -> List['E2ERelationshipDef']:
-        return self._outgoing_relationships.get(path, [])
+    def fetch_outgoing_relationships(self, entity: 'CdmEntityDefinition') -> List['E2ERelationshipDef']:
+        return self._outgoing_relationships.get(entity.at_corpus_path, [])
 
     def _get_from_attributes(self, new_gen_set: 'CdmAttributeContext', from_attrs: List['CdmAttributeReference']) -> \
     List['CdmAttributeReference']:

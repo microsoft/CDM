@@ -87,16 +87,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            string path = string.Empty;
-            if (this.Ctx.Corpus.blockDeclaredPathChanges == false)
-            {
-                path = this.DeclaredPath;
-                if (string.IsNullOrEmpty(path))
-                {
-                    path = pathFrom + $"operationReplaceAsForeignKey";
-                    this.DeclaredPath = path;
-                }
-            }
+            string path = this.UpdateDeclaredPath(pathFrom);
 
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
@@ -158,7 +149,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string refAttrName)
         {
             List<ProjectionAttributeState> pasList = ProjectionResolutionCommonUtil.GetLeafList(projCtx, refAttrName);
-            string sourceEntity = projCtx.ProjectionDirective.OriginalSourceEntityAttributeName;
+            string sourceEntity = projCtx.ProjectionDirective.OriginalSourceAttributeName;
 
             if (sourceEntity == null)
             {

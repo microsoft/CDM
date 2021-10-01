@@ -16,7 +16,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +32,6 @@ public class CdmOperationIncludeAttributes extends CdmOperationBase {
         super(ctx);
         this.setObjectType(CdmObjectType.OperationIncludeAttributesDef);
         this.setType(CdmOperationType.IncludeAttributes);
-
-        this.includeAttributes = new ArrayList<>();
     }
 
     @Override
@@ -102,14 +99,7 @@ public class CdmOperationIncludeAttributes extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrEmpty(path)) {
-                path = pathFrom + "operationIncludeAttributes";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;

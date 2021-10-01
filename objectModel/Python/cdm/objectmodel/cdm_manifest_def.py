@@ -23,15 +23,6 @@ if TYPE_CHECKING:
     from cdm.utilities import CopyOptions, VisitCallback
 
 
-def rel2_cache_key(rel: 'CdmE2ERelationship') -> str:
-    """"standardized way of turning a relationship object into a key for caching
-    without using the object itself as a key (could be duplicate relationship objects)"""
-    name_and_pipe = ''
-    if rel.name:
-        name_and_pipe = '{}|'.format(rel.name)
-    return '{}{}|{}|{}|{}'.format(name_and_pipe, rel.to_entity, rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
-
-
 class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileStatus):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx, '{}.manifest.cdm.json'.format(name))
@@ -152,6 +143,10 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 new_manifest_name = new_manifest_name[resolved_manifest_path_split:]
             else:
                 resolved_manifest_folder = self.owner
+
+            if resolved_manifest_folder.documents.item(new_manifest_name) is not None:
+                logger.error(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path, CdmLogCode.ERR_RESOLVE_MANIFEST_EXISTS, new_manifest_name, resolved_manifest_folder.at_corpus_path)
+                return None
 
             logger.debug(self.ctx, self._TAG, self.create_resolved_manifest_async.__name__, self.at_corpus_path,
                          'resolving manifest {}'.format(source_manifest_path))
@@ -319,7 +314,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 outgoing_rels = self.ctx.corpus.fetch_outgoing_relationships(curr_entity)  # List[CdmE2ERelationship]
                 if outgoing_rels:
                     for rel in outgoing_rels:
-                        cache_key = rel2_cache_key(rel)
+                        cache_key = rel.create_cache_key()
                         if cache_key not in rel_cache and self._is_rel_allowed(rel, option):
                             self.relationships.append(self._localize_rel_to_manifest(rel))
                             rel_cache.add(cache_key)
@@ -344,7 +339,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                                 to_inheritance_graph.append(current_in_base)
 
                         # add current incoming relationship
-                        cache_key = rel2_cache_key(in_rel)
+                        cache_key = in_rel.create_cache_key()
                         if cache_key not in rel_cache and self._is_rel_allowed(in_rel, option):
                             self.relationships.append(self._localize_rel_to_manifest(in_rel))
                             rel_cache.add(cache_key)
@@ -361,7 +356,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                                     new_rel.to_entity = in_rel.to_entity
                                     new_rel.to_entity_attribute = in_rel.to_entity_attribute
 
-                                    base_rel_cache_key = rel2_cache_key(new_rel)
+                                    base_rel_cache_key = new_rel.create_cache_key()
                                     if base_rel_cache_key not in rel_cache and self._is_rel_allowed(new_rel, option):
                                         self.relationships.append(self._localize_rel_to_manifest(new_rel))
                                         rel_cache.add(base_rel_cache_key)
@@ -410,25 +405,25 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         return True
 
 
-    async def _fetch_document_definition(self, relative_path: str) -> (CdmDocumentDefinition, bool):
+    async def _fetch_document_definition(self, relative_path: str) -> CdmDocumentDefinition:
         """Helper that fixes a path from local to absolute.Gets the object from that path.
         Created from SaveDirtyLink in order to be able to save docs in parallel.
         Represents the part of SaveDirtyLink that could not be parallelized."""
-        ans = (None, False)
+
         # get the document object from the import
         doc_path = self.ctx.corpus.storage.create_absolute_corpus_path(relative_path, self)
         if doc_path is None:
             logger.error(self.ctx, self._TAG, self._fetch_document_definition.__name__, self.at_corpus_path, CdmLogCode.ERR_VALDN_INVALID_CORPUS_PATH, relative_path)
-            return ans
+            return None
 
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
         obj_at = await self.ctx.corpus.fetch_object_async(doc_path, None, res_opt)
         if obj_at is None:
             logger.error(self.ctx, self._TAG, self._fetch_document_definition.__name__, self.at_corpus_path, CdmLogCode.ERR_PERSIST_OBJECT_NOT_FOUND, doc_path)
-            return ans
-        doc_imp = cast('CdmDocumentDefinition', obj_at.in_document)
-        return (doc_imp, True) 
+            return None
+        document = cast('CdmDocumentDefinition', obj_at.in_document)
+        return document
 
     async def _save_document_if_dirty(self, doc_imp, options: 'CopyOptions') -> None:
         """Saves CdmDocumentDefinition if dirty.
@@ -459,25 +454,27 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 for pattern in entity_def.data_partition_patterns:
                     if pattern.specialized_schema:
                        links.add(pattern.specialized_schema)
-        
-        if self.sub_manifests:
-            for sub in self.sub_manifests:
-                links.add(sub.definition)
 
         docs = list() # type: List[CdmDocumentDefinition]
         for link in links:
             doc = await self._fetch_document_definition(link)
-            if not doc[1]:
-               logger.error(self.ctx, self._TAG, self._save_linked_documents_async.__name__, self.at_corpus_path, CdmLogCode.ERR_PERSIST_OBJECT_NOT_FOUND, link)
-            else:
-               docs.append(doc[0])
+            if not doc:
+               return False
+            
+            docs.append(doc)
 
         tasks = list()
         loop = asyncio.get_event_loop()
         for d in docs:
-            tasks.append(loop.create_task(self._save_document_if_dirty(d,options)))
+            tasks.append(loop.create_task(self._save_document_if_dirty(d, options)))
 
         await asyncio.gather(*tasks)
+
+        if self.sub_manifests:
+            for sub_declaration in self.sub_manifests:
+                sub_manifest = await self._fetch_document_definition(sub_declaration.definition)  # type: CdmManifestDefinition
+                if not sub_manifest or not await self._save_document_if_dirty(sub_manifest, options):
+                    return False
 
         return True
 

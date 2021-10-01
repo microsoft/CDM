@@ -40,20 +40,22 @@ class StringUtils:
         return s is None or s.strip() == ''
 
     @staticmethod
-    def _replace(source: str, pattern: str, value: str) -> str:
-        if len(pattern) > 1:
-            # This exception is just for safety since Python doesn't support char type.
-            raise Exception('Pattern should have size 1.')
+    def _capitalize_value(s: str) -> str:
+        """
+        Capitalizes first letter of the given string.
+        """
+        if StringUtils.is_null_or_white_space(s):
+            return ''
+        return s[0].upper() + s[1:]
 
+    @staticmethod
+    def _replace(source: str, pattern: str, value: str) -> str:
         if value is None:
             value = ''
 
         lower_case_pattern = pattern.lower()
         upper_case_pattern = pattern.upper()
-        upper_case_value = ''
-        
-        if value:
-            upper_case_value = value[0].upper() + value[1:]
+        upper_case_value = StringUtils._capitalize_value(value) if not StringUtils.is_null_or_white_space(value) else ''
 
         result = source.replace('{{{}}}'.format(lower_case_pattern), value)
         return result.replace('{{{}}}'.format(upper_case_pattern), upper_case_value)

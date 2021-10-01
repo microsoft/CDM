@@ -97,14 +97,7 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
      * @inheritdoc
      */
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
-        let path: string = '';
-        if (!this.ctx.corpus.blockDeclaredPathChanges) {
-            path = this.declaredPath;
-            if (!path) {
-                path = pathFrom + 'operationCombineAttributes';
-                this.declaredPath = path;
-            }
-        }
+        const path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren && preChildren(this, path)) {
             return false;

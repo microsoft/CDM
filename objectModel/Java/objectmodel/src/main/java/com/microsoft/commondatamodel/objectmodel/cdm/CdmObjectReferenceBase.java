@@ -176,104 +176,6 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     return rasb;
   }
 
-  /**
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Override
-  @Deprecated
-  public ResolvedTraitSet fetchResolvedTraits() {
-    return this.fetchResolvedTraits(null);
-  }
-
-  /**
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   * @param resOpt - Resolved options
-   * @return Resolved Trait Set
-   */
-  @Deprecated
-  @Override
-  public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
-    final boolean wasPreviouslyResolving = this.getCtx().getCorpus().isCurrentlyResolving;
-    this.getCtx().getCorpus().isCurrentlyResolving = true;
-    ResolvedTraitSet ret = this._fetchResolvedTraits(resOpt);
-    this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
-    return ret;
-  }
-
-  /**
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   * @param resOpt - Resolved options
-   * @return Resolved Trait Set
-   */
-  @Deprecated
-  public ResolvedTraitSet _fetchResolvedTraits(ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
-    if (this.getNamedReference() != null && this.getAppliedTraits() == null) {
-      final String kind = "rts";
-      final ResolveContext ctx = (ResolveContext) this.getCtx();
-      final CdmObjectDefinition objDef = this.fetchObjectDefinition(resOpt);
-      String cacheTag = ctx.getCorpus().createDefinitionCacheTag(
-        resOpt,
-        this,
-        kind,
-        "",
-        true,
-        objDef != null ? objDef.getAtCorpusPath() : null
-      );
-      Object rtsResultDynamic = null;
-      if (cacheTag != null) {
-        rtsResultDynamic = ctx.getCache().get(cacheTag);
-      }
-      ResolvedTraitSet rtsResult = (ResolvedTraitSet) rtsResultDynamic;
-
-      // store the previous document set, we will need to add it with
-      // children found from the constructResolvedTraits call
-      SymbolSet currSymRefSet = resOpt.getSymbolRefSet();
-      if (currSymRefSet == null) {
-        currSymRefSet = new SymbolSet();
-      }
-      resOpt.setSymbolRefSet(new SymbolSet());
-
-      if (rtsResult == null) {
-        if (objDef != null) {
-          rtsResult = objDef.fetchResolvedTraits(resOpt);
-          if (rtsResult != null) {
-            rtsResult = rtsResult.deepCopy();
-          }
-
-          // register set of possible docs
-          ctx.getCorpus().registerDefinitionReferenceSymbols(objDef, kind, resOpt.getSymbolRefSet());
-
-          // get the new getCache() tag now that we have the list of docs
-          cacheTag = ctx.getCorpus().createDefinitionCacheTag(resOpt, this, kind, "", true, objDef.getAtCorpusPath());
-          if (!StringUtils.isNullOrTrimEmpty(cacheTag)) {
-            ctx.getCache().put(cacheTag, rtsResult);
-          }
-        }
-      } else {
-        // getCache() was found
-        // get the SymbolSet for this cached object
-        final String key = CdmCorpusDefinition.createCacheKeyFromObject(this, kind);
-        final SymbolSet tempDocRefSet = ctx.getCorpus().getDefinitionReferenceSymbols().get(key);
-        resOpt.setSymbolRefSet(tempDocRefSet);
-      }
-
-      // merge child document set with current
-      currSymRefSet.merge(resOpt.getSymbolRefSet());
-      resOpt.setSymbolRefSet(currSymRefSet);
-
-      return rtsResult;
-    } else {
-      return super.fetchResolvedTraits(resOpt);
-    }
-  }
-
   @Override
   void constructResolvedTraits(final ResolvedTraitSetBuilder rtsb, final ResolveOptions resOpt) {
     final CdmObjectDefinition objDef = this.fetchObjectDefinition(resOpt);
@@ -290,8 +192,8 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     }
 
     if (this.getAppliedTraits() != null) {
-      for (final CdmTraitReferenceBase at : this.getAppliedTraits()) {
-        rtsb.mergeTraits(at.fetchResolvedTraits(resOpt));
+      for (final CdmTraitReferenceBase trait : this.getAppliedTraits()) {
+        rtsb.mergeTraits(trait.fetchResolvedTraits(resOpt));
       }
     }
   }
@@ -495,44 +397,37 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       final String pathFrom,
       final VisitCallback preChildren,
       final VisitCallback postChildren) {
-    String path = "";
-    if (this.getCtx() != null
-        && this.getCtx().getCorpus() != null
-        && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
-      if (!StringUtils.isNullOrEmpty(this.getNamedReference())) {
-        path = pathFrom + this.getNamedReference();
+    String path;
+
+    if (!StringUtils.isNullOrEmpty(this.getNamedReference())) {
+      path = pathFrom + this.getNamedReference();
+    } else {
+      // when an object is defined inline inside a reference, we need a path to the reference
+      // AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
+      // defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
+      // gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
+      // entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
+      // object at the same level, like anywhere there is a collection of references or the collection of attributes.
+      // so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
+      // extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
+      // the inline defined object.
+      // ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
+      // the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
+      // ANY reference, not just inline ones
+      if (this.explicitReference != null) {
+        // ref path is name of defined object
+        path = ((CdmObjectDefinitionBase)this.explicitReference).fetchDeclaredPath(pathFrom);
       } else {
-        // when an object is defined inline inside a reference, we need a path to the reference
-        // AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
-        // defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
-        // gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
-        // entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
-        // object at the same level, like anywhere there is a collection of references or the collection of attributes.
-        // so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
-        // extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
-        // the inline defined object.
-        // ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
-        // the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
-        // ANY reference, not just inline ones
-        if (this.explicitReference != null) {
-          // ref path is name of defined object
-          path = pathFrom + this.explicitReference.getName();
-          // inline object path is a request for the defintion. setting the declaredPath
-          // keeps the visit on the explcitReference from using the defined object name
-          // as the path to that object
-          ((CdmObjectDefinitionBase)this.getExplicitReference()).setDeclaredPath(path);
-        } else {
-          path = pathFrom;
-        }
+        path = pathFrom;
       }
-      this.setDeclaredPath(path + "/(ref)");
     }
-    String refPath = this.getDeclaredPath();
+
+    String refPath = path + "/(ref)";
 
     if (preChildren != null && preChildren.invoke(this, refPath)) {
       return false;
     }
-    if (this.getExplicitReference() != null && StringUtils.isNullOrEmpty(this.getNamedReference()) && this.getExplicitReference().visit(path, preChildren, postChildren)) {
+    if (this.getExplicitReference() != null && StringUtils.isNullOrEmpty(this.getNamedReference()) && this.getExplicitReference().visit(pathFrom, preChildren, postChildren)) {
       return true;
     }
     if (this.visitRef(path, preChildren, postChildren)) {

@@ -12,7 +12,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Types
         public DatabaseEntity Database { get; set; }
         public List<TableEntity> Entities { get; set; }
         public List<RelationshipEntity> Relationships { get; set; }
-        public bool IntialSync { get; set; }
+        public bool InitialSync { get; set; }
         public List<string> RemovedEntities { get; set; }
         public List<string> RemovedRelationships { get; set; }
     }

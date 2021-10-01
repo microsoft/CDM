@@ -173,6 +173,9 @@ export class traitToPropertyMap {
                 return this.fetchTraitReference('is.nullable', fromProperty) !== undefined;
             case 'isReadOnly':
                 return this.fetchTraitReference('is.readOnly', fromProperty) !== undefined;
+            case 'isResolved':
+                const trait = this.fetchTraitReference('has.entitySchemaAbstractionLevel', fromProperty)
+                return  trait?.arguments?.fetchValue('level') === 'resolved'
             case 'valueConstrainedToList':
                 return this.fetchTraitReference('is.constrainedList', fromProperty) !== undefined;
             case 'maximumValue':

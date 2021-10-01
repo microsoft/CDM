@@ -80,12 +80,7 @@ class CdmArgumentDefinition(CdmObjectSimple):
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        path = ''
-        if self.ctx.corpus._block_declared_path_changes is False:
-            path = self._declared_path
-            if not path:
-                path = path_from # name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
-                self._declared_path = path
+        path = path_from  # name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
 
         if pre_children and pre_children(self, path):
             return False

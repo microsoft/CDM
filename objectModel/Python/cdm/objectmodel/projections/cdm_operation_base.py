@@ -6,14 +6,15 @@ from typing import Optional, TYPE_CHECKING, List, Union
 
 from cdm.enums.cdm_operation_type import CdmOperationType
 from cdm.utilities.string_utils import StringUtils
-from cdm.objectmodel import CdmObjectDefinition
+from cdm.objectmodel import CdmObjectDefinition, CdmAttribute
 from cdm.resolvedmodel import ResolvedAttribute
 
 if TYPE_CHECKING:
     from cdm.enums import CdmObjectType
-    from cdm.objectmodel import CdmAttribute, CdmAttributeContext, CdmCorpusContext, CdmTraitReference
+    from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmTraitReference
     from cdm.utilities import ResolveOptions, VisitCallback
 
+    from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
     from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
     from cdm.resolvedmodel.projections.projection_context import ProjectionContext
 
@@ -124,7 +125,7 @@ class CdmOperationBase(CdmObjectDefinition):
         return new_res_attr
 
     @staticmethod
-    def _replace_wildcard_characters(format: str, base_attribute_name: str, ordinal: str, member_attribute_name: str):
+    def _replace_wildcard_characters(format: str, projection_owner_name: str, current_PAS: 'ProjectionAttributeState'):
         """
         Replace the wildcard character. {a/A} will be replaced with the current attribute name.
         {m/M} will be replaced with the entity attribute name. {o} will be replaced with the index of the attribute after an array expansion
@@ -132,8 +133,13 @@ class CdmOperationBase(CdmObjectDefinition):
         if not format:
             return ''
 
-        attribute_name = StringUtils._replace(format, 'a', base_attribute_name)
-        attribute_name = StringUtils._replace(attribute_name, 'o', ordinal)
-        attribute_name = StringUtils._replace(attribute_name, 'm', member_attribute_name)
+        ordinal = str(current_PAS._ordinal) if current_PAS._ordinal is not None else ''
+        original_member_attribute_name = current_PAS._current_resolved_attribute.target.name if isinstance(current_PAS._current_resolved_attribute.target, CdmAttribute) else '' or ''
+        resolved_member_attribute_name = current_PAS._current_resolved_attribute._resolved_name
 
-        return attribute_name
+        value = StringUtils._replace(format, 'a', projection_owner_name)
+        value = StringUtils._replace(value, 'o', ordinal)
+        value = StringUtils._replace(value, 'mo', original_member_attribute_name)
+        value = StringUtils._replace(value, 'm', resolved_member_attribute_name)
+
+        return value

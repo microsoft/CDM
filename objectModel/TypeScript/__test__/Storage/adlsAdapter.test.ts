@@ -392,6 +392,54 @@ describe('Cdm.Storage.AdlsAdapter', () => {
     });
 
     /**
+     * Test hostname with leading protocol.
+     */
+    it('TestHostnameWithLeadingProtocol', () => {
+        const host1: string = 'https://storageaccount.dfs.core.windows.net';
+        const adlsAdapter1: MockADLSAdapter = new MockADLSAdapter(host1, 'root-without-slash', 'test');
+        const adapterPath: string = 'https://storageaccount.dfs.core.windows.net/root-without-slash/a/1.csv';
+        const corpusPath1: string = adlsAdapter1.createCorpusPath(adapterPath);
+        expect(adlsAdapter1.hostname)
+            .toBe('https://storageaccount.dfs.core.windows.net');
+        expect(adlsAdapter1.root)
+            .toBe('/root-without-slash');
+        expect(corpusPath1)
+            .toBe('/a/1.csv');
+        expect(adlsAdapter1.createAdapterPath(corpusPath1))
+            .toBe(adapterPath);
+
+        const host2: string = 'HttPs://storageaccount.dfs.core.windows.net';
+        const adlsAdapter2: MockADLSAdapter = new MockADLSAdapter(host2, 'root-without-slash', 'test');
+        const corpusPath2: string = adlsAdapter2.createCorpusPath(adapterPath);
+        expect(adlsAdapter2.hostname)
+            .toBe('HttPs://storageaccount.dfs.core.windows.net');
+        expect(adlsAdapter2.root)
+            .toBe('/root-without-slash');
+        expect(corpusPath2)
+            .toBe('/a/1.csv');
+        expect(adlsAdapter2.createAdapterPath(corpusPath2))
+            .toBe(adapterPath);
+
+        try {
+            const host3: string = 'http://storageaccount.dfs.core.windows.net';
+            const adlsAdapter3: MockADLSAdapter = new MockADLSAdapter(host3, 'root-without-slash', 'test');
+            fail('Expected Exception for using a http:// hostname.')
+        } catch(ex) {
+            expect(ex instanceof URIError)
+                .toBeTruthy();
+        }
+
+        try {
+            const host4: string = 'https://bar:baz::]/foo/';
+            const adlsAdapter4: MockADLSAdapter = new MockADLSAdapter(host4, 'root-without-slash', 'test');
+            fail('Expected Exception for using an invalid hostname.')
+        } catch(ex) {
+            expect(ex instanceof URIError)
+                .toBeTruthy();
+        }
+    });
+
+    /**
      * Test azure cloud endpoint in config.
      */
     it('TestLoadingAndSavingEndpointInConfig', () => {
@@ -415,7 +463,7 @@ describe('Cdm.Storage.AdlsAdapter', () => {
             const corpusSnakeCase: CdmCorpusDefinition = new CdmCorpusDefinition();
             corpusSnakeCase.storage.mountFromConfig(configSnakeCase);
             fail('Expected RuntimeException for config.json using endpoint value in snake case.')
-        } catch(ex) {
+        } catch (ex) {
             const message: string = "Endpoint value should be a string of an enumeration value from the class AzureCloudEndpoint in Pascal case.";
             expect(ex.message)
                 .toBe(message);

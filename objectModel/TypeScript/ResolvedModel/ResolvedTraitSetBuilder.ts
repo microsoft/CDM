@@ -17,7 +17,6 @@ export class ResolvedTraitSetBuilder {
      * @internal
      */
     public rts: ResolvedTraitSet;
-    // resOpt: resolveOptions;
 
     public clear(): void {
         // let bodyCode = () =>

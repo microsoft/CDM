@@ -110,14 +110,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
 
     @Override
     public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-        String path = "";
-        if (!this.getCtx().getCorpus().getBlockDeclaredPathChanges()) {
-            path = this.getDeclaredPath();
-            if (StringUtils.isNullOrEmpty(path)) {
-                path = pathFrom + "operationRenameAttributes";
-                this.setDeclaredPath(path);
-            }
-        }
+        String path = this.fetchDeclaredPath(pathFrom);
 
         if (preChildren != null && preChildren.invoke(this, path)) {
             return false;
@@ -160,8 +153,6 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
         // We use the top-level names because the rename list may contain a previous name our current resolved attributes had
         Map<String, String> topLevelRenameAttributeNames = ProjectionResolutionCommonUtil.getTopList(projCtx, renameAttributes);
 
-        String sourceAttributeName = projCtx.getProjectionDirective().getOriginalSourceEntityAttributeName();
-
         // Initialize a projection attribute context tree builder with the created attribute context for the operation
         ProjectionAttributeContextTreeBuilder attrCtxTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpRenameAttrs);
 
@@ -174,7 +165,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
                 if (currentPAS.getCurrentResolvedAttribute().getTarget() instanceof CdmAttribute) {
                     // The current attribute should be renamed
 
-                    String newAttributeName = this.getNewAttributeName(currentPAS, sourceAttributeName);
+                    String newAttributeName = this.getNewAttributeName(projCtx.getProjectionDirective().getOriginalSourceAttributeName(), currentPAS);
 
                     // Create new resolved attribute with the new name, set the new attribute as target
                     ResolvedAttribute resAttrNew = createNewResolvedAttribute(projCtx, null, currentPAS.getCurrentResolvedAttribute(), newAttributeName, null);
@@ -217,20 +208,16 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
 
     /**
      * Renames an attribute with the current renameFormat
-     * @param attributeState The attribute state
-     * @param sourceAttributeName The parent attribute name (if any
+     * @param projectionOwnerName The attribute name of projection owner (only available when the owner is an entity attribute or type attribute).
+     * @param currentPAS The attribute state.
      */
-    private String getNewAttributeName(ProjectionAttributeState attributeState, String sourceAttributeName) {
-        String currentAttributeName = attributeState.getCurrentResolvedAttribute().getResolvedName();
-        String ordinal = attributeState.getOrdinal() != null ? attributeState.getOrdinal().toString() : "";
-        String format = this.renameFormat;
-
-        if (StringUtils.isNullOrTrimEmpty(format))
+    private String getNewAttributeName(final String projectionOwnerName, final ProjectionAttributeState currentPAS) {
+        if (StringUtils.isNullOrTrimEmpty(this.renameFormat))
         {
             Logger.error(this.getCtx(), TAG, "getNewAttributeName", this.getAtCorpusPath(), CdmLogCode.ErrProjRenameFormatIsNotSet);
             return "";
         }
 
-        return replaceWildcardCharacters(format, sourceAttributeName, ordinal, currentAttributeName);
+        return replaceWildcardCharacters(this.renameFormat, projectionOwnerName, currentPAS);
     }
 }

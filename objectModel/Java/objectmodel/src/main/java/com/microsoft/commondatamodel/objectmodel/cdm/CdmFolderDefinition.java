@@ -115,19 +115,6 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
     this.namespace = namespace;
   }
 
-  CompletableFuture<CdmDocumentDefinition> fetchDocumentFromFolderPathAsync(
-          final String path,
-          final StorageAdapter adapter) {
-    return this.fetchDocumentFromFolderPathAsync(path, adapter, false);
-  }
-
-  CompletableFuture<CdmDocumentDefinition> fetchDocumentFromFolderPathAsync(
-          final String path,
-          final StorageAdapter adapter,
-          final boolean forceReload) {
-    return this.fetchDocumentFromFolderPathAsync(path, adapter, forceReload, null);
-  }
-
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
@@ -145,7 +132,6 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   @Deprecated
   CompletableFuture<CdmDocumentDefinition> fetchDocumentFromFolderPathAsync(
       final String objectPath,
-      final StorageAdapter adapter,
       final boolean forceReload,
       final ResolveOptions resOpt) {
     final String docName;
@@ -232,22 +218,8 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
           break;
         }
 
-        // check children folders
-        CdmFolderDefinition result = null;
-        for (int i = 0; i < childFolder.getChildFolders().size(); i++) {
-          CdmFolderDefinition folder = childFolder.getChildFolders()
-                  .get(i);
-          if (childFolderName.equalsIgnoreCase(folder.getName())) {
-            result = folder;
-            break;
-          }
-        }
-
-        if (result == null) {
-          result = childFolder.getChildFolders().add(childFolderName);
-        }
-
-        childFolder = result;
+        // get next child folder.
+        childFolder = childFolder.getChildFolders().getOrCreate(childFolderName);
       }
 
       if (makeFolder) {

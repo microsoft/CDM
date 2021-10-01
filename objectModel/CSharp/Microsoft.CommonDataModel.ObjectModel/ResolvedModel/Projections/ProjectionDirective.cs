@@ -21,29 +21,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         internal ResolveOptions ResOpt { get; private set; }
 
         /// <summary>
-        /// The calling referencing EntityDef or the EntityAttributeDef that contains this projection
+        /// The calling referencing EntityDef, the EntityAttributeDef, or the TypeAttributeDef that contains this projection
         /// </summary>
         internal CdmObjectDefinitionBase Owner { get; private set; }
 
         /// <summary>
-        /// The EntityRef to the owning EntityDef or EntityAttributeDef
+        /// The EntityRef to the owning EntityDef, EntityAttributeDef, or TypeAttributeDef
         /// </summary>
         internal CdmObjectReference OwnerRef { get; private set; }
 
         /// <summary>
-        /// Is Owner EntityDef or EntityAttributeDef
-        /// </summary>
-        internal CdmObjectType OwnerType { get; private set; }
-
-        /// <summary>
-        /// The entity attribute name or "{a/A}"
+        /// The entity/type attribute name or "{a/A}"
         /// This may pass through at each opertaion action/transformation
         /// </summary>
-        internal string OriginalSourceEntityAttributeName
+        internal string OriginalSourceAttributeName
         {
             get
             {
-                return (Owner?.ObjectType == CdmObjectType.EntityAttributeDef) ? Owner.GetName() : null;
+                return (Owner?.ObjectType == CdmObjectType.EntityAttributeDef || Owner?.ObjectType == CdmObjectType.TypeAttributeDef) ? Owner.GetName() : null;
             }
         }
 
@@ -100,7 +95,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             // Owner information
             this.Owner = owner;
             this.OwnerRef = ownerRef;
-            this.OwnerType = (owner != null) ? owner.ObjectType : CdmObjectType.Error;
 
             if (owner?.ObjectType == CdmObjectType.EntityAttributeDef)
             {
@@ -112,7 +106,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             }
             else
             {
-                // Entity Def
+                // Entity Def or Type Attribute
 
                 this.Cardinality = null;
                 this.IsSourcePolymorphic = false;

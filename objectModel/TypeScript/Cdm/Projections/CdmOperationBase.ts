@@ -10,6 +10,7 @@ import {
     cdmObjectType,
     cdmOperationType,
     CdmTraitReference,
+    ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
     ResolvedAttribute,
@@ -143,8 +144,8 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
 
             if (addedSimpleRefTraits) {
                 for (const trait of addedSimpleRefTraits) {
-                    const tr = new CdmTraitReference(targetAttr.ctx, trait, true, false);
-                    newResAttr.resolvedTraits = newResAttr.resolvedTraits.mergeSet(tr._fetchResolvedTraits());
+                    const traitReference = new CdmTraitReference(targetAttr.ctx, trait, true, false);
+                    newResAttr.resolvedTraits = newResAttr.resolvedTraits.mergeSet(traitReference.fetchResolvedTraits());
                 }
             }
         }
@@ -154,26 +155,31 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
 
 
     /**
-     * Replace the wildcard character. {a/A} will be replaced with the current attribute name. 
-     * {m/M} will be replaced with the entity attribute name. 
-     * {o} will be replaced with the index of the attribute after an array expansion
+     * Replace the wildcard character. {a/A} will be replaced with the current attribute's original name. 
+     * {m/M} will be replaced with the attribute name of the projection owner. 
+     * {mo/Mo} will be replaced with the current attribute's resolved name.
+     * {o} will be replaced with the index of the attribute after an array expansion.
      * @internal
      */
         public static replaceWildcardCharacters(
             format: string,
-            baseAttributeName: string,
-            ordinal: string,
-            memberAttributeName: string
+            projectionOwnerName: string,
+            currentPAS: ProjectionAttributeState
         ): string {
             if (!format) {
                 return ''
             }
-            
-            let attributeName: string = StringUtils.replace(format, 'a', baseAttributeName);
-            attributeName = StringUtils.replace(attributeName, 'o', ordinal);
-            attributeName = StringUtils.replace(attributeName, 'm', memberAttributeName);
 
-            return attributeName;
+            const ordinal: string = currentPAS.ordinal != null ? currentPAS.ordinal.toString() : "";
+            const originalMemberAttributeName: string = (currentPAS.currentResolvedAttribute.target as CdmAttribute)?.name ?? "";
+            const resolvedMemberAttributeName: string = currentPAS.currentResolvedAttribute.resolvedName ?? "";
+            
+            let value: string = StringUtils.replace(format, 'a', projectionOwnerName);
+            value = StringUtils.replace(value, 'o', ordinal);
+            value = StringUtils.replace(value, 'mo', originalMemberAttributeName);
+            value = StringUtils.replace(value, 'm', resolvedMemberAttributeName);
+
+            return value;
         }
 
 }

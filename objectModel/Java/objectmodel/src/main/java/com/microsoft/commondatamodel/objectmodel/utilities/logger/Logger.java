@@ -329,8 +329,12 @@ public class Logger {
 
     @Override
     public void close() {
-      String message = Logger.format("Leaving scope. Time Elapsed: {0} ms; Cache memory used: {1}",
-        String.valueOf(Duration.between(time, Instant.now()).toMillis()), ((ResolveContext)state.ctx).getCache().size());
+      final String message = Logger.format("Leaving scope. Time Elapsed: {0} ms.",
+              String.valueOf(Duration.between(time, Instant.now()).toMillis()));
+      // Commenting out to keep consistent with C#
+      //  # In C# - Cache is a concurrent dict, and getting the Count on it is getting blocked by other cache updates
+      // final String message = Logger.format("Leaving scope. Time Elapsed: {0} ms; Cache memory used: {1}.",
+      //  String.valueOf(Duration.between(time, Instant.now()).toMillis()), ((ResolveContext)state.ctx).getAttributeCache().size());
 
       debug(state.ctx, state.classname, state.path, null, message, isTopLevelMethod);
 
@@ -349,6 +353,9 @@ public class Logger {
    */
   public static void ingestManifestTelemetry(final CdmManifestDefinition manifest,
     final CdmCorpusContext ctx, final String className, final String method, final String corpusPath) {
+    if (ctx.getCorpus().getTelemetryClient() == null) {
+      return;
+    }
 
     // Get the namespace of the storage for the manifest
     String storageNamespace = manifest.getNamespace();
@@ -400,7 +407,7 @@ public class Logger {
       // Check if entity is standard
       final String entityNamespace = StorageUtils.splitNamespacePath(entityDec.getEntityPath()).left;
 
-      if (entityNamespace == "cdm") {
+      if ("cdm".equals(entityNamespace)) {
         standardEntityNum++;
       }
     }
@@ -429,6 +436,9 @@ public class Logger {
    */
   public static void ingestEntityTelemetry(final CdmEntityDefinition entity,
     final CdmCorpusContext ctx, final String className, final String method, final String corpusPath) {
+    if (ctx.getCorpus().getTelemetryClient() == null) {
+      return;
+    }
 
     // Get entity storage namespace
     String entityNamespace = entity.getInDocument().getNamespace();

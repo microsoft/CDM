@@ -76,6 +76,7 @@ export enum cdmLogCode {
     ErrResolveEntityFailure,
     ErrResolveNewEntityNameNotSet,
     ErrResolveFolderNotFound,
+    ErrResolveManifestExists,
     ErrResolveManifestFailed,
     ErrResolveReferenceFailure,
     ErrStorageAdapterNotFound,

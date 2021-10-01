@@ -15,48 +15,32 @@ export class StringUtils {
     }
 
     /**
+     * Capitalizes first letter of the given string.
+     * @param str The source string to be capitalized.</param>
+     */
+    public static capitalizeValue(str: string) : string {
+        if (StringUtils.isNullOrWhiteSpace(str)) {
+            return "";
+        }
+        return str[0].toUpperCase() + (str.length > 1 ? str.slice(1) : '');
+    }
+
+    /**
      * Replaces in the pattern in the source with the value.
      * @param source The source string
      * @param pattern A pattern in the format {p}. The code will try to find {p} and {P}
      * @param value The value to be replaced instead of the pattern
      */
     public static replace(source: string, pattern: string, value: string): string {
-        if (pattern.length > 1) {
-            // This exception is just for safety since TS doesn't support char type.
-            throw new Error('Pattern should have size 1.')
-        }
-
         if (value === undefined) {
             value = '';
         }
 
         const lowerCasePattern: string = pattern.toLowerCase();
-        const upperCasePattern: string = pattern.toUpperCase();
-        let upperCaseValue: string = '';
-        
-        if (value) {
-            upperCaseValue = value[0].toUpperCase() + (value.length > 1 ? value.slice(1) : '');
-        }
+        const upperCasePattern: string = StringUtils.capitalizeValue(pattern);
+        const upperCaseValue: string = !StringUtils.isNullOrWhiteSpace(value) ? StringUtils.capitalizeValue(value) : "";
 
         const result: string = source.replace(`{${lowerCasePattern}}`, value);
         return result.replace(`{${upperCasePattern}}`, upperCaseValue);
     }
-
-    /**
-     * Convert snake cased string to pascal cased.
-     * @param snakeStr The orginal string
-     */
-    public static snakeCaseToPascalCase(snakeStr: string): string {
-        if (StringUtils.isNullOrWhiteSpace(snakeStr)) {
-            return snakeStr;
-        }
-        
-        const components: String[] = snakeStr.split('_');
-        if (components.length === 1) {
-          return snakeStr;
-        }
-    
-        return components.map(str => str.substring(0, 1) .toUpperCase() + str.substring(1).toLowerCase()).join('');
-      }
-
 }

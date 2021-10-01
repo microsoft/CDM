@@ -164,14 +164,7 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            let path: string = '';
-            if (!this.ctx.corpus.blockDeclaredPathChanges) {
-                path = this.declaredPath;
-                if (!path) {
-                    path = pathFrom + this.traitName;
-                    this.declaredPath = path;
-                }
-            }
+            const path: string = this.fetchDeclaredPath(pathFrom);
 
             if (preChildren && preChildren(this, path)) {
                 return false;
@@ -246,7 +239,7 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
             }
 
             let cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
-            let rtsResult: ResolvedTraitSet = cacheTag ? ctx.cache.get(cacheTag) : undefined;
+            let rtsResult: ResolvedTraitSet = cacheTag ? ctx.traitCache.get(cacheTag) : undefined;
 
             // store the previous reference symbol set, we will need to add it with
             // children found from the constructResolvedTraits call
@@ -272,13 +265,13 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
                     }
                 }
                 this.hasSetFlags = true;
-                const pc: ParameterCollection = this.fetchAllParameters(resOpt);
-                const av: (ArgumentValue)[] = [];
+                const parameterCollection: ParameterCollection = this.fetchAllParameters(resOpt);
+                const argumentValues: (ArgumentValue)[] = [];
                 const wasSet: (boolean)[] = [];
-                this.thisIsKnownToHaveParameters = (pc.sequence.length > 0);
-                for (let i: number = 0; i < pc.sequence.length; i++) {
+                this.thisIsKnownToHaveParameters = (parameterCollection.sequence.length > 0);
+                for (let i: number = 0; i < parameterCollection.sequence.length; i++) {
                     // either use the default value or (higher precidence) the value taken from the base reference
-                    let value: ArgumentValue = pc.sequence[i].defaultValue;
+                    let value: ArgumentValue = parameterCollection.sequence[i].defaultValue;
                     let baseValue: ArgumentValue;
                     if (baseValues && i < baseValues.length) {
                         baseValue = baseValues[i];
@@ -286,12 +279,12 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
                             value = baseValue;
                         }
                     }
-                    av.push(value);
+                    argumentValues.push(value);
                     wasSet.push(false);
                 }
 
                 // save it
-                const resTrait: ResolvedTrait = new ResolvedTrait(this, pc, av, wasSet);
+                const resTrait: ResolvedTrait = new ResolvedTrait(this, parameterCollection, argumentValues, wasSet);
                 rtsResult = new ResolvedTraitSet(resOpt);
                 rtsResult.merge(resTrait, false);
 
@@ -300,7 +293,7 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
                 // get the new cache tag now that we have the list of docs
                 cacheTag = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
                 if (cacheTag) {
-                    ctx.cache.set(cacheTag, rtsResult);
+                    ctx.traitCache.set(cacheTag, rtsResult);
                 }
             } else {
                 // cache found
