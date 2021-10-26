@@ -1,0 +1,1260 @@
+﻿{
+    "jsonSchemaSemanticVersion":  "1.1.0",
+    "imports":  [
+                    {
+                        "corpusPath":  "cdm:/core/cdsConcepts.cdm.json"
+                    },
+                    {
+                        "corpusPath":  "Fh_account.cdm.json"
+                    },
+                    {
+                        "corpusPath":  "Fh_creditline.cdm.json"
+                    },
+                    {
+                        "corpusPath":  "Fh_investment.cdm.json"
+                    },
+                    {
+                        "corpusPath":  "Fh_loan.cdm.json"
+                    },
+                    {
+                        "corpusPath":  "Fh_saving.cdm.json"
+                    },
+                    {
+                        "corpusPath":  "GlobalOptionSets.cdm.json"
+                    }
+                ],
+    "definitions":  [
+                        {
+                            "constantEntityName":  "StatusValues",
+                            "explanation":  "The constantValues below correspond to the attributes of the \u0027listLookupValues\u0027 entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape":  "listLookupValues",
+                            "constantValues":  [
+                                                   [
+                                                       "en",
+                                                       "Active",
+                                                       "0",
+                                                       "1"
+                                                   ],
+                                                   [
+                                                       "en",
+                                                       "Inactive",
+                                                       "1",
+                                                       "2"
+                                                   ]
+                                               ]
+                        },
+                        {
+                            "constantEntityName":  "StatusReasonValues",
+                            "explanation":  "The constantValues below correspond to the attributes of the \u0027listLookupCorrelatedValues\u0027 entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape":  "listLookupCorrelatedValues",
+                            "constantValues":  [
+                                                   [
+                                                       "en",
+                                                       "Active",
+                                                       "1",
+                                                       "1",
+                                                       "1"
+                                                   ],
+                                                   [
+                                                       "en",
+                                                       "Inactive",
+                                                       "2",
+                                                       "2",
+                                                       "2"
+                                                   ]
+                                               ]
+                        },
+                        {
+                            "entityName":  "FinancialHolding",
+                            "extendsEntity":  "CdmEntity",
+                            "displayName":  "Financial holding",
+                            "description":  "Accounts, loans, investments, credit lines and savings accounts held by a customer.",
+                            "sourceName":  "msfsi_financialholding",
+                            "exhibitsTraits":  [
+                                                   {
+                                                       "traitReference":  "is.localized.describedAs",
+                                                       "arguments":  [
+                                                                         {
+                                                                             "entityReference":  {
+                                                                                                     "entityShape":  "localizedTable",
+                                                                                                     "constantValues":  [
+                                                                                                                            [
+                                                                                                                                "en",
+                                                                                                                                "Accounts, loans, investments, credit lines and savings accounts held by a customer."
+                                                                                                                            ]
+                                                                                                                        ]
+                                                                                                 }
+                                                                         }
+                                                                     ]
+                                                   },
+                                                   {
+                                                       "traitReference":  "is.localized.displayedAs",
+                                                       "arguments":  [
+                                                                         {
+                                                                             "entityReference":  {
+                                                                                                     "entityShape":  "localizedTable",
+                                                                                                     "constantValues":  [
+                                                                                                                            [
+                                                                                                                                "en",
+                                                                                                                                "Financial holding"
+                                                                                                                            ]
+                                                                                                                        ]
+                                                                                                 }
+                                                                         }
+                                                                     ]
+                                                   }
+                                               ],
+                            "hasAttributes":  [
+                                                  {
+                                                      "attributeGroupReference":  {
+                                                                                      "attributeGroupName":  "attributesAddedAtThisScope",
+                                                                                      "members":  [
+                                                                                                      {
+                                                                                                          "name":  "financialholdingId",
+                                                                                                          "sourceName":  "msfsi_financialholdingid",
+                                                                                                          "sourceOrdering":  1,
+                                                                                                          "description":  "The identifier of the financial holding in the core system.",
+                                                                                                          "displayName":  "Financial holding",
+                                                                                                          "isNullable":  false,
+                                                                                                          "purpose":  "identifiedBy",
+                                                                                                          "dataType":  "entityId",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "systemrequired"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "The identifier of the financial holding in the core system."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Financial holding"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.CDS.sourceNamed",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      "msfsi_financialholdingid"
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "createdOn",
+                                                                                                          "sourceName":  "createdon",
+                                                                                                          "sourceOrdering":  2,
+                                                                                                          "description":  "Date and time when the record was created.",
+                                                                                                          "displayName":  "Created On",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "dateTime",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "none"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Date and time when the record was created."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Created On"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "modifiedOn",
+                                                                                                          "sourceName":  "modifiedon",
+                                                                                                          "sourceOrdering":  4,
+                                                                                                          "description":  "Date and time when the record was modified.",
+                                                                                                          "displayName":  "Modified On",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "dateTime",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "none"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Date and time when the record was modified."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Modified On"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "statecode",
+                                                                                                          "sourceName":  "statecode",
+                                                                                                          "sourceOrdering":  25,
+                                                                                                          "description":  "Status of the Financial Holding.",
+                                                                                                          "displayName":  "Status",
+                                                                                                          "isNullable":  false,
+                                                                                                          "purpose":  "representsStateWith",
+                                                                                                          "dataType":  {
+                                                                                                                           "dataTypeReference":  "listLookup",
+                                                                                                                           "appliedTraits":  [
+                                                                                                                                                 {
+                                                                                                                                                     "traitReference":  "does.haveDefault",
+                                                                                                                                                     "arguments":  [
+                                                                                                                                                                       {
+                                                                                                                                                                           "entityReference":  "StatusValues"
+                                                                                                                                                                       }
+                                                                                                                                                                   ]
+                                                                                                                                                 }
+                                                                                                                                             ]
+                                                                                                                       },
+                                                                                                          "projections":  {
+                                                                                                                              "operations":  [
+                                                                                                                                                 {
+                                                                                                                                                     "$type":  "addSupportingAttribute",
+                                                                                                                                                     "condition":  "virtual",
+                                                                                                                                                     "supportingAttribute":  {
+                                                                                                                                                                                 "explanation":  "This attribute \u0027statecode_display\u0027 is added to the \u0027FinancialHolding\u0027 entity to provide the localized display text for the value of the listLookup attribute \u0027statecode\u0027",
+                                                                                                                                                                                 "name":  "statecode_display",
+                                                                                                                                                                                 "purpose":  "hasA",
+                                                                                                                                                                                 "dataType":  "localizedDisplayText",
+                                                                                                                                                                                 "isReadOnly":  true
+                                                                                                                                                                             }
+                                                                                                                                                 }
+                                                                                                                                             ]
+                                                                                                                          },
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "systemrequired"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Status of the Financial Holding."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Status"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.CDS.sourceNamed",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      "statecode"
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "statuscode",
+                                                                                                          "sourceName":  "statuscode",
+                                                                                                          "sourceOrdering":  27,
+                                                                                                          "description":  "Reason for the status of the Financial Holding.",
+                                                                                                          "displayName":  "Status Reason",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  {
+                                                                                                                          "purposeReference":  "representsCorrelatedStatusWith",
+                                                                                                                          "appliedTraits":  [
+                                                                                                                                                {
+                                                                                                                                                    "traitReference":  "is.correlatedWith",
+                                                                                                                                                    "arguments":  [
+                                                                                                                                                                      "statecode"
+                                                                                                                                                                  ]
+                                                                                                                                                }
+                                                                                                                                            ]
+                                                                                                                      },
+                                                                                                          "dataType":  {
+                                                                                                                           "dataTypeReference":  "listLookup",
+                                                                                                                           "appliedTraits":  [
+                                                                                                                                                 {
+                                                                                                                                                     "traitReference":  "does.haveDefault",
+                                                                                                                                                     "arguments":  [
+                                                                                                                                                                       {
+                                                                                                                                                                           "entityReference":  "StatusReasonValues"
+                                                                                                                                                                       }
+                                                                                                                                                                   ]
+                                                                                                                                                 }
+                                                                                                                                             ]
+                                                                                                                       },
+                                                                                                          "projections":  {
+                                                                                                                              "operations":  [
+                                                                                                                                                 {
+                                                                                                                                                     "$type":  "addSupportingAttribute",
+                                                                                                                                                     "condition":  "virtual",
+                                                                                                                                                     "supportingAttribute":  {
+                                                                                                                                                                                 "explanation":  "This attribute \u0027statuscode_display\u0027 is added to the \u0027FinancialHolding\u0027 entity to provide the localized display text for the value of the listLookup attribute \u0027statuscode\u0027",
+                                                                                                                                                                                 "name":  "statuscode_display",
+                                                                                                                                                                                 "purpose":  "hasA",
+                                                                                                                                                                                 "dataType":  "localizedDisplayText",
+                                                                                                                                                                                 "isReadOnly":  true
+                                                                                                                                                                             }
+                                                                                                                                                 }
+                                                                                                                                             ]
+                                                                                                                          },
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "none"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Reason for the status of the Financial Holding."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Status Reason"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.CDS.sourceNamed",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      "statuscode"
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "importSequenceNumber",
+                                                                                                          "sourceName":  "importsequencenumber",
+                                                                                                          "sourceOrdering":  30,
+                                                                                                          "description":  "Sequence number of the import that created this record.",
+                                                                                                          "displayName":  "Import Sequence Number",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "integer",
+                                                                                                          "maximumValue":  "2147483647",
+                                                                                                          "minimumValue":  "-2147483648",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "none"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Sequence number of the import that created this record."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Import Sequence Number"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.constrained",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "maximumValue",
+                                                                                                                                                          "value":  "2147483647"
+                                                                                                                                                      },
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "minimumValue",
+                                                                                                                                                          "value":  "-2147483648"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "overriddenCreatedOn",
+                                                                                                          "sourceName":  "overriddencreatedon",
+                                                                                                          "sourceOrdering":  31,
+                                                                                                          "description":  "Date and time that the record was migrated.",
+                                                                                                          "displayName":  "Record Created On",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "dateTime",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "none"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Date and time that the record was migrated."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Record Created On"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "timeZoneRuleVersionNumber",
+                                                                                                          "sourceName":  "timezoneruleversionnumber",
+                                                                                                          "sourceOrdering":  32,
+                                                                                                          "description":  "For internal use only.",
+                                                                                                          "displayName":  "Time Zone Rule Version Number",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "integer",
+                                                                                                          "maximumValue":  "2147483647",
+                                                                                                          "minimumValue":  "-1",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "none"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "For internal use only."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Time Zone Rule Version Number"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.constrained",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "maximumValue",
+                                                                                                                                                          "value":  "2147483647"
+                                                                                                                                                      },
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "minimumValue",
+                                                                                                                                                          "value":  "-1"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "UTCConversionTimeZoneCode",
+                                                                                                          "sourceName":  "utcconversiontimezonecode",
+                                                                                                          "sourceOrdering":  33,
+                                                                                                          "description":  "Time zone code that was in use when the record was created.",
+                                                                                                          "displayName":  "UTC Conversion Time Zone Code",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "integer",
+                                                                                                          "maximumValue":  "2147483647",
+                                                                                                          "minimumValue":  "-1",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "none"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Time zone code that was in use when the record was created."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "UTC Conversion Time Zone Code"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.constrained",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "maximumValue",
+                                                                                                                                                          "value":  "2147483647"
+                                                                                                                                                      },
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "minimumValue",
+                                                                                                                                                          "value":  "-1"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "name",
+                                                                                                          "sourceName":  "msfsi_name",
+                                                                                                          "sourceOrdering":  34,
+                                                                                                          "description":  "The name of the custom entity.",
+                                                                                                          "displayName":  "Name",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "string",
+                                                                                                          "maximumLength":  "100",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "applicationrequired"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "The name of the custom entity."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Name"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.constrained",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "maximumLength",
+                                                                                                                                                          "value":  "100"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "accountingClassification",
+                                                                                                          "sourceName":  "msfsi_accountingclassification",
+                                                                                                          "sourceOrdering":  35,
+                                                                                                          "description":  "Indicates whether the financial holding is an asset or a liability.",
+                                                                                                          "displayName":  "Accounting classification",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  {
+                                                                                                                           "dataTypeReference":  "listLookup",
+                                                                                                                           "appliedTraits":  [
+                                                                                                                                                 {
+                                                                                                                                                     "traitReference":  "does.haveDefault",
+                                                                                                                                                     "arguments":  [
+                                                                                                                                                                       {
+                                                                                                                                                                           "entityReference":  "AccountingClassificationValues"
+                                                                                                                                                                       }
+                                                                                                                                                                   ]
+                                                                                                                                                 }
+                                                                                                                                             ]
+                                                                                                                       },
+                                                                                                          "projections":  {
+                                                                                                                              "operations":  [
+                                                                                                                                                 {
+                                                                                                                                                     "$type":  "addSupportingAttribute",
+                                                                                                                                                     "condition":  "virtual",
+                                                                                                                                                     "supportingAttribute":  {
+                                                                                                                                                                                 "explanation":  "This attribute \u0027accountingClassification_display\u0027 is added to the \u0027FinancialHolding\u0027 entity to provide the localized display text for the value of the listLookup attribute \u0027accountingClassification\u0027",
+                                                                                                                                                                                 "name":  "accountingClassification_display",
+                                                                                                                                                                                 "purpose":  "hasA",
+                                                                                                                                                                                 "dataType":  "localizedDisplayText",
+                                                                                                                                                                                 "isReadOnly":  true
+                                                                                                                                                                             }
+                                                                                                                                                 }
+                                                                                                                                             ]
+                                                                                                                          },
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "applicationrequired"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Indicates whether the financial holding is an asset or a liability."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Accounting classification"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "Details",
+                                                                                                          "sourceName":  "msfsi_details",
+                                                                                                          "sourceOrdering":  37,
+                                                                                                          "description":  "Details.",
+                                                                                                          "displayName":  "Details",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "entityId",
+                                                                                                          "isPolymorphicSource":  true,
+                                                                                                          "entity":  {
+                                                                                                                         "source":  {
+                                                                                                                                        "entityReference":  {
+                                                                                                                                                                "entityName":  "FinancialHoldingDetailsOptions",
+                                                                                                                                                                "hasAttributes":  [
+                                                                                                                                                                                      {
+                                                                                                                                                                                          "name":  "FHAccountOption",
+                                                                                                                                                                                          "entity":  {
+                                                                                                                                                                                                         "source":  "FHAccount"
+                                                                                                                                                                                                     }
+                                                                                                                                                                                      },
+                                                                                                                                                                                      {
+                                                                                                                                                                                          "name":  "FHLineOfCreditOption",
+                                                                                                                                                                                          "entity":  {
+                                                                                                                                                                                                         "source":  "FHLineOfCredit"
+                                                                                                                                                                                                     }
+                                                                                                                                                                                      },
+                                                                                                                                                                                      {
+                                                                                                                                                                                          "name":  "FHInvestmentOption",
+                                                                                                                                                                                          "entity":  {
+                                                                                                                                                                                                         "source":  "FHInvestment"
+                                                                                                                                                                                                     }
+                                                                                                                                                                                      },
+                                                                                                                                                                                      {
+                                                                                                                                                                                          "name":  "FHLoanOption",
+                                                                                                                                                                                          "entity":  {
+                                                                                                                                                                                                         "source":  "FHLoan"
+                                                                                                                                                                                                     }
+                                                                                                                                                                                      },
+                                                                                                                                                                                      {
+                                                                                                                                                                                          "name":  "FHSavingOption",
+                                                                                                                                                                                          "entity":  {
+                                                                                                                                                                                                         "source":  "FHSaving"
+                                                                                                                                                                                                     }
+                                                                                                                                                                                      }
+                                                                                                                                                                                  ]
+                                                                                                                                                            }
+                                                                                                                                    },
+                                                                                                                         "runSequentially":  true,
+                                                                                                                         "operations":  [
+                                                                                                                                            {
+                                                                                                                                                "$type":  "combineAttributes",
+                                                                                                                                                "select":  [
+                                                                                                                                                               "FH_AccountId",
+                                                                                                                                                               "FH_CreditlineId",
+                                                                                                                                                               "FH_InvestmentId",
+                                                                                                                                                               "FH_LoanId",
+                                                                                                                                                               "FH_SavingId"
+                                                                                                                                                           ],
+                                                                                                                                                "mergeInto":  {
+                                                                                                                                                                  "name":  "combinedDetails",
+                                                                                                                                                                  "dataType":  "entityId"
+                                                                                                                                                              }
+                                                                                                                                            },
+                                                                                                                                            {
+                                                                                                                                                "$type":  "replaceAsForeignKey",
+                                                                                                                                                "reference":  "combinedDetails",
+                                                                                                                                                "replaceWith":  {
+                                                                                                                                                                    "name":  "details",
+                                                                                                                                                                    "dataType":  "entityId"
+                                                                                                                                                                }
+                                                                                                                                            },
+                                                                                                                                            {
+                                                                                                                                                "$type":  "addTypeAttribute",
+                                                                                                                                                "typeAttribute":  {
+                                                                                                                                                                      "name":  "detailsType",
+                                                                                                                                                                      "dataType":  "entityName"
+                                                                                                                                                                  }
+                                                                                                                                            }
+                                                                                                                                        ],
+                                                                                                                         "appliedTraits":  [
+                                                                                                                                               {
+                                                                                                                                                   "traitReference":  "is.requiredAtLevel",
+                                                                                                                                                   "arguments":  [
+                                                                                                                                                                     {
+                                                                                                                                                                         "name":  "level",
+                                                                                                                                                                         "value":  "applicationrequired"
+                                                                                                                                                                     }
+                                                                                                                                                                 ]
+                                                                                                                                               },
+                                                                                                                                               {
+                                                                                                                                                   "traitReference":  "is.localized.describedAs",
+                                                                                                                                                   "arguments":  [
+                                                                                                                                                                     {
+                                                                                                                                                                         "entityReference":  {
+                                                                                                                                                                                                 "entityShape":  "localizedTable",
+                                                                                                                                                                                                 "constantValues":  [
+                                                                                                                                                                                                                        [
+                                                                                                                                                                                                                            "en",
+                                                                                                                                                                                                                            "Details."
+                                                                                                                                                                                                                        ]
+                                                                                                                                                                                                                    ]
+                                                                                                                                                                                             }
+                                                                                                                                                                     }
+                                                                                                                                                                 ]
+                                                                                                                                               },
+                                                                                                                                               {
+                                                                                                                                                   "traitReference":  "is.localized.displayedAs",
+                                                                                                                                                   "arguments":  [
+                                                                                                                                                                     {
+                                                                                                                                                                         "entityReference":  {
+                                                                                                                                                                                                 "entityShape":  "localizedTable",
+                                                                                                                                                                                                 "constantValues":  [
+                                                                                                                                                                                                                        [
+                                                                                                                                                                                                                            "en",
+                                                                                                                                                                                                                            "Details"
+                                                                                                                                                                                                                        ]
+                                                                                                                                                                                                                    ]
+                                                                                                                                                                                             }
+                                                                                                                                                                     }
+                                                                                                                                                                 ]
+                                                                                                                                               },
+                                                                                                                                               {
+                                                                                                                                                   "traitReference":  "is.CDS.lookup",
+                                                                                                                                                   "arguments":  [
+                                                                                                                                                                     {
+                                                                                                                                                                         "name":  "style",
+                                                                                                                                                                         "value":  "single"
+                                                                                                                                                                     }
+                                                                                                                                                                 ]
+                                                                                                                                               }
+                                                                                                                                           ]
+                                                                                                                     }
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "financialHoldingCategory",
+                                                                                                          "sourceName":  "msfsi_financialholdingcategory",
+                                                                                                          "sourceOrdering":  38,
+                                                                                                          "description":  "The category of the financial holding (Accounts, Long-term savings, Investments, Loans and Lines or credit).",
+                                                                                                          "displayName":  "Financial holding category",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  {
+                                                                                                                           "dataTypeReference":  "listLookup",
+                                                                                                                           "appliedTraits":  [
+                                                                                                                                                 {
+                                                                                                                                                     "traitReference":  "does.haveDefault",
+                                                                                                                                                     "arguments":  [
+                                                                                                                                                                       {
+                                                                                                                                                                           "entityReference":  "FinancialHoldingCategoryValues"
+                                                                                                                                                                       }
+                                                                                                                                                                   ]
+                                                                                                                                                 }
+                                                                                                                                             ]
+                                                                                                                       },
+                                                                                                          "projections":  {
+                                                                                                                              "operations":  [
+                                                                                                                                                 {
+                                                                                                                                                     "$type":  "addSupportingAttribute",
+                                                                                                                                                     "condition":  "virtual",
+                                                                                                                                                     "supportingAttribute":  {
+                                                                                                                                                                                 "explanation":  "This attribute \u0027financialHoldingCategory_display\u0027 is added to the \u0027FinancialHolding\u0027 entity to provide the localized display text for the value of the listLookup attribute \u0027financialHoldingCategory\u0027",
+                                                                                                                                                                                 "name":  "financialHoldingCategory_display",
+                                                                                                                                                                                 "purpose":  "hasA",
+                                                                                                                                                                                 "dataType":  "localizedDisplayText",
+                                                                                                                                                                                 "isReadOnly":  true
+                                                                                                                                                                             }
+                                                                                                                                                 }
+                                                                                                                                             ]
+                                                                                                                          },
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "applicationrequired"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "The category of the financial holding (Accounts, Long-term savings, Investments, Loans and Lines or credit)."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Financial holding category"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "financialHoldingCode",
+                                                                                                          "sourceName":  "msfsi_financialholdingcode",
+                                                                                                          "sourceOrdering":  40,
+                                                                                                          "description":  "The bank\u0027s code for the financial holding.",
+                                                                                                          "displayName":  "Id",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "string",
+                                                                                                          "maximumLength":  "100",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "none"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "The bank\u0027s code for the financial holding."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Id"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.constrained",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "maximumLength",
+                                                                                                                                                          "value":  "100"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "integrationKey",
+                                                                                                          "sourceName":  "msfsi_integrationkey",
+                                                                                                          "sourceOrdering":  41,
+                                                                                                          "description":  "Used by the system integrator to uniquely define the data record .",
+                                                                                                          "displayName":  "Integration key",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "string",
+                                                                                                          "maximumLength":  "100",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "applicationrequired"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Used by the system integrator to uniquely define the data record ."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Integration key"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.constrained",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "maximumLength",
+                                                                                                                                                          "value":  "100"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "validFrom",
+                                                                                                          "sourceName":  "msfsi_validfrom",
+                                                                                                          "sourceOrdering":  42,
+                                                                                                          "description":  "Date the financial holding is valid from.",
+                                                                                                          "displayName":  "Valid from",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "dateTime",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "none"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Date the financial holding is valid from."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Valid from"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      }
+                                                                                                  ]
+                                                                                  }
+                                                  }
+                                              ],
+                            "explanation":  "Request received at: 10/18/2021 8:54:56 PM; Metadata (actual): 62.4937 (ms); Related: 156.2536 (ms); ; Entity creation: 31.2521 (ms)"
+                        }
+                    ],
+    "explanation":  "Request received at: 10/18/2021 8:54:56 PM; Message Processing Duration: 249.9994 (ms); "
+}

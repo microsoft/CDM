@@ -1,0 +1,279 @@
+﻿{
+    "jsonSchemaSemanticVersion":  "1.1.0",
+    "imports":  [
+                    {
+                        "corpusPath":  "cdm:/core/cdsConcepts.cdm.json"
+                    },
+                    {
+                        "corpusPath":  "Loanapplication.cdm.json"
+                    },
+                    {
+                        "corpusPath":  "Loanapplicationcontact.cdm.json"
+                    }
+                ],
+    "definitions":  [
+                        {
+                            "entityName":  "ApplicationDocument",
+                            "extendsEntity":  "CdmEntity",
+                            "displayName":  "Application document",
+                            "description":  "Document filled out by a potential borrower to apply for a loan; provides financial and other information to the lender.",
+                            "sourceName":  "msfsi_applicationdocument",
+                            "exhibitsTraits":  [
+                                                   {
+                                                       "traitReference":  "is.localized.describedAs",
+                                                       "arguments":  [
+                                                                         {
+                                                                             "entityReference":  {
+                                                                                                     "entityShape":  "localizedTable",
+                                                                                                     "constantValues":  [
+                                                                                                                            [
+                                                                                                                                "en",
+                                                                                                                                "Document filled out by a potential borrower to apply for a loan; provides financial and other information to the lender."
+                                                                                                                            ]
+                                                                                                                        ]
+                                                                                                 }
+                                                                         }
+                                                                     ]
+                                                   },
+                                                   {
+                                                       "traitReference":  "is.localized.displayedAs",
+                                                       "arguments":  [
+                                                                         {
+                                                                             "entityReference":  {
+                                                                                                     "entityShape":  "localizedTable",
+                                                                                                     "constantValues":  [
+                                                                                                                            [
+                                                                                                                                "en",
+                                                                                                                                "Application document"
+                                                                                                                            ]
+                                                                                                                        ]
+                                                                                                 }
+                                                                         }
+                                                                     ]
+                                                   }
+                                               ],
+                            "hasAttributes":  [
+                                                  {
+                                                      "attributeGroupReference":  {
+                                                                                      "attributeGroupName":  "attributesAddedAtThisScope",
+                                                                                      "members":  [
+                                                                                                      {
+                                                                                                          "name":  "applicationDocumentId",
+                                                                                                          "sourceName":  "msfsi_applicationdocumentid",
+                                                                                                          "sourceOrdering":  1,
+                                                                                                          "description":  "Unique identifier for entity instances.",
+                                                                                                          "displayName":  "Application document",
+                                                                                                          "isNullable":  false,
+                                                                                                          "purpose":  "identifiedBy",
+                                                                                                          "dataType":  "entityId",
+                                                                                                          "appliedTraits":  [
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.requiredAtLevel",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "name":  "level",
+                                                                                                                                                          "value":  "systemrequired"
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.describedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Unique identifier for entity instances."
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.localized.displayedAs",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      {
+                                                                                                                                                          "entityReference":  {
+                                                                                                                                                                                  "entityShape":  "localizedTable",
+                                                                                                                                                                                  "constantValues":  [
+                                                                                                                                                                                                         [
+                                                                                                                                                                                                             "en",
+                                                                                                                                                                                                             "Application document"
+                                                                                                                                                                                                         ]
+                                                                                                                                                                                                     ]
+                                                                                                                                                                              }
+                                                                                                                                                      }
+                                                                                                                                                  ]
+                                                                                                                                },
+                                                                                                                                {
+                                                                                                                                    "traitReference":  "is.CDS.sourceNamed",
+                                                                                                                                    "arguments":  [
+                                                                                                                                                      "msfsi_applicationdocumentid"
+                                                                                                                                                  ]
+                                                                                                                                }
+                                                                                                                            ]
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "Application",
+                                                                                                          "sourceName":  "msfsi_application",
+                                                                                                          "sourceOrdering":  43,
+                                                                                                          "description":  "The Loan application the current application document is associated with.",
+                                                                                                          "displayName":  "Application",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "entityId",
+                                                                                                          "entity":  {
+                                                                                                                         "source":  "LoanApplication",
+                                                                                                                         "operations":  [
+                                                                                                                                            {
+                                                                                                                                                "$type":  "replaceAsForeignKey",
+                                                                                                                                                "condition":  "referenceOnly",
+                                                                                                                                                "reference":  "loanApplicationId",
+                                                                                                                                                "replaceWith":  {
+                                                                                                                                                                    "name":  "application",
+                                                                                                                                                                    "dataType":  "entityId",
+                                                                                                                                                                    "appliedTraits":  [
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "traitReference":  "is.requiredAtLevel",
+                                                                                                                                                                                              "arguments":  [
+                                                                                                                                                                                                                {
+                                                                                                                                                                                                                    "name":  "level",
+                                                                                                                                                                                                                    "value":  "applicationrequired"
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            ]
+                                                                                                                                                                                          },
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "traitReference":  "is.localized.describedAs",
+                                                                                                                                                                                              "arguments":  [
+                                                                                                                                                                                                                {
+                                                                                                                                                                                                                    "entityReference":  {
+                                                                                                                                                                                                                                            "entityShape":  "localizedTable",
+                                                                                                                                                                                                                                            "constantValues":  [
+                                                                                                                                                                                                                                                                   [
+                                                                                                                                                                                                                                                                       "en",
+                                                                                                                                                                                                                                                                       "The Loan application the current application document is associated with."
+                                                                                                                                                                                                                                                                   ]
+                                                                                                                                                                                                                                                               ]
+                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            ]
+                                                                                                                                                                                          },
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "traitReference":  "is.localized.displayedAs",
+                                                                                                                                                                                              "arguments":  [
+                                                                                                                                                                                                                {
+                                                                                                                                                                                                                    "entityReference":  {
+                                                                                                                                                                                                                                            "entityShape":  "localizedTable",
+                                                                                                                                                                                                                                            "constantValues":  [
+                                                                                                                                                                                                                                                                   [
+                                                                                                                                                                                                                                                                       "en",
+                                                                                                                                                                                                                                                                       "Application"
+                                                                                                                                                                                                                                                                   ]
+                                                                                                                                                                                                                                                               ]
+                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            ]
+                                                                                                                                                                                          },
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "traitReference":  "is.CDS.lookup",
+                                                                                                                                                                                              "arguments":  [
+                                                                                                                                                                                                                {
+                                                                                                                                                                                                                    "name":  "style",
+                                                                                                                                                                                                                    "value":  "single"
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            ]
+                                                                                                                                                                                          }
+                                                                                                                                                                                      ]
+                                                                                                                                                                }
+                                                                                                                                            }
+                                                                                                                                        ]
+                                                                                                                     }
+                                                                                                      },
+                                                                                                      {
+                                                                                                          "name":  "DocumentSubmitter",
+                                                                                                          "sourceName":  "msfsi_DocumentSubmitter",
+                                                                                                          "sourceOrdering":  44,
+                                                                                                          "description":  "The application contact associated with the Application Document.",
+                                                                                                          "displayName":  "Document submitter",
+                                                                                                          "isNullable":  true,
+                                                                                                          "purpose":  "hasA",
+                                                                                                          "dataType":  "entityId",
+                                                                                                          "entity":  {
+                                                                                                                         "source":  "LoanApplicationContact",
+                                                                                                                         "operations":  [
+                                                                                                                                            {
+                                                                                                                                                "$type":  "replaceAsForeignKey",
+                                                                                                                                                "condition":  "referenceOnly",
+                                                                                                                                                "reference":  "loanApplicationContactId",
+                                                                                                                                                "replaceWith":  {
+                                                                                                                                                                    "name":  "documentSubmitter",
+                                                                                                                                                                    "dataType":  "entityId",
+                                                                                                                                                                    "appliedTraits":  [
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "traitReference":  "is.requiredAtLevel",
+                                                                                                                                                                                              "arguments":  [
+                                                                                                                                                                                                                {
+                                                                                                                                                                                                                    "name":  "level",
+                                                                                                                                                                                                                    "value":  "applicationrequired"
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            ]
+                                                                                                                                                                                          },
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "traitReference":  "is.localized.describedAs",
+                                                                                                                                                                                              "arguments":  [
+                                                                                                                                                                                                                {
+                                                                                                                                                                                                                    "entityReference":  {
+                                                                                                                                                                                                                                            "entityShape":  "localizedTable",
+                                                                                                                                                                                                                                            "constantValues":  [
+                                                                                                                                                                                                                                                                   [
+                                                                                                                                                                                                                                                                       "en",
+                                                                                                                                                                                                                                                                       "The application contact associated with the Application Document."
+                                                                                                                                                                                                                                                                   ]
+                                                                                                                                                                                                                                                               ]
+                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            ]
+                                                                                                                                                                                          },
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "traitReference":  "is.localized.displayedAs",
+                                                                                                                                                                                              "arguments":  [
+                                                                                                                                                                                                                {
+                                                                                                                                                                                                                    "entityReference":  {
+                                                                                                                                                                                                                                            "entityShape":  "localizedTable",
+                                                                                                                                                                                                                                            "constantValues":  [
+                                                                                                                                                                                                                                                                   [
+                                                                                                                                                                                                                                                                       "en",
+                                                                                                                                                                                                                                                                       "Document submitter"
+                                                                                                                                                                                                                                                                   ]
+                                                                                                                                                                                                                                                               ]
+                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            ]
+                                                                                                                                                                                          },
+                                                                                                                                                                                          {
+                                                                                                                                                                                              "traitReference":  "is.CDS.lookup",
+                                                                                                                                                                                              "arguments":  [
+                                                                                                                                                                                                                {
+                                                                                                                                                                                                                    "name":  "style",
+                                                                                                                                                                                                                    "value":  "single"
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                            ]
+                                                                                                                                                                                          }
+                                                                                                                                                                                      ]
+                                                                                                                                                                }
+                                                                                                                                            }
+                                                                                                                                        ]
+                                                                                                                     }
+                                                                                                      }
+                                                                                                  ]
+                                                                                  }
+                                                  }
+                                              ],
+                            "explanation":  "Request received at: 10/18/2021 9:20:19 PM; Metadata (actual): 62.4429 (ms); Related: 46.8922 (ms); ; Entity creation: 0 (ms)"
+                        }
+                    ],
+    "explanation":  "Request received at: 10/18/2021 9:20:19 PM; Message Processing Duration: 109.3351 (ms); "
+}
