@@ -6,6 +6,7 @@ import {
     CdmDocumentDefinition,
     CdmEntityDefinition,
     CdmFolderDefinition,
+    cdmLogCode,
     CdmManifestDefinition,
     cdmObjectType,
     cdmStatusLevel,
@@ -178,7 +179,9 @@ describe('Persistence.PersistenceLayerTest', () => {
      * Test that the persistence layer handles the case when the persistence format cannot be found.
      */
     it('TestMissingPersistenceFormat', async (done) => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestMissingPersistenceFormat');
+        const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrPersistClassMissing]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestMissingPersistenceFormat', undefined, false, expectedLogCodes);
+
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder(corpus.storage.defaultNamespace);
 
         const manifest: CdmManifestDefinition = corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'someManifest');

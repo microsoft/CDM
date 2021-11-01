@@ -10,10 +10,11 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.RemoteAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.EventList;
 import org.testng.Assert;
 
 import java.io.File;
@@ -54,6 +55,13 @@ public class TestHelper {
   public static final String SCHEMA_DOCS_ROOT = "../../../schemaDocuments";
 
   /**
+   * The log codes that are allowed to be logged without failing the test
+   */
+  private static HashSet<String> ignoredLogCodes = new HashSet<>(
+          Collections.singletonList(CdmLogCode.WarnDeprecatedResolutionGuidance.name())
+  );
+
+  /**
    * The adapter path to the top-level manifest in the CDM Schema Documents folder. Used by tests where we resolve the corpus.
    * This path is temporarily pointing to the applicationCommon manifest instead of standards due to performance issues when resolving
    * the entire set of CDM standard schemas, after 8000+ F&O entities were added.
@@ -63,7 +71,6 @@ public class TestHelper {
   public static String getInputFolderPath(final String testSubpath, final String testName) throws InterruptedException {
     return getInputFolderPath(testSubpath, testName, false);
   }
-
 
   /**
    * Gets the input folder path associated with specified test.
@@ -432,7 +439,7 @@ public class TestHelper {
    * @return {@link CdmCorpusDefinition}
    */
   public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName) throws InterruptedException {
-    return getLocalCorpus(testSubpath, testName, null, false);
+    return getLocalCorpus(testSubpath, testName, null, false, null, false);
   }
 
   /**
@@ -441,7 +448,25 @@ public class TestHelper {
    * @return {@link CdmCorpusDefinition}
    */
   public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, String testInputDir) throws InterruptedException {
-    return getLocalCorpus(testSubpath, testName, testInputDir, false);
+    return getLocalCorpus(testSubpath, testName, testInputDir, false, null, false);
+  }
+
+  /**
+   * Gets local corpus.
+   *
+   * @return {@link CdmCorpusDefinition}
+   */
+  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, String testInputDir, Boolean isLanguageSpecific) throws InterruptedException {
+    return getLocalCorpus(testSubpath, testName, testInputDir, isLanguageSpecific, null, false);
+  }
+
+  /**
+   * Gets local corpus.
+   *
+   * @return {@link CdmCorpusDefinition}
+   */
+  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, String testInputDir, Boolean isLanguageSpecific, HashSet<CdmLogCode> expectedCodes) throws InterruptedException {
+    return getLocalCorpus(testSubpath, testName, testInputDir, isLanguageSpecific, expectedCodes, false);
   }
 
   /**
@@ -450,27 +475,58 @@ public class TestHelper {
    * @return {@link CdmCorpusDefinition}
    */
   public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, Boolean isLanguageSpecific) throws InterruptedException {
-    return getLocalCorpus(testSubpath, testName, null, isLanguageSpecific);
+    return getLocalCorpus(testSubpath, testName, null, isLanguageSpecific, null, false);
   }
 
-    /**
-     * Gets local corpus.
-     *
-     * @return {@link CdmCorpusDefinition}
-     */
-  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, String testName, String testInputDir, Boolean isLanguageSpecific) throws InterruptedException {
+  /**
+   * Gets local corpus.
+   *
+   * @return {@link CdmCorpusDefinition}
+   */
+  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, Boolean isLanguageSpecific, HashSet<CdmLogCode> expectedCodes) throws InterruptedException {
+    return getLocalCorpus(testSubpath, testName, null, isLanguageSpecific, expectedCodes, false);
+  }
+
+  /**
+   * Gets local corpus.
+   *
+   * @return {@link CdmCorpusDefinition}
+   */
+  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, Boolean isLanguageSpecific, HashSet<CdmLogCode> expectedCodes, Boolean noInputAndOutputFolder) throws InterruptedException {
+    return getLocalCorpus(testSubpath, testName, null, isLanguageSpecific, expectedCodes, noInputAndOutputFolder);
+  }
+
+  /**
+   * Creates a corpus to be used by the tests, which mounts inputFolder, outputFolder, cdm, and remoteAdapter. Will fail on any unexpected warning/error.
+   * @param testSubpath               The root of the corpus files.
+   * @param testName                  The test name.
+   * @param testInputDir              The test input directory.
+   * @param isLanguageSpecific        Indicate whether there is subfolder called Java, it's used when input is different compared with other languages
+   * @param expectedCodes             The error codes that are expected, and they should not block the test.
+   * @param noInputAndOutputFolder    No input and output folder needed.
+   * @return {@link CdmCorpusDefinition}
+   */
+  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, String testName, String testInputDir, Boolean isLanguageSpecific, HashSet<CdmLogCode> expectedCodes, Boolean noInputAndOutputFolder) throws InterruptedException {
     testName = (testName == null || testName.equals("")) ? testName : testName.substring(0, 1).toUpperCase() + testName.substring(1);
+    if (noInputAndOutputFolder) {
+      testInputDir = "C:\\dummyPath";
+    }
     testInputDir = (testInputDir != null) ? testInputDir : TestHelper.getInputFolderPath(testSubpath, testName, isLanguageSpecific);
 
-    final String testOutputDir = getActualOutputFolderPath(testSubpath, testName);
+    final String testOutputDir = noInputAndOutputFolder ? testInputDir : getActualOutputFolderPath(testSubpath, testName);
 
     final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+
+    cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
+      failOnUnexpectedFailure(cdmCorpus, message, expectedCodes);
+    }, CdmStatusLevel.Warning);
+
     cdmCorpus.getStorage().setDefaultNamespace(LOCAL);
 
-    final StorageAdapter localAdapter = new LocalAdapter(testInputDir);
+    final StorageAdapterBase localAdapter = new LocalAdapter(testInputDir);
     cdmCorpus.getStorage().mount(LOCAL, localAdapter);
 
-    final StorageAdapter outputAdapter = new LocalAdapter(testOutputDir);
+    final StorageAdapterBase outputAdapter = new LocalAdapter(testOutputDir);
     cdmCorpus.getStorage().mount(OUTPUT, outputAdapter);
 
     final LocalAdapter cdmAdapter = new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT);
@@ -483,6 +539,30 @@ public class TestHelper {
     cdmCorpus.getStorage().mount(REMOTE, remoteAdapter);
 
     return cdmCorpus;
+  }
+
+  private static void failOnUnexpectedFailure(final CdmCorpusDefinition corpus, final String message) {
+    failOnUnexpectedFailure(corpus, message, null);
+  }
+
+  /**
+   * Fail on an unexpected message.
+   * @param corpus          The corpus.
+   * @param message         The unexpected error messages.
+   * @param expectedCodes   The expected error codes.
+   */
+  private static void failOnUnexpectedFailure(final CdmCorpusDefinition corpus, final String message, final HashSet<CdmLogCode> expectedCodes) {
+    EventList events = corpus.getCtx().getEvents();
+    if (events.size() > 0) {
+      Map<String, String> lastLog = events.get(events.size() - 1);
+      if (!lastLog.containsKey("code") || !ignoredLogCodes.contains(lastLog.get("code"))) {
+        if (expectedCodes != null && expectedCodes.contains(CdmLogCode.valueOf(lastLog.get("code")))) {
+          return;
+        }
+        final String code = lastLog.getOrDefault("code", "no code associated");
+        Assert.fail("Encountered unexpected log event: " + code + " - " + message + "!");
+      }
+    }
   }
 
   public static void assertSameObjectWasSerialized(final String expected, final String actual) throws IOException {
@@ -547,10 +627,10 @@ public class TestHelper {
    */
   public static void assertCdmLogCodeEquality(CdmCorpusDefinition corpus, CdmLogCode expectedCode, boolean isPresent) {
     boolean toAssert = false;
-    for (Map<String,String> logEntry : corpus.getCtx().getEvents()) {
-      if ( ((expectedCode.name().startsWith("Warn") && logEntry.get("level").equals(CdmStatusLevel.Warning.name()))
+    for (Map<String, String> logEntry : corpus.getCtx().getEvents()) {
+      if (((expectedCode.name().startsWith("Warn") && logEntry.get("level").equals(CdmStatusLevel.Warning.name()))
               || (expectedCode.name().startsWith("Err") && logEntry.get("level").equals(CdmStatusLevel.Error.name())))
-      && logEntry.get("code").equalsIgnoreCase(expectedCode.toString())) {
+              && logEntry.get("code").equalsIgnoreCase(expectedCode.toString())) {
         toAssert = true;
       }
     }
@@ -559,12 +639,11 @@ public class TestHelper {
       if (!toAssert) {
         Assert.fail("The recorded log events should have contained message with log code " + expectedCode.toString() + " of appropriate level");
       }
-    }
-    else {
+    } else {
       if (toAssert) {
         Assert.fail("The recorded log events should have not contained message with log code " + expectedCode.toString() +
                 " of appropriate level as this message should be filtered out.");
+      }
     }
   }
- }
 }

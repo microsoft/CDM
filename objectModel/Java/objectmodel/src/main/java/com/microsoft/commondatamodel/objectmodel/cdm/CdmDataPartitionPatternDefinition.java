@@ -5,7 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.lang3.tuple.Pair;
@@ -260,7 +260,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     return CompletableFuture.runAsync(() -> {
       try (Logger.LoggerScope logScope = Logger.enterScope(CdmDataPartitionPatternDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
         String nameSpace = null;
-        StorageAdapter adapter = null;
+        StorageAdapterBase adapter = null;
 
         // make sure the root is a good full corpus path
         String rootCleaned = getRootLocation() != null && getRootLocation().endsWith("/") ? getRootLocation().substring(0, getRootLocation().length() - 1) : getRootLocation();

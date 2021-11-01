@@ -6,6 +6,8 @@ package com.microsoft.commondatamodel.objectmodel.cdm.relationship;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
@@ -14,14 +16,11 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryStyle;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.E2ERelationship;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -264,7 +263,8 @@ public class RelationshipTest {
   @Test
   public void testExtendsEntityAndReplaceAsForeignKey() throws InterruptedException {
       String testName = "testExtendsEntityAndReplaceAsForeignKey";
-      CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
+      final HashSet<CdmLogCode> expectedLogCodes = new HashSet<> (Collections.singletonList(CdmLogCode.WarnProjFKWithoutSourceEntity));
+      CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null, false, expectedLogCodes);
 
       CdmManifestDefinition manifest =  corpus.<CdmManifestDefinition>fetchObjectAsync("local:/default.manifest.cdm.json").join();
 
@@ -349,7 +349,9 @@ public class RelationshipTest {
   }
 
   private CompletableFuture<Void> reloadFromEntity(CdmCorpusDefinition corpus, CdmEntityDefinition fromEnt, String tempFromFilePath, String tempFromEntityPath) {
-      fromEnt.getInDocument().saveAsAsync(tempFromFilePath).join();
+      final CopyOptions options = new CopyOptions();
+      options.setTopLevelDocument(false);
+      fromEnt.getInDocument().saveAsAsync(tempFromFilePath, false, options).join();
       // fetch gain to reset the cache
       corpus.<CdmEntityDefinition>fetchObjectAsync(tempFromEntityPath, null, null, true).join();
       return CompletableFuture.completedFuture(null);
@@ -400,7 +402,10 @@ public class RelationshipTest {
         final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
         final CdmManifestDefinition manifestNoToEnt = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/mainNoToEnt.manifest.cdm.json").join();
         final CdmEntityDefinition fromEnt = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/fromEnt.cdm.json/fromEnt").join();
-        fromEnt.getInDocument().saveAsAsync(tempFromFilePath).join();
+
+        final CopyOptions options = new CopyOptions();
+        options.setTopLevelDocument(false);
+        fromEnt.getInDocument().saveAsAsync(tempFromFilePath, false, options).join();
 
         try {
             // 1. test when entity attribute is removed

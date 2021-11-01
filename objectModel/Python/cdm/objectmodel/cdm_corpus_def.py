@@ -126,7 +126,7 @@ class CdmCorpusDefinition:
                     res_entity = None  # type: Optional[CdmEntityDefinition]
                     # make options wrt this entity document and "relational" always
                     res_opt = ResolveOptions(entity.in_document,
-                                            AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'}))
+                                             AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'}))
 
                     is_resolved_entity = entity._is_resolved
 
@@ -210,6 +210,7 @@ class CdmCorpusDefinition:
             for sub_att_ctx in att_ctx.contents:
                 # find the top level entity definition's attribute context
                 if entity_att_att_context is None and att_ctx.type == CdmAttributeContextType.ATTRIBUTE_DEFINITION \
+                        and att_ctx.definition is not None \
                         and att_ctx.definition.fetch_object_definition(res_opt) is not None \
                         and att_ctx.definition.fetch_object_definition(res_opt).object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
                     entity_att_att_context = att_ctx
@@ -299,10 +300,11 @@ class CdmCorpusDefinition:
         return out_rels
 
     def _fetch_purpose_resolved_traits_from_att_ctx(self, res_opt: 'ResolveOptions', attribute_ctx: 'CdmAttributeContext') -> 'ResolvedTraitSet':
-        definition = attribute_ctx.definition.fetch_object_definition(res_opt)
-        if definition and definition.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF \
-            and cast('CdmEntityAttributeDefinition', definition) and cast('CdmEntityAttributeDefinition', definition).purpose is not None:
-            return cast('CdmEntityAttributeDefinition', definition).purpose._fetch_resolved_traits(res_opt)
+        if attribute_ctx.definition is not None:
+            definition = attribute_ctx.definition.fetch_object_definition(res_opt)
+            if definition and definition.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF \
+                    and cast('CdmEntityAttributeDefinition', definition) and cast('CdmEntityAttributeDefinition', definition).purpose is not None:
+                return cast('CdmEntityAttributeDefinition', definition).purpose._fetch_resolved_traits(res_opt)
 
         return None
 
@@ -476,7 +478,7 @@ class CdmCorpusDefinition:
         tag_suffix = '-{}-{}'.format(kind, this_id)
         # Some object types like traits don't change their resolved from depending on the directives.
         # This optimization is only useful when the same corpus is used to resolve objects using different directives.
-        SIMPLE_CACHE_TAG_TYPES = { CdmObjectType.DATA_TYPE_DEF, CdmObjectType.PURPOSE_DEF, CdmObjectType.TRAIT_DEF, CdmObjectType.TRAIT_GROUP_DEF }
+        SIMPLE_CACHE_TAG_TYPES = {CdmObjectType.DATA_TYPE_DEF, CdmObjectType.PURPOSE_DEF, CdmObjectType.TRAIT_DEF, CdmObjectType.TRAIT_GROUP_DEF}
         simple_cache_tag = definition.object_type in SIMPLE_CACHE_TAG_TYPES
 
         if not simple_cache_tag:
@@ -599,7 +601,7 @@ class CdmCorpusDefinition:
             if pre_end == 0:
                 # absolute refererence
                 logger.error(self.ctx, self._TAG, '_docs_for_symbol', wrt_doc.at_corpus_path,
-                                'no support for absolute references yet. fix \'{}\''.format(symbol_def),
+                             'no support for absolute references yet. fix \'{}\''.format(symbol_def),
                              ctx._relative_path)
 
                 return None
@@ -679,7 +681,8 @@ class CdmCorpusDefinition:
                 logger.info(self.ctx, self._TAG, self._load_imports_async.__name__, loaded_doc.at_corpus_path,
                             'resolved import for \'{}\''.format(loaded_doc.name))
             else:
-                logger.warning(self.ctx, self._TAG, CdmCorpusDefinition._load_imports_async.__name__, None, CdmLogCode.WARN_RESOLVE_IMPORT_FAILED, doc_path, doc_path)
+                logger.warning(self.ctx, self._TAG, CdmCorpusDefinition._load_imports_async.__name__,
+                               None, CdmLogCode.WARN_RESOLVE_IMPORT_FAILED, doc_path, doc_path)
 
             await self._load_imports_async(loaded_doc, docs_loading, res_opt)
 
@@ -780,7 +783,7 @@ class CdmCorpusDefinition:
 
         doc.visit('', visit_callback, None)
 
-    async def _resolve_imports_async(self, doc: 'CdmDocumentDefinition', docs_loading: Set[CdmDocumentDefinition], res_opt: 'ResolveOptions') -> None:
+    async def _resolve_imports_async(self, doc: 'CdmDocumentDefinition', docs_loading: Set[str], res_opt: 'ResolveOptions') -> None:
         """takes a callback that askes for promise to do URI resolution."""
         # load imports (and imports of imports)
         await self._load_imports_async(doc, docs_loading, res_opt)
@@ -1023,7 +1026,7 @@ class CdmCorpusDefinition:
 
         if wrt_doc._needs_indexing and res_opt.imports_load_strategy == ImportsLoadStrategy.DO_NOT_LOAD:
             logger.error(self.ctx, self._TAG, '_resolve_symbol_reference', wrt_doc.at_corpus_path, CdmLogCode.ERR_SYMBOL_NOT_FOUND, symbol_def,
-                            'because the ImportsLoadStrategy is set to DO_NOT_LOAD')
+                         'because the ImportsLoadStrategy is set to DO_NOT_LOAD')
             return None
 
         # save the symbol name as it got here
@@ -1034,7 +1037,7 @@ class CdmCorpusDefinition:
         is_reference = symbol_def.endswith('(ref)')
         if is_reference:
             def_index = symbol_def.find('/')
-            symbol_def = symbol_def[0 : def_index]
+            symbol_def = symbol_def[0: def_index]
 
         # get the array of documents where the symbol is defined
         symbol_docs_result = self._docs_for_symbol(res_opt, wrt_doc, from_doc, symbol_def)
@@ -1076,6 +1079,7 @@ class CdmCorpusDefinition:
         if found and is_reference:
             found_ref = None  # type: Optional[CdmObjectBase]
             # try to find the reference
+
             def find_ref_callback(obj: CdmObject, obj_path: str):
                 nonlocal found_ref
                 if initial_symbol == obj_path:
@@ -1241,7 +1245,7 @@ class CdmCorpusDefinition:
         return CdmObjectType.ERROR
 
     async def fetch_object_async(self, object_path: str, relative_object: Optional['CdmObject'] = None,
-                                 shallow_validation: Optional[bool] = False,
+                                 shallow_validation: Optional[bool] = None,
                                  force_reload: Optional[bool] = False, res_opt: Optional['ResolveOptions'] = None) -> Optional['CdmObject']:
         """gets an object by the path from the Corpus."""
         from cdm.persistence import PersistenceLayer
@@ -1250,6 +1254,13 @@ class CdmCorpusDefinition:
 
             if res_opt is None:
                 res_opt = ResolveOptions()
+
+            if shallow_validation is not None:
+                if isinstance(shallow_validation, ResolveOptions):
+                    raise Exception('ResolveOptions is not the third parameter in Python, please specify the parameter name when you pass in ResolveOptions.')
+
+                res_opt = res_opt.copy()
+                res_opt.shallow_validation = shallow_validation
 
             object_path = self.storage.create_absolute_corpus_path(object_path, relative_object)
             document_path = object_path
@@ -1269,9 +1280,7 @@ class CdmCorpusDefinition:
 
             # get imports and index each document that is loaded
             if isinstance(obj, CdmDocumentDefinition):
-                if res_opt.shallow_validation is None:
-                    res_opt.shallow_validation = shallow_validation
-                if not await obj._index_if_needed(res_opt, False):
+                if not await obj._index_if_needed(res_opt):
                     return None
                 if not obj._is_valid:
                     logger.error(self.ctx, self._TAG, self.fetch_object_async.__name__, obj.at_corpus_path,
@@ -1318,7 +1327,7 @@ class CdmCorpusDefinition:
         from cdm.persistence import PersistenceLayer
 
         return path.endswith(PersistenceLayer.FOLIO_EXTENSION) or path.endswith(PersistenceLayer.MANIFEST_EXTENSION) \
-               or path.endswith(PersistenceLayer.MODEL_JSON_EXTENSION)
+            or path.endswith(PersistenceLayer.MODEL_JSON_EXTENSION)
 
     def fetch_incoming_relationships(self, entity: 'CdmEntityDefinition') -> List['E2ERelationshipDef']:
         return self._incoming_relationships.get(entity.at_corpus_path, [])
@@ -1327,7 +1336,7 @@ class CdmCorpusDefinition:
         return self._outgoing_relationships.get(entity.at_corpus_path, [])
 
     def _get_from_attributes(self, new_gen_set: 'CdmAttributeContext', from_attrs: List['CdmAttributeReference']) -> \
-    List['CdmAttributeReference']:
+            List['CdmAttributeReference']:
         """For Projections get the list of 'From' Attributes"""
         if new_gen_set and new_gen_set.contents:
             if not from_attrs:

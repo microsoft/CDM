@@ -36,7 +36,7 @@ describe('Utilities.TelemetryKustoClient', () => {
     /** Declare a blackhole callback. */
     const eventCallback = () => { }
 
-    const kustoIt: jest.It = (process.env['KUSTO_RUNTESTS']) ? it : it.skip;
+    const kustoIt: jest.It = process.env['KUSTO_RUNTESTS'] === '1' ? it : it.skip;
 
     kustoIt('TestInitializeClientWithDefaultDatabase', async() => {
         const corpus: CdmCorpusDefinition = initializeClientWithDefaultDatabase();
@@ -113,6 +113,10 @@ describe('Utilities.TelemetryKustoClient', () => {
 
     function initializeClientWithUserDatabase(): CdmCorpusDefinition {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestTelemetryKustoClient');
+        
+        // TODO: need to investigate why only Java not failing if using event callback from GetLocalCorpus() 
+        // set callback to receive error, warning and progress logs.
+        corpus.setEventCallback(eventCallback, cdmStatusLevel.progress);
 
         expect(StringUtils.isNullOrWhiteSpace(tenantId)).toBe(false);
         expect(StringUtils.isNullOrWhiteSpace(clientId)).toBe(false);
@@ -127,9 +131,6 @@ describe('Utilities.TelemetryKustoClient', () => {
             secret, clusterName, databaseName, azureCloudEndpoint.AzurePublic, infoTable, warningTable, errorTable);
 
         corpus.telemetryClient = new TelemetryKustoClient(corpus.ctx, kustoConfig);
-
-        // set callback to receive error, warning and progress logs.
-        corpus.setEventCallback(eventCallback, cdmStatusLevel.progress);
 
         return corpus;
     }

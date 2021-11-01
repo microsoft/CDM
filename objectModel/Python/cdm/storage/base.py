@@ -5,6 +5,7 @@ import datetime
 from .cache_context import StorageAdapterCacheContext
 from typing import List, Optional
 
+
 class StorageAdapterBase:
     """Abstract base class of all storage adapters that can read and write documents to and from
     data sources. It offers the flexibility to interact with data from multiple sources, and can be

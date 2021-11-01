@@ -77,3 +77,11 @@ class StringUtils:
         pattern = re.compile(r'(?<!^)(?=[A-Z])')
 
         return pattern.sub('_', pascal_str).upper()
+
+    @staticmethod
+    def trim_start(inputstring, word_to_remove):
+        return inputstring[len(word_to_remove):] if inputstring.startswith(word_to_remove) else inputstring
+
+    @staticmethod
+    def trim_end(inputstring, word_to_remove):
+        return inputstring[:len(word_to_remove)] if inputstring.endswith(word_to_remove) else inputstring

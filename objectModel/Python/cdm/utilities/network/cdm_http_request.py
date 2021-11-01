@@ -1,8 +1,10 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Dict
+import time
+from typing import Dict, Optional
 import uuid
+
 
 class CdmHttpRequest:
     """
@@ -16,12 +18,28 @@ class CdmHttpRequest:
         self.number_of_retries = number_of_retries  # type : int
         self.content = None  # type : Optional[str]
         self.content_type = None # type: Optional[str]
+        self.maximum_timeout = None  # type: Optional[int]
+        self.timeout = None  # type: Optional[int]
 
         if method is None:
             self.method = 'GET'
         else:
             self.method = method
-    
+
+        # --- internal ---
+        self._start_time = None  # type: Optional[int]
+
+    @property
+    def _time_for_maximum_timeout(self) -> int:
+        return max(self.maximum_timeout - (time.time() - self._start_time) * 1000, 0)
+
+    @property
+    def _maximum_timeout_exceeded(self) -> bool:
+        return self._time_for_maximum_timeout == 0
+
+    def _start(self):
+        self._start_time = time.time()
+
     def _strip_sas_sig(self) -> str:
         """
         Strips the value of sas token parameter 'sig'.

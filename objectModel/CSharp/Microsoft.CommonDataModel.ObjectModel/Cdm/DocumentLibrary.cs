@@ -300,7 +300,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             var namespaceFolder = this.corpus.Storage.FetchRootFolder(nameSpace);
-            StorageAdapter namespaceAdapter = this.corpus.Storage.FetchAdapter(nameSpace);
+            StorageAdapterBase namespaceAdapter = this.corpus.Storage.FetchAdapter(nameSpace);
             if (namespaceFolder == null || namespaceAdapter == null)
             {
                 Logger.Error(this.corpus.Ctx, TAG, nameof(LoadFolderOrDocument), objectPath, CdmLogCode.ErrStorageNamespaceNotRegistered, nameSpace);

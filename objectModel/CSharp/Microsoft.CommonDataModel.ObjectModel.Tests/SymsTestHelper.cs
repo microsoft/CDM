@@ -19,7 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
         public static void CheckSymsEnvironment()
         {
-            if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("SYMS_RUNTESTS")))
+            if (Environment.GetEnvironmentVariable("SYMS_RUNTESTS") != "1")
             {
                 // this will cause tests to appear as "Skipped" in the final result
                 Assert.Inconclusive("Syms environment not set up");

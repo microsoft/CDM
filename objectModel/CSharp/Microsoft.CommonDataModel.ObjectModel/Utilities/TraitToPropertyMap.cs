@@ -196,9 +196,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 case "dataFormat":
                     return this.TraitsToDataFormat(onlyFromProperty);
                 case "primaryKey":
-                    CdmTypeAttributeDefinition attRef = FetchTraitReferenceArgumentValue(FetchTraitReference("is.identifiedBy", onlyFromProperty), "attribute");
+                    var attRef = FetchTraitReferenceArgumentValue(FetchTraitReference("is.identifiedBy", onlyFromProperty), "attribute");
                     if (attRef != null)
-                        return attRef.FetchObjectDefinitionName();
+                    {
+                        if (attRef is string)
+                        {
+                            return attRef;
+                        }
+                        return ((CdmTypeAttributeDefinition)attRef).FetchObjectDefinitionName();
+                    }
                     break;
                 case "defaultValue":
                     return this.FetchDefaultValue(onlyFromProperty);

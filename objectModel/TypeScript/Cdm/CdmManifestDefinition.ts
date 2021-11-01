@@ -25,10 +25,11 @@ import {
     importsLoadStrategy,
     Logger,
     resolveOptions,
+    StorageAdapterBase,
+    StorageAdapterCacheContext,
     VisitCallback
 } from '../internal';
 import { isLocalEntityDeclarationDefinition, isReferencedEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
-import { StorageAdapterBase, StorageAdapterCacheContext } from '../Storage/StorageAdapterBase';
 import * as timeUtils from '../Utilities/timeUtils';
 import { using } from "using-statement";
 import { enterScope } from '../Utilities/Logging/Logger';
@@ -396,7 +397,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
      */
     public async fileStatusCheckAsync(): Promise<void> {
         return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
-            let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace) as StorageAdapterBase;
+            let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace);
             let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
             try {
                 const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeFromObjectAsync(this);
@@ -486,7 +487,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
         const resOpt = new resolveOptions();
         resOpt.importsLoadStrategy = importsLoadStrategy.load;
-        const objAt: CdmObject = await this.ctx.corpus.fetchObjectAsync(relativePath, this);
+        const objAt: CdmObject = await this.ctx.corpus.fetchObjectAsync(relativePath, this, resOpt);
         if (!objAt) {
             Logger.error(this.ctx, this._TAG, this.fetchDocumentDefinition.name, this.atCorpusPath, cdmLogCode.ErrPersistObjectNotFound, docPath);
             return undefined;

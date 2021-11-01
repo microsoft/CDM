@@ -5,7 +5,7 @@ import * as http from 'http';
 import * as https from 'https';
 import { CdmHttpResponse } from '../Utilities/Network/CdmHttpResponse'
 
-export async function requestUrl(url: string, method: string, content: string = undefined, headers: http.OutgoingHttpHeaders = undefined): Promise<CdmHttpResponse> {
+export async function requestUrl(url: string, method: string, requestTimeout: number, content: string = undefined, headers: http.OutgoingHttpHeaders = undefined): Promise<CdmHttpResponse> {
     const protocolIndex: number = url.indexOf('://');
 
     if (protocolIndex === -1) {
@@ -18,10 +18,10 @@ export async function requestUrl(url: string, method: string, content: string = 
     const host: string = url.slice(protocolIndex + 3, hostIndex);
     const path: string = pathIndex !== -1 ? url.slice(pathIndex) : '';
 
-    return request(protocol, host, path, method, content, headers);
+    return request(protocol, host, path, method, requestTimeout, content, headers);
 }
 
-export async function request(protocol: string, host: string, path: string, method: string, content: string = undefined, headers: http.OutgoingHttpHeaders = undefined): Promise<CdmHttpResponse> {
+export async function request(protocol: string, host: string, path: string, method: string, requestTimeout: number, content: string = undefined, headers: http.OutgoingHttpHeaders = undefined): Promise<CdmHttpResponse> {
     return new Promise((resolve, reject) => {
         let lib;
         switch (protocol) {
@@ -39,9 +39,17 @@ export async function request(protocol: string, host: string, path: string, meth
         const options = {
             hostname: host,
             path: path,
+            port: undefined,
             method: method,
             headers: headers,
         };
+
+        // If the host has a port on it, break it down. E.g.: 'localhost:8000'
+        const portIndex = host.indexOf(':')
+        if (portIndex !== -1) {
+            options.hostname = host.slice(0, portIndex);
+            options.port = host.slice(portIndex + 1)
+        }
 
         const req = lib.request(options, (res: http.IncomingMessage) => {
             const arr = [];
@@ -83,14 +91,21 @@ export async function request(protocol: string, host: string, path: string, meth
             });
         });
 
+        req.on('socket', (socket) => {
+            // Set the timeout on the socket.
+            socket.setTimeout(requestTimeout);  
+            socket.on('timeout', () => req.abort());
+        });
+
+        req.on('error', (err) => {
+            reject(err);
+        });
+
         if (content !== undefined) {
             // Be sure to set the content in the case of a POST or PUT HTTP request.
             req.write(content, 'utf-8');
         }
 
-        req.on('error', (err) => {
-            reject(err);
-        });
         req.end();
     });
 };

@@ -54,7 +54,7 @@ public class ProjectionExpansionTest {
      */
     @Test
     public void testEntityAttributeProjUsingObjectModel() throws InterruptedException {
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, "testEntityAttributeProjUsingObjectModel");
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testEntityAttributeProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "testEntityAttributeProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
@@ -114,7 +114,7 @@ public class ProjectionExpansionTest {
      */
     @Test
     public void testEntityProjUsingObjectModel() throws InterruptedException {
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, "testEntityProjUsingObjectModel");
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testEntityProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "testEntityProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
@@ -172,7 +172,7 @@ public class ProjectionExpansionTest {
      */
     @Test
     public void testConditionalProjUsingObjectModel() throws InterruptedException {
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, "testConditionalProjUsingObjectModel");
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testConditionalProjUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "testConditionalProjUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
@@ -252,7 +252,7 @@ public class ProjectionExpansionTest {
     public void testExpansion() throws InterruptedException {
         String testName = "testExpansion";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -283,7 +283,7 @@ public class ProjectionExpansionTest {
     public void testEntityAttribute() throws InterruptedException {
         String testName = "testEntityAttribute";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -313,7 +313,7 @@ public class ProjectionExpansionTest {
     public void testTypeAttribute() throws InterruptedException {
         String testName = "testTypeAttribute";
         String entityName = "Person";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -336,7 +336,7 @@ public class ProjectionExpansionTest {
     public void testProjNoRename() throws InterruptedException {
         String testName = "testProjNoRename";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -362,7 +362,7 @@ public class ProjectionExpansionTest {
     public void testExtendsEntity() throws InterruptedException {
         String testName = "testExtendsEntity";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -385,7 +385,7 @@ public class ProjectionExpansionTest {
     public void testExtendsEntityProj() throws InterruptedException {
         String testName = "testExtendsEntityProj";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -415,7 +415,7 @@ public class ProjectionExpansionTest {
     public void testNestedProj() throws InterruptedException {
         String testName = "testNestedProj";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -454,7 +454,7 @@ public class ProjectionExpansionTest {
     public void testNegativeStartOrdinal() throws InterruptedException {
         String testName = "testNegativeStartOrdinal";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -485,7 +485,7 @@ public class ProjectionExpansionTest {
     public void testStartGTEndOrdinal() throws InterruptedException {
         String testName = "testStartGTEndOrdinal";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         // A warning should be logged when startOrdinal > endOrdinal
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
@@ -516,7 +516,7 @@ public class ProjectionExpansionTest {
     public void testSameStartEndOrdinals() throws InterruptedException {
         String testName = "testSameStartEndOrdinals";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -540,7 +540,7 @@ public class ProjectionExpansionTest {
     public void testCombineOps() throws InterruptedException {
         String testName = "testCombineOps";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -565,7 +565,7 @@ public class ProjectionExpansionTest {
     public void testPolymorphic() throws InterruptedException {
         String testName = "testPolymorphic";
         String entityName = "BusinessPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -597,7 +597,7 @@ public class ProjectionExpansionTest {
     public void testPolymorphicProj() throws InterruptedException {
         String testName = "testPolymorphicProj";
         String entityName = "BusinessPerson";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             if (resOpt.contains("structured")) {
@@ -635,7 +635,7 @@ public class ProjectionExpansionTest {
     public void testArraySource() throws InterruptedException {
         String testName = "testArraySource";
         String entityName = "FriendGroup";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -667,7 +667,7 @@ public class ProjectionExpansionTest {
     public void testArraySourceProj() throws InterruptedException {
         String testName = "testArraySourceProj";
         String entityName = "FriendGroup";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -702,7 +702,7 @@ public class ProjectionExpansionTest {
     public void testGroup() throws InterruptedException {
         String testName = "testGroup";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -733,7 +733,7 @@ public class ProjectionExpansionTest {
     public void testGroupProj() throws InterruptedException {
         String testName = "testGroupProj";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -763,7 +763,7 @@ public class ProjectionExpansionTest {
     public void testConditionalProj() throws InterruptedException {
         String testName = "testConditionalProj";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();

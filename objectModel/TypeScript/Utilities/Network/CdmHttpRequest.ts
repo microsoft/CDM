@@ -53,6 +53,27 @@ export class CdmHttpRequest {
      */
     public numberOfRetries: number;
 
+    /**
+     * Amount of time in milliseconds to reach the maximum timout.
+     * @internal
+     */
+    public get timeForMaximumTimeout(): number {
+        return Math.max(this.maximumTimeout - (Date.now() - this.startTime), 0)
+    }
+
+    /**
+     * If the maximum timout was exceeded or not.
+     * @internal
+     */
+    public get maximumTimeoutExceeded(): boolean {
+        return this.timeForMaximumTimeout === 0;
+    }
+
+    /**
+     * The time at which this request started being proceeed.
+     */
+    private startTime: number;
+
     constructor(url: string, numberOfRetries: number = 0, method?: string) {
         this.headers = new Map<string, string>();
         this.requestedUrl = url;
@@ -65,6 +86,14 @@ export class CdmHttpRequest {
         } else {
             this.method = method;
         }
+    }
+
+    /**
+     * Marks this requests as `started` for processing.
+     * @internal
+     */
+    public start() {
+        this.startTime = Date.now();
     }
 
     /**

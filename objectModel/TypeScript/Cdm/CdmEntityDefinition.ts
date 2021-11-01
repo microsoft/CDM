@@ -1009,7 +1009,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                                     // if this is a new entity context, get the name to pass along
                                     const subSubAttCtx: CdmAttributeContext = cr as CdmAttributeContext;
                                     let subEntityHint: string = entityHint;
-                                    if (subSubAttCtx.type === cdmAttributeContextType.entity) {
+                                    if (subSubAttCtx.type === cdmAttributeContextType.entity && subSubAttCtx.definition) {
                                         subEntityHint = subSubAttCtx.definition.namedReference;
                                     }
                                     // do this for all types

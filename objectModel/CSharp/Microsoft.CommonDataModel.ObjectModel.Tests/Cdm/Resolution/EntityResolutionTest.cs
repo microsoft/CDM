@@ -7,6 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using System.IO;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection;
     using Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution;
@@ -48,6 +49,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             Assert.AreEqual(document, entity.Owner);
             Assert.AreEqual(entity, entity.Attributes[0].Owner, "Entity's attribute's owner should have remained unchanged (same as the owning entity)");
+        }
+
+        /// <summary>
+        /// Test that entity references that do not point to valid entities are reported as an error instead of triggering an exception
+        /// </summary>
+        [TestMethod]
+        public async Task TestEntRefNonexistent()
+        {
+            var expectedCodes = new HashSet<CdmLogCode> { CdmLogCode.WarnResolveObjectFailed, CdmLogCode.ErrResolveReferenceFailure };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestEntRefNonexistent", expectedCodes: expectedCodes);
+            var folder = corpus.Storage.NamespaceFolders["local"];
+            var doc = new CdmDocumentDefinition(corpus.Ctx, "someDoc.cdm.json");
+            folder.Documents.Add(doc);
+            var entity = new CdmEntityDefinition(corpus.Ctx, "someEntity");
+            var entAtt = new CdmEntityAttributeDefinition(corpus.Ctx, "entityAtt");
+            entAtt.Entity = new CdmEntityReference(corpus.Ctx, "nonExistingEntity", true);
+            entity.Attributes.Add(entAtt);
+            doc.Definitions.Add(entity);
+
+            var resolvedEnt = await entity.CreateResolvedEntityAsync("resolvedSomeEntity");
+            Assert.IsNotNull(resolvedEnt);
         }
 
         /// <summary>
@@ -212,7 +234,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestResolvedAttributeLimit()
         {
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestResolvedAttributeLimit");
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrRelMaxResolvedAttrReached };
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestResolvedAttributeLimit", expectedCodes: expectedLogCodes);
 
             CdmEntityDefinition mainEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/mainEntity.cdm.json/mainEntity");
             ResolveOptions resOpt = new ResolveOptions { WrtDoc = mainEntity.InDocument, Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" }) };

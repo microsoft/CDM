@@ -130,6 +130,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
                     }
                 }
             }, CdmStatusLevel.Warning);
+
             await cdmManifest.FileStatusCheckAsync();
             Assert.AreEqual(1, errorLogged);
             Assert.AreEqual(cdmManifest.Entities[0].DataPartitions.Count, 0);

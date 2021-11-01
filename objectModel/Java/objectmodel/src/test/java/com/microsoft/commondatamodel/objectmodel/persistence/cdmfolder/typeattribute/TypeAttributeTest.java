@@ -129,7 +129,7 @@ public class TypeAttributeTest {
     // Check that the trait "is.identifiedBy" is created with the correct argument.
     CdmTraitReference isIdentifiedBy1 = (CdmTraitReference) typeAttribute.getAppliedTraits().get(1);
     Assert.assertEquals(isIdentifiedBy1.getNamedReference(), "is.identifiedBy");
-    Assert.assertEquals(isIdentifiedBy1.getArguments().get(0).getValue(), "TeamMembership/(resolvedAttributes)/teamMembershipId");
+    Assert.assertEquals(((CdmAttributeReference)isIdentifiedBy1.getArguments().get(0).getValue()).getNamedReference(), "TeamMembership/(resolvedAttributes)/teamMembershipId");
 
     // Read from a resolved entity schema.
     final CdmEntityDefinition resolvedEntity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TeamMembership_Resolved.cdm.json/TeamMembership", null, resOpt).join();

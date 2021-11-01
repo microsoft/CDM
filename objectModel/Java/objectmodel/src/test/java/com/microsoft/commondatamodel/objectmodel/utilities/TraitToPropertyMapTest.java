@@ -3,6 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -21,6 +27,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class TraitToPropertyMapTest {
+
+  private static String testsSubpath = new File("Utilities", "TraitToPropertyMap").toString();
+  
   /**
    * Test trait to data format when unknown data format trait is in an attribute.
    */
@@ -95,5 +104,31 @@ public class TraitToPropertyMapTest {
       att.updateDataFormat(format);
       Assert.assertEquals(att.fetchDataFormat(), format);
     }
+  }
+
+  /**
+   * Test fetch primary key.
+   */
+  @Test
+  public void testFetchPrimaryKey() {
+      try {
+          CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(testsSubpath, "TestFetchPrimaryKey");
+          CdmDocumentDefinition doc = cdmCorpus
+                  .<CdmDocumentDefinition>fetchObjectAsync("Account.cdm.json").join();
+
+          if (doc == null) {
+            Assert.fail("Unable to load manifest Account.cdm.json. Please inspect error log for additional details.");
+          }
+
+          CdmEntityDefinition entity = (CdmEntityDefinition)doc.getDefinitions().get(0);
+          try {
+            String pk = entity.getPrimaryKey();
+          } catch (Exception e) {
+            Assert.fail("Exception occur while reading primary key for entity ."
+                + e.getMessage());
+          }
+      } catch (InterruptedException e) {
+          Assert.fail(e.getMessage());
+      }
   }
 }

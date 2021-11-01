@@ -17,10 +17,10 @@ import {
     CdmObject,
     cdmObjectType,
     copyOptions,
-    resolveOptions
+    Logger,
+    resolveOptions,
+    StorageAdapterBase,
 } from '../internal';
-import { StorageAdapter } from '../Storage/StorageAdapter';
-import { Logger } from '../Utilities/Logging/Logger';
 import { DocumentPersistence } from './CdmFolder/DocumentPersistence';
 import { IPersistence } from './Common/IPersistence';
 
@@ -126,7 +126,7 @@ export class PersistenceLayer {
         let jsonData: string;
         let fsModifiedTime: Date;
         const docPath: string = folder.folderPath + docName;
-        const adapter: StorageAdapter = this.corpus.storage.fetchAdapter(folder.namespace);
+        const adapter: StorageAdapterBase = this.corpus.storage.fetchAdapter(folder.namespace);
 
         try {
             if (adapter.canRead()) {
@@ -242,7 +242,7 @@ export class PersistenceLayer {
         if (ns === undefined) {
             ns = this.corpus.storage.defaultNamespace;
         }
-        const adapter: StorageAdapter = this.corpus.storage.fetchAdapter(ns);
+        const adapter: StorageAdapterBase = this.corpus.storage.fetchAdapter(ns);
         if (adapter === undefined) {
             Logger.error(this.ctx, this.TAG, this.saveDocumentAsAsync.name, doc.atCorpusPath, cdmLogCode.ErrPersistAdapterNotFoundForNamespace, ns);
             return false;

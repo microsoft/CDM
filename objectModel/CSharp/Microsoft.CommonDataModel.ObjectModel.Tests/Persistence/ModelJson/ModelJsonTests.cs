@@ -337,6 +337,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
         }
 
         /// <summary>
+        /// Test model.json is correctly created without an entity when the location is not recognized
+        /// </summary>
+        [Test]
+        public async Task TestIncorrectModelLocation()
+        {
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrStorageInvalidAdapterPath, CdmLogCode.ErrPersistModelJsonEntityParsingError, CdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestIncorrectModelLocation", expectedCodes: expectedLogCodes);
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("model.json");
+            Assert.NotNull(manifest);
+            Assert.AreEqual(0, manifest.Entities.Count);
+            TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, true);
+        }
+
+        /// <summary>
         /// Handles the obtained output.
         /// If needed, writes the output to a test debugging file.
         /// It reads expected output and compares it to the actual output.

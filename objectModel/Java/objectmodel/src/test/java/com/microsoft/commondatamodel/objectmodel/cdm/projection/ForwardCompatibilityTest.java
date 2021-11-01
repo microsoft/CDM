@@ -3,6 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
@@ -34,7 +35,7 @@ public class ForwardCompatibilityTest {
     public void testAllOperations() throws InterruptedException {
         String testName = "testAllOperations";
         String entityName = "TestAllOperations";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             if (!message.contains("Projection operation not implemented yet."))
                 Assert.fail("Some unexpected failure - " + message + "!");

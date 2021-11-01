@@ -45,7 +45,7 @@ class CdmTraitReference(CdmTraitReferenceBase):
 
     def _copy_ref_object(self, res_opt: 'ResolveOptions', ref_to: Union[str, 'CdmTraitDefinition'], simple_reference: bool, host: Optional['CdmObjectReference'] = None) -> 'CdmObjectReference':
         if not host:
-            copy = CdmTraitReference(self.ctx, ref_to, bool(self.arguments))
+            copy = CdmTraitReference(self.ctx, ref_to, simple_reference)
         else:
             copy = host._copy_to_host(self.ctx, ref_to, simple_reference)
             copy.arguments.clear()

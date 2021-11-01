@@ -33,6 +33,7 @@ export enum cdmLogCode {
     ErrPersistEntityPathNotFound,
     ErrPersistEntityAttrUnsupported,
     ErrPersistEntityDeclarationMissing,
+    ErrPersistModelJsonRefEntityInvalidLocation,
     ErrPersistModelJsonEntityParsingError,
     ErrPersistFailure,
     ErrPersistFilePersistError,

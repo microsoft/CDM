@@ -102,7 +102,7 @@ class CdmE2ERelationship(CdmObjectDefinition):
         return self.last_file_modified_time
 
     def set_last_file_modified_time(self, value: datetime) -> None:
-        self.last_file_modified_old_time = self.last_file_modified_old_time
+        self.last_file_modified_old_time = self.last_file_modified_time
         self.last_file_modified_time = value
 
     def get_last_file_modified_old_time(self) -> datetime:

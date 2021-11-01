@@ -9,7 +9,8 @@ import { Logger } from '../Logging/Logger';
 import { CdmHttpRequest } from './CdmHttpRequest';
 import { CdmHttpResponse } from './CdmHttpResponse';
 import { HttpRequestCallback } from './HttpRequestCallback';
-import { cdmLogCode } from '../../internal';
+
+const REQUEST_TIMEOUT: string = 'Request timeout.';
 
 /**
  * CDM Http Client is an HTTP client which implements retry logic to execute retries in the case of failed requests.
@@ -29,8 +30,6 @@ export class CdmHttpClient {
     private apiEndpoint: string;
 
     private httpHandler: HttpRequestCallback;
-
-    private maximumTimeoutReached: boolean = false;
 
     /**
      * Initializes a new instance of the CdmHttpClient.
@@ -90,12 +89,14 @@ export class CdmHttpClient {
             cdmRequest.headers.set(key, value);
         });
 
+        // Start counting the time for this request.
+        cdmRequest.start();
+
         try {
-            const res: CdmHttpResponse = await this.raceAsyncTaskAgainstTimeout(cdmRequest.maximumTimeout, this.SendAsyncHelper(cdmRequest, callback, ctx), 'Maximum timeout exceeded.');
-            return res;
+            return await this.SendAsyncHelper(cdmRequest, callback, ctx);
         } catch (e) {
-            if (typeof e === 'string' && e === 'Maximum timeout exceeded.') {
-                this.maximumTimeoutReached = true;
+            if (typeof e === 'string' && e === REQUEST_TIMEOUT && cdmRequest.maximumTimeoutExceeded) {
+                throw 'Maximum timeout exceeded.';
             }
             throw e;
         }
@@ -137,27 +138,27 @@ export class CdmHttpClient {
 
             // If the number of retries is 0, we only try once, otherwise we retry the specified number of times.
             for (let retryNumber: number = 0; retryNumber <= cdmRequest.numberOfRetries; retryNumber++) {
-
-                if (this.maximumTimeoutReached) {
-                    return;
-                }
-
                 let hasFailed: boolean = false;
                 let response: CdmHttpResponse;
+                const startTime = new Date();
 
                 try {
-                    const startTime = new Date();
                     if (ctx != null) {
                         Logger.debug(ctx, this.TAG, this.SendAsyncHelper.name, null, `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, request url: ${cdmRequest.stripSasSig()}, retry number: ${retryNumber}.`);
-                       
                     }
 
-                    response = await this.raceAsyncTaskAgainstTimeout(
-                        cdmRequest.timeout,
-                        this.httpHandler(fullUrl, cdmRequest.method, cdmRequest.content, outgoingHeaders),
-                        'Request timeout.',
-                        ctx,
-                        `Request ${cdmRequest.requestId} timeout after ${cdmRequest.timeout / 1000} s.`);
+                    if (cdmRequest.maximumTimeoutExceeded) {
+                        reject(REQUEST_TIMEOUT)
+                        break;
+                    }
+
+                    // Calculate how much longer we have before hitting the maximum timout.
+                    const maxTimeout: number = cdmRequest.timeForMaximumTimeout;
+
+                    // The request should timeout either for its own timeout or if maximum timeout is reached.
+                    const timeout: number = Math.min(maxTimeout, cdmRequest.timeout);
+
+                    response = await this.httpHandler(fullUrl, cdmRequest.method, timeout, cdmRequest.content, outgoingHeaders);
 
                     if (ctx != null) {
                         const endTime = new Date();
@@ -165,11 +166,19 @@ export class CdmHttpClient {
                     }
                 } catch (err) {
                     hasFailed = true;
+                    const endTime = new Date();
+                    
+                    if (err.code === 'ECONNRESET' && ctx) {
+                        Logger.debug(ctx, this.TAG, this.SendAsyncHelper.name, null,  `Request ${cdmRequest.requestId} timeout after ${endTime.valueOf() - startTime.valueOf()} ms.`);
+                    }
 
                     // Only throw an exception if another retry is not expected anymore.
                     if (callback === undefined || retryNumber === cdmRequest.numberOfRetries) {
-                        if (retryNumber !== 0) {
+                        if (retryNumber !== 0 && !cdmRequest.maximumTimeoutExceeded) {
                             reject('The number of retries has exceeded the maximum number allowed by the client.');
+                            break;
+                        } else if (err.code === 'ECONNRESET') {
+                            reject(REQUEST_TIMEOUT);
                             break;
                         } else {
                             reject(err);
@@ -179,7 +188,7 @@ export class CdmHttpClient {
                 }
 
                 // Check whether we have a callback function set and whether this is not our last retry.
-                if (callback && retryNumber !== cdmRequest.numberOfRetries) {
+                if (callback && retryNumber !== cdmRequest.numberOfRetries && !cdmRequest.maximumTimeoutExceeded) {
 
                     // Call the callback function with the retry numbers starting from 1.
                     const waitTime: number = await callback(response, hasFailed, retryNumber + 1);
@@ -198,47 +207,17 @@ export class CdmHttpClient {
                     if (response !== undefined) {
                         resolve(response);
                         break;
+                    } else if (retryNumber  < cdmRequest.numberOfRetries || cdmRequest.maximumTimeoutExceeded) {
+                        reject(REQUEST_TIMEOUT);
+                        break;
                     } else {
-                        if (retryNumber === 0) {
-                            resolve(undefined);
-                            break;
-                        } else {
-                            // If response doesn't exist repeatedly, just throw that the number of retries has exceeded
-                            // (we don't have any other information).
-                            reject('The number of retries has exceeded the maximum number allowed by the client.');
-                            break;
-                        }
+                        // If response doesn't exist repeatedly, just throw that the number of retries has exceeded
+                        // (we don't have any other information).
+                        reject('The number of retries has exceeded the maximum number allowed by the client.');
+                        break;
                     }
                 }
             }
-        });
-    }
-
-    /**
-     * Races an async task (network request) against timeout and returns the winner.
-     * @param {number} ms The time in milliseconds.
-     * @param {Promise} promise The promise that is competing against the timeout promise.
-     * @return {Promise} which one the race.
-     */
-    private async raceAsyncTaskAgainstTimeout(ms: number, promise: Promise<CdmHttpResponse>, errorMessage: string, ctx?: CdmCorpusContext, infoMessage?: string): Promise<CdmHttpResponse> {
-        let timeout;
-        const timeoutPromise = new Promise<CdmHttpResponse>((resolve, reject) => {
-            timeout = setTimeout(() => {
-                if (ctx != null && infoMessage != null) {
-                     Logger.debug(ctx, this.TAG, this.raceAsyncTaskAgainstTimeout.name, null, infoMessage);
-
-                }
-                clearTimeout(timeout);
-                reject(errorMessage);
-            }, ms);
-        });
-
-        return Promise.race([
-            timeoutPromise,
-            promise
-        ]).then((response) => {
-            clearTimeout(timeout);
-            return response;
         });
     }
 }

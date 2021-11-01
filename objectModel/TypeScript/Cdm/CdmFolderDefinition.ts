@@ -16,7 +16,6 @@ import {
     ResolvedAttributeSet,
     ResolvedTraitSet,
     resolveOptions,
-    StorageAdapter,
     StringUtils,
     VisitCallback
 } from '../internal';

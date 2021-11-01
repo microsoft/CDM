@@ -155,6 +155,8 @@ class TraitToPropertyMap:
         elif property_name == 'primaryKey':
             att_ref = _fetch_trait_ref_argument_value(self._fetch_trait_reference('is.identifiedBy', only_from_property), 'attribute')
             if att_ref is not None:
+                if isinstance(att_ref, str):
+                    return att_ref
                 return att_ref.fetch_object_definition_name()
         elif property_name == 'defaultValue':
             return self._fetch_default_value(only_from_property)

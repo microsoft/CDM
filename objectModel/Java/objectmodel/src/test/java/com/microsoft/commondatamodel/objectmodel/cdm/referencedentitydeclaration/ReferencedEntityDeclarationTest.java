@@ -81,12 +81,14 @@ class LocalAdapterWithSlashPath extends LocalAdapter {
         this.separator = separator;
     }
 
+    @Override
     public String createAdapterPath(String corpusPath) {
         String basePath = super.createAdapterPath(corpusPath);
-        return this.separator == "/" ? basePath.replace("\\", "/") : basePath.replace("/", "\\");
+        return this.separator.equals("/") ? basePath.replace("\\", "/") : basePath.replace("/", "\\");
     }
 
-    public String CreateCorpusPath(String adapterPath) {
+    @Override
+    public String createCorpusPath(String adapterPath) {
         return adapterPath;
     }
 }

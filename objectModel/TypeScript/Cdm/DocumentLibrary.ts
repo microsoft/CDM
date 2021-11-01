@@ -8,8 +8,8 @@ import {
     cdmLogCode,
     CdmFolderDefinition,
     Logger,
-    StorageAdapter,
-    resolveOptions
+    resolveOptions,
+    StorageAdapterBase
 } from '../internal';
 import { StorageUtils } from '../Utilities/StorageUtils';
 
@@ -262,7 +262,7 @@ export class DocumentLibrary {
             }
 
             const namespaceFolder: CdmFolderDefinition = this.corpus.storage.fetchRootFolder(namespace);
-            const namespaceAdapter: StorageAdapter = this.corpus.storage.fetchAdapter(namespace);
+            const namespaceAdapter: StorageAdapterBase = this.corpus.storage.fetchAdapter(namespace);
             if (!namespaceFolder || !namespaceAdapter) {
                 Logger.error(this.corpus.ctx, this.TAG, this.loadFolderOrDocument.name, objectPath, cdmLogCode.ErrStorageNamespaceNotRegistered, namespace, objectPath);
 

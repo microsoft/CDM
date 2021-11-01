@@ -47,9 +47,8 @@ class ManifestResolution(unittest.TestCase):
         """Test that resolving a manifest that hasn't been added to a folder doesn't throw any exceptions."""
 
         try:
-            corpus = CdmCorpusDefinition()
-            corpus.storage.mount('local', LocalAdapter('C:\\path'))
-            corpus.storage.default_namespace = 'local'
+            expected_log_codes = {CdmLogCode.ERR_RESOLVE_MANIFEST_FAILED}
+            corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_resolving_manifest_not_in_folder', expected_codes=expected_log_codes, no_input_and_output_folder=True)
 
             manifest = corpus.make_object(CdmObjectType.MANIFEST_DEF, 'test')
             entity = corpus.make_object(CdmObjectType.ENTITY_DEF, 'entity')
@@ -87,7 +86,8 @@ class ManifestResolution(unittest.TestCase):
         """
         Test that correct error is shown when trying to create a resolved manifest with a name that already exists
         """
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_resolving_manifest_with_same_name')
+        expected_log_codes = { CdmLogCode.ERR_RESOLVE_MANIFEST_EXISTS }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_resolving_manifest_with_same_name', expected_codes=expected_log_codes)
 
         manifest = corpus.make_object(CdmObjectType.MANIFEST_DEF, 'test')  # type: CdmManifestDefinition
         corpus.storage._namespace_folders['local'].documents.append(manifest)

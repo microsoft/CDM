@@ -78,7 +78,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             // Check that the trait "is.identifiedBy" is created with the correct argument.
             var isIdentifiedBy1 = typeAttribute.AppliedTraits[1];
             Assert.AreEqual("is.identifiedBy", isIdentifiedBy1.NamedReference);
-            Assert.AreEqual("TeamMembership/(resolvedAttributes)/teamMembershipId", (isIdentifiedBy1 as CdmTraitReference).Arguments[0].Value);
+            Assert.AreEqual("TeamMembership/(resolvedAttributes)/teamMembershipId", (isIdentifiedBy1 as CdmTraitReference).Arguments[0].Value.NamedReference);
 
             // Read from a resolved entity schema.
             CdmEntityDefinition resolvedEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TeamMembership_Resolved.cdm.json/TeamMembership", null, resOpt);

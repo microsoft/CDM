@@ -11,7 +11,11 @@ import {
     CdmAttributeReference,
     CdmCorpusDefinition,
     CdmDocumentDefinition,
+    CdmEntityAttributeDefinition,
     CdmEntityDefinition,
+    CdmEntityReference,
+    CdmFolderDefinition,
+    cdmLogCode,
     CdmManifestDefinition,
     cdmStatusLevel,
     CdmTraitReference,
@@ -54,6 +58,26 @@ describe('Cdm/Resolution/EntityResolution', () => {
         expect(entity.attributes.allItems[0].owner)
             .toBe(entity);
         done();
+    });
+
+    /**
+     * Test that entity references that do not point to valid entities are reported as an error instead of triggering an exception
+     */
+    it('TestEntRefNonexistent', async () => {
+        const expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.WarnResolveObjectFailed, cdmLogCode.ErrResolveReferenceFailure]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestEntRefNonexistent', undefined, false, expectedLogCodes);
+        const folder: CdmFolderDefinition = corpus.storage.namespaceFolders.get('local');
+        const doc: CdmDocumentDefinition = new CdmDocumentDefinition(corpus.ctx, 'someDoc.cdm.json');
+        folder.documents.push(doc);
+        const entity: CdmEntityDefinition = new CdmEntityDefinition(corpus.ctx, 'someEntity');
+        const entAtt: CdmEntityAttributeDefinition = new CdmEntityAttributeDefinition(corpus.ctx, 'entityAtt');
+        entAtt.entity = new CdmEntityReference(corpus.ctx, 'nonExistingEntity', true);
+        entity.attributes.push(entAtt);
+        doc.definitions.push(entity);
+
+        const resolvedEnt: CdmEntityDefinition = await entity.createResolvedEntityAsync('resolvedSomeEntity');
+        expect(resolvedEnt)
+            .not.toBeUndefined();
     });
 
     /**
@@ -219,7 +243,8 @@ describe('Cdm/Resolution/EntityResolution', () => {
      * Test that resolved attribute limit is calculated correctly and respected
      */
     it('TestResolvedAttributeLimit', async (done) => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolvedAttributeLimit');
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrRelMaxResolvedAttrReached]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolvedAttributeLimit', undefined, false, expectedLogCodes);
 
         const mainEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/mainEntity.cdm.json/mainEntity');
         let resOpt: resolveOptions = new resolveOptions(mainEntity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
@@ -314,13 +339,13 @@ describe('Cdm/Resolution/EntityResolution', () => {
     /**
      * Test that traits(including the ones inside of dataTypeRefence and PurposeReference) are applied to an entity attribute and type attribute.
      */
-         it('TestAppliedTraitsInAttributes', async (done) => {
-            const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestAppliedTraitsInAttributes');
-            const expectedOutputFolder: string = testHelper.getExpectedOutputFolderPath(testsSubpath, 'TestAppliedTraitsInAttributes');
-            const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Sales.cdm.json/Sales');
-            const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
-            await AttributeContextUtil.validateAttributeContext(expectedOutputFolder, 'Sales', resolvedEntity);
-    
-            done();
-        });
+    it('TestAppliedTraitsInAttributes', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestAppliedTraitsInAttributes');
+        const expectedOutputFolder: string = testHelper.getExpectedOutputFolderPath(testsSubpath, 'TestAppliedTraitsInAttributes');
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Sales.cdm.json/Sales');
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
+        await AttributeContextUtil.validateAttributeContext(expectedOutputFolder, 'Sales', resolvedEntity);
+
+        done();
+    });
 });

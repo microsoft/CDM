@@ -15,6 +15,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
     public class CdmStandardsAdapterTests
     {
         const string ENDPOINT = "https://cdm-schema.microsoft.com/logical";
+        const string ALT_ENDPOINT = "https://cdm-schema.microsoft.cn";
+        const string EXPECTED_ALT_ENDPOINT = "https://cdm-schema.microsoft.cn/logical";
         const string TEST_FILE_PATH = "/foundations.cdm.json";
 
         /// <summary>
@@ -27,6 +29,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             var corpusPath = TEST_FILE_PATH;
             var adapterPath = adapter.CreateAdapterPath(corpusPath);
             Assert.AreEqual($"{ENDPOINT}{corpusPath}", adapterPath);
+
+            adapter.Endpoint = ALT_ENDPOINT;
+            adapterPath = adapter.CreateAdapterPath(corpusPath);
+            Assert.AreEqual($"{EXPECTED_ALT_ENDPOINT}{corpusPath}", adapterPath);
         }
 
         /// <summary>
@@ -38,6 +44,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             var adapter = new CdmStandardsAdapter();
             var adapterPath = $"{ENDPOINT}{TEST_FILE_PATH}";
             var corpusPath = adapter.CreateCorpusPath(adapterPath);
+            Assert.AreEqual(TEST_FILE_PATH, corpusPath);
+
+            adapter.Endpoint = ALT_ENDPOINT;
+            adapterPath = $"{EXPECTED_ALT_ENDPOINT}{TEST_FILE_PATH}";
+            corpusPath = adapter.CreateCorpusPath(adapterPath);
             Assert.AreEqual(TEST_FILE_PATH, corpusPath);
         }
 

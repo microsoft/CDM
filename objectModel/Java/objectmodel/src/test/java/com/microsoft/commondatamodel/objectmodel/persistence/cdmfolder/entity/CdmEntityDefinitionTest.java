@@ -6,12 +6,11 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.entity;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
-import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.AttributeGroupPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.EntityPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.AttributeGroup;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
@@ -46,7 +45,7 @@ public class CdmEntityDefinitionTest {
 
     final CdmCorpusDefinition corpus = new CdmCorpusDefinition();
 
-    final StorageAdapter localAdapter;
+    final StorageAdapterBase localAdapter;
     localAdapter = new LocalAdapter(testInputPath);
     corpus.getStorage().mount(LOCAL, localAdapter);
     corpus.getStorage().setDefaultNamespace(LOCAL);

@@ -4,6 +4,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import org.testng.Assert;
@@ -36,7 +37,7 @@ public class ProjectionArrayTest {
     public void testEntityAttribute() throws InterruptedException {
         String testName = "testEntityAttribute";
         String entityName = "ThreeMusketeers";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
@@ -82,7 +83,7 @@ public class ProjectionArrayTest {
     public void testTypeAttribute() throws InterruptedException {
         String testName = "testTypeAttribute";
         String entityName = "Person";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         for (List<String> resOpt : resOptsCombinations) {
             ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();

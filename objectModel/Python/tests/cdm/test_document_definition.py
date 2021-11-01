@@ -176,7 +176,7 @@ class DocumentDefinitionTests(unittest.TestCase):
         # load the document and entity the first time
         await corpus.fetch_object_async('doc.cdm.json/entity')
         # reload the same doc and make sure it is reloaded correctly
-        reloadedEntity = await corpus.fetch_object_async('doc.cdm.json/entity', None, None, True)  # type: CdmEntityDefinition
+        reloadedEntity = await corpus.fetch_object_async('doc.cdm.json/entity', None, None, force_reload=True)  # type: CdmEntityDefinition
 
         # if the reloaded doc is not indexed correctly, the entity will not be able to be found
         self.assertIsNotNone(reloadedEntity)

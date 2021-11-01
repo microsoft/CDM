@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { StorageAdapterBase } from './StorageAdapterBase';
+import { StorageAdapterBase } from '../internal';
 
 interface FileInfo {
     name: string;

@@ -12,6 +12,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
 
@@ -183,11 +184,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         [TestMethod]
         public void TestPathThatDoesNotEndInSlash()
         {
-            var corpus = new CdmCorpusDefinition();
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.WarnStorageExpectedPathPrefix };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPathThatDoesNotEndInSlash), expectedCodes: expectedLogCodes, noInputAndOutputFolder: true);
+
             var absolutePath = corpus.Storage.CreateAbsoluteCorpusPath("Abc",
                 new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "Mnp" });
             Assert.AreEqual("cdm:Mnp/Abc", absolutePath);
-
             TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.WarnStorageExpectedPathPrefix, true);
         }
 
@@ -198,8 +200,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         [TestMethod]
         public void TestPathRootInvalidObjectPath()
         {
-            var corpus = new CdmCorpusDefinition();
-
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrStorageInvalidPathFormat };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPathRootInvalidObjectPath), expectedCodes: expectedLogCodes, noInputAndOutputFolder: true);
             corpus.Storage.CreateAbsoluteCorpusPath("./Abc");
             TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);
 
@@ -223,7 +225,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         [TestMethod]
         public void TestPathRootInvalidFolderPath()
         {
-            var corpus = new CdmCorpusDefinition();
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrStorageInvalidPathFormat };
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestPathRootInvalidFolderPath), expectedCodes: expectedLogCodes, noInputAndOutputFolder: true);
 
             corpus.Storage.CreateAbsoluteCorpusPath("Abc", new CdmManifestDefinition(null, null) { Namespace = "cdm", FolderPath = "./Mnp" });
             TestHelper.AssertCdmLogCodeEquality(corpus, CdmLogCode.ErrStorageInvalidPathFormat, true);

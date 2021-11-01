@@ -2,19 +2,26 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import os
+from typing import TYPE_CHECKING
 import unittest
+from cdm.objectmodel.cdm_document_def import CdmDocumentDefinition
+from cdm.objectmodel.cdm_entity_attribute_def import CdmEntityAttributeDefinition
+from cdm.objectmodel.cdm_entity_ref import CdmEntityReference
 
 from tests.cdm.projection.attribute_context_util import AttributeContextUtil
 
 from tests.utilities.projection_test_utils import ProjectionTestUtils
 
-from cdm.enums import CdmStatusLevel
+from cdm.enums import CdmStatusLevel, CdmLogCode
 from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition, CdmEntityDefinition
 from cdm.storage import LocalAdapter
 from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
 from .resolution_test_utils import StringSpewCatcher, list_all_resolved, resolve_save_debugging_file_and_assert
 
 from tests.common import async_test, TestHelper
+
+if TYPE_CHECKING:
+    from cdm.objectmodel import CdmFolderDefinition
 
 
 class EntityResolution(unittest.TestCase):
@@ -36,6 +43,24 @@ class EntityResolution(unittest.TestCase):
         self.assertEqual(document, entity.owner)
         self.assertEqual(entity, entity.attributes[0].owner,
                          'Entity\'s attribute\'s owner should have remained unchanged (same as the owning entity)')
+
+    @async_test
+    async def test_ent_ref_nonexistent(self):
+        """Test that entity references that do not point to valid entities are reported as an error instead of triggering an exception"""
+
+        expected_log_codes = {CdmLogCode.WARN_RESOLVE_OBJECT_FAILED, CdmLogCode.ERR_RESOLVE_REFERENCE_FAILURE}
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'TestEntRefNonexistent', expected_codes=expected_log_codes)
+        folder = corpus.storage._namespace_folders['local']  # type: CdmFolderDefinition
+        doc = CdmDocumentDefinition(corpus.ctx, 'someDoc.cdm.json')
+        folder.documents.append(doc)
+        entity = CdmEntityDefinition(corpus.ctx, 'someEntity')
+        ent_att = CdmEntityAttributeDefinition(corpus.ctx, 'entityAtt')
+        ent_att.entity = CdmEntityReference(corpus.ctx, 'nonExistingEntity', True)
+        entity.attributes.append(ent_att)
+        doc.definitions.append(entity)
+
+        resolvedEnt = await entity.create_resolved_entity_async('resolvedSomeEntity')
+        self.assertIsNotNone(resolvedEnt)
 
     @async_test
     async def test_resolving_resolved_entity(self):
@@ -109,7 +134,6 @@ class EntityResolution(unittest.TestCase):
     @async_test
     async def test_attributes_that_are_replaced(self):
         corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'test_attributes_that_are_replaced')
-        corpus.storage.mount('cdm', LocalAdapter(TestHelper.get_schema_docs_root()))
 
         extended_entity = await corpus.fetch_object_async('local:/extended.cdm.json/extended')  # type: CdmEntityDefinition
         res_extended_ent = await extended_entity.create_resolved_entity_async('resExtended')
@@ -134,7 +158,8 @@ class EntityResolution(unittest.TestCase):
 
     @async_test
     async def test_resolved_attribute_limit(self):
-        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'test_resolved_attribute_limit')  # type: CdmCorpusDefinition
+        expected_log_codes = { CdmLogCode.ERR_REL_MAX_RESOLVED_ATTR_REACHED }
+        corpus = TestHelper.get_local_corpus(self.tests_sub_path, 'test_resolved_attribute_limit', expected_codes=expected_log_codes)  # type: CdmCorpusDefinition
 
         main_entity = await corpus.fetch_object_async('local:/mainEntity.cdm.json/mainEntity')  # type: CdmEntityDefinition
         res_opt = ResolveOptions(wrt_doc=main_entity.in_document)
@@ -216,4 +241,3 @@ class EntityResolution(unittest.TestCase):
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])
 
         await AttributeContextUtil.validate_attribute_context(self, expected_output_folder, 'Sales', resolved_entity)
-

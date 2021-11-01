@@ -34,7 +34,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestEntityAttribute', async () => {
         const testName: string = 'TestEntityAttribute';
         const entityName: string = 'SalesEntityAttribute';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -44,7 +44,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestEntityAttributeProj', async () => {
         const testName: string = 'TestEntityAttributeProj';
         const entityName: string = 'SalesEntityAttribute';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -54,7 +54,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestSourceWithEA', async () => {
         const testName: string = 'TestSourceWithEA';
         const entityName: string = 'SalesSourceWithEA';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -64,7 +64,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestSourceWithEAProj', async () => {
         const testName: string = 'TestSourceWithEAProj';
         const entityName: string = 'SalesSourceWithEA';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -74,7 +74,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestGroupFK', async () => {
         const testName: string = 'TestGroupFK';
         const entityName: string = 'SalesGroupFK';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -84,7 +84,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestGroupFKProj', async () => {
         const testName: string = 'TestGroupFKProj';
         const entityName: string = 'SalesGroupFK';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -94,7 +94,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestNestedFKProj', async () => {
         const testName: string = 'TestNestedFKProj';
         const entityName: string = 'SalesNestedFK';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -104,7 +104,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestPolymorphic', async () => {
         const testName: string = 'TestPolymorphic';
         const entityName: string = 'PersonPolymorphicSource';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -114,7 +114,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestPolymorphicProj', async () => {
         const testName: string = 'TestPolymorphicProj';
         const entityName: string = 'PersonPolymorphicSource';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -124,7 +124,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestPolymorphicFKProj', async () => {
         const testName: string = 'TestPolymorphicFKProj';
         const entityName: string = 'PersonPolymorphicSourceFK';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -134,7 +134,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestArraySource', async () => {
         const testName: string = 'TestArraySource';
         const entityName: string = 'SalesArraySource';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -144,7 +144,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestArraySourceProj', async () => {
         const testName: string = 'TestArraySourceProj';
         const entityName: string = 'SalesArraySource';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -154,7 +154,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestForeignKey', async () => {
         const testName: string = 'TestForeignKey';
         const entityName: string = 'SalesForeignKey';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -164,7 +164,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestForeignKeyProj', async () => {
         const testName: string = 'TestForeignKeyProj';
         const entityName: string = 'SalesForeignKey';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -174,7 +174,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestForeignKeyAlways', async () => {
         const testName: string = 'TestForeignKeyAlways';
         const entityName: string = 'SalesForeignKeyAlways';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -184,7 +184,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
     it('TestCompositeKeyProj', async () => {
         const testName: string = 'TestCompositeKeyProj';
         const entityName: string = 'SalesCompositeKey';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);

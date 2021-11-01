@@ -191,20 +191,22 @@ public class LocalAdapter extends StorageAdapterBase {
 
       final File[] content = new File(adapterPath).listFiles();
 
-      if (content != null) {
-        for (final File childPath : content) {
-          final String childCorpusPath = createCorpusPath(childPath.getPath());
-          try {
-            if (dirExistsAsync(childCorpusPath).get()) {
-              final List<String> subFiles = fetchAllFilesAsync(childCorpusPath).get();
-              allFiles.addAll(subFiles);
-            } else {
-              allFiles.add(childCorpusPath);
-            }
-          } catch (final InterruptedException | ExecutionException e) {
-            throw new StorageAdapterException(
-                    "Failed to get all files for folderCorpusPath:" + folderCorpusPath, e);
+      if (content == null) {
+        throw new StorageAdapterException("This abstract pathname does not denote a directory, or if an I/O error occurs.");
+      }
+
+      for (final File childPath : content) {
+        final String childCorpusPath = createCorpusPath(childPath.getPath());
+        try {
+          if (dirExistsAsync(childCorpusPath).get()) {
+            final List<String> subFiles = fetchAllFilesAsync(childCorpusPath).get();
+            allFiles.addAll(subFiles);
+          } else {
+            allFiles.add(childCorpusPath);
           }
+        } catch (final InterruptedException | ExecutionException e) {
+          throw new StorageAdapterException(
+                  "Failed to get all files for folderCorpusPath:" + folderCorpusPath, e);
         }
       }
 

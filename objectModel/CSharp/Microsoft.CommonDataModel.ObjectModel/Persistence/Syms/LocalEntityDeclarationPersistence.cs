@@ -79,44 +79,53 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                         return null;
                     }
 
-                    if (tableProperties.StorageDescriptor.Format.FormatType == FormatType.Csv)
+                    var formatType = tableProperties.StorageDescriptor.Format.FormatType;
+                    if (formatType != FormatType.Csv && formatType != FormatType.Parquet)
                     {
-                        if (tableProperties.StorageDescriptor.Source.Location.EndWithOrdinalIgnoreCase(".csv"))
+                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableFormatTypeNotSupported, tableName);
+                        return null;
+                    }
+
+                    if (tableProperties.StorageDescriptor.Source.Location.EndWithOrdinalIgnoreCase(".csv"))
+                    {
+                        if (formatType == FormatType.Parquet)
                         {
-                            // Location points to file. create data partition.
-                            var dataPartition = DataPartitionPersistence.FromData(ctx, tableProperties.StorageDescriptor, symsRootPath);
-                            localDec.DataPartitions.Add(dataPartition);
+                            Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsIncompatibleFileToType, "csv", formatType.ToString());
+                            return null;
                         }
-                        else if (System.IO.Path.GetExtension(tableProperties.StorageDescriptor.Source.Location) == String.Empty)
+                        // Location points to file. create data partition.
+                        var dataPartition = DataPartitionPersistence.FromData(ctx, tableProperties.StorageDescriptor, symsRootPath, formatType);
+                        localDec.DataPartitions.Add(dataPartition);
+                    }
+                    else if (tableProperties.StorageDescriptor.Source.Location.EndWithOrdinalIgnoreCase(".parquet"))
+                    {
+                        if (formatType == FormatType.Csv)
                         {
-                            var dataPartitionPattern = DataPartitionPatternPersistence.FromData(ctx, tableProperties.StorageDescriptor, $"{table.Name}PartitionPattern", symsRootPath);
+                            Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsIncompatibleFileToType, "parquet", formatType.ToString());
+                            return null;
+                        }
+                        // Location points to file. create data partition.
+                        var dataPartition = DataPartitionPersistence.FromData(ctx, tableProperties.StorageDescriptor, symsRootPath, formatType);
+                        localDec.DataPartitions.Add(dataPartition);
+                    }
+                    else if (System.IO.Path.GetExtension(tableProperties.StorageDescriptor.Source.Location) == String.Empty)
+                    {
+                        var dataPartitionPattern = DataPartitionPatternPersistence.FromData(ctx, tableProperties.StorageDescriptor, $"{table.Name}PartitionPattern", symsRootPath, formatType);
+                        localDec.DataPartitionPatterns.Add(dataPartitionPattern);
+                    }
+                    else
+                    {
+                        // restore data partition pattern if exist
+                        if (properties != null && properties.ContainsKey("cdm:dataPartitionPatterns"))
+                        {
+                            var dataPartitionPattern = DataPartitionPatternPersistence.FromData(ctx, properties["cdm:dataPartitionPatterns"], $"{table.Name}PartitionPattern", symsRootPath, formatType);
                             localDec.DataPartitionPatterns.Add(dataPartitionPattern);
                         }
                         else
                         {
-                            // restore data partition pattern if exist
-                            if (properties != null && properties.ContainsKey("cdm:dataPartitionPatterns"))
-                            {
-                                var dataPartitionPattern = DataPartitionPatternPersistence.FromData(ctx, properties["cdm:dataPartitionPatterns"], $"{table.Name}PartitionPattern", symsRootPath);
-                                localDec.DataPartitionPatterns.Add(dataPartitionPattern);
-                            }
-                            else
-                            {
-                                Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableInvalidDataLocation, tableName);
-                                return null;
-                            }
+                            Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableInvalidDataLocation, tableName);
+                            return null;
                         }
-                    }
-                    else if (tableProperties.StorageDescriptor.Format.FormatType == FormatType.Parquet)
-                    {
-                        // TODO : Parquet or other.
-                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableFormatTypeNotSupported, tableName);
-                        return null;
-                    }
-                    else
-                    {
-                        Logger.Error((ResolveContext)ctx, Tag, nameof(FromData), localDec.AtCorpusPath, CdmLogCode.ErrPersistSymsTableFormatTypeNotSupported, tableName);
-                        return null;
                     }
                 }
             }

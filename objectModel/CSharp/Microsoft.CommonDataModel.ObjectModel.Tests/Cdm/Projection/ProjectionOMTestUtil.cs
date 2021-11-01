@@ -94,7 +94,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             ExpectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, TestName);
             ActualOutputPath = TestHelper.GetActualOutputFolderPath(testsSubpath, TestName);
 
-            Corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, TestName);
+            Corpus = TestHelper.GetLocalCorpus(testsSubpath, TestName);
             Corpus.Storage.Mount(LocalOutputStorageNS, new LocalAdapter(ActualOutputPath));
             Corpus.Storage.DefaultNamespace = LocalOutputStorageNS;
 

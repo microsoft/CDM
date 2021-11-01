@@ -103,7 +103,7 @@ export * from './Utilities/PrimitiveAppliers';
 export * from './Cdm/CdmManifestDefinition';
 export * from './Utilities/symbolSet';
 export * from './Cdm/CdmAttributeResolutionGuidance';
-export * from './Storage/StorageAdapter';
+export * from './Storage/StorageAdapterBase';
 export * from './Storage/StorageManager';
 export * from './Cdm/CdmE2ERelationship';
 export * from './Cdm/CdmCollection';

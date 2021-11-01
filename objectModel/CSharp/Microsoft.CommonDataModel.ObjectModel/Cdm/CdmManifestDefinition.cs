@@ -480,7 +480,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             using (Logger.EnterScope(nameof(CdmManifestDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
-                using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
+                using (this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace)?.CreateFileQueryCacheContext())
                 {
                     DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeFromObjectAsync(this);
 
@@ -686,14 +686,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // Save all dirty Cdm documents in parallel
             IEnumerable<Task<bool>> tasks = docs.Select(doc => SaveDocumentIfDirty(doc, options));
             var results = await Task.WhenAll(tasks);
-            for (int i = 0; i < results.Length; ++i)
-            {
-                if (results[i] == false)
-                {
-                    Logger.Error(this.Ctx as ResolveContext, Tag, nameof(SaveLinkedDocuments), this.AtCorpusPath, CdmLogCode.ErrDocEntityDocSavingFailure, docs[i].Name);
-                    return false;
-                }
-            }
 
             if (this.SubManifests != null)
             {

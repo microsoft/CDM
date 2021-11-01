@@ -3,6 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
@@ -32,7 +33,7 @@ public class ProjectionAttributeContextTest {
     public void testEntityStringReference() throws InterruptedException {
         String testName = "testEntityStringReference";
         String entityName = "TestEntStrRef";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
@@ -44,7 +45,7 @@ public class ProjectionAttributeContextTest {
     public void testEntityEntityReference() throws InterruptedException {
         String testName = "testEntityEntityReference";
         String entityName = "TestEntEntRef";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
@@ -56,7 +57,7 @@ public class ProjectionAttributeContextTest {
     public void testEntityProjection() throws InterruptedException {
         String testName = "testEntityProjection";
         String entityName = "TestEntityProjection";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
@@ -68,7 +69,7 @@ public class ProjectionAttributeContextTest {
     public void testEntityNestedProjection() throws InterruptedException {
         String testName = "testEntityNestedProjection";
         String entityName = "NestedProjection";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
@@ -80,7 +81,7 @@ public class ProjectionAttributeContextTest {
     public void testEntityAttributeStringReference() throws InterruptedException {
         String testName = "testEntityAttributeStringReference";
         String entityName = "TestEntAttrStrRef";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
@@ -92,7 +93,7 @@ public class ProjectionAttributeContextTest {
     public void testEntityAttributeEntityReference() throws InterruptedException {
         String testName = "testEntityAttributeEntityReference";
         String entityName = "TestEntAttrEntRef";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
@@ -104,7 +105,7 @@ public class ProjectionAttributeContextTest {
     public void testEntityAttributeProjection() throws InterruptedException {
         String testName = "testEntityAttributeProjection";
         String entityName = "TestEntAttrProj";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
@@ -116,7 +117,7 @@ public class ProjectionAttributeContextTest {
     public void testEntityAttributeNestedProjection() throws InterruptedException {
         String testName = "testEntityAttributeNestedProjection";
         String entityName = "NestedProjection";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
     }
@@ -128,7 +129,7 @@ public class ProjectionAttributeContextTest {
     public void testEntityTrait() throws InterruptedException {
         String testName = "testEntityTrait";
         String entityName = "TestEntityTrait";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
 
@@ -151,7 +152,7 @@ public class ProjectionAttributeContextTest {
     public void testEntityExtendsTrait() throws InterruptedException {
         String testName = "testEntityExtendsTrait";
         String entityName = "ExtendsTrait";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
 
@@ -174,7 +175,7 @@ public class ProjectionAttributeContextTest {
     public void testProjectionTrait() throws InterruptedException {
         String testName = "testProjectionTrait";
         String entityName = "TestProjectionTrait";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
 
@@ -197,7 +198,7 @@ public class ProjectionAttributeContextTest {
     public void testProjectionExtendsTrait() throws InterruptedException {
         String testName = "testProjectionExtendsTrait";
         String entityName = "ExtendsTrait";
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, testName);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName);
 
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, new ArrayList<String>()).join();
 

@@ -24,9 +24,13 @@ class ReferencedEntityDeclarationPersistence:
         referenced_entity = ctx.corpus.make_object(
             CdmObjectType.REFERENCED_ENTITY_DECLARATION_DEF,
             data_obj.name)
+        referenced_entity.entity_name = data_obj.name
         corpus_path = ctx.corpus.storage.adapter_path_to_corpus_path(location)
 
-        referenced_entity.entity_name = data_obj.name
+        if corpus_path is None:
+            logger.error(ctx, _TAG, "from_data", None, CdmLogCode.ERR_PERSIST_MODEL_JSON_REF_ENTITY_INVALID_LOCATION, location, referenced_entity.entity_name)
+            return None
+
         referenced_entity.entity_path = '{}/{}'.format(corpus_path, data_obj.source)
         referenced_entity.explanation = data_obj.get('description')
 
@@ -68,7 +72,8 @@ class ReferencedEntityDeclarationPersistence:
         source_index = instance.entity_path.rfind('/')
 
         if source_index == -1:
-            logger.error(instance.ctx, _TAG, 'to_data', instance.at_corpus_path, CdmLogCode.ERR_PERSIST_MODELJSON_ENTITY_PARTITION_CONVERSION_ERROR, instance.at_corpus_path)
+            logger.error(instance.ctx, _TAG, 'to_data', instance.at_corpus_path,
+                         CdmLogCode.ERR_PERSIST_MODELJSON_ENTITY_PARTITION_CONVERSION_ERROR, instance.at_corpus_path)
             return None
 
         reference_entity = ReferenceEntity()

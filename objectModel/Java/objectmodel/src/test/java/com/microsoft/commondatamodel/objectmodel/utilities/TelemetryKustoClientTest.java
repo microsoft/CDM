@@ -23,7 +23,7 @@ import org.testng.SkipException;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class TelemetryKustoClientTests {
+public class TelemetryKustoClientTest {
   /** Environment variables for Kusto configuration */
   private static final String TENANT_ID = System.getenv("KUSTO_TENANTID");
   private static final String CLIENT_ID = System.getenv("KUSTO_CLIENTID");
@@ -46,7 +46,7 @@ public class TelemetryKustoClientTests {
    * Check if the environment variable for telemetry is set.
    */
   public static void checkKustoEnvironment() {
-    if (System.getenv("KUSTO_RUNTESTS") != "1") {
+    if (!"1".equals(System.getenv("KUSTO_RUNTESTS"))) {
       // this will cause tests to appear as "Skipped" in the final result
       throw new SkipException("Kusto environment not set up");
     }
@@ -58,7 +58,7 @@ public class TelemetryKustoClientTests {
   @Test
   public void testInitializeClientWithDefaultDatabase() throws InterruptedException {
     checkKustoEnvironment();
-
+    
     CdmCorpusDefinition corpus = initializeClientWithDefaultDatabase();
     corpus.getTelemetryClient().enable();
 
@@ -140,7 +140,7 @@ public class TelemetryKustoClientTests {
     assertFalse(StringUtils.isNullOrEmpty(CLUSTER_NAME));
     assertFalse(StringUtils.isNullOrEmpty(DATABASE_NAME));
 
-    TelemetryConfig kustoConfig = new TelemetryConfig(TENANT_ID, CLIENT_ID, SECRET, CLUSTER_NAME, DATABASE_NAME, EnvironmentType.DEV);
+    TelemetryConfig kustoConfig = new TelemetryConfig(TENANT_ID, CLIENT_ID, SECRET, CLUSTER_NAME, DATABASE_NAME, EnvironmentType.DEV, false);
 
     corpus.setTelemetryClient(new TelemetryKustoClient(corpus.getCtx(), kustoConfig));
     corpus.setAppId("CDM Integration Test");
@@ -153,6 +153,9 @@ public class TelemetryKustoClientTests {
 
   private CdmCorpusDefinition initializeClientWithUserDatabase() throws InterruptedException {
     CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestTelemetryKustoClient");
+    // TODO: need to investigate why only Java not failing if using event callback from GetLocalCorpus() 
+    // set callback to receive error and warning logs.
+    corpus.setEventCallback(eventCallback, CdmStatusLevel.Progress);
 
     assertFalse(StringUtils.isNullOrEmpty(TENANT_ID));
     assertFalse(StringUtils.isNullOrEmpty(CLIENT_ID));
@@ -164,13 +167,10 @@ public class TelemetryKustoClientTests {
     assertFalse(StringUtils.isNullOrEmpty(ERROR_TABLE));
 
     TelemetryConfig kustoConfig = new TelemetryConfig(TENANT_ID, CLIENT_ID, SECRET, CLUSTER_NAME, DATABASE_NAME,
-      INFO_TABLE, WARNING_TABLE, ERROR_TABLE, EnvironmentType.DEV);
+      INFO_TABLE, WARNING_TABLE, ERROR_TABLE, EnvironmentType.DEV, false);
     
     corpus.setTelemetryClient(new TelemetryKustoClient(corpus.getCtx(), kustoConfig));
     corpus.setAppId("CDM Integration Test");
-
-    // set callback to receive error and warning logs.
-    corpus.setEventCallback(eventCallback, CdmStatusLevel.Progress);
 
     return corpus;
   }

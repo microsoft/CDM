@@ -85,11 +85,11 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
     @display_name.setter
     def display_name(self, val: str) -> None:
         self._trait_to_property_map._update_property_value('displayName', val)
-    
+
     @property
     def extends_entity(self) -> Optional['CdmEntityReference']:
         return self._extends_entity
-    
+
     @extends_entity.setter
     def extends_entity(self, extends_entity: Optional['CdmEntityReference']) -> None:
         if extends_entity:
@@ -400,11 +400,9 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 else None  # type: Optional[CdmAttributeContext]
             ent_resolved.attribute_context = att_ctx
 
-
             if att_ctx:
                 # fix all of the definition references, parent and lineage references, owner documents, etc. in the context tree
                 att_ctx._finalize_attribute_context(res_opt_copy, '{}/attributeContext/'.format(ent_name), doc_res, self.in_document, 'resolvedFrom', True)
-
 
                 # TEST CODE in C# by Jeff
                 # run over the resolved attributes and make sure none have the dummy context
@@ -419,7 +417,6 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 #        if isinstance(ra.target, ResolvedAttributeSet):
                 #            test_resolve_attribute_ctx(ra.target)
                 # test_resolve_attribute_ctx(ras)
-
 
             # add the traits of the entity, also add to attribute context top node
             rts_ent = self._fetch_resolved_traits(res_opt)
@@ -664,7 +661,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                             # If this is a new entity context, get the name to pass along.
                             sub_sub_att_ctx = cast('CdmAttributeContext', cr)
                             sub_entity_hint = entity_hint
-                            if sub_sub_att_ctx.type == CdmAttributeContextType.ENTITY:
+                            if sub_sub_att_ctx.type == CdmAttributeContextType.ENTITY and sub_sub_att_ctx.definition is not None:
                                 sub_entity_hint = sub_sub_att_ctx.definition.named_reference
                             # Do this for all types.
                             fix_context_traits(sub_sub_att_ctx, sub_entity_hint)

@@ -5,32 +5,24 @@ package com.microsoft.commondatamodel.objectmodel.persistence;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.CdmFolderType;
-import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.DocumentPersistence;
-import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.common.PersistenceType;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ModelJsonType;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 // TODO-BQ: This class will need a revisit, it is dealing with way too much reflection.
 public class PersistenceLayer {
@@ -166,7 +158,7 @@ public class PersistenceLayer {
             String jsonData = null;
             OffsetDateTime fsModifiedTime = null;
             final String docPath = folder.getFolderPath() + docName;
-            final StorageAdapter adapter = this.corpus.getStorage().fetchAdapter(folder.getNamespace());
+            final StorageAdapterBase adapter = this.corpus.getStorage().fetchAdapter(folder.getNamespace());
             try {
                 if (adapter.canRead()) {
                     // log message used by navigator, do not change or remove
@@ -296,7 +288,7 @@ public class PersistenceLayer {
             if (StringUtils.isEmpty(ns)) {
                 ns = this.corpus.getStorage().getDefaultNamespace();
             }
-            final StorageAdapter adapter = this.corpus.getStorage().fetchAdapter(ns);
+            final StorageAdapterBase adapter = this.corpus.getStorage().fetchAdapter(ns);
 
             if (adapter == null) {
                 Logger.error(ctx, TAG, "saveDocumentAsAsync", doc.getAtCorpusPath(), CdmLogCode.ErrPersistAdapterNotFoundForNamespace, ns);
