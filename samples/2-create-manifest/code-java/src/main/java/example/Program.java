@@ -15,7 +15,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,13 +42,13 @@ public class Program {
     String pathFromExeToExampleRoot = "../../";
 
     // Register it as the 'local' device.
-    StorageAdapter localAdapter = new LocalAdapter(pathFromExeToExampleRoot + "2-create-manifest/sample-data");
+    StorageAdapterBase localAdapter = new LocalAdapter(pathFromExeToExampleRoot + "2-create-manifest/sample-data");
     cdmCorpus.getStorage().mount("local", localAdapter);
     // Local is our default. So any paths that start out navigating without a device tag will assume local.
     cdmCorpus.getStorage().setDefaultNamespace("local");
 
     // Register it as the 'cdm' device, not the default so must use "cdm:/folder" to get there.
-    StorageAdapter cdmAdapter = new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards");
+    StorageAdapterBase cdmAdapter = new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards");
     cdmCorpus.getStorage().mount("cdm", cdmAdapter);
 
     // Example how to mount to the ADLS.

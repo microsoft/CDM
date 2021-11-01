@@ -1489,7 +1489,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         // find the top level entity definition's attribute context
                         if (entityAttAttContext == null && attCtx.Type == CdmAttributeContextType.AttributeDefinition
-                            && attCtx.Definition.FetchObjectDefinition<CdmObjectDefinition>(resOpt)?.ObjectType == CdmObjectType.EntityAttributeDef)
+                            && attCtx.Definition?.FetchObjectDefinition<CdmObjectDefinition>(resOpt)?.ObjectType == CdmObjectType.EntityAttributeDef)
                         {
                             entityAttAttContext = attCtx;
                         }
@@ -1609,7 +1609,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="attributeCtx"></param>
         internal ResolvedTraitSet FetchPurposeResolvedTraitsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx)
         {
-            CdmObjectDefinition def = attributeCtx.Definition.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
+            CdmObjectDefinition def = attributeCtx.Definition?.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
             if (def?.ObjectType == CdmObjectType.EntityAttributeDef && (def as CdmEntityAttributeDefinition)?.Purpose != null)
             {
                 return (def as CdmEntityAttributeDefinition).Purpose.FetchResolvedTraits(resOpt);
@@ -1847,7 +1847,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (currObject is CdmContainerDefinition)
             {
-                StorageAdapter adapter = this.Storage.FetchAdapter((currObject as CdmContainerDefinition).Namespace);
+                StorageAdapterBase adapter = this.Storage.FetchAdapter((currObject as CdmContainerDefinition).Namespace);
 
                 if (adapter == null)
                 {
@@ -1894,7 +1894,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string nameSpace = pathTuple.Item1;
             if (!string.IsNullOrWhiteSpace(nameSpace))
             {
-                StorageAdapter adapter = this.Storage.FetchAdapter(nameSpace);
+                StorageAdapterBase adapter = this.Storage.FetchAdapter(nameSpace);
 
                 if (adapter == null)
                 {

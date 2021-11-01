@@ -30,7 +30,7 @@ TEST_SUB_PATH = 'Utilities'
 
 def check_kusto_environment():
     """Check if the environment variable for telemetry is set."""
-    return (os.environ.get('KUSTO_RUNTESTS') is None)
+    return os.environ.get('KUSTO_RUNTESTS') is not '1'
 
 
 def event_callback(status_level: 'CdmStatusLevel', message: str):
@@ -131,6 +131,8 @@ class TestTelemetryKustoClient(unittest.TestCase):
 
     def _initialize_client_with_user_database(self) -> 'CdmCorpusDefinition':
         corpus = TestHelper.get_local_corpus('Utilities', 'TestTelemetryKustoClient')  # type: CdmCorpusDefinition
+        # TODO: need to investigate why only Java not failing if using event callback from GetLocalCorpus()
+        corpus.set_event_callback(event_callback, CdmStatusLevel.PROGRESS)
 
         self.assertIsNotNone(TENANT_ID)
         self.assertIsNotNone(CLIENT_ID)
@@ -148,7 +150,6 @@ class TestTelemetryKustoClient(unittest.TestCase):
         
         corpus.telemetry_client = TelemetryKustoClient(corpus.ctx, kusto_config)
         corpus.app_id = 'CDM Integration Test'
-        corpus.set_event_callback(event_callback, CdmStatusLevel.PROGRESS)
 
         return corpus
 

@@ -13,7 +13,6 @@ import {
     cdmObjectType,
     CdmProjection,
     CdmTypeAttributeDefinition,
-    cdmStatusLevel,
     resolveOptions,
     CdmCollection,
     CdmAttributeGroupReference,
@@ -34,13 +33,6 @@ export class projectionTestUtils {
      * Path to foundations
      */
     public static foundationJsonPath: string = 'cdm:/foundations.cdm.json';
-
-    /**
-     * The log codes that are allowed to be logged without failing the test\
-     */
-    private static allowedLogs: Set<string> = new Set<string>([
-        cdmLogCode[cdmLogCode.WarnDeprecatedResolutionGuidance]
-    ]);
 
     /**
      * Resolves an entity
@@ -119,23 +111,6 @@ export class projectionTestUtils {
         await projectionTestUtils.validateAttributeContext(directives, expectedOutputPath, entityName, resolvedEntity, updateExpectedOutput);
 
         return resolvedEntity;
-    }
-
-    /**
-     * Creates a corpus
-     */
-    public static getLocalCorpus(testsSubpath: string, testName: string): CdmCorpusDefinition {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-
-        corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
-            const events = corpus.ctx.events;
-            const lastEvent: Map<string, string> = events.allItems[events.length - 1];
-            if (!lastEvent.get('code') || !this.allowedLogs.has(lastEvent.get('code'))) {
-                throw new Error(message);
-            }
-        }, cdmStatusLevel.warning);
-
-        return corpus;
     }
 
     /**

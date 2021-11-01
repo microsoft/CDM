@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmCorpusContext, CdmEntityDefinition, cdmLogCode, CdmManifestDefinition, cdmStatusLevel, resolveContext, StorageAdapter } from '../../internal';
+import { CdmCorpusContext, CdmEntityDefinition, cdmLogCode, CdmManifestDefinition, cdmStatusLevel, StorageAdapterBase } from '../../internal';
 import * as timeUtils from '../timeUtils';
 import { StorageUtils } from '../StorageUtils';
 import * as data from '../../resx/logMessages.json';
@@ -106,11 +106,10 @@ export class Logger {
             defaultStatusEvent(formattedMessage);
         }
     }
-
     /**
      * Formats the message into a string.
      * @param code The code, usually the enum code assigned to log message
-     * @param args The args, ussually have values which would be inserted into the messages 
+     * @param args The args, usually have values which would be inserted into the messages 
      */
     private static getMessageFromResourceFile(code: cdmLogCode, args: any[]): string {
         var retstr: string = data[cdmLogCode[code]];
@@ -150,7 +149,7 @@ export class Logger {
         }
 
         // Get storage adapter type
-        const adapter: StorageAdapter = manifest.ctx.corpus.storage.fetchAdapter(storageNamespace);
+        const adapter: StorageAdapterBase = manifest.ctx.corpus.storage.fetchAdapter(storageNamespace);
         const adapterType: string = typeof (adapter);
 
         let message = `ManifestStorage:${adapterType};`;
@@ -230,7 +229,7 @@ export class Logger {
         }
 
         // Get storage adapter type
-        const adapter: StorageAdapter = entity.ctx.corpus.storage.fetchAdapter(entityNamespace);
+        const adapter: StorageAdapterBase = entity.ctx.corpus.storage.fetchAdapter(entityNamespace);
         const adapterType: string = typeof (adapter);
 
         let message: string = `EntityStorage:${adapterType};EntityNamespace:${entityNamespace};`

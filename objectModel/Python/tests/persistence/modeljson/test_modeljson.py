@@ -6,7 +6,7 @@ import unittest
 import json
 import os
 
-from cdm.enums import CdmStatusLevel, CdmObjectType, CdmDataFormat
+from cdm.enums import CdmLogCode, CdmStatusLevel, CdmObjectType, CdmDataFormat
 from cdm.objectmodel import CdmDocumentDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition, \
     CdmCorpusDefinition
 from cdm.persistence import PersistenceLayer
@@ -199,6 +199,17 @@ class ModelJsonTest(unittest.TestCase):
         # Verify that the attributes' data types were correctly loaded as "date" and "time"
         self.assertEqual(CdmDataFormat.DATE, entity.attributes[0].data_format)
         self.assertEqual(CdmDataFormat.TIME, entity.attributes[1].data_format)
+
+    @async_test
+    async def test_incorrect_model_location(self):
+        """Test model.json is correctly created without an entity when the location is not recognized"""
+        expected_log_codes = {CdmLogCode.ERR_STORAGE_INVALID_ADAPTER_PATH,
+                              CdmLogCode.ERR_PERSIST_MODELJSON_ENTITY_PARSING_ERROR, CdmLogCode.ERR_PERSIST_MODEL_JSON_REF_ENTITY_INVALID_LOCATION}
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_incorrect_model_location', expected_codes=expected_log_codes)
+        manifest = await corpus.fetch_object_async('model.json')  # type: CdmManifestDefinition
+        self.assertIsNotNone(manifest)
+        self.assertEqual(0, len(manifest.entities))
+        TestHelper.assert_cdm_log_code_equality(corpus, CdmLogCode.ERR_PERSIST_MODEL_JSON_REF_ENTITY_INVALID_LOCATION, True, self)
 
     def _validate_output(self, test_name: str, output_file_name: str, actual_output: 'JObject',
                          does_write_test_debugging_files: Optional[bool] = False,

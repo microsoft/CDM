@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
-    ArgumentValue,
     AttributeResolutionDirectiveSet,
     CdmArgumentDefinition,
     CdmAttribute,
@@ -34,9 +33,7 @@ import {
     CdmObject,
     CdmObjectBase,
     CdmObjectDefinition,
-    CdmObjectDefinitionBase,
     CdmObjectReference,
-    CdmObjectReferenceBase,
     cdmObjectType,
     cdmLogCode,
     CdmOperationAddAttributeGroup,
@@ -69,12 +66,11 @@ import {
     ImportInfo,
     Logger,
     p,
-    ParameterCollection,
     resolveContext,
     ResolvedTrait,
     ResolvedTraitSet,
     resolveOptions,
-    StorageAdapter,
+    StorageAdapterBase,
     StorageManager,
     SymbolSet,
     TelemetryClient,
@@ -244,8 +240,8 @@ export class CdmCorpusDefinition {
                 case cdmObjectType.traitGroupDef:
                 case cdmObjectType.traitGroupRef:
                     return cdmObjectType.traitGroupRef;
-    
-                        case cdmObjectType.entityAttributeDef:
+
+                case cdmObjectType.entityAttributeDef:
                 case cdmObjectType.typeAttributeDef:
                 case cdmObjectType.attributeRef:
                     return cdmObjectType.attributeRef;
@@ -824,7 +820,7 @@ export class CdmCorpusDefinition {
                     break;
                 case cdmObjectType.operationAddArtifactAttributeDef:
                     newObj = new CdmOperationAddArtifactAttribute(this.ctx);
-                    break;    
+                    break;
                 default:
             }
 
@@ -1136,7 +1132,7 @@ export class CdmCorpusDefinition {
      */
     public async getLastModifiedTimeFromObjectAsync(currObject: CdmObject): Promise<Date> {
         if ("namespace" in currObject) {
-            const adapter: StorageAdapter = this.storage.fetchAdapter((currObject as CdmContainerDefinition).namespace);
+            const adapter: StorageAdapterBase = this.storage.fetchAdapter((currObject as CdmContainerDefinition).namespace);
 
             if (adapter === undefined) {
                 Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromObjectAsync.name, (currObject as CdmContainerDefinition).atCorpusPath, cdmLogCode.ErrAdapterNotFound, (currObject as CdmContainerDefinition).namespace);
@@ -1178,11 +1174,11 @@ export class CdmCorpusDefinition {
         }
         const namespace: string = pathTuple[0];
         if (namespace) {
-            const adapter: StorageAdapter = this.storage.fetchAdapter(namespace);
+            const adapter: StorageAdapterBase = this.storage.fetchAdapter(namespace);
 
             if (adapter === undefined) {
                 Logger.error(this.ctx, this.TAG, this.getLastModifiedTimeFromPartitionPathAsync.name, corpusPath, cdmLogCode.ErrAdapterNotFound);
-               
+
                 return undefined;
             }
 
@@ -1253,7 +1249,7 @@ export class CdmCorpusDefinition {
                 // find outgoing entity relationships using attribute context
                 const newOutgoingRelationships: CdmE2ERelationship[] =
                     this.findOutgoingRelationships(resOpt, resEntity, resEntity.attributeContext, isResolvedEntity);
-                
+
                 const oldOutgoingRelationships: CdmE2ERelationship[] = this.outgoingRelationships.get(entity.atCorpusPath);
 
                 // fix incoming rels based on any changes made to the outgoing rels
@@ -1338,7 +1334,7 @@ export class CdmCorpusDefinition {
                 if (subAttCtx.objectType === cdmObjectType.attributeContextDef) {
                     // find the top level entity definition's attribute context
                     if (entityAttAttContext == null && attCtx.type == cdmAttributeContextType.attributeDefinition
-                        && attCtx.definition.fetchObjectDefinition<CdmObjectDefinition>(resOpt)?.objectType == cdmObjectType.entityAttributeDef) {
+                        && attCtx.definition?.fetchObjectDefinition<CdmObjectDefinition>(resOpt)?.objectType == cdmObjectType.entityAttributeDef) {
                         entityAttAttContext = attCtx;
                     }
                     // find entity references that identifies the 'this' entity
@@ -1418,12 +1414,12 @@ export class CdmCorpusDefinition {
      * Given a list of 'From' attributes, find the E2E relationships based on the 'To' information stored in the trait of the attribute in the resolved entity
      * @internal
      */
-    public fetchPurposeResolvedTraitsFromAttCtx(resOpt: resolveOptions, attributeCtx: CdmAttributeContext): ResolvedTraitSet{
-        const def: CdmObjectDefinition = attributeCtx.definition.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
+    public fetchPurposeResolvedTraitsFromAttCtx(resOpt: resolveOptions, attributeCtx: CdmAttributeContext): ResolvedTraitSet {
+        const def: CdmObjectDefinition = attributeCtx.definition?.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
         if (def?.objectType == cdmObjectType.entityAttributeDef && (def as CdmEntityAttributeDefinition)?.purpose != null) {
             return (def as CdmEntityAttributeDefinition).purpose.fetchResolvedTraits(resOpt);
         }
-        
+
         return null;
     }
 
@@ -1894,7 +1890,7 @@ export class CdmCorpusDefinition {
                                         .getName();
 
                                     Logger.error(this.ctx, this.TAG, this.resolveReferencesTraitsArguments.name, currentDoc.atCorpusPath, cdmLogCode.ErrTraitArgumentMissing, paramName, rt.traitName, objectName);
-                                        
+
                                 } else {
                                     resolved++;
                                 }

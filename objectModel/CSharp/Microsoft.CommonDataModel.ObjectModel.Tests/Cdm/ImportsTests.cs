@@ -7,8 +7,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
 
@@ -23,10 +23,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestEntityWithMissingImport()
         {
-            var localAdapter = this.CreateStorageAdapterForTest("TestEntityWithMissingImport");
-            var cdmCorpus = this.CreateTestCorpus(localAdapter);
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrPersistFileReadFailure, CdmLogCode.WarnResolveImportFailed, CdmLogCode.WarnDocImportNotLoaded };
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestEntityWithMissingImport), expectedCodes: expectedLogCodes);
 
-            var doc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("local:/missingImport.cdm.json");
+            var resOpt = new ResolveOptions()
+            {
+                ImportsLoadStrategy = ImportsLoadStrategy.Load
+            };
+
+            var doc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("local:/missingImport.cdm.json", null, resOpt);
             Assert.IsNotNull(doc);
             Assert.AreEqual(1, doc.Imports.Count);
             Assert.AreEqual("missing.cdm.json", doc.Imports[0].CorpusPath);
@@ -36,8 +41,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestEntityWithMissingNestedImportsAsync()
         {
-            var localAdapter = this.CreateStorageAdapterForTest("TestEntityWithMissingNestedImportsAsync");
-            var cdmCorpus = this.CreateTestCorpus(localAdapter);
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrPersistFileReadFailure, CdmLogCode.WarnResolveImportFailed, CdmLogCode.WarnDocImportNotLoaded };
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestEntityWithMissingNestedImportsAsync), expectedCodes: expectedLogCodes);
 
             var resOpt = new ResolveOptions()
             {
@@ -56,8 +61,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestEntityWithSameImportsAsync()
         {
-            var localAdapter = this.CreateStorageAdapterForTest("TestEntityWithSameImportsAsync");
-            var cdmCorpus = this.CreateTestCorpus(localAdapter);
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrPersistFileReadFailure, CdmLogCode.WarnResolveImportFailed, CdmLogCode.WarnDocImportNotLoaded };
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestEntityWithSameImportsAsync), expectedCodes: expectedLogCodes);
 
             var resOpt = new ResolveOptions()
             {
@@ -79,11 +84,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public void TestNonExistingAdapterNamespace()
         {
-            var localAdapter = this.CreateStorageAdapterForTest("TestNonExistingAdapterNamespace");
-            var cdmCorpus = this.CreateTestCorpus(localAdapter);
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrPersistFileReadFailure };
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestNonExistingAdapterNamespace), expectedCodes: expectedLogCodes);
 
             // Register it as a 'local' adapter.
-            cdmCorpus.Storage.Mount("erp", localAdapter);
+            cdmCorpus.Storage.Mount("erp", new LocalAdapter(TestHelper.GetInputFolderPath(testsSubpath, nameof(TestNonExistingAdapterNamespace))));
 
             // Set local as our default.
             cdmCorpus.Storage.DefaultNamespace = "erp";
@@ -100,8 +105,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestLoadingSameImportsAsync()
         {
-            var localAdapter = this.CreateStorageAdapterForTest("TestLoadingSameImportsAsync");
-            var cdmCorpus = this.CreateTestCorpus(localAdapter);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestLoadingSameImportsAsync));
 
             var resOpt = new ResolveOptions()
             {
@@ -130,8 +134,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestLoadingSameMissingImportsAsync()
         {
-            var localAdapter = this.CreateStorageAdapterForTest("TestLoadingSameMissingImportsAsync");
-            var cdmCorpus = this.CreateTestCorpus(localAdapter);
+            var expectedLogCodes = new HashSet<CdmLogCode> { CdmLogCode.ErrPersistFileReadFailure, CdmLogCode.WarnResolveImportFailed, CdmLogCode.WarnDocImportNotLoaded };
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestLoadingSameMissingImportsAsync), expectedCodes: expectedLogCodes);
 
             var resOpt = new ResolveOptions()
             {
@@ -159,8 +163,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         [TestMethod]
         public async Task TestLoadingAlreadyPresentImportsAsync()
         {
-            var localAdapter = this.CreateStorageAdapterForTest("TestLoadingAlreadyPresentImportsAsync");
-            var cdmCorpus = this.CreateTestCorpus(localAdapter);
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestLoadingAlreadyPresentImportsAsync));
 
             var resOpt = new ResolveOptions()
             {
@@ -207,26 +210,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             Assert.AreEqual(1, document.Imports.Count);
             Assert.AreEqual(2, document.ImportPriorities.ImportPriority.Count);
-        }
-
-        private CdmCorpusDefinition CreateTestCorpus(StorageAdapter adapter)
-        {
-            var cdmCorpus = new CdmCorpusDefinition();
-            cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-            cdmCorpus.Storage.Mount("local", adapter);
-            cdmCorpus.Storage.DefaultNamespace = "local";
-
-            return cdmCorpus;
-        }
-
-        /// <summary>
-        /// Creates a storage adapter used to retrieve input files associated with test.
-        /// </summary>
-        /// <param name="testName">The name of the test we should retrieve input files for.</param>
-        /// <returns>The storage adapter to be used by the named test method.</returns>
-        private StorageAdapter CreateStorageAdapterForTest(string testName)
-        {
-            return new LocalAdapter(TestHelper.GetInputFolderPath(testsSubpath, testName));
         }
     }
 }

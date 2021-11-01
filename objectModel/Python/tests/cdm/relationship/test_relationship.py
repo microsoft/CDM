@@ -7,6 +7,7 @@ import os
 from cdm.enums import CdmLogCode, CdmObjectType, CdmRelationshipDiscoveryStyle
 from cdm.storage import LocalAdapter
 from cdm.objectmodel import CdmAttributeItem, CdmCorpusDefinition, CdmEntityDefinition, CdmManifestDefinition
+from cdm.utilities import CopyOptions
 
 from tests.common import async_test, TestHelper
 
@@ -178,7 +179,8 @@ class RelationshipTest(unittest.TestCase):
         """Test the relationship calculation when using a replace as foreign key operation while extending an entity."""
 
         test_name = 'test_extends_entity_and_replace_as_foreign_key'
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        expected_log_codes = { CdmLogCode.WARN_PROJ_FK_WITHOUT_SOURCE_ENTITY }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name, expected_codes=expected_log_codes)
 
         manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')  # type: CdmManifestDefinition
 
@@ -249,12 +251,14 @@ class RelationshipTest(unittest.TestCase):
         manifest = await corpus.fetch_object_async('local:/main.manifest.cdm.json')  # type: CdmManifestDefinition
         manifest_no_to_ent = await corpus.fetch_object_async('local:/mainNoToEnt.manifest.cdm.json')  # type: CdmManifestDefinition
         from_ent = await corpus.fetch_object_async('local:/fromEnt.cdm.json/fromEnt')  # type: CdmEntityDefinition
-        await from_ent.in_document.save_as_async(temp_from_file_path)
+        co = CopyOptions()
+        co._is_top_level_document = False
+        await from_ent.in_document.save_as_async(temp_from_file_path, options=co)
 
         async def reload_from_entity():
-            await from_ent.in_document.save_as_async(temp_from_file_path)
+            await from_ent.in_document.save_as_async(temp_from_file_path, options=co)
             # fetch again to reset the cache
-            await corpus.fetch_object_async(temp_from_entity_path, None, False, True)
+            await corpus.fetch_object_async(temp_from_entity_path, None, shallow_validation=False, force_reload=True)
 
         try:
             # 1. test when entity attribute is removed

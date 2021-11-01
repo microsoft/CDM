@@ -30,7 +30,7 @@ public class ProjectionObjectModelTest {
      */
     @Test
     public void testProjectionUsingObjectModel() throws InterruptedException {
-        CdmCorpusDefinition corpus = ProjectionTestUtils.getLocalCorpus(TESTS_SUBPATH, "testProjectionUsingObjectModel");
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testProjectionUsingObjectModel");
         corpus.getStorage().mount("local", new LocalAdapter(TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, "testProjectionUsingObjectModel")));
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
         CdmManifestDefinition manifestDefault = createDefaultManifest(corpus, localRoot);

@@ -35,6 +35,13 @@ export const testHelper = {
      */
     sampleSchemaFolderPath: '../../samples/example-public-standards',
 
+    /**
+     * The log codes that are allowed to be logged without failing the test\
+     */
+     ignoredLogCodes: new Set<string>([
+           cdmLogCode[cdmLogCode.WarnDeprecatedResolutionGuidance]
+    ]),
+
     getInputFolderPath: (testSubpath: string, testName: string, isLanguageSpecific?: boolean) =>
         getTestFolderPath(testSubpath, testName, testFolders.Input, isLanguageSpecific),
     getExpectedOutputFolderPath: (testSubpath: string, testName: string) =>
@@ -251,7 +258,9 @@ export const testHelper = {
         expect(testHelper.compareObjectsContent(expected, actual))
             .toBeTruthy();
     },
-
+    setsEqual(a: Set<string | number | cdmLogCode>, b: Set<string | number | cdmLogCode>): boolean {
+        return a.size === b.size && [...a].every(value => b.has(value));
+    },
     createCorpusForTest(testsSubpath: string, testName: string): CdmCorpusDefinition {
         const pathOfInput: string = testHelper.getInputFolderPath(testsSubpath, testName);
 
@@ -269,17 +278,28 @@ export const testHelper = {
     },
 
     /**
-     * Creates a corpus to be used by the tests.
-     * @param testFilesRoot         The root of the corpus files.
-     * @param testName              The test name.
-     * @param testInputDir          The test input directory.
-     * @param isLanguageSpecific    Indicate whether there is subfolder called TypeScript.
+     * Creates a corpus to be used by the tests, which mounts inputFolder, outputFolder, cdm, and remoteAdapter. Will fail on any unexpected warning/error.
+     * @param testSubpath               The root of the corpus files.
+     * @param testName                  The test name.
+     * @param testInputDir              The test input directory.
+     * @param isLanguageSpecific        Indicate whether there is subfolder called TypeScript, it's used when input is different compared with other languages.
+     * @param expectedCodes             The error codes that are expected, and they should not block the test.
+     * @param noInputAndOutputFolder    No input and output folder needed.
      */
-    getLocalCorpus(testSubpath: string, testName: string, testInputDir?: string, isLanguageSpecific?: boolean): CdmCorpusDefinition {
+    getLocalCorpus(testSubpath: string, testName: string, testInputDir?: string, isLanguageSpecific?: boolean, expectedCodes?: Set<cdmLogCode>, noInputAndOutputFolder?: boolean): CdmCorpusDefinition {
+        if (noInputAndOutputFolder) {
+            testInputDir = 'C:\\dummyPath';
+        }
         testInputDir = testInputDir !== undefined ? testInputDir : testHelper.getInputFolderPath(testSubpath, testName, isLanguageSpecific);
-        const testOutputDir: string = testHelper.getActualOutputFolderPath(testSubpath, testName);
+        const testOutputDir: string = noInputAndOutputFolder ? testInputDir : testHelper.getActualOutputFolderPath(testSubpath, testName);
 
         const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+
+        cdmCorpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
+            testHelper.failOnUnexpectedFailure(cdmCorpus, message, expectedCodes);
+        }, cdmStatusLevel.warning);
+
+
         cdmCorpus.storage.defaultNamespace = 'local';
 
         cdmCorpus.storage.mount('local', new LocalAdapter(testInputDir));
@@ -290,15 +310,30 @@ export const testHelper = {
         cdmCorpus.storage.mount('remote', remoteAdapter);
         cdmCorpus.storage.mount('output', new LocalAdapter(testOutputDir));
 
-        // Set empty callback to avoid breaking tests due too many errors in logs,
-        // change the event callback to console or file status report if wanted.
-        // tslint:disable-next-line: no-empty
-        cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.warning);
-
         return cdmCorpus;
     },
 
-     /**
+    /**
+    * Fail on an unexpected message.
+    * @param corpus                 The corpus object.
+    * @param message                The unexpected error messages
+    * @param expectedCodes          The expected error codes.
+    */
+    failOnUnexpectedFailure(corpus: CdmCorpusDefinition, message: string, expectedCodes?: Set<cdmLogCode>): void {
+        const events = corpus.ctx.events;
+        if (events.length > 0) {
+            const lastEvent: Map<string, string> = events.allItems[events.length - 1];
+            if (!lastEvent.get('code') || !this.ignoredLogCodes.has(lastEvent.get('code'))) {
+                if (expectedCodes !== undefined && expectedCodes.has(cdmLogCode[lastEvent.get('code') as keyof typeof cdmLogCode])) {
+                    return;
+                }
+                const code: string = lastEvent.get('code') !== undefined ? lastEvent.get('code') : 'no code associated';
+                throw new Error(`Encountered unexpected log event: ${code} - ${message}!`);
+            }
+        }
+    },
+            
+    /**
     *Asserts the logcode, if unexpected log code is present in log codes recorded list.
     *Asserts in logcode, if expected log code in log codes recorded list (isPresent = false)
     * @param corpus The corpus object.

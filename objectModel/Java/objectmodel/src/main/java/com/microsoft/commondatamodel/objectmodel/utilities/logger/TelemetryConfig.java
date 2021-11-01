@@ -164,9 +164,10 @@ public class TelemetryConfig {
     
     this.ingestAtLevel = ingestAtLevel;
     this.region = region;
+    this.removeUserContent = removeUserContent;
     this.cloudInstance = cloudInstance;
   }
-  
+
   /**
    * Constructs a telemetry configuration with the credentials for default Kusto cluster and table names,
    * removing all potential user content and using Azure public cloud instance.
@@ -192,6 +193,33 @@ public class TelemetryConfig {
       ingestAtLevel, region, true, cloudInstance);
   }
 
+  public TelemetryConfig(final String tenantId, final String clientId, final String secret,
+                         final String clusterName, final String databaseName, final EnvironmentType ingestAtLevel,
+                         final String region, final boolean removeUserContent) {
+
+    this(tenantId, clientId, secret, clusterName, databaseName,
+            CDM_INFOLOG_TABLE, CDM_WARNINGLOG_TABLE, CDM_ERRORLOG_TABLE,
+            ingestAtLevel, region, removeUserContent, AzureCloudEndpoint.AzurePublic);
+  }
+
+  public TelemetryConfig(final String tenantId, final String clientId, final String secret,
+                         final String clusterName, final String databaseName, final EnvironmentType ingestAtLevel,
+                         final AzureCloudEndpoint cloudInstance) {
+
+    this(tenantId, clientId, secret, clusterName, databaseName,
+            CDM_INFOLOG_TABLE, CDM_WARNINGLOG_TABLE, CDM_ERRORLOG_TABLE,
+            ingestAtLevel, null, true, cloudInstance);
+  }
+
+  public TelemetryConfig(final String tenantId, final String clientId, final String secret,
+                         final String clusterName, final String databaseName, final EnvironmentType ingestAtLevel,
+                         final boolean removeUserContent) {
+
+    this(tenantId, clientId, secret, clusterName, databaseName,
+            CDM_INFOLOG_TABLE, CDM_WARNINGLOG_TABLE, CDM_ERRORLOG_TABLE,
+            ingestAtLevel, null, removeUserContent, AzureCloudEndpoint.AzurePublic);
+  }
+
   /**
    * Constructs a telemetry configuration with the credentials for user-defined Kusto cluster,
    * removing all potential user content and using Azure public cloud instance.
@@ -203,6 +231,16 @@ public class TelemetryConfig {
     this(tenantId, clientId, secret, clusterName, databaseName,
       infoTable, warningTable, errorTable,
       ingestAtLevel, null, true, AzureCloudEndpoint.AzurePublic);
+  }
+
+  public TelemetryConfig(final String tenantId, final String clientId, final String secret,
+                         final String clusterName, final String databaseName, final String infoTable,
+                         final String warningTable, final String errorTable, final EnvironmentType ingestAtLevel,
+                         final boolean removeUserContent) {
+
+    this(tenantId, clientId, secret, clusterName, databaseName,
+            infoTable, warningTable, errorTable,
+            ingestAtLevel, null, removeUserContent, AzureCloudEndpoint.AzurePublic);
   }
 
   /**

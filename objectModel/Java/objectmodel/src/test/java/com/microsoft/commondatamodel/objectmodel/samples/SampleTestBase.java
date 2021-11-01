@@ -18,7 +18,7 @@ public abstract class SampleTestBase {
      */
     protected void checkSampleRunTestsFlag()
     {
-        if (StringUtils.isNullOrEmpty(System.getenv("SAMPLE_RUNTESTS")))
+        if (!"1".equals(System.getenv("SAMPLE_RUNTESTS")))
         {
             // this will cause tests to appear as "Skipped" in the final result
             throw new SkipException("SAMPLE_RUNTESTS environment variable not set.");

@@ -222,7 +222,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     }
                 }
                 else if (paths.Length == 4) // 4 level is supported for relationship
-                {
+                { 
                     //paths[0] : database name
                     //paths[1] : filename
                     if (paths[1].EndsWith(".manifest.cdm.json") && paths[2].Equals("relationships"))
@@ -249,6 +249,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             if (!string.IsNullOrEmpty(adapterPath))
             {
+                if (!adapterPath.EndsWith("/"))
+                {
+                    adapterPath = adapterPath + "/";
+                }
+
                 var startIndex = "https://".Length;
                 var endIndex = adapterPath.IndexOf("/", startIndex + 1);
 
@@ -257,7 +262,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     throw new Exception($"Unexpected adapter path: {adapterPath}");
                 }
 
-                var hostname = adapterPath.Substring(startIndex, endIndex - startIndex);
+                var hostname = this.FormatEndpoint(adapterPath.Substring(startIndex, endIndex - startIndex));
 
                 if (hostname.Equals(Endpoint))
                 {

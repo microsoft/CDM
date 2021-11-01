@@ -27,7 +27,7 @@ import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageManager;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
@@ -1560,6 +1560,7 @@ public class CdmCorpusDefinition {
         if (((CdmObject) subAttCtx).getObjectType() == CdmObjectType.AttributeContextDef) {
           // find the top level entity definition's attribute context
           if (entityAttAttContext == null && attCtx.getType() == CdmAttributeContextType.AttributeDefinition
+                  && attCtx.getDefinition() != null
                   && attCtx.getDefinition().fetchObjectDefinition(resOpt) != null
                   && attCtx.getDefinition().fetchObjectDefinition(resOpt).getObjectType() == CdmObjectType.EntityAttributeDef) {
             entityAttAttContext = attCtx;
@@ -1757,10 +1758,12 @@ public class CdmCorpusDefinition {
    */
   @Deprecated
   public ResolvedTraitSet fetchPurposeResolvedTraitsFromAttCtx(ResolveOptions resOpt, CdmAttributeContext attributeCtx) {
-    CdmObjectDefinition def = attributeCtx.getDefinition().fetchObjectDefinition(resOpt);
-    if (def != null && def.getObjectType() == CdmObjectType.EntityAttributeDef) {
-      final CdmEntityAttributeDefinition ettAttDef = (CdmEntityAttributeDefinition)def;
-      return ettAttDef.getPurpose() != null ? ettAttDef.getPurpose().fetchResolvedTraits(resOpt) : null;
+    if (attributeCtx.getDefinition() != null) {
+      CdmObjectDefinition def = attributeCtx.getDefinition().fetchObjectDefinition(resOpt);
+      if (def != null && def.getObjectType() == CdmObjectType.EntityAttributeDef) {
+        final CdmEntityAttributeDefinition ettAttDef = (CdmEntityAttributeDefinition)def;
+        return ettAttDef.getPurpose() != null ? ettAttDef.getPurpose().fetchResolvedTraits(resOpt) : null;
+      }
     }
 
     return null;
@@ -2349,10 +2352,10 @@ public class CdmCorpusDefinition {
   /**
    * Gets the last modified time of the object where it was readAsync from.
    */
-  CompletableFuture<OffsetDateTime> getLastModifiedTimeAsyncFromObjectAsync(
+  CompletableFuture<OffsetDateTime> getLastModifiedTimeFromObjectAsync(
       final CdmObject currObject) {
     if (currObject instanceof CdmContainerDefinition) {
-      final StorageAdapter adapter =
+      final StorageAdapterBase adapter =
           this.storage.fetchAdapter(((CdmContainerDefinition) currObject).getNamespace());
 
       if (adapter == null) {
@@ -2372,7 +2375,7 @@ public class CdmCorpusDefinition {
         return null;
       }
     } else {
-      return getLastModifiedTimeAsyncFromObjectAsync(currObject.getInDocument());
+      return getLastModifiedTimeFromObjectAsync(currObject.getInDocument());
     }
   }
 
@@ -2400,7 +2403,7 @@ public class CdmCorpusDefinition {
     final String nameSpace = pathTuple.getLeft();
 
     if (!StringUtils.isNullOrTrimEmpty(nameSpace)) {
-      final StorageAdapter adapter = this.storage.fetchAdapter(nameSpace);
+      final StorageAdapterBase adapter = this.storage.fetchAdapter(nameSpace);
 
       if (adapter == null) {
         Logger.error(this.ctx, TAG, "getLastModifiedTimeFromPartitionPathAsync", corpusPath, CdmLogCode.ErrStorageAdapterNotFound, nameSpace);
@@ -2436,7 +2439,7 @@ public class CdmCorpusDefinition {
       final CdmObject obj) {
     return fetchObjectAsync(corpusPath, obj, true).thenCompose(currObject -> {
       if (currObject != null) {
-        return this.getLastModifiedTimeAsyncFromObjectAsync(currObject);
+        return this.getLastModifiedTimeFromObjectAsync(currObject);
       }
       return CompletableFuture.completedFuture(null);
     });

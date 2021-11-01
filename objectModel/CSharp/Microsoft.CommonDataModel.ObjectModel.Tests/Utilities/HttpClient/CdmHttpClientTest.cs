@@ -16,9 +16,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
     [TestClass]
     public class CdmHttpClientTest
     {
-        private int method2ExecutedCount = 0;
+        private int requestsExecutionCounter = 0;
 
-        private async Task<HttpResponseMessage> method1(HttpRequestMessage request, CancellationToken token)
+        private async Task<HttpResponseMessage> CompleteResponseMethod(HttpRequestMessage request, CancellationToken token)
         {
             if (request.RequestUri.ToString() == "https://www.example.com/folder1")
             {
@@ -35,52 +35,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
             }
         }
 
-        private async Task<HttpResponseMessage> method2(HttpRequestMessage request, CancellationToken token)
+        private async Task<HttpResponseMessage> DelayedResponseMethod(HttpRequestMessage request, CancellationToken token)
         {
+            var waitTime = requestsExecutionCounter == 0 ? 4 : 2;
+            requestsExecutionCounter++;
+
+            var cancelled = token.WaitHandle.WaitOne(TimeSpan.FromSeconds(waitTime));
+
+            if (cancelled)
+            {
+                throw new TaskCanceledException("The operation was canceled.");
+            }
+
             var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent("REPLY2")
             };
 
-            if (method2ExecutedCount == 0)
-            {
-                Thread.Sleep(4000);
-                method2ExecutedCount++;
-
-                return await Task.FromResult(responseMessage);
-            }
-            else
-            {
-                // Wait some time.
-                Thread.Sleep(2000);
-
-                method2ExecutedCount++;
-                return await Task.FromResult(responseMessage);
-            }
-        }
-
-        private async Task<HttpResponseMessage> method3(HttpRequestMessage request, CancellationToken token)
-        {
-            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent("REPLY2")
-            };
-
-            if (method2ExecutedCount == 0)
-            {
-                await Task.Delay(4000);
-                method2ExecutedCount++;
-
-                return await Task.FromResult(responseMessage);
-            }
-            else
-            {
-                // Wait some time.
-                await Task.Delay(2000);
-
-                method2ExecutedCount++;
-                return await Task.FromResult(responseMessage);
-            }
+            return await Task.FromResult(responseMessage);
         }
 
         /// <summary>
@@ -89,7 +61,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
         [TestMethod]
         public async Task TestResultReturnedFirstTime()
         {
-            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method1)))
+            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(CompleteResponseMethod)))
             {
                 var cdmHttpRequest = new CdmHttpRequest("/folder1")
                 {
@@ -111,7 +83,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
         [TestMethod]
         public void TestResultHttpExceptionZeroRetry()
         {
-            using (var cdmHttpClient = new CdmHttpClient("https://www.example1.com", new CdmHttpMessageHandlerStub(method1)))
+            using (var cdmHttpClient = new CdmHttpClient("https://www.example1.com", new CdmHttpMessageHandlerStub(CompleteResponseMethod)))
             {
                 var cdmHttpRequest = new CdmHttpRequest("/folder1")
                 {
@@ -131,7 +103,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
         [TestMethod]
         public void TestTimeout()
         {
-            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method3)))
+            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(DelayedResponseMethod)))
             {
                 var cdmHttpRequest = new CdmHttpRequest("/folder2")
                 {
@@ -152,7 +124,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
         [TestMethod]
         public void TestTimeoutMultipleTimes()
         {
-            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method3)))
+            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(DelayedResponseMethod)))
             {
                 var cdmHttpRequest = new CdmHttpRequest("/folder2")
                 {
@@ -173,7 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
         [TestMethod]
         public void TestMaximumTimeout()
         {
-            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method3)))
+            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(DelayedResponseMethod)))
             {
                 var cdmHttpRequest = new CdmHttpRequest("/folder2")
                 {
@@ -194,12 +166,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
         [TestMethod]
         public async Task TestTimeoutThenSuccessMultipleRetries()
         {
-            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(method2)))
+            using (var cdmHttpClient = new CdmHttpClient("https://www.example.com", new CdmHttpMessageHandlerStub(DelayedResponseMethod)))
             {
                 var cdmHttpRequest = new CdmHttpRequest("/folder2")
                 {
                     Timeout = TimeSpan.FromSeconds(3),
-                    MaximumTimeout = TimeSpan.FromSeconds(150),
+                    MaximumTimeout = TimeSpan.FromSeconds(20),
                     NumberOfRetries = 3
                 };
 

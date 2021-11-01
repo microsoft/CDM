@@ -178,7 +178,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             using (Logger.EnterScope(nameof(CdmDataPartitionPatternDefinition), Ctx, nameof(FileStatusCheckAsync)))
             {
                 string nameSpace = null;
-                StorageAdapter adapter = null;
+                StorageAdapterBase adapter = null;
 
                 // make sure the root is a good full corpus path
                 string rootCleaned = this.RootLocation?.EndsWith("/") == true ? this.RootLocation.Substring(0, this.RootLocation.Length - 1) : this.RootLocation;

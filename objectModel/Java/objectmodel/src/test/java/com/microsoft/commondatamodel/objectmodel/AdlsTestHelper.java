@@ -14,7 +14,7 @@ public class AdlsTestHelper {
 
     public static void checkADLSEnvironment()
     {
-        if (StringUtils.isNullOrEmpty(System.getenv("ADLS_RUNTESTS")))
+        if (!"1".equals(System.getenv("ADLS_RUNTESTS")))
         {
             // this will cause tests to appear as "Skipped" in the final result
             throw new SkipException("ADLS environment not set up");

@@ -29,7 +29,7 @@ describe('Samples.LogicalManipulationUsingProjections', () => {
     const testsSubpath: string = 'Samples';
     const testName: string = 'TestLogicalManipulationUsingProjections';
 
-    const sampleIt: jest.It = process.env['SAMPLE_RUNTESTS'] ? it : it.skip;
+    const sampleIt: jest.It = process.env['SAMPLE_RUNTESTS'] === '1' ? it : it.skip;
 
     sampleIt('TestLogicalManipulationUsingProjections', async (done) => {
         jest.setTimeout(100000);

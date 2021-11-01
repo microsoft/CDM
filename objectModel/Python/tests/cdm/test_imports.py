@@ -5,14 +5,14 @@ import os
 from typing import TYPE_CHECKING
 import unittest
 
-from cdm.enums import ImportsLoadStrategy
+from cdm.enums import ImportsLoadStrategy, CdmStatusLevel, CdmLogCode
 from cdm.storage import LocalAdapter
 from cdm.utilities import ResolveOptions
 
 from tests.common import async_test, TestHelper
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmDocumentDefinition, CdmFolderDefinition
+    from cdm.objectmodel import CdmDocumentDefinition
 
 
 class ImportsTests(unittest.TestCase):
@@ -22,7 +22,9 @@ class ImportsTests(unittest.TestCase):
     async def test_entity_with_missing_import(self):
         """The path between TestDataPath and TestName."""
         test_name = 'test_entity_with_missing_import'
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        expected_log_codes = { CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE, CdmLogCode.WARN_RESOLVE_IMPORT_FAILED, CdmLogCode.WARN_DOC_IMPORT_NOT_LOADED }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name, expected_codes=expected_log_codes)
+
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 
@@ -35,7 +37,9 @@ class ImportsTests(unittest.TestCase):
     @async_test
     async def test_entity_with_missing_nested_imports_async(self):
         test_name = 'test_entity_with_missing_nested_imports_async'
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        expected_log_codes = { CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE, CdmLogCode.WARN_RESOLVE_IMPORT_FAILED, CdmLogCode.WARN_DOC_IMPORT_NOT_LOADED }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name, expected_codes=expected_log_codes)
+
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 
@@ -51,7 +55,9 @@ class ImportsTests(unittest.TestCase):
     @async_test
     async def test_entity_with_same_imports_async(self):
         test_name = 'test_entity_with_same_imports_async'
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        expected_log_codes = { CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE, CdmLogCode.WARN_RESOLVE_IMPORT_FAILED, CdmLogCode.WARN_DOC_IMPORT_NOT_LOADED }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name, expected_codes=expected_log_codes)
+
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 
@@ -69,7 +75,8 @@ class ImportsTests(unittest.TestCase):
         """Test an import with a non-existing namespace name."""
         test_name = 'test_non_existing_adapter_namespace'
         local_adapter = LocalAdapter(TestHelper.get_input_folder_path(self.tests_subpath, test_name))
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        expected_log_codes = { CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name, expected_codes=expected_log_codes)
 
         # Register it as a 'local' adapter.
         corpus.storage.mount('erp', local_adapter)
@@ -129,7 +136,9 @@ class ImportsTests(unittest.TestCase):
     async def test_loading_same_missing_imports_async(self):
         """Testing docs that load the same import"""
         test_name = 'test_loading_same_missing_imports_async'
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        expected_log_codes = { CdmLogCode.ERR_PERSIST_FILE_READ_FAILURE, CdmLogCode.WARN_RESOLVE_IMPORT_FAILED, CdmLogCode.WARN_DOC_IMPORT_NOT_LOADED }
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name, expected_codes=expected_log_codes)
+
         res_opt = ResolveOptions()
         res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 

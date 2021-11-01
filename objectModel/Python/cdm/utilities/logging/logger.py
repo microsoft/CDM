@@ -27,7 +27,7 @@ default_logger.handlers = [handler]  # Overwrite existing handler.
 resource_file_path = os.path.abspath(os.path.join(ROOT_PATH, '..', '..', 'resx','logmessages.txt'))
 
 with open(resource_file_path, 'r') as resource_file:
-    log_messages = dict(line.strip().split(': ') for line in resource_file)
+    log_messages = dict(line.strip().split(': ', 1) for line in resource_file)
 
 def debug(ctx: 'CdmCorpusContext', class_name: str, method: str, corpus_path: str, message: str, ingest_telemetry: Optional[bool] = False) -> None:
     _log(CdmStatusLevel.PROGRESS, ctx, class_name, message, method, default_logger.debug, corpus_path, CdmLogCode.NONE, ingest_telemetry)
@@ -88,20 +88,20 @@ def _log(level: 'CdmStatusLevel', ctx: 'CdmCorpusContext', class_name: str, mess
 
         # Ingest the logs into telemetry database
         if ctx.corpus.telemetry_client:
-            ctx.corpus.telemetry_client.add_to_ingestion_queue(timestamp, level, class_name, method, corpus_path, 
+            ctx.corpus.telemetry_client.add_to_ingestion_queue(timestamp, level, class_name, method, corpus_path,
                                                                 message, ingest_telemetry, code)
 
 def _get_message_from_resource_file(code: 'CdmLogCode', args) -> str:
-        """
-        Loads the string from resource file for particular enum and inserts arguments in it.
-        """
-        message = log_messages[code.name]
-        i = 0
-        for x in args:
-            string = '{' + str(i) + '}'
-            message = message.replace(string, str(x))
-            i = i + 1
-        return message
+    """
+    Loads the string from resource file for particular enum and inserts arguments in it.
+    """
+    message = log_messages[code.name]
+    i = 0
+    for x in args:
+        string = '{' + str(i) + '}'
+        message = message.replace(string, str(x))
+        i = i + 1
+    return message
 
 def _format_message(timestamp: str, class_name: str, message: str, method: Optional[str] = None,
                     correlation_id: Optional[str] = None, corpus_path: Optional[str] = None) -> str:

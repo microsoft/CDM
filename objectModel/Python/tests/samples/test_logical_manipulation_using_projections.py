@@ -18,7 +18,7 @@ from tests.common import async_test, TestHelper
 
 
 def IfRunTestsFlagNotSet():
-    return (os.environ.get("SAMPLE_RUNTESTS") is None)
+    return os.environ.get('SAMPLE_RUNTESTS') is not '1'
 
 
 class LogicalManipulationUsingProjectionsTest(unittest.TestCase):

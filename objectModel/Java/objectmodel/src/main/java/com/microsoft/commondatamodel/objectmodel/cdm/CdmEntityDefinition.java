@@ -913,7 +913,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         // if this is a new entity context, get the name to pass along
         final CdmAttributeContext subSubAttCtx = (CdmAttributeContext) cr;
         String subEntityHint = entityHint;
-        if (subSubAttCtx.getType() == CdmAttributeContextType.Entity) {
+        if (subSubAttCtx.getType() == CdmAttributeContextType.Entity && subSubAttCtx.getDefinition() != null) {
           subEntityHint = subSubAttCtx.getDefinition().getNamedReference();
         }
         // do this for all types

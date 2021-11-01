@@ -13,19 +13,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Types;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     class DataPartitionPersistence
     {
         private static readonly string Tag = nameof(DataPartitionPersistence);
 
-        public static CdmDataPartitionDefinition FromData(CdmCorpusContext ctx, StorageDescriptor obj, string symsRootPath)
+        public static CdmDataPartitionDefinition FromData(CdmCorpusContext ctx, StorageDescriptor obj, string symsRootPath, FormatType formatType)
         {
             var newPartition = ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef);
 
             var symsPath = Utils.CreateSymsAbsolutePath(symsRootPath, obj.Source.Location);
             newPartition.Location = Utils.SymsPathToCorpusPath(symsPath, ctx.Corpus.Storage);
 
-            newPartition.ExhibitsTraits.Add(Utils.CreateCsvTrait(obj.Format.Properties, ctx));
+            var trait = Utils.CreatePartitionTrait(obj.Format.Properties, ctx, formatType);
+            if (trait != null)
+            {
+                newPartition.ExhibitsTraits.Add(trait);
+            }
+            else
+            {
+                Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistSymsUnsupportedTableFormat);
+                return null;
+            }
 
             var properties = obj.Properties;
             if (properties != null)

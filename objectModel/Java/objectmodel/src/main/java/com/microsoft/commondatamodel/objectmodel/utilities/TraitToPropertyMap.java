@@ -166,13 +166,15 @@ public class TraitToPropertyMap {
       case DATA_FORMAT:
         return this.traitsToDataFormat(onlyFromProperty);
       case PRIMARY_KEY:
-        final CdmTypeAttributeDefinition attRef = (CdmTypeAttributeDefinition)
-            fetchTraitReferenceArgumentValue(
+        final Object attRef = fetchTraitReferenceArgumentValue(
                 this.fetchTraitReference(CdmTraitName.IS_IDENTIFIED_BY.toString(), onlyFromProperty),
-                "attribute"); // TODO-BQ: This may break since unchecked casting
+                "attribute");
         if (attRef != null) {
-          return attRef.fetchObjectDefinitionName();
-        }
+            if (attRef instanceof String) {
+              return attRef;
+            }
+            return ((CdmTypeAttributeDefinition)attRef).fetchObjectDefinitionName();
+          }
         break;
       case DEFAULT:
         return this.fetchDefaultValue(onlyFromProperty);

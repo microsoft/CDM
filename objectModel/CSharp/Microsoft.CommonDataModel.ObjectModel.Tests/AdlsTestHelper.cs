@@ -14,7 +14,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
     {
         public static void CheckADLSEnvironment()
         {
-            if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("ADLS_RUNTESTS")))
+            if (Environment.GetEnvironmentVariable("ADLS_RUNTESTS") != "1")
             {
                 // this will cause tests to appear as "Skipped" in the final result
                 Assert.Inconclusive("ADLS environment not set up");

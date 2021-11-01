@@ -1046,7 +1046,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 // if this is a new entity context, get the name to pass along
                                 CdmAttributeContext subSubAttCtx = (CdmAttributeContext)cr;
                                 string subEntityHint = entityHint;
-                                if (subSubAttCtx.Type == CdmAttributeContextType.Entity)
+                                if (subSubAttCtx.Type == CdmAttributeContextType.Entity && subSubAttCtx.Definition != null)
                                 {
                                     subEntityHint = subSubAttCtx.Definition.NamedReference;
                                 }

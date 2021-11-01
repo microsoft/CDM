@@ -478,47 +478,52 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    * @return true if save succeeded, false otherwise
    */
   public CompletableFuture<Boolean> saveAsAsync(final String newName, final boolean saveReferenced, CopyOptions options) {
-    try (Logger.LoggerScope logScope = Logger.enterScope(CdmDocumentDefinition.class.getSimpleName(), getCtx(), "saveAsAsync")) {
-      if (options == null) {
-        options = new CopyOptions();
-      }
-
-      final ResolveOptions resOpt = new ResolveOptions(this, getCtx().getCorpus().getDefaultResolutionDirectives());
-
-      if (!this.indexIfNeededAsync(resOpt, false).join()) {
-        Logger.error(getCtx(), TAG, "saveAsAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
-        return CompletableFuture.completedFuture(false);
-      }
-
-      if (newName.equals(this.getName())) {
-        this.isDirty = false;
-      }
-
-      // Log the telemetry if the document is a manifest
-      if (this instanceof CdmManifestDefinition) {
-        for (CdmEntityDeclarationDefinition entity : ((CdmManifestDefinition)this).getEntities()) {
-          if (entity instanceof CdmLocalEntityDeclarationDefinition) {
-            ((CdmLocalEntityDeclarationDefinition)entity).resetLastFileModifiedOldTime();
-          }
-          for (CdmE2ERelationship relationship : ((CdmManifestDefinition)this).getRelationships()) {
-            relationship.resetLastFileModifiedOldTime();
-          }
-        }
-        Logger.ingestManifestTelemetry((CdmManifestDefinition) this, this.getCtx(), TAG, "saveAsAsync", this.getAtCorpusPath());
-      }
-
-      // Log the telemetry of all entities contained in the document
-      else {
-        for (CdmObjectDefinition obj : this.getDefinitions()) {
-          if (obj instanceof CdmEntityDefinition) {
-            Logger.ingestEntityTelemetry((CdmEntityDefinition) obj, this.getCtx(), TAG, "saveAsAsync", this.getAtCorpusPath());
-          }
-        }
-      }
-
-      return this.getCtx().getCorpus().getPersistence().saveDocumentAsAsync(this, newName, saveReferenced, options);
+    if (options == null) {
+      options = new CopyOptions();
     }
-    
+    CopyOptions finalOptions = options;
+    return CompletableFuture.supplyAsync(() -> {
+      try (Logger.LoggerScope logScope = Logger.enterScope(CdmDocumentDefinition.class.getSimpleName(), getCtx(), "saveAsAsync")) {
+
+        final ResolveOptions resOpt = new ResolveOptions(this, getCtx().getCorpus().getDefaultResolutionDirectives());
+
+        if (!this.indexIfNeededAsync(resOpt, false).join()) {
+          Logger.error(getCtx(), TAG, "saveAsAsync", this.getAtCorpusPath(), CdmLogCode.ErrIndexFailed);
+          return false;
+        }
+
+        if (newName.equals(this.getName())) {
+          this.isDirty = false;
+        }
+
+        if (!this.getCtx().getCorpus().getPersistence().saveDocumentAsAsync(this, newName, saveReferenced, finalOptions).join()) {
+          return false;
+        }
+
+        // Log the telemetry if the document is a manifest
+        if (this instanceof CdmManifestDefinition) {
+          for (CdmEntityDeclarationDefinition entity : ((CdmManifestDefinition) this).getEntities()) {
+            if (entity instanceof CdmLocalEntityDeclarationDefinition) {
+              ((CdmLocalEntityDeclarationDefinition) entity).resetLastFileModifiedOldTime();
+            }
+            for (CdmE2ERelationship relationship : ((CdmManifestDefinition) this).getRelationships()) {
+              relationship.resetLastFileModifiedOldTime();
+            }
+          }
+          Logger.ingestManifestTelemetry((CdmManifestDefinition) this, this.getCtx(), TAG, "saveAsAsync", this.getAtCorpusPath());
+        }
+
+        // Log the telemetry of all entities contained in the document
+        else {
+          for (CdmObjectDefinition obj : this.getDefinitions()) {
+            if (obj instanceof CdmEntityDefinition) {
+              Logger.ingestEntityTelemetry((CdmEntityDefinition) obj, this.getCtx(), TAG, "saveAsAsync", this.getAtCorpusPath());
+            }
+          }
+        }
+      }
+        return true;
+    });
   }
 
   CdmObject fetchObjectFromDocumentPath(final String objectPath, final ResolveOptions resOpt) {
@@ -825,7 +830,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
           final CdmObjectReferenceBase objectRef = (CdmObjectReferenceBase) obj;
 
           if (CdmObjectReferenceBase.offsetAttributePromise(objectRef.getNamedReference()) < 0) {
-            final CdmObject resNew = objectRef.fetchResolvedReference(resOpt);
+            final CdmObject resNew = objectRef.fetchObjectDefinition(resOpt);
 
             if (null == resNew) {
               String message = Logger.format(

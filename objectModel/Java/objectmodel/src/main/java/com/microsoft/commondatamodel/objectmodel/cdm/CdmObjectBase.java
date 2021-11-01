@@ -475,12 +475,12 @@ public abstract class CdmObjectBase implements CdmObject {
           if (!StringUtils.isNullOrTrimEmpty(cacheTag) && rasbCache != null) {
             ctx.getAttributeCache().put(cacheTag, rasbCache);
           }
-          // get the 'underCtx' of the attribute set from the acp that is wired into
-          // the target tree
-          underCtx = rasbCache.getResolvedAttributeSet().getAttributeContext() != null
-                  ? rasbCache.getResolvedAttributeSet().getAttributeContext().getUnderContextFromCacheContext(resOpt, acpInContext)
-                  : null;
         }
+        // get the 'underCtx' of the attribute set from the acp that is wired into
+        // the target tree
+        underCtx = rasbCache.getResolvedAttributeSet().getAttributeContext() != null
+                ? rasbCache.getResolvedAttributeSet().getAttributeContext().getUnderContextFromCacheContext(resOpt, acpInContext)
+                : null;
       }
     }
     else {

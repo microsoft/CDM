@@ -5,7 +5,6 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -187,10 +186,10 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return CompletableFuture.runAsync(() -> {
-      StorageAdapter storageAdapterInterface = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace()); 
+      StorageAdapterBase adapter = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace());
       StorageAdapterBase.CacheContext cacheContext = null;
-      if(storageAdapterInterface instanceof StorageAdapterBase) {
-        cacheContext = ((StorageAdapterBase)storageAdapterInterface).createFileQueryCacheContext();
+      if(adapter != null) {
+        cacheContext = adapter.createFileQueryCacheContext();
       }      
       try {
         final String fullPath =

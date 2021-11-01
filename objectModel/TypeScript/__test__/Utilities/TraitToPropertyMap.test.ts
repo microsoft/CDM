@@ -1,15 +1,21 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { testHelper } from '../testHelper';
 import {
     CdmCorpusDefinition,
     cdmDataFormat,
+    CdmDocumentDefinition,
+    CdmEntityDefinition,
+    CdmManifestDefinition,
     cdmObjectType,
     CdmTypeAttributeDefinition,
     traitToPropertyMap
 } from '../../internal';
 
 describe('Utilities.TraitToPropertyMapTests', () => {
+    const testsSubpath: string = 'Utilities/TraitToPropertyMap';
+
     /**
      * Test update and fetch list lookup default value without attributeValue and displayOrder.
      */
@@ -49,5 +55,25 @@ describe('Utilities.TraitToPropertyMapTests', () => {
             expect(att.dataFormat)
                 .toBe(i);
         }
+    });
+
+    /**
+     * Test getting primary key.
+     */
+     it('TestFetchPrimaryKey', async () => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, "TestFetchPrimaryKey");
+        const doc: CdmDocumentDefinition = await corpus.fetchObjectAsync<CdmDocumentDefinition>("Account.cdm.json");
+
+        if (doc == undefined) {
+            fail("Unable to load manifest account.cdm.json. Please inspect error log for additional details.");
+        }
+
+        const entity: CdmEntityDefinition = doc.definitions.allItems[0] as CdmEntityDefinition;
+        try {
+            const pk: string = entity.primaryKey;
+        } catch (e) {
+            fail("Exception occur while reading primary key for entity account."  + e);
+        }
+
     });
 });

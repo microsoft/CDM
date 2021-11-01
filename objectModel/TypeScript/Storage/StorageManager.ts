@@ -9,7 +9,8 @@ import {
     CdmFolderDefinition,
     cdmLogCode,
     CdmObject,
-    resolveContext
+    configObjectType,
+    StorageAdapterBase
 } from '../internal';
 import { Logger, enterScope } from '../Utilities/Logging/Logger';
 import { StorageUtils } from '../Utilities/StorageUtils';
@@ -17,8 +18,6 @@ import { ADLSAdapter } from './ADLSAdapter';
 import { CdmStandardsAdapter } from './CdmStandardsAdapter';
 import { RemoteAdapter } from './RemoteAdapter';
 import { ResourceAdapter } from './ResourceAdapter';
-import { configObjectType, StorageAdapter } from './StorageAdapter';
-import { StorageAdapterBase } from './StorageAdapterBase';
 import { using } from "using-statement";
 
 export class StorageManager {
@@ -29,7 +28,7 @@ export class StorageManager {
      */
     public readonly corpus: CdmCorpusDefinition;
     // the map of registered namespace <-> adapters.
-    public namespaceAdapters: Map<string, StorageAdapter>;
+    public namespaceAdapters: Map<string, StorageAdapterBase>;
     /**
      * @internal
      */
@@ -63,7 +62,7 @@ export class StorageManager {
 
     constructor(corpus: CdmCorpusDefinition) {
         this.corpus = corpus;
-        this.namespaceAdapters = new Map<string, StorageAdapter>();
+        this.namespaceAdapters = new Map<string, StorageAdapterBase>();
         this.namespaceFolders = new Map<string, CdmFolderDefinition>();
         this.systemDefinedNamespaces = new Set<string>();
         this.registeredAdapterTypes = new Map<string, any>([
@@ -85,7 +84,7 @@ export class StorageManager {
     /**
      * Mounts a namespace to the specified adapter
      */
-    public mount(namespace: string, adapter: StorageAdapter): void {
+    public mount(namespace: string, adapter: StorageAdapterBase): void {
         return using(enterScope(StorageManager.name, this.ctx, this.mount.name), _ => {
             if (!namespace) {
                 Logger.error(this.ctx, this.TAG, this.mount.name, null, cdmLogCode.ErrStorageNullNamespace);
@@ -93,9 +92,7 @@ export class StorageManager {
             }
 
             if (adapter) {
-                if (adapter instanceof (StorageAdapterBase)) {
-                    (adapter as StorageAdapterBase).ctx = this.ctx;
-                }
+                adapter.ctx = this.ctx;
                 this.namespaceAdapters.set(namespace, adapter);
                 const fd: CdmFolderDefinition = new CdmFolderDefinition(this.ctx, '');
                 fd.corpus = this.corpus;
@@ -163,7 +160,7 @@ export class StorageManager {
             if (!adapterType) {
                 unrecognizedAdapters.push(item);
             } else {
-                const adapter: StorageAdapter = new adapterType.constructor();
+                const adapter: StorageAdapterBase = new adapterType.constructor();
                 adapter.updateConfig(JSON.stringify(configs));
                 this.mount(nameSpace, adapter);
             }
@@ -203,7 +200,7 @@ export class StorageManager {
      * @internal
      * Allow replacing a storage adapter with another one for testing, leaving folders intact.
      */
-    public setAdapter(nameSpace: string, adapter: StorageAdapter): void {
+    public setAdapter(nameSpace: string, adapter: StorageAdapterBase): void {
         if (!nameSpace) {
             Logger.error(this.ctx, this.TAG, this.setAdapter.name, null, cdmLogCode.ErrStorageNullNamespace);
             return;
@@ -218,7 +215,7 @@ export class StorageManager {
     /**
      * Retrieves the adapter for the specified namespace.
      */
-    public fetchAdapter(namespace: string): StorageAdapter {
+    public fetchAdapter(namespace: string): StorageAdapterBase {
         if (!namespace) {
             Logger.error(this.ctx, this.TAG, this.fetchAdapter.name, null, cdmLogCode.ErrStorageNullNamespace);
             return undefined;
@@ -303,7 +300,7 @@ export class StorageManager {
             const namespace: string = pathTuple[0] || this.defaultNamespace;
 
             // get the adapter registered for this namespace
-            const namespaceAdapter: StorageAdapter = this.fetchAdapter(namespace);
+            const namespaceAdapter: StorageAdapterBase = this.fetchAdapter(namespace);
             if (namespaceAdapter === undefined) {
                 Logger.error(this.ctx, this.TAG, this.corpusPathToAdapterPath.name, null, cdmLogCode.ErrStorageNamespaceNotRegistered, namespace);
             } else {
@@ -347,7 +344,7 @@ export class StorageManager {
         }
 
             if (prefix && this.containsUnsupportedPathFormat(prefix)) {
-                // already called statusRpt when checking for unsupporetd path format.
+                // already called statusRpt when checking for unsupported path format.
                 return;
             }
             if (prefix && prefix.length > 0 && prefix[prefix.length - 1] !== '/') {
@@ -439,7 +436,7 @@ export class StorageManager {
     /**
      * Saves adapters config into a file.
      */
-    public async saveAdaptersConfigAsync(name: string, adapter: StorageAdapter): Promise<void> {
+    public async saveAdaptersConfigAsync(name: string, adapter: StorageAdapterBase): Promise<void> {
         await adapter.writeAsync(name, this.fetchConfig());
     }
 

@@ -34,7 +34,7 @@ public class StorageManager {
   private Map<String, CdmFolderDefinition> namespaceFolders = new LinkedHashMap<>();
 
   private String defaultNamespace;
-  private Map<String, StorageAdapter> namespaceAdapters = new LinkedHashMap<>();
+  private Map<String, StorageAdapterBase> namespaceAdapters = new LinkedHashMap<>();
 
   // The namespaces that have default adapters defined by the program and not by a user.
   private Set<String> systemDefinedNamespaces;
@@ -51,7 +51,7 @@ public class StorageManager {
     systemDefinedNamespaces.add("cdm");
   }
 
-  public void mount(final String nameSpace, final StorageAdapter adapter) {
+  public void mount(final String nameSpace, final StorageAdapterBase adapter) {
     try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "mount")) {
       if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
         Logger.error(this.corpus.getCtx(), TAG, "mount", null, CdmLogCode.ErrStorageNullNamespace);
@@ -59,9 +59,7 @@ public class StorageManager {
       }
 
       if (adapter != null) {
-        if (adapter instanceof StorageAdapterBase) {
-          ((StorageAdapterBase) adapter).setCtx(this.corpus.getCtx());
-        }
+        adapter.setCtx(this.corpus.getCtx());
 
         this.namespaceAdapters.put(nameSpace, adapter);
         final CdmFolderDefinition fd = new CdmFolderDefinition(this.corpus.getCtx(), "");
@@ -121,7 +119,7 @@ public class StorageManager {
       }
       try {
         final String itemType = item.get("type").asText();
-        StorageAdapter adapter = null;
+        StorageAdapterBase adapter = null;
 
         switch (itemType) {
           case CdmStandardsAdapter.TYPE:
@@ -187,12 +185,12 @@ public class StorageManager {
    * Allow replacing a storage adapter with another one for testing, leaving folders intact.
    *
    * @param nameSpace String
-   * @param adapter StorageAdapter
+   * @param adapter StorageAdapterBase
    * @deprecated This should only be used for testing only. And is very likely to be removed from
    * public interface.
    */
   @Deprecated
-  public void setAdapter(String nameSpace, StorageAdapter adapter) {
+  public void setAdapter(String nameSpace, StorageAdapterBase adapter) {
     if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
       Logger.error(this.corpus.getCtx(), TAG, "setAdapter", null, CdmLogCode.ErrStorageNullNamespace);
       return;
@@ -205,7 +203,7 @@ public class StorageManager {
     }
   }
 
-  public StorageAdapter fetchAdapter(final String nameSpace) {
+  public StorageAdapterBase fetchAdapter(final String nameSpace) {
     if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
       Logger.error(this.corpus.getCtx(), TAG, "fetchAdapter", null, CdmLogCode.ErrStorageNullNamespace);
       return null;
@@ -236,14 +234,14 @@ public class StorageManager {
 
   public String adapterPathToCorpusPath(final String adapterPath) {
     try (Logger.LoggerScope logScope = Logger.enterScope(StorageManager.class.getSimpleName(), getCtx(), "adapterPathToCorpusPath")) {
-      for (final Map.Entry<String, StorageAdapter> kv : this.namespaceAdapters.entrySet()) {
+      for (final Map.Entry<String, StorageAdapterBase> kv : this.namespaceAdapters.entrySet()) {
         final String corpusPath = kv.getValue().createCorpusPath(adapterPath);
         if (corpusPath != null) {
           // got one, add the prefix
           return kv.getKey() + ":" + corpusPath;
         }
       }
-      Logger.error(this.corpus.getCtx(), TAG, "adapterPathToCorpusPath", null, CdmLogCode.ErrStorageInvalidAdapterPath);
+      Logger.error(this.corpus.getCtx(), TAG, "adapterPathToCorpusPath", null, CdmLogCode.ErrStorageInvalidAdapterPath, adapterPath);
       return null;
     }
   }
@@ -343,7 +341,7 @@ public class StorageManager {
     final ArrayNode adaptersArray = JsonNodeFactory.instance.arrayNode();
 
     // Construct the JObject for each adapter.
-    for (final Map.Entry<String, StorageAdapter> namespaceAdapterTuple : this.namespaceAdapters.entrySet()) {
+    for (final Map.Entry<String, StorageAdapterBase> namespaceAdapterTuple : this.namespaceAdapters.entrySet()) {
       // Skip system-defined adapters and resource adapters.
       if (this.systemDefinedNamespaces.contains(namespaceAdapterTuple.getKey())
           || namespaceAdapterTuple.getValue() instanceof ResourceAdapter) {
@@ -389,7 +387,7 @@ public class StorageManager {
    * @param adapter The adapter used to save the config to a file.
    * @return CompletableFuture
    */
-  public CompletableFuture<Void> saveAdapterConfigAsync(final String name, final StorageAdapter adapter) {
+  public CompletableFuture<Void> saveAdapterConfigAsync(final String name, final StorageAdapterBase adapter) {
     return adapter.writeAsync(name, fetchConfig());
   }
 
@@ -442,11 +440,11 @@ public class StorageManager {
     return true;
   }
 
-  public Map<String, StorageAdapter> getNamespaceAdapters() {
+  public Map<String, StorageAdapterBase> getNamespaceAdapters() {
     return namespaceAdapters;
   }
 
-  public void setNamespaceAdapters(final Map<String, StorageAdapter> namespaceAdapters) {
+  public void setNamespaceAdapters(final Map<String, StorageAdapterBase> namespaceAdapters) {
     this.namespaceAdapters = namespaceAdapters;
   }
 

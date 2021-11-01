@@ -53,7 +53,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
      it('TestAlterTraitsOnTypeAttrProj', async () => {
         const testName: string = 'TestAlterTraitsOnTypeAttrProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.storage.mount('traitGroup', new LocalAdapter(traitGroupFilePath));
 
         for (const resOpt of resOptsCombinations) {
@@ -74,7 +74,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
         it('TestAlterTraitsOnEntiAttrProj', async () => {
         const testName: string = 'TestAlterTraitsOnEntiAttrProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.storage.mount('traitGroup', new LocalAdapter(traitGroupFilePath));
 
         for (const resOpt of resOptsCombinations) {
@@ -99,7 +99,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
      it('TestAlterTraitsOnAttrGrpProj', async () => {
         const testName: string = 'TestAlterTraitsOnAttrGrpProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.storage.mount('traitGroup', new LocalAdapter(traitGroupFilePath));
 
         for (const resOpt of resOptsCombinations) {
@@ -135,7 +135,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
     it('TestCombineOpsNestedProj', async () => {
         const testName: string = 'TestCombineOpsNestedProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.storage.mount('traitGroup', new LocalAdapter(traitGroupFilePath));
 
         for (const resOpt of resOptsCombinations) {
@@ -165,7 +165,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
     it('TestConditionalProj', async () => {
         const testName: string = 'TestConditionalProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.storage.mount('traitGroup', new LocalAdapter(traitGroupFilePath));
 
         for (const resOpt of resOptsCombinations) {
@@ -203,7 +203,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
      */
     it('TestConditionalProjUsingObjectModel', async () => {
         const testName: string = 'TestConditionalProjUsingObjectModel';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
         corpus.storage.mount('traitGroup', new LocalAdapter(traitGroupFilePath));
 
@@ -279,7 +279,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
     it('TestExtendsEntityProj', async () => {
         const testName: string = 'TestExtendsEntityProj';
         const entityName: string = 'Child';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.storage.mount('traitGroup', new LocalAdapter(traitGroupFilePath));
 
         for (const resOpt of resOptsCombinations) {
@@ -305,7 +305,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
     it('TestMultipleOpProj', async () => {
         const testName: string = 'TestMultipleOpProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.storage.mount('traitGroup', new LocalAdapter(traitGroupFilePath));
 
         for (const resOpt of resOptsCombinations) {
@@ -331,7 +331,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
     it('TestWildcardArgs', async () => {
         const testName: string = 'TestWildcardArgs';
         const entityName: string = 'ThreeMusketeers';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         for (const resOpt of resOptsCombinations) {
             await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
@@ -362,7 +362,7 @@ describe('Cdm/Projection/TestProjectionAlterTraits', () => {
     it('TestAlterArguments', async () => {
         const testName: string = 'TestAlterArguments';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.storage.mount('traitGroup', new LocalAdapter(traitGroupFilePath));
 
         for (const resOpt of resOptsCombinations) {

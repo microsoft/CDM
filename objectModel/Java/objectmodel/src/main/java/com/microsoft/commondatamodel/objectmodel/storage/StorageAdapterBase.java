@@ -17,7 +17,7 @@ import java.util.HashSet;
   * to manually copy data to the location where the Object Model is running. By deriving from this 
   * this class, users can to create their own adapter if needed.
  */
-public abstract class StorageAdapterBase implements StorageAdapter {
+public abstract class StorageAdapterBase {
 
   /**
    * The CDM corpus context, gives information for the logger.

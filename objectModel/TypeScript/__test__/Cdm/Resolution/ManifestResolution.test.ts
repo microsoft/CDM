@@ -67,9 +67,8 @@ describe('Cdm/Resolution/ManifestResolution', () => {
         let failed: boolean = false;
 
         try {
-            const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
-            cdmCorpus.storage.mount('local', new LocalAdapter('C:\\path'));
-            cdmCorpus.storage.defaultNamespace = 'local';
+            var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrResolveManifestFailed]);
+            const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubPath, 'TestResolvingManifestNotInFolder', undefined, false, expectedLogCodes, true);
 
             const manifest: CdmManifestDefinition = cdmCorpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'test');
             const entity: CdmEntityDefinition = cdmCorpus.MakeObject<CdmEntityDefinition>(cdmObjectType.entityDef, 'entity');
@@ -112,7 +111,8 @@ describe('Cdm/Resolution/ManifestResolution', () => {
      * Test that correct error is shown when trying to create a resolved manifest with a name that already exists
      */
     it('TestResolvingManifestWithSameName', async () => {
-        var corpus = testHelper.getLocalCorpus(testsSubPath, 'TestResolvingManifestWithSameName')
+        var expectedLogCodes = new Set<cdmLogCode>([cdmLogCode.ErrResolveManifestExists]);
+        var corpus = testHelper.getLocalCorpus(testsSubPath, 'TestResolvingManifestWithSameName', undefined, false, expectedLogCodes);
 
         const manifest: CdmManifestDefinition = corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'test');
         corpus.storage.namespaceFolders.get('local').documents.push(manifest);

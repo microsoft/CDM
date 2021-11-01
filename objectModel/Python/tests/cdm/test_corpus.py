@@ -66,8 +66,8 @@ class CorpusTests(unittest.TestCase):
         res_opt.imports_load_strategy = ImportsLoadStrategy.LAZY_LOAD
 
         # load entB which is imported by entA document.
-        doc_b = await corpus.fetch_object_async('local:/entB.cdm.json', None, res_opt)  # type: CdmDocumentDefinition
-        ent_a = await corpus.fetch_object_async('local:/entA.cdm.json/entA', None, res_opt)  # type: CdmEntityDefinition
+        doc_b = await corpus.fetch_object_async('local:/entB.cdm.json', None, res_opt=res_opt)  # type: CdmDocumentDefinition
+        ent_a = await corpus.fetch_object_async('local:/entA.cdm.json/entA', None, res_opt=res_opt)  # type: CdmEntityDefinition
 
         self.assertIsNone(ent_a.in_document._import_priorities)
         self.assertIsNone(doc_b._import_priorities)

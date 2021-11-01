@@ -18,6 +18,7 @@ import {
     CdmTypeAttributeDefinition,
     resolveOptions
 } from '../../../internal';
+import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 
 /**
@@ -47,7 +48,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
     it('TestInvalidOperationType', async () => {
         const testName: string = 'TestInvalidOperationType';
 
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('ProjectionPersistence | Invalid operation type \'replaceAsForeignKey11111\'. | fromData') == -1) {
                 fail(message);
@@ -71,7 +72,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
     it('TestZeroMinimumCardinality', async () => {
         const testName: string = 'TestZeroMinimumCardinality';
 
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             fail(message);
         }, cdmStatusLevel.warning);
@@ -124,7 +125,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
         const testName: string = 'TestCircularEntityAttributes';
         const entityName: string = 'A';
 
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`${entityName}.cdm.json/${entityName}`);
 
@@ -187,7 +188,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
         const testName: string = 'TestMaxDepthOnPolymorphicEntity';
         const entityName: string = 'A';
 
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`${entityName}.cdm.json/${entityName}`);
 
@@ -251,7 +252,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
     it('testRunSequentially', async () => {
         const testName: string = 'TestRunSequentially';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
@@ -280,7 +281,7 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
     it('testRunSequentiallyAndSourceInput', async () => {
         const testName: string = 'TestRunSequentiallyAndSourceInput';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
         const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);

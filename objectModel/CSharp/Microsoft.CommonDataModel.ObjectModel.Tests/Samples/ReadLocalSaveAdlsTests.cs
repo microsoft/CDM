@@ -28,7 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Samples
             AdlsTestHelper.CheckADLSEnvironment();
             
             // Check if SAMPLE_RUNTESTS flag is set.
-            if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("SAMPLE_RUNTESTS")))
+            if (Environment.GetEnvironmentVariable("SAMPLE_RUNTESTS") != "1")
             {
                 // this will cause tests to appear as "Skipped" in the final result
                 Assert.Inconclusive("SAMPLE_RUNTESTS environment variable not set.");

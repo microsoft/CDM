@@ -5,7 +5,6 @@ using Microsoft.CommonDataModel.ObjectModel.Cdm;
 using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Storage;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
-using Microsoft.CommonDataModel.Tools.Processor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using System;
@@ -42,6 +41,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// the entire set of CDM standard schemas, after 8000+ F&O entities were added.
         /// </summary>
         public const string CdmStandardSchemaPath = "local:/core/applicationCommon/applicationCommon.manifest.cdm.json";
+
+        /// <summary>
+        /// The log codes that are allowed to be logged without failing the test
+        /// </summary>
+        private static readonly HashSet<string> ignoredLogCodes = new HashSet<string>()
+        {
+            CdmLogCode.WarnDeprecatedResolutionGuidance.ToString()
+        };
 
         /// <summary>
         /// Gets the input folder path associated with specified test.
@@ -160,13 +167,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             File.WriteAllText(pathOfExpectedOutputFile, fileContent);
         }
 
-        public static CdmCorpusDefinition GetLocalCorpus(string testSubpath, string testName, string testInputDir = null, bool isLanguageSpecific = false)
+        /// <summary>
+        /// Creates a corpus to be used by the tests, which mounts inputFolder, outputFolder, cdm, and remoteAdapter. Will fail on any unexpected warning/error.
+        /// </summary>
+        /// <param name="testSubpath">The subpath of the test.</param>
+        /// <param name="testName">The name of the test.</param>
+        /// <param name="testInputDir">The test input directory.</param>
+        /// <param name="isLanguageSpecific">Indicate whether there is subfolder called CSharp, it's used when input is different compared with other languages.</param>
+        /// <param name="expectedCodes">The error codes that are expected, and they should not block the test.</param>
+        /// <param name="noInputAndOutputFolder">No input and output folder needed.</param>
+        /// <returns>CdmCorpusDefinition</returns>
+        public static CdmCorpusDefinition GetLocalCorpus(string testSubpath, string testName, string testInputDir = null, bool isLanguageSpecific = false, HashSet<CdmLogCode> expectedCodes = null, bool noInputAndOutputFolder = false)
         {
+            if (noInputAndOutputFolder)
+            {
+                testInputDir = "C:\\dummyPath";
+            }
+
             testInputDir = testInputDir ?? GetInputFolderPath(testSubpath, testName, isLanguageSpecific);
-            var testOutputDir = GetActualOutputFolderPath(testSubpath, testName);
+            var testOutputDir = noInputAndOutputFolder ? testInputDir : GetActualOutputFolderPath(testSubpath, testName);
 
             var corpus = new CdmCorpusDefinition();
-            corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
+
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (status, message) =>
+                {
+                    FailOnUnexpectedFailure(corpus, message, expectedCodes);
+                }
+            }, CdmStatusLevel.Warning);
+
             corpus.Storage.DefaultNamespace = "local";
 
             corpus.Storage.Mount("local", new LocalAdapter(testInputDir));
@@ -181,6 +211,31 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             });
 
             return corpus;
+        }
+
+        /// <summary>
+        /// Fail on an unexpected message.
+        /// </summary>
+        /// <param name="corpus">The corpus.</param>
+        /// <param name="message">The unexpected error messages.</param>
+        /// <param name="expectedCodes">The expected error codes.</param>
+        /// <returns></returns>
+        private static void FailOnUnexpectedFailure(CdmCorpusDefinition corpus, string message, HashSet<CdmLogCode> expectedCodes = null)
+        {
+            var events = corpus.Ctx.Events;
+            if (events.Count > 0)
+            {
+                var lastLog = events[events.Count - 1];
+                if (!lastLog.ContainsKey("code") || !ignoredLogCodes.Contains(lastLog["code"]))
+                {
+                    if (expectedCodes != null && expectedCodes.Contains((CdmLogCode)Enum.Parse(typeof(CdmLogCode), lastLog["code"])))
+                    {
+                        return;
+                    }
+                    var code = lastLog.ContainsKey("code") ? lastLog["code"] : "no code associated";
+                    Assert.Fail($"Encountered unexpected log event: {code} - {message}!");
+                }
+            }
         }
 
         /// <summary>
@@ -273,7 +328,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
             bool toAssert = false;
             corpus.Ctx.Events.ForEach(logEntry =>
             {
-                if ( ((expectedCode.ToString().StartsWith("Warn") && logEntry["level"].Equals(CdmStatusLevel.Warning.ToString()))
+                if (((expectedCode.ToString().StartsWith("Warn") && logEntry["level"].Equals(CdmStatusLevel.Warning.ToString()))
                      || (expectedCode.ToString().StartsWith("Err") && logEntry["level"].Equals(CdmStatusLevel.Error.ToString())))
                     && logEntry["code"].Equals(expectedCode.ToString()))
                 {

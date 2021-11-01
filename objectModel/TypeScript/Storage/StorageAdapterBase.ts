@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { CdmCorpusContext } from '../Cdm/CdmCorpusContext';
-import { configObjectType, StorageAdapter } from './StorageAdapter';
 
 /**
   * The CDM base class for an adapter object that can read and write documents from a data source.
@@ -10,7 +9,7 @@ import { configObjectType, StorageAdapter } from './StorageAdapter';
   * to manually copy data to the location where the Object Model is running. By deriving from this 
   * this class, users can to create their own adapter if needed.
  */
-export abstract class StorageAdapterBase implements StorageAdapter {
+export abstract class StorageAdapterBase {
     /**
      * The CDM corpus context, gives information for the logger.
      */
@@ -155,3 +154,24 @@ export class StorageAdapterCacheContext {
         this.disposeFunc(this);
     }
 }
+
+export interface configObjectType {
+    type?: string;
+    root?: string;
+    appId?: string;
+    defaultNamespace?: string;
+    adapters?: any[];
+    hosts?: any[];
+    locationHint?: string;
+    config?: configObjectType;
+    tenant?: string;
+    clientId?: string;
+    hostname?: string;
+    sharedKey?: string;
+    secret?: string;
+    timeout?: number;
+    maximumTimeout?: number;
+    numberOfRetries?: number;
+    sasToken?: string;
+    endpoint?: string;
+  }

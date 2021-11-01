@@ -33,9 +33,14 @@ export class ReferencedEntityDeclarationPersistence {
             cdmObjectType.referencedEntityDeclarationDef,
             dataObj.name
         );
+        referencedEntity.entityName = dataObj.name;
         const corpusPath: string = ctx.corpus.storage.adapterPathToCorpusPath(location);
 
-        referencedEntity.entityName = dataObj.name;
+        if (corpusPath === undefined) {
+            Logger.error(ctx, this.TAG, this.fromData.name, null, cdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, location, referencedEntity.entityName);
+            return undefined;
+        }
+
         referencedEntity.entityPath = `${corpusPath}/${dataObj.source}`;
         referencedEntity.explanation = dataObj.description;
 

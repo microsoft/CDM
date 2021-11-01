@@ -4,7 +4,6 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -24,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmObjectDefinition, CdmFileStatus {
   private static final String TAG = CdmManifestDefinition.class.getSimpleName();
@@ -260,7 +258,8 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
       if (docImp != null && docImp.isDirty()) {
           // save it with the same name
           if (!docImp.saveAsAsync(docImp.getName(), true, options).join()) {
-              return false;
+            Logger.error(this.getCtx(), TAG, "saveDocumentIfDirty", this.getAtCorpusPath(), CdmLogCode.ErrDocEntityDocSavingFailure, docImp.getName());
+            return false;
           }
       }
       return true;
@@ -372,15 +371,15 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return CompletableFuture.runAsync(() -> {
       try (Logger.LoggerScope logScope = Logger.enterScope(CdmManifestDefinition.class.getSimpleName(), getCtx(), "fileStatusCheckAsync")) {
-        StorageAdapter storageAdapterInterface = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace());
+        StorageAdapterBase adapter = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace());
         StorageAdapterBase.CacheContext cacheContext = null;
-        if (storageAdapterInterface instanceof StorageAdapterBase) {
-          cacheContext = ((StorageAdapterBase) storageAdapterInterface).createFileQueryCacheContext();
+        if (adapter != null) {
+          cacheContext = adapter.createFileQueryCacheContext();
         }
         try {
 
           final OffsetDateTime modifiedTime = getCtx().getCorpus()
-                  .getLastModifiedTimeAsyncFromObjectAsync(this).join();
+                  .getLastModifiedTimeFromObjectAsync(this).join();
 
           setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
 

@@ -9,6 +9,7 @@ from .local import LocalAdapter
 from .remote import RemoteAdapter
 from .resource import ResourceAdapter
 from .storage_manager import StorageManager
+from .syms import SymsAdapter
 
 __all__ = [
     'ADLSAdapter',
@@ -19,5 +20,6 @@ __all__ = [
     'RemoteAdapter',
     'ResourceAdapter',
     'StorageAdapterBase',
-    'StorageManager'
+    'StorageManager',
+    'SymsAdapter'
 ]

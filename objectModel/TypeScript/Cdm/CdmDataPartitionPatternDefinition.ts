@@ -9,7 +9,7 @@ import {
     cdmObjectType,
     cdmLogCode,
     resolveOptions,
-    StorageAdapter,
+    StorageAdapterBase,
     VisitCallback
 } from '../internal';
 import { isLocalEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
@@ -190,7 +190,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     public async fileStatusCheckAsync(): Promise<void> {
         return await using(enterScope(CdmDataPartitionPatternDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
             let namespace: string = undefined;
-            let adapter: StorageAdapter = undefined;
+            let adapter: StorageAdapterBase = undefined;
 
             // make sure the root is a good full corpus path
             let rootCleaned: string = this.rootLocation && this.rootLocation.endsWith('/') ? this.rootLocation.substring(0, this.rootLocation.length - 1) : this.rootLocation;

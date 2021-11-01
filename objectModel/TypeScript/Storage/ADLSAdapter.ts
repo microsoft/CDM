@@ -7,7 +7,7 @@ import { URL } from 'url';
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse, TokenProvider } from '../Utilities/Network';
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { NetworkAdapter } from './NetworkAdapter';
-import { configObjectType } from './StorageAdapter';
+import { configObjectType } from '../internal';
 import { azureCloudEndpoint, AzureCloudEndpointConvertor } from '../Enums/azureCloudEndpoint';
 import { StringUtils } from '../Utilities/StringUtils';
 

@@ -10,6 +10,7 @@ import {
     CdmEntityDeclarationDefinition,
     CdmEntityDefinition,
     CdmFolderDefinition,
+    cdmLogCode,
     CdmManifestDefinition,
     cdmObjectType,
     CdmReferencedEntityDeclarationDefinition,
@@ -71,11 +72,9 @@ describe('Persistence.ModelJson.ModelJson', () => {
      */
     it('TestLoadingCdmFolderAndModelJsonToData', async () => {
         const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingCdmFolderAndModelJsonToData');
-        const absPath: string =
-            cdmCorpus.storage.createAbsoluteCorpusPath(`default${manifestExtension}`, cdmCorpus.storage.fetchRootFolder('local'));
         const stopwatch: Stopwatch = new Stopwatch();
         stopwatch.start();
-        const cdmManifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(absPath);
+        const cdmManifest: CdmManifestDefinition = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>(`default${manifestExtension}`, cdmCorpus.storage.fetchRootFolder('local'));
         stopwatch.stop();
 
         expect(stopwatch.getTime())
@@ -366,6 +365,20 @@ describe('Persistence.ModelJson.ModelJson', () => {
             .toEqual(cdmDataFormat.date);
         expect((entity.attributes.allItems[1] as CdmTypeAttributeDefinition).dataFormat)
             .toEqual(cdmDataFormat.time);
+    });
+
+    /**
+     * Test model.json is correctly created without an entity when the location is not recognized
+     */
+    it('TestIncorrectModelLocation', async () => {
+        const expectedLogs = new Set<cdmLogCode>([cdmLogCode.ErrStorageInvalidAdapterPath, cdmLogCode.ErrPersistModelJsonEntityParsingError, cdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation]);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestIncorrectModelLocation', undefined, false, expectedLogs);
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('model.json');
+        expect(manifest)
+            .not.toBeUndefined();
+        expect(manifest.entities.length)
+            .toBe(0);
+        testHelper.expectCdmLogCodeEquality(corpus, cdmLogCode.ErrPersistModelJsonRefEntityInvalidLocation, true);
     });
 
     /**

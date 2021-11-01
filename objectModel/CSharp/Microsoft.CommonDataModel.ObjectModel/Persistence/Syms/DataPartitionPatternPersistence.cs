@@ -6,12 +6,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.Syms.Models;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
 
     class DataPartitionPatternPersistence
     {
-        public static CdmDataPartitionPatternDefinition FromData(CdmCorpusContext ctx, dynamic obj, string name, string symsRootPath)
+        private static readonly string Tag = nameof(DataPartitionPatternPersistence);
+
+        public static CdmDataPartitionPatternDefinition FromData(CdmCorpusContext ctx, dynamic obj, string name, string symsRootPath, FormatType formatType)
         {
             var dataPartitionPattern = ctx.Corpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, name);
             if ( obj is StorageDescriptor ) 
@@ -22,8 +25,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.Syms
                 var symsPath = Utils.CreateSymsAbsolutePath(symsRootPath, sd.Source.Location);
                 dataPartitionPattern.RootLocation = Utils.SymsPathToCorpusPath(symsPath, ctx.Corpus.Storage);
 
-                dataPartitionPattern.GlobPattern = "/**/*.csv";
-                dataPartitionPattern.ExhibitsTraits.Add(Utils.CreateCsvTrait(sd.Format.Properties, ctx));
+                if (formatType == FormatType.Csv)
+                {
+                    dataPartitionPattern.GlobPattern = "/**/*.csv";
+                }
+                else if (formatType == FormatType.Parquet)
+                {
+                    dataPartitionPattern.GlobPattern = "/**/*.parquet";
+                }
+                else
+                {
+                    Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistSymsUnsupportedTableFormat);
+                    return null;
+                }
+
+                var trait = Utils.CreatePartitionTrait(sd.Format.Properties, ctx, formatType);
+                if (trait != null)
+                {
+                    dataPartitionPattern.ExhibitsTraits.Add(trait);
+                }
+                else
+                {
+                    Logger.Error(ctx, Tag, nameof(FromData), null, CdmLogCode.ErrPersistSymsUnsupportedTableFormat);
+                    return null;
+                }
 
                 if (properties != null)
                 {

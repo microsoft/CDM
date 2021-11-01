@@ -5,7 +5,7 @@ from collections import OrderedDict
 import importlib
 import json
 import os
-from typing import List, Optional, Tuple, Set, TYPE_CHECKING
+from typing import List, Optional, Set, TYPE_CHECKING
 
 from cdm.storage import CdmStandardsAdapter, LocalAdapter, ResourceAdapter, StorageAdapterBase
 from cdm.utilities import logger, StorageUtils
@@ -32,7 +32,8 @@ class StorageManager:
             'local': 'LocalAdapter',
             'adls': 'ADLSAdapter',
             'remote': 'RemoteAdapter',
-            'github': 'GithubAdapter'
+            'github': 'GithubAdapter',
+            'syms' : 'SymsAdapter'
         }
 
         # The namespaces that have default adapters defined by the program and not by a user.
@@ -69,8 +70,10 @@ class StorageManager:
             if self.namespace_adapters:
                 for key, value in self.namespace_adapters.items():
                     result = value.create_corpus_path(adapter_path)
-                    if result:
+                    if result is not None:
                         # Got one, add the prefix
+                        if result == '':
+                            result = '/'
                         result = '{}:{}'.format(key, result)
                         break
 
@@ -247,8 +250,7 @@ class StorageManager:
             from cdm.objectmodel import CdmFolderDefinition
 
             if adapter:
-                if isinstance(adapter, StorageAdapterBase):
-                    adapter.ctx = self._ctx
+                adapter.ctx = self._ctx
                 self.namespace_adapters[namespace] = adapter
                 fd = CdmFolderDefinition(self._ctx, '')
                 fd._corpus = self._corpus
@@ -338,6 +340,6 @@ class StorageManager:
         else:
             return False
 
-    def _set_adapter(self, namespace: str, adapter: 'StorageAdapter') -> None:
+    def _set_adapter(self, namespace: str, adapter: 'StorageAdapterBase') -> None:
         if adapter:
             self.namespace_adapters[namespace] = adapter

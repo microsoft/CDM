@@ -5,6 +5,7 @@ import {
     CdmCorpusDefinition,
     cdmStatusLevel
 } from '../../../internal';
+import { testHelper } from '../../testHelper';
 import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 
 /**
@@ -23,7 +24,7 @@ describe('Cdm/Projection/ForwardCompatibility', () => {
         const testName: string = 'TestAllOperations';
         const entityName: string = testName;
 
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, testName);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
 
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
             if (message.indexOf('Projection operation not implemented yet.') === -1) {

@@ -83,9 +83,17 @@ class _data_partition_patternTest(unittest.TestCase):
         content = TestHelper.get_input_file_content(self.test_subpath, "test_pattern_with_non_existing_folder", "entities.manifest.cdm.json")
         manifest_content = ManifestContent()
         manifest_content.decode(content)
-
         cdmManifest = ManifestPersistence.from_object(CdmCorpusContext(corpus, None), "entities", "local", "/", manifest_content)
+
+        error_logged = 0
+        def callback(level: CdmStatusLevel, message: str):
+            if 'Failed to fetch all files in the folder location \'local:/testLocation\' described by a partition pattern. Exception:' in message:
+                nonlocal error_logged
+                error_logged += 1
+        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
+
         await cdmManifest.file_status_check_async()
+        self.assertEqual(1, error_logged)
         self.assertEqual(len(cdmManifest.entities[0].data_partitions), 0)
         # make sure the last check time is still being set
         self.assertIsNotNone(cdmManifest.entities[0].data_partition_patterns[0].last_file_status_check_time)

@@ -22,17 +22,6 @@ import java.util.Set;
  */
 public class ResolutionTestUtils {
     /**
-     * Creates a storage adapter used to retrieve input files associated with test.
-     * @param testsSubPath The tests sub-folder name
-     * @param testName The name of the test we should retrieve input files for.
-     * @return The storage adapter to be used by the named test method.
-     * @throws InterruptedException
-     */
-    static StorageAdapterBase createStorageAdapterConfigForTest(String testsSubPath, String testName) throws InterruptedException {
-        return new LocalAdapter(TestHelper.getInputFolderPath(testsSubPath, testName));
-    }
-
-    /**
      * Function used to test resolving an environment.
      * Writes a helper function used for debugging.
      * Asserts the result matches the expected result stored in a file.
@@ -66,10 +55,7 @@ public class ResolutionTestUtils {
      * @throws InterruptedException
      */
     static String resolveEnvironment(String testsSubPath, String testName, String manifestName) throws InterruptedException, IOException {
-        CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
-
-        StorageAdapterBase testLocalAdapter = createStorageAdapterConfigForTest(testsSubPath, testName);
-        cdmCorpus.getStorage().mount("local", testLocalAdapter);
+        CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(testsSubPath, testName);
 
         CdmManifestDefinition manifest = (CdmManifestDefinition) cdmCorpus.fetchObjectAsync
                 ("local:/" + manifestName + ".manifest.cdm.json").join();

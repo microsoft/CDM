@@ -41,7 +41,7 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         # the child documents for the directory folder.
         self._documents = CdmDocumentCollection(self.ctx, self)  # type: CdmDocumentCollection
 
-        self._corpus = None  # type: CdmDocumentDefinition
+        self._corpus = None  # type: CdmCorpusDefinition
         self._namespace = None  # type: Optional[str]
 
 

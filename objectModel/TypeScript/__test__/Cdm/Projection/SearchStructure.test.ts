@@ -11,7 +11,7 @@ import {
     SearchResult,
     SearchStructure
 } from '../../../internal';
-import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
+import { testHelper } from '../../testHelper';
 
 /**
  * Unit test for SearchStructure functions
@@ -50,7 +50,7 @@ describe('Cdm/Projection/SearchStructureUnitTest', () => {
      * Unit test for building a tree
      */
     it('TestBuildTree', () => {
-        const corpus: CdmCorpusDefinition = projectionTestUtils.getLocalCorpus(testsSubpath, 'TestBuildTree');
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestBuildTree');
 
         const pc: ProjectionContext = buildFakeTree(corpus);
 

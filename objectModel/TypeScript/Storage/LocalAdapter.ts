@@ -5,8 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 import { StorageUtils } from '../Utilities/StorageUtils';
-import { configObjectType } from './StorageAdapter';
-import { StorageAdapterBase } from './StorageAdapterBase';
+import { configObjectType, StorageAdapterBase } from '../internal';
 
 let readFile, writeFile, stat, mkdir, readdir;
 

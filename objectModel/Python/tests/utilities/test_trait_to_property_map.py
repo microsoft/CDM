@@ -2,13 +2,19 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import unittest
+import os
 
 from cdm.enums import CdmDataFormat, CdmObjectType
-from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmTypeAttributeDefinition
+from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmTypeAttributeDefinition, \
+    CdmManifestDefinition, CdmEntityDefinition
 from cdm.utilities import TraitToPropertyMap
+from tests.common import TestHelper
+from tests.common import async_test
 
 
 class TraitToPropertyMapTests(unittest.TestCase):
+    test_subpath = os.path.join('Utilities', 'TraitToPropertyMap')
+
     def test_trait_to_unknown_data_format(self):
         """Test trait to data format when unknown data format trait is in an attribute."""
         cdm_attribute = CdmTypeAttributeDefinition(CdmCorpusContext(CdmCorpusDefinition(), None), 'SomeAttribute')
@@ -59,3 +65,17 @@ class TraitToPropertyMapTests(unittest.TestCase):
         for format in CdmDataFormat:
             att.dataFormat = format
             self.assertEqual(att.dataFormat, format)
+
+    @async_test
+    async def test_fetch_primary_key(self):
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'TestFetchPrimaryKey')
+        doc = await corpus.fetch_object_async('Account.cdm.json')
+        if doc is None:
+            self.fail('Unable to doc Account.cdm.json. Please inspect error log for additional details.')
+
+        entity = doc.definitions[0]
+        try:
+            pk = entity.primary_key
+        except Exception as e:
+            self.fail('Exception occur while reading primary key for entity.' + e)
+

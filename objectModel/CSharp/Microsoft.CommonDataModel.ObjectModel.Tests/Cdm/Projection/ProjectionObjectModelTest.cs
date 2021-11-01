@@ -28,7 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         [TestMethod]
         public async Task TestProjectionUsingObjectModel()
         {
-            CdmCorpusDefinition corpus = ProjectionTestUtils.GetLocalCorpus(testsSubpath, "TestProjectionUsingObjectModel");
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestProjectionUsingObjectModel");
             corpus.Storage.Mount("local", new LocalAdapter(TestHelper.GetActualOutputFolderPath(testsSubpath, "TestProjectionUsingObjectModel")));
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
             CdmManifestDefinition manifestDefault = CreateDefaultManifest(corpus, localRoot);

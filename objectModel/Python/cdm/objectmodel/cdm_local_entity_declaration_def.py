@@ -161,11 +161,11 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         return self.last_file_modified_time
 
     def set_last_file_modified_time(self, value: datetime) -> None:
-        self.last_file_modified_old_time = self.last_file_modified_old_time
+        self.last_file_modified_old_time = self.last_file_modified_time
         self.last_file_modified_time = value
 
     def get_last_file_modified_old_time(self) -> datetime:
         return self.last_file_modified_old_time
 
     def reset_last_file_modified_old_time(self) -> None:
-       self.last_file_modified_old_time = None;
+       self.last_file_modified_old_time = None

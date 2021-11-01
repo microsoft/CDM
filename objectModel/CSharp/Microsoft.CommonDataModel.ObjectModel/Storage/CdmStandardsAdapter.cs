@@ -16,16 +16,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     {
         internal const string Type = "cdm-standards";
         private const string STANDARDS_ENDPOINT = "https://cdm-schema.microsoft.com";
-        
+
         /// <summary>
         /// The path to be appended to the endpoint.
         /// </summary>
         public string Root { get; set; }
 
         /// <summary>
+        /// The endpoint of the standard schema store.
+        /// </summary>
+        internal string Endpoint
+        {
+            get
+            {
+                return this._endpoint;
+            }
+            set
+            {
+                this._endpoint = value.EndsWith("/") ? value.Substring(0, value.Length - 1) : value;
+            }
+        }
+
+        /// <summary>
         /// The combinating of the standards endpoint and the root path.
         /// </summary>
-        private string AbsolutePath { get => STANDARDS_ENDPOINT + Root; }
+        private string AbsolutePath { get => Endpoint + Root; }
+
+        private string _endpoint;
 
         /// <summary>
         /// Constructs a CdmStandardsAdapter with default parameters.
@@ -37,13 +54,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// Constructs a CdmStandardsAdapter.
         /// </summary>
-        /// <param name="root">
-        /// The root path specifies either to read the standard files in logical or resolved form.
-        /// </param>
-        public CdmStandardsAdapter(string root)
+        /// <param name="root"> The root path specifies either to read the standard files in logical or resolved form. </param>
+        /// <param name="endpoint"> The endpoint specifies cdm standard schema store url in different environments (internal use only). </param>
+        public CdmStandardsAdapter(string root, string endpoint = null)
         {
             this.Root = root;
-            this.httpClient = new CdmHttpClient(STANDARDS_ENDPOINT);
+            this.Endpoint = endpoint ?? STANDARDS_ENDPOINT;
+            this.httpClient = new CdmHttpClient(this.Endpoint);
         }
 
         /// <inheritdoc />

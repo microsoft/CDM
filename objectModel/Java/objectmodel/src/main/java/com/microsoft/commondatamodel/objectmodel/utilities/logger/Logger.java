@@ -11,8 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmLogCode;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
@@ -76,7 +75,7 @@ public class Logger {
    */
   public static void warning(CdmCorpusContext ctx, String classname, String method, String corpuspath, CdmLogCode code, String... args) {
     // Get message from resource for the code enum.
-    String message = getMessagefromResourceFile(code, args);
+    String message = getMessageFromResourceFile(code, args);
     log(CdmStatusLevel.Warning, ctx, classname, message, method, System.out::println, corpuspath, code);
   }
 
@@ -93,7 +92,7 @@ public class Logger {
    */
   public static void error(CdmCorpusContext ctx, String classname, String method, String corpuspath, CdmLogCode code, String... args) {
     // Get message from resource for the code enum.
-    String message = getMessagefromResourceFile(code, args);
+    String message = getMessageFromResourceFile(code, args);
     log(CdmStatusLevel.Error, ctx, classname, message, method, System.err::println, corpuspath, code);
   }
 
@@ -230,21 +229,21 @@ public class Logger {
   }
 
   /**
-   * Loads the string from resource file for pritcluar enum and inserts arguments
+   * Loads the string from resource file for particular enum and inserts arguments
    * in it.
-   * 
-   * @param code The path, denotes the code enum for a message..
+   *
+   * @param code The path, denotes the code enum for a message.
    * @param args The path, denotes the arguments inserts into the message.
    */
-  private static String getMessagefromResourceFile(CdmLogCode code, String... args) {
-      StringBuilder builder = new StringBuilder(resource.getString(code.toString()));
+  private static String getMessageFromResourceFile(CdmLogCode code, String... args) {
+    StringBuilder builder = new StringBuilder(resource.getString(code.toString()));
 
-      int i = 0;
-      for (String x : args) {
-        String from = "{" + i + "}";
-        builder = builder.replace(builder.indexOf(from), builder.indexOf(from) + from.length(), x == null ? "" : x);
-        i++;
-      }
+    int i = 0;
+    for (String x : args) {
+      String from = "{" + i + "}";
+      builder = builder.replace(builder.indexOf(from), builder.indexOf(from) + from.length(), x == null ? "" : x);
+      i++;
+    }
     return builder.toString();
   }
 
@@ -365,7 +364,7 @@ public class Logger {
     }
 
     // Get storage adapter type
-    final StorageAdapter adapter = manifest.getCtx().getCorpus().getStorage().fetchAdapter(storageNamespace);
+    final StorageAdapterBase adapter = manifest.getCtx().getCorpus().getStorage().fetchAdapter(storageNamespace);
     final String adapterType = adapter.getClass().getSimpleName();
 
     String message = Logger.format("ManifestStorage:{0};", adapterType);
@@ -448,7 +447,7 @@ public class Logger {
     }
 
     // Get storage adapter type
-    final StorageAdapter adapter = entity.getCtx().getCorpus().getStorage().fetchAdapter(entityNamespace);
+    final StorageAdapterBase adapter = entity.getCtx().getCorpus().getStorage().fetchAdapter(entityNamespace);
     final String adapterType = adapter.getClass().getSimpleName();
 
     String message = Logger.format("EntityStorage:{0};EntityNamespace:{1};", adapterType, entityNamespace);
