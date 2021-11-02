@@ -1,0 +1,213 @@
+{
+  "jsonSchemaSemanticVersion": "1.4.0",
+  "imports": [
+    {
+      "corpusPath": "Person.cdm.json",
+      "moniker": "resolvedFrom"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "normalized_Person",
+      "exhibitsTraits": [
+        {
+          "traitReference": "has.entitySchemaAbstractionLevel",
+          "arguments": [
+            {
+              "name": "level",
+              "value": "resolved"
+            }
+          ]
+        }
+      ],
+      "attributeContext": {
+        "type": "entity",
+        "name": "normalized_Person",
+        "definition": "resolvedFrom/Person",
+        "contents": [
+          {
+            "type": "attributeDefinition",
+            "name": "name",
+            "parent": "normalized_Person/attributeContext/normalized_Person",
+            "definition": "resolvedFrom/Person/hasAttributes/name",
+            "contents": [
+              "normalized_Person/hasAttributes/name"
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "age",
+            "parent": "normalized_Person/attributeContext/normalized_Person",
+            "definition": "resolvedFrom/Person/hasAttributes/age",
+            "contents": [
+              "normalized_Person/hasAttributes/age"
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "address",
+            "parent": "normalized_Person/attributeContext/normalized_Person",
+            "definition": "resolvedFrom/Person/hasAttributes/address",
+            "contents": [
+              {
+                "type": "projection",
+                "name": "projection",
+                "parent": "normalized_Person/attributeContext/normalized_Person/address",
+                "definition": "resolvedFrom/Person/hasAttributes/address/entity/projection",
+                "contents": [
+                  {
+                    "type": "source",
+                    "name": "source",
+                    "parent": "normalized_Person/attributeContext/normalized_Person/address/projection",
+                    "contents": [
+                      {
+                        "type": "projection",
+                        "name": "projection",
+                        "parent": "normalized_Person/attributeContext/normalized_Person/address/projection/source",
+                        "definition": "resolvedFrom/Person/hasAttributes/address/entity/projection",
+                        "contents": [
+                          {
+                            "type": "source",
+                            "name": "source",
+                            "parent": "normalized_Person/attributeContext/normalized_Person/address/projection/source/projection",
+                            "contents": [
+                              {
+                                "type": "entity",
+                                "name": "Address",
+                                "parent": "normalized_Person/attributeContext/normalized_Person/address/projection/source/projection/source",
+                                "definition": "resolvedFrom/Address",
+                                "contents": [
+                                  {
+                                    "type": "attributeDefinition",
+                                    "name": "addressLine",
+                                    "parent": "normalized_Person/attributeContext/normalized_Person/address/projection/source/projection/source/Address",
+                                    "definition": "resolvedFrom/Address/hasAttributes/addressLine",
+                                    "contents": [
+                                      "normalized_Person/hasAttributes/addressLine"
+                                    ]
+                                  },
+                                  {
+                                    "type": "attributeDefinition",
+                                    "name": "postalCode",
+                                    "parent": "normalized_Person/attributeContext/normalized_Person/address/projection/source/projection/source/Address",
+                                    "definition": "resolvedFrom/Address/hasAttributes/postalCode",
+                                    "contents": [
+                                      "normalized_Person/hasAttributes/postalCode"
+                                    ]
+                                  },
+                                  {
+                                    "type": "attributeDefinition",
+                                    "name": "city",
+                                    "parent": "normalized_Person/attributeContext/normalized_Person/address/projection/source/projection/source/Address",
+                                    "definition": "resolvedFrom/Address/hasAttributes/city",
+                                    "contents": [
+                                      "normalized_Person/hasAttributes/city"
+                                    ]
+                                  },
+                                  {
+                                    "type": "attributeDefinition",
+                                    "name": "country",
+                                    "parent": "normalized_Person/attributeContext/normalized_Person/address/projection/source/projection/source/Address",
+                                    "definition": "resolvedFrom/Address/hasAttributes/country",
+                                    "contents": [
+                                      "normalized_Person/hasAttributes/country"
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "email",
+            "parent": "normalized_Person/attributeContext/normalized_Person",
+            "definition": "resolvedFrom/Person/hasAttributes/email",
+            "contents": [
+              "normalized_Person/hasAttributes/email"
+            ]
+          }
+        ]
+      },
+      "hasAttributes": [
+        {
+          "name": "name",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "normalized_Person/attributeContext/normalized_Person/name",
+          "dataFormat": "String"
+        },
+        {
+          "name": "age",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "normalized_Person/attributeContext/normalized_Person/age",
+          "dataFormat": "String"
+        },
+        {
+          "name": "addressLine",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "normalized_Person/attributeContext/normalized_Person/address/projection/source/projection/source/Address/addressLine",
+          "dataFormat": "String"
+        },
+        {
+          "name": "postalCode",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "normalized_Person/attributeContext/normalized_Person/address/projection/source/projection/source/Address/postalCode",
+          "dataFormat": "String"
+        },
+        {
+          "name": "city",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "normalized_Person/attributeContext/normalized_Person/address/projection/source/projection/source/Address/city",
+          "dataFormat": "String"
+        },
+        {
+          "name": "country",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "normalized_Person/attributeContext/normalized_Person/address/projection/source/projection/source/Address/country",
+          "dataFormat": "String"
+        },
+        {
+          "name": "email",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "normalized_Person/attributeContext/normalized_Person/email",
+          "dataFormat": "String"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "ThreeMusketeers",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "ThreePeople",
+                    "entity": {
+                        "source": "Person",
+                        "operations": [
+                            {
+                                "$type": "addAttributeGroup",
+                                "condition": "structured",
+                                "attributeGroupName": "favoriteMusketeers"
+                            },
+                            {
+                                "$type": "alterTraits",
+                                "condition": "structured",
+                                "traitsToAdd": [
+                                    {
+                                        "traitReference": "is.dataFormat.list"
+                                    }
+                                ]
+                            },
+                            {
+                                "$type": "arrayExpansion",
+                                "condition": "!structured",
+                                "startOrdinal": 1,
+                                "endOrdinal": 3
+                            },
+                            {
+                                "$type": "renameAttributes",
+                                "condition": "!structured",
+                                "renameFormat": "{m}{o}"
+                            },
+                            {
+                                "$type": "alterTraits",
+                                "condition": "!structured",
+                                "traitsToAdd": [
+                                    {
+                                        "traitReference": "has.expansionInfo.list",
+                                        "arguments": [
+                                            {
+                                                "name": "expansionName",
+                                                "value": "{a}"
+                                            },
+                                            {
+                                                "name": "ordinal",
+                                                "value": "{o}"
+                                            },
+                                            {
+                                                "name": "memberAttribute",
+                                                "value": "{mo}"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "argumentsContainWildcards": true
+                            },
+                            {
+                                "$type": "addArtifactAttribute",
+                                "condition": "!structured",
+                                "newAttribute": {
+                                    "name": "personCount",
+                                    "dataType": "integer"
+                                }
+                            },
+                            {
+                                "$type": "alterTraits",
+                                "condition": "!structured",
+                                "traitsToAdd": [
+                                    {
+                                        "traitReference": "indicates.expansionInfo.count",
+                                        "arguments": [
+                                            {
+                                                "name": "expansionName",
+                                                "value": "{a}"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "applyTo": "personCount",
+                                "argumentsContainWildcards": true
+                            }
+                        ],
+                        "runSequentially": true
+                    }
+                }
+            ]
+        }
+    ]
+}
